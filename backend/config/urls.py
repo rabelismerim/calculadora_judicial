@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import include, path, re_path, reverse
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView, RedirectView
+from core.dttuser.models import User
+from config.settings import IS_LOCALHOST
 import os
 
 
@@ -28,13 +30,6 @@ def frontend_index(request):
     return render(request, template_name='index.html')
 
 urlpatterns = [
-    path('aplication/admin/login/', lambda r: redirect(
-        reverse('drfmsal_signin', kwargs={'redirect_uri': 'aplication/admin'})
-    )),
-    path('aplication/admin/logout/', lambda r: redirect(
-        reverse('drfmsal_signout', kwargs={'redirect_uri': 'aplication'})
-    )),
-    path('aplication/admin/', admin.site.urls),
     path('aplication/api-auth/', include("rest_framework.urls")),  
     path('aplication/api/', include("projetos.urls")),
     path('aplication/api/', include("core.drfmsal.urls")),
@@ -44,10 +39,23 @@ urlpatterns = [
     path('aplication/api/', include("core.dttuser.api.urls")),
 ]
 
+# Active or inactive MFA login MS
+if IS_LOCALHOST:
+    urlpatterns.extend([path('aplication/admin/', admin.site.urls),])
+else:
+    urlpatterns.extend([
+        path('aplication/admin/login/', lambda r: redirect(
+        reverse('drfmsal_signin', kwargs={'redirect_uri': 'aplication/admin'})
+    )),
+    path('aplication/admin/logout/', lambda r: redirect(
+        reverse('drfmsal_signout', kwargs={'redirect_uri': 'aplication'})
+    )),
+    ])
+    
 
 # adds image to urlpath
 from django.conf.urls.static import static
 from django.conf import settings
 
-if (str(os.getenv('ENV')) == 'branch') or (str(os.getenv('ENV')) == 'hml'):
+if (str(os.getenv('ENV', )) == 'branch') or (str(os.getenv('ENV')) == 'hml'):
     urlpatterns += static("aplication"+settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
