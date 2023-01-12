@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from .managers import CustomUserManager
-
+from config.settings import IS_LOCALHOST
 
 class PermissionsMixin(models.Model):
     """
@@ -91,8 +91,6 @@ class PermissionsMixin(models.Model):
 
 class User(AbstractBaseUser, PermissionsMixin):
 
-    SUPERUSER_IDS = [1, 2, 3, 4]
-
     username_validator = UnicodeUsernameValidator()
 
     username = models.CharField(
@@ -132,7 +130,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_superuser(self):
-        return self.id in self.__class__.SUPERUSER_IDS
+        return self.is_active and self.is_staff
     
     @classmethod
     def from_db(cls, db, field_names, values):
@@ -177,7 +175,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        if not self._state.adding and (self.id != self._loaded_values['id']):
-            raise ValueError("Updating the value of id isn't allowed")
-        self.set_unusable_password()
+        # Allowing or blocking to use django user with password
+        if IS_LOCALHOST is False:
+            if not self._state.adding and (self.id != self._loaded_values['id']):
+                raise ValueError("Updating the value of id isn't allowed")
+            self.set_unusable_password()
         return super().save(force_insert, force_update, using, update_fields)

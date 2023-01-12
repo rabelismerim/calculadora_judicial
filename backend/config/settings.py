@@ -33,7 +33,11 @@ SECRET_KEY = str(os.getenv('SECRET_KEY'))
 # else:
 #     DEBUG = str(os.getenv('ENV')) == "True"
 
-DEBUG = True
+DEBUG = str(os.getenv('DEBUG', 'false')).lower() == 'true'
+
+BRANCH_DEV = str(os.getenv('ENV', 'branch')) == 'branch'
+
+IS_LOCALHOST = str(os.getenv('IS_LOCALHOST', 'false')).lower() == 'true' and BRANCH_DEV
 
 ALLOWED_HOSTS = [
     '127.0.0.1', 
@@ -115,8 +119,7 @@ DRFMSAL_IDENTITY_WEB = IdentityWebPython()
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 #str(os.getenv('SECRET_KEY'))
-
-if str(os.getenv('ENV')) == 'branch':
+if BRANCH_DEV:
     DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
