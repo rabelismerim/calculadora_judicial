@@ -42,7 +42,8 @@ IS_LOCALHOST = str(os.getenv('IS_LOCALHOST', 'false')).lower() == 'true' and BRA
 ALLOWED_HOSTS = [
     '127.0.0.1', 
     'localhost', 
-    'brdcvmdev01' # TEMP
+    'brdcvmdev01',
+    'brsphearndt', # TEMP
 ]
 
 
@@ -99,6 +100,36 @@ TEMPLATES = [
         },
     },
 ]
+
+# Logging file
+# https://docs.djangoproject.com/en/3.2/topics/logging/
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': str(BASE_DIR / 'log' / 'beholder.log'),
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'WARNING',
+            'propagate': True,
+        },
+        'werkzeug': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
 
 # DRFMSAL AUTHENTICATION
 DRFMSAL_CONFIG = {
@@ -199,8 +230,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Setting media info for images
 MEDIA_URL = "/media/"
 MEDIA_ROOT = "uploads"
-
-
 
 REST_FRAMEWORK = {
 
