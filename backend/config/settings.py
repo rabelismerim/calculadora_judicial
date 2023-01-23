@@ -63,7 +63,8 @@ INSTALLED_APPS = [
     'rest_framework',
 
     'projetos',
-    'core.dttuser.apps.DTTUserConfig'
+    'core.dttuser.apps.DTTUserConfig',
+    'core.abstract'
 
 ]
 
@@ -77,17 +78,19 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
     'core.drfmsal.middleware.MsalMiddleware',
+    'crum.CurrentRequestUserMiddleware', # Get current request in Models
 ]
 
 ROOT_URLCONF = 'config.urls'
+
+template = 'templates'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            'static/src/vue/dist/'
+            'static/src/vue/dist/', os.path.join(BASE_DIR, template)
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -103,7 +106,8 @@ TEMPLATES = [
 
 # Logging file
 # https://docs.djangoproject.com/en/3.2/topics/logging/
-LOGGING = {
+if IS_LOCALHOST is False:
+    LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
