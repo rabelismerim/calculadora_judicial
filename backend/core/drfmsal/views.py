@@ -8,6 +8,7 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from core.dttuser.models import User
 
 ms_identity_web = settings.DRFMSAL_IDENTITY_WEB
 
@@ -25,6 +26,14 @@ def sign_in(request, redirect_uri):
             reverse('drfmsal_redirect', kwargs={'redirect_uri': redirect_uri})
         )
     )
+    user_view = User.objects.filter(email=request.identity_context_data.usermail)
+    if len(user_view)==0:
+        user = User()
+        user.email = request.identity_context_data.usermail
+        user.username = request.identity_context_data.username
+        user.first_name = request.identity_context_data.username.split()[0]
+        user.last_name = request.identity_context_data.username.split()[len(request.identity_context_data.username.split())-1]
+        user.save()
     return redirect(auth_url)
 
 @require_GET
