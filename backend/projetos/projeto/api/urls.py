@@ -3,7 +3,7 @@ from .views import (ProjetoListCreate, ProjetoDetail)
 
 urlpatterns = [
 
-    path('projetos/', ProjetoListCreate.as_view(), name="projeto-list-Create"),
-    path('projetos/<int:pk>', ProjetoDetail.as_view(), name="projeto-detail"),
+    path('', ProjetoListCreate.as_view(), name="projeto-list-Create"),
+    path('<int:pk>', ProjetoDetail.as_view(), name="projeto-detail"),
 
 ]

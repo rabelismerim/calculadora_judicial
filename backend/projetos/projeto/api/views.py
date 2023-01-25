@@ -25,7 +25,7 @@ class ProjetoListCreate(generics.ListCreateAPIView):
         '''
         filters the resulting queryset based on the params in the url and current user
         '''
-        queryset = Projeto.objects.filter(user__username=self.usuario).order_by('-id')
+        queryset = Projeto.objects.filter(user__username=self.request.user).order_by('-id')
         return queryset
     
     def post(self, request):
@@ -36,7 +36,7 @@ class ProjetoListCreate(generics.ListCreateAPIView):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) # REJECTS BAD REQUESTS
         else:
-            serializer.validated_data['user'].append(self.usuario) # adds current user to project
+            serializer.validated_data['user'].append(self.request.user) # adds current user to project
             serializer.validated_data['is_active'] = True
             projeto = serializer.save() # SAVES IN DB THE project
         
@@ -51,12 +51,12 @@ class ProjetoDetail(generics.RetrieveUpdateDestroyAPIView):
     def dispatch(self, request, *args, **kwargs):
         self.usuario = request.user
         return super().dispatch(request, *args, **kwargs)
-
+    
     def get_queryset(self):
         '''
         filters the resulting queryset based on the current user
         '''
-        queryset = Projeto.objects.filter(user__username=self.usuario).order_by('-id')
+        queryset = Projeto.objects.filter(user__username=self.request.user).order_by('-id')
         return queryset
 
 

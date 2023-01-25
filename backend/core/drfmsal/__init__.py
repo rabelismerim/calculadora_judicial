@@ -3,7 +3,7 @@ from msal import ConfidentialClientApplication
 from base64 import b64encode
 from functools import wraps
 from logging import Logger
-from requests import get as request_get
+from requests import get
 from uuid import uuid4
 
 from .adapter import DjangoContextAdapter
@@ -214,7 +214,7 @@ class IdentityWebPython(object):
     def _get_userpicture(self, access_token):
         graph_url = f'{self.aad_config.graph_url.rstrip("/")}/me/photos/48x48/$value'
         auth_z = f'Bearer {access_token}'
-        picture_reponse = request_get(graph_url, headers={'Authorization': auth_z}, stream=True)
+        picture_reponse = get(graph_url, headers={'Authorization': auth_z}, stream=True, verify=False)
         picture = picture_reponse.ok and picture_reponse.raw.read() or ''
         return picture and b64encode(picture).decode('ascii') or None
 

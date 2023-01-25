@@ -14,6 +14,9 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 from core.drfmsal import IdentityWebPython
+import urllib3
+
+urllib3.disable_warnings()
 
 load_dotenv()
 
@@ -42,7 +45,8 @@ IS_LOCALHOST = str(os.getenv('IS_LOCALHOST', 'false')).lower() == 'true' and BRA
 ALLOWED_HOSTS = [
     '127.0.0.1', 
     'localhost', 
-    'brdcvmdev01' # TEMP
+    'brdcvmdev01',
+    'brsphearndt', # TEMP
 ]
 
 
@@ -62,7 +66,8 @@ INSTALLED_APPS = [
     'rest_framework',
 
     'projetos',
-    'core.dttuser.apps.DTTUserConfig'
+    'core.dttuser.apps.DTTUserConfig',
+    'core.abstract'
 
 ]
 
@@ -76,17 +81,19 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
     'core.drfmsal.middleware.MsalMiddleware',
+    'crum.CurrentRequestUserMiddleware', # Get current request in Models
 ]
 
 ROOT_URLCONF = 'config.urls'
+
+template = 'templates'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            'static/src/vue/dist/'
+            'static/src/vue/dist/', os.path.join(BASE_DIR, template)
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -99,6 +106,37 @@ TEMPLATES = [
         },
     },
 ]
+
+# Logging file
+# https://docs.djangoproject.com/en/3.2/topics/logging/
+if IS_LOCALHOST is False:
+    LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': str(BASE_DIR / 'log' / 'beholder.log'),
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'WARNING',
+            'propagate': True,
+        },
+        'werkzeug': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
 
 # DRFMSAL AUTHENTICATION
 DRFMSAL_CONFIG = {
@@ -199,8 +237,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Setting media info for images
 MEDIA_URL = "/media/"
 MEDIA_ROOT = "uploads"
-
-
 
 REST_FRAMEWORK = {
 
