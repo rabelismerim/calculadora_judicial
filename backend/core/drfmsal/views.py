@@ -27,7 +27,7 @@ def sign_in(request, redirect_uri):
         )
     )
     user_view = User.objects.filter(email=request.identity_context_data.usermail)
-    if len(user_view)==0:
+    if len(user_view)==0 and request.identity_context_data.usermail != None:
         user = User()
         user.email = request.identity_context_data.usermail
         user.username = request.identity_context_data.username
