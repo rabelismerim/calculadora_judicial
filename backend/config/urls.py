@@ -24,13 +24,15 @@ from django.views.generic import TemplateView
 from rest_framework import permissions
 from rest_framework.schemas import get_schema_view
 
+from django.views.decorators.csrf import ensure_csrf_cookie
 import os
 
 
 admin.site.site_header = admin.site.site_title = 'aplication'
 admin.site.index_title = 'Administration area'
-admin.site.site_url = '/aplication'
+admin.site.site_url = '/aplication/admin/login'
 
+@ensure_csrf_cookie
 def frontend_index(request):
     return render(request, template_name='index.html')
 

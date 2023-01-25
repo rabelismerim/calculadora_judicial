@@ -14,6 +14,9 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 from core.drfmsal import IdentityWebPython
+import urllib3
+
+urllib3.disable_warnings()
 
 load_dotenv()
 
