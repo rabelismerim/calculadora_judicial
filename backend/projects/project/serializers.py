@@ -1,9 +1,9 @@
 from rest_framework import serializers
 
-from projetos.projeto.models import Projeto
+from projects.project.models import Project
 
 
-class ProjetoListSerializer(serializers.ModelSerializer):
+class ProjectListSerializer(serializers.ModelSerializer):
     unidades_count = serializers.IntegerField(
                         source='unidades.count', 
                         read_only=True
@@ -19,7 +19,7 @@ class ProjetoListSerializer(serializers.ModelSerializer):
     #porc_complete = serializers.SerializerMethodField()
     
     class Meta:
-        model = Projeto
+        model = Project
         fields = "__all__"
     
     # def get_porc_complete(self, instance):
@@ -27,14 +27,14 @@ class ProjetoListSerializer(serializers.ModelSerializer):
     #     #return instance.unidades.count
 
 
-class ProjetoDetailSerializer(serializers.ModelSerializer):
+class ProjectDetailSerializer(serializers.ModelSerializer):
     
     porcentage = serializers.ReadOnlyField(
         source='porcentage_complete'
                         )
 
     class Meta:
-        model = Projeto
+        model = Project
         fields = "__all__"
 
 

@@ -63,8 +63,13 @@ class PermissionsMixin(models.Model):
         assumed to have permission in general. If an object is provided, check
         permissions for that object.
         """
-        # Active superusers have all permissions.
+        sensitive_permissions = ['projetos', 'credores'] # Only managers have permissions 
+        is_sensitive = perm.split('.')[0] in sensitive_permissions
+
+        # Active superusers have all permissions, except in sensitive permissions.
         if self.is_active and self.is_superuser:
+            if is_sensitive:
+                return self.groups.filter(name='gerente').exists() # TODO: verificar nome do grupo de gerente
             return True
 
         # Otherwise we need to check the backends.

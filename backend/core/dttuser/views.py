@@ -9,17 +9,19 @@ from rest_framework.schemas.openapi import AutoSchema
 from utils import get_user_model
 from rest_framework import permissions 
 
+
 User = get_user_model()
 
 
 class UserDttApi(AbstractViewApi):
     """HTTP methods for User Deloitte"""
-    # permission_classes = (IsAuthenticatedOrWriteOnly,)
     http_method_names = ['post', 'get']
     serializer_class = UserDttSchema
     permission_classes = [permissions.IsAdminUser]
+    model = User
     queryset = User.objects.all
     schema = AutoSchema(tags=["User"])
+
     query_params = [
         {
             "name": "nome",
@@ -46,16 +48,15 @@ class UserDttApi(AbstractViewApi):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_user = serializer.validated_data
+        groups = new_user.pop('groups', []) # TODO: adicionar grupo ao projeto
         new_user.pop('password_confirm', None)
         password = new_user.pop('password', None)
-        user = User.objects.create(**new_user)
+        user = self.model.objects.create(**new_user)
         user.set_password(password)
         user.save()
         return JsonResponse({'user': UserDttSchema(user, many=False).data}, status=status.HTTP_201_CREATED)
 
     def get(self, request, *args, **kwargs):
         """Get Users details"""
-        params = self.get_query_params()
-        users = self.queryset().filter(**params)
-        users = self.serializer_class(users, many=True).data
+        users = self.get_query()
         return JsonResponse({'users': users})

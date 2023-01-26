@@ -37,7 +37,7 @@ def frontend_index(request):
 base_url = 'aplication/api/v1/'
 urlpatterns = [
     path('aplication/api-auth/', include("rest_framework.urls")),  
-    path(f'{base_url}projetos/', include("projetos.urls")),
+    path(f'{base_url}projects/', include("projects.urls")),
     path(base_url, include("core.drfmsal.urls")),
     path(base_url, include("core.dttuser.urls")),
     

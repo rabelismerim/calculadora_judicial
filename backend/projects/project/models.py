@@ -1,17 +1,18 @@
 from django.db import models
 from django.db.models import Count, Min, Sum, Avg
+from core.abstract.models import AbstractModel
 
 from core.dttuser.models import User
 
-#from projetos.models import Profissional
+#from projects.models import Profissional
 
-class Projeto(models.Model):
+class Project(AbstractModel):
     '''Class responsible for the grand project/engagement'''
 
     eng_number = models.PositiveIntegerField(null=True, blank=True)
     client = models.CharField(max_length=100)
-    #users = models.ManyToManyField(Profissional, related_name="projetos") # This is here only for future use (MAYBE)
-    user = models.ManyToManyField(User, related_name="projetos") # USE THIS ONE
+    #users = models.ManyToManyField(Profissional, related_name="projects") # This is here only for future use (MAYBE)
+    user = models.ManyToManyField(User, related_name="projects") # USE THIS ONE
     image = models.ImageField(null=True, blank=True)
     project_start = models.DateField(null=True, blank=True)
     project_end = models.DateField(null=True, blank=True)
