@@ -69,7 +69,10 @@ INSTALLED_APPS = [
     'projects.judge',
     'projects.layer',
     'projects.region', # Comarca
-    'projects.description',
+    'projects.abstract_project',
+    'projects.engagement',
+    'projects.client',
+    'projects.project_user',
     
     # Core
     'core.dttuser.apps.DTTUserConfig',

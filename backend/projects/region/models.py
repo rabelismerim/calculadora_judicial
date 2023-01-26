@@ -1,3 +1,6 @@
 from django.db import models
+from projects.abstract_project.models import AbstractDescription
 
-# Create your models here.
+
+class Region(AbstractDescription): # Comarca
+    pass

@@ -32,7 +32,7 @@ class AbstractModel(models.Model):
         """Abstract get User by UUID"""
         user = User.objects.filter(id=id_).first()
         if user:
-            return user.get_full_name()
+            return user.get_full_name
         return ''
 
     @property

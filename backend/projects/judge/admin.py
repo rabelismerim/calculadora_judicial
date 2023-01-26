@@ -1,3 +1,5 @@
 from django.contrib import admin
+from projects.judge.models import Judge
 
-# Register your models here.
+
+admin.site.register(Judge)
