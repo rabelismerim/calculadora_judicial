@@ -24,17 +24,20 @@ from django.views.generic import TemplateView
 from rest_framework import permissions
 from rest_framework.schemas import get_schema_view
 
+from django.views.decorators.csrf import ensure_csrf_cookie
 import os
 
 
 admin.site.site_header = admin.site.site_title = 'aplication'
 admin.site.index_title = 'Administration area'
-admin.site.site_url = '/aplication'
+admin.site.site_url = '/aplication/admin/login'
 
+@ensure_csrf_cookie
 def frontend_index(request):
     return render(request, template_name='index.html')
 
 base_url = 'aplication/api/v1/'
+base_url_auth = 'aplication/api/'
 urlpatterns = [
     path('aplication/api-auth/', include("rest_framework.urls")),  
     path(f'{base_url}projects/', include("projects.urls")),
@@ -43,7 +46,7 @@ urlpatterns = [
     
     # VUE FRONTEND
     re_path(r'^(?!aplication\/static|aplication\/admin|aplication\/api).*$', frontend_index, name='frontend'),
-    path(base_url, include("core.dttuser.api.urls")),
+    path(base_url_auth, include("core.dttuser.api.urls")),
 
     path(f'{base_url}docs/',
          TemplateView.as_view(template_name='api_docs.html', extra_context={'schema_url': 'schema-api'}), name='api-docs'),
