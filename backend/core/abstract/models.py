@@ -27,6 +27,28 @@ class AbstractModel(models.Model):
         super(AbstractModel, self).__init__(*args, **kwargs)
         self.__initial = self._dict
 
+    @staticmethod
+    def __get_user(id_):
+        """Abstract get User by UUID"""
+        user = User.objects.filter(id=id_).first()
+        if user:
+            return user.get_full_name
+        return ''
+
+    @property
+    def get_update_user(self):
+        """Get update User by UUID"""
+        if self.update_user:
+            return self.__get_user(self.update_user)
+        return ''
+
+    @property
+    def get_create_user(self):
+        """Get create User by UUID"""
+        if self.create_user:
+            return self.__get_user(self.create_user)
+        return ''
+
     @property
     def diff(self):
         d1 = self.__initial
