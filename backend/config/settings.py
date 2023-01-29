@@ -45,7 +45,7 @@ IS_LOCALHOST = str(os.getenv('IS_LOCALHOST', 'false')).lower() == 'true' and BRA
 ALLOWED_HOSTS = [
     '127.0.0.1', 
     'localhost', 
-    'brdcvmdev01',
+    'brdcvmdev07',
     'brsphearndt', # TEMP
 ]
 
@@ -117,7 +117,7 @@ if IS_LOCALHOST is False:
         'file': {
             'level': 'WARNING',
             'class': 'logging.FileHandler',
-            'filename': str(BASE_DIR / 'log' / 'beholder.log'),
+            'filename': str(BASE_DIR / 'log' / 'djud.log'),
         },
         'console': {
             'level': 'DEBUG',
