@@ -39,7 +39,7 @@ class AbstractViewApi(generics.GenericAPIView):
 
         return types.get(instance, str)
 
-    def get_query_params(self):
+    def get_query(self):
         """Validate parameters received in query params, returning query values"""
         query = {}
         for valid_params in self.query_params:
@@ -58,4 +58,5 @@ class AbstractViewApi(generics.GenericAPIView):
                 else:
                     raise serializers.ValidationError(
                         {name: f'Campo no formato inválido. Deve ser estar no formato {instance["legend"]}'})
-        return query
+        data = self.model.objects.filter(**query)
+        return self.serializer_class(data, many=True).data

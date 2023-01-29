@@ -53,19 +53,28 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    # Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'django_extensions', #TEMP
     'import_export',
-
     'rest_framework',
 
-    'projetos',
+    # Projeto
+    'projects.project',
+    'projects.judge',
+    'projects.layer',
+    'projects.region', # Comarca
+    'projects.abstract_project',
+    'projects.engagement',
+    'projects.client',
+    'projects.project_user',
+    
+    # Core
     'core.dttuser.apps.DTTUserConfig',
     'core.abstract'
 

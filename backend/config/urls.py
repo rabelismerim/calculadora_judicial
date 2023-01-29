@@ -40,9 +40,9 @@ base_url = 'aplication/api/v1/'
 base_url_auth = 'aplication/api/'
 urlpatterns = [
     path('aplication/api-auth/', include("rest_framework.urls")),  
-    path(f'{base_url}projetos/', include("projetos.urls")),
-    path(base_url_auth, include("core.drfmsal.urls")),
-    path(base_url_auth, include("core.dttuser.urls")),
+    path(f'{base_url}projects/', include("projects.urls")),
+    path(base_url, include("core.drfmsal.urls")),
+    path(base_url, include("core.dttuser.urls")),
     
     # VUE FRONTEND
     re_path(r'^(?!aplication\/static|aplication\/admin|aplication\/api).*$', frontend_index, name='frontend'),
