@@ -4,6 +4,7 @@ from rest_framework import serializers
 from projects.judge.schemas import JudgeSchema
 from projects.layer.schemas import LayerSchema
 from projects.region.schemas import RegionSchema
+from projects.engagement.schemas import ProjectEngagementSchema
 
 
 class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):
@@ -17,6 +18,8 @@ class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):
 
     region = RegionSchema(many=False, read_only=True)
     region_id = serializers.UUIDField(write_only=True)
+    
+    engagement = ProjectEngagementSchema(many=False)
 
 
     class Meta:

@@ -5,6 +5,7 @@ from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions
 from projects.project.models import Project
 from projects.project.schemas import ProjectSchema 
+from projects.engagement.models import Engagement, ProjectEngagement
 
 
 class ProjectApi(AbstractViewApi):
@@ -33,9 +34,22 @@ class ProjectApi(AbstractViewApi):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_project = serializer.validated_data
-        print(new_project, 'project')
-        project = self.model.objects.create(**new_project)
+
+        engagements = new_project.pop('engagement')
+        numbers = engagements.pop('engagement').get('numbers', [])
+        
+        users = engagements.pop('users', [])
+        project_engagement = ProjectEngagement.objects.create() # Create ProjectEngagement
+        project_engagement.users.add(*users)
+        project_engagement.save()
+
+        new_project['engagement_id'] = project_engagement.id 
+        project = self.model.objects.create(**new_project) # Create Project
         project.save()
+
+        for number in numbers:
+            Engagement.objects.create(**{'number': number, 'project_id': project_engagement.id}) # Create Engagement Project number
+
         return JsonResponse({'project': ProjectSchema(project, many=False).data}, status=status.HTTP_201_CREATED)
 
     def get(self, request, *args, **kwargs):

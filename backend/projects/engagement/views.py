@@ -1,3 +1,51 @@
-from django.shortcuts import render
+from core.abstract.views import AbstractViewApi
+from django.http import JsonResponse
+from rest_framework import status
+from rest_framework.schemas.openapi import AutoSchema
+from rest_framework import permissions
+from projects.engagement.models import ProjectEngagement, Engagement
+from projects.engagement.schemas import ProjectEngagementSchema 
 
-# Create your views here.
+
+class EngagementApi(AbstractViewApi):
+    """HTTP methods for Engagement"""
+    http_method_names = ['post', 'get']
+    serializer_class = ProjectEngagementSchema
+    permission_classes = [permissions.IsAdminUser]
+    model = ProjectEngagement
+    schema = AutoSchema(tags=["Engagement"])
+
+    query_params = [
+        {
+            "name": "número",
+            "field": "engagement__number",
+            "in": "query",
+            "required": False,
+            "description": "Número do engagement",
+            "schema": {"type": "string"}
+        }
+    ]
+    
+    def post(self, request, *args, **kwargs):
+        """
+           Create Engagement receiving a dict, return Engagement detail
+        """
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        new_engagement = serializer.validated_data
+
+        users = new_engagement.pop('users')
+        numbers = new_engagement.pop('engagement').get('numbers', [])
+ 
+        project_engagement = self.model.objects.create() # Create ProjectEngagement
+        project_engagement.users.add(*users)
+        project_engagement.save()
+
+        for number in numbers:
+            engagement = Engagement.objects.create(**{'number': number, 'project_id': project_engagement.id}) # Create Engagement Project number
+        return JsonResponse({'engagement': self.serializer_class(engagement, many=False).data}, status=status.HTTP_201_CREATED)
+
+    def get(self, request, *args, **kwargs):
+        """Get Engagements details"""
+        engagements = self.get_query()
+        return JsonResponse({'engagements': engagements})

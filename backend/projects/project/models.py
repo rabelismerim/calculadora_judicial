@@ -5,6 +5,8 @@ from core.dttuser.models import User
 from projects.judge.models import Judge
 from projects.layer.models import Layer
 from projects.region.models import Region
+from projects.engagement.models import ProjectEngagement
+from django.db.models import F
 
 
 STATUS_CHOICES = (
@@ -25,6 +27,14 @@ class Project(AbstractModel):
     judge = models.ForeignKey(Judge, on_delete=models.PROTECT, null=True)
     layer = models.ForeignKey(Layer, on_delete=models.PROTECT, null=True)
     region = models.ForeignKey(Region, on_delete=models.PROTECT, null=True)
+    engagement = models.ForeignKey(ProjectEngagement, on_delete=models.PROTECT, null=True)
+    # users = models.ManyToManyField(ProjectUser, blank=True)
+
+    # @property
+    # def engagements(self):
+    #     return list(self.projectengagement_set.all().values('id', 'create_user', 'update_user',
+    #      'created_at', 'updated_at', number=F('engagement__number')))
+
 
     def __str__(self):
         return f"{self.description}"

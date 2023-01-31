@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     'projects.engagement',
     'projects.client',
     'projects.project_user',
+    'projects.entity',
     
     # Core
     'core.dttuser.apps.DTTUserConfig',
