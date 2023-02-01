@@ -22,35 +22,38 @@ from config.settings import IS_LOCALHOST
 from django.conf import settings
 from django.views.generic import TemplateView
 from rest_framework import permissions
-from rest_framework.schemas import get_schema_view
+from rest_framework.schemas import get_schema_view, AutoSchema
 
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.conf.urls.static import static
+
 import os
 
 
-admin.site.site_header = admin.site.site_title = 'aplication'
+admin.site.site_header = admin.site.site_title = 'DJUD'
 admin.site.index_title = 'Administration area'
-admin.site.site_url = '/aplication/admin/login'
+admin.site.site_url = '/djud/admin/login'
 
 @ensure_csrf_cookie
 def frontend_index(request):
     return render(request, template_name='index.html')
 
-base_url = 'aplication/api/v1/'
-base_url_auth = 'aplication/api/'
+base_url = 'djud/api/v1/'
+base_url_auth = 'djud/api/'
 urlpatterns = [
-    path('aplication/api-auth/', include("rest_framework.urls")),  
+    path('djud/api-auth/', include("rest_framework.urls")),  
     path(f'{base_url}projects/', include("projects.urls")),
-    path(base_url, include("core.drfmsal.urls")),
-    path(base_url, include("core.dttuser.urls")),
+    path(f'{base_url}creditors/', include("creditors.urls")),
+    path(base_url, include("core.dttuser.api.urls")),
+    path(base_url_auth, include("core.drfmsal.urls")),
+    path(base_url_auth, include("core.dttuser.urls")),
     
     # VUE FRONTEND
-    re_path(r'^(?!aplication\/static|aplication\/admin|aplication\/api).*$', frontend_index, name='frontend'),
-    path(base_url_auth, include("core.dttuser.api.urls")),
+    re_path(r'^(?!djud\/static|djud\/admin|djud\/api).*$', frontend_index, name='frontend'),
 
-    path(f'{base_url}docs/',
-         TemplateView.as_view(template_name='api_docs.html', extra_context={'schema_url': 'schema-api'}), name='api-docs'),
-    path(f'{base_url}docs/deloitte/', get_schema_view(title="Project Deloitte DJUD",
+    path(f'{base_url}docs/swagger/',
+         TemplateView.as_view(template_name='api_docs.html', extra_context={'schema_url': 'schema-api'}), name='DJUD'),
+    path(f'{base_url}docs/redoc/', get_schema_view(title="Project Deloitte DJUD",
                                                   description="Api for Djud platform",
                                                   version="1.0.0", permission_classes=[permissions.AllowAny]),
          name='schema-api'),
@@ -59,21 +62,19 @@ urlpatterns = [
 # TODO: definir se frontend MFA pode ter auteração de versões
 # Active or inactive MFA login MS
 if IS_LOCALHOST:
-    urlpatterns.extend([path('aplication/admin/', admin.site.urls),])
+    urlpatterns.extend([path('djud/admin/', admin.site.urls),])
 else:
+    urlpatterns.extend([path('djud/admin/', admin.site.urls),])
     urlpatterns.extend([
-        path('aplication/admin/login/', lambda r: redirect(
-        reverse('drfmsal_signin', kwargs={'redirect_uri': 'aplication/admin'})
+        path('djud/admin/login/', lambda r: redirect(
+        reverse('drfmsal_signin', kwargs={'redirect_uri': 'djud/admin'})
     )),
-    path('aplication/admin/logout/', lambda r: redirect(
-        reverse('drfmsal_signout', kwargs={'redirect_uri': 'aplication'})
+    path('djud/admin/logout/', lambda r: redirect(
+        reverse('drfmsal_signout', kwargs={'redirect_uri': 'djud'})
     )),
     ])
     
 
-# adds image to urlpath
-from django.conf.urls.static import static
-from django.conf import settings
 
 if (str(os.getenv('ENV', )) == 'branch') or (str(os.getenv('ENV')) == 'hml'):
-    urlpatterns += static("aplication"+settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static("djud"+settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

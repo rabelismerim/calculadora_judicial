@@ -64,6 +64,15 @@ INSTALLED_APPS = [
     'import_export',
     'rest_framework',
 
+    # Creditors
+    'creditors.archive',
+    'creditors.archive_recovering',
+    'creditors.budgets',
+    'creditors.classes',
+    'creditors.coins',
+    'creditors.notice',
+    'creditors.recovering',
+
     # Projeto
     'projects.project',
     'projects.judge',
@@ -127,7 +136,7 @@ if IS_LOCALHOST is False:
         'file': {
             'level': 'WARNING',
             'class': 'logging.FileHandler',
-            'filename': str(BASE_DIR / 'log' / 'beholder.log'),
+            'filename': str(BASE_DIR / 'log' / 'djud.log'),
         },
         'console': {
             'level': 'DEBUG',

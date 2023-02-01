@@ -7,12 +7,12 @@ import store from '../store'
 
 Vue.use(VueRouter)
 
-const DEFAULT_TITLE = 'aplication'
+const DEFAULT_TITLE = 'DJUD'
 
 
 const router = new VueRouter({
   mode: 'history',
-  base: '/aplication',
+  base: '/djud',
   routes,
   // base: process.env.BASE_URL,
 })

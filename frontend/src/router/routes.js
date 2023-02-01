@@ -12,7 +12,7 @@ export default [
     path: '/login/:redirectPath',
     name: 'login',
     beforeEnter(to, from, next) {
-      window.location.href = `${window.location.origin}/aplication/api/drfmsal_signin/aplication/`;
+      window.location.href = `${window.location.origin}/djud/api/drfmsal_signin/djud/`;
     },
     showInNav: false,
     authenticationRequired: false
@@ -21,7 +21,7 @@ export default [
     path: '/logout',
     name: 'logout',
     beforeEnter(to, from, next) {
-      window.location.href = `${window.location.origin}/aplication/api/drfmsal_signout/aplication/`;
+      window.location.href = `${window.location.origin}/djud/api/drfmsal_signout/djud/`;
     },
     showInNav: false,
     authenticationRequired: false
