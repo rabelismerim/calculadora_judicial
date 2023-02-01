@@ -1,9 +1,7 @@
 from django.urls import path
-from .views import NoticeCreate, addNotice
+from .views import NoticeApi
+
 
 urlpatterns = [
-
-    path('notice/<int:notice_pk>/', NoticeCreate.as_view(), name="notice-create"),
-    path('creditors/notice/', addNotice.as_view(), name="notice-add"),
-
+    path('', NoticeApi.as_view(), name="notice-list-create"),
 ]

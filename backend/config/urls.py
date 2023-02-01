@@ -18,53 +18,57 @@ from django.urls import include, path, re_path, reverse
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from config.settings import IS_LOCALHOST
-
 from django.conf import settings
 from django.views.generic import TemplateView
 from rest_framework import permissions
 from rest_framework.schemas import get_schema_view, AutoSchema
-
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.conf.urls.static import static
+from django.contrib.auth import views
+from config.settings import BASE_URL, BASE_URL_AUTH
 
 import os
 
 
 admin.site.site_header = admin.site.site_title = 'DJUD'
 admin.site.index_title = 'Administration area'
-admin.site.site_url = '/djud/admin/login'
+# admin.site.site_url = '/djud/admin/login'
 
 @ensure_csrf_cookie
 def frontend_index(request):
     return render(request, template_name='index.html')
 
-base_url = 'djud/api/v1/'
-base_url_auth = 'djud/api/'
 urlpatterns = [
-    path('djud/api-auth/', include("rest_framework.urls")),  
-    path(f'{base_url}projects/', include("projects.urls")),
-    path(f'{base_url}creditors/', include("creditors.urls")),
-    path(base_url, include("core.dttuser.api.urls")),
-    path(base_url_auth, include("core.drfmsal.urls")),
-    path(base_url_auth, include("core.dttuser.urls")),
+    # API Authentication
+    path('djud/api-auth/', include("rest_framework.urls")),
+
+    # Projects
+    path(f'{BASE_URL}projects/', include("projects.urls")),
+
+    # Creditors
+    path(f'{BASE_URL}creditors/', include("creditors.urls")),
+
+    # CORE
+    path(BASE_URL, include("core.dttuser.api.urls")),
+    path(BASE_URL_AUTH, include("core.drfmsal.urls")),
+    path(BASE_URL_AUTH, include("core.dttuser.urls")),
+
+    # Django
+    path('djud/admin/', admin.site.urls),
+    path('djud/login/', views.LoginView.as_view()),
+    path('djud/logout/', views.LogoutView.as_view()),
     
     # VUE FRONTEND
     re_path(r'^(?!djud\/static|djud\/admin|djud\/api).*$', frontend_index, name='frontend'),
 
-    path(f'{base_url}docs/swagger/',
-         TemplateView.as_view(template_name='api_docs.html', extra_context={'schema_url': 'schema-api'}), name='DJUD'),
-    path(f'{base_url}docs/redoc/', get_schema_view(title="Project Deloitte DJUD",
-                                                  description="Api for Djud platform",
-                                                  version="1.0.0", permission_classes=[permissions.AllowAny]),
-         name='schema-api'),
+    # Documentation
+    path(f'{BASE_URL}docs/swagger/', TemplateView.as_view(template_name='api_docs.html', extra_context={'schema_url': 'schema-api'}), name='DJUD'),
+    path(f'{BASE_URL}docs/redoc/', get_schema_view(title="Deloitte DJUD Project", description="System that integrates the legal, calculation and financial teams of RJ / Bankruptcy processes (liabilities monitoring)", version="1.0.0", permission_classes=[permissions.AllowAny]), name='schema-api'),
 ]
 
 # TODO: definir se frontend MFA pode ter auteração de versões
 # Active or inactive MFA login MS
-if IS_LOCALHOST:
-    urlpatterns.extend([path('djud/admin/', admin.site.urls),])
-else:
-    urlpatterns.extend([path('djud/admin/', admin.site.urls),])
+if IS_LOCALHOST is False:
     urlpatterns.extend([
         path('djud/admin/login/', lambda r: redirect(
         reverse('drfmsal_signin', kwargs={'redirect_uri': 'djud/admin'})
@@ -73,8 +77,6 @@ else:
         reverse('drfmsal_signout', kwargs={'redirect_uri': 'djud'})
     )),
     ])
-    
-
 
 if (str(os.getenv('ENV', )) == 'branch') or (str(os.getenv('ENV')) == 'hml'):
     urlpatterns += static("djud"+settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

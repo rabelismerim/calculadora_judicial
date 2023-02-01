@@ -276,9 +276,17 @@ REST_FRAMEWORK = {
     )
 }
 
-#setting auth user
+# Setting auth user
 AUTH_USER_MODEL = 'dttuser.User'
+BASE_URL = 'djud/api/v1/'
+BASE_URL_AUTH = 'djud/api/'
 
 if DEBUG:
     import mimetypes
     mimetypes.add_type("application/javascript", ".js", True)
+
+    # Documentation login Urls
+    LOGIN_URL = "/djud/login/"
+    LOGOUT_REDIRECT_URL = f"/{BASE_URL}docs/swagger/"
+    LOGIN_REDIRECT_URL = f"/{BASE_URL}docs/swagger/"
+    LOGOUT_URL = "/djud/logout/"

@@ -1,32 +1,43 @@
-
-from rest_framework import generics
-
-from .serializers import RecoveringSerializer
+from core.abstract.views import AbstractViewApi
+from django.http import JsonResponse
+from rest_framework import status
+from rest_framework.schemas.openapi import AutoSchema
+from rest_framework import permissions
 from creditors.recovering.models import Recovering
-from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import DjangoModelPermissions
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from creditors.recovering.schemas import RecoveringSchema 
 
 
-class RecoveringCreate(generics.CreateAPIView):
+class RecoveringApi(AbstractViewApi):
+    """HTTP methods for Recovering"""
+    http_method_names = ['post', 'get']
+    serializer_class = RecoveringSchema
+    permission_classes = [permissions.IsAdminUser]
+    model = Recovering
+    schema = AutoSchema(tags=["Recovering"])
 
-    queryset = Recovering.objects.all().order_by('-id')
-    serializer_class = RecoveringSerializer
-    permission_classes = [DjangoModelPermissions]
+    query_params = [
+        {
+            "name": "registration",
+            "field": "registration__icontains",
+            "in": "query",
+            "required": False,
+            "description": "Registro",
+            "schema": {"type": "string"}
+        }
+    ]
+    
+    def post(self, request, *args, **kwargs):
+        """
+           Create Recovering receiving a dict, return Recovering detail
+        """
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        new_recovering = serializer.validated_data
+        recovering = self.model.objects.create(**new_recovering)
+        recovering.save()
+        return JsonResponse({'recovering': self.serializer_class(recovering, many=False).data}, status=status.HTTP_201_CREATED)
 
-    def perform_create(self, serializer):
-        recovering_pk = self.kwargs.get("recovering_pk")
-        recovering = get_object_or_404(recovering, pk=recovering_pk)
-
-        serializer.save(recovering=recovering)
-
-class addRecovering(APIView):
-    def post(self, request):
-        recovering_pk = request.data['recovering_pk']
-        recovering = get_object_or_404(recovering, pk=recovering_pk)
-            
-        return Response({'result': 'ok'})
-
-
-
+    def get(self, request, *args, **kwargs):
+        """Get Recovering details"""
+        recoverings = self.get_query()
+        return JsonResponse({'recoverings': recoverings})

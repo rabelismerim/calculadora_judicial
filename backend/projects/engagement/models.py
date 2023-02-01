@@ -5,8 +5,6 @@ from projects.project_user.models import ProjectUser
 
 
 class ProjectEngagement(AbstractModel):
-    # project = models.ForeignKey(Project, on_delete=models.PROTECT)
-    # engagement = models.ForeignKey(Engagement, on_delete=models.PROTECT)
     users = models.ManyToManyField(ProjectUser, blank=True)
 
     @property
@@ -19,7 +17,7 @@ class ProjectEngagement(AbstractModel):
 
 class Engagement(AbstractModel):
     number = models.CharField('Numero do engagement', max_length=10)
-    project = models.ForeignKey(ProjectEngagement, on_delete=models.PROTECT, null=True)
+    project = models.ForeignKey(ProjectEngagement, on_delete=models.PROTECT)
 
     def __str__(self):
         return self.number

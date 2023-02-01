@@ -1,32 +1,43 @@
-
-from rest_framework import generics
-
-from .serializers import ArchiveRecoveringSerializer
+from core.abstract.views import AbstractViewApi
+from django.http import JsonResponse
+from rest_framework import status
+from rest_framework.schemas.openapi import AutoSchema
+from rest_framework import permissions
 from creditors.archive_recovering.models import ArchiveRecovering
-from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import DjangoModelPermissions
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from creditors.archive_recovering.schemas import ArchiveRecoveringSchema 
 
 
-class ArchiveRecoveringCreate(generics.CreateAPIView):
+class ArchiveRecoveringApi(AbstractViewApi):
+    """HTTP methods for ArchiveRecovering"""
+    http_method_names = ['post', 'get']
+    serializer_class = ArchiveRecoveringSchema
+    permission_classes = [permissions.IsAdminUser]
+    model = ArchiveRecovering
+    schema = AutoSchema(tags=["Archive Recovering"])
 
-    queryset = ArchiveRecovering.objects.all().order_by('-id')
-    serializer_class = ArchiveRecovering
-    permission_classes = [DjangoModelPermissions]
+    query_params = [
+        {
+            "name": "registration",
+            "field": "registration__icontains",
+            "in": "query",
+            "required": False,
+            "description": "Registro",
+            "schema": {"type": "string"}
+        }
+    ]
+    
+    def post(self, request, *args, **kwargs):
+        """
+           Create ArchiveRecovering receiving a dict, return ArchiveRecovering detail
+        """
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        new_archive_recovering = serializer.validated_data
+        archive_recovering = self.model.objects.create(**new_archive_recovering)
+        archive_recovering.save()
+        return JsonResponse({'archive_recovering': self.serializer_class(archive_recovering, many=False).data}, status=status.HTTP_201_CREATED)
 
-    def perform_create(self, serializer):
-        archive_recovering_pk = self.kwargs.get("archive_recovering_pk")
-        archive_recovering = get_object_or_404(archive_recovering, pk=archive_recovering_pk)
-
-        serializer.save(archive_recovering=archive_recovering)
-
-class addArchiveRecovering(APIView):
-    def post(self, request):
-        archive_recovering_pk = request.data['archive_recovering_pk']
-        archive_recovering = get_object_or_404(archive_recovering, pk=archive_recovering_pk)
-            
-        return Response({'result': 'ok'})
-
-
-
+    def get(self, request, *args, **kwargs):
+        """Get ArchiveRecovering details"""
+        archive_recoverings = self.get_query()
+        return JsonResponse({'archive_recoverings': archive_recoverings})

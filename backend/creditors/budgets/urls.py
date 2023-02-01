@@ -1,8 +1,7 @@
 from django.urls import path
-from .views import BudgetsSerializer
+from .views import BudgetsApi
+
 
 urlpatterns = [
-
-    path('budgets/<int:budgets_pk>/', BudgetsSerializer.create, name="budgets-create")
-
+    path('', BudgetsApi.as_view(), name="budgets-list-Create")
 ]

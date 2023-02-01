@@ -1,32 +1,43 @@
-
-from rest_framework import generics
-
-from .serializers import ClassesSerializer
+from core.abstract.views import AbstractViewApi
+from django.http import JsonResponse
+from rest_framework import status
+from rest_framework.schemas.openapi import AutoSchema
+from rest_framework import permissions
 from creditors.classes.models import Classes
-from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import DjangoModelPermissions
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from creditors.classes.schemas import ClassesSchema 
 
 
-class ClassesCreate(generics.CreateAPIView):
+class ClassesApi(AbstractViewApi):
+    """HTTP methods for Classes"""
+    http_method_names = ['post', 'get']
+    serializer_class = ClassesSchema
+    permission_classes = [permissions.IsAdminUser]
+    model = Classes
+    schema = AutoSchema(tags=["Classes"])
 
-    queryset = Classes.objects.all().order_by('-id')
-    serializer_class = ClassesSerializer
-    permission_classes = [DjangoModelPermissions]
+    query_params = [
+        {
+            "name": "description",
+            "field": "description__icontains",
+            "in": "query",
+            "required": False,
+            "description": "Descrição",
+            "schema": {"type": "string"}
+        }
+    ]
+    
+    def post(self, request, *args, **kwargs):
+        """
+           Create Classes receiving a dict, return Classes detail
+        """
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        new_classes = serializer.validated_data
+        classes = self.model.objects.create(**new_classes)
+        classes.save()
+        return JsonResponse({'classes': self.serializer_class(classes, many=False).data}, status=status.HTTP_201_CREATED)
 
-    def perform_create(self, serializer):
-        classes_pk = self.kwargs.get("classes_pk")
-        classes = get_object_or_404(classes, pk=classes_pk)
-
-        serializer.save(classes=classes)
-
-class addClasses(APIView):
-    def post(self, request):
-        classes_pk = request.data['classes_pk']
-        classes = get_object_or_404(classes, pk=classes_pk)
-            
-        return Response({'result': 'ok'})
-
-
-
+    def get(self, request, *args, **kwargs):
+        """Get Classes details"""
+        classess = self.get_query()
+        return JsonResponse({'classess': classess})

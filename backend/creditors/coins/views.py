@@ -1,32 +1,43 @@
-
-from rest_framework import generics
-
-from .serializers import CoinsSerializer
+from core.abstract.views import AbstractViewApi
+from django.http import JsonResponse
+from rest_framework import status
+from rest_framework.schemas.openapi import AutoSchema
+from rest_framework import permissions
 from creditors.coins.models import Coins
-from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import DjangoModelPermissions
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from creditors.coins.schemas import CoinsSchema 
 
 
-class CoinsCreate(generics.CreateAPIView):
+class CoinsApi(AbstractViewApi):
+    """HTTP methods for Coins"""
+    http_method_names = ['post', 'get']
+    serializer_class = CoinsSchema
+    permission_classes = [permissions.IsAdminUser]
+    model = Coins
+    schema = AutoSchema(tags=["Coins"])
 
-    queryset = Coins.objects.all().order_by('-id')
-    serializer_class = CoinsSerializer
-    permission_classes = [DjangoModelPermissions]
+    query_params = [
+        {
+            "name": "description",
+            "field": "description__icontains",
+            "in": "query",
+            "required": False,
+            "description": "Descrição",
+            "schema": {"type": "string"}
+        }
+    ]
+    
+    def post(self, request, *args, **kwargs):
+        """
+           Create Coins receiving a dict, return Coins detail
+        """
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        new_coins = serializer.validated_data
+        coins = self.model.objects.create(**new_coins)
+        coins.save()
+        return JsonResponse({'coins': self.serializer_class(coins, many=False).data}, status=status.HTTP_201_CREATED)
 
-    def perform_create(self, serializer):
-        coins_pk = self.kwargs.get("coins_pk")
-        coins = get_object_or_404(coins, pk=coins_pk)
-
-        serializer.save(coins=coins)
-
-class addCoins(APIView):
-    def post(self, request):
-        coins_pk = request.data['coins_pk']
-        coins = get_object_or_404(coins, pk=coins_pk)
-            
-        return Response({'result': 'ok'})
-
-
-
+    def get(self, request, *args, **kwargs):
+        """Get Coins details"""
+        coinss = self.get_query()
+        return JsonResponse({'coinss': coinss})

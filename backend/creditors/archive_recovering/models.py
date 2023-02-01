@@ -1,11 +1,13 @@
 from django.db import models
 from core.abstract.models import AbstractModel
+from creditors.recovering.models import Recovering
+from creditors.archive.models import Archive
 
 
-class ArchiveRecovering(models.Model):
-    id_recovering = models.ForeignKey("creditors.recovering", on_delete=models.CASCADE, related_name="Recuperanda")
-    id_archive = models.ForeignKey("creditors.archive", on_delete=models.CASCADE, related_name="Arquivo")
+class ArchiveRecovering(AbstractModel):
+    recovering = models.ForeignKey(Recovering, on_delete=models.PROTECT)
+    archive = models.ForeignKey(Archive, on_delete=models.PROTECT)
     
     def __str__(self):
-        return f"{self.id} | {str(self.id_recovering)}"
+        return f"{self.id} | {str(self.recovering)}"
     

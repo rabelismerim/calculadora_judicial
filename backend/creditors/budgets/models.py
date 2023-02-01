@@ -1,11 +1,7 @@
 from django.db import models
-from core.abstract.models import AbstractModel
+from projects.abstract_project.models import AbstractDescription
 
 
-class Budgets(models.Model):
-    
-    description = models.CharField(max_length=150)
-
-    def __str__(self):
-        return f"{self.id}"
+class Budgets(AbstractDescription):
+    pass
     

@@ -1,8 +1,7 @@
 from django.urls import path
-from .views import ClassesSerializer
+from .views import ClassesApi
+
 
 urlpatterns = [
-
-    path('classes/<int:classes_pk>/', ClassesSerializer.create, name="classes-create")
-
+    path('', ClassesApi.as_view(), name="classes-list-Create")
 ]

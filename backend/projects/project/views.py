@@ -18,11 +18,11 @@ class ProjectApi(AbstractViewApi):
 
     query_params = [
         {
-            "name": "client",
-            "field": "client__icontains",
+            "name": "descrição",
+            "field": "description__icontains",
             "in": "query",
             "required": False,
-            "description": "Nome do cliente",
+            "description": "Descrição do projeto",
             "schema": {"type": "string"}
         }
     ]
