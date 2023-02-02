@@ -27,12 +27,14 @@ def sign_in(request, redirect_uri):
         )
     )
     user_view = User.objects.filter(email=request.identity_context_data.usermail)
-    if len(user_view)==0 and request.identity_context_data.usermail != None:
+    if len(user_view)==0 and request.identity_context_data.usermail!=None:
         user = User()
         user.email = request.identity_context_data.usermail
         user.username = request.identity_context_data.username
         user.first_name = request.identity_context_data.username.split()[0]
         user.last_name = request.identity_context_data.username.split()[len(request.identity_context_data.username.split())-1]
+        user.is_active = False
+        user.is_authenticated = True
         user.save()
     return redirect(auth_url)
 

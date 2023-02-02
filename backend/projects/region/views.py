@@ -13,7 +13,7 @@ class RegionApi(AbstractViewApi):
     serializer_class = RegionSchema
     permission_classes = [permissions.IsAdminUser]
     model = Region
-    schema = AutoSchema(tags=["Region"])
+    schema = AutoSchema(tags=["Region - Comarca"])
 
     query_params = [
         {

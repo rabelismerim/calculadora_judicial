@@ -6,4 +6,5 @@ urlpatterns = [
     path('judge', include("projects.judge.urls")),
     path('layer', include("projects.layer.urls")),
     path('region', include("projects.region.urls")),
+    path('engagement', include("projects.engagement.urls")),
 ]

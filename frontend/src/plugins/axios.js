@@ -4,7 +4,7 @@ import router from '../router'
 import axios from 'axios'
 
 const apiCall = axios.create({
-    baseURL: '/aplication/api',
+    baseURL: '/djud/api',
     withCredentials: true,
     xsrfHeaderName: 'X-CSRFToken',
     xsrfCookieName: 'csrftoken',

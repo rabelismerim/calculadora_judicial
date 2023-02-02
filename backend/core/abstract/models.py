@@ -110,7 +110,7 @@ class UpdateUser(models.Model):
         ordering = ('created_at',)
 
     def __str__(self):
-        return f'Field alterado: {self.field_changed}, Valor anterior: {self.previous_value}, Valor atual: {self.current_value}, User: {self.create_user}, Hora de criação: {self.created_at}'
+        return f'Field alterado: {self.field_changed} | Valor anterior: {self.previous_value} | Valor atual: {self.current_value} | User: {self.create_user} | Hora de criação: {self.created_at}'
 
 
 def get_user(sender, **kwargs):
