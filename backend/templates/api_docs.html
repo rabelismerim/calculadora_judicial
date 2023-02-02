@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Documentation Api Deloitte</title>
+    <title>DJUD Api Documentation</title>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="//unpkg.com/swagger-ui-dist@3/swagger-ui.css"/>
@@ -10,17 +10,16 @@
 <body>
 <div style="padding: 20px 0 10px 38px">
     {% if request.user.is_authenticated %}
-        <form method="post" action="/logout/">
+        <form method="post" action="/djud/logout/">
             {% csrf_token %}
-            <button type="submit">Fazer logout</button>
+            <button type="submit">Logout</button>
         </form>
     {% else %}
-        <form method="post" action="/login/">
+        <form method="post" action="/djud/login/">
             {% csrf_token %}
             <input type="text" name="username" placeholder="digite o username..."/>
             <input type="password" name="password" placeholder="digite a senha..."/>
-            <input type="hidden" name="next" value="/api/v1/docs"/>
-            <button type="submit">Fazer login</button>
+            <button type="submit">Login</button>
         </form>
     {% endif %}
 </div>

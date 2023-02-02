@@ -7,7 +7,7 @@ from core.dttuser.models import PermissionsMixin
 User = get_user_model()
 
 
-class ProjectUser(AbstractModel, PermissionsMixin):
+class ProjectUser(PermissionsMixin):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
 
     def __str__(self):
