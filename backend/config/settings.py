@@ -44,6 +44,8 @@ IS_LOCALHOST = str(os.getenv('IS_LOCALHOST', 'false')).lower() == 'true' and BRA
 
 ALLOWED_HOSTS = [
     '127.0.0.1', 
+    'uat.fadigitallab.deloitte.com.br',
+    '10.127.64.87',
     'localhost', 
     'brdcvmdev07',
     'brsphearndt', # TEMP
