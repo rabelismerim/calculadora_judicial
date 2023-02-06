@@ -19,7 +19,10 @@ steps:
   inputs:
     versionSpec: '$(PYTHON_VERSION)'
     architecture: 'x64'
-
+- task: NodeTool@0
+  inputs:
+    versionSource: 'spec'
+    versionSpec: '6.x'
 - task: PythonScript@0
   displayName: 'Export project path'
   inputs:
