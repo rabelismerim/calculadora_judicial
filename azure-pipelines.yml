@@ -38,13 +38,13 @@ steps:
       print('Found Django project in', project_location)
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
 - script: |
-  workingDirectory: /backend
+  workingDirectory: backend/
     python -m pip install --upgrade pip setuptools wheel
     pip install -r requirements.txt
     pip install unittest-xml-reporting
   displayName: 'Install python prerequisites'
 - script: |
-  workingDirectory: /frontend
+  workingDirectory: frontend/
     npm install
     npm run build
   displayName: 'Install node prerequisites'
