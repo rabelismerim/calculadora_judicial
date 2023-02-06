@@ -51,3 +51,10 @@ steps:
     npm run build
   workingDirectory: $(Build.SourcesDirectory)/frontend
   displayName: 'Install node prerequisites'
+
+- script: |
+    python manage.py makemigrations
+    python manage.py migrate
+    python manage.py collectstatic
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Preparing backend'
