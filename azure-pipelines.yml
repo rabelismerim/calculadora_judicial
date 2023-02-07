@@ -5,33 +5,6 @@
 trigger:
 - main
 
-variables:
-  - name: ENV
-    value: dev
-  - name: debug
-    value: True
-  - name: SECRET_KEY_MONGO
-    value: 
-  - name: SECRET_KEY
-    value: ey+_ix$avrz=zpjr=zj6dhayyec=cd^&5%nm5d*k$s$qf!#q9q
-  - name: DB_PASS_GERAL
-    value:
-  - name: DB_USER
-    value: a-hearndt
-  - name: DB_PASS
-    value: 7GizEiIBF41p
-  - name: DB_PORT
-    value: 5433
-  - name: DB_HOST
-    value: BRDCVMDB05
-  - name: DB_NAME
-    value: PROJETO_DJUD_DEV
-  - name: MSAL_CLIENT_ID
-    value: a55d74a8-7a9b-41d4-a520-c6b238533430
-  - name: MSAL_CLIENT_SECRET
-    value: PaW8Q~.LIyWtlKCl69h1gJnD1JQyQv1brPaTSaL2
-  - name: MSAL_DTT_TENANT
-    value: 36da45f1-dd2c-4d1f-af13-5abe46b99921
 
 pool:
   vmImage: ubuntu-latest
@@ -50,6 +23,13 @@ steps:
   inputs:
     versionSource: 'spec'
     versionSpec: '8.x'
+- task: DownloadSecureFile@1
+  inputs:
+    secureFile: '.env'
+- task: CopyFiles@2
+  inputs:
+    contents: '.env*'
+    targetFolder: $(Build.SourcesDirectory)/backend
 - task: PythonScript@0
   displayName: 'Export project path'
   inputs:
