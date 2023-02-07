@@ -2,22 +2,36 @@
 # Test a Django project on multiple versions of Python.
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
-variables
-  ENV:'dev'
-  debug:'True'
-  SECRET_KEY_MONGO:''
-  SECRET_KEY:'ey+_ix$avrz=zpjr=zj6dhayyec=cd^&5%nm5d*k$s$qf!#q9q'
-  DB_PASS_GERAL:''
-  DB_USER:'a-hearndt'
-  DB_PASS:'7GizEiIBF41p'
-  DB_PORT:'5433'
-  DB_HOST:'BRDCVMDB05'
-  DB_NAME:'PROJETO_DJUD_DEV'
-  MSAL_CLIENT_ID:'a55d74a8-7a9b-41d4-a520-c6b238533430'
-  MSAL_CLIENT_SECRET:'PaW8Q~.LIyWtlKCl69h1gJnD1JQyQv1brPaTSaL2'
-  MSAL_DTT_TENANT:'36da45f1-dd2c-4d1f-af13-5abe46b99921'
 trigger:
 - main
+
+variables:
+  - name: ENV
+    value: dev
+  - name: debug
+    value: True
+  - name: SECRET_KEY_MONGO
+    value: 
+  - name: SECRET_KEY
+    value: ey+_ix$avrz=zpjr=zj6dhayyec=cd^&5%nm5d*k$s$qf!#q9q
+  - name: DB_PASS_GERAL
+    value:
+  - name: DB_USER
+    value: a-hearndt
+  - name: DB_PASS
+    value: 7GizEiIBF41p
+  - name: DB_PORT
+    value: 5433
+  - name: DB_HOST
+    value: BRDCVMDB05
+  - name: DB_NAME
+    value: PROJETO_DJUD_DEV
+  - name: MSAL_CLIENT_ID
+    value: a55d74a8-7a9b-41d4-a520-c6b238533430
+  - name: MSAL_CLIENT_SECRET
+    value: PaW8Q~.LIyWtlKCl69h1gJnD1JQyQv1brPaTSaL2
+  - name: MSAL_DTT_TENANT
+    value: 36da45f1-dd2c-4d1f-af13-5abe46b99921
 
 pool:
   vmImage: ubuntu-latest
