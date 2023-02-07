@@ -46,9 +46,11 @@ steps:
   displayName: 'Install node prerequisites'
 
 - script: |
+    virtualenv venv
     python -m pip install --upgrade pip setuptools wheel
-    pip install -r backend/requirements.txt
+    pip install -r requirements.txt
     pip install unittest-xml-reporting
+    pip install fastcgi
     python manage.py makemigrations
     python manage.py migrate
     python manage.py collectstatic
