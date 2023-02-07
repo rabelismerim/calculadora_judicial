@@ -24,12 +24,13 @@ steps:
     versionSource: 'spec'
     versionSpec: '8.x'
 - task: DownloadSecureFile@1
+  name: EnvDev
   inputs:
     secureFile: '.env'
-- task: CopyFiles@2
-  inputs:
-    contents: '.env*'
-    targetFolder: $(Build.SourcesDirectory)/backend
+- script: |
+    echo Installing $(EnvDev.secureFilePath) to the path backend...
+    sudo chown root:root $(EnvDev.secureFilePath)
+    sudo cp $(EnvDev.secureFilePath)/.env $(Build.SourcesDirectory)/backend 
 - task: PythonScript@0
   displayName: 'Export project path'
   inputs:
