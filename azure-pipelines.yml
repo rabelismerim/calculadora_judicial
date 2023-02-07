@@ -13,13 +13,15 @@ strategy:
     Python39:
       PYTHON_VERSION: '3.9'
   maxParallel: 3
-
 steps:
 - task: UsePythonVersion@0
   inputs:
     versionSpec: '$(PYTHON_VERSION)'
     architecture: 'x64'
-
+- task: NodeTool@0
+  inputs:
+    versionSource: 'spec'
+    versionSpec: '6.x'
 - task: PythonScript@0
   displayName: 'Export project path'
   inputs:
@@ -35,9 +37,14 @@ steps:
       project_location = path.dirname(path.abspath(manage_py))
       print('Found Django project in', project_location)
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
-
 - script: |
     python -m pip install --upgrade pip setuptools wheel
-    pip install -r backend/requirements.txt
+    pip install -r requirements.txt
     pip install unittest-xml-reporting
-  displayName: 'Install prerequisites'
+  displayName: 'Install python prerequisites'
+  workingDirectory: '$(Agent.BuildDirectory)/backend'
+- script: |
+    npm install
+    npm run build
+  displayName: 'Install node prerequisites'
+  workingDirectory: '$(Agent.BuildDirectory)/frontend'

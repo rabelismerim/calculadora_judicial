@@ -45,8 +45,9 @@ IS_LOCALHOST = str(os.getenv('IS_LOCALHOST', 'false')
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
+    'uat.fadigitallab.deloitte.com.br',
     'localhost',
-    'brdcvmdev01',
+    'brdcvmdev07',
     'brsphearndt',  # TEMP
 ]
 
