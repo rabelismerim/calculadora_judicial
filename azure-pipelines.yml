@@ -62,8 +62,6 @@ steps:
     pip install unittest-xml-reporting
     pip install fastcgi
     mkdir ./log
-    python manage.py makemigrations
-    python manage.py migrate
     python manage.py collectstatic
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
