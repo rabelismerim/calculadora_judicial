@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from .managers import CustomUserManager
 from config.settings import IS_LOCALHOST
 
+
 class PermissionsMixin(models.Model):
     """
     Add the fields and methods necessary to support the Group and Permission
@@ -63,17 +64,40 @@ class PermissionsMixin(models.Model):
         assumed to have permission in general. If an object is provided, check
         permissions for that object.
         """
-        sensitive_permissions = ['projetos', 'credores'] # Only managers have permissions 
+        sensitive_permissions = ['projetos',
+                                 'credores']  # Only managers have permissions
         is_sensitive = perm.split('.')[0] in sensitive_permissions
 
         # Active superusers have all permissions, except in sensitive permissions.
         if self.is_active and self.is_superuser:
             if is_sensitive:
-                return self.groups.filter(name='gerente').exists() # TODO: verificar nome do grupo de gerente
+                # TODO: verificar nome do grupo de gerente
+                return self.groups.filter(name='gerente').exists()
             return True
 
         # Otherwise we need to check the backends.
         return _user_has_perm(self, perm, obj)
+
+    def has_permission(self, perm, obj=None):
+        """
+        Return True if the user has the specified permission in individual or group. Query all
+        available auth backends, but return immediately if any backend returns
+        True. Thus, a user who has permission from a single auth backend is
+        assumed to have permission in general. If an object is provided, check
+        permissions for that object.
+        """
+        sensitive_permissions = ['projetos',
+                                 'credores']  # Only managers have permissions
+        is_sensitive = perm.split('.')[0] in sensitive_permissions
+
+        # Active superusers have all permissions, except in sensitive permissions.
+        if hasattr(self, 'is_active') and self.is_active and self.is_superuser:
+            if is_sensitive:
+                # TODO: verificar nome do grupo de gerente
+                return self.groups.filter(name='gerente').exists()
+            return True
+
+        return any([self.groups.filter(permissions__codename=perm).exists(), self.user_permissions.filter(codename=perm).exists()])
 
     def has_perms(self, perm_list, obj=None):
         """
@@ -102,7 +126,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         _('username'),
         max_length=150,
         unique=True,
-        help_text=_('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
+        help_text=_(
+            'Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
         validators=[username_validator],
         error_messages={
             'unique': _("A user with that username already exists."),
@@ -115,7 +140,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
-        help_text=_('Designates whether the user can log into this admin site.'),
+        help_text=_(
+            'Designates whether the user can log into this admin site.'),
     )
     is_active = models.BooleanField(
         _('active'),
@@ -136,7 +162,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_superuser(self):
         return self.is_active and self.is_staff
-    
+
     @classmethod
     def from_db(cls, db, field_names, values):
         # Default implementation of from_db() (subject to change and could
@@ -154,7 +180,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         # customization to store the original field values on the instance
         instance._loaded_values = dict(zip(field_names, values))
         return instance
-    
+
     class Meta:
         verbose_name = _('user')
         verbose_name_plural = _('users')

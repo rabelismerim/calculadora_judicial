@@ -3,15 +3,16 @@ from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions
+from core.permission.views import CheckHasPermission
 from projects.judge.models import Judge
-from projects.judge.schemas import JudgeSchema 
+from projects.judge.schemas import JudgeSchema
 
 
 class JudgeApi(AbstractViewApi):
     """HTTP methods for judge"""
     http_method_names = ['post', 'get']
     serializer_class = JudgeSchema
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Judge
     schema = AutoSchema(tags=["Judge"])
 
@@ -25,7 +26,7 @@ class JudgeApi(AbstractViewApi):
             "schema": {"type": "string"}
         }
     ]
-    
+
     def post(self, request, *args, **kwargs):
         """
            Create judge receiving a dict, return judge detail

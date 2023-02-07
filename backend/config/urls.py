@@ -32,11 +32,13 @@ import os
 
 admin.site.site_header = admin.site.site_title = 'DJUD'
 admin.site.index_title = 'Administration area'
-# admin.site.site_url = '/djud/admin/login'
+admin.site.site_url = '/djud/admin/login'
+
 
 @ensure_csrf_cookie
 def frontend_index(request):
     return render(request, template_name='index.html')
+
 
 urlpatterns = [
     # API Authentication
@@ -47,6 +49,7 @@ urlpatterns = [
 
     # Creditors
     path(f'{BASE_URL}creditors/', include("creditors.urls")),
+    path(f'{BASE_URL}calculation/', include("calculation.urls")),
 
     # CORE
     path(BASE_URL, include("core.dttuser.api.urls")),
@@ -57,26 +60,30 @@ urlpatterns = [
     path('djud/admin/', admin.site.urls),
     path('djud/login/', views.LoginView.as_view()),
     path('djud/logout/', views.LogoutView.as_view()),
-    
+
     # VUE FRONTEND
-    re_path(r'^(?!djud\/static|djud\/admin|djud\/api).*$', frontend_index, name='frontend'),
+    re_path(r'^(?!djud\/static|djud\/admin|djud\/api).*$',
+            frontend_index, name='frontend'),
 
     # Documentation
-    path(f'{BASE_URL}docs/swagger/', TemplateView.as_view(template_name='api_docs.html', extra_context={'schema_url': 'schema-api'}), name='DJUD'),
-    path(f'{BASE_URL}docs/redoc/', get_schema_view(title="Deloitte DJUD Project", description="System that integrates the legal, calculation and financial teams of RJ / Bankruptcy processes (liabilities monitoring)", version="1.0.0", permission_classes=[permissions.AllowAny]), name='schema-api'),
+    path(f'{BASE_URL}docs/swagger/', TemplateView.as_view(template_name='api_docs.html',
+         extra_context={'schema_url': 'schema-api'}), name='DJUD'),
+    path(f'{BASE_URL}docs/redoc/', get_schema_view(title="Deloitte DJUD Project", description="System that integrates the legal, calculation and financial teams of RJ / Bankruptcy processes (liabilities monitoring)",
+         version="1.0.0", permission_classes=[permissions.AllowAny]), name='schema-api'),
 ]
 
-# TODO: definir se frontend MFA pode ter auteração de versões
+# TODO: definir se frontend MFA pode ter alteração de versões
 # Active or inactive MFA login MS
 if IS_LOCALHOST is False:
     urlpatterns.extend([
         path('djud/admin/login/', lambda r: redirect(
-        reverse('drfmsal_signin', kwargs={'redirect_uri': 'djud/admin'})
-    )),
-    path('djud/admin/logout/', lambda r: redirect(
-        reverse('drfmsal_signout', kwargs={'redirect_uri': 'djud'})
-    )),
+            reverse('drfmsal_signin', kwargs={'redirect_uri': 'djud/admin'})
+        )),
+        path('djud/admin/logout/', lambda r: redirect(
+            reverse('drfmsal_signout', kwargs={'redirect_uri': 'djud'})
+        )),
     ])
 
 if (str(os.getenv('ENV', )) == 'branch') or (str(os.getenv('ENV')) == 'hml'):
-    urlpatterns += static("djud"+settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static("djud"+settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)
