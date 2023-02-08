@@ -1,38 +1,31 @@
 from django.db import models
-from django.db.models import Count, Min, Sum, Avg
-from core.abstract.models import AbstractModel
-from core.dttuser.models import User
+from projects.abstract_project.models import AbstractDescription
 from projects.judge.models import Judge
-from projects.layer.models import Layer
+from projects.lawyer.models import Lawyer
 from projects.region.models import Region
 from projects.engagement.models import ProjectEngagement
-from django.db.models import F
 
 
 STATUS_CHOICES = (
-    ('E', 'Em andamento'),
+    ('P', 'Em Preparação'),
     ('C', 'Concluido'),
-    ('A', 'Em análise'),
+    ('A', 'Em Andamento'),
     ('F', 'Cancelado'),
 )
 
-class Project(AbstractModel):
-    '''Class responsible for the grand project/engagement'''
 
-    STATUS_CHOICES = (
-        ("E","Em Análise"),
-        ("C","Concluído"),
-        ("A","Em Andamento"),
-        ("D","Cancelado")
-    )   
+class Project(AbstractDescription):
+    '''Class responsible for the grand project/engagement'''
 
     project_start = models.DateField(null=True, blank=True)
     project_end = models.DateField(null=True, blank=True)
-    description = models.CharField('Descrição', max_length=150, default='')
-    status = models.CharField(default="E", max_length=1, choices=STATUS_CHOICES) # Em andamento | Concluído | Em análise | Cancelado
+
+    status = models.CharField(
+        default="E", max_length=1, choices=STATUS_CHOICES)
     is_active = models.BooleanField(default=True)
+    is_adm = models.BooleanField(default=True)  # É adminstrativa ou judicial
     judge = models.ForeignKey(Judge, on_delete=models.PROTECT)
-    layer = models.ForeignKey(Layer, on_delete=models.PROTECT)
+    lawyer = models.ForeignKey(Lawyer, on_delete=models.PROTECT)
     region = models.ForeignKey(Region, on_delete=models.PROTECT)
     engagement = models.ForeignKey(ProjectEngagement, on_delete=models.PROTECT)
 

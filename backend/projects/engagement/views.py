@@ -3,15 +3,16 @@ from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions
+from core.permission.views import CheckHasPermission
 from projects.engagement.models import ProjectEngagement, Engagement
-from projects.engagement.schemas import ProjectEngagementSchema 
+from projects.engagement.schemas import ProjectEngagementSchema
 
 
 class EngagementApi(AbstractViewApi):
     """HTTP methods for Engagement"""
     http_method_names = ['post', 'get']
     serializer_class = ProjectEngagementSchema
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = ProjectEngagement
     schema = AutoSchema(tags=["Engagement"])
 
@@ -25,7 +26,7 @@ class EngagementApi(AbstractViewApi):
             "schema": {"type": "string"}
         }
     ]
-    
+
     def post(self, request, *args, **kwargs):
         """
            Create Engagement receiving a dict, return Engagement detail
@@ -36,13 +37,14 @@ class EngagementApi(AbstractViewApi):
 
         users = new_engagement.pop('users')
         numbers = new_engagement.pop('engagement').get('numbers', [])
- 
-        project_engagement = self.model.objects.create() # Create ProjectEngagement
+
+        project_engagement = self.model.objects.create()  # Create ProjectEngagement
         project_engagement.users.add(*users)
         project_engagement.save()
 
         for number in numbers:
-            engagement = Engagement.objects.create(**{'number': number, 'project_id': project_engagement.id}) # Create Engagement Project number
+            engagement = Engagement.objects.create(
+                **{'number': number, 'project_id': project_engagement.id})  # Create Engagement Project number
         return JsonResponse({'engagement': self.serializer_class(engagement, many=False).data}, status=status.HTTP_201_CREATED)
 
     def get(self, request, *args, **kwargs):

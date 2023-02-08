@@ -4,14 +4,15 @@ from core.abstract.models import AbstractModel
 
 class Coins(AbstractModel):
 
-    DESCRIPTION_CHOICES = (
-        ("B","BRL"),
-        ("E","EUR"),
-        ("U","US$"),
-        ("C","CAN$")
-    )        
-    description = models.CharField(max_length=1, verbose_name='Descrição', choices=DESCRIPTION_CHOICES, default='B')
+    COIN_CHOICES = (
+        ("B", "BRL"),
+        ("E", "EUR"),
+        ("U", "US$"),
+        ("C", "CAN$")
+    )
+    coin = models.CharField(
+        max_length=1, verbose_name='Descrição', choices=COIN_CHOICES, default='B')
+    value = models.FloatField(default=0)
 
     def __str__(self):
-        return f"{self.get_description_display()}"
-    
+        return f"{self.get_coin_display()}"

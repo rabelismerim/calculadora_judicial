@@ -40,13 +40,15 @@ DEBUG = str(os.getenv('DEBUG', 'false')).lower() == 'true'
 
 BRANCH_DEV = str(os.getenv('ENV', 'branch')) == 'branch'
 
-IS_LOCALHOST = str(os.getenv('IS_LOCALHOST', 'false')).lower() == 'true' and BRANCH_DEV
+IS_LOCALHOST = str(os.getenv('IS_LOCALHOST', 'false')
+                   ).lower() == 'true' and BRANCH_DEV
 
 ALLOWED_HOSTS = [
-    '127.0.0.1', 
-    'localhost', 
+    '127.0.0.1',
+    'uat.fadigitallab.deloitte.com.br',
+    'localhost',
     'brdcvmdev07',
-    'brsphearndt', # TEMP
+    'brsphearndt',  # TEMP
 ]
 
 
@@ -60,11 +62,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_extensions', #TEMP
+    'django_extensions',  # TEMP
     'import_export',
     'rest_framework',
 
     # Creditors
+    'creditors',
     'creditors.archive',
     'creditors.archive_recovering',
     'creditors.budgets',
@@ -72,21 +75,31 @@ INSTALLED_APPS = [
     'creditors.coins',
     'creditors.notice',
     'creditors.recovering',
+    'creditors.claim',
 
-    # Projeto
+    # Project
     'projects.project',
     'projects.judge',
-    'projects.layer',
-    'projects.region', # Comarca
+    'projects.lawyer',
+    'projects.region',  # Comarca
     'projects.abstract_project',
     'projects.engagement',
     'projects.client',
     'projects.project_user',
-    'projects.entity',
-    
+
     # Core
     'core.dttuser.apps.DTTUserConfig',
-    'core.abstract'
+    'core.abstract',
+    'core.permission',
+    'core.entity',
+
+    # Calculation
+    'calculation',
+    'calculation.criterion',
+    'calculation.verdict',
+
+    # Rate - Indice
+    'rates',
 
 ]
 
@@ -101,7 +114,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'core.drfmsal.middleware.MsalMiddleware',
-    'crum.CurrentRequestUserMiddleware', # Get current request in Models
+    'crum.CurrentRequestUserMiddleware',  # Get current request in Models
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -130,32 +143,32 @@ TEMPLATES = [
 # https://docs.djangoproject.com/en/3.2/topics/logging/
 if IS_LOCALHOST is False:
     LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'WARNING',
-            'class': 'logging.FileHandler',
-            'filename': str(BASE_DIR / 'log' / 'djud.log'),
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'file': {
+                'level': 'WARNING',
+                'class': 'logging.FileHandler',
+                'filename': str(BASE_DIR / 'log' / 'djud.log'),
+            },
+            'console': {
+                'level': 'DEBUG',
+                'class': 'logging.StreamHandler',
+            },
         },
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
+        'loggers': {
+            'django': {
+                'handlers': ['file'],
+                'level': 'WARNING',
+                'propagate': True,
+            },
+            'werkzeug': {
+                'handlers': ['console'],
+                'level': 'DEBUG',
+                'propagate': True,
+            },
         },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'WARNING',
-            'propagate': True,
-        },
-        'werkzeug': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-    },
-}
+    }
 
 # DRFMSAL AUTHENTICATION
 DRFMSAL_CONFIG = {
@@ -175,21 +188,21 @@ DRFMSAL_IDENTITY_WEB = IdentityWebPython()
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-#str(os.getenv('SECRET_KEY'))
+# str(os.getenv('SECRET_KEY'))
 if BRANCH_DEV:
     DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
 else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            
+
             'NAME': str(os.getenv('DB_NAME')),
-            
+
             'USER': str(os.getenv('DB_USER')),
 
             'PASSWORD': str(os.getenv('DB_PASS')),
@@ -199,7 +212,6 @@ else:
             'PORT': str(os.getenv('DB_PORT')),
         }
     }
-
 
 
 # Password validation
