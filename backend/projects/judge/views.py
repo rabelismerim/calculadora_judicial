@@ -14,7 +14,7 @@ class JudgeApi(AbstractViewApi):
     serializer_class = JudgeSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Judge
-    schema = AutoSchema(tags=["Judge"])
+    schema = AutoSchema(tags=["Project - Judge"])
 
     query_params = [
         {

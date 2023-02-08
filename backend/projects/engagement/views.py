@@ -14,7 +14,7 @@ class EngagementApi(AbstractViewApi):
     serializer_class = ProjectEngagementSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = ProjectEngagement
-    schema = AutoSchema(tags=["Engagement"])
+    schema = AutoSchema(tags=["Project - Engagement"])
 
     query_params = [
         {

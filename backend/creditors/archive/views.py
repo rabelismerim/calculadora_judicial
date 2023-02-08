@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions
 from creditors.archive.models import Archive
-from creditors.archive.schemas import ArchiveSchema 
+from creditors.archive.schemas import ArchiveSchema
 
 
 class ArchiveApi(AbstractViewApi):
@@ -13,7 +13,7 @@ class ArchiveApi(AbstractViewApi):
     serializer_class = ArchiveSchema
     permission_classes = [permissions.IsAdminUser]
     model = Archive
-    schema = AutoSchema(tags=["Archive"])
+    schema = AutoSchema(tags=["Creditors - Archive"])
 
     query_params = [
         {
@@ -25,7 +25,7 @@ class ArchiveApi(AbstractViewApi):
             "schema": {"type": "string"}
         }
     ]
-    
+
     def post(self, request, *args, **kwargs):
         """
            Create Archive receiving a dict, return Archive detail

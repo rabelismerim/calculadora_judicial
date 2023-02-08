@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions
 from creditors.coins.models import Coins
-from creditors.coins.schemas import CoinsSchema 
+from creditors.coins.schemas import CoinsSchema
 
 
 class CoinsApi(AbstractViewApi):
@@ -13,7 +13,7 @@ class CoinsApi(AbstractViewApi):
     serializer_class = CoinsSchema
     permission_classes = [permissions.IsAdminUser]
     model = Coins
-    schema = AutoSchema(tags=["Coins"])
+    schema = AutoSchema(tags=["Creditors - Coins"])
 
     query_params = [
         {
@@ -25,7 +25,7 @@ class CoinsApi(AbstractViewApi):
             "schema": {"type": "string"}
         }
     ]
-    
+
     def post(self, request, *args, **kwargs):
         """
            Create Coins receiving a dict, return Coins detail

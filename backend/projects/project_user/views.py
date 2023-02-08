@@ -17,7 +17,7 @@ class ProjectUserApi(AbstractViewApi):
     serializer_class = ProjectUserSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = ProjectUser
-    schema = AutoSchema(tags=["ProjectUser"])
+    schema = AutoSchema(tags=["Project - ProjectUser"])
 
     query_params = [
         {

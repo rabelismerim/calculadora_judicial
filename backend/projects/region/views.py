@@ -14,7 +14,7 @@ class RegionApi(AbstractViewApi):
     serializer_class = RegionSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Region
-    schema = AutoSchema(tags=["Region - Comarca"])
+    schema = AutoSchema(tags=["Project - Region - Comarca"])
 
     query_params = [
         {

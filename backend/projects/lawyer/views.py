@@ -14,7 +14,7 @@ class LawyerApi(AbstractViewApi):
     serializer_class = LawyerSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Lawyer
-    schema = AutoSchema(tags=["Lawyer"])
+    schema = AutoSchema(tags=["Project - Lawyer"])
 
     query_params = [
         {

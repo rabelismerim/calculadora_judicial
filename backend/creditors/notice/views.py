@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions
 from creditors.notice.models import Notice
-from creditors.notice.schemas import NoticeSchema 
+from creditors.notice.schemas import NoticeSchema
 
 
 class NoticeApi(AbstractViewApi):
@@ -13,7 +13,7 @@ class NoticeApi(AbstractViewApi):
     serializer_class = NoticeSchema
     permission_classes = [permissions.IsAdminUser]
     model = Notice
-    schema = AutoSchema(tags=["Notice - Edital"])
+    schema = AutoSchema(tags=["Creditors - Notice - Edital"])
 
     query_params = [
         {
@@ -25,7 +25,7 @@ class NoticeApi(AbstractViewApi):
             "schema": {"type": "string"}
         }
     ]
-    
+
     def post(self, request, *args, **kwargs):
         """
            Create Notice receiving a dict, return Notice detail

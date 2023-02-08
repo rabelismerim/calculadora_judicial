@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions
 from creditors.recovering.models import Recovering
-from creditors.recovering.schemas import RecoveringSchema 
+from creditors.recovering.schemas import RecoveringSchema
 
 
 class RecoveringApi(AbstractViewApi):
@@ -13,7 +13,7 @@ class RecoveringApi(AbstractViewApi):
     serializer_class = RecoveringSchema
     permission_classes = [permissions.IsAdminUser]
     model = Recovering
-    schema = AutoSchema(tags=["Recovering"])
+    schema = AutoSchema(tags=["Creditors - Recovering"])
 
     query_params = [
         {
@@ -25,7 +25,7 @@ class RecoveringApi(AbstractViewApi):
             "schema": {"type": "string"}
         }
     ]
-    
+
     def post(self, request, *args, **kwargs):
         """
            Create Recovering receiving a dict, return Recovering detail

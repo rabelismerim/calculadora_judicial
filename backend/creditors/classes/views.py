@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions
 from creditors.classes.models import Classes
-from creditors.classes.schemas import ClassesSchema 
+from creditors.classes.schemas import ClassesSchema
 
 
 class ClassesApi(AbstractViewApi):
@@ -13,7 +13,7 @@ class ClassesApi(AbstractViewApi):
     serializer_class = ClassesSchema
     permission_classes = [permissions.IsAdminUser]
     model = Classes
-    schema = AutoSchema(tags=["Classes"])
+    schema = AutoSchema(tags=["Creditors - Classes"])
 
     query_params = [
         {
@@ -25,7 +25,7 @@ class ClassesApi(AbstractViewApi):
             "schema": {"type": "string"}
         }
     ]
-    
+
     def post(self, request, *args, **kwargs):
         """
            Create Classes receiving a dict, return Classes detail

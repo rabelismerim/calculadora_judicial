@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions
 from creditors.archive_recovering.models import ArchiveRecovering
-from creditors.archive_recovering.schemas import ArchiveRecoveringSchema 
+from creditors.archive_recovering.schemas import ArchiveRecoveringSchema
 
 
 class ArchiveRecoveringApi(AbstractViewApi):
@@ -13,7 +13,7 @@ class ArchiveRecoveringApi(AbstractViewApi):
     serializer_class = ArchiveRecoveringSchema
     permission_classes = [permissions.IsAdminUser]
     model = ArchiveRecovering
-    schema = AutoSchema(tags=["Archive Recovering"])
+    schema = AutoSchema(tags=["Creditors - Archive Recovering"])
 
     query_params = [
         {
@@ -25,7 +25,7 @@ class ArchiveRecoveringApi(AbstractViewApi):
             "schema": {"type": "string"}
         }
     ]
-    
+
     def post(self, request, *args, **kwargs):
         """
            Create ArchiveRecovering receiving a dict, return ArchiveRecovering detail
@@ -33,7 +33,8 @@ class ArchiveRecoveringApi(AbstractViewApi):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_archive_recovering = serializer.validated_data
-        archive_recovering = self.model.objects.create(**new_archive_recovering)
+        archive_recovering = self.model.objects.create(
+            **new_archive_recovering)
         archive_recovering.save()
         return JsonResponse({'archive_recovering': self.serializer_class(archive_recovering, many=False).data}, status=status.HTTP_201_CREATED)
 

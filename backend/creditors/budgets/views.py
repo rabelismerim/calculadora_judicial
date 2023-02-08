@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions
 from creditors.budgets.models import Budgets
-from creditors.budgets.schemas import BudgetsSchema 
+from creditors.budgets.schemas import BudgetsSchema
 
 
 class BudgetsApi(AbstractViewApi):
@@ -13,7 +13,7 @@ class BudgetsApi(AbstractViewApi):
     serializer_class = BudgetsSchema
     permission_classes = [permissions.IsAdminUser]
     model = Budgets
-    schema = AutoSchema(tags=["Budgets"])
+    schema = AutoSchema(tags=["Creditors - Budgets"])
 
     query_params = [
         {
@@ -25,7 +25,7 @@ class BudgetsApi(AbstractViewApi):
             "schema": {"type": "string"}
         }
     ]
-    
+
     def post(self, request, *args, **kwargs):
         """
            Create Budgets receiving a dict, return Budgets detail
