@@ -13,7 +13,6 @@ strategy:
     DJUD:
       PYTHON_VERSION: '3.9'
   maxParallel: 3
-
 steps:
 - task: UsePythonVersion@0
   inputs:
@@ -46,7 +45,6 @@ steps:
       project_location = path.dirname(path.abspath(manage_py))
       print('Found Django project in', project_location)
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
-
 - script: |
     npm install
     npm run build

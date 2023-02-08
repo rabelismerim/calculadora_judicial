@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class LayerConfig(AppConfig):
+class PermissionConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'projects.layer'
+    name = 'core.permission'

@@ -33,8 +33,7 @@ def sign_in(request, redirect_uri):
         user.username = request.identity_context_data.username
         user.first_name = request.identity_context_data.username.split()[0]
         user.last_name = request.identity_context_data.username.split()[len(request.identity_context_data.username.split())-1]
-        user.is_active = False
-        user.is_authenticated = True
+        user.is_active = True
         user.save()
     return redirect(auth_url)
 

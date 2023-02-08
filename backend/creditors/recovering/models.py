@@ -1,31 +1,29 @@
 from django.db import models
-from core.abstract.models import AbstractModel
-from projects.client.models import Client
-from creditors.budgets.models import Budgets
-from creditors.coins.models import Coins
-from creditors.notice.models import Notice
+from core.entity.models import Entity
+from projects.abstract_project.models import AbstractDateRecovering
+from projects.project.models import Project
 from creditors.archive.models import Archive
 
 
-class Recovering(AbstractModel):
+class Recovering(AbstractDateRecovering):
     '''Class responsible for the grand project/engagement'''
-    registration = models.CharField(max_length=15)
-    client = models.ForeignKey(Client, on_delete=models.PROTECT)
-    budget = models.ForeignKey(Budgets, on_delete=models.PROTECT)
+    project = models.ForeignKey(Project, on_delete=models.PROTECT)
+    entity = models.ForeignKey(Entity, on_delete=models.PROTECT)
+    process_number = models.CharField("Número do processo", max_length=15)
     STATUS_CHOICES = (
-        ("E","Em Análise"),
-        ("C","Concluído"),
-        ("A","Em Andamento"),
-        ("D","Cancelado")
-    )        
-    status = models.CharField(max_length=1, verbose_name='Status', choices=STATUS_CHOICES, default='E')
-    admission = models.DateTimeField(blank=True, null=True)
-    dismissal = models.DateTimeField(blank=True, null=True)
-    competence = models.DateTimeField(blank=True, null=True)
-    coin = models.ForeignKey(Coins, on_delete=models.PROTECT)
-    notice = models.ForeignKey(Notice, on_delete=models.PROTECT)
+        ("E", "Em Análise"),
+        ("C", "Concluído"),
+        ("A", "Em Andamento"),
+        ("D", "Cancelado")
+    )
+    status = models.CharField(
+        max_length=1, verbose_name='Status', choices=STATUS_CHOICES, default='E')
+
+    competence = models.CharField(
+        "Competencia",  max_length=150, null=True, default=None)
     archive = models.ForeignKey(Archive, on_delete=models.PROTECT)
-    status_support = models.CharField(max_length=2, verbose_name='Status Suporte', choices=STATUS_CHOICES, default='E')   
+    status_support = models.CharField(
+        max_length=2, verbose_name='Status Suporte', choices=STATUS_CHOICES, default='E')
 
     def __str__(self):
-        return f"{self.registration} | {str(self.client)}"
+        return f"{self.process_number} | {str(self.client)}"
