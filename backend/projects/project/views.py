@@ -4,9 +4,11 @@ from rest_framework import status
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission
+from projects import engagement
 from projects.project.models import Project
 from projects.project.schemas import ProjectSchema
 from projects.engagement.models import Engagement, ProjectEngagement
+from projects.project_user.models import ProjectUser
 
 
 class ProjectApi(AbstractViewApi):
@@ -37,15 +39,19 @@ class ProjectApi(AbstractViewApi):
         new_project = serializer.validated_data
 
         engagements = new_project.pop('engagement')
-        numbers = engagements.pop('engagement').get('numbers', [])
+        numbers = [x['number'] for x in engagements]
 
-        users = engagements.pop('users', [])
+        users = new_project.pop('users', [])
+        list_users = []
+        users = [x['id'] for x in users]
+
         project_engagement = ProjectEngagement.objects.create()  # Create ProjectEngagement
-        project_engagement.users.add(*users)
+        project_engagement.users.add(*list_users)
         project_engagement.save()
 
         new_project['engagement_id'] = project_engagement.id
-        project = self.model.objects.create(**new_project)  # Create Project
+        project = self.model.objects.create(
+            **new_project)  # Create Project
         project.save()
 
         for number in numbers:
@@ -57,5 +63,6 @@ class ProjectApi(AbstractViewApi):
 
     def get(self, request, *args, **kwargs):
         """Get Projects details"""
-        projects = self.get_query()
+        filters = {'engagement__users__user': request.user}
+        projects = self.get_query(**filters)
         return JsonResponse({'projects': projects})

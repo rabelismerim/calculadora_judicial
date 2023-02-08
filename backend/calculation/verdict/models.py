@@ -13,7 +13,4 @@ class Verdict(AbstractModel):
     value = models.FloatField('Valor')
     type_calculation = models.ForeignKey(
         TypeCalculation, on_delete=models.PROTECT)
-
-
-class VerdictCalculation(AbstractModel):
     calculation = models.OneToOneField(Calculation, on_delete=models.PROTECT)

@@ -36,6 +36,7 @@ class EngagementApi(AbstractViewApi):
         new_engagement = serializer.validated_data
 
         users = new_engagement.pop('users')
+        users = [x['id'] for x in users]
         numbers = new_engagement.pop('engagement').get('numbers', [])
 
         project_engagement = self.model.objects.create()  # Create ProjectEngagement

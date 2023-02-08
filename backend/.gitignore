@@ -6,3 +6,5 @@ uploads/
 **/migrations/**
 !**/migrations
 !**/migrations/__init__.py
+
+*.sqlite3

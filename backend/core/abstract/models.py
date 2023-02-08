@@ -13,8 +13,10 @@ User = get_user_model()
 
 class AbstractModel(models.Model):
     """Abstraction of common fields in all models"""
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    created_at = models.DateTimeField('Data de criação', auto_now_add=True, editable=False)
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    created_at = models.DateTimeField(
+        'Data de criação', auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
     create_user = models.UUIDField()
     update_user = models.UUIDField(null=True)
@@ -30,24 +32,27 @@ class AbstractModel(models.Model):
     @staticmethod
     def __get_user(id_):
         """Abstract get User by UUID"""
-        user = User.objects.filter(id=id_).first()
-        if user:
-            return user.get_full_name
-        return ''
+        try:
+            user = User.objects.filter(id=id_).first()
+            if user:
+                return user.get_full_name
+        except:
+            pass
+        return 'Não encontrado'
 
     @property
     def get_update_user(self):
         """Get update User by UUID"""
         if self.update_user:
             return self.__get_user(self.update_user)
-        return ''
+        return 'Não encontrado'
 
     @property
     def get_create_user(self):
         """Get create User by UUID"""
         if self.create_user:
             return self.__get_user(self.create_user)
-        return ''
+        return 'Não encontrado'
 
     @property
     def diff(self):
@@ -96,12 +101,15 @@ class AbstractModel(models.Model):
 
 class UpdateUser(models.Model):
     """Model template to catch all updates made to the model"""
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     object_id = models.UUIDField()  # uuid AbstractModel
-    field_changed = models.CharField('Field alterado', max_length=100, null=True)
+    field_changed = models.CharField(
+        'Field alterado', max_length=100, null=True)
     current_value = models.CharField('Valor atual', max_length=400, null=True)
-    previous_value = models.CharField('Valor anterior', max_length=400, null=True)
+    previous_value = models.CharField(
+        'Valor anterior', max_length=400, null=True)
     create_user = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
     content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
     content_object = GenericForeignKey()
@@ -122,8 +130,8 @@ def get_user(sender, **kwargs):
     if hasattr(instance, 'changed_fields') and hasattr(instance, 'id'):
         for field, values in instance.changed_fields:
             UpdateUser.objects.create(field_changed=field, previous_value=values[0], current_value=values[1],
-                                              create_user_id=user_id, object_id=instance.id,
-                                              content_object=instance)
+                                      create_user_id=user_id, object_id=instance.id,
+                                      content_object=instance)
 
     if hasattr(instance, 'create_user'):
         if instance.create_user is None:

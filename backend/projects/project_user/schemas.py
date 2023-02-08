@@ -1,13 +1,14 @@
 from core.abstract.schemas import AbstractModelSchema
-from projects.project.models import Project
 from rest_framework import serializers
 from projects.project_user.models import ProjectUser
-from projects.abstract_project.schemas import AbstractDescriptionSchema
 
 
-class ProjectUserSchema(AbstractDescriptionSchema):
+class ProjectUserSchema(AbstractModelSchema):
     """Serializer ProjectUser fields"""
+    user = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = ProjectUser
         fields = '__all__'
+
+        read_only_fields = ('groups', 'permissions', 'id')

@@ -19,12 +19,12 @@ class AbstractViewApi(generics.GenericAPIView):
 
     @staticmethod
     def __parse_date(date_string):
-        """Parse sting to date"""
+        """Parse string to date"""
         return datetime.datetime.strptime(date_string, '%Y-%m-%d').date()
 
     @staticmethod
     def __parse_datetime(date_string):
-        """Parse sting to datetime"""
+        """Parse string to datetime"""
         return datetime.datetime.strptime(date_string, '%Y-%m-%d %H:%M')
 
     def __get_type_by_instance(self, instance):
@@ -39,7 +39,7 @@ class AbstractViewApi(generics.GenericAPIView):
 
         return types.get(instance, str)
 
-    def get_query(self):
+    def get_query(self, **kwargs):
         """Validate parameters received in query params, returning query values"""
         query = {}
         for valid_params in self.query_params:
@@ -58,5 +58,5 @@ class AbstractViewApi(generics.GenericAPIView):
                 else:
                     raise serializers.ValidationError(
                         {name: f'Campo no formato inválido. Deve ser estar no formato {instance["legend"]}'})
-        data = self.model.objects.filter(**query)
+        data = self.model.objects.filter(**query, **kwargs)
         return self.serializer_class(data, many=True).data

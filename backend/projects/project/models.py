@@ -22,12 +22,15 @@ class Project(AbstractDescription):
 
     status = models.CharField(
         default="E", max_length=1, choices=STATUS_CHOICES)
-    is_active = models.BooleanField(default=True)
     is_adm = models.BooleanField(default=True)  # É adminstrativa ou judicial
     judge = models.ForeignKey(Judge, on_delete=models.PROTECT)
     lawyer = models.ForeignKey(Lawyer, on_delete=models.PROTECT)
     region = models.ForeignKey(Region, on_delete=models.PROTECT)
     engagement = models.ForeignKey(ProjectEngagement, on_delete=models.PROTECT)
+
+    @property
+    def status_display(self):
+        return self.get_status_display
 
     def __str__(self):
         return f"{self.description}"

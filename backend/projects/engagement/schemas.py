@@ -16,36 +16,37 @@ class EngagementSchema(AbstractDescriptionSchema):
         fields = ['number']
 
 
+class UserSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+
+
 class ProjectEngagementSchema(AbstractDescriptionSchema):
     """Serializer ProjectEngagement fields"""
 
-    engagements = EngagementSchema(many=True, read_only=True, source='engagement_set.all')
-    engagement = EngagementSchema(many=True, write_only=True)
+    numbers = EngagementSchema(
+        many=True, read_only=True, source='engagement_set.all')
+    numbers = EngagementSchema(many=True, write_only=True)
 
     user_names = serializers.ListField(read_only=True)
-    users = serializers.ListField(write_only=True)
+    users = serializers.ListField(write_only=True, child=UserSerializer())
 
     class Meta:
         model = ProjectEngagement
         fields = '__all__'
 
-
     def validate(self, data):
         data = dict(data)
-        print(data,'data\n\n')
-        dict_ = {}
         engagement_data = data.pop('engagement')
-        print(engagement_data,'engagement_data\n\n')
+        print(engagement_data, 'engagement_data\n\n')
         list_eng = []
         for x in engagement_data:
-            engagement_number = x.get('number')        
-            print(engagement_number, 'engagement_number\n\n')
-            
+            engagement_number = x.get('number')
+
             if Engagement.objects.filter(number=engagement_number).exists():
-                raise serializers.ValidationError(['Número de engagement já cadastrado'])
-            
+                raise serializers.ValidationError(
+                    ['Número de engagement já cadastrado'])
+
             list_eng.append(engagement_number)
 
         data['engagement'] = {'numbers':  list_eng}
-        print(data,'data finih\n\n')
         return super(ProjectEngagementSchema, self).validate(data)
