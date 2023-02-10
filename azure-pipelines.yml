@@ -7,7 +7,7 @@ trigger:
 
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: default
 strategy:
   matrix:
     DJUD:
