@@ -6,8 +6,7 @@ trigger:
 - main
 
 
-pool:
-  vmImage: default
+pool: Default
 strategy:
   matrix:
     DJUD:
