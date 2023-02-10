@@ -30,6 +30,28 @@ export default defineConfig({
     AutoImport({
       imports: [
         'vue',
+        '@vueuse/core',
+        {
+          'animol': [
+            ['css', 'animate'],
+            'ease',
+            ['Easing', 'easing'],
+            'parseColor',
+            'blend',
+          ],
+          '@jrnwn/utils': [
+            'typeOf',
+            'createEl',
+            'setClass',
+            'removeClass',
+            'setStyle',
+            'getSelector',
+            'platform',
+            'get',
+            'set',
+            'getListOfPaths',
+          ],
+        },
       ],
       dts: 'src/auto-imports.d.ts',
       dirs: [
