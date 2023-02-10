@@ -253,7 +253,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
+if str(os.getenv('ENV')).strip().upper()=='HML':
+    STATIC_URL = '/djud/static/'
+else:
+    STATIC_URL = '/static/'
 STATIC_ROOT = 'var/static_root/'
 STATICFILES_DIRS = ['static']
 if DEBUG:
