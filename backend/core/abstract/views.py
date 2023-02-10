@@ -1,5 +1,6 @@
 import datetime
-from rest_framework import generics, serializers, permissions
+from django.http import JsonResponse
+from rest_framework import generics, serializers, status
 from rest_framework.filters import BaseFilterBackend
 
 
@@ -39,9 +40,10 @@ class AbstractViewApi(generics.GenericAPIView):
 
         return types.get(instance, str)
 
-    def get_query(self, **kwargs):
+    def get_query(self, id_=None, **kwargs):
         """Validate parameters received in query params, returning query values"""
-        query = {}
+        query = self.get_queryset()
+
         for valid_params in self.query_params:
             type_instance = valid_params['schema']['type']
             field = valid_params['field']
@@ -58,5 +60,29 @@ class AbstractViewApi(generics.GenericAPIView):
                 else:
                     raise serializers.ValidationError(
                         {name: f'Campo no formato inválido. Deve ser estar no formato {instance["legend"]}'})
-        data = self.model.objects.filter(**query, **kwargs)
-        return self.serializer_class(data, many=True).data
+
+        if id_:
+            return self.serializer_class(self.model.objects.filter(id=id_, **query, **kwargs).first(), many=False).data
+
+        return self.serializer_class(self.model.objects.filter(**query, **kwargs), many=True).data
+
+    def get(self, request, *args, **kwargs):
+        """Abstract method for default get model. Overide method in class for custom operation"""
+        id_ = kwargs.get('id')
+        query = self.get_query(id_=id_)
+        model_name = self.model._meta.verbose_name_plural.lower(
+        ) if not id_ else self.model._meta.verbose_name.lower()
+        return JsonResponse({model_name: query})
+
+    def post(self, request, *args, **kwargs):
+        """Abstract method for default post model. Overide method in class for custom operation"""
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        new_obj = serializer.validated_data
+        obj = self.model.objects.create(**new_obj)
+        obj_name = self.model._meta.verbose_name_plural.lower(
+        )
+        return JsonResponse({obj_name: self.serializer_class(obj, many=False).data}, status=status.HTTP_201_CREATED)
+
+    def get_queryset(self):
+        return {}

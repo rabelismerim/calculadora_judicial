@@ -74,3 +74,15 @@ class UserDttSchema(serializers.ModelSerializer):
         if errors:
             raise serializers.ValidationError(errors)
         return super(UserDttSchema, self).validate(data)
+
+    def __init__(self, *args, **kwargs):
+        fields = kwargs.pop('exclude', None)
+        super().__init__(*args, **kwargs)
+        if fields is not None:
+            allowed = set(fields)
+            existing = set(self.fields)
+            for field_name in allowed:
+                try:
+                    self.fields.pop(field_name)
+                except:
+                    pass

@@ -25,19 +25,3 @@ class NoticeApi(AbstractViewApi):
             "schema": {"type": "string"}
         }
     ]
-
-    def post(self, request, *args, **kwargs):
-        """
-           Create Notice receiving a dict, return Notice detail
-        """
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        new_notice = serializer.validated_data
-        notice = self.model.objects.create(**new_notice)
-        notice.save()
-        return JsonResponse({'notice': self.serializer_class(notice, many=False).data}, status=status.HTTP_201_CREATED)
-
-    def get(self, request, *args, **kwargs):
-        """Get Notice details"""
-        notices = self.get_query()
-        return JsonResponse({'notices': notices})

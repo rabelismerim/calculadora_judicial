@@ -66,23 +66,28 @@ INSTALLED_APPS = [
     'import_export',
     'rest_framework',
 
+    # Base
+    'base',
+    'base.claim',
+    'base.coins',
+
     # Creditors
     'creditors',
-    'creditors.archive',
-    'creditors.archive_recovering',
     'creditors.budgets',
     'creditors.classes',
-    'creditors.coins',
     'creditors.notice',
-    'creditors.recovering',
-    'creditors.claim',
+
+    # Recovering
+    'recovering',
+    'recovering.archive',
+    'recovering.archive_recovering',
 
     # Project
-    'projects.project',
+    'projects',
     'projects.judge',
     'projects.lawyer',
     'projects.region',  # Comarca
-    'projects.abstract_project',
+    'projects.court',  # Vara
     'projects.engagement',
     'projects.client',
     'projects.project_user',

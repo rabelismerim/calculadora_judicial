@@ -1,11 +1,9 @@
 from calculation.verdict.models import Verdict
-from core.abstract.schemas import AbstractModelSchema
-from projects.project.models import Project
 from rest_framework import serializers
-from projects.abstract_project.schemas import AbstractDescriptionSchema
+from core.abstract.models import AbstractModel
 
 
-class VerdictSchema(AbstractDescriptionSchema):
+class VerdictSchema(AbstractModel):
     """Serializer Projeto fields"""
 
     class Meta:

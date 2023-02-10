@@ -1,7 +1,7 @@
 from django.db import models
 from core.entity.models import Entity
-from creditors.recovering.models import Recovering
-from projects.abstract_project.models import AbstractDateCreditor
+from recovering.models import Recovering
+from base.models import AbstractDateCreditor
 
 
 class Creditor(AbstractDateCreditor):

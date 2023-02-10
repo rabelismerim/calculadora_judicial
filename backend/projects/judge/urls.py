@@ -3,6 +3,6 @@ from .views import JudgeApi
 
 urlpatterns = [
 
-    path('', JudgeApi.as_view(), name="judge-list-Create"),
+    path('', JudgeApi.as_view(), name="judge-list-create"),
 
 ]

@@ -1,7 +1,7 @@
 from django.db import models
 from calculation.models import Calculation
-from creditors.claim.models import Claim
-from projects.abstract_project.models import AbstractDateCreditor
+from base.claim.models import Claim
+from base.models import AbstractDateCreditor
 
 
 class Criterion(AbstractDateCreditor):

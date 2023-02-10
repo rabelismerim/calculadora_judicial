@@ -44,8 +44,3 @@ class ProjectUserApi(AbstractViewApi):
             project_user, many=False).data
         project_user_data['id'] = project_user.id
         return JsonResponse({'project_user': project_user_data}, status=status.HTTP_201_CREATED)
-
-    def get(self, request, *args, **kwargs):
-        """Get project_users details"""
-        project_users = self.get_query()
-        return JsonResponse({'project_users': project_users})

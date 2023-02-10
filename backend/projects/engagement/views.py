@@ -47,8 +47,3 @@ class EngagementApi(AbstractViewApi):
             engagement = Engagement.objects.create(
                 **{'number': number, 'project_id': project_engagement.id})  # Create Engagement Project number
         return JsonResponse({'engagement': self.serializer_class(engagement, many=False).data}, status=status.HTTP_201_CREATED)
-
-    def get(self, request, *args, **kwargs):
-        """Get Engagements details"""
-        engagements = self.get_query()
-        return JsonResponse({'engagements': engagements})

@@ -1,5 +1,4 @@
 from django.db import models
-from core.abstract.models import AbstractModel
 from utils import get_user_model
 from core.dttuser.models import PermissionsMixin
 
