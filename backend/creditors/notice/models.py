@@ -4,4 +4,4 @@ from base.models import AbstractCredit
 
 
 class Notice(AbstractCredit):  # Edital
-    client = models.OneToOneField(Creditor, on_delete=models.PROTECT)
+    creditor = models.OneToOneField(Creditor, on_delete=models.PROTECT)

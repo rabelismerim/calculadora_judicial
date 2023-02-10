@@ -44,19 +44,19 @@ urlpatterns = [
     # API Authentication
     path('djud/api-auth/', include("rest_framework.urls")),
 
-    # Base
+    # # Base
     path(f'{BASE_URL}base/', include("base.urls")),
 
-    # Projects
+    # # Projects
     path(f'{BASE_URL}projects/', include("projects.urls")),
 
-    # Recovering
+    # # Recovering
     path(f'{BASE_URL}recovering/', include("recovering.urls")),
 
     # Creditors
     path(f'{BASE_URL}creditors/', include("creditors.urls")),
 
-    # Calculation
+    # # Calculation
     path(f'{BASE_URL}calculation/', include("calculation.urls")),
 
     # CORE

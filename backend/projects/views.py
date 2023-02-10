@@ -1,29 +1,17 @@
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
-from django.db.models import F
 from rest_framework import status
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions
-from core.dttuser.schemas import UserDttSchema
 from core.permission.views import CheckHasPermission
-from projects.court.models import Court
-from projects.court.schemas import CourtSchema
-from projects.judge.models import Judge
-from projects.judge.schemas import JudgeSchema
-from projects.lawyer.models import Lawyer
-from projects.lawyer.schemas import LawyerSchema
 from projects.models import Project
-from projects.project_user.models import ProjectUser
-from projects.project_user.schemas import ProjectUserSchema
-from projects.region.models import Region
-from projects.region.schemas import RegionSchema
 from projects.schemas import ProjectCreateSchema, ProjectSchema
 from projects.engagement.models import Engagement, ProjectEngagement
 from utils import get_user_model
 User = get_user_model()
 
 
-class Project(AbstractViewApi):
+class AbstractProjectApi(AbstractViewApi):
     """HTTP methods for Project"""
     serializer_class = ProjectSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
@@ -45,12 +33,12 @@ class Project(AbstractViewApi):
         return {'engagement__users__user': self.request.user}
 
 
-class ProjectDetailApi(Project):
+class ProjectDetailApi(AbstractProjectApi):
     """HTTP methods for Project Detail"""
     http_method_names = ['get']
 
 
-class ProjectCreateApi(Project):
+class ProjectCreateApi(AbstractProjectApi):
     """HTTP methods for Project Create"""
     http_method_names = ['get']
     serializer_class = ProjectCreateSchema
@@ -65,7 +53,7 @@ class ProjectCreateApi(Project):
         return JsonResponse({'options': data}, status=status.HTTP_200_OK)
 
 
-class ProjectApi(Project):
+class ProjectApi(AbstractProjectApi):
     """HTTP methods for Project"""
     http_method_names = ['get', 'post']
 

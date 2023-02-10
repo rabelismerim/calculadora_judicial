@@ -9,3 +9,8 @@ class AbstractDescriptionSchema(serializers.ModelSerializer, AbstractModelSchema
     class Meta:
         model = AbstractDescription
         fields = '__all__'
+
+
+class AbstractChoicesSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    legend = serializers.CharField(max_length=1)

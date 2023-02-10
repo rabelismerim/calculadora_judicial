@@ -18,8 +18,8 @@ class ProjectTest(AbstractTest):
             "status": "P",
             "is_adm": True,
             "court_id": "10d1bc79-1e65-4a42-aa66-02e6b0f243b4",
-            "manager": "1",
-            "partner": "1",
+            "manager_id": "1",
+            "partner_id": "1",
             "engagements": [
                 {
                     "number": "Teste 1"
@@ -30,7 +30,7 @@ class ProjectTest(AbstractTest):
         }
 
         response = self.client.post(
-            '/djud/api/v1/projects/project', json.dumps(project), content_type="application/json")
+            '/djud/api/v1/projects/', json.dumps(project), content_type="application/json")
         # self.assertEqual(response.status_code, 201)
         content = json.loads(response.content)
         self.printl(content)
@@ -39,7 +39,8 @@ class ProjectTest(AbstractTest):
     def test_api_D_get_projects(self):
         """Assert get projects detail"""
         self.printl('List Project')
-        response = self.client.get('/djud/api/v1/projects/project')
+        response = self.client.get('/djud/api/v1/projects/')
+        self.printl(response)
         content = json.loads(response.content)
         self.printl(content)
         self.assertEqual(response.status_code, 200)

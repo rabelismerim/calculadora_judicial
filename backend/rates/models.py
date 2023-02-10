@@ -13,4 +13,4 @@ class Rate(AbstractModel):  # Edital
         'Tipo de indice', max_length=1, choices=INDEX_CHOICES)
 
     def __str__(self):
-        return f"{self.get_index_display}"
+        return f"{self.get_index_display()}"

@@ -35,9 +35,5 @@ class Project(AbstractDescription):
         User, on_delete=models.PROTECT, related_name='partner')
     engagement = models.ForeignKey(ProjectEngagement, on_delete=models.PROTECT)
 
-    @property
-    def status_display(self):
-        return self.get_status_display
-
     def __str__(self):
         return f"{self.description}"

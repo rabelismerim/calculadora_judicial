@@ -1,11 +1,12 @@
 from django.db.models import F
+from base.schemas import AbstractChoicesSerializer
 from core.abstract.schemas import AbstractModelSchema
 from core.dttuser.schemas import UserDttSchema
 from projects.court.models import Court
 from projects.court.schemas import CourtSchema
 from projects.judge.models import Judge
 from projects.lawyer.models import Lawyer
-from projects.models import Project
+from projects.models import STATUS_CHOICES, Project
 from rest_framework import serializers
 from projects.judge.schemas import JudgeSchema
 from projects.lawyer.schemas import LawyerSchema
@@ -13,7 +14,6 @@ from projects.project_user.models import ProjectUser
 from projects.region.models import Region
 from projects.region.schemas import RegionSchema
 from projects.engagement.schemas import EngagementSchema, ProjectEngagementSchema
-from django.core import serializers as sr
 from utils import get_user_model
 User = get_user_model()
 
@@ -40,18 +40,22 @@ class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):
     engagement = ProjectEngagementSchema(many=False, read_only=True)
     engagements = EngagementSchema(many=True, write_only=True)
 
+    manager = UserDttSchema(many=False, read_only=True)
+    manager_id = serializers.IntegerField(write_only=True)
+    partner = UserDttSchema(many=False, read_only=True)
+    partner_id = serializers.IntegerField(write_only=True)
+
     user_names = serializers.ListField(read_only=True)
     users = serializers.ListField(write_only=True, child=UserSerializer())
 
-    status_display = serializers.CharField(read_only=True)
+    status_display = serializers.CharField(
+        source='get_status_display', read_only=True)
 
     class Meta:
         model = Project
         fields = '__all__'
 
-    def validate(self, data):
-        data = dict(data)
-        users = data.get('users')
+    def validate_users(self, users):
         if not users:
             raise serializers.ValidationError(
                 ['Necessário selecionar ao menos um usuário'])
@@ -59,7 +63,7 @@ class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):
         if isinstance(users, list) is False:
             raise serializers.ValidationError(
                 ['O campo: "users" deve estar no formato de lista'])
-        return super(ProjectSchema, self).validate(data)
+        return users
 
 
 exclude = ('create_user', 'created_at',
@@ -75,6 +79,9 @@ class ProjectCreateSchema(serializers.Serializer):
     judge_options = JudgeSchema(Judge.objects.all(),
                                 many=True, read_only=True)
 
+    status_options = AbstractChoicesSerializer(
+        [{'id': x[0], 'legend': x[1]} for x in STATUS_CHOICES], many=True, read_only=True)
+
     lawyer_options = LawyerSchema(
         Lawyer.objects.all(), many=True, read_only=True, exclude=exclude)
     region_options = RegionSchema(
@@ -89,3 +96,6 @@ class ProjectCreateSchema(serializers.Serializer):
 
     class Meta:
         fields = '__all__'
+
+    def get_gender(self, obj):
+        return [{'id': x[0], 'legend': x[1]} for x in STATUS_CHOICES]

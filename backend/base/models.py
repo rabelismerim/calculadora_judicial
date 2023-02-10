@@ -18,7 +18,7 @@ class AbstractDescription(AbstractModel):
 class AbstractInfo(AbstractModel):
     # TODO: Criar validador de cpf|cnpj
     name = models.CharField('Descrição', max_length=150)
-    legal_number = models.CharField('CPF/CNPJ', max_length=18)
+    legal_number = models.CharField('CPF/CNPJ', max_length=18, unique=True)
 
     class Meta:
         abstract = True

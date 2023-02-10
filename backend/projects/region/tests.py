@@ -15,7 +15,7 @@ class RegionTest(AbstractTest):
         response = self.client.post('/djud/api/v1/projects/region', region)
         self.assertEqual(response.status_code, 201)
         content = json.loads(response.content)
-        self.set_project('region_id', content['region']['id'])
+        self.set_project('region_id', content['regions']['id'])
 
     def test_api_F_get_regions(self):
         """Assert get regions detail"""
