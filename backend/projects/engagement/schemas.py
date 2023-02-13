@@ -35,6 +35,7 @@ class ProjectEngagementSchema(AbstractModelSchema):
     def validate(self, data):
         data = dict(data)
         engagement_data = data.pop('engagements')
+        print(engagement_data, 'engagement_data\n\n')
         list_eng = []
 
         if not engagement_data:
@@ -55,4 +56,5 @@ class ProjectEngagementSchema(AbstractModelSchema):
             list_eng.append(engagement_number)
 
         data['engagements'] = list_eng
+        print(list_eng, 'list_eng\n\n')
         return super(ProjectEngagementSchema, self).validate(data)

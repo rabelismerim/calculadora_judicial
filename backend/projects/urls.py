@@ -1,11 +1,10 @@
 from django.urls import include, path
 
-from projects.views import ProjectApi, ProjectDetailApi, ProjectCreateApi
+from projects.views import ProjectApi, ProjectDetailApi, AbstractProjectApi
 
 
 urlpatterns = [
     path('', ProjectApi.as_view(), name="projects-list-create"),
-    path('options', ProjectCreateApi.as_view(), name="project-options"),
     path('<uuid:id>', ProjectDetailApi.as_view(), name="project-detail"),
     path('judge', include("projects.judge.urls")),
     path('lawyer', include("projects.lawyer.urls")),

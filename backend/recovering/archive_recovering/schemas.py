@@ -10,7 +10,7 @@ class ArchiveRecoveringSchema(AbstractDescriptionSchema):
     archive = ArchiveSchema(many=False)
     # archive_id = serializers.UUIDField(write_only=True)
 
-    recovering_id = serializers.UUIDField()
+    # recovering_id = serializers.UUIDField()
 
     class Meta:
         model = ArchiveRecovering

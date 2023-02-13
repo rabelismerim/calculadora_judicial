@@ -7,7 +7,6 @@ from core.entity.schemas import EntitySchema
 from creditors.classes.models import CLASSE_CHOICES
 from creditors.models import Creditor
 from creditors.notice.schemas import NoticeSchema
-from recovering.schemas import RecoveringSchema
 from rates.schemas import RateSchema
 
 
@@ -16,7 +15,7 @@ class CreditorSchema(AbstractDescriptionSchema):
 
     entity = EntitySchema(many=False, read_only=False)
 
-    recovering = RecoveringSchema(many=False, read_only=True)
+    # recovering = RecoveringSchema(many=False, read_only=True)
     recovering_id = serializers.UUIDField(write_only=True)
 
     rate = RateSchema(many=False, read_only=False)

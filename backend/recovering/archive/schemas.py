@@ -23,7 +23,8 @@ class ArchiveJsonSerializer(serializers.Serializer):
 
 class ArchiveSchema(AbstractDescriptionSchema):
 
-    archive_json = ArchiveJsonSerializer()
+    # archive_json = ArchiveJsonSerializer()
+    archive_json = serializers.JSONField()
 
     class Meta:
         model = Archive

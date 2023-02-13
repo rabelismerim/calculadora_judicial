@@ -1,4 +1,5 @@
 from django.db import models
+from numpy import number
 from base.models import AbstractDescription
 from projects.court.models import Court
 from projects.judge.models import Judge
@@ -34,6 +35,10 @@ class Project(AbstractDescription):
     partner = models.ForeignKey(
         User, on_delete=models.PROTECT, related_name='partner')
     engagement = models.ForeignKey(ProjectEngagement, on_delete=models.PROTECT)
+
+    @property
+    def num_recovering(self) -> number:
+        return self.recovering_set.all().count()
 
     def __str__(self):
         return f"{self.description}"

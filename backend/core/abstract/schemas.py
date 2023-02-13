@@ -6,6 +6,8 @@ class AbstractModelSchema(serializers.Serializer):
     """Serializer AbstractModel fields"""
     renderer_classes = [renderers.JSONRenderer]
     id = serializers.UUIDField(read_only=True)
+    create_user = serializers.CharField(read_only=True)
+    update_user = serializers.CharField(read_only=True)
     created_at = serializers.DateTimeField(read_only=True)
     updated_at = serializers.DateTimeField(allow_null=True, read_only=True)
 

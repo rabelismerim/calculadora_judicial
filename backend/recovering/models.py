@@ -21,9 +21,10 @@ class Recovering(AbstractDateRecovering):
 
     competence = models.CharField(
         "Competencia",  max_length=150, null=True, default=None)
-    archive = models.ForeignKey(Archive, on_delete=models.PROTECT)
+    # archive = models.ForeignKey(Archive, on_delete=models.PROTECT)
     status_support = models.CharField(
         max_length=2, verbose_name='Status Suporte', choices=STATUS_CHOICES, default='E')
 
     def __str__(self):
         return f"{self.process_number} | {str(self.entity)}"
+    

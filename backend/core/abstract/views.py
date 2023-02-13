@@ -43,6 +43,10 @@ class AbstractViewApi(generics.GenericAPIView):
     def get_query(self, id_=None, **kwargs):
         """Validate parameters received in query params, returning query values"""
         query = self.get_queryset()
+        exclude = []
+
+        if hasattr(self, 'exclude') and (isinstance(self.exclude, list) or isinstance(self.exclude, tuple)):
+            exclude = self.exclude
 
         for valid_params in self.query_params:
             type_instance = valid_params['schema']['type']
@@ -60,11 +64,10 @@ class AbstractViewApi(generics.GenericAPIView):
                 else:
                     raise serializers.ValidationError(
                         {name: f'Campo no formato inválido. Deve ser estar no formato {instance["legend"]}'})
-
+        serializer = self.get_serializer_class()
         if id_:
-            return self.serializer_class(self.model.objects.filter(id=id_, **query, **kwargs).first(), many=False).data
-
-        return self.serializer_class(self.model.objects.filter(**query, **kwargs), many=True).data
+            return serializer(self.model.objects.filter(id=id_, **query, **kwargs).first(), many=False, exclude=exclude).data
+        return serializer(self.model.objects.filter(**query, **kwargs), many=True, exclude=exclude).data
 
     def get(self, request, *args, **kwargs):
         """Abstract method for default get model. Overide method in class for custom operation"""

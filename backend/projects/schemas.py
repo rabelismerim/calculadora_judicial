@@ -4,6 +4,7 @@ from core.abstract.schemas import AbstractModelSchema
 from core.dttuser.schemas import UserDttSchema
 from projects.court.models import Court
 from projects.court.schemas import CourtSchema
+from projects.engagement.models import Engagement
 from projects.judge.models import Judge
 from projects.lawyer.models import Lawyer
 from projects.models import STATUS_CHOICES, Project
@@ -13,7 +14,8 @@ from projects.lawyer.schemas import LawyerSchema
 from projects.project_user.models import ProjectUser
 from projects.region.models import Region
 from projects.region.schemas import RegionSchema
-from projects.engagement.schemas import EngagementSchema, ProjectEngagementSchema
+from projects.engagement.schemas import ProjectEngagementSchema
+from recovering.schemas import RecoveringListSchema, RecoveringSchema
 from utils import get_user_model
 User = get_user_model()
 
@@ -38,7 +40,12 @@ class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):
     court_id = serializers.UUIDField(write_only=True)
 
     engagement = ProjectEngagementSchema(many=False, read_only=True)
-    engagements = EngagementSchema(many=True, write_only=True)
+    engagements = serializers.ListField(write_only=True)
+
+    # recovering = RecoveringSchema(
+    #     many=True, read_only=True, exclude=('project', ))
+    recoverings = RecoveringSchema(source='recovering_set',
+                                   many=True, read_only=False, exclude=('project', ))
 
     manager = UserDttSchema(many=False, read_only=True)
     manager_id = serializers.IntegerField(write_only=True)
@@ -50,6 +57,8 @@ class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):
 
     status_display = serializers.CharField(
         source='get_status_display', read_only=True)
+
+    num_recovering = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Project
@@ -64,6 +73,39 @@ class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):
             raise serializers.ValidationError(
                 ['O campo: "users" deve estar no formato de lista'])
         return users
+
+    def validate_engagements(self, engagement_data):
+
+        list_eng = []
+
+        if not engagement_data:
+            raise serializers.ValidationError(
+                ['Necessário adicionar ao menos um número de engagement'])
+
+        if isinstance(engagement_data, list) is False:
+            raise serializers.ValidationError(
+                ['O campo: "engagement" deve estar no formato de lista'])
+
+        for engagement_number in engagement_data:
+            if Engagement.objects.filter(number=engagement_number).exists():
+                raise serializers.ValidationError(
+                    ['Número de engagement já cadastrado'])
+
+            list_eng.append(engagement_number)
+
+        return list_eng
+
+
+class ProjectListSchema(ProjectSchema):
+    """Serializer Project fields"""
+
+    # recoverings = RecoveringListSchema(source='recovering_set',
+    #                                    many=True, read_only=False, exclude=('project', ))
+
+    class Meta:
+        model = Project
+        fields = ("id", 'description', 'status',
+                  'status_display', 'created_at', 'engagement', 'num_recovering')
 
 
 exclude = ('create_user', 'created_at',
