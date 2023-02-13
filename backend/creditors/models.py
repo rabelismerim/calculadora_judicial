@@ -8,3 +8,4 @@ class Creditor(AbstractDateCreditor):
     entity = models.ForeignKey(Entity, on_delete=models.PROTECT)
     recovering = models.ForeignKey(
         Recovering, on_delete=models.PROTECT)
+    description = models.CharField('Descrição', max_length=255, null=True)

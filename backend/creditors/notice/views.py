@@ -33,8 +33,7 @@ class NoticeApi(AbstractViewApi):
         serializer.is_valid(raise_exception=True)
         new_notice = serializer.validated_data
         coins = new_notice.get('coins')
-        new_coins = Coins.objects.create(**coins)
-        new_notice['coins'] = new_coins
+        new_notice['coins'] = Coins.objects.create(**coins)
         notice = self.model.objects.create(**new_notice)
 
         return JsonResponse({'notice': self.serializer_class(notice, many=False).data}, status=status.HTTP_201_CREATED)

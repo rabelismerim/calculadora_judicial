@@ -1,8 +1,12 @@
 import re
-from base.schemas import AbstractDescriptionSchema
+from base.claim.schemas import ClaimCreditorSchema, ClaimLawyerSchema
+from base.coins.models import COIN_CHOICES
+from base.schemas import AbstractChoicesSerializer, AbstractDescriptionSchema
 from rest_framework import serializers
 from core.entity.schemas import EntitySchema
+from creditors.classes.models import CLASSE_CHOICES
 from creditors.models import Creditor
+from creditors.notice.schemas import NoticeSchema
 from recovering.schemas import RecoveringSchema
 from rates.schemas import RateSchema
 
@@ -16,6 +20,12 @@ class CreditorSchema(AbstractDescriptionSchema):
     recovering_id = serializers.UUIDField(write_only=True)
 
     rate = RateSchema(many=False, read_only=False)
+    notice = NoticeSchema(many=False, read_only=False,
+                          required=False, allow_null=True)
+    claim_creditor = ClaimCreditorSchema(
+        many=False, read_only=False, required=False, allow_null=True)
+    claim_lawyer = ClaimLawyerSchema(
+        many=False, read_only=False, required=False, allow_null=True)
 
     class Meta:
         model = Creditor
@@ -26,10 +36,20 @@ class CreditorSchema(AbstractDescriptionSchema):
         legal_number = data.get('entity').get('legal_number')
         legal_number = ''.join(re.findall(r'\d', str(legal_number)))
 
-        has_creditor = Creditor.objects.filter(
-            recovering_id=recovering_id, entity__legal_number=legal_number).exists()
-
-        if has_creditor:
+        if Creditor.objects.filter(recovering_id=recovering_id, entity__legal_number=legal_number).exists():
             raise serializers.ValidationError(
                 ['Credor já cadastrado nessa recuperanda'])
         return super(CreditorSchema, self).validate(data)
+
+
+class CreditorCreateSchema(serializers.Serializer):
+    """Serializer Creditor fields"""
+
+    classes_options = AbstractChoicesSerializer(
+        [{'id': x[0], 'legend': x[1]} for x in CLASSE_CHOICES], many=True, read_only=True)
+
+    coin_options = AbstractChoicesSerializer(
+        [{'id': x[0], 'legend': x[1]} for x in COIN_CHOICES], many=True, read_only=True)
+
+    class Meta:
+        fields = '__all__'

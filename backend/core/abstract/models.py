@@ -18,8 +18,10 @@ class AbstractModel(models.Model):
     created_at = models.DateTimeField(
         'Data de criação', auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
-    create_user = models.UUIDField()
-    update_user = models.UUIDField(null=True)
+    create_user = models.CharField(
+        'Username de criação', max_length=150, null=True)
+    update_user = models.CharField(
+        'Username de atualização', max_length=150, null=True)
 
     class Meta:
         abstract = True
@@ -28,31 +30,6 @@ class AbstractModel(models.Model):
     def __init__(self, *args, **kwargs):
         super(AbstractModel, self).__init__(*args, **kwargs)
         self.__initial = self._dict
-
-    @staticmethod
-    def __get_user(id_):
-        """Abstract get User by UUID"""
-        try:
-            user = User.objects.filter(id=id_).first()
-            if user:
-                return user.get_full_name
-        except:
-            pass
-        return 'Não encontrado'
-
-    @property
-    def get_update_user(self):
-        """Get update User by UUID"""
-        if self.update_user:
-            return self.__get_user(self.update_user)
-        return 'Não encontrado'
-
-    @property
-    def get_create_user(self):
-        """Get create User by UUID"""
-        if self.create_user:
-            return self.__get_user(self.create_user)
-        return 'Não encontrado'
 
     @property
     def diff(self):
@@ -125,6 +102,7 @@ def get_user(sender, **kwargs):
     """Get User on request"""
     instance = kwargs.get('instance')
     requests_ = get_current_request()
+    username = requests_.user.username if requests_ else None
     user_id = requests_.user.id if requests_ else None
     instance.create_user_id = user_id
     if hasattr(instance, 'changed_fields') and hasattr(instance, 'id'):
@@ -135,9 +113,9 @@ def get_user(sender, **kwargs):
 
     if hasattr(instance, 'create_user'):
         if instance.create_user is None:
-            instance.create_user = user_id
+            instance.create_user = username
         else:
-            instance.update_user = user_id
+            instance.update_user = username
 
 
 pre_save.connect(get_user, dispatch_uid=AbstractModel)

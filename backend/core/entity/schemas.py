@@ -45,12 +45,14 @@ class EntitySchema(AbstractDescriptionSchema):
                 return True
         return False
 
-    def validate(self, data):
-        legal_number = data.get('legal_number')
+    def validate_legal_number(self, legal_number):
         legal_number = ''.join(re.findall(r'\d', str(legal_number)))
         if not self.__validate_cpf(legal_number):
             if not self.__validate_cnpj(legal_number):
                 raise serializers.ValidationError(
                     ['CPF/CNPJ inválido'])
-        data['legal_number'] = legal_number
-        return super(EntitySchema, self).validate(data)
+
+        if Entity.objects.filter(legal_number=legal_number).exists():
+            raise serializers.ValidationError(
+                ['CPF/CNPJ já cadastrado'])
+        return legal_number

@@ -96,6 +96,3 @@ class ProjectCreateSchema(serializers.Serializer):
 
     class Meta:
         fields = '__all__'
-
-    def get_gender(self, obj):
-        return [{'id': x[0], 'legend': x[1]} for x in STATUS_CHOICES]

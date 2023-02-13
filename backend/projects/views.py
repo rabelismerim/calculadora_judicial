@@ -76,12 +76,9 @@ class ProjectApi(AbstractProjectApi):
         project_engagement.save()
 
         new_project['engagement_id'] = project_engagement.id
-        project = self.model.objects.create(
-            **new_project)  # Create Project
-        project.save()
+        project = self.model.objects.create(**new_project)  # Create Project
 
-        for number in engagements:
-            # Create Engagement Project number
+        for number in engagements:  # Create Engagement Project number
             Engagement.objects.create(
                 **{'number': number, 'project_id': project_engagement.id})
 

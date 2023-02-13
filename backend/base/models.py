@@ -34,9 +34,9 @@ class AbstractDateCreditor(AbstractModel):
 
     # TODO: Verificar se esses valores são para cada credor ou cada recuperanda
     rate = models.ForeignKey(Rate, on_delete=models.PROTECT)
-    default_interest = models.FloatField('Juros moratórios')
-    fine = models.FloatField('Multa')
-    advocative_hours = models.FloatField('Honorários advocatícios')
+    # default_interest = models.FloatField('Juros moratórios')
+    # fine = models.FloatField('Multa')
+    # advocative_hours = models.FloatField('Honorários advocatícios')
 
     class Meta:
         abstract = True

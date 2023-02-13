@@ -4,6 +4,7 @@ from core.abstract.models import AbstractModel
 
 
 class TypeCalculation(AbstractModel):
+    # Danos materiais, Morais, Outros
     description = models.CharField('Descrição', max_length=255)
     calculation = models.CharField('Cálculo', max_length=255)
 
