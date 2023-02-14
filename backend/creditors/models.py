@@ -9,3 +9,13 @@ class Creditor(AbstractDateCreditor):
     recovering = models.ForeignKey(
         Recovering, on_delete=models.PROTECT)
     description = models.CharField('Descrição', max_length=255, null=True)
+
+    def get_clain_creditor(self):
+        if hasattr(self, 'claimcreditor'):
+            return self.claimcreditor
+        return None
+
+    def get_clain_lawyer(self):
+        if hasattr(self, 'claimlawyer'):
+            return self.claimlawyer
+        return None

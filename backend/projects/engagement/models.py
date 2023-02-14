@@ -7,6 +7,10 @@ class ProjectEngagement(AbstractModel):
     users = models.ManyToManyField(ProjectUser, blank=True)
 
     @property
+    def list_engagements(self):
+        return list(self.engagement_set.all().values_list('number'))
+
+    @property
     def user_names(self):
         return list(self.users.all().values(username=models.F('user__username')))
 

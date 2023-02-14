@@ -1,7 +1,9 @@
-from django.urls import path, include
+from django.urls import path
+
+from calculation.verdict.views import VerdictApi
 
 
 
 urlpatterns = [
-    # path('', CalculationApi.as_view(), name="calculation-list-create"),
+    path('', VerdictApi.as_view(), name="verdictApi-list-create"),
 ]

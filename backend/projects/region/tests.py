@@ -7,7 +7,7 @@ class RegionTest(AbstractTest):
 
     def test_api_E_post_regions(self):
         """Assert post regions detail"""
-        self.printl('Criar comarca')
+        self.printl('Create regions')
         region = {
             "description": "Name Comarca 1"
         }
@@ -19,6 +19,10 @@ class RegionTest(AbstractTest):
 
     def test_api_F_get_regions(self):
         """Assert get regions detail"""
-        self.printl('Lista de comarcas')
+        self.printl('List regions')
         response = self.client.get('/djud/api/v1/projects/region')
         self.assertEqual(response.status_code, 200)
+        regions = response.json()['regions']
+        region = regions[0]
+        self.assertGreaterEqual(len(regions), 1)
+        self.set_project('region_id', region['id'])

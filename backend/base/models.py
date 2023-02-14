@@ -28,15 +28,15 @@ class AbstractInfo(AbstractModel):
 
 
 class AbstractDateCreditor(AbstractModel):
-    # TODO: Verificar se admissão e demissão podem ser alterados, se nã possivel, migrar campos para tabela Creditor
+    # TODO: Verificar se admissão e demissão podem ser alterados, se não possivel, migrar campos para tabela Creditor
     admission = models.DateTimeField("Data de admissão", blank=True, null=True)
     dismissal = models.DateTimeField("Data de demissão", blank=True, null=True)
 
     # TODO: Verificar se esses valores são para cada credor ou cada recuperanda
     rate = models.ForeignKey(Rate, on_delete=models.PROTECT)
-    # default_interest = models.FloatField('Juros moratórios')
-    # fine = models.FloatField('Multa')
-    # advocative_hours = models.FloatField('Honorários advocatícios')
+    default_interest = models.FloatField('Juros moratórios', default=0)
+    fine = models.FloatField('Multa', default=0)
+    advocative_hours = models.FloatField('Honorários advocatícios', default=0)
 
     class Meta:
         abstract = True

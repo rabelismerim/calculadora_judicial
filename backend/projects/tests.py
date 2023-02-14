@@ -5,7 +5,7 @@ from core.abstract.tests import AbstractTest
 class ProjectTest(AbstractTest):
     """Project related tests"""
 
-    def test_api_C_post_projects(self):
+    def api_C_post_projects(self):
         """Assert post projects detail"""
         self.printl('Create Project')
         project = {
@@ -20,27 +20,43 @@ class ProjectTest(AbstractTest):
             "court_id": "10d1bc79-1e65-4a42-aa66-02e6b0f243b4",
             "manager_id": "1",
             "partner_id": "1",
-            "engagements": [
+            "engagement":  {
+                "numbers": [
+                    "teste 1"
+                ]
+            },
+            "recoverings": [
                 {
-                    "number": "Teste 1"
+                    "entity": {
+                        "name": "string",
+                        "legal_number": "958.882.860-01"
+                    },
+                    "archives": [
+                        {
+                            "archive": {
+                                "archive_json": {},
+                                "description": "string"
+                            }
+                        }
+                    ],
+                    "date_rj_request": "2023-02-14",
+                    "date_rj_filing": "2023-02-14",
+                    "date_citation": "2023-02-14",
+                    "process_number": "string",
+                    "status": "E",
+                    "competence": "string",
+                    "status_support": "E"
                 }
             ],
-            # "users": []
             "users": [{'id': '1'}]
         }
 
         response = self.client.post(
             '/djud/api/v1/projects/', json.dumps(project), content_type="application/json")
-        # self.assertEqual(response.status_code, 201)
-        content = json.loads(response.content)
-        self.printl(content)
-        # self.set_project('project_id', content['project']['id'])
+        self.assertEqual(response.status_code, 201)
 
-    def test_api_D_get_projects(self):
+    def api_D_get_projects(self):
         """Assert get projects detail"""
         self.printl('List Project')
         response = self.client.get('/djud/api/v1/projects/')
-        self.printl(response)
-        content = json.loads(response.content)
-        self.printl(content)
         self.assertEqual(response.status_code, 200)

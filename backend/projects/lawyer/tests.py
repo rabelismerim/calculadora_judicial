@@ -6,7 +6,7 @@ class LawyerTest(AbstractTest):
 
     def test_api_C_post_lawyers(self):
         """Assert post lawyers detail"""
-        self.printl('Criar advogado')
+        self.printl('Create lawyer')
         lawyer = {
             "description": "Name Juiz 1"
         }
@@ -15,6 +15,10 @@ class LawyerTest(AbstractTest):
 
     def test_api_D_get_lawyers(self):
         """Assert get lawyers detail"""
-        self.printl('Lista de advogados')
+        self.printl('List lawyers')
         response = self.client.get('/djud/api/v1/projects/lawyer')
         self.assertEqual(response.status_code, 200)
+        lawyers = response.json()['lawyers']
+        lawyer = lawyers[0]
+        self.assertGreaterEqual(len(lawyers), 1)
+        self.set_project('lawyer_id', lawyer['id'])

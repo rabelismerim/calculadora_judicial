@@ -35,10 +35,4 @@ class CalculationApi(AbstractViewApi):
         serializer.is_valid(raise_exception=True)
         new_calculation = serializer.validated_data
         calculation = self.model.objects.create(**new_calculation)
-        calculation.save()
         return JsonResponse({'calculation': self.serializer_class(calculation, many=False).data}, status=status.HTTP_201_CREATED)
-
-    def get(self, request, *args, **kwargs):
-        """Get Calculations details"""
-        calculations = self.get_query()
-        return JsonResponse({'calculations': calculations})

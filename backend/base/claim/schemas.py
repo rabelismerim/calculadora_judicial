@@ -1,4 +1,4 @@
-from base.claim.models import ClaimCreditor, ClaimLawyer
+from base.claim.models import Claim, ClaimCreditor, ClaimLawyer
 from rest_framework import serializers
 
 from creditors.classes.schemas import AbstractClassesSchema
@@ -20,3 +20,13 @@ class ClaimCreditorSchema(AbstractClassesSchema):
     class Meta:
         model = ClaimCreditor
         exclude = ('creditor', )
+
+
+class ClaimSchema(AbstractClassesSchema):
+    model = Claim
+    creditor_id = None
+
+    class Meta:
+        model = Claim
+        fields = '__all__'
+        # exclude = ('creditor_id', )

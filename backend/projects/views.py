@@ -56,7 +56,6 @@ class ProjectApi(AbstractProjectApi):
     }
 
     def get_serializer_class(self):
-        print(self, 'self\n')
         return self.layout_serializers.get(self.request.method.lower(),
                                            self.layout_serializers['default'])
 
@@ -69,8 +68,7 @@ class ProjectApi(AbstractProjectApi):
         new_project = dict(serializer.validated_data)
 
         recoverings = new_project.pop('recovering_set')
-        engagements = new_project.pop('engagements')
-
+        engagements = new_project.pop('engagement')
         users = new_project.pop('users', [])
         users = [x['id'] for x in users]
 

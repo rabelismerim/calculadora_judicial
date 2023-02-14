@@ -20,15 +20,16 @@ class CreditorSchema(AbstractDescriptionSchema):
 
     rate = RateSchema(many=False, read_only=False)
     notice = NoticeSchema(many=False, read_only=False,
-                          required=False, allow_null=True)
-    claim_creditor = ClaimCreditorSchema(
-        many=False, read_only=False, required=False, allow_null=True)
-    claim_lawyer = ClaimLawyerSchema(
-        many=False, read_only=False, required=False, allow_null=True)
+                          required=False, allow_null=True, exclude=('creditor_id', ))
+    claim_creditor = ClaimCreditorSchema(source='claimcreditor',
+                                         many=False, read_only=False, required=False, allow_null=True, exclude=('creditor_id', ))
+    claim_lawyer = ClaimLawyerSchema(source='claimlawyer',
+                                     many=False, read_only=False, required=False, allow_null=True, exclude=('creditor_id', ))
 
     class Meta:
         model = Creditor
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ('recovering', )
 
     def validate(self, data):
         recovering_id = data.get('recovering_id')

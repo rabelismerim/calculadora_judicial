@@ -21,10 +21,12 @@ class RecoveringSchema(AbstractDescriptionSchema):
     status_support_display = serializers.CharField(
         source='get_status_support_display', read_only=True)
 
+    project_id = serializers.UUIDField(write_only=True)
+
     class Meta:
         model = Recovering
-        fields = "__all__"
-        # exclude = ('project', )
+        # fields = "__all__"
+        exclude = ('project', )
 
 
 class RecoveringListSchema(RecoveringSchema):

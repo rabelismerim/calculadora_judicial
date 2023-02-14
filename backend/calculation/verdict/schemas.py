@@ -1,18 +1,31 @@
-from calculation.verdict.models import Verdict
+from base.schemas import AbstractDescriptionSchema
+from calculation.verdict.models import Verdict, TypeCalculation
 from rest_framework import serializers
-from core.abstract.models import AbstractModel
 
 
-class VerdictSchema(AbstractModel):
+class TypeCalculationSchema(AbstractDescriptionSchema):
+    """Serializer TypeCalculation fields"""
+
+    class Meta:
+        model = TypeCalculation
+        fields = '__all__'
+
+
+class VerdictSchema(AbstractDescriptionSchema):
     """Serializer Projeto fields"""
+
+    type_calculation = TypeCalculationSchema(many=False, read_only=False)
+    calculation_id = serializers.UUIDField()
 
     class Meta:
         model = Verdict
-        fields = '__all__'
+        exclude = ('calculation', )
 
     def validate(self, data):
-        verdict_name = dict(data).get('description')
-        verdict = verdict.objects.filter(description=verdict_name).exists()
+        verdict_name = data.get('description')
+        calculation_id = dict(data).get('calculation_id')
+        verdict = Verdict.objects.filter(
+            description=verdict_name, calculation_id=calculation_id).exists()
         if verdict:
-            raise serializers.ValidationError(['Juiz já cadastrado'])
+            raise serializers.ValidationError(['Sentença já cadastrada'])
         return super(VerdictSchema, self).validate(data)

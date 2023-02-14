@@ -75,7 +75,7 @@ class AbstractViewApi(generics.GenericAPIView):
         query = self.get_query(id_=id_)
         model_name = self.model._meta.verbose_name_plural.lower(
         ) if not id_ else self.model._meta.verbose_name.lower()
-        return JsonResponse({model_name: query})
+        return JsonResponse({model_name.replace(' ', '_'): query})
 
     def post(self, request, *args, **kwargs):
         """Abstract method for default post model. Overide method in class for custom operation"""

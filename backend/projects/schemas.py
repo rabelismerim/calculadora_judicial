@@ -39,13 +39,14 @@ class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):
     court = CourtSchema(many=False, read_only=True)
     court_id = serializers.UUIDField(write_only=True)
 
-    engagement = ProjectEngagementSchema(many=False, read_only=True)
-    engagements = serializers.ListField(write_only=True)
+    engagement = ProjectEngagementSchema(
+        many=False, exclude=('project_id', 'users'))
+    # engagement = serializers.ListField(source='list_engagements')
 
     # recovering = RecoveringSchema(
     #     many=True, read_only=True, exclude=('project', ))
     recoverings = RecoveringSchema(source='recovering_set',
-                                   many=True, read_only=False, exclude=('project', ))
+                                   many=True, read_only=False, exclude=('project_id', 'project'))
 
     manager = UserDttSchema(many=False, read_only=True)
     manager_id = serializers.IntegerField(write_only=True)

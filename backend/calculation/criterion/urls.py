@@ -1,6 +1,8 @@
-from django.urls import path, include
+from django.urls import path
+
+from calculation.criterion.views import CriterionApi
 
 
 urlpatterns = [
-    # path('', CalculationApi.as_view(), name="calculation-list-create"),
+    path('', CriterionApi.as_view(), name="criterion-list-create"),
 ]

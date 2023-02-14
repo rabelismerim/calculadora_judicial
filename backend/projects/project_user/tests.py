@@ -19,3 +19,7 @@ class ProjectUserTest(AbstractTest):
         self.printl('List Project Users')
         response = self.client.get('/djud/api/v1/projects/project_user')
         self.assertEqual(response.status_code, 200)
+        project_users = response.json()['project_users']
+        project_user = project_users[0]
+        self.assertGreaterEqual(len(project_users), 1)
+        self.set_project('users', [{'id': project_user['id']}])

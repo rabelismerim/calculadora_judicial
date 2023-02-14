@@ -73,26 +73,29 @@ class CreditorApi(AbstractCreditorApi):
         entity = creditor.pop('entity')
         rate = creditor.pop('rate')
         notice = creditor.pop('notice', None)
-        claim_creditor = creditor.pop('claim_creditor', None)
-        claim_lawyer = creditor.pop('claim_lawyer', None)
+        claim_creditor = creditor.pop('claimcreditor', None)
+        claim_lawyer = creditor.pop('claimlawyer', None)
 
         creditor['entity'] = Entity.objects.create(**entity)
         creditor['rate'] = Rate.objects.create(**rate)
 
-        if notice:
-            coins = notice.get('coins')
-            notice['coins'] = Coins.objects.create(**coins)
-            Notice.objects.create(**notice)
+        new_creditor = self.model.objects.create(**creditor)
 
         if claim_creditor:
             coins = claim_creditor.get('coins')
             claim_creditor['coins'] = Coins.objects.create(**coins)
+            claim_creditor['creditor'] = new_creditor
             ClaimCreditor.objects.create(**claim_creditor)
 
         if claim_lawyer:
             coins = claim_lawyer.get('coins')
             claim_lawyer['coins'] = Coins.objects.create(**coins)
+            claim_lawyer['creditor'] = new_creditor
             ClaimLawyer.objects.create(**claim_lawyer)
 
-        new_creditor = self.model.objects.create(**creditor)
+        if notice:
+            coins = notice.get('coins')
+            notice['coins'] = Coins.objects.create(**coins)
+            notice['creditor'] = new_creditor
+            Notice.objects.create(**notice)
         return JsonResponse({'creditor': self.serializer_class(new_creditor, many=False).data}, status=status.HTTP_201_CREATED)

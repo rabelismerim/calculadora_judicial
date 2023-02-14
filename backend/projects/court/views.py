@@ -14,7 +14,7 @@ class CourtApi(AbstractViewApi):
     serializer_class = CourtSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Court
-    schema = AutoSchema(tags=["Project - court"])
+    schema = AutoSchema(tags=["Project - Court"])
 
     query_params = [
         {

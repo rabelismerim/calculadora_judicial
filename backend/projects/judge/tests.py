@@ -1,3 +1,4 @@
+import json
 from core.abstract.tests import AbstractTest
 
 
@@ -18,3 +19,7 @@ class JudgeTest(AbstractTest):
         self.printl('List lawyers')
         response = self.client.get('/djud/api/v1/projects/judge')
         self.assertEqual(response.status_code, 200)
+        judges = response.json()['judges']
+        judge = judges[0]
+        self.assertGreaterEqual(len(judges), 1)
+        self.set_project('judge_id', judge['id'])
