@@ -7,7 +7,12 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    Btn: typeof import('./components/common/Btn.vue')['default']
+    FooterBar: typeof import('./components/common/FooterBar.vue')['default']
+    Img: typeof import('./components/common/Img.vue')['default']
+    NavBar: typeof import('./components/common/NavBar.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Spinner: typeof import('./components/common/Spinner.vue')['default']
   }
 }
