@@ -1,5 +1,5 @@
 <template>
-  <NavBar show-exit />
+  <NavBar />
   <div class="flex flex-1 flex-col">
     <RouterView />
   </div>
