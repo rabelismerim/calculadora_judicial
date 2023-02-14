@@ -1,5 +1,6 @@
 {
-  "name": "djud",
+  "name": "JUCA",
+  "description": "Sistema de Recuperação Financeira - Deloitte",
   "private": true,
   "version": "0.0.0",
   "type": "module",
