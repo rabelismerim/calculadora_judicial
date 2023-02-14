@@ -11,6 +11,11 @@ import {
 
 export default defineConfig({
   rules: [
+    [/^bg--(\w+)$/, ([, w]) => ({ background: `var(--${w})` })],
+    [/^text--(\w+)$/, ([, w]) => ({ color: `var(--${w})` })],
+    [/^color--(\w+)$/, ([, w]) => ({ color: `var(--${w})` })],
+    [/^fill--(\w+)$/, ([, w]) => ({ fill: `var(--${w})` })],
+    [/^stroke--(\w+)$/, ([, w]) => ({ stroke: `var(--${w})` })],
   ],
   shortcuts: [
   ],
