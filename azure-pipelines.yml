@@ -7,7 +7,7 @@ trigger:
 
 
 pool: 
-  name: Default
+  name: TRDEV
   vmImage: ubuntu-latest
 strategy:
   matrix:
