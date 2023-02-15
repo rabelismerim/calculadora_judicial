@@ -13,7 +13,7 @@ const router = useRouter()
       </h2>
       <p>
         D.JUD simplifica os cálculos financeiros complexos necessários nessas operações, fornecendo resultados precisos e confiáveis ao longo do tempo. Com sua interface amigável e algoritmos avançados, é a ferramenta ideal para advogados, analistas financeiros e demais profissionais envolvidos em processos de recuperação judicial e falência.
-        Para assistir ao tutorial de uso da ferramenta Clique aqui
+        <!-- Para assistir ao tutorial de uso da ferramenta Clique aqui -->
       </p>
       <div class="flex flex-wrap gap-3">
         <Btn @click="router.push('/home')">
