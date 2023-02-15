@@ -3,8 +3,10 @@ lockfileVersion: 5.4
 specifiers:
   '@antfu/eslint-config': ^0.35.2
   '@formkit/auto-animate': 1.0.0-beta.6
+  '@iconify-json/carbon': ^1.1.15
   '@jrnwn/utils': ^0.0.1
   '@types/node': ^18.13.0
+  '@unocss/preset-icons': ^0.49.4
   '@unocss/reset': ^0.49.4
   '@vitejs/plugin-vue': ^4.0.0
   '@vueuse/core': ^9.12.0
@@ -32,7 +34,9 @@ dependencies:
 
 devDependencies:
   '@antfu/eslint-config': 0.35.2_4vsywjlpuriuw3tl5oq6zy5a64
+  '@iconify-json/carbon': 1.1.15
   '@types/node': 18.13.0
+  '@unocss/preset-icons': 0.49.4
   '@vitejs/plugin-vue': 4.0.0_vite@4.1.1+vue@3.2.47
   eslint: 8.33.0
   typescript: 4.9.5
@@ -607,6 +611,12 @@ packages:
 
   /@humanwhocodes/object-schema/1.2.1:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
+    dev: true
+
+  /@iconify-json/carbon/1.1.15:
+    resolution: {integrity: sha512-O1JtNFRIFVCJwS0YpU9XmWmZIvZzvGBi+CL7dI2ofAU7b5XV6PNH2IVnwEGKCCxEyAPaok23lR5qpgC7AWbgkQ==}
+    dependencies:
+      '@iconify/types': 2.0.0
     dev: true
 
   /@iconify/types/2.0.0:
