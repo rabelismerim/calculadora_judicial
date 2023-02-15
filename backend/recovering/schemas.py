@@ -10,8 +10,9 @@ class RecoveringSchema(AbstractDescriptionSchema):
 
     entity = EntitySchema(many=False, read_only=False)
     archive = ArchiveRecoveringSchema(
-        source='archiverecovering_set', many=True, read_only=True)
-    archives = ArchiveRecoveringSchema(many=True, write_only=True)
+        source='archiverecovering_set', many=True, read_only=True, exclude=('recovering_id', ))
+    archives = ArchiveRecoveringSchema(
+        many=True, write_only=True, exclude=('recovering_id', ))
     creditors = CreditorSchema(
         source='creditor_set', many=True, read_only=True, allow_null=True)
 

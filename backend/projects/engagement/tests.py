@@ -10,7 +10,7 @@ class EngagementTest(AbstractTest):
 
     def test_api_E_post_engagements(self):
         """Assert post engagements detail"""
-        self.printl('Create engagement')
+        self.print_start('Create engagement')
         project = Project.objects.first()
         user = ProjectUser.objects.first()
         engagement = {
@@ -28,12 +28,15 @@ class EngagementTest(AbstractTest):
         response = self.client.post(
             '/djud/api/v1/projects/engagement', json.dumps(engagement), content_type="application/json")
         self.assertEqual(response.status_code, 201)
+        self.print_success('Created engagement')
 
     def test_api_F_get_engagements(self):
         """Assert get engagements detail"""
-        self.printl('List engagements')
+        self.print_start('List engagements')
         response = self.client.get('/djud/api/v1/projects/engagement')
         self.assertEqual(response.status_code, 200)
+        self.print_success('Listed engagements')
         engagements = response.json()['project_engagements']
         engagement = engagements[0]
         self.assertGreaterEqual(len(engagements), 1)
+        self.print_success('Listed engagements >= 1')

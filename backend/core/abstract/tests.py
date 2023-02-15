@@ -1,5 +1,6 @@
 import json
 import sys
+import os
 from django.core.management import color_style
 from django.core.management.base import OutputWrapper
 from django.test import TestCase
@@ -7,9 +8,15 @@ from utils import get_user_model
 
 User = get_user_model()
 
+print(os.environ.get("DJANGO_COLORS", ""), 'colors')
+
 
 class AbstractTest(TestCase):
     """Add common methods to all testcase"""
+    stdout = OutputWrapper(sys.stdout)
+    stderr = OutputWrapper(sys.stderr)
+    style = color_style()
+
     __user = {}
     __project = {
         "description": "Project test",
@@ -94,11 +101,16 @@ class AbstractTest(TestCase):
         self.__check_run_project(field, value)
         return self.__project
 
-    def printl(self, msg):
+    def print_start(self, msg):
         """Print in time execution"""
-        self.stdout = OutputWrapper(sys.stdout)
-        self.stderr = OutputWrapper(sys.stderr)
-        self.style = color_style()
+        self.stdout.write(self.style.WARNING(msg))
+
+    def print(self, msg):
+        """Print in time execution"""
+        self.stdout.write(self.style.ERROR(msg))
+
+    def print_success(self, msg):
+        """Print in time execution"""
         self.stdout.write(self.style.SUCCESS(msg))
 
     def __check_run_project(self, field, value):

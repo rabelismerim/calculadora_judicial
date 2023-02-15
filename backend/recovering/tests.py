@@ -8,7 +8,7 @@ class RecoveringTest(AbstractTest):
 
     def test_api_E_post_recoverings(self):
         """Assert post recoverings detail"""
-        self.printl('Create recovering')
+        self.print_start('Create recovering')
         project = Project.objects.first()
         recovering = {
             "entity": {
@@ -36,12 +36,15 @@ class RecoveringTest(AbstractTest):
         response = self.client.post(
             '/djud/api/v1/recovering/', json.dumps(recovering), content_type="application/json")
         self.assertEqual(response.status_code, 201)
+        self.print_success('Created recovering')
 
     def test_api_F_get_recoverings(self):
         """Assert get recoverings detail"""
-        self.printl('List recoverings')
+        self.print_start('List recoverings')
         response = self.client.get('/djud/api/v1/recovering/')
         self.assertEqual(response.status_code, 200)
+        self.print_success('Listed recoverings')
         recoverings = response.json()['recoverings']
         recovering = recoverings[0]
         self.assertGreaterEqual(len(recoverings), 1)
+        self.print_success('Listed recoverings >= 1')

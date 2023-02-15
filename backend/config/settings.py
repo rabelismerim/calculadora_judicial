@@ -89,7 +89,6 @@ INSTALLED_APPS = [
     'projects.region',  # Comarca
     'projects.court',  # Vara
     'projects.engagement',
-    'projects.client',
     'projects.project_user',
 
     # Core
@@ -258,7 +257,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-if str(os.getenv('ENV')).strip().upper()=='HML':
+if str(os.getenv('ENV')).strip().upper() == 'HML':
     STATIC_URL = '/djud/static/'
 else:
     STATIC_URL = '/static/'

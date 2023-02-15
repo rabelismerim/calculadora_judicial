@@ -8,7 +8,11 @@ class ProjectEngagement(AbstractModel):
 
     @property
     def list_engagements(self):
-        return list(self.engagement_set.all().values_list('number'))
+        return list(self.engagement_set.all().values_list('number', flat=True))
+
+    @property
+    def project_id(self):
+        return self.project.id
 
     @property
     def user_names(self):

@@ -12,9 +12,14 @@ class CalculationSchema(AbstractModelSchema):
     creditor = CreditorSchema(many=False, read_only=True)
     creditor_id = serializers.UUIDField(write_only=True)
     verdict = VerdictSchema(source='verdict_set',
-                            many=True, required=False, read_only=True)
+                            many=True, required=False, exclude=('calculation_id', ))
     criterion = CriterionSchema(many=False, read_only=True)
 
     class Meta:
         model = Calculation
         fields = '__all__'
+
+    def validate(self, data):
+        verdict = data.pop('verdict_set', None)
+        data['verdict'] = verdict
+        return super(CalculationSchema, self).validate(data)

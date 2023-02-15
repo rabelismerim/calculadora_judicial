@@ -30,7 +30,7 @@ class ProjectEngagementSchema(AbstractModelSchema):
 
     user_names = serializers.ListField(read_only=True)
     users = serializers.ListField(write_only=True, child=UserSerializer())
-    project_id = serializers.UUIDField(write_only=True)
+    project_id = serializers.UUIDField()
 
     class Meta:
         model = ProjectEngagement

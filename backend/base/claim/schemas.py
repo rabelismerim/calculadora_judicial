@@ -7,7 +7,7 @@ from creditors.classes.schemas import AbstractClassesSchema
 class ClaimLawyerSchema(AbstractClassesSchema):
     model = ClaimLawyer
 
-    classes = None
+    # classes = None
 
     class Meta:
         model = ClaimLawyer

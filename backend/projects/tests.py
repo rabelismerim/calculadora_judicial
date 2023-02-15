@@ -7,7 +7,7 @@ class ProjectTest(AbstractTest):
 
     def api_C_post_projects(self):
         """Assert post projects detail"""
-        self.printl('Create Project')
+        self.print_start('Create Project')
         project = {
             "description": "Project test",
             "project_start": "2023-02-08",
@@ -57,6 +57,6 @@ class ProjectTest(AbstractTest):
 
     def api_D_get_projects(self):
         """Assert get projects detail"""
-        self.printl('List Project')
+        self.print_start('List Project')
         response = self.client.get('/djud/api/v1/projects/')
         self.assertEqual(response.status_code, 200)

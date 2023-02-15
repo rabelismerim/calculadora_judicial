@@ -37,7 +37,5 @@ class VerdictApi(AbstractViewApi):
         type_calculation = new_verdict.pop('type_calculation')
         new_verdict['type_calculation'] = TypeCalculation.objects.create(
             **type_calculation)
-        print(new_verdict, 'new ve\n\n')
         verdict = self.model.objects.create(**new_verdict)
-        # return JsonResponse({}, status=status.HTTP_201_CREATED)
         return JsonResponse({'verdict': self.serializer_class(verdict, many=False).data}, status=status.HTTP_201_CREATED)

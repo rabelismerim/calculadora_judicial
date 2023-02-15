@@ -1,3 +1,36 @@
-from django.test import TestCase
+import json
+from core.abstract.tests import AbstractTest
+from recovering.models import Recovering
 
-# Create your tests here.
+
+class ArchiveRecoveringTest(AbstractTest):
+    """Recovering related tests"""
+
+    def test_api_E_post_archive_recoverings(self):
+        """Assert post Archive Recovering detail"""
+        self.print_start('Create Archive Recovering')
+        recovering = Recovering.objects.first()
+        archive_recovering = {
+            "archive": {
+                "archive_json": {},
+                "description": "string"
+            },
+            "recovering_id": str(recovering.id)
+        }
+
+        response = self.client.post(
+            '/djud/api/v1/recovering/archive_recovering', json.dumps(archive_recovering), content_type="application/json")
+        self.assertEqual(response.status_code, 201)
+        self.print_success('Created archive recovering')
+
+    def test_api_F_get_archive_recoverings(self):
+        """Assert get Archive Recoverings detail"""
+        self.print_start('List Archive Recovering')
+        response = self.client.get(
+            '/djud/api/v1/recovering/archive_recovering')
+        self.assertEqual(response.status_code, 200)
+        self.print_success('Listed archive recoverings')
+        archive_recoverings = response.json()['archive_recoverings']
+        archive_recovering = archive_recoverings[0]
+        self.assertGreaterEqual(len(archive_recoverings), 1)
+        self.print_success('Listed archive recoverings >= 1')

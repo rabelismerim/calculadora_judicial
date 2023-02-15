@@ -13,7 +13,7 @@ from core.permission.views import CheckHasPermission
 
 class CriterionApi(AbstractViewApi):
     """HTTP methods for Criterion"""
-    http_method_names = ['post', 'get']
+    http_method_names = ['get']
     serializer_class = CriterionSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Criterion
@@ -29,36 +29,3 @@ class CriterionApi(AbstractViewApi):
             "schema": {"type": "string"}
         }
     ]
-
-    def post(self, request, *args, **kwargs):
-        """
-           Create criterion receiving a dict, return criterion detail
-        """
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        criterion = serializer.validated_data
-        calculation = Calculation.objects.filter(
-            id=criterion.get('calculation_id')).first()
-        creditor = calculation.creditor
-        clain_creditor = creditor.get_clain_creditor()
-        clain_lawyer = creditor.get_clain_lawyer()
-        new_criterion = {
-            'calculation': calculation,
-            'rate': creditor.rate,
-            'admission': creditor.admission,
-            'dismissal': creditor.dismissal,
-            'default_interest': creditor.default_interest,
-            'fine': creditor.fine,
-            'advocative_hours': creditor.advocative_hours,
-        }
-
-        if clain_creditor:
-            new_criterion['claim_credor'] = Claim.objects.create(
-                classes=clain_creditor.classes, coins=clain_creditor.coins, archive_json=clain_creditor.archive_json)
-
-        if clain_lawyer:
-            new_criterion['claim_lawyer'] = Claim.objects.create(
-                classes=clain_lawyer.classes, coins=clain_lawyer.coins, archive_json=clain_lawyer.archive_json)
-
-        criterion = self.model.objects.create(**new_criterion)
-        return JsonResponse({'criterion': self.serializer_class(criterion, many=False).data}, status=status.HTTP_201_CREATED)

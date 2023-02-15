@@ -1,28 +1,75 @@
-# import json
-# from core.abstract.tests import AbstractTest
+import json
+from core.abstract.tests import AbstractTest
+from projects.engagement.models import ProjectEngagement
+from projects.project_user.models import ProjectUser
+from recovering.models import Recovering
 
 
-# class CreditorTest(AbstractTest):
-#     """Creditor related tests"""
+class CreditorTest(AbstractTest):
+    """Creditor related tests"""
 
-#     def test_api_E_post_creditors(self):
-#         """Assert post creditors detail"""
-#         self.printl('Criar Creditor')
-#         creditor = {
-#             "description": "Name Creditor 1"
-#         }
+    def test_api_E_post_creditors(self):
+        """Assert post creditors detail"""
+        self.print_start('Criar Creditor')
+        recovering = Recovering.objects.first()
+        creditor = {
+            "entity": {
+                "name": "string",
+                "legal_number": "920.393.410-30"
+            },
+            "recovering_id": str(recovering.id),
+            "rate": {
+                "index": "T"
+            },
+            "notice": {
+                "classes": {
+                    "classe": "1"
+                },
+                "coins": {
+                    "coin": "B",
+                    "value": 0
+                },
+                "archive_json": {}
+            },
+            "claim_creditor": {
+                "classes": {
+                    "classe": "1"
+                },
+                "coins": {
+                    "coin": "B",
+                    "value": 0
+                },
+                "archive_json": {}
+            },
+            "claim_lawyer": {
+                "coins": {
+                    "coin": "B",
+                    "value": 0
+                },
+                "archive_json": {},
+                "classes": {
+                    "classe": "1"
+                },
+            },
+            "admission": "2023-02-15T15:33:53.690Z",
+            "dismissal": "2023-02-15T15:33:53.690Z",
+            "default_interest": 0,
+            "fine": 0,
+            "advocative_hours": 0,
+            "description": "string"
+        }
 
-#         response = self.client.post('/djud/api/v1/projects/creditor', creditor)
-#         self.assertEqual(response.status_code, 201)
-#         content = json.loads(response.content)
-#         self.set_project('creditor_id', content['creditors']['id'])
+        response = self.client.post(
+            '/djud/api/v1/creditors/', json.dumps(creditor), content_type="application/json")
+        # self.print(response.json())
+        self.assertEqual(response.status_code, 201)
+        self.print_success('Created creditor')
+        content = json.loads(response.content)
+        self.set_project('creditor_id', content['creditor']['id'])
 
-#     def test_api_F_get_creditors(self):
-#         """Assert get creditors detail"""
-#         self.printl('Lista de Creditors')
-#         response = self.client.get('/djud/api/v1/projects/creditor')
-#         self.assertEqual(response.status_code, 200)
-#         creditors = response.json()['creditors']
-#         creditor = creditors[0]
-#         self.assertGreaterEqual(len(creditors), 1)
-#         self.set_project('creditor_id', creditor['id'])
+    def test_api_F_get_creditors(self):
+        """Assert get creditors detail"""
+        self.print_start('Lista de Creditors')
+        response = self.client.get('/djud/api/v1/creditors/')
+        self.assertEqual(response.status_code, 200)
+        self.print_success('Listed creditors')

@@ -19,3 +19,8 @@ class Creditor(AbstractDateCreditor):
         if hasattr(self, 'claimlawyer'):
             return self.claimlawyer
         return None
+
+    def get_notice(self):
+        if hasattr(self, 'notice'):
+            return self.notice
+        return None

@@ -34,7 +34,8 @@ class Project(AbstractDescription):
         User, on_delete=models.PROTECT, related_name='manager')
     partner = models.ForeignKey(
         User, on_delete=models.PROTECT, related_name='partner')
-    engagement = models.ForeignKey(ProjectEngagement, on_delete=models.PROTECT)
+    engagement = models.OneToOneField(
+        ProjectEngagement, on_delete=models.PROTECT)
 
     @property
     def num_recovering(self) -> number:
