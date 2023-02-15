@@ -27,6 +27,7 @@ const router = useRouter()
         @click="router.push('/')"
       >
         Sair
+        <div class="i-carbon-logout" />
       </Btn>
       <Img src="/logo/digital-lab-dark.svg" :height="32" />
     </div>
