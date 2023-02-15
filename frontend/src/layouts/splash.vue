@@ -3,5 +3,5 @@
   <div class="flex flex-1 flex-col">
     <RouterView />
   </div>
-  <FooterBar />
+  <FooterBar show-links />
 </template>
