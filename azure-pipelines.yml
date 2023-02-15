@@ -52,6 +52,7 @@ steps:
   displayName: 'Install node prerequisites'
 
 - script: |
+    mkdir ./log
     python -m pip install --upgrade pip setuptools wheel
     pip install virtualenv
     virtualenv venv
@@ -59,7 +60,6 @@ steps:
     pip install -r requirements.txt
     pip install unittest-xml-reporting
     pip install fastcgi
-    mkdir ./log
     python manage.py collectstatic
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
