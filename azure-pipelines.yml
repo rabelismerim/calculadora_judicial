@@ -29,8 +29,7 @@ steps:
     secureFile: '.env'
 - script: |
     echo Installing $(EnvDev.secureFilePath) to the path backend...
-    sudo chown root:root $(EnvDev.secureFilePath)
-    sudo cp $(EnvDev.secureFilePath) $(Build.SourcesDirectory)/backend 
+    copy $(EnvDev.secureFilePath) $(Build.SourcesDirectory)/backend 
 - task: PythonScript@0
   displayName: 'Export project path'
   inputs:
