@@ -5,18 +5,39 @@ import axios from 'axios'
 
 const apiCall = axios.create({
     baseURL: '/djud/api',
+    // baseURL: 'https://uat.fadigitallab.deloitte.com.br/djud/api',
     withCredentials: true,
     xsrfHeaderName: 'X-CSRFToken',
     xsrfCookieName: 'csrftoken',
-    timeout: 10000
+    timeout: 10000,
+    hearders: { 
+        Accept: 'application/json'
+    }
 })
 
-apiCall.getXSRFCookieValue = () => {
-    const cookies = decodeURIComponent(document.cookie).split('; ')
-    const xsrfCookieName = `${apiCall.defaults.xsrfCookieName}=`    
-    return cookies.find(c => c.startsWith(xsrfCookieName))?.replace(xsrfCookieName, '')
+// apiCall.getXSRFCookieValue = () => {
+//     const cookies = decodeURIComponent(document.cookie).split('; ')
+//     const xsrfCookieName = `${apiCall.defaults.xsrfCookieName}=`    
+//     console.log(cookies,xsrfCookieName)
+//     return cookies.find(c => c.startsWith(xsrfCookieName))?.replace(xsrfCookieName, '')
+// }
+
+const getCookie = (cookieName) => {
+    const cookies = decodeURIComponent(document.cookie)
+        .split(';')
+        .map((item) => {
+            const [name, value] = item.split('=')
+            return {name, value}
+        })
+    return cookies.find(({name}) => name === cookieName)?.value
 }
 
+const setCookie = (cookieName, newvalue) => {
+    
+}
+
+apiCall.getXSRFCookieValue = () => getCookie('xsrfCookieName')
+console.log('COOKIE', getCookie('csrftoken'))
 
 // TODO: Serviços com axios para cada tipo de uso axios services 
 apiCall.interceptors.response.use(
@@ -29,6 +50,9 @@ apiCall.interceptors.response.use(
         }
 
     }, 
+    (error) => {
+        console.warn(error);
+    }
     // TODO: Fix error handling
     // error => {
     //     console.log( Promise.reject(error.response.data.data) )

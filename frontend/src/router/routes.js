@@ -3,7 +3,7 @@ import ServiceTest from '@/views/ServiceTest/ServiceTest.vue'
 
 export default [
   { path: '/', 
-  alias: ['/', '/home'],
+  alias: ['/home'],
   name: 'home', 
   component: Home },
   
