@@ -56,7 +56,7 @@ urlpatterns = [
     # Creditors
     path(f'{BASE_URL}creditors/', include("creditors.urls")),
 
-    # # Calculation
+    # Calculation
     path(f'{BASE_URL}calculation/', include("calculation.urls")),
 
     # CORE

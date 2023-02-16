@@ -39,9 +39,10 @@ SECRET_KEY = str(os.getenv('SECRET_KEY'))
 DEBUG = str(os.getenv('DEBUG', 'false')).lower() == 'true'
 
 BRANCH_DEV = str(os.getenv('ENV', 'branch')) == 'branch'
+BRANCH_LOCAL = str(os.getenv('ENV', 'branch')) == 'dev'
 
 IS_LOCALHOST = str(os.getenv('IS_LOCALHOST', 'false')
-                   ).lower() == 'true' and BRANCH_DEV
+                   ).lower() == 'true' and BRANCH_LOCAL
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
@@ -117,7 +118,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'core.drfmsal.middleware.MsalMiddleware',
     'crum.CurrentRequestUserMiddleware',  # Get current request in Models
 ]
 
@@ -146,6 +146,8 @@ TEMPLATES = [
 # Logging file
 # https://docs.djangoproject.com/en/3.2/topics/logging/
 if IS_LOCALHOST is False:
+    MIDDLEWARE.append('core.drfmsal.middleware.MsalMiddleware')
+
     LOGGING = {
         'version': 1,
         'disable_existing_loggers': False,
@@ -173,6 +175,16 @@ if IS_LOCALHOST is False:
             },
         },
     }
+
+if IS_LOCALHOST or BRANCH_LOCAL:  # Enable Cors to dev mode
+    MIDDLEWARE.append("corsheaders.middleware.CorsMiddleware")
+    INSTALLED_APPS.append('corsheaders')
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:8080",
+    ]
+    CORS_ALLOW_ALL_ORIGINS = True
+    CORS_ALLOW_CREDENTIALS = True
+
 
 # DRFMSAL AUTHENTICATION
 DRFMSAL_CONFIG = {
