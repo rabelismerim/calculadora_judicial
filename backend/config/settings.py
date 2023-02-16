@@ -39,9 +39,10 @@ SECRET_KEY = str(os.getenv('SECRET_KEY'))
 DEBUG = str(os.getenv('DEBUG', 'false')).lower() == 'true'
 
 BRANCH_DEV = str(os.getenv('ENV', 'branch')) == 'branch'
+BRANCH_LOCAL = str(os.getenv('ENV', 'branch')) == 'dev'
 
 IS_LOCALHOST = str(os.getenv('IS_LOCALHOST', 'false')
-                   ).lower() == 'true' and BRANCH_DEV
+                   ).lower() == 'true' and BRANCH_LOCAL
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
@@ -175,7 +176,7 @@ if IS_LOCALHOST is False:
         },
     }
 
-if IS_LOCALHOST or BRANCH_DEV:  # Enable Cors to dev mode
+if IS_LOCALHOST or BRANCH_LOCAL:  # Enable Cors to dev mode
     MIDDLEWARE.append("corsheaders.middleware.CorsMiddleware")
     INSTALLED_APPS.append('corsheaders')
     CORS_ALLOWED_ORIGINS = [
