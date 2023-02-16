@@ -4,55 +4,31 @@ import router from '../router'
 import axios from 'axios'
 
 const apiCall = axios.create({
-    baseURL: '/djud/api',
-    // baseURL: 'https://uat.fadigitallab.deloitte.com.br/djud/api',
+    baseURL: 'https://brdcvmdev07/djud/api',
     withCredentials: true,
     xsrfHeaderName: 'X-CSRFToken',
     xsrfCookieName: 'csrftoken',
-    timeout: 10000,
-    hearders: { 
-        Accept: 'application/json'
-    }
+    timeout: 10000
 })
 
-// apiCall.getXSRFCookieValue = () => {
-//     const cookies = decodeURIComponent(document.cookie).split('; ')
-//     const xsrfCookieName = `${apiCall.defaults.xsrfCookieName}=`    
-//     console.log(cookies,xsrfCookieName)
-//     return cookies.find(c => c.startsWith(xsrfCookieName))?.replace(xsrfCookieName, '')
-// }
-
-const getCookie = (cookieName) => {
-    const cookies = decodeURIComponent(document.cookie)
-        .split(';')
-        .map((item) => {
-            const [name, value] = item.split('=')
-            return {name, value}
-        })
-    return cookies.find(({name}) => name === cookieName)?.value
+apiCall.getXSRFCookieValue = () => {
+    const cookies = decodeURIComponent(document.cookie).split('; ')
+    const xsrfCookieName = `${apiCall.defaults.xsrfCookieName}=`    
+    return cookies.find(c => c.startsWith(xsrfCookieName))?.replace(xsrfCookieName, '')
 }
 
-const setCookie = (cookieName, newvalue) => {
-    
-}
-
-apiCall.getXSRFCookieValue = () => getCookie('xsrfCookieName')
-console.log('COOKIE', getCookie('csrftoken'))
 
 // TODO: Serviços com axios para cada tipo de uso axios services 
-apiCall.interceptors.response.use(
-    response => {
+// apiCall.interceptors.response.use(
+//     response => {
 
-        return { 
-            headers: response.headers, 
-            data: response.data.data, 
-            profile: response.data.profile 
-        }
+//         return { 
+//             headers: response.headers, 
+//             data: response.data.data, 
+//             profile: response.data.profile 
+//         }
 
-    }, 
-    (error) => {
-        console.warn(error);
-    }
+//     }, 
     // TODO: Fix error handling
     // error => {
     //     console.log( Promise.reject(error.response.data.data) )
@@ -91,6 +67,6 @@ apiCall.interceptors.response.use(
         
     //     return result
     // }
-)
+// )
 
 export default apiCall
