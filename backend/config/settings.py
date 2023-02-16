@@ -117,7 +117,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'core.drfmsal.middleware.MsalMiddleware',
     'crum.CurrentRequestUserMiddleware',  # Get current request in Models
 ]
 
@@ -146,6 +145,7 @@ TEMPLATES = [
 # Logging file
 # https://docs.djangoproject.com/en/3.2/topics/logging/
 if IS_LOCALHOST is False:
+    MIDDLEWARE.append('core.drfmsal.middleware.MsalMiddleware')
     LOGGING = {
         'version': 1,
         'disable_existing_loggers': False,
@@ -173,6 +173,16 @@ if IS_LOCALHOST is False:
             },
         },
     }
+
+else:  # Enable Cors to dev mode
+    MIDDLEWARE.append("corsheaders.middleware.CorsMiddleware")
+    INSTALLED_APPS.append('corsheaders')
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:8080",
+    ]
+    CORS_ALLOW_ALL_ORIGINS = True
+    CORS_ALLOW_CREDENTIALS = True
+
 
 # DRFMSAL AUTHENTICATION
 DRFMSAL_CONFIG = {
