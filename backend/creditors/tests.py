@@ -2,6 +2,7 @@ import json
 from core.abstract.tests import AbstractTest
 from projects.engagement.models import ProjectEngagement
 from projects.project_user.models import ProjectUser
+from rates.models import Rate
 from recovering.models import Recovering
 
 
@@ -12,15 +13,14 @@ class CreditorTest(AbstractTest):
         """Assert post creditors detail"""
         self.print_start('Criar Creditor')
         recovering = Recovering.objects.first()
+        rate = Rate.objects.first()
         creditor = {
             "entity": {
                 "name": "string",
                 "legal_number": "920.393.410-30"
             },
             "recovering_id": str(recovering.id),
-            "rate": {
-                "index": "T"
-            },
+            "rate_id": str(rate.id),
             "notice": {
                 "classes": {
                     "classe": "1"

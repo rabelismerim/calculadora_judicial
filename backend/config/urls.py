@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import os
 from django.contrib import admin
 from django.urls import include, path, re_path, reverse
 from django.shortcuts import render, redirect
@@ -26,8 +27,6 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.conf.urls.static import static
 from django.contrib.auth import views
 from config.settings import BASE_URL, BASE_URL_AUTH
-
-import os
 
 
 admin.site.site_header = admin.site.site_title = 'DJUD'
@@ -58,6 +57,10 @@ urlpatterns = [
 
     # Calculation
     path(f'{BASE_URL}calculation/', include("calculation.urls")),
+
+
+    # Rates
+    path(f'{BASE_URL}rates/', include("rates.urls")),
 
     # CORE
     path(BASE_URL, include("core.dttuser.api.urls")),
