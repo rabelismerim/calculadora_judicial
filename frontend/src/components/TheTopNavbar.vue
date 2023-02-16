@@ -59,7 +59,7 @@
           <img v-if="userProfile.picture"
             :src="`data:image/jpeg;base64,${userProfile.picture}`"
           />
-          <v-icon color="grey" v-else>{{ icons.accountCircle }}</v-icon>
+          <v-icon color="grey" v-else>account_circle</v-icon>
         </v-avatar> {{ btnLoginText }} <v-icon class="ml-2">logout</v-icon>
     </v-btn>
 
