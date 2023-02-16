@@ -1,16 +1,16 @@
 import axios from "../plugins/axios"
 
 
-const getDjudUsers = () => axios
+const getUsers = () => axios
     .get(`/v1/users/`)
-    .then(({data}) => data)
+    .then(({data}) => data.data)
 
-const getDjudMsal = () => axios
+const getProfile = () => axios
     .get(`/drfmsal_signstatus`)
-    // .then(({data}) => data)
+    .then(({data}) => data.profile)
 
 
 export default {
-    getDjudUsers,
-    getDjudMsal,
+    getUsers,
+    getProfile,
 } 

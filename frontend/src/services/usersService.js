@@ -2,7 +2,7 @@ import axios from "../plugins/axios"
 
 
 const getUSers = () => axios
-    .get(`${baseUrl}/djud/api/users`)
+    .get(`/users`)
     .then(({data}) => data)
 
 

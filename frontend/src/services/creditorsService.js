@@ -2,19 +2,19 @@ import axios from "../plugins/axios"
 
 
 const getCreditors = () => axios
-    .get(`${baseUrl}/djud/api/v1/creditors/budgets`)
+    .get(`/v1/creditors/budgets`)
     .then(({data}) => data)
 
 const getCreditorsBudgets = () => axios
-    .get(`${baseUrl}/djud/api/v1/creditors/budgets`)
+    .get(`/v1/creditors/budgets`)
     .then(({data}) => data)
 
 const getCreditorsNotice = () => axios
-    .get(`${baseUrl}/djud/api/v1/creditors/notice`)
+    .get(`/v1/creditors/notice`)
     .then(({data}) => data)
 
 const getCreditorsClasses = () => axios
-    .get(`${baseUrl}/djud/api/v1/creditors/classes`)
+    .get(`/v1/creditors/classes`)
     .then(({data}) => data)
 
 
