@@ -1,6 +1,6 @@
 from rest_framework.renderers import JSONRenderer
 
-from config.settings import IS_LOCALHOST
+from config.settings import BRANCH_DEV, IS_LOCALHOST
 
 
 class APIRendererInterceptor(JSONRenderer):
@@ -8,7 +8,7 @@ class APIRendererInterceptor(JSONRenderer):
     def render(self, data, accepted_media_type=None, renderer_context=None):
         if renderer_context and 'request' in renderer_context:
             request = renderer_context['request']
-            if IS_LOCALHOST:
+            if IS_LOCALHOST or BRANCH_DEV:
                 is_authenticated = request.user.is_authenticated
                 data = {
                     'data': data,
