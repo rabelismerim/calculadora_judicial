@@ -1,5 +1,4 @@
 import Home from '@/views/home/Home.vue'
-import ServiceTest from '@/views/ServiceTest/ServiceTest.vue'
 
 export default [
   { path: '/', 
@@ -26,9 +25,5 @@ export default [
     },
     showInNav: false,
     authenticationRequired: false
-  },
-
-  { path: '/service-test', 
-  name: 'ServiceTest', 
-  component: ServiceTest },
+  }
 ]
