@@ -145,7 +145,6 @@ TEMPLATES = [
 # Logging file
 # https://docs.djangoproject.com/en/3.2/topics/logging/
 if IS_LOCALHOST is False:
-    MIDDLEWARE.append('core.drfmsal.middleware.MsalMiddleware')
     LOGGING = {
         'version': 1,
         'disable_existing_loggers': False,
@@ -174,7 +173,7 @@ if IS_LOCALHOST is False:
         },
     }
 
-else:  # Enable Cors to dev mode
+if IS_LOCALHOST or BRANCH_DEV:  # Enable Cors to dev mode
     MIDDLEWARE.append("corsheaders.middleware.CorsMiddleware")
     INSTALLED_APPS.append('corsheaders')
     CORS_ALLOWED_ORIGINS = [
@@ -182,6 +181,9 @@ else:  # Enable Cors to dev mode
     ]
     CORS_ALLOW_ALL_ORIGINS = True
     CORS_ALLOW_CREDENTIALS = True
+
+else:
+    MIDDLEWARE.append('core.drfmsal.middleware.MsalMiddleware')
 
 
 # DRFMSAL AUTHENTICATION
