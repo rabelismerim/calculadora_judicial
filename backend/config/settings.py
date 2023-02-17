@@ -42,7 +42,7 @@ BRANCH_DEV = str(os.getenv('ENV', 'branch')) == 'branch'
 BRANCH_LOCAL = str(os.getenv('ENV', 'branch')) == 'dev'
 
 IS_LOCALHOST = str(os.getenv('IS_LOCALHOST', 'false')
-                   ).lower() == 'true' and BRANCH_LOCAL
+                   ).lower() == 'true' and BRANCH_DEV
 
 ALLOWED_HOSTS = [
     '127.0.0.1',

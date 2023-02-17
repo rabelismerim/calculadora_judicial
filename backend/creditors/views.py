@@ -71,13 +71,11 @@ class CreditorApi(AbstractCreditorApi):
         creditor = serializer.validated_data
 
         entity = creditor.pop('entity')
-        rate = creditor.pop('rate')
         notice = creditor.pop('notice', None)
         claim_creditor = creditor.pop('claimcreditor', None)
         claim_lawyer = creditor.pop('claimlawyer', None)
 
         creditor['entity'] = Entity.objects.create(**entity)
-        creditor['rate'] = Rate.objects.create(**rate)
 
         new_creditor = self.model.objects.create(**creditor)
 

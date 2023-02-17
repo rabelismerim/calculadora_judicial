@@ -18,7 +18,8 @@ class CreditorSchema(AbstractDescriptionSchema):
     # recovering = RecoveringSchema(many=False, read_only=True)
     recovering_id = serializers.UUIDField(write_only=True)
 
-    rate = RateSchema(many=False, read_only=False)
+    # rate = RateSchema(many=False, read_only=False, exclude=('rate_value', ))
+    rate_id = serializers.UUIDField()
     notice = NoticeSchema(many=False, read_only=False,
                           required=False, allow_null=True, exclude=('creditor_id', ))
     claim_creditor = ClaimCreditorSchema(source='claimcreditor',
@@ -29,7 +30,7 @@ class CreditorSchema(AbstractDescriptionSchema):
     class Meta:
         model = Creditor
         # fields = '__all__'
-        exclude = ('recovering', )
+        exclude = ('recovering', 'rate')
 
     def validate(self, data):
         recovering_id = data.get('recovering_id')
