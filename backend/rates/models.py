@@ -1,6 +1,10 @@
+import pandas as pd
 from django.db import models
+from config.settings import RATE_FILE_TYPES
 
 from core.abstract.models import AbstractModel
+from django.utils.translation import gettext as _
+from rest_framework import serializers
 
 
 class Rate(AbstractModel):  # Indices
@@ -15,6 +19,11 @@ class Rate(AbstractModel):  # Indices
 
     def __str__(self):
         return self.index
+
+    def get_ratefile(self):
+        if hasattr(self, 'ratefile'):
+            return self.ratefile
+        return None
 
 
 class RateValues(AbstractModel):  # Indices
@@ -40,7 +49,7 @@ class RateValues(AbstractModel):  # Indices
     value = models.FloatField('Valor do indice')
 
     def __str__(self):
-        return f"{self.rate}"
+        return f"indice: {self.rate} | data: {self.date} | value: {self.value}"
 
     @property
     def get_period(self):
@@ -108,3 +117,62 @@ class Accumulated(AbstractCalcule):
     (inherited from the AbstractCalcule class)
     """
     rate = models.OneToOneField(RateValues, on_delete=models.PROTECT)
+
+
+class RateFile(AbstractModel):
+    """
+    Class that defines a model for calculations of accumulated value.
+
+    Attributes:
+    ----------
+    rate : RateValues
+        The interest rate to be applied to the calculation.
+
+    Methods:
+    --------
+    (inherited from the AbstractCalcule class)
+    """
+    rate = models.OneToOneField(Rate, on_delete=models.PROTECT)
+    file = models.FileField('Arquivo de indices',
+                            upload_to=f'djud/indices/%Y-%m-%d/')
+
+    def __str__(self):
+        return f"indice: {self.rate} | arquivo: {self.file.name}"
+
+    def save(self, *args, **kwargs):
+        file_type = self.file.name.split('.')[-1]
+        if file_type not in RATE_FILE_TYPES:
+            raise serializers.ValidationError(['Tipo de arquivo inválido'])
+        super(RateFile, self).save(*args, **kwargs)
+
+    def get_excel_to_dict(self):
+        rows = pd.read_excel(self.file.open()).to_dict(orient='records')
+        rates = []
+
+        if len(rows) == 0:
+            return rates
+
+        if all([rows[0].get('mes'), rows[0].get('indice')]) is False:
+            return False
+
+        for row in rows:
+            new_rate = {
+                "rate_value": {
+                    "accumulated": row.get('acumulado'),
+                    "period": row.get('periodo'),
+                    "date": row.get('mes').date(),
+                    "value": row.get('indice')
+                },
+                "index": self.rate.index
+            }
+            rates.append(new_rate)
+
+        return rates
+
+    @property
+    def filename(self):
+        return self.file.name.split("/")[-1]
+
+    @property
+    def index(self):
+        return self.rate.index

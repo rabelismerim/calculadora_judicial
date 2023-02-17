@@ -324,3 +324,5 @@ if DEBUG:
     LOGOUT_REDIRECT_URL = f"/{BASE_URL}docs/swagger/"
     LOGIN_REDIRECT_URL = f"/{BASE_URL}docs/swagger/"
     LOGOUT_URL = "/djud/logout/"
+
+RATE_FILE_TYPES = ['pdf', 'vnd.ms-excel', 'xlsx', 'xls']

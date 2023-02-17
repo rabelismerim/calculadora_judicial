@@ -1,6 +1,5 @@
-from numpy import source
 from base.schemas import AbstractDescriptionSchema
-from rates.models import Accumulated, Period, Rate, RateValues, AbstractCalcule
+from rates.models import Accumulated, Period, Rate, RateFile, RateValues, AbstractCalcule
 from rest_framework import serializers
 
 
@@ -33,9 +32,6 @@ class AccumulatedSchema(AbstractDescriptionSchema):
 class RateValuesSchema(AbstractDescriptionSchema):
     """Serializer RateValues fields"""
 
-    # accumulated = AccumulatedSchema(required=False, allow_null=True)
-    # period = PeriodSchema(required=False, allow_null=True)
-
     accumulated = serializers.FloatField(
         required=False, allow_null=True, source='get_accumulated')
     period = serializers.FloatField(
@@ -43,10 +39,7 @@ class RateValuesSchema(AbstractDescriptionSchema):
 
     class Meta:
         model = RateValues
-        # fields = '__all__'
         exclude = ('rate', )
-
-    # def to_representation
 
 
 class RateSchema(AbstractDescriptionSchema):
@@ -91,3 +84,13 @@ class RateSchema(AbstractDescriptionSchema):
                 rate=new_rate_values, value=period)
 
         return super(RateSchema, self).validate(new_rate)
+
+
+class RateFileSchema(AbstractDescriptionSchema):
+    """Serializer RateFile fields"""
+    index = serializers.CharField()
+    file = serializers.FileField()
+
+    class Meta:
+        model = RateFile
+        exclude = ('rate', )

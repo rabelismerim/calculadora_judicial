@@ -102,7 +102,10 @@ def get_user(sender, **kwargs):
     """Get User on request"""
     instance = kwargs.get('instance')
     requests_ = get_current_request()
-    username = requests_.user.username if requests_ else None
+    username = requests_.user.username if requests_ else 'anonymus'
+    username = username.strip()
+    if not username:
+        username = None
     user_id = requests_.user.id if requests_ else None
     instance.create_user_id = user_id
     if hasattr(instance, 'changed_fields') and hasattr(instance, 'id'):
