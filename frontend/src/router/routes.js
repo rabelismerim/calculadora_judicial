@@ -2,7 +2,7 @@ import Home from '@/views/home/Home.vue'
 
 export default [
   { path: '/', 
-  alias: ['/', '/home'],
+  alias: ['/home'],
   name: 'home', 
   component: Home },
   

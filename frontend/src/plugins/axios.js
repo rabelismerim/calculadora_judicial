@@ -4,7 +4,7 @@ import router from '../router'
 import axios from 'axios'
 
 const apiCall = axios.create({
-    baseURL: '/djud/api',
+    baseURL: 'https://brdcvmdev07/djud/api',
     withCredentials: true,
     xsrfHeaderName: 'X-CSRFToken',
     xsrfCookieName: 'csrftoken',
@@ -19,16 +19,16 @@ apiCall.getXSRFCookieValue = () => {
 
 
 // TODO: Serviços com axios para cada tipo de uso axios services 
-apiCall.interceptors.response.use(
-    response => {
+// apiCall.interceptors.response.use(
+//     response => {
 
-        return { 
-            headers: response.headers, 
-            data: response.data.data, 
-            profile: response.data.profile 
-        }
+//         return { 
+//             headers: response.headers, 
+//             data: response.data.data, 
+//             profile: response.data.profile 
+//         }
 
-    }, 
+//     }, 
     // TODO: Fix error handling
     // error => {
     //     console.log( Promise.reject(error.response.data.data) )
@@ -67,6 +67,6 @@ apiCall.interceptors.response.use(
         
     //     return result
     // }
-)
+// )
 
 export default apiCall

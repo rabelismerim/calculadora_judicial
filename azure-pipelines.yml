@@ -6,12 +6,13 @@ trigger:
 - main
 
 
-pool:
+pool: 
+  name: Default
   vmImage: ubuntu-latest
 strategy:
   matrix:
     DJUD:
-      PYTHON_VERSION: '3.9'
+      PYTHON_VERSION: '3.10.2'
   maxParallel: 3
 steps:
 - task: UsePythonVersion@0
@@ -38,7 +39,7 @@ steps:
       """Search all subdirectories for `manage.py`."""
       from glob import iglob
       from os import path
-      # Python >= 3.9
+      # Python >= 3.10.2
       manage_py = next(iglob(path.join('**', 'manage.py'), recursive=True), None)
       if not manage_py:
           raise SystemExit('Could not find a Django project')
