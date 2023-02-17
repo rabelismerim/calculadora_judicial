@@ -1,3 +1,18 @@
+"""
+Registers models from the "rates" app to the Django admin site and defines an action to load data from Excel files for the "RateFile" model.
+
+Functions:
+- load_files: Action to load data from an Excel file associated with the selected "RateFile" objects and save the data as instances of the "Rate" model.
+- CustomRateFile: Custom admin class for the "RateFile" model that includes the "load_files" action.
+
+Modules:
+- django.contrib.admin: Django's built-in administration interface.
+- django.contrib.messages: Django's messaging framework.
+- rates.models: Models for the "rates" app.
+- rates.schemas: Schema for validating data from Excel files.
+"""
+
+
 from django.contrib import admin, messages
 from django.contrib import admin, messages
 from rates.models import Accumulated, Period, Rate, RateValues, RateFile

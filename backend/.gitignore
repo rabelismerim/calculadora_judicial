@@ -6,7 +6,7 @@ uploads/
 **/migrations/**
 !**/migrations
 !**/migrations/__init__.py
-
+__pycache__
 *.sqlite3
 static
 staticfiles

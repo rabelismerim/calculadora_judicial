@@ -36,3 +36,7 @@ System that integrates the legal, calculation and financial teams of RJ / Bankru
 
 ### Criação de grupo de permissões
 * Na pasta raiz do backend rode o comando `python manage.py create_permissions`;
+
+### Criação dos indices e valores
+* Na url http://127.0.0.1:8000/djud/admin/rates/ratefile/ adicionar um rate file. Na lista de ratefile, marque o checkbox nos arquivos que deseja adicionar. No select action, selecione Load file e clique em Go. Os arquivos serão carregados para o banco de dados;
+>* O arquivo para rate file deve estar no formato xlsx e contêr obrigatoriamente as colunas "mes" e "indice". Opcionalmente tem as colunas "acumulado" e "periodo" que são usadas em determinados indices, como o TST
