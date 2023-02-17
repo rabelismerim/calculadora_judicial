@@ -1,9 +1,9 @@
 <template> 
     <v-app> 
         <TheTopNavbar />
-        <v-content>
+        <v-main>
           <router-view></router-view>
-        </v-content>
+        </v-main>
         <TheFooter />
     </v-app>
 </template>
@@ -13,6 +13,7 @@
 
 
 import TheTopNavbar from '@/components/TheTopNavbar.vue';
+import djudService from '@/services/djudService';
 import TheFooter from '@/components/TheFooter.vue';
 import WebFontLoader from 'webfontloader'
 export default {
@@ -33,8 +34,15 @@ export default {
         //active: this.setFontsLoaded(true)
       })
     },
-  
+    async mounted(){
+      try {
+        const result = await djudService.getDjudMsal()
+      } catch (error) {
+        console.log(error)
+      }
+    }
 };
+
 </script>
 
 <style scoped>

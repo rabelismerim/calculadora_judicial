@@ -31,9 +31,9 @@ const state = () => ({
   const actions = {
     profileCheck: ({ commit }) => new Promise((resolve) => {
         Vue.prototype.$http.get('/drfmsal_signstatus')
-            .then((r) => {
-            if (!Object.prototype.hasOwnProperty.call(r, 'error')) {
-                commit('setUserProfile', r.profile)
+            .then((response) => {
+            if (!Object.prototype.hasOwnProperty.call(response, 'error')) {
+                commit('setUserProfile', response.data.profile)
                 resolve(true)
             } else {
                 commit('unsetUserProfile')
