@@ -4,7 +4,7 @@ import router from '../router'
 import axios from 'axios'
 
 const apiCall = axios.create({
-    baseURL: 'https://brdcvmdev07/djud/api',
+    baseURL: 'https://brsphearndt:8080/djud/api',
     withCredentials: true,
     xsrfHeaderName: 'X-CSRFToken',
     xsrfCookieName: 'csrftoken',
