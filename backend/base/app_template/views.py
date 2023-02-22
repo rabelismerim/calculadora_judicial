@@ -1,16 +1,24 @@
-from calculation.criterion.models import Criterion
-from calculation.criterion.schemas import CriterionSchema
+"""
+This module defines a {{app_name | title}}Api class that provides HTTP methods for managing {{app_name | title}} objects.
+It extends the AbstractViewApi class and includes a CheckHasPermission permission class for authorization.
+The API responds with JSON data and utilizes the rest_framework.schemas.openapi.AutoSchema for generating API documentation.
+The {{app_name | title}}Api class uses the {{app_name | title}} model and {{app_name | title}}Schema for working with data.
+"""
+
+
+from {{app_name}}.schemas import {{app_name | title}}Schema
+from {{app_name}}.models import {{app_name | title}}
 from core.abstract.views import AbstractViewApi
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 
 
-class CriterionApi(AbstractViewApi):
-    """Define the CriterionApi view class for handling HTTP methods related to criterion.
+class {{app_name | title}}Api(AbstractViewApi):
+    """Define the {{app_name | title}}Api view class for handling HTTP methods related to {{app_name | title}}.
 
     This view class extends the AbstractViewApi class, which provides a basic implementation
-    for common API actions. The CriterionApi supports HTTP POST and GET methods, and uses the CriterionSchema
+    for common API actions. The {{app_name | title}}Api supports HTTP POST and GET methods, and uses the {{app_name | title}}Schema
     serializer for input/output validation. The view requires authenticated users with appropriate
     permissions to access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission
     permission classes.
@@ -24,24 +32,24 @@ class CriterionApi(AbstractViewApi):
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:
-        To retrieve criterion with a matching description:
+        To retrieve {{app_name}} with a matching description:
         ```
-        GET /api/v1/criterion/?sentenca=sentenca_name
+        GET /api/v1/{{app_name}}/?{{app_name}}={{app_name}}_name
         ```
     """
     http_method_names = ['get']
-    serializer_class = CriterionSchema
+    serializer_class = {{app_name | title}}Schema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
-    model = Criterion
-    schema = AutoSchema(tags=["Criterion"])
+    model = {{app_name | title}}
+    schema = AutoSchema(tags=["{{app_name | title}}"])
 
     query_params = [
         {
-            "name": "sentenca",
-            "field": "calculation__description__icontains",
+            "name": "{{app_name}}",
+            "field": "{{app_name}}__icontains",
             "in": "query",
             "required": False,
-            "description": "Nome da Sentença",
+            "description": "{{app_name}}",
             "schema": {"type": "string"}
         }
     ]
