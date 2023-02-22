@@ -11,12 +11,14 @@
     "@googlemaps/markerclusterer": "^1.0.24",
     "axios": "^0.24.0",
     "core-js": "^3.6.5",
+    "pnpm": "^7.27.0",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
     "vue2-google-maps": "^0.10.7",
     "vuetify": "^2.4.0",
     "vuex": "^3.6.2",
-    "webfontloader": "^1.6.28"
+    "webfontloader": "^1.6.28",
+    "yarn": "^1.22.19"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

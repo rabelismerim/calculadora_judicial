@@ -8,7 +8,7 @@ class APIRendererInterceptor(JSONRenderer):
     def render(self, data, accepted_media_type=None, renderer_context=None):
         if renderer_context and 'request' in renderer_context:
             request = renderer_context['request']
-            if IS_LOCALHOST or BRANCH_LOCAL:
+            if IS_LOCALHOST:
                 is_authenticated = request.user.is_authenticated
                 data = {
                     'data': data,
