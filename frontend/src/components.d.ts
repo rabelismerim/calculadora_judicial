@@ -11,8 +11,11 @@ declare module '@vue/runtime-core' {
     FooterBar: typeof import('./components/common/FooterBar.vue')['default']
     Img: typeof import('./components/common/Img.vue')['default']
     NavBar: typeof import('./components/common/NavBar.vue')['default']
+    QBtn: typeof import('quasar')['QBtn']
+    QTable: typeof import('quasar')['QTable']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Spinner: typeof import('./components/common/Spinner.vue')['default']
+    TinyBtn: typeof import('./components/common/TinyBtn.vue')['default']
   }
 }
