@@ -2,7 +2,6 @@
 const props = withDefaults(defineProps<{
   showExit?: boolean
 }>(), {
-  showExit: false,
 })
 
 const router = useRouter()
@@ -22,8 +21,8 @@ const router = useRouter()
       <Btn
         v-if="showExit"
         transparent
-        color="white"
         grow
+        color="white"
         @click="router.push('/')"
       >
         Sair

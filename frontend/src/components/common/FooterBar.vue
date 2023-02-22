@@ -4,7 +4,6 @@ import links from '@/assets/footer-links.json'
 const props = withDefaults(defineProps<{
   showLinks?: boolean
 }>(), {
-  showLinks: false,
 })
 </script>
 

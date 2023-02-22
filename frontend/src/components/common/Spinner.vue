@@ -2,9 +2,11 @@
 const props = withDefaults(defineProps<{
   size?: number
   width?: number
+  color?: string
 }>(), {
   size: 16,
-  width: 2,
+  width: 3,
+  color: 'white',
 })
 </script>
 
@@ -14,6 +16,7 @@ const props = withDefaults(defineProps<{
     :style="{
       '--size': `${size}px`,
       '--width': `${width}px`,
+      '--color': `hsl(var(--${color}))`,
     }"
   >
     <div /><div /><div /><div />
@@ -24,6 +27,7 @@ const props = withDefaults(defineProps<{
 .spinner {
   --size: 16px;
   --width: 2px;
+  --color: #fff;
   opacity: .8;
   display: inline-block;
   position: relative;
@@ -36,10 +40,10 @@ const props = withDefaults(defineProps<{
   position: absolute;
   width: var(--size);
   height: var(--size);
-  border: var(--width) solid #fff;
+  border: var(--width) solid var(--color);
   border-radius: 50%;
   animation: spinner 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-  border-color: #fff transparent transparent transparent;
+  border-color: var(--color) transparent transparent transparent;
 }
 .spinner div:nth-child(1) {
   animation-delay: -0.45s;
