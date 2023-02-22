@@ -1,23 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700;900&display=swap');
 
 :root {
-  font-family: 'Open Sans', Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
   color: #213547;
-  background-color: #ffffff;
-
+  
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
-
-  --primary: #007cb0;
-  --secondary: #86bc24;
-  --white: #fff;
-  --black: #000;
+  
+  --primary: 198,100%,35%;
+  --secondary: 81, 68%, 44%;
+  --white: 0, 0%, 100%;
+  --black: 0, 0%, 0%;
+  --base: 0, 0%, 96%;
 }
 
 a {
@@ -34,6 +30,10 @@ body {
   min-width: 320px;
   min-height: 100vh;
   overflow-x: hidden;
+  background-color: #fff;  
+  font-family: 'Open Sans', Helvetica, Arial, sans-serif !important;
+  line-height: 1.5;
+  font-weight: 400;
 }
 
 h1 {
