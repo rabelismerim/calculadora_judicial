@@ -1,0 +1,29 @@
+import Home from '@/views/home/Home.vue'
+
+export default [
+  { path: '/', 
+  alias: ['/home'],
+  name: 'home', 
+  component: Home },
+  
+  // { path: '/example', name: 'example', component: () => import('@/views/example/Example.vue'), },
+
+  {
+    path: '/login/:redirectPath',
+    name: 'login',
+    beforeEnter(to, from, next) {
+      window.location.href = `${window.location.origin}/djud/api/drfmsal_signin/djud/`;
+    },
+    showInNav: false,
+    authenticationRequired: false
+  },
+  {
+    path: '/logout',
+    name: 'logout',
+    beforeEnter(to, from, next) {
+      window.location.href = `${window.location.origin}/djud/api/drfmsal_signout/djud/`;
+    },
+    showInNav: false,
+    authenticationRequired: false
+  }
+]

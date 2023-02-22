@@ -16,6 +16,7 @@ declare module '@vue/runtime-core' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Spinner: typeof import('./components/common/Spinner.vue')['default']
+    TheTopNavbar: typeof import('./components/TheTopNavbar.vue')['default']
     TinyBtn: typeof import('./components/common/TinyBtn.vue')['default']
   }
 }
