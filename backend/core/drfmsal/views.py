@@ -17,6 +17,17 @@ ms_identity_web = settings.DRFMSAL_IDENTITY_WEB
 @authentication_classes([SessionAuthentication])
 @permission_classes([AllowAny])
 def sign_status(request):
+    if ms_identity_web.id_data:
+        user_view = User.objects.filter(email=ms_identity_web.id_data.usermail)
+        if len(user_view)==0 and ms_identity_web.id_data.usermail!=None:
+            user = User()
+            user.email = ms_identity_web.id_data.usermail
+            user.username = ms_identity_web.id_data.username
+            user.first_name = ms_identity_web.id_data.split()[0]
+            user.last_name = ms_identity_web.id_data.username.split()[len(request.identity_context_data.username.split())-1]
+            user.is_active = True
+            user.is_staff = True
+            user.save()
     return Response()
 
 @require_GET
@@ -26,15 +37,6 @@ def sign_in(request, redirect_uri):
             reverse('drfmsal_redirect', kwargs={'redirect_uri': redirect_uri})
         )
     )
-    user_view = User.objects.filter(email=request.identity_context_data.usermail)
-    if len(user_view)==0 and request.identity_context_data.usermail!=None:
-        user = User()
-        user.email = request.identity_context_data.usermail
-        user.username = request.identity_context_data.username
-        user.first_name = request.identity_context_data.username.split()[0]
-        user.last_name = request.identity_context_data.username.split()[len(request.identity_context_data.username.split())-1]
-        user.is_active = True
-        user.save()
     return redirect(auth_url)
 
 @require_GET

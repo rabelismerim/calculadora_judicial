@@ -14,7 +14,7 @@ class LawyerApi(AbstractViewApi):
     serializer_class = LawyerSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Lawyer
-    schema = AutoSchema(tags=["Lawyer"])
+    schema = AutoSchema(tags=["Project - Lawyer"])
 
     query_params = [
         {
@@ -26,19 +26,3 @@ class LawyerApi(AbstractViewApi):
             "schema": {"type": "string"}
         }
     ]
-
-    def post(self, request, *args, **kwargs):
-        """
-           Create Lawyer receiving a dict, return Lawyer detail
-        """
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        new_lawyer = serializer.validated_data
-        lawyer = self.model.objects.create(**new_lawyer)
-        lawyer.save()
-        return JsonResponse({'lawyer': self.serializer_class(lawyer, many=False).data}, status=status.HTTP_201_CREATED)
-
-    def get(self, request, *args, **kwargs):
-        """Get lawyers details"""
-        lawyers = self.get_query()
-        return JsonResponse({'lawyers': lawyers})

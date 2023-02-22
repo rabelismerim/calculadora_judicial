@@ -3,5 +3,5 @@ from .views import ClassesApi
 
 
 urlpatterns = [
-    path('', ClassesApi.as_view(), name="classes-list-Create")
+    path('', ClassesApi.as_view(), name="classes-list-create")
 ]

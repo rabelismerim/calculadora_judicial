@@ -1,6 +1,6 @@
 from django.db import models
-from projects.abstract_project.models import AbstractDescription
+from base.models import AbstractDescription
 
 
-class Region(AbstractDescription): # Comarca
+class Region(AbstractDescription):  # Comarca
     pass

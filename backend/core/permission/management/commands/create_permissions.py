@@ -7,7 +7,7 @@ from django.contrib.auth.models import Permission, Group
 class Command(BaseCommand):
     help = 'run create permissions group'
 
-    def printl(self, msg):
+    def print_start(self, msg):
         self.stdout.write(self.style.SUCCESS(msg))
 
     def create_update_permissions(self):
@@ -38,7 +38,7 @@ class Command(BaseCommand):
                     project_manager_list.extend(permissions_app)
 
         group_manager.permissions.add(*project_manager_list)
-        self.printl(
+        self.print_start(
             f'Successfully {"created" if created else "altered"} group\nNumber of permissions: {len(project_manager_list)}')
 
     def handle(self, *args, **options):

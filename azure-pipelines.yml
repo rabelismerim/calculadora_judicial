@@ -6,12 +6,13 @@ trigger:
 - main
 
 
-pool:
+pool: 
+  name: TR
   vmImage: ubuntu-latest
 strategy:
   matrix:
     DJUD:
-      PYTHON_VERSION: '3.9'
+      PYTHON_VERSION: '3.10.10'
   maxParallel: 3
 steps:
 - task: UsePythonVersion@0
@@ -28,8 +29,7 @@ steps:
     secureFile: '.env'
 - script: |
     echo Installing $(EnvDev.secureFilePath) to the path backend...
-    sudo chown root:root $(EnvDev.secureFilePath)
-    sudo cp $(EnvDev.secureFilePath) $(Build.SourcesDirectory)/backend 
+    copy $(EnvDev.secureFilePath) $(Build.SourcesDirectory)/backend 
 - task: PythonScript@0
   displayName: 'Export project path'
   inputs:
@@ -38,7 +38,7 @@ steps:
       """Search all subdirectories for `manage.py`."""
       from glob import iglob
       from os import path
-      # Python >= 3.9
+      # Python >= 3.10.10
       manage_py = next(iglob(path.join('**', 'manage.py'), recursive=True), None)
       if not manage_py:
           raise SystemExit('Could not find a Django project')
@@ -46,12 +46,13 @@ steps:
       print('Found Django project in', project_location)
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
 - script: |
-    npm install
+    npm install --force
     npm run build
   workingDirectory: $(Build.SourcesDirectory)/frontend
   displayName: 'Install node prerequisites'
 
 - script: |
+    mkdir ./log
     python -m pip install --upgrade pip setuptools wheel
     pip install virtualenv
     virtualenv venv
@@ -59,7 +60,6 @@ steps:
     pip install -r requirements.txt
     pip install unittest-xml-reporting
     pip install fastcgi
-    mkdir ./log
     python manage.py collectstatic
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'

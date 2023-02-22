@@ -1,8 +1,6 @@
-from core.abstract.schemas import AbstractModelSchema
-from projects.project.models import Project
 from rest_framework import serializers
 from projects.judge.models import Judge
-from projects.abstract_project.schemas import AbstractDescriptionSchema
+from base.schemas import AbstractDescriptionSchema
 
 
 class JudgeSchema(AbstractDescriptionSchema):
@@ -11,7 +9,6 @@ class JudgeSchema(AbstractDescriptionSchema):
     class Meta:
         model = Judge
         fields = '__all__'
-
 
     def validate(self, data):
         judge_name = dict(data).get('description')

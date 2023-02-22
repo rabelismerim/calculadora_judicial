@@ -14,7 +14,7 @@ class EngagementApi(AbstractViewApi):
     serializer_class = ProjectEngagementSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = ProjectEngagement
-    schema = AutoSchema(tags=["Engagement"])
+    schema = AutoSchema(tags=["Project - Engagement"])
 
     query_params = [
         {
@@ -36,18 +36,13 @@ class EngagementApi(AbstractViewApi):
         new_engagement = serializer.validated_data
 
         users = new_engagement.pop('users')
-        numbers = new_engagement.pop('engagement').get('numbers', [])
 
-        project_engagement = self.model.objects.create()  # Create ProjectEngagement
+        numbers = new_engagement.pop('engagement')
+        project_engagement, created = self.model.objects.get_or_create(
+            project__id=new_engagement['project_id'])  # Get or Create ProjectEngagement
         project_engagement.users.add(*users)
         project_engagement.save()
-
         for number in numbers:
-            engagement = Engagement.objects.create(
+            Engagement.objects.create(
                 **{'number': number, 'project_id': project_engagement.id})  # Create Engagement Project number
-        return JsonResponse({'engagement': self.serializer_class(engagement, many=False).data}, status=status.HTTP_201_CREATED)
-
-    def get(self, request, *args, **kwargs):
-        """Get Engagements details"""
-        engagements = self.get_query()
-        return JsonResponse({'engagements': engagements})
+        return JsonResponse({'engagement': self.serializer_class(project_engagement, many=False).data}, status=status.HTTP_201_CREATED)

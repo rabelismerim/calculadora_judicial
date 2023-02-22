@@ -1,12 +1,10 @@
-from rest_framework import serializers
-from core.dttuser.models import User
+from creditors.classes.schemas import AbstractClassesSchema
 from creditors.notice.models import Notice
-from projects.abstract_project.schemas import AbstractDescriptionSchema
 
 
-class NoticeSchema(AbstractDescriptionSchema):
-    
-    
+class NoticeSchema(AbstractClassesSchema):
+    model = Notice
+
     class Meta:
         model = Notice
-        fields = "__all__"
+        exclude = ('creditor', )
