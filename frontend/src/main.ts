@@ -2,10 +2,15 @@ import { createApp } from 'vue'
 import { autoAnimatePlugin } from '@formkit/auto-animate/vue'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { setupLayouts } from 'virtual:generated-layouts'
+import { Quasar, Ripple } from 'quasar'
+import quasarLang from 'quasar/lang/pt-BR'
+import quasarIconSet from 'quasar/icon-set/material-icons-outlined'
 import App from './App.vue'
 
 import generatedRoutes from '~pages'
 
+import '@quasar/extras/material-icons-outlined/material-icons-outlined.css'
+import 'quasar/src/css/index.sass'
 import '@/assets/style.css'
 import '@unocss/reset/tailwind.css'
 import 'uno.css'
@@ -22,6 +27,12 @@ const router = createRouter({
   routes,
 })
 
+app.use(Quasar, {
+  plugins: {}, // import Quasar plugins and add here
+  lang: quasarLang,
+  iconSet: quasarIconSet,
+})
+app.directive('ripple', Ripple)
 app.use(router)
 app.use(autoAnimatePlugin)
 

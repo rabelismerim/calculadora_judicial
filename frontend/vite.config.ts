@@ -7,6 +7,8 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import Pages from 'vite-plugin-pages'
 import Layouts from 'vite-plugin-vue-layouts'
+import { quasar } from '@quasar/vite-plugin'
+import { QuasarResolver } from 'unplugin-vue-components/resolvers'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -27,12 +29,18 @@ export default defineConfig({
       reactivityTransform: true,
     }),
 
+    quasar({
+      autoImportComponentCase: 'pascal',
+      sassVariables: 'src/assets/quasar-variables.sass',
+    }),
+
     UnoCSS(),
 
     AutoImport({
       imports: [
         'vue',
         'vue-router',
+        'vue/macros',
         '@vueuse/core',
         {
           'animol': [
@@ -68,6 +76,7 @@ export default defineConfig({
     Components({
       extensions: ['vue', 'md'],
       include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
+      resolvers: [QuasarResolver()],
       dts: 'src/components.d.ts',
     }),
 
