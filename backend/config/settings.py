@@ -55,6 +55,7 @@ ALLOWED_HOSTS = [
     'uat.fadigitallab.deloitte.com.br',
     'localhost',
     'brdcvmdev07',
+    'brfojwanderley',
     'brsphearndt',  # TEMP
 ]
 

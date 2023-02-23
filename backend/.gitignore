@@ -1,6 +1,6 @@
 uploads
 uploads/
-
+log/
 /cert.crt
 /cert.key
 **/migrations/**
