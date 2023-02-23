@@ -43,6 +43,7 @@ declare global {
   const easing: typeof import('animol')['Easing']
   const effectScope: typeof import('vue')['effectScope']
   const extendRef: typeof import('@vueuse/core')['extendRef']
+  const formatDate: typeof import('./composables/utils')['formatDate']
   const get: typeof import('@jrnwn/utils')['get']
   const getCookie: typeof import('@jrnwn/utils')['getCookie']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
@@ -349,6 +350,7 @@ declare module 'vue' {
     readonly easing: UnwrapRef<typeof import('animol')['Easing']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
+    readonly formatDate: UnwrapRef<typeof import('./composables/utils')['formatDate']>
     readonly get: UnwrapRef<typeof import('@jrnwn/utils')['get']>
     readonly getCookie: UnwrapRef<typeof import('@jrnwn/utils')['getCookie']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>

@@ -9,17 +9,14 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Btn: typeof import('./components/common/Btn.vue')['default']
     FooterBar: typeof import('./components/common/FooterBar.vue')['default']
-    Gauge: typeof import('./components/common/Gauge.vue')['default']
     GraphGauge: typeof import('./components/common/GraphGauge.vue')['default']
     GraphLine: typeof import('./components/common/GraphLine.vue')['default']
     Img: typeof import('./components/common/Img.vue')['default']
     NavBar: typeof import('./components/common/NavBar.vue')['default']
     ProgressList: typeof import('./components/common/ProgressList.vue')['default']
-    QBtn: typeof import('quasar')['QBtn']
     QTable: typeof import('quasar')['QTable']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Spinner: typeof import('./components/common/Spinner.vue')['default']
-    TinyBtn: typeof import('./components/common/TinyBtn.vue')['default']
   }
 }

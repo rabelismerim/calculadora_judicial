@@ -7,6 +7,7 @@ const userFallback = {
 const store = useStorage('deloitte-user', { ...userFallback }, sessionStorage)
 
 const login = async () => {
+  const router = useRouter()
   try {
     const user = await usersService.getMyProfile()
     store.value = user
@@ -15,6 +16,7 @@ const login = async () => {
   }
   catch (error) {
     console.warn('ERROR ON LOGIN:', error)
+    router.push({ path: '/' })
   }
 }
 const logout = () => {

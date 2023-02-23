@@ -3,15 +3,30 @@ import GraphLine from '../components/common/GraphLine.vue'
 
 const router = useRouter()
 
-const projects = $ref([])
+let projects = $ref([])
 const projectsCount = computed(() => projects.length)
 
 onMounted(async () => {
   try {
     const projectList = await projectService.getProjects()
     const recoveringList = await recoveringService.getRecovering()
-    // eslint-disable-next-line no-console
-    console.log({ projectList, recoveringList })
+
+    projects = projectList.projects.map(({
+      id,
+      description,
+      created_at,
+      engagement,
+      is_adm,
+      status_display,
+    }: any) => ({
+      id,
+      name: description,
+      createdAt: formatDate(created_at),
+      responsable: engagement?.create_user,
+      fase: is_adm ? 'Administrativa' : 'Judicial',
+      status: status_display,
+    }))
+    console.log({ projects, projectList, recoveringList })
   }
   catch (error) {
     console.warn('ERROR LOADING PROJECTS:', error)
@@ -36,7 +51,7 @@ const columns = [
   },
   {
     name: 'createdAt',
-    field: 'created_at',
+    field: 'createdAt',
     label: 'Data de Criação',
     align: 'left',
     sortable: true,
