@@ -27,7 +27,7 @@ class RecoveringSchema(AbstractDescriptionSchema):
     class Meta:
         model = Recovering
         # fields = "__all__"
-        exclude = ('project', )
+        exclude = ( )
 
 
 class RecoveringListSchema(RecoveringSchema):
