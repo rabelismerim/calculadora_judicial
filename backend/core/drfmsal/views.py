@@ -24,7 +24,7 @@ def sign_status(request):
             user.email = ms_identity_web.id_data.usermail
             user.username = ms_identity_web.id_data.username
             user.first_name = ms_identity_web.id_data.username.split()[0]
-            user.last_name = ms_identity_web.id_data.username.split()[len(ms_identity_web.username.split())-1]
+            user.last_name = ms_identity_web.id_data.username.split()[len(ms_identity_web.id_data.username.split())-1]
             user.is_active = True
             user.is_staff = True
             user.save()
