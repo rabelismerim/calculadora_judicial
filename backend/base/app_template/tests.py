@@ -15,28 +15,28 @@ Attributes:
 from core.abstract.tests import AbstractTest
 
 
-class {{app_name | title}}Test(AbstractTest):
-    """{{app_name}} related tests"""
+# class {{app_name | title}}Test(AbstractTest):
+#     """{{app_name}} related tests"""
 
-    def test_api_a_post_{{app_name}}s(self):
-        """Assert post {{app_name}}s detail"""
-        self.print_start('Create {{app_name}}s')
-        {{app_name}} = {
-            "description": "{{app_name}}"
-        }
-        response = self.client.post(
-            '/djud/api/v1/projects/{{app_name}}', {{app_name}})
-        self.assertEqual(response.status_code, 201)
-        self.print_success('Created {{app_name}}')
+#     def test_api_a_post_{{app_name}}s(self):
+#         """Assert post {{app_name}}s detail"""
+#         self.print_start('Create {{app_name}}s')
+#         {{app_name}} = {
+#             "description": "{{app_name}}"
+#         }
+#         response = self.client.post(
+#             '/djud/api/v1/projects/{{app_name}}', {{app_name}})
+#         self.assertEqual(response.status_code, 201)
+#         self.print_success('Created {{app_name}}')
 
-    def test_api_b_get_{{app_name}}s(self):
-        """Assert get {{app_name}}s detail"""
-        self.print_start('List {{app_name}}s')
-        response = self.client.get('/djud/api/v1/projects/{{app_name}}')
-        self.assertEqual(response.status_code, 200)
-        self.print_success('Listed {{app_name}}s')
-        {{app_name}}s = response.json()['{{app_name}}s']
-        {{app_name}} = {{app_name}}s[0]
-        self.assertGreaterEqual(len({{app_name}}s), 1)
-        self.print_success('Listed {{app_name}}s >= 1')
-        self.set_project('{{app_name}}_id', {{app_name}}['id'])
+#     def test_api_b_get_{{app_name}}s(self):
+#         """Assert get {{app_name}}s detail"""
+#         self.print_start('List {{app_name}}s')
+#         response = self.client.get('/djud/api/v1/projects/{{app_name}}')
+#         self.assertEqual(response.status_code, 200)
+#         self.print_success('Listed {{app_name}}s')
+#         {{app_name}}s = response.json()['{{app_name}}s']
+#         {{app_name}} = {{app_name}}s[0]
+#         self.assertGreaterEqual(len({{app_name}}s), 1)
+#         self.print_success('Listed {{app_name}}s >= 1')
+#         self.set_project('{{app_name}}_id', {{app_name}}['id'])

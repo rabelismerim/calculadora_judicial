@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from config.settings import ENABLE_SSO
 
 from core.dttuser.models import User
 
@@ -17,18 +18,20 @@ ms_identity_web = settings.DRFMSAL_IDENTITY_WEB
 @authentication_classes([SessionAuthentication])
 @permission_classes([AllowAny])
 def sign_status(request):
-    if ms_identity_web.id_data:
+    if ENABLE_SSO and ms_identity_web.id_data:
         user_view = User.objects.filter(email=ms_identity_web.id_data.usermail)
-        if len(user_view)==0 and ms_identity_web.id_data.usermail!=None:
+        if len(user_view) == 0 and ms_identity_web.id_data.usermail != None:
             user = User()
             user.email = ms_identity_web.id_data.usermail
             user.username = ms_identity_web.id_data.username
-            user.first_name = ms_identity_web.id_data.username.split()[0]
-            user.last_name = ms_identity_web.id_data.username.split()[len(ms_identity_web.username.split())-1]
+            user.first_name = ms_identity_web.id_data.split()[0]
+            user.last_name = ms_identity_web.id_data.username.split(
+            )[len(request.identity_context_data.username.split())-1]
             user.is_active = True
-            user.is_staff = True
+            user.is_staff = False
             user.save()
     return Response()
+
 
 @require_GET
 def sign_in(request, redirect_uri):
@@ -39,22 +42,26 @@ def sign_in(request, redirect_uri):
     )
     return redirect(auth_url)
 
+
 @require_GET
-def aad_redirect(request, redirect_uri):        
+def aad_redirect(request, redirect_uri):
     ms_identity_web.process_auth_redirect(
         request,
         redirect_uri=request.build_absolute_uri(request.path),
     )
     return redirect(f'/{redirect_uri}')
 
+
 @require_GET
 def sign_out(request, redirect_uri):
     sign_out_url = ms_identity_web.get_sign_out_url(
         redirect_uri=request.build_absolute_uri(
-            reverse('drfmsal_postsignout', kwargs={'redirect_uri': redirect_uri})
+            reverse('drfmsal_postsignout', kwargs={
+                    'redirect_uri': redirect_uri})
         )
     )
     return redirect(sign_out_url)
+
 
 @require_GET
 def post_sign_out(request, redirect_uri):

@@ -1,6 +1,6 @@
 from rest_framework.renderers import JSONRenderer
 
-from config.settings import BRANCH_LOCAL, IS_LOCALHOST
+from config.settings import ENABLE_SSO
 
 
 class APIRendererInterceptor(JSONRenderer):
@@ -8,11 +8,12 @@ class APIRendererInterceptor(JSONRenderer):
     def render(self, data, accepted_media_type=None, renderer_context=None):
         if renderer_context and 'request' in renderer_context:
             request = renderer_context['request']
-            if IS_LOCALHOST:
+            if ENABLE_SSO is False:
                 is_authenticated = request.user.is_authenticated
                 data = {
                     'data': data,
                     'dttdare': True,
+                    'accept_token': True,
                     'profile': {
                         'authorized': is_authenticated,
                         'authenticated': is_authenticated,
@@ -25,6 +26,7 @@ class APIRendererInterceptor(JSONRenderer):
                 data = {
                     'data': data,
                     'dttdare': True,
+                    'accept_token': False,
                     'profile': {
                         'authorized': request.user.is_authenticated,
                         'authenticated': identity_context_data.authenticated,
