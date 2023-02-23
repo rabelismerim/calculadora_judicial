@@ -106,7 +106,7 @@ class ProjectListSchema(ProjectSchema):
     class Meta:
         model = Project
         fields = ("id", 'description', 'status',
-                  'status_display', 'created_at', 'engagement', 'num_recovering')
+                  'status_display', 'created_at', 'engagement', 'num_recovering','is_adm')
 
 
 exclude = ('create_user', 'created_at',
