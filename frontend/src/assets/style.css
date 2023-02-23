@@ -11,9 +11,12 @@
   
   --primary: 198,100%,35%;
   --secondary: 81, 68%, 44%;
+  --background: 0, 0%, 96%;
+  --base: 0, 0%, 100%;
+  --dark-base: 0, 0%, 0%;
+  --content: 0, 0%, 0%;
+  --dark-content: 0, 0%, 100%;
   --white: 0, 0%, 100%;
-  --black: 0, 0%, 0%;
-  --base: 0, 0%, 96%;
 }
 
 a {
@@ -30,10 +33,11 @@ body {
   min-width: 320px;
   min-height: 100vh;
   overflow-x: hidden;
-  background-color: #fff;  
   font-family: 'Open Sans', Helvetica, Arial, sans-serif !important;
   line-height: 1.5;
   font-weight: 400;
+  background-color: hsl(var(--background));
+  color: hsl(var(--content));
 }
 
 h1 {

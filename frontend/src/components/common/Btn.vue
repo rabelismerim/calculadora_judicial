@@ -45,8 +45,8 @@ const onMouseMove = (event: MouseEvent) => {
     class="relative overflow-hidden text-[1.05rem] min-h-10 font-semibold px-8 py-2 flex gap-4 no-wrap items-center transition duration-300 ease-in-out"
     :class="{
       'text--color border-1 border--color rounded-.5': outlined,
-      'hover:bg--white/10 text--color rounded-.5': transparent,
-      'bg--color text-white border-1 border--black/12 rounded-.5': !transparent && !outlined,
+      'hover:bg--base/10 text--color rounded-.5': transparent,
+      'bg--color text-white border-1 border-black/12 rounded-.5': !transparent && !outlined,
       'h-full rounded-0': grow,
       'active:scale-110': !grow && !disabled,
     }"

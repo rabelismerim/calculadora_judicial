@@ -5,6 +5,10 @@ const props = withDefaults(defineProps<{
 })
 
 const router = useRouter()
+const logout = () => {
+  $user.logout()
+  router.push({ path: '/' })
+}
 </script>
 
 <template>
@@ -14,7 +18,7 @@ const router = useRouter()
       <Img src="/logo/deloitte-dark.svg" :height="24" class="hidden sm:block" />
       <Img src="/logo/app.svg" :height="30" class="hidden sm:block" />
     </div>
-    <div class="flex-1">
+    <div class="flex no-wrap flex-1 h-full overflow-x-auto overflow-y-hidden">
       <slot />
     </div>
     <div class="flex h-full items-center gap-3">
@@ -23,11 +27,10 @@ const router = useRouter()
         transparent
         grow
         color="white"
-        @click="router.push('/')"
-      >
-        Sair
-        <div class="i-carbon-logout" />
-      </Btn>
+        label="Sair"
+        icon="i-carbon-logout"
+        @click="logout"
+      />
       <Img src="/logo/digital-lab-dark.svg" :height="32" />
     </div>
   </nav>

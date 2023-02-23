@@ -7,6 +7,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import Pages from 'vite-plugin-pages'
 import Layouts from 'vite-plugin-vue-layouts'
+import mkcert from 'vite-plugin-mkcert'
 import { quasar } from '@quasar/vite-plugin'
 import { QuasarResolver } from 'unplugin-vue-components/resolvers'
 
@@ -22,6 +23,10 @@ export default defineConfig({
     alias: {
       '@/': `${path.resolve(__dirname, 'src')}/`,
     },
+  },
+
+  server: {
+    https: true,
   },
 
   plugins: [
@@ -61,6 +66,7 @@ export default defineConfig({
             'get',
             'set',
             'getListOfPaths',
+            'getCookie',
           ],
         },
       ],
@@ -85,5 +91,7 @@ export default defineConfig({
     }),
 
     Layouts(),
+
+    mkcert(),
   ],
 })

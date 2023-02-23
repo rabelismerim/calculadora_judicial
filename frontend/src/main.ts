@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import { autoAnimatePlugin } from '@formkit/auto-animate/vue'
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import { setupLayouts } from 'virtual:generated-layouts'
 import { Quasar, Ripple } from 'quasar'
 import quasarLang from 'quasar/lang/pt-BR'
@@ -22,9 +22,18 @@ const routes = setupLayouts(generatedRoutes)
     route.meta = generatedRoutes[index].meta || {}
     return route
   })
+
 const router = createRouter({
-  history: createWebHashHistory(),
+  // history: createWebHistory(import.meta.env.VITE_API_URL),
+  history: createWebHistory(),
   routes,
+})
+
+router.beforeEach(async (to, from, next) => {
+  const token = getCookie('csrftoken')
+  if (!token || !$user.isAuthenticated)
+    window.location.href = `${window.location.origin}/djud/api/drfmsal_signin/djud/`
+  next()
 })
 
 app.use(Quasar, {
