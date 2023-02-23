@@ -2,6 +2,7 @@ from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions, serializers, status
+from core.permission.views import CheckHasPermission
 from rates.models import Rate, RateFile
 from rates.schemas import RateFileSchema, RateSchema
 
@@ -10,9 +11,9 @@ class RateApi(AbstractViewApi):
     """HTTP methods for Rate"""
     http_method_names = ['post', 'get']
     serializer_class = RateSchema
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Rate
-    schema = AutoSchema(tags=["Rate"], component_name='teste')
+    schema = AutoSchema(tags=["Rate"])
 
     query_params = [
         {
@@ -37,8 +38,7 @@ class RateFileApi(AbstractViewApi):
     """HTTP methods for rate_file"""
     http_method_names = ['post', 'get']
     serializer_class = RateFileSchema
-    permission_classes = [permissions.AllowAny]
-    # permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Rate
     schema = AutoSchema(tags=["RateFile"])
 

@@ -1,4 +1,3 @@
-from unicodedata import name
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 from rest_framework import serializers, renderers
@@ -27,7 +26,6 @@ class GroupSchema(serializers.ModelSerializer):
 
     def validate(self, data):
         data = dict(data)
-        print(data, 'dt\n')
         group = Group.objects.filter(name=data['name']).first()
         if group:
             return super(GroupSchema, self).validate({'id': group.id})
