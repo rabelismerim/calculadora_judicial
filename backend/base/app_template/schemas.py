@@ -1,0 +1,28 @@
+"""
+Serializes the fields of the {{app_name | title}} model for use in the API.
+
+This module defines a Django REST Framework serializer that inherits from both
+`serializers.ModelSerializer` and a custom `AbstractModelSchema` class. The serializer
+converts instances of the `{{app_name | title}}` model to and from JSON format, and
+validates incoming data based on the model's fields.
+
+Attributes:
+    - `Meta`: A nested class that specifies metadata for the serializer. The `model`
+      attribute specifies the model class that the serializer should be based on, and
+      `fields` lists the names of all fields that should be included in the serialized
+      representation.
+
+Usage example:
+serializer = {{app_name | title}}Schema()
+"""
+
+from {{app_name}}.models import {{app_name | title}}
+from base.schemas import AbstractDescriptionSchema
+from rest_framework import serializers
+
+
+class {{app_name | title}}Schema(AbstractDescriptionSchema):
+
+    class Meta:
+        model = {{app_name | title}}
+        fields = "__all__"
