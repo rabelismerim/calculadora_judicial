@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import include, path, re_path, reverse
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
-from config.settings import IS_LOCALHOST
+from config.settings import ENABLE_SSO, IS_LOCALHOST
 from django.conf import settings
 from django.views.generic import TemplateView
 from rest_framework import permissions
@@ -27,7 +27,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.conf.urls.static import static
 from django.contrib.auth import views
 from config.settings import BASE_URL, BASE_URL_AUTH
-
+from rest_framework.authtoken import views as rest_views
 
 admin.site.site_header = admin.site.site_title = 'DJUD'
 admin.site.index_title = 'Administration area'
@@ -94,6 +94,14 @@ if IS_LOCALHOST is False:
             reverse('drfmsal_signout', kwargs={'redirect_uri': 'djud'})
         )),
     ])
+
+if ENABLE_SSO is False:
+    urlpatterns.extend([
+        path(f'{BASE_URL}obtain-auth-token/', rest_views.obtain_auth_token),
+    ])
+
+# if IS_LOCALHOST or BRANCH_LOCAL:
+#     urlpatterns.extend([])
 
 if (str(os.getenv('ENV', )) == 'branch') or (str(os.getenv('ENV')) == 'hml'):
     urlpatterns += static("djud"+settings.MEDIA_URL,

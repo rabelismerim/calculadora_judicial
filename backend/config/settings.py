@@ -36,13 +36,19 @@ SECRET_KEY = str(os.getenv('SECRET_KEY'))
 # else:
 #     DEBUG = str(os.getenv('ENV')) == "True"
 
-DEBUG = str(os.getenv('DEBUG', 'false')).lower() == 'true'
+PASSWD_DEV = str(os.getenv('PASSWD_DEV', 'fake_passwd'))
 
-BRANCH_DEV = str(os.getenv('ENV', 'branch')) == 'branch'
-BRANCH_LOCAL = str(os.getenv('ENV', 'branch')) == 'dev'
+DEBUG = str(os.getenv('DEBUG', 'false')).lower() == 'true'
+ENABLE_SSO = str(os.getenv('ENABLE_SSO', 'true')).lower() == 'true'
+
+print(ENABLE_SSO, 'sso\n')
+BRANCH_DEV = str(os.getenv('ENV', 'hml')) == 'branch'
+BRANCH_LOCAL = str(os.getenv('ENV', 'hml')) == 'dev'
 
 IS_LOCALHOST = str(os.getenv('IS_LOCALHOST', 'false')
                    ).lower() == 'true' and BRANCH_DEV
+
+IS_HML = any([BRANCH_LOCAL, BRANCH_DEV]) is False
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
@@ -143,11 +149,14 @@ TEMPLATES = [
     },
 ]
 
+
+DEFAULT_AUTHENTICATION_CLASSES = [
+    "rest_framework.authentication.SessionAuthentication",
+]
+
 # Logging file
 # https://docs.djangoproject.com/en/3.2/topics/logging/
-if IS_LOCALHOST is False:
-    MIDDLEWARE.append('core.drfmsal.middleware.MsalMiddleware')
-
+if IS_HML:
     LOGGING = {
         'version': 1,
         'disable_existing_loggers': False,
@@ -176,7 +185,8 @@ if IS_LOCALHOST is False:
         },
     }
 
-if IS_LOCALHOST or BRANCH_LOCAL:  # Enable Cors to dev mode
+# Enable Cors to dev mode or local mode
+else:
     MIDDLEWARE.append("corsheaders.middleware.CorsMiddleware")
     INSTALLED_APPS.append('corsheaders')
     CORS_ALLOWED_ORIGINS = [
@@ -184,6 +194,14 @@ if IS_LOCALHOST or BRANCH_LOCAL:  # Enable Cors to dev mode
     ]
     CORS_ALLOW_ALL_ORIGINS = True
     CORS_ALLOW_CREDENTIALS = True
+
+# Enable Login SSO
+if ENABLE_SSO:
+    MIDDLEWARE.append('core.drfmsal.middleware.MsalMiddleware')
+else:
+    INSTALLED_APPS.append('rest_framework.authtoken')
+    DEFAULT_AUTHENTICATION_CLASSES.append(
+        'rest_framework.authentication.TokenAuthentication')
 
 
 # DRFMSAL AUTHENTICATION
@@ -269,7 +287,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-if str(os.getenv('ENV')).strip().upper() == 'HML':
+if IS_HML:
     STATIC_URL = '/djud/static/'
 else:
     STATIC_URL = '/static/'
@@ -301,9 +319,7 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.ScopedRateThrottle',
     ],
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.SessionAuthentication",
-    ),
+    "DEFAULT_AUTHENTICATION_CLASSES": DEFAULT_AUTHENTICATION_CLASSES,
     "DEFAULT_RENDERER_CLASSES": (
         "core.drfmsal.renderer.APIRendererInterceptor",
         "rest_framework.renderers.BrowsableAPIRenderer"

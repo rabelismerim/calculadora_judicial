@@ -1,12 +1,13 @@
 from http.client import IM_USED
 from re import I
-from config.settings import IS_LOCALHOST
+from config.settings import ENABLE_SSO, IS_LOCALHOST, PASSWD_DEV
 from core.abstract.views import AbstractViewApi
 from core.dttuser.schemas import UserDttSchema
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.schemas.openapi import AutoSchema
+from core.permission.views import CheckHasPermission, CreatePermissions
 from utils import get_user_model
 from rest_framework import permissions
 
@@ -22,7 +23,7 @@ class UserDttApi(AbstractViewApi):
     if IS_LOCALHOST:
         permission_classes = [permissions.AllowAny]
     else:
-        permission_classes = [permissions.IsAdminUser]
+        permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = User
     queryset = User.objects.all
     schema = AutoSchema(tags=["User"])
@@ -71,3 +72,17 @@ class UserDttApi(AbstractViewApi):
         """Get Users details"""
         users = self.get_query()
         return JsonResponse({'users': users})
+
+
+if ENABLE_SSO is False:
+    user, created = User.objects.get_or_create(
+        username='dev_admin', first_name='admin', last_name='dev', is_staff=True)
+    user.set_password(PASSWD_DEV)
+    project_manager_list, created, group_manager = CreatePermissions().create_project_manager()
+    user.groups.add(group_manager)
+    user.save()
+
+    user, created = User.objects.get_or_create(
+        username='dev_user', first_name='user', last_name='dev', is_staff=False)
+    user.set_password(PASSWD_DEV)
+    user.save()
