@@ -14,9 +14,9 @@ const logout = () => {
 <template>
   <nav class="flex bg-black h-14 px-8 justify-between items-center sticky top-0 z-100">
     <div class="mr-8 flex items-center gap-6">
-      <Img src="/logo/deloitte-small-dark.svg" :height="24" class="sm:hidden" />
-      <Img src="/logo/deloitte-dark.svg" :height="24" class="hidden sm:block" />
-      <Img src="/logo/app.svg" :height="30" class="hidden sm:block" />
+      <Img :src="`${baseUrl}/logo/deloitte-small-dark.svg`" :height="24" class="sm:hidden" />
+      <Img :src="`${baseUrl}/logo/deloitte-dark.svg`" :height="24" class="hidden sm:block" />
+      <Img :src="`${baseUrl}/logo/app.svg`" :height="30" class="hidden sm:block" />
     </div>
     <div class="flex no-wrap flex-1 h-full overflow-x-auto overflow-y-hidden">
       <slot />
@@ -31,7 +31,7 @@ const logout = () => {
         icon="i-carbon-logout"
         @click="logout"
       />
-      <Img src="/logo/digital-lab-dark.svg" :height="32" />
+      <Img :src="`${baseUrl}/logo/digital-lab-dark.svg`" :height="32" />
     </div>
   </nav>
 </template>

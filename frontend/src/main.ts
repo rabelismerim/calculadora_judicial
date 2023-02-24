@@ -24,16 +24,14 @@ const routes = setupLayouts(generatedRoutes)
   })
 
 const router = createRouter({
-  // history: createWebHistory(import.meta.env.VITE_API_URL),
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.VITE_ROUTER_BASE_URL),
   routes,
 })
 
 router.beforeEach(async (to, from, next) => {
-  const token = getCookie('csrftoken')
-  if (!token || !$user.isAuthenticated)
-    window.location.href = `${window.location.origin}/djud/api/drfmsal_signin/djud/`
-  next()
+  const isAuthenticated = await $user.login()
+  if (isAuthenticated)
+    next()
 })
 
 app.use(Quasar, {

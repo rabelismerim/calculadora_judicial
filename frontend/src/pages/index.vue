@@ -1,23 +1,11 @@
 <script setup lang="ts">
 const router = useRouter()
 
-let loading = $ref(false)
+const loading = $ref(false)
 const enter = async () => {
   router.push({ path: '/projetos' })
 }
 const { isAuthenticated, hasPermission } = $user
-const login = async () => {
-  loading = true
-  try {
-    await $user.login()
-  }
-  catch (error) {
-    console.warn('ERROR ON LOGIN:', error)
-  }
-  finally {
-    loading = false
-  }
-}
 </script>
 
 <template>
@@ -36,17 +24,14 @@ const login = async () => {
         </p>
         <div class="flex flex-wrap gap-3">
           <Btn
-            v-if="getCookie('csrftoken')"
+            v-if="isAuthenticated"
             label="Entrar"
+            :loading="loading"
+            loading-label="carregando seus dados..."
             @click="enter"
           />
           <Btn
-            v-else-if="!isAuthenticated"
-            label="Entrar"
-            @click="login"
-          />
-          <Btn
-            v-else-if="!hasPermission"
+            v-else
             color="secondary"
             label="Solicitar acesso"
             loading-label="enviando Solicitação..."
@@ -56,7 +41,7 @@ const login = async () => {
         </div>
       </div>
       <div class="px-8">
-        <Img src="/illustrations/splash-balance.svg" class="h-full min-h-10" />
+        <Img :src="`${baseUrl}/illustrations/splash-balance.svg`" class="h-full min-h-10" />
       </div>
     </div>
   </div>

@@ -8,7 +8,7 @@ const props = withDefaults(defineProps<{
 }>(), {
   src: '',
   alt: '',
-  errorImage: '/fallback/image.svg',
+  errorImage: `${baseUrl}/fallback/image.svg`,
 })
 
 const image = ref(null) as unknown as { value: HTMLImageElement }
