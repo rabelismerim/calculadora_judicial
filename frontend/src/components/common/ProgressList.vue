@@ -6,6 +6,8 @@ const props = withDefaults(defineProps<{
 }>(), {
   values: () => [],
 })
+
+const biggestValue = computed(() => [...props.values]?.sort(({ count: a }, { count: b }) => a < b ? 1 : -1)?.at(0)?.count || 0)
 </script>
 
 <template>
@@ -27,9 +29,23 @@ const props = withDefaults(defineProps<{
       </div>
       <div
         v-else
-        class=""
+        class="max-h-40 overflow-y-auto"
       >
-        teste...
+        <div
+          v-for="{ label, count } in values"
+          :key="label"
+          class="grid grid-cols-[1fr_2fr] items-center"
+        >
+          <div>{{ label }}</div>
+          <div class="relative h-4 bg-gray-3 rounded-full overflow-hidden">
+            <div
+              class="h-full bg--secondary rounded-full"
+              :style="{
+                width: `${count / biggestValue * 100}%`,
+              }"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </div>

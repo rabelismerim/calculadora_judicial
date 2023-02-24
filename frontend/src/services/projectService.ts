@@ -11,7 +11,7 @@ const getProjects = () => api
     id,
     name: description,
     createdAt: formatDate(created_at),
-    responsable: engagement?.create_user,
+    responsible: engagement?.create_user,
     fase: is_adm ? 'Administrativa' : 'Judicial',
     status: status_display,
   })))

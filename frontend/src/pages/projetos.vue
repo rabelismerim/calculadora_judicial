@@ -14,10 +14,17 @@ const gaugeValues = computed(() => Object.entries(projects
     acc[status]++
     return acc
   }, {}))
-  .map(([label, count]) => ({ label, count })),
-)
+  .map(([label, count]) => ({ label, count })))
 
-const responsibleList: any[] = []
+const responsibleList = computed(() => Object.entries(projects
+  .reduce((acc: any, { responsible }) => {
+    if (!acc[responsible])
+      acc[responsible] = 0
+    acc[responsible]++
+    return acc
+  }, {}))
+  .map(([label, count]) => ({ label, count })))
+
 const usageData: any[] = []
 
 const loadProjects = async () => {
@@ -67,8 +74,8 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'responsable',
-    field: 'responsable',
+    name: 'responsible',
+    field: 'responsible',
     label: 'Responsável',
     align: 'left',
     sortable: true,

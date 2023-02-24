@@ -76,11 +76,14 @@ const total = computed(() => props.values.reduce((acc, { count }) => acc + count
           </g>
         </svg>
       </div>
-      <div class="grid gap-2 justify-center">
+      <div>
         <div v-if="values.length < 1">
           Sem dados disponíveis...
         </div>
-        <div v-else>
+        <div
+          v-else
+          class="grid gap-2 justify-center"
+        >
           <div
             v-for="(item, i) in values"
             :key="item.label"
