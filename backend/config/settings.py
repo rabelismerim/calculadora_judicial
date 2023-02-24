@@ -41,7 +41,6 @@ PASSWD_DEV = str(os.getenv('PASSWD_DEV', 'fake_passwd'))
 DEBUG = str(os.getenv('DEBUG', 'false')).lower() == 'true'
 ENABLE_SSO = str(os.getenv('ENABLE_SSO', 'true')).lower() == 'true'
 
-print(ENABLE_SSO, 'sso\n')
 BRANCH_DEV = str(os.getenv('ENV', 'hml')) == 'branch'
 BRANCH_LOCAL = str(os.getenv('ENV', 'hml')) == 'dev'
 
@@ -109,6 +108,7 @@ INSTALLED_APPS = [
     'calculation',
     'calculation.criterion',
     'calculation.verdict',
+    'calculation.funds',  # Verbas
 
     # Rate - Indice
     'rates',

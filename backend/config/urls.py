@@ -58,7 +58,6 @@ urlpatterns = [
     # Calculation
     path(f'{BASE_URL}calculation/', include("calculation.urls")),
 
-
     # Rates
     path(f'{BASE_URL}rates/', include("rates.urls")),
 
