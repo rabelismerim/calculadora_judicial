@@ -14,7 +14,7 @@ class VerdictApi(AbstractViewApi):
     serializer_class = VerdictSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Verdict
-    schema = AutoSchema(tags=["Verdict"])
+    schema = AutoSchema(tags=["Calculation - Verdict"])
 
     query_params = [
         {

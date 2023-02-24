@@ -33,7 +33,7 @@ class CriterionApi(AbstractViewApi):
     serializer_class = CriterionSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Criterion
-    schema = AutoSchema(tags=["Criterion"])
+    schema = AutoSchema(tags=["Calculation - Criterion"])
 
     query_params = [
         {
