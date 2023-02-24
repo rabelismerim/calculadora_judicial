@@ -16,7 +16,8 @@ export default defineConfig({
   base: './',
 
   build: {
-    outDir: './dist',
+    // outDir: './dist',
+    outDir: path.resolve(__dirname, '../backend/static/src/vue/dist/'),
   },
 
   resolve: {
@@ -27,8 +28,6 @@ export default defineConfig({
 
   server: {
     https: true,
-    host: '0.0.0.0',
-    port: 8081,
   },
 
   plugins: [
