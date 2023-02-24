@@ -22,7 +22,7 @@ const login = async () => {
 
 <template>
   <div class="bg--base flex flex-1">
-    <div class="grid sm:grid-cols-2 gap-16 max-w-300 px-6 flex-1 mx-auto">
+    <div class="grid sm:grid-cols-2 gap-16 max-w-[min(1200px,100vw)] px-6 flex-1 mx-auto">
       <div class="flex flex-col justify-center gap-6">
         <h1 class="font-extrabold text-6xl mt-8">
           JUCA

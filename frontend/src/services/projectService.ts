@@ -1,6 +1,20 @@
 const getProjects = () => api
   .get('/v1/projects/')
-  .then(({ data }) => data)
+  .then(({ data }) => data.projects.map(({
+    id,
+    description,
+    created_at,
+    engagement,
+    is_adm,
+    status_display,
+  }: any) => ({
+    id,
+    name: description,
+    createdAt: formatDate(created_at),
+    responsable: engagement?.create_user,
+    fase: is_adm ? 'Administrativa' : 'Judicial',
+    status: status_display,
+  })))
 
 const getProjectJudge = () => api
   .get('/v1/projects/judge/')

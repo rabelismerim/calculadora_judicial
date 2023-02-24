@@ -3,33 +3,29 @@ import GraphLine from '../components/common/GraphLine.vue'
 
 const router = useRouter()
 
+let loading = $ref(false)
+const filterBy = $ref('')
 let projects = $ref([])
 const projectsCount = computed(() => projects.length)
 
 onMounted(async () => {
+  loading = true
   try {
-    const projectList = await projectService.getProjects()
-    const recoveringList = await recoveringService.getRecovering()
+    const projectResult = await projectService.getProjects()
 
-    projects = projectList.projects.map(({
-      id,
-      description,
-      created_at,
-      engagement,
-      is_adm,
-      status_display,
-    }: any) => ({
-      id,
-      name: description,
-      createdAt: formatDate(created_at),
-      responsable: engagement?.create_user,
-      fase: is_adm ? 'Administrativa' : 'Judicial',
-      status: status_display,
+    const recoveringResult = await recoveringService.getRecovering()
+    const getRecovering = (project: string) => recoveringResult.find(({ projectId }: any) => projectId === project)
+
+    projects = projectResult.map((project: any) => ({
+      ...getRecovering(project.id),
+      ...project,
     }))
-    console.log({ projects, projectList, recoveringList })
   }
   catch (error) {
     console.warn('ERROR LOADING PROJECTS:', error)
+  }
+  finally {
+    loading = false
   }
 })
 
@@ -43,8 +39,8 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'processId',
-    field: 'process',
+    name: 'process',
+    field: 'processNumber',
     label: 'N° do Processo',
     align: 'left',
     sortable: true,
@@ -101,7 +97,7 @@ const usageData: any[] = []
 
 <template>
   <div class="flex flex-1 justify-center">
-    <div class="px-8 py-8 max-w-400 flex-1">
+    <div class="px-8 py-8 max-w-[min(1600px,100vw)] flex-1">
       <button
         class="group mb-8 flex gap-1 items-center uppercase font-semibold hover:text--secondary transition duration-300 ease-in-out"
         @click="router.push({ path: '/' })"
@@ -145,7 +141,11 @@ const usageData: any[] = []
         <div>
           <label class="relative">
             <span class="mr-4">Buscar</span>
-            <input type="text" class="border-1 border-black/12 py-1 pl-1 pr-8 rounded-.5">
+            <input
+              v-model="filterBy"
+              type="text"
+              class="border-1 border-black/12 py-1 pl-1 pr-8 rounded-.5"
+            >
             <button class="group absolute right-.5 top-50% -translate-y-50% p-1.5 hover:bg--primary transition duration-300 ease-in-out">
               <div class="i-carbon-search group-hover:bg-white transition duration-300 ease-in-out" />
             </button>
@@ -157,10 +157,14 @@ const usageData: any[] = []
         class="my-header-table"
         :rows="projects"
         :columns="columns"
-        row-key="name"
+        :loading="loading"
+        :filter="filterBy"
+        row-key="id"
         flat
         bordered
-      />
+      >
+        <template # />
+      </q-table>
     </div>
   </div>
 </template>

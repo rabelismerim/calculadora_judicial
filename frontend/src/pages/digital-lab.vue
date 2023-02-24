@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col justify-center max-w-200 px-4 flex-1 mx-auto">
+  <div class="flex flex-col justify-center max-w-[min(800px,100vw)] px-4 flex-1 mx-auto">
     <div class="flex flex-wrap justify-center gap-8 max-w-200 mx-auto">
       <Img src="/logo/deloitte-light.svg" class="max-w-90 w-32vw min-w-40" alt="logo of Deloitte" />
       <Img src="/logo/digital-lab-light.svg" class="max-w-90 w-32vw min-w-40" alt="logo of Digital Lab" />
