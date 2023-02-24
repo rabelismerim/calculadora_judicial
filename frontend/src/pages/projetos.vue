@@ -7,8 +7,20 @@ let loading = $ref(false)
 const filterBy = $ref('')
 let projects = $ref([])
 const projectsCount = computed(() => projects.length)
+const gaugeValues = computed(() => Object.entries(projects
+  .reduce((acc: any, { status }) => {
+    if (!acc[status])
+      acc[status] = 0
+    acc[status]++
+    return acc
+  }, {}))
+  .map(([label, count]) => ({ label, count })),
+)
 
-onMounted(async () => {
+const responsibleList: any[] = []
+const usageData: any[] = []
+
+const loadProjects = async () => {
   loading = true
   try {
     const projectResult = await projectService.getProjects()
@@ -27,7 +39,9 @@ onMounted(async () => {
   finally {
     loading = false
   }
-})
+}
+
+onMounted(() => loadProjects())
 
 const columns = [
   {
@@ -89,10 +103,6 @@ const columns = [
   sortable?: boolean
 
 }[]
-
-const gaugeValues: any[] = []
-const responsibleList: any[] = []
-const usageData: any[] = []
 </script>
 
 <template>
@@ -106,7 +116,7 @@ const usageData: any[] = []
         Voltar
       </button>
 
-      <div class="mb-8 flex justify-between">
+      <div class="mb-8 flex justify-between gap-4">
         <h1 class="font-bold text-4xl">
           Projetos
         </h1>
@@ -125,7 +135,7 @@ const usageData: any[] = []
         <GraphLine
           :values="usageData"
           title="Uso da Ferramenta x Tempo"
-          hint="Esse"
+          hint="Esse gráfico mostra o uso da ferramenta no último mês."
         />
         <ProgressList
           :values="responsibleList"
@@ -134,10 +144,18 @@ const usageData: any[] = []
         />
       </div>
 
-      <div class="flex justify-between mb-8">
-        <h2 class="font-bold text-3xl">
-          Projetos ({{ projectsCount }})
-        </h2>
+      <div class="flex justify-between mb-8 gap-4">
+        <div class="flex no-wrap gap-2 items-center">
+          <h2 class="font-bold text-3xl">
+            Projetos ({{ projectsCount }})
+          </h2>
+          <button
+            class="h-8 w-8 hover:bg-gray/30 rounded-full flex justify-center items-center transition duration-300 ease-in-out"
+            @click="loadProjects"
+          >
+            <div class="i-carbon-restart h-5 w-5" />
+          </button>
+        </div>
         <div>
           <label class="relative">
             <span class="mr-4">Buscar</span>
@@ -163,7 +181,46 @@ const usageData: any[] = []
         flat
         bordered
       >
-        <template # />
+        <template #body-cell-name="props">
+          <q-td :props="props">
+            <div class="flex no-wrap items-center gap-3 font-bold">
+              <div class="h-10 w-10 bg-gray-2 rounded-.5 flex justify-center items-center text-[16px]">
+                {{ getInitials(props.value) }}
+              </div>
+              <div class="text-[14px]">
+                {{ props.value }}
+              </div>
+            </div>
+          </q-td>
+        </template>
+        <template #body-cell-status="props">
+          <q-td :props="props">
+            <div class="flex">
+              <div
+                class="py-1 pl-3 rounded-full flex no-wrap items-center"
+                :class="{
+                  'bg-red/20': props.value === 'Em Atraso',
+                  'bg-orange/20': props.value === 'Em Preparação',
+                  'bg-blue/20': props.value === 'Em Andamento',
+                  'bg-green/20': props.value === 'Concluído',
+                }"
+              >
+                <div class="flex-1">
+                  {{ props.value }}
+                </div>
+                <div
+                  class="h-4 w-4 bg-red rounded-full mr-2 ml-1.5"
+                  :class="{
+                    'bg-red': props.value === 'Em Atraso',
+                    'bg-orange': props.value === 'Em Preparação',
+                    'bg-blue': props.value === 'Em Andamento',
+                    'bg-green': props.value === 'Concluído',
+                  }"
+                />
+              </div>
+            </div>
+          </q-td>
+        </template>
       </q-table>
     </div>
   </div>

@@ -48,6 +48,7 @@ declare global {
   const getCookie: typeof import('@jrnwn/utils')['getCookie']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
+  const getInitials: typeof import('./composables/utils')['getInitials']
   const getListOfPaths: typeof import('@jrnwn/utils')['getListOfPaths']
   const getSelector: typeof import('@jrnwn/utils')['getSelector']
   const h: typeof import('vue')['h']
@@ -355,6 +356,7 @@ declare module 'vue' {
     readonly getCookie: UnwrapRef<typeof import('@jrnwn/utils')['getCookie']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
+    readonly getInitials: UnwrapRef<typeof import('./composables/utils')['getInitials']>
     readonly getListOfPaths: UnwrapRef<typeof import('@jrnwn/utils')['getListOfPaths']>
     readonly getSelector: UnwrapRef<typeof import('@jrnwn/utils')['getSelector']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
