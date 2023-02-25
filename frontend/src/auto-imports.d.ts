@@ -15,6 +15,7 @@ declare global {
   const asyncComputed: typeof import('@vueuse/core')['asyncComputed']
   const autoResetRef: typeof import('@vueuse/core')['autoResetRef']
   const baseCoinService: typeof import('./services/baseCoinService')['default']
+  const baseUrl: typeof import('./stores/baseUrl')['default']
   const blend: typeof import('animol')['blend']
   const calculationService: typeof import('./services/calculationService')['default']
   const computed: typeof import('vue')['computed']
@@ -94,6 +95,7 @@ declare global {
   const reactivePick: typeof import('@vueuse/core')['reactivePick']
   const readonly: typeof import('vue')['readonly']
   const recoveringService: typeof import('./services/recoveringService')['default']
+  const redirectTo: typeof import('./composables/utils')['redirectTo']
   const ref: typeof import('vue')['ref']
   const refAutoReset: typeof import('@vueuse/core')['refAutoReset']
   const refDebounced: typeof import('@vueuse/core')['refDebounced']
@@ -323,6 +325,7 @@ declare module 'vue' {
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
     readonly baseCoinService: UnwrapRef<typeof import('./services/baseCoinService')['default']>
+    readonly baseUrl: UnwrapRef<typeof import('./stores/baseUrl')['default']>
     readonly blend: UnwrapRef<typeof import('animol')['blend']>
     readonly calculationService: UnwrapRef<typeof import('./services/calculationService')['default']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
@@ -402,6 +405,7 @@ declare module 'vue' {
     readonly reactivePick: UnwrapRef<typeof import('@vueuse/core')['reactivePick']>
     readonly readonly: UnwrapRef<typeof import('vue')['readonly']>
     readonly recoveringService: UnwrapRef<typeof import('./services/recoveringService')['default']>
+    readonly redirectTo: UnwrapRef<typeof import('./composables/utils')['redirectTo']>
     readonly ref: UnwrapRef<typeof import('vue')['ref']>
     readonly refAutoReset: UnwrapRef<typeof import('@vueuse/core')['refAutoReset']>
     readonly refDebounced: UnwrapRef<typeof import('@vueuse/core')['refDebounced']>

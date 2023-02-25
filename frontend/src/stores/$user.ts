@@ -1,9 +1,10 @@
 const userFallback = {
-  authenticated: false,
-  authorized: false,
-  user_fullname: '',
-  user_picture: '',
+  authenticated: undefined,
+  authorized: undefined,
+  fullName: undefined,
+  picture: undefined,
 }
+
 const store = useStorage('deloitte-user', { ...userFallback }, sessionStorage)
 
 const login = async () => {
@@ -11,6 +12,9 @@ const login = async () => {
   try {
     const user = await usersService.getMyProfile()
     store.value = user
+
+    if (!user.authenticated)
+      redirectTo(`${window.location.origin}/djud/api/drfmsal_signin/djud/`)
 
     return user.authenticated
   }

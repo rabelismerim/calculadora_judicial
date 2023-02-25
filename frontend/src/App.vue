@@ -1,5 +1,7 @@
 <script setup lang="ts">
-onMounted(() => $user.login())
+// onMounted(() => {
+//   $user.login()
+// })
 </script>
 
 <template>
