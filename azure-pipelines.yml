@@ -7,7 +7,9 @@ trigger:
 
 
 pool: 
-  name: TRDEV
+  name: TR
+  demands:
+  - Agent.Name -equals TRDEV
   vmImage: ubuntu-latest
 strategy:
   matrix:
