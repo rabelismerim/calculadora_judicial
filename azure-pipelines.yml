@@ -7,8 +7,7 @@ trigger:
 
 
 pool: 
-  name: TR
-  agent: TRHMG
+  name: TRHMG
   vmImage: ubuntu-latest
 strategy:
   matrix:
