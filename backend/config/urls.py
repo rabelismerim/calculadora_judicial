@@ -42,7 +42,6 @@ def frontend_index(request):
     else:
         return render(request, template_name='index.html')
 
-
 urlpatterns = [
     # API Authentication
     path('djud/api-auth/', include("rest_framework.urls")),
