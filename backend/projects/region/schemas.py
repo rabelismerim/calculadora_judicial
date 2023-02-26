@@ -1,8 +1,6 @@
-from core.abstract.schemas import AbstractModelSchema
-from projects.project.models import Project
 from rest_framework import serializers
 from projects.region.models import Region
-from projects.abstract_project.schemas import AbstractDescriptionSchema
+from base.schemas import AbstractDescriptionSchema
 
 
 class RegionSchema(AbstractDescriptionSchema):
@@ -11,7 +9,6 @@ class RegionSchema(AbstractDescriptionSchema):
     class Meta:
         model = Region
         fields = '__all__'
-
 
     def validate(self, data):
         region_name = dict(data).get('description')

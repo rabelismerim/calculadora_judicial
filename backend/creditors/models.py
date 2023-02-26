@@ -1,14 +1,26 @@
 from django.db import models
 from core.entity.models import Entity
-from creditors.recovering.models import Recovering
-from projects.abstract_project.models import AbstractDateCreditor
+from recovering.models import Recovering
+from base.models import AbstractDateCreditor
 
 
 class Creditor(AbstractDateCreditor):
-    # TODO: filtrar Entity se já existe nessa recuperanda
-    # Entidade(dados credor)
     entity = models.ForeignKey(Entity, on_delete=models.PROTECT)
     recovering = models.ForeignKey(
-        Recovering, on_delete=models.PROTECT)  # Recuperanda
-    # notice = models.ForeignKey(
-    #     Notice, on_delete=models.PROTECT, null=True)  # Edital
+        Recovering, on_delete=models.PROTECT)
+    description = models.CharField('Descrição', max_length=255, null=True)
+
+    def get_clain_creditor(self):
+        if hasattr(self, 'claimcreditor'):
+            return self.claimcreditor
+        return None
+
+    def get_clain_lawyer(self):
+        if hasattr(self, 'claimlawyer'):
+            return self.claimlawyer
+        return None
+
+    def get_notice(self):
+        if hasattr(self, 'notice'):
+            return self.notice
+        return None

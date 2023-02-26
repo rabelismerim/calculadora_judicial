@@ -13,11 +13,13 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import os
 from django.contrib import admin
+from django.http import HttpResponseRedirect
 from django.urls import include, path, re_path, reverse
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
-from config.settings import IS_LOCALHOST
+from config.settings import ENABLE_SSO, IS_LOCALHOST
 from django.conf import settings
 from django.views.generic import TemplateView
 from rest_framework import permissions
@@ -26,9 +28,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.conf.urls.static import static
 from django.contrib.auth import views
 from config.settings import BASE_URL, BASE_URL_AUTH
-
-import os
-
+from rest_framework.authtoken import views as rest_views
 
 admin.site.site_header = admin.site.site_title = 'DJUD'
 admin.site.index_title = 'Administration area'
@@ -37,19 +37,32 @@ admin.site.site_url = '/djud/admin/login'
 
 @ensure_csrf_cookie
 def frontend_index(request):
-    return render(request, template_name='index.html')
-
+    if request.META['REQUEST_URI'][:5].upper()=='/DJUD':
+        return HttpResponseRedirect("/")
+    else:
+        return render(request, template_name='index.html')
 
 urlpatterns = [
     # API Authentication
     path('djud/api-auth/', include("rest_framework.urls")),
 
-    # Projects
+    # # Base
+    path(f'{BASE_URL}base/', include("base.urls")),
+
+    # # Projects
     path(f'{BASE_URL}projects/', include("projects.urls")),
+
+    # # Recovering
+    path(f'{BASE_URL}recovering/', include("recovering.urls")),
 
     # Creditors
     path(f'{BASE_URL}creditors/', include("creditors.urls")),
+
+    # Calculation
     path(f'{BASE_URL}calculation/', include("calculation.urls")),
+
+    # Rates
+    path(f'{BASE_URL}rates/', include("rates.urls")),
 
     # CORE
     path(BASE_URL, include("core.dttuser.api.urls")),
@@ -84,6 +97,14 @@ if IS_LOCALHOST is False:
         )),
     ])
 
+if ENABLE_SSO is False:
+    urlpatterns.extend([
+        path(f'{BASE_URL}obtain-auth-token/', rest_views.obtain_auth_token),
+    ])
+
+# if IS_LOCALHOST or BRANCH_LOCAL:
+#     urlpatterns.extend([])
+
 if (str(os.getenv('ENV', )) == 'branch') or (str(os.getenv('ENV')) == 'hml'):
-    urlpatterns += static("djud"+settings.MEDIA_URL,
+    urlpatterns += static("/djud"+settings.MEDIA_URL,
                           document_root=settings.MEDIA_ROOT)

@@ -1,5 +1,6 @@
 import datetime
-from rest_framework import generics, serializers, permissions
+from django.http import JsonResponse
+from rest_framework import generics, serializers, status
 from rest_framework.filters import BaseFilterBackend
 
 
@@ -19,12 +20,12 @@ class AbstractViewApi(generics.GenericAPIView):
 
     @staticmethod
     def __parse_date(date_string):
-        """Parse sting to date"""
+        """Parse string to date"""
         return datetime.datetime.strptime(date_string, '%Y-%m-%d').date()
 
     @staticmethod
     def __parse_datetime(date_string):
-        """Parse sting to datetime"""
+        """Parse string to datetime"""
         return datetime.datetime.strptime(date_string, '%Y-%m-%d %H:%M')
 
     def __get_type_by_instance(self, instance):
@@ -39,9 +40,14 @@ class AbstractViewApi(generics.GenericAPIView):
 
         return types.get(instance, str)
 
-    def get_query(self):
+    def get_query(self, id_=None, **kwargs):
         """Validate parameters received in query params, returning query values"""
-        query = {}
+        query = self.get_queryset()
+        exclude = []
+
+        if hasattr(self, 'exclude') and (isinstance(self.exclude, list) or isinstance(self.exclude, tuple)):
+            exclude = self.exclude
+
         for valid_params in self.query_params:
             type_instance = valid_params['schema']['type']
             field = valid_params['field']
@@ -58,5 +64,28 @@ class AbstractViewApi(generics.GenericAPIView):
                 else:
                     raise serializers.ValidationError(
                         {name: f'Campo no formato inválido. Deve ser estar no formato {instance["legend"]}'})
-        data = self.model.objects.filter(**query)
-        return self.serializer_class(data, many=True).data
+        serializer = self.get_serializer_class()
+        if id_:
+            return serializer(self.model.objects.filter(id=id_, **query, **kwargs).first(), many=False, exclude=exclude).data
+        return serializer(self.model.objects.filter(**query, **kwargs), many=True, exclude=exclude).data
+
+    def get(self, request, *args, **kwargs):
+        """Abstract method for default get model. Overide method in class for custom operation"""
+        id_ = kwargs.get('id')
+        query = self.get_query(id_=id_)
+        model_name = self.model._meta.verbose_name_plural.lower(
+        ) if not id_ else self.model._meta.verbose_name.lower()
+        return JsonResponse({model_name.replace(' ', '_'): query})
+
+    def post(self, request, *args, **kwargs):
+        """Abstract method for default post model. Overide method in class for custom operation"""
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        new_obj = serializer.validated_data
+        obj = self.model.objects.create(**new_obj)
+        obj_name = self.model._meta.verbose_name_plural.lower(
+        )
+        return JsonResponse({obj_name: self.serializer_class(obj, many=False).data}, status=status.HTTP_201_CREATED)
+
+    def get_queryset(self):
+        return {}

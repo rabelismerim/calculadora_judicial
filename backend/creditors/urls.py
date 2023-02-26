@@ -1,12 +1,12 @@
 from django.urls import include, path
 
+from creditors.views import CreditorDetailApi, CreditorCreateApi, CreditorApi
 
 urlpatterns = [
-    path('archive', include("creditors.archive.urls")),
-    path('archive_recovering', include("creditors.archive_recovering.urls")),
-    path('budgets', include("creditors.budgets.urls")),
-    path('classes', include("creditors.classes.urls")),
-    path('coins', include("creditors.coins.urls")),
+    path('', CreditorApi.as_view(), name="creditor-list-create"),
+    path('<uuid:id>', CreditorDetailApi.as_view(), name="creditor-detail"),
+    path('options', CreditorCreateApi.as_view(), name="creditor-options"),
+    # path('budgets', include("creditors.budgets.urls")),
+    # path('classes', include("creditors.classes.urls")),
     path('notice', include("creditors.notice.urls")),
-    path('recovering', include("creditors.recovering.urls")),
 ]

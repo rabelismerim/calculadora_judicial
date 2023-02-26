@@ -1,0 +1,21 @@
+"""
+This module defines a Django AppConfig class for configuring the '{{app_name}}' app.
+
+The {{app_name | title}}Config class inherits from the AppConfig class and sets the default_auto_field
+attribute to 'django.db.models.BigAutoField' to use a Big Integer field as the primary key
+for all models by default. The name attribute is set to '{{app_name}}', which is the name of the app
+this configuration belongs to.
+
+Attributes:
+- default_auto_field: A string representing the default primary key field type for all models
+- name: A string representing the name of the app
+"""
+
+
+from django.apps import AppConfig
+from django.utils.translation import gettext_lazy as _
+
+
+class {{app_name | title}}Config(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = '{{app_name}}'
