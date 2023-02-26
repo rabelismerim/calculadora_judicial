@@ -15,6 +15,7 @@ Including another URLconf
 """
 import os
 from django.contrib import admin
+from django.http import HttpResponseRedirect
 from django.urls import include, path, re_path, reverse
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
@@ -36,7 +37,10 @@ admin.site.site_url = '/djud/admin/login'
 
 @ensure_csrf_cookie
 def frontend_index(request):
-    return render(request, template_name='index.html')
+    if request.META['REQUEST_URI'][:5].upper()=='/DJUD':
+        return HttpResponseRedirect("/")
+    else:
+        return render(request, template_name='index.html')
 
 
 urlpatterns = [
@@ -103,5 +107,5 @@ if ENABLE_SSO is False:
 #     urlpatterns.extend([])
 
 if (str(os.getenv('ENV', )) == 'branch') or (str(os.getenv('ENV')) == 'hml'):
-    urlpatterns += static("djud"+settings.MEDIA_URL,
+    urlpatterns += static("/djud"+settings.MEDIA_URL,
                           document_root=settings.MEDIA_ROOT)

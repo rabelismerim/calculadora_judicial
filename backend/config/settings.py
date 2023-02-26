@@ -190,9 +190,8 @@ if IS_HML:
 else:
     MIDDLEWARE.append("corsheaders.middleware.CorsMiddleware")
     INSTALLED_APPS.append('corsheaders')
-    CORS_ALLOWED_ORIGINS = [
-        "http://localhost:8080",
-        "https://brfojwanderley:5173",
+    CORS_ALLOWED_ORIGINS_REGEXES = [
+        r"*",
     ]
     CORS_ALLOW_ALL_ORIGINS = True
     CORS_ALLOW_CREDENTIALS = True
@@ -289,10 +288,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-if IS_HML:
-    STATIC_URL = '/djud/static/'
-else:
-    STATIC_URL = '/static/'
+STATIC_URL = '/djud/static/'
 STATIC_ROOT = 'var/static_root/'
 STATICFILES_DIRS = ['static']
 if DEBUG:
