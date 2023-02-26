@@ -1,7 +1,0 @@
-$base-font: Open Sans;
-$base-box: border-box; 
-
-@mixin base-page-text {
-    box-sizing: $base-box;
-    font-family: $base-font;
-}

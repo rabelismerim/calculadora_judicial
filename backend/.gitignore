@@ -1,8 +1,12 @@
 uploads
 uploads/
-
+log/
 /cert.crt
 /cert.key
 **/migrations/**
 !**/migrations
 !**/migrations/__init__.py
+__pycache__
+*.sqlite3
+static
+staticfiles

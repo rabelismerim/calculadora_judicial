@@ -14,7 +14,7 @@ class RegionApi(AbstractViewApi):
     serializer_class = RegionSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Region
-    schema = AutoSchema(tags=["Region - Comarca"])
+    schema = AutoSchema(tags=["Project - Region - Comarca"])
 
     query_params = [
         {
@@ -26,19 +26,3 @@ class RegionApi(AbstractViewApi):
             "schema": {"type": "string"}
         }
     ]
-
-    def post(self, request, *args, **kwargs):
-        """
-           Create Region receiving a dict, return Region detail
-        """
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        new_region = serializer.validated_data
-        region = self.model.objects.create(**new_region)
-        region.save()
-        return JsonResponse({'region': self.serializer_class(region, many=False).data}, status=status.HTTP_201_CREATED)
-
-    def get(self, request, *args, **kwargs):
-        """Get Regions details"""
-        regions = self.get_query()
-        return JsonResponse({'regions': regions})

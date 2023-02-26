@@ -1,8 +1,6 @@
-from core.abstract.schemas import AbstractModelSchema
-from projects.project.models import Project
 from rest_framework import serializers
 from projects.lawyer.models import Lawyer
-from projects.abstract_project.schemas import AbstractDescriptionSchema
+from base.schemas import AbstractDescriptionSchema
 
 
 class LawyerSchema(AbstractDescriptionSchema):

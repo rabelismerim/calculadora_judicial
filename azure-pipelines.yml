@@ -8,8 +8,12 @@ trigger:
 
 pool: 
   name: TR
+<<<<<<< HEAD
+  agent: TRHMG
+=======
   demands:
   - Agent.Name -equals TRHMG
+>>>>>>> origin/main
   vmImage: ubuntu-latest
 strategy:
   matrix:

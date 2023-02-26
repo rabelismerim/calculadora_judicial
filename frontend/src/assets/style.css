@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700;900&display=swap');
+
+:root {
+  color: #213547;
+  
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  
+  --primary: 198,100%,35%;
+  --secondary: 81, 68%, 44%;
+  --background: 0, 0%, 96%;
+  --base: 0, 0%, 100%;
+  --dark-base: 0, 0%, 0%;
+  --content: 0, 0%, 0%;
+  --dark-content: 0, 0%, 100%;
+  --white: 0, 0%, 100%;
+}
+
+a {
+  font-weight: 500;
+  text-decoration: inherit;
+}
+
+a:hover {
+  color: #86bc24;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: 'Open Sans', Helvetica, Arial, sans-serif !important;
+  line-height: 1.5;
+  font-weight: 400;
+  background-color: hsl(var(--background));
+  color: hsl(var(--content));
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+.card {
+  padding: 2em;
+}
+
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+}

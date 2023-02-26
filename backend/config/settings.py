@@ -36,18 +36,25 @@ SECRET_KEY = str(os.getenv('SECRET_KEY'))
 # else:
 #     DEBUG = str(os.getenv('ENV')) == "True"
 
-DEBUG = str(os.getenv('DEBUG', 'false')).lower() == 'true'
+PASSWD_DEV = str(os.getenv('PASSWD_DEV', 'fake_passwd'))
 
-BRANCH_DEV = str(os.getenv('ENV', 'branch')) == 'branch'
+DEBUG = str(os.getenv('DEBUG', 'false')).lower() == 'true'
+ENABLE_SSO = str(os.getenv('ENABLE_SSO', 'true')).lower() == 'true'
+
+BRANCH_DEV = str(os.getenv('ENV', 'hml')) == 'branch'
+BRANCH_LOCAL = str(os.getenv('ENV', 'hml')) == 'dev'
 
 IS_LOCALHOST = str(os.getenv('IS_LOCALHOST', 'false')
                    ).lower() == 'true' and BRANCH_DEV
+
+IS_HML = any([BRANCH_LOCAL, BRANCH_DEV]) is False
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'uat.fadigitallab.deloitte.com.br',
     'localhost',
     'brdcvmdev07',
+    'brfojwanderley',
     'brsphearndt',  # TEMP
 ]
 
@@ -66,25 +73,29 @@ INSTALLED_APPS = [
     'import_export',
     'rest_framework',
 
+    # Base
+    'base',
+    'base.claim',
+    'base.coins',
+
     # Creditors
     'creditors',
-    'creditors.archive',
-    'creditors.archive_recovering',
     'creditors.budgets',
     'creditors.classes',
-    'creditors.coins',
     'creditors.notice',
-    'creditors.recovering',
-    'creditors.claim',
+
+    # Recovering
+    'recovering',
+    'recovering.archive',
+    'recovering.archive_recovering',
 
     # Project
-    'projects.project',
+    'projects',
     'projects.judge',
     'projects.lawyer',
     'projects.region',  # Comarca
-    'projects.abstract_project',
+    'projects.court',  # Vara
     'projects.engagement',
-    'projects.client',
     'projects.project_user',
 
     # Core
@@ -97,6 +108,7 @@ INSTALLED_APPS = [
     'calculation',
     'calculation.criterion',
     'calculation.verdict',
+    'calculation.funds',  # Verbas
 
     # Rate - Indice
     'rates',
@@ -113,7 +125,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'core.drfmsal.middleware.MsalMiddleware',
     'crum.CurrentRequestUserMiddleware',  # Get current request in Models
 ]
 
@@ -139,9 +150,14 @@ TEMPLATES = [
     },
 ]
 
+
+DEFAULT_AUTHENTICATION_CLASSES = [
+    "rest_framework.authentication.SessionAuthentication",
+]
+
 # Logging file
 # https://docs.djangoproject.com/en/3.2/topics/logging/
-if IS_LOCALHOST is False:
+if IS_HML:
     LOGGING = {
         'version': 1,
         'disable_existing_loggers': False,
@@ -170,6 +186,25 @@ if IS_LOCALHOST is False:
         },
     }
 
+# Enable Cors to dev mode or local mode
+else:
+    MIDDLEWARE.append("corsheaders.middleware.CorsMiddleware")
+    INSTALLED_APPS.append('corsheaders')
+    CORS_ALLOWED_ORIGINS_REGEXES = [
+        r"*",
+    ]
+    CORS_ALLOW_ALL_ORIGINS = True
+    CORS_ALLOW_CREDENTIALS = True
+
+# Enable Login SSO
+if ENABLE_SSO:
+    MIDDLEWARE.append('core.drfmsal.middleware.MsalMiddleware')
+else:
+    INSTALLED_APPS.append('rest_framework.authtoken')
+    DEFAULT_AUTHENTICATION_CLASSES.append(
+        'rest_framework.authentication.TokenAuthentication')
+
+
 # DRFMSAL AUTHENTICATION
 DRFMSAL_CONFIG = {
     'id_web_configs': 'MS_ID_WEB_CONFIGS',
@@ -194,6 +229,9 @@ if BRANCH_DEV:
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
+            'TEST': {
+                'MIRROR': 'default',
+            },
         }
     }
 else:
@@ -250,7 +288,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/djud/static/'
 STATIC_ROOT = 'var/static_root/'
 STATICFILES_DIRS = ['static']
 if DEBUG:
@@ -279,9 +317,7 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.ScopedRateThrottle',
     ],
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.SessionAuthentication",
-    ),
+    "DEFAULT_AUTHENTICATION_CLASSES": DEFAULT_AUTHENTICATION_CLASSES,
     "DEFAULT_RENDERER_CLASSES": (
         "core.drfmsal.renderer.APIRendererInterceptor",
         "rest_framework.renderers.BrowsableAPIRenderer"
@@ -302,3 +338,5 @@ if DEBUG:
     LOGOUT_REDIRECT_URL = f"/{BASE_URL}docs/swagger/"
     LOGIN_REDIRECT_URL = f"/{BASE_URL}docs/swagger/"
     LOGOUT_URL = "/djud/logout/"
+
+RATE_FILE_TYPES = ['pdf', 'vnd.ms-excel', 'xlsx', 'xls']
