@@ -63,6 +63,9 @@ class AbstractStatement(AbstractModel):
     class Meta:
         abstract = True
 
+    def __str__(self):
+        return f'{self.data_base} - {self.historical_value}'
+
 
 class StatementFunds(AbstractStatement):
     """
@@ -94,18 +97,106 @@ class StatementIntegrations(AbstractStatement):
     description = models.CharField('Descrição da verba', max_length=150)
 
 
-# class StatementIRFF(AbstractStatement):
-#     """
-#     A model class that represents a financial statement for an integration.
+class StatementIRRF(AbstractModel):
+    """
+    This class represents a statement of taxable amounts for a given fund, used to calculate the Income Tax Withholding at Source
+    (IRRF - Imposto de Renda Retido na Fonte in Portuguese) in Brazil. It is a subclass of AbstractStatement.
 
-#     This class inherits from the AbstractStatement class and represents a financial statement for an integration. It has the same attributes as the AbstractStatement class, which include a data base date, historical value, and a foreign key relationship to a Funds object. Additionally, it has a 'description' attribute, which is a character field with a maximum length of 150 that represents a description of the integration.
+    Attributes:
+    fund (ForeignKey): The foreign key to the Fund model, representing the fund associated with this statement.
+    fund_name (CharField): The name of the fund associated with this statement.
+    taxable_amounts (FloatField): The taxable amounts for this statement, used to calculate the IRFF.
+    """
+    fund = models.ForeignKey(Funds, on_delete=models.PROTECT)
+    fund_name = models.CharField('Verbas', max_length=150)
+    taxable_amounts = models.FloatField('Valores tributáveis')
 
-#     Attributes:
-#     This class has the same attributes as the AbstractStatement class, as well as:
-#     description (CharField): Represents a description of the integration.
 
-#     Methods:
-#     This class does not define any methods.
-#     """
-#     fund = models.CharField('Verbas', max_length=150)
-#     taxable_amounts = models.FloatField('Valores tributáveis')
+class AbstractMonetaryCorrection(AbstractModel):
+    """
+    The AbstractMonetaryCorrection class is an abstract base class that defines the common attributes and methods for monetary corrections.
+
+    Attributes:
+
+    index_data_base (float): The index value at the reference date for the correction.
+    index_recovering (float): The index value at the recovery date for the correction.
+    corrected_value (float): The corrected value obtained by applying the correction factors.
+    Methods:
+
+    __str__: Returns a string representation of the object.
+    The class is not meant to be instantiated directly, but to be subclassed by concrete classes that specify the statement to which the correction applies.
+    """
+    index_data_base = models.FloatField('Indice na data base')
+    index_recovering = models.FloatField('Indice na recuperação')
+    corrected_value = models.FloatField('Valor corrigido')
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return f'{self.index_data_base} - {self.index_recovering} - {self.corrected_value}'
+
+
+class MonetaryCorrection(AbstractMonetaryCorrection):
+    """
+    A class that represents a monetary correction for a statement of funds.
+
+    Attributes:
+    statement (StatementFunds): The statement of funds to which the monetary correction applies.
+    """
+    statement = models.OneToOneField(StatementFunds, on_delete=models.PROTECT)
+
+
+class MonetaryCorrectionIntegrations(AbstractMonetaryCorrection):
+    """
+    A class that represents a monetary correction for a statement of integrations.
+
+    Attributes:
+    statement (StatementIntegrations): The statement of integrations to which the monetary correction applies.
+    """
+    statement = models.OneToOneField(
+        StatementIntegrations, on_delete=models.PROTECT)
+
+
+class TotalValuesIRRF(AbstractModel):
+    """
+    A class that represents the total values of IRRF (Income Tax on Individuals) for a fund.
+
+    Attributes:
+    taxable_amount (float): The taxable amount of the IRRF.
+    months_period (int): The number of months in the period for the IRRF calculation.
+    taxable_portion (float): The taxable portion of the IRRF.
+    aliquot (float): The aliquot of the IRRF.
+    installment_deducted (float): The installment deducted from the IRRF.
+    irrf_per_month (float): The value of the IRRF per month.
+    irrf_per_period (float): The value of the IRRF for the entire period.
+    fund (Funds): The fund to which the IRRF applies.
+    """
+    taxable_amount = models.FloatField('Valor tributável')
+    months_period = models.PositiveIntegerField('Meses no período')
+    taxable_portion = models.FloatField('Parcela tributável')
+    aliquot = models.FloatField('Alíquota')
+    installment_deducted = models.FloatField('Parcela a deduzir')
+    irrf_per_month = models.FloatField('Valor IRRF por mês')
+    irrf_per_period = models.FloatField('Valor do IRRF no período')
+    fund = models.OneToOneField(Funds, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f'{self.fund} - {self.taxable_amount}'
+
+
+class TotalValuesFunds(AbstractModel):
+    """
+    A class that represents the total values of a fund.
+
+    Attributes:
+    value_historical (float): The historical value of the fund.
+    value_corrected (float): The corrected value of the fund.
+    fund (Funds): The fund to which the values apply.
+    """
+    value_historical = models.FloatField('Valor histórico')
+    value_corrected = models.FloatField('Valor corrigido')
+    fund = models.OneToOneField(Funds, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f'{self.fund} - {self.value_historical} - {self.value_corrected}'

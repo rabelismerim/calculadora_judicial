@@ -1,5 +1,6 @@
 from base.claim.models import Claim
 from calculation.criterion.models import Criterion
+from calculation.funds.views import CreateFunds
 from calculation.models import Calculation
 from calculation.schemas import CalculationSchema
 from calculation.verdict.models import TypeCalculation, Verdict
@@ -38,6 +39,7 @@ class CalculationApi(AbstractViewApi):
         serializer.is_valid(raise_exception=True)
         new_calculation = serializer.validated_data
         new_verdicts = new_calculation.pop('verdict', None)
+        new_funds = new_calculation.pop('funds', None)
         calculation = self.model.objects.create(**new_calculation)
         creditor = calculation.creditor
         clain_creditor = creditor.get_clain_creditor()
@@ -69,5 +71,7 @@ class CalculationApi(AbstractViewApi):
                 new_verdict['type_calculation'] = TypeCalculation.objects.create(
                     **type_calculation)
                 Verdict.objects.create(**new_verdict)
-
+        if new_funds:
+            for fund in new_funds:
+                CreateFunds(fund, calculation.id).create_funds()
         return JsonResponse({'calculation': self.serializer_class(calculation, many=False).data}, status=status.HTTP_201_CREATED)

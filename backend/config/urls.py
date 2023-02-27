@@ -76,8 +76,8 @@ urlpatterns = [
     path('djud/logout/', views.LogoutView.as_view()),
 
     # VUE FRONTEND
-    re_path(r'^(?!djud\/admin|djud\/api).*$',
-            frontend_index, name='frontend'),
+    re_path(r'^(?!djud\/admin|djud\/api).*$', frontend_index, name='frontend'),
+    # path('djud/<path:resource>', frontend_index, name='frontend'),
 
     # Documentation
     path(f'{BASE_URL}docs/swagger/', TemplateView.as_view(template_name='api_docs.html',

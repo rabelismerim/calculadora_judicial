@@ -56,6 +56,7 @@ ALLOWED_HOSTS = [
     'brdcvmdev07',
     'brfojwanderley',
     'brsphearndt',  # TEMP
+    'brspwaoliveira'
 ]
 
 
@@ -136,7 +137,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            'static/src/vue/dist/', os.path.join(BASE_DIR, template)
+            'djud/static/src/vue/dist/', os.path.join(BASE_DIR, template)
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -190,8 +191,10 @@ if IS_HML:
 else:
     MIDDLEWARE.append("corsheaders.middleware.CorsMiddleware")
     INSTALLED_APPS.append('corsheaders')
-    CORS_ALLOWED_ORIGINS_REGEXES = [
-        r"*",
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:8080",
+        "https://brfojwanderley:5173",
+        'https://localhost:5173'
     ]
     CORS_ALLOW_ALL_ORIGINS = True
     CORS_ALLOW_CREDENTIALS = True
@@ -288,9 +291,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/djud/static/'
+STATIC_URL = 'djud/static/'
+# STATIC_URL = '/static/'
 STATIC_ROOT = 'var/static_root/'
-STATICFILES_DIRS = ['djud/static/']
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'djud/static/'),
+    # os.path.join(BASE_DIR, 'static/'),
+]
 if DEBUG is False:
     STATIC_ROOT = os.path.join(BASE_DIR, 'var/static_root/')
 

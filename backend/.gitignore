@@ -10,4 +10,4 @@ __pycache__
 *.sqlite3
 static
 staticfiles
-package-lock.json
+**/package-lock.json

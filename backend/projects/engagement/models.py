@@ -18,6 +18,9 @@ class ProjectEngagement(AbstractModel):
     def user_names(self):
         return list(self.users.all().values(username=models.F('user__username')))
 
+    def __str__(self):
+        return str(self.project) if hasattr(self, 'project') else f'{self.user_names}'
+
 
 class Engagement(AbstractModel):
     number = models.CharField('Numero do engagement',

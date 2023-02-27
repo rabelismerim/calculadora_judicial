@@ -1,6 +1,6 @@
 from django.urls import include, path
 
-from projects.views import ProjectApi, ProjectDetailApi, AbstractProjectApi
+from projects.views import ProjectApi, ProjectDetailApi
 
 
 urlpatterns = [

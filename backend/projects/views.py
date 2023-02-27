@@ -18,7 +18,7 @@ User = get_user_model()
 class AbstractProjectApi(AbstractViewApi):
     """HTTP methods for Project"""
     serializer_class = ProjectSchema
-    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    permission_classes = [permissions.AllowAny]
     model = Project
     http_method_names = ['get']
     # exclude = ('recoverings', 'status_display')
