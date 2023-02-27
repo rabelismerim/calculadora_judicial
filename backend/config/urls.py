@@ -37,10 +37,11 @@ admin.site.site_url = '/djud/admin/login'
 
 @ensure_csrf_cookie
 def frontend_index(request):
-    if request.META['REQUEST_URI'][:5].upper()=='/DJUD':
+    if request.META.get('REQUEST_URI', 'none')[:5].upper() == '/DJUD':
         return HttpResponseRedirect("/")
     else:
         return render(request, template_name='index.html')
+
 
 urlpatterns = [
     # API Authentication
