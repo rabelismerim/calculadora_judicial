@@ -16,3 +16,5 @@ export const getInitials = (text: string) => {
     return initials.slice(0, 2)
   return initials
 }
+
+export const redirectTo = (url: string) => window.location.replace(url)
