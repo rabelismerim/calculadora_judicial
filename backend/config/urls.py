@@ -76,7 +76,7 @@ urlpatterns = [
     path('djud/logout/', views.LogoutView.as_view()),
 
     # VUE FRONTEND
-    re_path(r'^(?!djud\/static|djud\/admin|djud\/api).*$',
+    re_path(r'^(?!djud\/admin|djud\/api).*$',
             frontend_index, name='frontend'),
 
     # Documentation
