@@ -289,17 +289,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-if IS_HML:
-    STATIC_URL = '/djud/static/'
-else:
-    STATIC_URL = '/static/'
+STATIC_URL = '/djud/static/'
 STATIC_ROOT = 'var/static_root/'
-STATICFILES_DIRS = ['static']
-if DEBUG:
-    STATICFILES_DIRS = [
-        os.path.join(BASE_DIR, 'static')
-    ]
-else:
+STATICFILES_DIRS = ['djud/static/']
+if DEBUG is False:
     STATIC_ROOT = os.path.join(BASE_DIR, 'var/static_root/')
 
 # Default primary key field type
