@@ -46,6 +46,8 @@ const loadProjects = async () => {
   }
 }
 
+const openProject = (_: Event, { id }: any) => router.push(`/projeto/${id}`)
+
 onMounted(() => loadProjects())
 
 const columns = [
@@ -185,6 +187,7 @@ const columns = [
         row-key="id"
         flat
         bordered
+        @row-click="openProject"
       >
         <template #body-cell-name="props">
           <q-td :props="props">
