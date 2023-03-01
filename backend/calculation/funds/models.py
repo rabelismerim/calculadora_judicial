@@ -112,6 +112,30 @@ class StatementIRRF(AbstractModel):
     taxable_amounts = models.FloatField('Valores tributáveis')
 
 
+class StatementDocuments(AbstractStatement):
+    """
+    A model class that represents a financial statement for a fund.
+
+    This class inherits from the AbstractStatement class and represents a financial statement for a fund. It has the same attributes as the AbstractStatement class, which include a data base date, historical value, and a foreign key relationship to a Funds object.
+
+    Attributes:
+    This class has the same attributes as the AbstractStatement class.
+
+    Methods:
+    This class does not define any methods.
+    """
+    number = models.CharField('Número do documento', max_length=100)
+    data_base = models.DateField('Data base')
+    historical_value = models.FloatField('Valor histórico')
+    fund = models.OneToOneField(Funds, on_delete=models.PROTECT)
+
+    # class Meta:
+    #     abstract = True
+
+    def __str__(self):
+        return f'{self.data_base} - {self.historical_value}'
+
+
 class AbstractMonetaryCorrection(AbstractModel):
     """
     The AbstractMonetaryCorrection class is an abstract base class that defines the common attributes and methods for monetary corrections.
@@ -158,6 +182,84 @@ class MonetaryCorrectionIntegrations(AbstractMonetaryCorrection):
         StatementIntegrations, on_delete=models.PROTECT)
 
 
+class MonetaryCorrectionDocuments(AbstractMonetaryCorrection):
+    """
+    A class that represents a monetary correction for a statement of integrations.
+
+    Attributes:
+    statement (StatementIntegrations): The statement of integrations to which the monetary correction applies.
+    """
+    statement = models.OneToOneField(
+        StatementDocuments, on_delete=models.PROTECT)
+
+
+class ArrearsCharges(AbstractModel):  # Encargos moratórios
+    """
+    A class that represents a monetary correction for a statement of integrations.
+
+    Attributes:
+    statement (StatementIntegrations): The statement of integrations to which the monetary correction applies.
+    """
+    statement = models.OneToOneField(
+        StatementDocuments, on_delete=models.PROTECT)
+
+
+class AbstractValue(AbstractModel):
+    """
+    Defines an abstract model for a value associated with a StatementPF object. Inherits from the AbstractModel
+    class, which provides common fields such as id, created_at, and updated_at. Contains a value field
+    for the associated value, as well as a OneToOneField to a StatementPF object. This class is meant to be
+    subclassed to create specific value types associated with a StatementPF object, such as TaxDays,
+    RecurralDeposit, DefaultInterest, DefaultInterestDue, TotalDue, and TotalLawyer. The abstract flag
+    in the Meta class indicates that this model should not be instantiated directly.
+    """
+    value = models.FloatField('Valor')
+    arrears_charges = models.OneToOneField(
+        ArrearsCharges, on_delete=models.PROTECT)
+
+    class Meta:
+        abstract = True
+
+
+class Days(AbstractValue):
+    """
+    Defines an abstract model for a value associated with a ArrearsCharges object. Inherits from the AbstractModel
+    class, which provides common fields such as id, created_at, and updated_at. Contains a value field
+    for the associated value, as well as a OneToOneField to a ArrearsCharges object. Subclass this model to add
+    specific fields as needed and include a field description for the value type.
+    """
+
+
+class Interest(AbstractValue):
+    """
+    Defines an abstract model for a value associated with a ArrearsCharges object. Inherits from the AbstractModel
+    class, which provides common fields such as id, created_at, and updated_at. Contains a value field
+    for the associated value, as well as a OneToOneField to a ArrearsCharges object. Subclass this model to add
+    specific fields as needed and include a field description for the value type.
+    """
+
+
+class Fine(AbstractValue):
+    """
+    Defines an abstract model for a value associated with a ArrearsCharges object. Inherits from the AbstractModel
+    class, which provides common fields such as id, created_at, and updated_at. Contains a value field
+    for the associated value, as well as a OneToOneField to a ArrearsCharges object. Subclass this model to add
+    specific fields as needed and include a field description for the value type.
+    """
+
+
+class AmountDue(AbstractModel):
+    """
+    Defines an abstract model for a value associated with a StatementDocuments object. Inherits from the AbstractModel
+    class, which provides common fields such as id, created_at, and updated_at. Contains a value field
+    for the associated value, as well as a OneToOneField to a StatementDocuments object. Subclass this model to add
+    specific fields as needed and include a field description for the value type.
+    """
+    value = models.FloatField('Valor')
+    statement_document = models.OneToOneField(
+        StatementDocuments, on_delete=models.PROTECT)
+
+
 class TotalValuesIRRF(AbstractModel):
     """
     A class that represents the total values of IRRF (Income Tax on Individuals) for a fund.
@@ -172,31 +274,61 @@ class TotalValuesIRRF(AbstractModel):
     irrf_per_period (float): The value of the IRRF for the entire period.
     fund (Funds): The fund to which the IRRF applies.
     """
-    taxable_amount = models.FloatField('Valor tributável')
+    taxable_amount = models.FloatField('Valor tributável', default=0)
     months_period = models.PositiveIntegerField('Meses no período')
-    taxable_portion = models.FloatField('Parcela tributável')
-    aliquot = models.FloatField('Alíquota')
-    installment_deducted = models.FloatField('Parcela a deduzir')
-    irrf_per_month = models.FloatField('Valor IRRF por mês')
-    irrf_per_period = models.FloatField('Valor do IRRF no período')
+    taxable_portion = models.FloatField('Parcela tributável', default=0)
+    aliquot = models.FloatField('Alíquota', default=0)
+    installment_deducted = models.FloatField('Parcela a deduzir', default=0)
+    irrf_per_month = models.FloatField('Valor IRRF por mês', default=0)
+    irrf_per_period = models.FloatField('Valor do IRRF no período', default=0)
     fund = models.OneToOneField(Funds, on_delete=models.PROTECT)
+
+    # TODO: somar todas as StatementIRRF. Calcular no evento signals.post.save ou em Procedure
+    total = models.FloatField('Total da soma dos valores', default=0)
 
     def __str__(self):
         return f'{self.fund} - {self.taxable_amount}'
 
 
-class TotalValuesFunds(AbstractModel):
+class AbstractTotalValuesFunds(AbstractModel):
     """
-    A class that represents the total values of a fund.
+    A class that represents the total values of a fund, which is an abstract model.
 
     Attributes:
-    value_historical (float): The historical value of the fund.
-    value_corrected (float): The corrected value of the fund.
+    total_historical (float): The historical value of the fund.
+    total_corrected (float): The corrected value of the fund.
     fund (Funds): The fund to which the values apply.
     """
-    value_historical = models.FloatField('Valor histórico')
-    value_corrected = models.FloatField('Valor corrigido')
     fund = models.OneToOneField(Funds, on_delete=models.PROTECT)
 
+    # TODO: somar todas as StatementFunds or StatementFundsIntegrations. Calcular no evento signals.post.save ou em Procedure
+    total_historical = models.FloatField('Total valor histórico', default=0)
+    total_corrected = models.FloatField('Total valor corrigido', default=0)
+
     def __str__(self):
-        return f'{self.fund} - {self.value_historical} - {self.value_corrected}'
+        return f'{self.fund} - {self.total_historical} - {self.total_corrected}'
+
+    class Meta:
+        abstract = True
+
+
+class TotalValuesFunds(AbstractTotalValuesFunds):
+    """
+    A class that represents the total values of a fund, which is a concrete implementation of AbstractTotalValuesFunds.
+
+    Attributes:
+    total_historical (float): The historical value of the fund.
+    total_corrected (float): The corrected value of the fund.
+    fund (Funds): The fund to which the values apply.
+    """
+
+
+class TotalValuesFundsIntegrations(AbstractTotalValuesFunds):
+    """
+    A class that represents the total values of a fund, which is a concrete implementation of AbstractTotalValuesFunds.
+
+    Attributes:
+    total_historical (float): The historical value of the fund.
+    total_corrected (float): The corrected value of the fund.
+    fund (Funds): The fund to which the values apply.
+    """

@@ -110,6 +110,9 @@ INSTALLED_APPS = [
     'calculation.criterion',
     'calculation.verdict',
     'calculation.funds',  # Verbas
+    'calculation.statement',  # Extrato contábil
+    'calculation.statement_pf',  # Extrato contábil PF
+    'calculation.statement_pj',  # Extrato contábil PJ
 
     # Rate - Indice
     'rates',

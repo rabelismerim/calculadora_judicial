@@ -12,9 +12,8 @@ from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 
 
-class CalculationApi(AbstractViewApi):
+class AbstractCalculationApi(AbstractViewApi):
     """HTTP methods for Calculation"""
-    http_method_names = ['post', 'get']
     serializer_class = CalculationSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Calculation
@@ -30,6 +29,16 @@ class CalculationApi(AbstractViewApi):
             "schema": {"type": "string"}
         }
     ]
+
+
+class CalculationDetailApi(AbstractCalculationApi):
+    """HTTP methods for Calculation"""
+    http_method_names = ['get']
+
+
+class CalculationApi(AbstractCalculationApi):
+    """HTTP methods for Calculation"""
+    http_method_names = ['post', 'get']
 
     def post(self, request, *args, **kwargs):
         """

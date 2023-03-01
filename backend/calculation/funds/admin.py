@@ -16,14 +16,22 @@ admin.site.register(Funds)
 """
 
 from django.contrib import admin
-from calculation.funds.models import Funds, StatementIntegrations, StatementFunds, StatementIRRF, MonetaryCorrection, MonetaryCorrectionIntegrations, TotalValuesIRRF, TotalValuesFunds
+from calculation.funds.models import Days, Interest, Fine, AmountDue, Funds, StatementIntegrations, StatementFunds, StatementIRRF, StatementDocuments, MonetaryCorrection, MonetaryCorrectionIntegrations, MonetaryCorrectionDocuments, TotalValuesIRRF, TotalValuesFunds, TotalValuesFundsIntegrations, ArrearsCharges
 
 
+admin.site.register(Days)
+admin.site.register(Interest)
+admin.site.register(Fine)
+admin.site.register(AmountDue)
 admin.site.register(Funds)
 admin.site.register(StatementFunds)
 admin.site.register(StatementIntegrations)
 admin.site.register(StatementIRRF)
+admin.site.register(StatementDocuments)
 admin.site.register(MonetaryCorrection)
 admin.site.register(MonetaryCorrectionIntegrations)
+admin.site.register(MonetaryCorrectionDocuments)
 admin.site.register(TotalValuesIRRF)
 admin.site.register(TotalValuesFunds)
+admin.site.register(TotalValuesFundsIntegrations)
+admin.site.register(ArrearsCharges)
