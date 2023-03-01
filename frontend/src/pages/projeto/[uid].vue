@@ -1,113 +1,10 @@
 <script setup lang="ts">
+const attrs = useAttrs()
 const router = useRouter()
 
-let loading = $ref(false)
+const loading = $ref(false)
 const filterBy = $ref('')
-let projects = $ref([])
-const projectsCount = computed(() => projects.length)
-const gaugeValues = computed(() => Object.entries(projects
-  .reduce((acc: any, { status }) => {
-    if (!acc[status])
-      acc[status] = 0
-    acc[status]++
-    return acc
-  }, {}))
-  .map(([label, count]) => ({ label, count })))
-
-const responsibleList = computed(() => Object.entries(projects
-  .reduce((acc: any, { responsible }) => {
-    if (!acc[responsible])
-      acc[responsible] = 0
-    acc[responsible]++
-    return acc
-  }, {}))
-  .map(([label, count]) => ({ label, count })))
-
-const usageData: any[] = []
-
-const loadProjects = async () => {
-  loading = true
-  try {
-    const projectResult = await projectService.getProjects()
-
-    const recoveringResult = await recoveringService.getRecovering()
-    const getRecovering = (project: string) => recoveringResult.find(({ projectId }: any) => projectId === project)
-
-    projects = projectResult.map((project: any) => ({
-      ...getRecovering(project.id),
-      ...project,
-    }))
-  }
-  catch (error) {
-    console.warn('ERROR LOADING PROJECTS:', error)
-  }
-  finally {
-    loading = false
-  }
-}
-
-onMounted(() => loadProjects())
-
-const columns = [
-  {
-    name: 'name',
-    field: 'name',
-    required: true,
-    label: 'Projeto',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'process',
-    field: 'processNumber',
-    label: 'N° do Processo',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'createdAt',
-    field: 'createdAt',
-    label: 'Data de Criação',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'responsible',
-    field: 'responsible',
-    label: 'Responsável',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'company',
-    field: 'company',
-    label: 'Recuperanda(s)',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'fase',
-    field: 'fase',
-    label: 'Fase',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'status',
-    field: 'status',
-    label: 'Status',
-    align: 'left',
-    sortable: true,
-  },
-] as {
-  name: string
-  label: string
-  field: string
-  required?: boolean
-  align?: 'left' | 'right' | 'center'
-  sortable?: boolean
-
-}[]
+const project = $ref({})
 </script>
 
 <template>
@@ -230,14 +127,3 @@ const columns = [
     </div>
   </div>
 </template>
-
-<style lang="scss">
-.my-header-table {
-  border-radius: 2px;
-}
-</style>
-
-<route lang="yaml">
-meta:
-  authentication: true
-</route>

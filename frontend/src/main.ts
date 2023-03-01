@@ -29,8 +29,12 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  const isAuthenticated = await $user.login()
-  if (isAuthenticated)
+  if (!to.meta?.authentication) {
+    next()
+    return
+  }
+  const { authorized } = await usersService.getMyProfile()
+  if (authorized)
     next()
 })
 

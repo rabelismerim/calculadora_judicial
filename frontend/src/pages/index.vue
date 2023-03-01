@@ -5,7 +5,8 @@ const loading = $ref(false)
 const enter = async () => {
   router.push({ path: '/projetos' })
 }
-const { isAuthenticated, hasPermission } = $user
+onMounted(() => $user.login())
+const { hasPermission } = $user
 </script>
 
 <template>
@@ -24,7 +25,7 @@ const { isAuthenticated, hasPermission } = $user
         </p>
         <div class="flex flex-wrap gap-3">
           <Btn
-            v-if="isAuthenticated"
+            v-if="hasPermission"
             label="Entrar"
             :loading="loading"
             loading-label="carregando seus dados..."
@@ -32,10 +33,10 @@ const { isAuthenticated, hasPermission } = $user
           />
           <Btn
             v-else
-            color="secondary"
             label="Solicitar acesso"
             loading-label="enviando Solicitação..."
             :loading="loading"
+            outlined
             @click="loading = !loading"
           />
         </div>

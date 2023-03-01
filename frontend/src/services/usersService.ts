@@ -2,7 +2,7 @@ const login = () => api
   .get('/drfmsal_signin/djud/')
 
 const getMyProfile = () => api
-  .get('/drfmsal_signstatus')
+  .get('/drfmsal_signstatus/')
   .then(({ data }) => data.profile)
   .then(({
     authenticated,
