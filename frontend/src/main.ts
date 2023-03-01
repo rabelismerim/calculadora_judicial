@@ -36,6 +36,8 @@ router.beforeEach(async (to, from, next) => {
   const { authorized } = await usersService.getMyProfile()
   if (authorized)
     next()
+  else
+    next('/')
 })
 
 app.use(Quasar, {
