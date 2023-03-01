@@ -13,7 +13,10 @@ from core.permission.views import CheckHasPermission
 
 
 class AbstractCalculationApi(AbstractViewApi):
-    """HTTP methods for Calculation"""
+    """This class provides basic HTTP methods for managing Calculation Objects. 
+    It includes a serializer_class and required permission_classes to authenticate the users, 
+    a model instance with a corresponding schema as well as custom query parameters to retrieve data.
+    """
     serializer_class = CalculationSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Calculation
@@ -32,7 +35,8 @@ class AbstractCalculationApi(AbstractViewApi):
 
 
 class CalculationDetailApi(AbstractCalculationApi):
-    """HTTP methods for Calculation"""
+    """A class for handling detail HTTP requests for a Calculation object
+    HTTP methods for retrieving particular Calculation detail"""
     http_method_names = ['get']
 
 
@@ -42,7 +46,18 @@ class CalculationApi(AbstractCalculationApi):
 
     def post(self, request, *args, **kwargs):
         """
-           Create Calculation receiving a dict, return Calculation detail
+        Creates a new instance of the Calculation model, receiving a dictionary as an argument and returning details of the newly created instance. 
+        Before creation of the Calculation instance, it will create related Criterion and Verdict instances based on the input data. 
+        Furthermore, if any Funds objects are found in the input data, it will also iteratively call the CreateFunds helper class to create the necessary
+        Funds instances related to the Calculation. Finally, a JsonResponse with the serialized Calculation instance is returned upon successful completion.
+        
+        Arguments
+        request -- Containing the input data, a Request object that supports .data attribute access.
+        args -- Additional positional arguments, if given.
+        kwargs -- Additional keyword arguments, if given.
+        
+        Returns
+        A JsonResponse containing the serialized Calculation instance.
         """
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)

@@ -1,3 +1,21 @@
+"""
+Serializes the fields of the Statement model for use in the API.
+
+This module defines a Django REST Framework serializer that inherits from both
+`serializers.ModelSerializer` and a custom `AbstractModelSchema` class. The serializer
+converts instances of the `Statement` model to and from JSON format, and
+validates incoming data based on the model's fields.
+
+Attributes:
+    - `Meta`: A nested class that specifies metadata for the serializer. The `model`
+      attribute specifies the model class that the serializer should be based on, and
+      `fields` lists the names of all fields that should be included in the serialized
+      representation.
+
+Usage example:
+serializer = StatementSchema()
+"""
+
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 from rest_framework import serializers, renderers
@@ -6,7 +24,7 @@ from django.contrib.auth.models import Permission, Group
 
 
 class PermissionSchema(serializers.ModelSerializer):
-    """Serializer Permission fields"""
+    """This class provides a serializers.ModelSerializer subclass to serialize the Permission model fields."""
 
     class Meta:
         model = Permission
@@ -14,7 +32,13 @@ class PermissionSchema(serializers.ModelSerializer):
 
 
 class GroupSchema(serializers.ModelSerializer):
-    """Serializer Group fields"""
+    """Serializer for fields of a Group.
+
+    This serializer contains two main fields, name and permissions, along with the extra_kwargs attribute 
+    for additional keyword arguments for the field.
+    The validate method is responsible for validating the group name and returning either the group's ID 
+    if the group exists, or raising a ValidationError if it does not exist.
+    """
     permissions = PermissionSchema(many=True, read_only=True)
 
     class Meta:
@@ -25,6 +49,16 @@ class GroupSchema(serializers.ModelSerializer):
         }
 
     def validate(self, data):
+        """
+        Validate password is strong and same as password confirm.
+
+        Args:
+            password (str): Password to validate.
+            password_confirm (str): Password confirmation.
+
+        Returns:
+            errors (list): List of errors found in validations.
+        """
         data = dict(data)
         group = Group.objects.filter(name=data['name']).first()
         if group:
@@ -33,7 +67,22 @@ class GroupSchema(serializers.ModelSerializer):
 
 
 class UserDttSchema(serializers.ModelSerializer):
-    """Serializer AbstractModel fields"""
+    """
+    Serializer for fields of the abstract model.
+
+    Attributes:
+        renderer_classes (list): A list of JSONRenderer objects.
+        id (UUIDField): Unique identifier for the model instance. Read-only.
+        password (CharField): Model password with a minimum length of 8 characters. 
+                              Write-only, required. 
+        password_confirm (CharField): Confirmation of the model's password with a 
+                                     minimum length of 8 characters. Write-only, 
+                                     required. 
+        user_permissions (PermissionSchema): Permissions authorization details associated with model.
+                                 Read-only.
+
+        groups (GroupSchema): Groups associated with the model. Read and write access.
+    """
     renderer_classes = [renderers.JSONRenderer]
     id = serializers.UUIDField(read_only=True)
     password = serializers.CharField(
@@ -51,7 +100,16 @@ class UserDttSchema(serializers.ModelSerializer):
 
     @staticmethod
     def __check_passwd(password, password_confirm):
-        """Validate password is strong and same password confirm"""
+        """
+        Validate password is strong and same as password confirm.
+
+        Args:
+            password (str): Password to validate.
+            password_confirm (str): Password confirmation.
+
+        Returns:
+            errors (list): List of errors found in validations.
+        """
         errors = []
 
         try:
@@ -64,7 +122,15 @@ class UserDttSchema(serializers.ModelSerializer):
         return errors
 
     def validate(self, data):
-        """Extend validator method to add custom validators"""
+        """
+        Extends validator method to add custom validators.
+
+        Args:
+            data (dict): Data to be validated.
+
+        Raises:
+            ValidationError: If validation fails.
+        """
         password = data.get('password')
         password_confirm = data.get('password_confirm')
         errors = []

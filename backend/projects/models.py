@@ -18,7 +18,16 @@ STATUS_CHOICES = (
 
 
 class Project(AbstractDescription):
-    '''Class responsible for the grand project/engagement'''
+    """
+    This class Project represents a grand project/engagement.
+    It contains the properties project_start and project_end for specifying the start and end date of the project, 
+    as well as a status field with choices specified by the constant STATUS_CHOICES. 
+    Additionally it stores relations to other models such as Judge, Lawyer, and Region through foreign keys,
+    as well as a one-to-one relationship to the model ProjectEngagement through the field engagement. 
+    Lastly it has two fields containing relationships to the User model, namely manager and partner. 
+    The property num_recovering is responsible for retrieving the number of recovering related to this project. 
+    Lastly the string representation of this object is defined in the method __str__.
+    """
 
     project_start = models.DateField(null=True, blank=True)
     project_end = models.DateField(null=True, blank=True)
