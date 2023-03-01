@@ -13,7 +13,7 @@ const logout = () => {
 
 <template>
   <nav class="flex bg-black h-14 px-8 justify-between items-center sticky top-0 z-100">
-    <div class="mr-8 flex items-center gap-6">
+    <div class="mr-8 flex items-center">
       <Img :src="`${baseUrl}/logo/deloitte-small-dark.svg`" :height="24" class="sm:hidden" />
       <Img :src="`${baseUrl}/logo/deloitte-dark.svg`" :height="24" class="hidden sm:block" />
       <Img :src="`${baseUrl}/logo/app.svg`" :height="30" class="hidden sm:block" />
