@@ -42,7 +42,7 @@ class TotalLawyer(AbstractModel):
         total_pf (Statement): The statement that this total belongs to.
     """
     value = models.FloatField('Valor')
-    total_pf = models.OneToOneField(Statement, on_delete=models.PROTECT)
+    statement = models.OneToOneField(Statement, on_delete=models.PROTECT)
 
 
 # TODO: Tabela estatica. Criar no evento signals.post.save ou em Procedure

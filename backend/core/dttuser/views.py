@@ -1,5 +1,9 @@
-from http.client import IM_USED
-from re import I
+"""
+This module defines a Api's classes that provides HTTP methods for managing DttUser objects models.
+It is extended from an AbstractViewApi class and includes a CheckHasPermission permission class for authorization.
+Api's responds with JSON data and uses rest_framework.schemas.openapi.AutoSchema to generate the API documents.
+Api's classes use the DttUser model and schema DttUser to work with data.
+"""
 from config.settings import ENABLE_SSO, IS_LOCALHOST, PASSWD_DEV
 from core.abstract.views import AbstractViewApi
 from core.dttuser.schemas import UserDttSchema
@@ -16,7 +20,8 @@ User = get_user_model()
 
 
 class AbstractUserDttApi(AbstractViewApi):
-    """HTTP methods for User Deloitte"""
+    """HTTP methods for interfacing with the User Deloitte modelThis method returns a JSON response that contains the user details given a filtering criteria. 
+    The serializer is used to access the model object, and then the data is returned in a JSON format."""
     serializer_class = UserDttSchema
 
     if IS_LOCALHOST:
@@ -48,7 +53,7 @@ class AbstractUserDttApi(AbstractViewApi):
 
 
 class UserDttDetailApi(AbstractUserDttApi):
-    """HTTP methods for User Deloitte"""
+    """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like query_params and schema."""
     http_method_names = ['get']
     query_params = []
     schema = AutoSchema(
@@ -58,7 +63,10 @@ class UserDttDetailApi(AbstractUserDttApi):
     )
 
     def get(self, request, *args, **kwargs):
-        """Get User detail"""
+        """
+        This method returns a JSON response that contains the user details as per authenticated user. 
+        The serializer is used to access the model object, and then the data is returned in a JSON format.
+        """
         serializer = self.get_serializer_class()
         user = serializer(self.model.objects.filter(
             id=request.user.id).first(), many=False).data
@@ -66,12 +74,13 @@ class UserDttDetailApi(AbstractUserDttApi):
 
 
 class UserDttApi(AbstractUserDttApi):
-    """HTTP methods for User Deloitte"""
+    """HTTP methods for interacting with Deloitte user data."""
     http_method_names = ['post', 'get']
 
     def post(self, request, *args, **kwargs):
         """
-           Create User receiving a dict, return user detail
+        Create a new user by recieving data in the form of dictionaries and 
+        returning the specific user details.
         """
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -93,7 +102,7 @@ class UserDttApi(AbstractUserDttApi):
         return JsonResponse({'user': serializer(request.user, many=False).data}, status=status.HTTP_201_CREATED)
 
     def get(self, request, *args, **kwargs):
-        """Get Users details"""
+        """Get the details of all existing users."""
         users = self.get_query()
         return JsonResponse({'users': users})
 

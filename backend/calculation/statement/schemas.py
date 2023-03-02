@@ -16,12 +16,48 @@ Usage example:
 serializer = StatementSchema()
 """
 
-from calculation.statement.models import Statement
+from calculation.statement.models import Lawyer, Statement, TotalLawyer
 from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
 
 from calculation.statement_pf.schemas import StatementPFSchema
 from calculation.statement_pj.schemas import StatementPJSchema
+
+
+class LawyerSchema(AbstractDescriptionSchema):
+    """
+    Serializes the fields of the Lawyer model for use in the API.
+
+    This module defines a Django REST Framework serializer that inherits from a custom
+    AbstractDescriptionSchema class. The serializer converts instances of the Lawyer
+    model to and from JSON format, and validates incoming data based on the model's fields.
+
+    Usage example:
+    serializer = LawyerSchema()
+    """
+
+    class Meta:
+        model = Lawyer
+        exclude = ('total_lawyer', )
+
+
+class TotalLawyerSchema(AbstractDescriptionSchema):
+    """
+    Serializes the fields of the TotalLawyer model for use in the API.
+
+    This module defines a Django REST Framework serializer that inherits from a custom
+    AbstractDescriptionSchema class. The serializer converts instances of the TotalLawyer
+    model to and from JSON format, and validates incoming data based on the model's fields.
+
+    Usage example:
+    serializer = TotalLawyerSchema()
+    """
+
+    lawyers = LawyerSchema(many=True, source='lawyer_set')
+
+    class Meta:
+        model = TotalLawyer
+        exclude = ('statement', )
 
 
 class StatementSchema(AbstractDescriptionSchema):
@@ -49,6 +85,9 @@ class StatementSchema(AbstractDescriptionSchema):
 
     statement_pj = StatementPJSchema(
         read_only=True, source='statementpj', exclude=('statement_id', ))
+
+    lawyer = TotalLawyerSchema(read_only=True, source='totallawyer')
+
     calculation_id = serializers.UUIDField(read_only=True)
 
     conclusion_display = serializers.CharField(source='get_conclusion_display')
