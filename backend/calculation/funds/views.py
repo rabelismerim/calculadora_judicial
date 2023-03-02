@@ -13,6 +13,7 @@ from core.abstract.views import AbstractViewApi
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions, status
 from core.permission.views import CheckHasPermission
+from django.apps import apps
 
 
 class FundsApi(AbstractViewApi):
@@ -139,3 +140,16 @@ class CreateFunds:
                 fund=fund, **new_statement_documents)
 
         return fund
+
+# Teste de criação de formula em formato json
+# jsons = {
+#     'model': 'AbstractMonetaryCorrection',
+#     'field1': 'index_data_base',
+#     'field2': 'index_recovering',
+#     'field3': 'calculation.value_historic',
+#     'operation': 'field3*field2/field1',
+# }
+
+
+# User = apps.get_model(app_label='funds', model_name='Funds')
+# print(User, 'funds')

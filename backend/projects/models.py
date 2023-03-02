@@ -39,10 +39,16 @@ class Project(AbstractDescription):
     lawyer = models.ForeignKey(Lawyer, on_delete=models.PROTECT)
     region = models.ForeignKey(Region, on_delete=models.PROTECT)
     court = models.ForeignKey(Court, on_delete=models.PROTECT)
-    manager = models.ForeignKey(
-        User, on_delete=models.PROTECT, related_name='manager')
-    partner = models.ForeignKey(
-        User, on_delete=models.PROTECT, related_name='partner')
+    legal_manager = models.ForeignKey(
+        User, on_delete=models.PROTECT, related_name='legal_manager', null=True)  # Gerente juridico
+    calculation_manager = models.ForeignKey(
+        User, on_delete=models.PROTECT, related_name='calculation_manager', null=True)  # Gerente de calculos
+    financial_manager = models.ForeignKey(
+        User, on_delete=models.PROTECT, related_name='financial_manager', null=True)  # Gerente Financeiro
+    legal_partner = models.ForeignKey(
+        User, on_delete=models.PROTECT, related_name='legal_partner', null=True)  # Socio juridico
+    financial_partner = models.ForeignKey(
+        User, on_delete=models.PROTECT, related_name='financial_partner', null=True)  # Socio Financeiro
     engagement = models.OneToOneField(
         ProjectEngagement, on_delete=models.PROTECT)
 

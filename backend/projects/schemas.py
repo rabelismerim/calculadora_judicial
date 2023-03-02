@@ -4,7 +4,6 @@ from core.abstract.schemas import AbstractModelSchema
 from core.dttuser.schemas import UserDttSchema
 from projects.court.models import Court
 from projects.court.schemas import CourtSchema
-from projects.engagement.models import Engagement
 from projects.judge.models import Judge
 from projects.lawyer.models import Lawyer
 from projects.models import STATUS_CHOICES, Project
@@ -12,10 +11,11 @@ from rest_framework import serializers
 from projects.judge.schemas import JudgeSchema
 from projects.lawyer.schemas import LawyerSchema
 from projects.project_user.models import ProjectUser
+from projects.project_user.schemas import ProjectUserProjectSchema
 from projects.region.models import Region
 from projects.region.schemas import RegionSchema
 from projects.engagement.schemas import ProjectEngagementSchema
-from recovering.schemas import RecoveringListSchema, RecoveringSchema
+from recovering.schemas import RecoveringSchema
 from utils import get_user_model
 User = get_user_model()
 
@@ -48,13 +48,27 @@ class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):
     recoverings = RecoveringSchema(source='recovering_set',
                                    many=True, read_only=False, exclude=('project_id', 'project'))
 
-    manager = UserDttSchema(many=False, read_only=True)
-    manager_id = serializers.IntegerField(write_only=True)
-    partner = UserDttSchema(many=False, read_only=True)
-    partner_id = serializers.IntegerField(write_only=True)
+    legal_manager = UserDttSchema(many=False, read_only=True)
+    legal_manager_id = serializers.IntegerField(write_only=True)
+
+    calculation_manager = UserDttSchema(many=False, read_only=True)
+    calculation_manager_id = serializers.IntegerField(write_only=True)
+
+    financial_manager = UserDttSchema(many=False, read_only=True)
+    financial_manager_id = serializers.IntegerField(write_only=True)
+
+    legal_partner = UserDttSchema(many=False, read_only=True)
+    legal_partner_id = serializers.IntegerField(write_only=True)
+
+    financial_partner = UserDttSchema(many=False, read_only=True)
+    financial_partner_id = serializers.IntegerField(write_only=True)
 
     user_names = serializers.ListField(read_only=True)
-    users = serializers.ListField(write_only=True, child=UserSerializer())
+    users_ss = ProjectUserProjectSchema(
+        read_only=True, many=True, source='engagement.users')
+    executors = serializers.ListField(write_only=True, child=UserSerializer())
+    approvers = serializers.ListField(write_only=True, child=UserSerializer())
+    reviewers = serializers.ListField(write_only=True, child=UserSerializer())
 
     status_display = serializers.CharField(
         source='get_status_display', read_only=True)
@@ -65,36 +79,50 @@ class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):
         model = Project
         fields = '__all__'
 
-    def validate_users(self, users):
-        if not users:
+    def validate_executors(self, executors):
+        if not executors:
             raise serializers.ValidationError(
                 ['Necessário selecionar ao menos um usuário'])
 
-        if isinstance(users, list) is False:
+        if isinstance(executors, list) is False:
             raise serializers.ValidationError(
-                ['O campo: "users" deve estar no formato de lista'])
-        return users
+                ['O campo executors deve estar no formato de lista'])
+        return executors
 
-    def validate_engagements(self, engagement_data):
-
-        list_eng = []
-
-        if not engagement_data:
+    def validate_approvers(self, approvers):
+        if not approvers:
             raise serializers.ValidationError(
-                ['Necessário adicionar ao menos um número de engagement'])
+                ['Necessário selecionar ao menos um usuário'])
 
-        if isinstance(engagement_data, list) is False:
+        if isinstance(approvers, list) is False:
             raise serializers.ValidationError(
-                ['O campo: "engagement" deve estar no formato de lista'])
+                ['O campo approvers deve estar no formato de lista'])
+        return approvers
 
-        for engagement_number in engagement_data:
-            if Engagement.objects.filter(number=engagement_number).exists():
-                raise serializers.ValidationError(
-                    ['Número de engagement já cadastrado'])
+    def validate_reviewers(self, reviewers):
+        if not reviewers:
+            raise serializers.ValidationError(
+                ['Necessário selecionar ao menos um usuário'])
 
-            list_eng.append(engagement_number)
+        if isinstance(reviewers, list) is False:
+            raise serializers.ValidationError(
+                ['O campo reviewers deve estar no formato de lista'])
+        return reviewers
 
-        return list_eng
+    def validate(self, data):
+        data = dict(data)
+        engagement_data = data.pop('engagement').pop('engagement')
+        executors = data.pop('executors', [])
+        executors = [x['id'] for x in executors]
+        approvers = data.pop('approvers', [])
+        approvers = [x['id'] for x in approvers]
+        reviewers = data.pop('reviewers', [])
+        reviewers = [x['id'] for x in reviewers]
+        data['engagement'] = engagement_data
+        data['executors'] = executors
+        data['approvers'] = approvers
+        data['reviewers'] = reviewers
+        return super(ProjectSchema, self).validate(data)
 
 
 class ProjectListSchema(ProjectSchema):
@@ -106,7 +134,7 @@ class ProjectListSchema(ProjectSchema):
     class Meta:
         model = Project
         fields = ("id", 'description', 'status',
-                  'status_display', 'created_at', 'engagement', 'num_recovering','is_adm')
+                  'status_display', 'created_at', 'engagement', 'num_recovering', 'is_adm')
 
 
 exclude = ('create_user', 'created_at',

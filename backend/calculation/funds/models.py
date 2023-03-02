@@ -13,6 +13,8 @@ from django.db import models
 from calculation.models import Calculation
 from core.abstract.models import AbstractModel
 
+from django.apps import apps
+
 
 class Funds(AbstractModel):
     """
