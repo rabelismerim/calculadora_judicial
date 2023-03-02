@@ -65,6 +65,18 @@ class GroupSchema(serializers.ModelSerializer):
             return super(GroupSchema, self).validate({'id': group.id})
         raise serializers.ValidationError(['Grupo não encontrado'])
 
+    def __init__(self, *args, **kwargs):
+        fields = kwargs.pop('exclude', None)
+        super().__init__(*args, **kwargs)
+        if fields is not None:
+            allowed = set(fields)
+            existing = set(self.fields)
+            for field_name in allowed:
+                try:
+                    self.fields.pop(field_name)
+                except:
+                    pass
+
 
 class UserDttSchema(serializers.ModelSerializer):
     """
@@ -90,7 +102,7 @@ class UserDttSchema(serializers.ModelSerializer):
     password_confirm = serializers.CharField(
         min_length=8, write_only=True, required=True)
     user_permissions = PermissionSchema(many=True, read_only=True)
-    # groups = GroupSchema(many=True, read_only=False)
+    groups = GroupSchema(many=True, read_only=False, exclude=('permissions', ))
 
     class Meta:
         model = get_user_model()
@@ -133,6 +145,7 @@ class UserDttSchema(serializers.ModelSerializer):
         """
         password = data.get('password')
         password_confirm = data.get('password_confirm')
+        data['groups'] = [x.get('id') for x in data.get('groups', [])]
         errors = []
         errors.extend(self.__check_passwd(password, password_confirm))
         if errors:

@@ -15,9 +15,8 @@ from rest_framework import permissions
 User = get_user_model()
 
 
-class UserDttApi(AbstractViewApi):
+class AbstractUserDttApi(AbstractViewApi):
     """HTTP methods for User Deloitte"""
-    http_method_names = ['post', 'get']
     serializer_class = UserDttSchema
 
     if IS_LOCALHOST:
@@ -47,6 +46,29 @@ class UserDttApi(AbstractViewApi):
         },
     ]
 
+
+class UserDttDetailApi(AbstractUserDttApi):
+    """HTTP methods for User Deloitte"""
+    http_method_names = ['get']
+    query_params = []
+    schema = AutoSchema(
+        tags=['User'],
+        component_name='UserDetail',
+        operation_id_base='UserDetail',
+    )
+
+    def get(self, request, *args, **kwargs):
+        """Get User detail"""
+        serializer = self.get_serializer_class()
+        user = serializer(self.model.objects.filter(
+            id=request.user.id).first(), many=False).data
+        return JsonResponse({'user': user})
+
+
+class UserDttApi(AbstractUserDttApi):
+    """HTTP methods for User Deloitte"""
+    http_method_names = ['post', 'get']
+
     def post(self, request, *args, **kwargs):
         """
            Create User receiving a dict, return user detail
@@ -59,6 +81,7 @@ class UserDttApi(AbstractViewApi):
         password = new_user.pop('password', None)
         user = self.model.objects.create(**new_user)
         user.set_password(password)
+        user.groups.add(groups)
         user.save()
 
         if IS_LOCALHOST:
@@ -66,7 +89,8 @@ class UserDttApi(AbstractViewApi):
                 username=new_user['username'], password=password)
             if user_authenticated:
                 login(self.request, user_authenticated)
-        return JsonResponse({'user': UserDttSchema(user, many=False).data}, status=status.HTTP_201_CREATED)
+        serializer = self.get_serializer_class()
+        return JsonResponse({'user': serializer(request.user, many=False).data}, status=status.HTTP_201_CREATED)
 
     def get(self, request, *args, **kwargs):
         """Get Users details"""
