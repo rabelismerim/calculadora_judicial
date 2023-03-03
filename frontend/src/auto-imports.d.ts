@@ -3,6 +3,7 @@ export {}
 declare global {
   const $$: typeof import('vue/macros')['$$']
   const $: typeof import('vue/macros')['$']
+  const $Notification: typeof import('./stores/$Notification')['default']
   const $computed: typeof import('vue/macros')['$computed']
   const $customRef: typeof import('vue/macros')['$customRef']
   const $ref: typeof import('vue/macros')['$ref']
@@ -63,6 +64,7 @@ declare global {
   const makeDestructurable: typeof import('@vueuse/core')['makeDestructurable']
   const markRaw: typeof import('vue')['markRaw']
   const nextTick: typeof import('vue')['nextTick']
+  const notify: typeof import('./stores/$Notification')['notify']
   const onActivated: typeof import('vue')['onActivated']
   const onBeforeMount: typeof import('vue')['onBeforeMount']
   const onBeforeRouteLeave: typeof import('vue-router')['onBeforeRouteLeave']
@@ -117,6 +119,7 @@ declare global {
   const templateRef: typeof import('@vueuse/core')['templateRef']
   const throttledRef: typeof import('@vueuse/core')['throttledRef']
   const throttledWatch: typeof import('@vueuse/core')['throttledWatch']
+  const throwError: typeof import('./stores/$Notification')['throwError']
   const toRaw: typeof import('vue')['toRaw']
   const toReactive: typeof import('@vueuse/core')['toReactive']
   const toRef: typeof import('vue')['toRef']
@@ -313,6 +316,7 @@ declare module 'vue' {
   interface ComponentCustomProperties {
     readonly $$: UnwrapRef<typeof import('vue/macros')['$$']>
     readonly $: UnwrapRef<typeof import('vue/macros')['$']>
+    readonly $Notification: UnwrapRef<typeof import('./stores/$Notification')['default']>
     readonly $computed: UnwrapRef<typeof import('vue/macros')['$computed']>
     readonly $customRef: UnwrapRef<typeof import('vue/macros')['$customRef']>
     readonly $ref: UnwrapRef<typeof import('vue/macros')['$ref']>
@@ -373,6 +377,7 @@ declare module 'vue' {
     readonly makeDestructurable: UnwrapRef<typeof import('@vueuse/core')['makeDestructurable']>
     readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
     readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
+    readonly notify: UnwrapRef<typeof import('./stores/$Notification')['notify']>
     readonly onActivated: UnwrapRef<typeof import('vue')['onActivated']>
     readonly onBeforeMount: UnwrapRef<typeof import('vue')['onBeforeMount']>
     readonly onBeforeRouteLeave: UnwrapRef<typeof import('vue-router')['onBeforeRouteLeave']>
@@ -427,6 +432,7 @@ declare module 'vue' {
     readonly templateRef: UnwrapRef<typeof import('@vueuse/core')['templateRef']>
     readonly throttledRef: UnwrapRef<typeof import('@vueuse/core')['throttledRef']>
     readonly throttledWatch: UnwrapRef<typeof import('@vueuse/core')['throttledWatch']>
+    readonly throwError: UnwrapRef<typeof import('./stores/$Notification')['throwError']>
     readonly toRaw: UnwrapRef<typeof import('vue')['toRaw']>
     readonly toReactive: UnwrapRef<typeof import('@vueuse/core')['toReactive']>
     readonly toRef: UnwrapRef<typeof import('vue')['toRef']>

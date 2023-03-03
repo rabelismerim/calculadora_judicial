@@ -13,11 +13,13 @@ declare module '@vue/runtime-core' {
     GraphLine: typeof import('./components/common/GraphLine.vue')['default']
     Img: typeof import('./components/common/Img.vue')['default']
     NavBar: typeof import('./components/common/NavBar.vue')['default']
+    NotificationArea: typeof import('./components/common/NotificationArea.vue')['default']
     ProgressList: typeof import('./components/common/ProgressList.vue')['default']
     QTable: typeof import('quasar')['QTable']
     QTd: typeof import('quasar')['QTd']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Spinner: typeof import('./components/common/Spinner.vue')['default']
+    TimeoutBar: typeof import('./components/common/TimeoutBar.vue')['default']
   }
 }
