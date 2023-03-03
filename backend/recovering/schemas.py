@@ -64,7 +64,16 @@ class RecoveringSchema(AbstractDescriptionSchema):
 
 
 class RecoveringListSchema(RecoveringSchema):
+    """
+    Serializes the fields of the Recovering model for use in the API.
 
+    This module defines a Django REST Framework serializer that inherits from a custom
+    AbstractDescriptionSchema class. The serializer converts instances of the Recovering
+    model to and from JSON format, and validates incoming data based on the model's fields.
+
+    Usage example:
+    serializer = RecoveringListSchema()
+    """
     class Meta:
         model = Recovering
         fields = ('id', 'entity')

@@ -22,12 +22,12 @@ class {{app_name | title}}Schema(AbstractDescriptionSchema):
     """
     Serializes the fields of the {{app_name | title}} model for use in the API.
 
-    This module defines a Django REST Framework serializer that inherits from a custom
+    This class defines a Django REST Framework serializer that inherits from a custom
     AbstractDescriptionSchema class. The serializer converts instances of the {{app_name | title}}
     model to and from JSON format, and validates incoming data based on the model's fields.
 
     Usage example:
-    serializer = {{app_name | title}}
+    serializer = {{app_name | title}}Schema()
     """
     class Meta:
         model = {{app_name | title}}
