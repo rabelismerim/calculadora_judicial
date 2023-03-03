@@ -16,7 +16,49 @@ admin.site.register(Comparative)
 """
 
 from django.contrib import admin
-from comparative.models import Comparative
+from calculation.comparative.models import *
 
 
 admin.site.register(Comparative)
+admin.site.register(ComparativeFundsIntegrations)
+
+
+class ComparativeFundsAdmin(admin.ModelAdmin):
+    readonly_fields = ('value_dtt', 'difference', 'percentage')
+
+
+readonly_fields = ('data_base_dtt',
+                   'difference_date',
+
+                   'recurral_deposit_dtt',
+                   'difference_recurral_deposit',
+                   'percentage_recurral_deposit',
+
+                   'total_updated_creditor',
+                   'total_updated_dtt',
+                   'difference_total_updated',
+                   'percentage_total_updated',
+
+                   'default_interest_dtt',
+                   'difference_default_interest',
+                   'percentage_default_interest',
+
+                   'total_due_creditor',
+                   'total_due_dtt',
+                   'difference_total_due',
+                   'percentage_total_due',
+
+                   )
+
+
+class ApprovedCalculationAdmin(admin.ModelAdmin):
+    readonly_fields = readonly_fields
+
+
+class UpdatedCalculationAdmin(admin.ModelAdmin):
+    readonly_fields = readonly_fields
+
+
+admin.site.register(ComparativeFunds, ComparativeFundsAdmin)
+admin.site.register(ApprovedCalculation, ApprovedCalculationAdmin)
+admin.site.register(UpdatedCalculation, UpdatedCalculationAdmin)

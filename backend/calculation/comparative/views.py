@@ -6,8 +6,8 @@ Api's classes use the Comparative model and schema Comparative to work with data
 """
 
 
-from comparative.schemas import ComparativeSchema
-from comparative.models import Comparative
+from calculation.comparative.schemas import ComparativeSchema
+from calculation.comparative.models import Comparative
 from core.abstract.views import AbstractViewApi
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions

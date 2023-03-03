@@ -113,6 +113,7 @@ INSTALLED_APPS = [
     'calculation.statement',  # Extrato contábil
     'calculation.statement_pf',  # Extrato contábil PF
     'calculation.statement_pj',  # Extrato contábil PJ
+    'calculation.comparative',  # Comparativo
 
     # Rate - Indice
     'rates',

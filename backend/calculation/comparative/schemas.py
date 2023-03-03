@@ -16,7 +16,7 @@ Usage example:
 serializer = ComparativeSchema()
 """
 
-from comparative.models import Comparative
+from calculation.comparative.models import Comparative
 from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
 
