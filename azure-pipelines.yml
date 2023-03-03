@@ -13,7 +13,7 @@ pool:
 strategy:
   matrix:
     DJUD:
-      PYTHON_VERSION: '3.9.6'
+      PYTHON_VERSION: '3.10.10'
   maxParallel: 3
 steps:
 - task: UsePythonVersion@0
@@ -39,7 +39,7 @@ steps:
       """Search all subdirectories for `manage.py`."""
       from glob import iglob
       from os import path
-      # Python >= 3.9.6
+      # Python >= 3.10.10
       manage_py = next(iglob(path.join('**', 'manage.py'), recursive=True), None)
       if not manage_py:
           raise SystemExit('Could not find a Django project')
