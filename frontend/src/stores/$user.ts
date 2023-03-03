@@ -13,12 +13,13 @@ const login = async () => {
     const user = await usersService.getMyProfile()
     store.value = user
 
-    if (!user.authenticated)
+    if (!user.authenticated && import.meta.env.PROD)
       redirectTo(`${window.location.origin}/djud/api/drfmsal_signin/djud/`)
 
     return user.authenticated
   }
-  catch (error) {
+  catch (error: any) {
+    throwError(error)
     console.warn('ERROR ON LOGIN:', error)
     router.push({ path: '/' })
   }

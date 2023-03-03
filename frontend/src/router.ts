@@ -21,12 +21,12 @@ router.beforeEach(async (to, from, next) => {
   }
   try {
     const { authenticated, authorized } = await usersService.getMyProfile()
-    if (!authenticated)
+    if (!authenticated && import.meta.env.PROD)
       redirectTo(`${window.location.origin}/djud/api/drfmsal_signin/djud/`)
     if (authorized)
       next()
   }
-  catch (error) {
+  finally {
     next('/')
   }
 })
