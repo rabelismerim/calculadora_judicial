@@ -18,7 +18,7 @@ const logout = () => {
       <Img :src="`${baseUrl}/logo/deloitte-dark.svg`" :height="24" class="hidden sm:block" />
       <Img :src="`${baseUrl}/logo/app.svg`" :height="30" class="hidden sm:block" />
     </div>
-    <div class="flex no-wrap flex-1 h-full overflow-x-auto overflow-y-hidden">
+    <div class="flex no-wrap flex-1 h-full overflow-x-auto overflow-y-hidden hide-scrollbar">
       <slot />
     </div>
     <div class="flex h-full items-center gap-3">
