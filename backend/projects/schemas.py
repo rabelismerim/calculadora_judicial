@@ -63,8 +63,8 @@ class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):
     financial_partner = UserDttSchema(many=False, read_only=True)
     financial_partner_id = serializers.IntegerField(write_only=True)
 
-    user_names = serializers.ListField(read_only=True)
-    users_ss = ProjectUserProjectSchema(
+    # user_names = serializers.ListField(read_only=True)
+    users = ProjectUserProjectSchema(
         read_only=True, many=True, source='engagement.users')
     executors = serializers.ListField(write_only=True, child=UserSerializer())
     approvers = serializers.ListField(write_only=True, child=UserSerializer())

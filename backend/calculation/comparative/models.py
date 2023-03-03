@@ -20,51 +20,32 @@ class Comparative(AbstractModel):
         return f'{self.calculation}'
 
 
-class CreditorDate(AbstractModel):
+class ApprovedCalculation(AbstractModel):  # Calculo homologado
     """
     This class is used to store a OneToOne relationship with the Calculation model.
     """
-    data_base = models.DateField('Data base do credor')
+    comparative = models.OneToOneField(Comparative, on_delete=models.PROTECT)
 
     def __str__(self):
-        return f'{self.data_base}'
+        return f'{self.comparative}'
 
 
-class DTTDate(AbstractModel):
+class UpdatedCalculation(AbstractModel):  # Calculo atualizado
     """
     This class is used to store a OneToOne relationship with the Calculation model.
     """
-    data_base = models.DateField('Data base do pedido de recuperação judicial')
+    comparative = models.OneToOneField(Comparative, on_delete=models.PROTECT)
 
     def __str__(self):
-        return f'{self.data_base}'
+        return f'{self.comparative}'
 
 
 class AbstractFields(AbstractModel):
     """
     This class is used to store a OneToOne relationship with the Calculation model.
     """
-    comparative = models.OneToOneField(Comparative, on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f'{self.comparative}'
-
-
-class ApprovedCalculation(AbstractModel):
-    """
-    This class is used to store a OneToOne relationship with the Calculation model.
-    """
-    comparative = models.OneToOneField(Comparative, on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f'{self.comparative}'
-
-
-class UpdatedCalculation(AbstractModel):
-    """
-    This class is used to store a OneToOne relationship with the Calculation model.
-    """
-    comparative = models.OneToOneField(Comparative, on_delete=models.PROTECT)
+    comparative = models.ForeignKey(
+        ApprovedCalculation, on_delete=models.PROTECT)
 
     def __str__(self):
         return f'{self.comparative}'

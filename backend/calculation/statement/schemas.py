@@ -1,9 +1,9 @@
 """
-Serializes the fields of the Statement model for use in the API.
+Serializes the fields of the Statement models for use in the API.
 
 This module defines a Django REST Framework serializer that inherits from both
 `serializers.ModelSerializer` and a custom `AbstractModelSchema` class. The serializer
-converts instances of the `Statement` model to and from JSON format, and
+converts instances of the `Statement` models to and from JSON format, and
 validates incoming data based on the model's fields.
 
 Attributes:
@@ -11,9 +11,6 @@ Attributes:
       attribute specifies the model class that the serializer should be based on, and
       `fields` lists the names of all fields that should be included in the serialized
       representation.
-
-Usage example:
-serializer = StatementSchema()
 """
 
 from calculation.statement.models import Lawyer, Statement, TotalLawyer

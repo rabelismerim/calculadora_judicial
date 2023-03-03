@@ -19,6 +19,7 @@ Attributes:
 
 from core.abstract.schemas import AbstractModelSchema
 from rest_framework import serializers
+from core.dttuser.schemas import GroupSchema
 from projects.project_user.models import ProjectUser
 
 
@@ -46,6 +47,8 @@ class ProjectUserProjectSchema(AbstractModelSchema):
         Kwargs:
             many=True, read_only=False, exclude=('field_to_exclude', )
     """
+    groups = GroupSchema(many=True, read_only=True, exclude=('permissions', ))
+
     class Meta:
         model = ProjectUser
         fields = '__all__'

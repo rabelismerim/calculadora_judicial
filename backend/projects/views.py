@@ -115,7 +115,8 @@ class ProjectApi(AbstractProjectApi):
             entity = recovering.pop('entity')
             new_archive_recovering = recovering.pop('archives', None)
             recovering['project'] = project
-            recovering['entity'] = Entity.objects.create(**entity)
+            recovering['entity'], created = Entity.objects.get_or_create(
+                **entity)
             new_recovering = Recovering.objects.create(**recovering)
             if new_archive_recovering:
                 for new_ in new_archive_recovering:

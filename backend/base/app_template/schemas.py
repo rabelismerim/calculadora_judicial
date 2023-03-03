@@ -11,9 +11,6 @@ Attributes:
       attribute specifies the model class that the serializer should be based on, and
       `fields` lists the names of all fields that should be included in the serialized
       representation.
-
-Usage example:
-serializer = {{app_name | title}}Schema()
 """
 
 from {{app_name}}.models import {{app_name | title}}
@@ -22,7 +19,16 @@ from rest_framework import serializers
 
 
 class {{app_name | title}}Schema(AbstractDescriptionSchema):
+    """
+    Serializes the fields of the {{app_name | title}} model for use in the API.
 
+    This module defines a Django REST Framework serializer that inherits from a custom
+    AbstractDescriptionSchema class. The serializer converts instances of the {{app_name | title}}
+    model to and from JSON format, and validates incoming data based on the model's fields.
+
+    Usage example:
+    serializer = {{app_name | title}}
+    """
     class Meta:
         model = {{app_name | title}}
         fields = "__all__"
