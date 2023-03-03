@@ -1,10 +1,19 @@
 <script setup lang="ts">
 const router = useRouter()
 
-const loading = $ref(false)
+let loading = $ref(false)
 const enter = async () => {
   router.push({ path: '/projetos' })
 }
+
+const requestPermission = () => {
+  loading = !loading
+  notify({
+    message: `text: adsfadsfs adsfadf, ${Date.now().toString()}`,
+    type: 'error',
+  })
+}
+
 onMounted(() => $user.login())
 const { hasPermission } = $user
 </script>
@@ -37,7 +46,7 @@ const { hasPermission } = $user
             loading-label="enviando Solicitação..."
             :loading="loading"
             outlined
-            @click="loading = !loading"
+            @click="requestPermission"
           />
         </div>
       </div>
