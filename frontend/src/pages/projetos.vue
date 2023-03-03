@@ -38,7 +38,7 @@ const loadProjects = async () => {
       ...project,
     }))
   }
-  catch (error: any) {
+  catch (error) {
     throwError(error)
     console.warn('ERROR LOADING PROJECTS:', error)
   }

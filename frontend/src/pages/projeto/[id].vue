@@ -12,7 +12,7 @@ onMounted(async () => {
     project = await projectService.getProject(attrs.id)
   }
   catch (error) {
-
+    throwError(error)
   }
   finally {
     loading = false

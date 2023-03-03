@@ -21,7 +21,12 @@ export const notify = ({ message, id = Date.now(), timeout = 20, type = 'informa
   }
 }
 
-export const throwError = ({ message, id = Date.now(), timeout }: NotificationOptions) => {
+export const throwError = (error: any) => {
+  let { code, message, id = Date.now(), timeout } = error
+
+  if (code === 'ERR_NETWORK')
+    message = 'Problemas no Servidor...'
+
   notify({ message, id, timeout, type: 'error' })
 }
 
