@@ -47,7 +47,7 @@ const onMouseMove = (event: MouseEvent) => {
       'text--color border-1 border--color rounded-.5': outlined,
       'hover:bg--base/10 text--color rounded-.5': transparent,
       'bg--color text-white border-1 border-black/12 rounded-.5': !transparent && !outlined,
-      'h-full rounded-0': grow,
+      'h-full rounded-0 min-w-fit': grow,
       'active:scale-110': !grow && !disabled,
     }"
     :style="{
