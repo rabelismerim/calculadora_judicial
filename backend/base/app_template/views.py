@@ -1,8 +1,8 @@
 """
-This module defines a {{app_name | title}}Api class that provides HTTP methods for managing {{app_name | title}} objects.
-It extends the AbstractViewApi class and includes a CheckHasPermission permission class for authorization.
-The API responds with JSON data and utilizes the rest_framework.schemas.openapi.AutoSchema for generating API documentation.
-The {{app_name | title}}Api class uses the {{app_name | title}} model and {{app_name | title}}Schema for working with data.
+This module defines a Api's classes that provides HTTP methods for managing {{app_name | title}} objects models.
+It is extended from an AbstractViewApi class and includes a CheckHasPermission permission class for authorization.
+Api's responds with JSON data and uses rest_framework.schemas.openapi.AutoSchema to generate the API documents.
+Api's classes use the {{app_name | title}} model and schema {{app_name | title}} to work with data.
 """
 
 

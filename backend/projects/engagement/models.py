@@ -24,7 +24,7 @@ class ProjectEngagement(AbstractModel):
 
 class Engagement(AbstractModel):
     number = models.CharField('Numero do engagement',
-                              max_length=10, unique=True)
+                              max_length=100, unique=True)
     project = models.ForeignKey(ProjectEngagement, on_delete=models.PROTECT)
 
     def __str__(self):

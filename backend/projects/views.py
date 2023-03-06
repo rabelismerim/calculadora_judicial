@@ -1,3 +1,5 @@
+from django.contrib.auth.models import Group
+from config.settings import GROUP_NAME_APPROVER, GROUP_NAME_EXECUTOR, GROUP_NAME_REVIEWER
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from rest_framework import status
@@ -6,7 +8,8 @@ from rest_framework import permissions
 from core.entity.models import Entity
 from core.permission.views import CheckHasPermission
 from projects.models import Project
-from projects.schemas import ProjectCreateSchema, ProjectSchema, ProjectListSchema
+from projects.project_user.models import ProjectUser
+from projects.schemas import ProjectSchema, ProjectListSchema
 from projects.engagement.models import Engagement, ProjectEngagement
 from recovering.archive.models import Archive
 from recovering.archive_recovering.models import ArchiveRecovering
@@ -18,10 +21,9 @@ User = get_user_model()
 class AbstractProjectApi(AbstractViewApi):
     """HTTP methods for Project"""
     serializer_class = ProjectSchema
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Project
     http_method_names = ['get']
-    # exclude = ('recoverings', 'status_display')
     schema = AutoSchema(tags=["Project"])
 
     query_params = [
@@ -69,8 +71,34 @@ class ProjectApi(AbstractProjectApi):
 
         recoverings = new_project.pop('recovering_set')
         engagements = new_project.pop('engagement')
-        users = new_project.pop('users', [])
-        users = [x['id'] for x in users]
+        executors = new_project.pop('executors', [])
+        approvers = new_project.pop('approvers', [])
+        reviewers = new_project.pop('reviewers', [])
+
+        users = []
+
+        group_executor, created = Group.objects.get_or_create(
+            name=GROUP_NAME_EXECUTOR)
+        group_approver, created = Group.objects.get_or_create(
+            name=GROUP_NAME_APPROVER)
+        group_reviewer, created = Group.objects.get_or_create(
+            name=GROUP_NAME_REVIEWER)
+
+        for user_django_id in executors:
+            project_user = ProjectUser.objects.create(user_id=user_django_id)
+            project_user.groups.add(group_executor.id)
+            project_user.save()
+            users.append(project_user.id)
+        for user_django_id in approvers:
+            project_user = ProjectUser.objects.create(user_id=user_django_id)
+            project_user.groups.add(group_approver.id)
+            project_user.save()
+            users.append(project_user.id)
+        for user_django_id in reviewers:
+            project_user = ProjectUser.objects.create(user_id=user_django_id)
+            project_user.groups.add(group_reviewer.id)
+            project_user.save()
+            users.append(project_user.id)
 
         project_engagement = ProjectEngagement.objects.create()  # Create ProjectEngagement
         project_engagement.users.add(*users)
@@ -87,7 +115,8 @@ class ProjectApi(AbstractProjectApi):
             entity = recovering.pop('entity')
             new_archive_recovering = recovering.pop('archives', None)
             recovering['project'] = project
-            recovering['entity'] = Entity.objects.create(**entity)
+            recovering['entity'], created = Entity.objects.get_or_create(
+                **entity)
             new_recovering = Recovering.objects.create(**recovering)
             if new_archive_recovering:
                 for new_ in new_archive_recovering:

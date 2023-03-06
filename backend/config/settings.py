@@ -110,6 +110,10 @@ INSTALLED_APPS = [
     'calculation.criterion',
     'calculation.verdict',
     'calculation.funds',  # Verbas
+    'calculation.statement',  # Extrato contábil
+    'calculation.statement_pf',  # Extrato contábil PF
+    'calculation.statement_pj',  # Extrato contábil PJ
+    'calculation.comparative',  # Comparativo
 
     # Rate - Indice
     'rates',
@@ -343,3 +347,7 @@ if DEBUG:
     LOGOUT_URL = "/djud/logout/"
 
 RATE_FILE_TYPES = ['pdf', 'vnd.ms-excel', 'xlsx', 'xls']
+
+GROUP_NAME_EXECUTOR = 'Executor'
+GROUP_NAME_APPROVER = 'Aprovador'
+GROUP_NAME_REVIEWER = 'Revisor'

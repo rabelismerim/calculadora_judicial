@@ -16,7 +16,9 @@ admin.site.register(Statement)
 """
 
 from django.contrib import admin
-from calculation.statement.models import Statement
+from calculation.statement.models import Statement, TotalLawyer, Lawyer
 
 
 admin.site.register(Statement)
+admin.site.register(TotalLawyer)
+admin.site.register(Lawyer)

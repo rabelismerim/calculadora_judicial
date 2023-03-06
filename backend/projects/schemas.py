@@ -4,7 +4,6 @@ from core.abstract.schemas import AbstractModelSchema
 from core.dttuser.schemas import UserDttSchema
 from projects.court.models import Court
 from projects.court.schemas import CourtSchema
-from projects.engagement.models import Engagement
 from projects.judge.models import Judge
 from projects.lawyer.models import Lawyer
 from projects.models import STATUS_CHOICES, Project
@@ -14,91 +13,101 @@ from projects.lawyer.schemas import LawyerSchema
 from projects.project_user.models import ProjectUser
 from projects.region.models import Region
 from projects.region.schemas import RegionSchema
-from projects.engagement.schemas import ProjectEngagementSchema
-from recovering.schemas import RecoveringListSchema, RecoveringSchema
 from utils import get_user_model
 User = get_user_model()
 
 
 class UserSerializer(serializers.Serializer):
+    """
+    Serializes the field id of the UserSerializer for use in the API.
+
+    Usage example:
+    serializer = UserSerializer
+    """
     id = serializers.IntegerField()
 
 
 class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):
-    """Serializer Project fields"""
+    """
+    Serializes the fields of the ProjectSchema model for use in the API.
 
-    judge = JudgeSchema(many=False, read_only=True)
-    judge_id = serializers.UUIDField(write_only=True)
+    This class defines a Django REST Framework serializer that inherits from a custom
+    AbstractDescriptionSchema class. The serializer converts instances of the Project
+    model to and from JSON format, and validates incoming data based on the model's fields.
 
-    lawyer = LawyerSchema(many=False, read_only=True)
-    lawyer_id = serializers.UUIDField(write_only=True)
-
-    region = RegionSchema(many=False, read_only=True)
-    region_id = serializers.UUIDField(write_only=True)
-
-    court = CourtSchema(many=False, read_only=True)
-    court_id = serializers.UUIDField(write_only=True)
-
-    engagement = ProjectEngagementSchema(
-        many=False, exclude=('project_id', 'users'))
-    # engagement = serializers.ListField(source='list_engagements')
-
-    # recovering = RecoveringSchema(
-    #     many=True, read_only=True, exclude=('project', ))
-    recoverings = RecoveringSchema(source='recovering_set',
-                                   many=True, read_only=False, exclude=('project_id', 'project'))
-
-    manager = UserDttSchema(many=False, read_only=True)
-    manager_id = serializers.IntegerField(write_only=True)
-    partner = UserDttSchema(many=False, read_only=True)
-    partner_id = serializers.IntegerField(write_only=True)
-
-    user_names = serializers.ListField(read_only=True)
-    users = serializers.ListField(write_only=True, child=UserSerializer())
-
-    status_display = serializers.CharField(
-        source='get_status_display', read_only=True)
-
-    num_recovering = serializers.IntegerField(read_only=True)
+    Usage example:
+    serializer = ProjectSchema()
+    """
 
     class Meta:
         model = Project
         fields = '__all__'
 
-    def validate_users(self, users):
-        if not users:
+    def validate_executors(self, executors):
+        """Validate executors with a list format"""
+        if not executors:
             raise serializers.ValidationError(
                 ['Necessário selecionar ao menos um usuário'])
 
-        if isinstance(users, list) is False:
+        if isinstance(executors, list) is False:
             raise serializers.ValidationError(
-                ['O campo: "users" deve estar no formato de lista'])
-        return users
+                ['O campo executors deve estar no formato de lista'])
+        return executors
 
-    def validate_engagements(self, engagement_data):
-
-        list_eng = []
-
-        if not engagement_data:
+    def validate_approvers(self, approvers):
+        """Validate approvers with a list format"""
+        if not approvers:
             raise serializers.ValidationError(
-                ['Necessário adicionar ao menos um número de engagement'])
+                ['Necessário selecionar ao menos um usuário'])
 
-        if isinstance(engagement_data, list) is False:
+        if isinstance(approvers, list) is False:
             raise serializers.ValidationError(
-                ['O campo: "engagement" deve estar no formato de lista'])
+                ['O campo approvers deve estar no formato de lista'])
+        return approvers
 
-        for engagement_number in engagement_data:
-            if Engagement.objects.filter(number=engagement_number).exists():
-                raise serializers.ValidationError(
-                    ['Número de engagement já cadastrado'])
+    def validate_reviewers(self, reviewers):
+        """Validate reviewers with a list format"""
+        if not reviewers:
+            raise serializers.ValidationError(
+                ['Necessário selecionar ao menos um usuário'])
 
-            list_eng.append(engagement_number)
+        if isinstance(reviewers, list) is False:
+            raise serializers.ValidationError(
+                ['O campo reviewers deve estar no formato de lista'])
+        return reviewers
 
-        return list_eng
+    def validate(self, data):
+        """
+        Validate the project schema by extracting the necessary data from Project object.
+        :param data: Project object.
+        :returns: Updated Project object with extracted data.
+        """
+        data = dict(data)
+        engagement_data = data.pop('engagement').pop('engagement')
+        executors = data.pop('executors', [])
+        executors = [x['id'] for x in executors]
+        approvers = data.pop('approvers', [])
+        approvers = [x['id'] for x in approvers]
+        reviewers = data.pop('reviewers', [])
+        reviewers = [x['id'] for x in reviewers]
+        data['engagement'] = engagement_data
+        data['executors'] = executors
+        data['approvers'] = approvers
+        data['reviewers'] = reviewers
+        return super(ProjectSchema, self).validate(data)
 
 
 class ProjectListSchema(ProjectSchema):
-    """Serializer Project fields"""
+    """
+    Serializes the fields of the Project model for use in the API.
+
+    This class defines a Django REST Framework serializer that inherits from a custom
+    AbstractDescriptionSchema class. The serializer converts instances of the Project
+    model to and from JSON format, and validates incoming data based on the model's fields.
+
+    Usage example:
+    serializer = ProjectSchema()
+    """
 
     # recoverings = RecoveringListSchema(source='recovering_set',
     #                                    many=True, read_only=False, exclude=('project', ))
@@ -106,7 +115,7 @@ class ProjectListSchema(ProjectSchema):
     class Meta:
         model = Project
         fields = ("id", 'description', 'status',
-                  'status_display', 'created_at', 'engagement', 'num_recovering','is_adm')
+                  'status_display', 'created_at', 'engagement', 'num_recovering', 'is_adm')
 
 
 exclude = ('create_user', 'created_at',
@@ -114,7 +123,7 @@ exclude = ('create_user', 'created_at',
 
 
 class ProjectCreateSchema(serializers.Serializer):
-    """Serializer Project fields"""
+    """Serializer Project fields to options to ccreate project"""
 
     user_options = UserDttSchema(
         User.objects.all(), many=True, read_only=True, exclude=('create_user', 'created_at', 'is_staff', 'user_permissions', 'date_joined', 'is_active', 'groups'))

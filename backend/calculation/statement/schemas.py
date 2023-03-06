@@ -1,9 +1,9 @@
 """
-Serializes the fields of the Statement model for use in the API.
+Serializes the fields of the Statement models for use in the API.
 
 This module defines a Django REST Framework serializer that inherits from both
 `serializers.ModelSerializer` and a custom `AbstractModelSchema` class. The serializer
-converts instances of the `Statement` model to and from JSON format, and
+converts instances of the `Statement` models to and from JSON format, and
 validates incoming data based on the model's fields.
 
 Attributes:
@@ -11,18 +11,84 @@ Attributes:
       attribute specifies the model class that the serializer should be based on, and
       `fields` lists the names of all fields that should be included in the serialized
       representation.
-
-Usage example:
-serializer = StatementSchema()
 """
 
-from calculation.statement.models import Statement
+from calculation.statement.models import Lawyer, Statement, TotalLawyer
 from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
 
+from calculation.statement_pf.schemas import StatementPFSchema
+from calculation.statement_pj.schemas import StatementPJSchema
+
+
+class LawyerSchema(AbstractDescriptionSchema):
+    """
+    Serializes the fields of the Lawyer model for use in the API.
+
+    This module defines a Django REST Framework serializer that inherits from a custom
+    AbstractDescriptionSchema class. The serializer converts instances of the Lawyer
+    model to and from JSON format, and validates incoming data based on the model's fields.
+
+    Usage example:
+    serializer = LawyerSchema()
+    """
+
+    class Meta:
+        model = Lawyer
+        exclude = ('total_lawyer', )
+
+
+class TotalLawyerSchema(AbstractDescriptionSchema):
+    """
+    Serializes the fields of the TotalLawyer model for use in the API.
+
+    This module defines a Django REST Framework serializer that inherits from a custom
+    AbstractDescriptionSchema class. The serializer converts instances of the TotalLawyer
+    model to and from JSON format, and validates incoming data based on the model's fields.
+
+    Usage example:
+    serializer = TotalLawyerSchema()
+    """
+
+    lawyers = LawyerSchema(many=True, source='lawyer_set')
+
+    class Meta:
+        model = TotalLawyer
+        exclude = ('statement', )
+
 
 class StatementSchema(AbstractDescriptionSchema):
+    """
+    Serializes the fields of the Statement model for use in the API.
+
+    This module defines a Django REST Framework serializer that inherits from a custom
+    AbstractDescriptionSchema class. The serializer converts instances of the Statement
+    model to and from JSON format, and validates incoming data based on the model's fields.
+
+    Attributes:
+    - statement_pf: A nested serializer that converts instances of the StatementPF
+    model to and from JSON format.
+    - statement_pj: A nested serializer that converts instances of the StatementPJ
+    model to and from JSON format.
+    - calculation_id: A read-only UUIDField that represents the calculation object
+    associated with the statement.
+    - conclusion_display: A CharField that represents the conclusion of the statement.
+
+    Usage example:
+    serializer = StatementSchema()
+    """
+    statement_pf = StatementPFSchema(
+        read_only=True, source='statementpf', exclude=('statement_id', ))
+
+    statement_pj = StatementPJSchema(
+        read_only=True, source='statementpj', exclude=('statement_id', ))
+
+    lawyer = TotalLawyerSchema(read_only=True, source='totallawyer')
+
+    calculation_id = serializers.UUIDField(read_only=True)
+
+    conclusion_display = serializers.CharField(source='get_conclusion_display')
 
     class Meta:
         model = Statement
-        fields = "__all__"
+        exclude = ('calculation', )

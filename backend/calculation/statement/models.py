@@ -9,64 +9,52 @@ from django.db import models
 from calculation.models import Calculation
 from core.abstract.models import AbstractModel
 
-CHOICES_TOTAL = (
-    ('A', 'Total atualizado'),
-    ('D', 'Total devido')
-)
 
-CHOICES_TAX_DAYS = (
-    ('T', 'Taxa SELIC no período'),
-    ('D', 'Dias em atraso')
-)
-
-CHOICES_DEFAULT_INTEREST_DUE = (
-    ('T', 'Total após juros de mora'),
-    ('D', 'Total devido')
-)
-
-
-class Total(AbstractModel):
-    field_description = models.CharField(
-        'Legenda', max_length=1, choices=CHOICES_TOTAL)
-    value = models.FloatField('Valor', max_length=150)
-
-
-class TaxDays(AbstractModel):
-    field_description = models.CharField(
-        'Legenda', max_length=1, choices=CHOICES_TOTAL)
-    value = models.FloatField('Valor', max_length=150)
-
-
-class DefaultInterestDue(AbstractModel):
-    field_description = models.CharField(
-        'Legenda', max_length=1, choices=CHOICES_DEFAULT_INTEREST_DUE)
-    value = models.FloatField('Valor', max_length=150)
-
-
-class DefaultInterestDue(AbstractModel):
-    bankruptcy_credit = models.CharField(
-        'Crédito inteiramente concursal? ', max_length=1, choices=CHOICES_DEFAULT_INTEREST_DUE)
-    value = models.FloatField('Valor', max_length=150)
+CHOICES_CONCLUSION = (('I', 'Impugnação'), ('H', 'Habilitação'))
 
 
 class Statement(AbstractModel):
+    """
+    Represents a statement with a conclusion and optional edital.
+
+    Attributes:
+        calculation (Calculation): The calculation that this statement belongs to.
+        conclusion (str): A one-character string indicating the conclusion of the statement.
+        has_edital (bool): Whether this statement has an edital.
+    """
     calculation = models.OneToOneField(Calculation, on_delete=models.PROTECT)
     # TODO: definir operações de lógica para as legendas e calculo
 
-    default_interest = models.FloatField('Juros moratórios',
-                                         null=True)  # Juros moratórios ou EXCLUIR LINHA
-
-    recurral_deposit_released = models.FloatField(
-        'Depósito recursal liberado', null=True)  # Depósito recursal liberado ou EXCLUIR LINHA
-
-    # Total atualizado ou Total devido
-    total = models.OneToOneField(Total, on_delete=models.PROTECT)
-
-    tax_days = models.OneToOneField(
-        TaxDays, on_delete=models.PROTECT, null=True)  # Taxa SELIC no período, dias em atraso ou EXCLUIR LINHA
-
-    default_interest_due = models.OneToOneField(
-        DefaultInterestDue, on_delete=models.PROTECT, null=True)  # Total após juros de mora, Total devido ou EXCLUIR LINHA
+    conclusion = models.CharField(
+        'Legenda da conclusão', max_length=1, choices=CHOICES_CONCLUSION)
 
     def __str__(self):
         return f'{self.calculation}'
+
+
+# TODO: Tabela estatica. Criar no evento signals.post.save ou em Procedure
+class TotalLawyer(AbstractModel):
+    """
+    Represents the total value of a group of lawyers' fees for a Statement.
+
+    Attributes:
+        value (float): The total value of the lawyers' fees.
+        total_pf (Statement): The statement that this total belongs to.
+    """
+    value = models.FloatField('Valor')
+    statement = models.OneToOneField(Statement, on_delete=models.PROTECT)
+
+
+# TODO: Tabela estatica. Criar no evento signals.post.save ou em Procedure
+class Lawyer(AbstractModel):
+    """
+    Represents a single lawyer's fee for a Statement.
+
+    Attributes:
+        name (str): The name of the lawyer.
+        valor (float): The value of the lawyer's fee.
+        total_lawyer (TotalLawyer): The total value that this fee contributes to.
+    """
+    name = models.CharField('Nome do advogado', max_length=150)
+    valor = models.FloatField('Valor')
+    total_lawyer = models.ForeignKey(TotalLawyer, on_delete=models.PROTECT)

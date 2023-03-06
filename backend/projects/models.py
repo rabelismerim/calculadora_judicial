@@ -18,7 +18,16 @@ STATUS_CHOICES = (
 
 
 class Project(AbstractDescription):
-    '''Class responsible for the grand project/engagement'''
+    """
+    This class Project represents a grand project/engagement.
+    It contains the properties project_start and project_end for specifying the start and end date of the project, 
+    as well as a status field with choices specified by the constant STATUS_CHOICES. 
+    Additionally it stores relations to other models such as Judge, Lawyer, and Region through foreign keys,
+    as well as a one-to-one relationship to the model ProjectEngagement through the field engagement. 
+    Lastly it has two fields containing relationships to the User model, namely manager and partner. 
+    The property num_recovering is responsible for retrieving the number of recovering related to this project. 
+    Lastly the string representation of this object is defined in the method __str__.
+    """
 
     project_start = models.DateField(null=True, blank=True)
     project_end = models.DateField(null=True, blank=True)
@@ -30,10 +39,16 @@ class Project(AbstractDescription):
     lawyer = models.ForeignKey(Lawyer, on_delete=models.PROTECT)
     region = models.ForeignKey(Region, on_delete=models.PROTECT)
     court = models.ForeignKey(Court, on_delete=models.PROTECT)
-    manager = models.ForeignKey(
-        User, on_delete=models.PROTECT, related_name='manager')
-    partner = models.ForeignKey(
-        User, on_delete=models.PROTECT, related_name='partner')
+    legal_manager = models.ForeignKey(
+        User, on_delete=models.PROTECT, related_name='legal_manager', null=True)  # Gerente juridico
+    calculation_manager = models.ForeignKey(
+        User, on_delete=models.PROTECT, related_name='calculation_manager', null=True)  # Gerente de calculos
+    financial_manager = models.ForeignKey(
+        User, on_delete=models.PROTECT, related_name='financial_manager', null=True)  # Gerente Financeiro
+    legal_partner = models.ForeignKey(
+        User, on_delete=models.PROTECT, related_name='legal_partner', null=True)  # Socio juridico
+    financial_partner = models.ForeignKey(
+        User, on_delete=models.PROTECT, related_name='financial_partner', null=True)  # Socio Financeiro
     engagement = models.OneToOneField(
         ProjectEngagement, on_delete=models.PROTECT)
 

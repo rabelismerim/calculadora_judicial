@@ -8,11 +8,12 @@ The FundsApi class uses the Funds model and FundsSchema for working with data.
 
 from django.http import JsonResponse
 from calculation.funds.schemas import FundsSchema
-from calculation.funds.models import Funds, StatementFunds, StatementIRRF, StatementIntegrations
+from calculation.funds.models import Funds, StatementDocuments, StatementFunds, StatementIRRF, StatementIntegrations, TotalValuesFunds, TotalValuesFundsIntegrations, TotalValuesIRRF
 from core.abstract.views import AbstractViewApi
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions, status
 from core.permission.views import CheckHasPermission
+from django.apps import apps
 
 
 class FundsApi(AbstractViewApi):
@@ -115,20 +116,40 @@ class CreateFunds:
         new_funds = self.funds
         new_statement_irrfs = new_funds.pop('statement_irrf', [])
         new_statement_funds = new_funds.pop('statement_funds', [])
+        new_statement_documents = new_funds.pop('statement_documents', {})
         new_statement_integrations = new_funds.pop(
             'statement_integrations', [])
 
         fund = Funds.objects.create(**new_funds)
-
         for statement_fund in new_statement_funds:
             StatementFunds.objects.create(fund=fund, **statement_fund)
+            TotalValuesFunds.objects.get_or_create(fund=fund)
 
         for statement_integration in new_statement_integrations:
             StatementIntegrations.objects.create(
                 fund=fund, **statement_integration)
+            TotalValuesFundsIntegrations.objects.get_or_create(fund=fund)
 
         for statement_irrf in new_statement_irrfs:
             StatementIRRF.objects.create(
                 fund=fund, **statement_irrf)
+            TotalValuesIRRF.objects.get_or_create(fund=fund)
+
+        if new_statement_documents:
+            StatementDocuments.objects.create(
+                fund=fund, **new_statement_documents)
 
         return fund
+
+# Teste de criação de formula em formato json
+# jsons = {
+#     'model': 'AbstractMonetaryCorrection',
+#     'field1': 'index_data_base',
+#     'field2': 'index_recovering',
+#     'field3': 'calculation.value_historic',
+#     'operation': 'field3*field2/field1',
+# }
+
+
+# User = apps.get_model(app_label='funds', model_name='Funds')
+# print(User, 'funds')
