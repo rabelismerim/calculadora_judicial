@@ -18,8 +18,73 @@ class Comparative(AbstractModel):
     """This class represents a Comparative model which is an AbstractModel."""
     calculation = models.OneToOneField(Calculation, on_delete=models.PROTECT)
 
+    # TODO: Esse valor pode ser nulo?
+    data_base_creditor = models.DateField('Data base Credor')  # C4
+    data_base_dtt = models.DateField('Data base DTT')  # D4
+
+    @property
+    def difference_date(self) -> int:  # E4 = D4 - C4
+        """ Returns the difference between the Dates in days. """
+        if not self.data_base_dtt or not self.data_base_creditor:
+            return 0
+        return int((self.data_base_dtt - self.data_base_creditor).days)
+
+    def get_data_base_dtt(self):
+        """ Returns the date of the creditor's recovering request from the DTT."""
+        return self.calculation.creditor.recovering.date_rj_request
+
+    def save(self, *args, **kwargs):
+        """
+        Save the instance of ComparativeFunds and calculate its dtt value
+        Calculates the value of dtt using the get_dtt_value() method.
+        """
+        self.data_base_dtt = self.get_data_base_dtt()
+        super(Comparative, self).save(*args, **kwargs)
+
     def __str__(self):
         return f'{self.calculation}'
+
+
+class AbstractComparative(AbstractModel):
+    creditor = models.FloatField(
+        'Total creditor', default=0)  # C
+    dtt = models.FloatField(
+        'Total da DTT', default=0, editable=False)  # D
+
+    @property
+    def difference(self) -> float:  # E = C + D
+        """Returns float: The difference between dtt and creditor."""
+        return self.dtt - self.creditor
+
+    @property
+    def percentage(self) -> float:  # F = (D / C) -1
+        """Returns float: The percentage difference between dtt and creditor. """
+        try:
+            return (((self.dtt or 0) / (self.creditor or 0)) - 1) * 100
+        except ZeroDivisionError:
+            return 0
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return f'{self.creditor}'
+
+
+class RecurralComparative(AbstractComparative):
+    pass
+
+
+class TotalUpdatedComparative(AbstractComparative):
+    pass
+
+
+class DefaultInterestComparative(AbstractComparative):
+    pass
+
+
+class AdvocativeHoursComparative(AbstractComparative):
+    pass
 
 
 class AbstractCalculation(AbstractDescription):  # Calculo homologado
@@ -36,105 +101,62 @@ class AbstractCalculation(AbstractDescription):  # Calculo homologado
     """
 
     comparative = models.OneToOneField(Comparative, on_delete=models.PROTECT)
-    # TODO: Esse valor pode ser nulo?
-    data_base_creditor = models.DateField('Data base Credor')  # C4
-    data_base_dtt = models.DateField('Data base DTT')  # D4
 
-    @property
-    def difference_date(self) -> int:  # E4 = D4 - C4
-        """ Returns the difference between the Dates in days. """
-        if not self.data_base_dtt or not self.data_base_creditor:
-            return 0
-        return int((self.data_base_dtt - self.data_base_creditor).days)
-
-    recurral_deposit_creditor = models.FloatField(
-        'Deposito recursal liberado do creditor', default=0)  # C9
-    recurral_deposit_dtt = models.FloatField(
-        'Deposito recursal liberado da DTT', default=0)  # D9
-
-    @property
-    def difference_recurral_deposit(self) -> float:  # E9 = C9 + D9 V
-        """Returns float: The difference between recurral_deposit_dtt and recurral_deposit_creditor."""
-        return self.recurral_deposit_dtt - self.recurral_deposit_creditor
-
-    @property
-    def percentage_recurral_deposit(self) -> float:  # F9 = (D9 / C9) -1 V
-        """Returns float: The percentage difference between recurral_deposit_dtt and recurral_deposit_creditor. """
-        try:
-            return (self.recurral_deposit_dtt / self.recurral_deposit_creditor) - 1
-        except ZeroDivisionError:
-            return 0
-
-    total_updated_creditor = models.FloatField(
-        'Total atualizado do creditor', default=0)  # C10
-    total_updated_dtt = models.FloatField(
-        'Total atualizado da DTT', default=0)  # D10
-
-    @property
-    def difference_total_updated(self) -> float:  # E10 = C10 + D10 V
-        """Returns float: The difference between total_updated_dtt and total_updated_creditor."""
-        return self.total_updated_dtt - self.total_updated_creditor
-
-    @property
-    def percentage_total_updated(self) -> float:  # F10 = (D10 / C10) -1 V
-        """Returns float: The percentage difference between total_updated_dtt and total_updated_creditor. """
-        try:
-            return (self.total_updated_dtt / self.total_updated_creditor) - 1
-        except ZeroDivisionError:
-            return 0
-
-    default_interest_creditor = models.FloatField(
-        'Juros moratórios Creditor', default=0)  # C11
-    default_interest_dtt = models.FloatField(
-        'Juros moratórios DTT', default=0)  # D11
-
-    @property
-    def difference_default_interest(self) -> float:  # E11 = C11 + D11 V
-        """Returns float: The difference between default_interest_dtt and default_interest_creditor."""
-        return self.default_interest_dtt - self.default_interest_creditor
-
-    @property
-    def percentage_default_interest(self) -> float:  # F11 = (D11 / C11) -1 V
-        """Returns float: The percentage difference between default_interest_dtt and default_interest_creditor. """
-        try:
-            return (self.default_interest_dtt / self.default_interest_creditor) - 1
-        except ZeroDivisionError:
-            return 0
+    recurral = models.OneToOneField(
+        RecurralComparative, on_delete=models.PROTECT, null=True)  # V
+    total_updated = models.OneToOneField(
+        TotalUpdatedComparative, on_delete=models.PROTECT, null=True)  # V
+    default_interest = models.OneToOneField(
+        DefaultInterestComparative, on_delete=models.PROTECT, null=True)  # V
+    advocative_hours = models.OneToOneField(
+        AdvocativeHoursComparative, on_delete=models.PROTECT, null=True)  # V
 
     @property
     def total_due_creditor(self) -> float:  # C12 = C10 + C11 V
         """ Returns the difference between the Dates in days. """
-        return self.total_updated_creditor + self.default_interest_creditor
+        return self.total_updated.creditor + self.default_interest.creditor + self.get_total_advocative_hours_creditor()
 
     @property
     def total_due_dtt(self) -> float:  # D12 = D10 + D11 V
         """ Returns the difference between the Dates in days. """
-        return self.total_updated_dtt + self.default_interest_dtt
+        return self.total_updated.dtt + self.default_interest.dtt + self.get_total_advocative_hours_dtt()
 
     @property
-    def difference_total_due(self) -> float:  # E12 = C12 + D12 V
+    def total_due_difference(self) -> float:  # E12 = C12 + D12 V
         """Returns float: The difference between total_due_dtt and total_due_credor."""
         return self.total_due_dtt - self.total_due_creditor
 
     @property
-    def percentage_total_due(self) -> float:  # F12 =  (D12 / C12) -1 V
+    def total_due_percentage(self) -> float:  # F12 =  (D12 / C12) -1 V
         """Returns float: The percentage difference between total_due_dtt and total_due_creditor. """
         try:
-            return (self.total_due_dtt / self.total_due_creditor) - 1
+            return (((self.total_due_dtt or 0) / (self.total_due_creditor or 0)) - 1) * 100
         except ZeroDivisionError:
             return 0
 
-    def get_data_base_dtt(self):
-        """ Returns the date of the creditor's recovering request from the DTT."""
-        return self.comparative.calculation.creditor.recovering.date_rj_request
+    def get_total_advocative_hours_dtt(self) -> float:
+        """ Returns the recurral deposit of the statement"""
+        if hasattr(self, 'advocative_hours'):
+            return self.advocative_hours.dtt
+        return 0
+
+    def get_total_advocative_hours_creditor(self) -> float:
+        """ Returns the recurral deposit of the statement"""
+        if hasattr(self, 'advocative_hours'):
+            return self.advocative_hours.creditor
+        return 0
+
+    def get_recurral_deposit_dtt(self) -> float:
+        """ Returns the recurral deposit of the statement"""
+        return self.comparative.calculation.statement.statementpf.recurraldeposit.value
 
     def get_default_interest_dtt(self) -> float:
         """ Returns the default interest of the statement"""
         return self.comparative.calculation.statement.statementpf.defaultinterest.value
 
-    def get_recurral_deposit_dtt(self) -> float:
-        """ Returns the recurral deposit of the statement"""
-        return self.comparative.calculation.statement.statementpf.recurraldeposit.value
+    def get_advocative_hours_dtt(self) -> float:
+        """ Returns the default interest of the statement"""
+        return self.comparative.calculation.statement.get_total_lawyer()
 
     def __str__(self):
         return f'{self.comparative}'
@@ -144,9 +166,12 @@ class AbstractCalculation(AbstractDescription):  # Calculo homologado
         Save the instance of ComparativeFunds and calculate its dtt value
         Calculates the value of dtt using the get_dtt_value() method.
         """
-        self.data_base_dtt = self.get_data_base_dtt()
-        self.default_interest_dtt = self.get_default_interest_dtt()
-        self.recurral_deposit_dtt = self.get_recurral_deposit_dtt()
+        self.recurral.dtt = self.get_recurral_deposit_dtt()
+        self.recurral.save()
+        self.default_interest.dtt = self.get_default_interest_dtt()
+        self.default_interest.save()
+        self.advocative_hours.dtt = self.get_advocative_hours_dtt()
+        self.advocative_hours.save()
         super(AbstractCalculation, self).save(*args, **kwargs)
 
     class Meta:
@@ -193,12 +218,15 @@ class AbstractComparativeFunds(AbstractDescription):
     @property
     def difference(self):
         """Returns the difference between DTT calculated value and claim creditor value"""
-        return self.value_dtt - self.value_claim_creditor
+        return (self.value_dtt or 0) - (self.value_claim_creditor or 0)
 
     @property
     def percentage(self):
         """Returns the percentage of difference between DTT calculated value and claim creditor value"""
-        return (self.value_dtt / self.value_claim_creditor) - 1
+        try:
+            return (((self.value_dtt or 0) / (self.value_claim_creditor or 0)) - 1) * 100
+        except ZeroDivisionError:
+            return 0
 
     def __str__(self):
         return f'{self.value_claim_creditor}'
@@ -245,15 +273,15 @@ def update_comparative_total(sender, instance, **kwargs) -> None:
         None
     """
     comparatives = instance.approved_calculation.get_comparatives()
-    sum_total_updated_dtt = 0
-    sum_total_updated_creditor = 0
+    sum_total_updated_dtt = instance.approved_calculation.recurral.dtt
+    sum_total_updated_creditor = instance.approved_calculation.recurral.creditor
     calculation = instance.approved_calculation
     for comparative in comparatives:
         sum_total_updated_dtt += comparative.value_dtt
         sum_total_updated_creditor += comparative.value_claim_creditor
-    calculation.total_updated_dtt = sum_total_updated_dtt
-    calculation.total_updated_creditor = sum_total_updated_creditor
-    calculation.save()
+    calculation.total_updated.dtt = sum_total_updated_dtt
+    calculation.total_updated.creditor = sum_total_updated_creditor
+    calculation.total_updated.save()
 
 
 @receiver(post_save, sender=ComparativeFundsIntegrations)
@@ -273,12 +301,12 @@ def update_comparative_integrations_total(sender, instance, **kwargs) -> None:
         None
     """
     comparatives = instance.updated_calculation.get_comparatives()
-    sum_total_updated_dtt = 0
-    sum_total_updated_creditor = 0
+    sum_total_updated_dtt = instance.updated_calculation.recurral.dtt
+    sum_total_updated_creditor = instance.updated_calculation.recurral.creditor
     calculation = instance.updated_calculation
     for comparative in comparatives:
         sum_total_updated_dtt += comparative.value_dtt
         sum_total_updated_creditor += comparative.value_claim_creditor
-    calculation.total_updated_dtt = sum_total_updated_dtt
-    calculation.total_updated_creditor = sum_total_updated_creditor
-    calculation.save()
+    calculation.total_updated.dtt = sum_total_updated_dtt
+    calculation.total_updated.creditor = sum_total_updated_creditor
+    calculation.total_updated.save()

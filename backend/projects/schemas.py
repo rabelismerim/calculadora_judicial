@@ -4,6 +4,7 @@ from core.abstract.schemas import AbstractModelSchema
 from core.dttuser.schemas import UserDttSchema
 from projects.court.models import Court
 from projects.court.schemas import CourtSchema
+from projects.engagement.schemas import ProjectEngagementSchema
 from projects.judge.models import Judge
 from projects.lawyer.models import Lawyer
 from projects.models import STATUS_CHOICES, Project
@@ -11,8 +12,10 @@ from rest_framework import serializers
 from projects.judge.schemas import JudgeSchema
 from projects.lawyer.schemas import LawyerSchema
 from projects.project_user.models import ProjectUser
+from projects.project_user.schemas import ProjectUserProjectSchema
 from projects.region.models import Region
 from projects.region.schemas import RegionSchema
+from recovering.schemas import RecoveringSchema
 from utils import get_user_model
 User = get_user_model()
 
@@ -38,6 +41,55 @@ class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):
     Usage example:
     serializer = ProjectSchema()
     """
+
+    judge = JudgeSchema(many=False, read_only=True)
+    judge_id = serializers.UUIDField(write_only=True)
+
+    lawyer = LawyerSchema(many=False, read_only=True)
+    lawyer_id = serializers.UUIDField(write_only=True)
+
+    region = RegionSchema(many=False, read_only=True)
+    region_id = serializers.UUIDField(write_only=True)
+
+    court = CourtSchema(many=False, read_only=True)
+    court_id = serializers.UUIDField(write_only=True)
+
+    engagement = ProjectEngagementSchema(
+        many=False, exclude=('project_id', 'users', 'user_names'))
+    # engagement = serializers.ListField(source='list_engagements')
+
+    # recovering = RecoveringSchema(
+    #     many=True, read_only=True, exclude=('project', ))
+    recoverings = RecoveringSchema(source='recovering_set',
+                                   many=True, read_only=False, exclude=('project_id', 'project'))
+
+    legal_manager = UserDttSchema(many=False, read_only=True)
+    legal_manager_id = serializers.IntegerField(write_only=True)
+
+    calculation_manager = UserDttSchema(many=False, read_only=True)
+    calculation_manager_id = serializers.IntegerField(write_only=True)
+
+    financial_manager = UserDttSchema(many=False, read_only=True)
+    financial_manager_id = serializers.IntegerField(write_only=True)
+
+    legal_partner = UserDttSchema(many=False, read_only=True)
+    legal_partner_id = serializers.IntegerField(write_only=True)
+
+    financial_partner = UserDttSchema(many=False, read_only=True)
+    financial_partner_id = serializers.IntegerField(write_only=True)
+
+    # user_names = serializers.ListField(read_only=True)
+    executors = serializers.ListField(write_only=True, child=UserSerializer())
+    approvers = serializers.ListField(write_only=True, child=UserSerializer())
+    reviewers = serializers.ListField(write_only=True, child=UserSerializer())
+
+    users = ProjectUserProjectSchema(
+        read_only=True, many=True, source='engagement.users')
+
+    status_display = serializers.CharField(
+        source='get_status_display', read_only=True)
+
+    num_recovering = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Project
@@ -114,8 +166,8 @@ class ProjectListSchema(ProjectSchema):
 
     class Meta:
         model = Project
-        fields = ("id", 'description', 'status',
-                  'status_display', 'created_at', 'engagement', 'num_recovering', 'is_adm')
+        fields = ("id", 'description', 'status', 'status_display', 'created_at', 'users',
+                  'engagement', 'num_recovering', 'is_adm')
 
 
 exclude = ('create_user', 'created_at',

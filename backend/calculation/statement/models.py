@@ -28,6 +28,11 @@ class Statement(AbstractModel):
     conclusion = models.CharField(
         'Legenda da conclusão', max_length=1, choices=CHOICES_CONCLUSION)
 
+    def get_total_lawyer(self):
+        if hasattr(self, 'totallawyer'):
+            return self.totallawyer.value
+        return 0
+
     def __str__(self):
         return f'{self.calculation}'
 
