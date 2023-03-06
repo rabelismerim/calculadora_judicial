@@ -28,8 +28,18 @@ class StatementPF(AbstractModel):
     """
     field_description = models.CharField(
         'Legenda', max_length=1, choices=CHOICES_TOTAL_PF)
-    total = models.FloatField('Valor')
+    total = models.FloatField('Valor total')
     statement = models.OneToOneField(Statement, on_delete=models.PROTECT)
+
+    def get_recurral_deposit(self):
+        if hasattr(self, 'recurraldeposit'):
+            return self.recurraldeposit.value
+        return 0
+
+    def get_default_interest(self):
+        if hasattr(self, 'defaultinterest'):
+            return self.defaultinterest.value
+        return 0
 
 
 class AbstractValue(AbstractModel):

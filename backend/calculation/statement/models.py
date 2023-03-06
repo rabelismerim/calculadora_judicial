@@ -33,6 +33,16 @@ class Statement(AbstractModel):
             return self.totallawyer.value
         return 0
 
+    def get_recurral_deposit(self):
+        if hasattr(self, 'statementpf'):
+            return self.statementpf.get_recurral_deposit()
+        return 0
+
+    def get_default_interest(self):
+        if hasattr(self, 'statementpf'):
+            return self.statementpf.get_default_interest()
+        return 0
+
     def __str__(self):
         return f'{self.calculation}'
 
