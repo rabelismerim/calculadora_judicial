@@ -31,7 +31,7 @@ class Comparative(AbstractModel):
 
     def get_data_base_dtt(self):
         """ Returns the date of the creditor's recovering request from the DTT."""
-        return self.calculation.creditor.recovering.date_rj_request
+        return self.calculation.creditor.recovering.project.date_rj_request
 
     def save(self, *args, **kwargs):
         """
