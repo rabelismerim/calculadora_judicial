@@ -20,7 +20,7 @@ from calculation.comparative.models import *
 from django.utils.html import format_html
 from django.contrib.sites.models import Site
 
-readonly_fields_funds = ('value_dtt', 'difference', 'percentage')
+readonly_fields_funds = ('dtt', 'difference', 'percentage')
 
 
 class ComparativeFundsAdmin(admin.ModelAdmin):
@@ -45,6 +45,14 @@ class ComparativeAdmin(admin.ModelAdmin):
     admin interface for the Comparative instance.
     """
     readonly_fields = ('data_base_dtt', 'difference_date')
+
+
+class ComparativeCalculationAdmin(admin.ModelAdmin):
+    """
+    A ModelAdmin class containing the definition of fields displayed in the 
+    admin interface for the ComparativeCalculation instance.
+    """
+    readonly_fields = ('dtt', )
 
 
 readonly_fields = [
@@ -226,10 +234,7 @@ class ApprovedCalculationAdmin(AbstractCalculationAdmin):  # Calculo homologado
         return get_verbas(comparatives, 'totalvaluesfundsintegrations')
 
 
-admin.site.register(RecurralComparative)
-admin.site.register(TotalUpdatedComparative)
-admin.site.register(DefaultInterestComparative)
-admin.site.register(AdvocativeHoursComparative)
+admin.site.register(ComparativeCalculation, ComparativeCalculationAdmin)
 admin.site.register(Comparative, ComparativeAdmin)
 admin.site.register(ComparativeFunds, ComparativeFundsAdmin)
 admin.site.register(ComparativeFundsIntegrations,

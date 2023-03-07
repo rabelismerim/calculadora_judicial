@@ -6,7 +6,7 @@ Api's classes use the DttUser model and schema DttUser to work with data.
 """
 from config.settings import ENABLE_SSO, IS_LOCALHOST, PASSWD_DEV
 from core.abstract.views import AbstractViewApi
-from core.dttuser.schemas import UserDttSchema
+from core.dttuser.schemas import GroupSchema, UserDttSchema
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 from rest_framework import status
@@ -14,7 +14,7 @@ from rest_framework.schemas.openapi import AutoSchema
 from core.permission.views import CheckHasPermission, CreatePermissions
 from utils import get_user_model
 from rest_framework import permissions
-
+from django.contrib.auth.models import Permission, Group
 
 User = get_user_model()
 
@@ -30,7 +30,7 @@ class AbstractUserDttApi(AbstractViewApi):
         permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = User
     queryset = User.objects.all
-    schema = AutoSchema(tags=["User"])
+    schema = AutoSchema(tags=["Users"])
 
     query_params = [
         {
@@ -57,7 +57,7 @@ class UserDttDetailApi(AbstractUserDttApi):
     http_method_names = ['get']
     query_params = []
     schema = AutoSchema(
-        tags=['User'],
+        tags=['Users'],
         component_name='UserDetail',
         operation_id_base='UserDetail',
     )
@@ -71,6 +71,21 @@ class UserDttDetailApi(AbstractUserDttApi):
         user = serializer(self.model.objects.filter(
             id=request.user.id).first(), many=False).data
         return JsonResponse({'user': user})
+
+
+class GroupApi(AbstractViewApi):
+    """HTTP methods for interfacing with the User Deloitte modelThis method returns a JSON response that contains the user details given a filtering criteria. 
+    The serializer is used to access the model object, and then the data is returned in a JSON format."""
+    serializer_class = GroupSchema
+
+    if IS_LOCALHOST:
+        permission_classes = [permissions.AllowAny]
+    else:
+        permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    model = Group
+    http_method_names = ['get']
+    queryset = Group.objects.all
+    schema = AutoSchema(tags=["Groups"])
 
 
 class UserDttApi(AbstractUserDttApi):
