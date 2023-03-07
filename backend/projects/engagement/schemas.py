@@ -42,6 +42,7 @@ class ProjectEngagementSchema(AbstractModelSchema):
         users = data.pop('users', [])
         users = [x['id'] for x in users]
         list_eng = []
+        list_eng_error = []
 
         if isinstance(engagement_data, list) is False:
             raise serializers.ValidationError(
@@ -51,12 +52,17 @@ class ProjectEngagementSchema(AbstractModelSchema):
             raise serializers.ValidationError(
                 [f'Necessário adicionar ao menos um engagement'])
 
+        list_engagements_number = list(Engagement.objects.filter(
+            number__in=engagement_data).values_list('number', flat=True))
         for engagement_number in engagement_data:
-            if Engagement.objects.filter(number=engagement_number).exists():
-                raise serializers.ValidationError(
-                    ['Número de engagement já cadastrado'])
+            if engagement_number in list_engagements_number:
+                list_eng_error.append(
+                    f'O engagement de número {engagement_number} já está cadastrado')
+            else:
+                list_eng.append(engagement_number)
 
-            list_eng.append(engagement_number)
+        if list_eng_error:
+            raise serializers.ValidationError(list_eng_error)
 
         data['engagement'] = list_eng
         data['users'] = users
