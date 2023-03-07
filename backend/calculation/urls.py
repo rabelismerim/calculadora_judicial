@@ -9,4 +9,5 @@ urlpatterns = [
     path(f'criterion', include("calculation.criterion.urls")),
     path(f'verdict', include("calculation.verdict.urls")),
     path(f'funds', include("calculation.funds.urls")),
+    path(f'comparative', include("calculation.comparative.urls")),
 ]

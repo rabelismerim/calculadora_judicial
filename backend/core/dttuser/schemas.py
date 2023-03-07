@@ -43,7 +43,7 @@ class GroupSchema(serializers.ModelSerializer):
 
     class Meta:
         model = Group
-        fields = ['name', 'permissions']
+        fields = ['name', 'permissions', 'id']
         extra_kwargs = {
             'name': {'validators': []},
         }

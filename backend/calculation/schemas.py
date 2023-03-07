@@ -16,6 +16,7 @@ Usage example:
 serializer = CalculationSchema()
 """
 
+from calculation.comparative.schemas import ComparativeSchema
 from calculation.criterion.schemas import CriterionSchema
 from calculation.funds.schemas import FundsSchema
 from calculation.statement.schemas import StatementSchema
@@ -50,6 +51,9 @@ class CalculationSchema(AbstractModelSchema):
                         required=False, exclude=('calculation_id', ))
 
     statement = StatementSchema(read_only=True, exclude=('calculation_id', ))
+
+    comparative = ComparativeSchema(
+        read_only=True, exclude=('statement_id', ))
 
     class Meta:
         model = Calculation

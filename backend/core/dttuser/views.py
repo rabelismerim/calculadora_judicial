@@ -6,6 +6,7 @@ Api's classes use the DttUser model and schema DttUser to work with data.
 """
 from config.settings import ENABLE_SSO, IS_LOCALHOST, PASSWD_DEV
 from core.abstract.views import AbstractViewApi
+from core.dttuser.schemas import UserDttSchema, UserAuthorizeDttSchema, GroupSchema
 from core.dttuser.schemas import UserDttSchema, UserAuthorizeDttSchema
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
@@ -14,7 +15,7 @@ from rest_framework.schemas.openapi import AutoSchema
 from core.permission.views import CheckHasPermission, CreatePermissions
 from utils import get_user_model
 from rest_framework import permissions
-
+from django.contrib.auth.models import Permission, Group
 
 User = get_user_model()
 
@@ -30,7 +31,7 @@ class AbstractUserDttApi(AbstractViewApi):
         permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = User
     queryset = User.objects.all
-    schema = AutoSchema(tags=["User"])
+    schema = AutoSchema(tags=["Users"])
 
     query_params = [
         {
@@ -50,8 +51,8 @@ class AbstractUserDttApi(AbstractViewApi):
             "schema": {"type": "string"}
         },
         {
-            "name": "is_staff",
-            "field": "is_staff__exact",
+            "name": "is_active",
+            "field": "is_active__exact",
             "in": "query",
             "required": False,
             "description": "Usuários Autenticados (True/False)",
@@ -65,7 +66,7 @@ class UserDttDetailApi(AbstractUserDttApi):
     http_method_names = ['get']
     query_params = []
     schema = AutoSchema(
-        tags=['User'],
+        tags=['Users'],
         component_name='UserDetail',
         operation_id_base='UserDetail',
     )
@@ -80,13 +81,14 @@ class UserDttDetailApi(AbstractUserDttApi):
             id=request.user.id).first(), many=False).data
         return JsonResponse({'user': user})
 
+
 class UserAuthorizeDttApi(AbstractUserDttApi):
     """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like query_params and schema."""
     http_method_names = ['post']
     serializer_class = UserAuthorizeDttSchema
     query_params = []
     schema = AutoSchema(
-        tags=['User'],
+        tags=['Users'],
         component_name='UserAuthorize',
         operation_id_base='UserAuthorize',
     )
@@ -99,9 +101,25 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
         serializer = self.get_serializer_class()
         user = serializer(self.model.objects.filter(
             email=request.user.email).first(), many=False).data
-        user.is_staff = True
+        user.is_active = True
         user.update()
         return JsonResponse({'user': user}, status=status.HTTP_201_CREATED)
+
+
+class GroupApi(AbstractViewApi):
+    """HTTP methods for interfacing with the User Deloitte modelThis method returns a JSON response that contains the user details given a filtering criteria. 
+    The serializer is used to access the model object, and then the data is returned in a JSON format."""
+    serializer_class = GroupSchema
+
+    if IS_LOCALHOST:
+        permission_classes = [permissions.AllowAny]
+    else:
+        permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    model = Group
+    http_method_names = ['get']
+    queryset = Group.objects.all
+    schema = AutoSchema(tags=["Groups"])
+
 
 class UserDttApi(AbstractUserDttApi):
     """HTTP methods for interacting with Deloitte user data."""

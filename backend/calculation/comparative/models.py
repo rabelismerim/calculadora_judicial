@@ -52,7 +52,7 @@ class Comparative(AbstractModel):
         return f'{self.calculation}'
 
 
-class AbstractComparative(AbstractModel):
+class ComparativeCalculation(AbstractModel):
     """
     This is an abstract model class that serves as a base for other comparative models in the application. 
     Fields:
@@ -66,7 +66,7 @@ class AbstractComparative(AbstractModel):
     creditor = models.FloatField(
         'Total creditor', default=0)  # C
     dtt = models.FloatField(
-        'Total da DTT', default=0, editable=False)  # D
+        'Total da DTT', default=0)  # D
 
     @property
     def difference(self) -> float:  # E = C + D
@@ -81,39 +81,8 @@ class AbstractComparative(AbstractModel):
         except ZeroDivisionError:
             return 0
 
-    class Meta:
-        abstract = True
-
     def __str__(self):
         return f'{self.creditor}'
-
-
-class RecurralComparative(AbstractComparative):
-    """
-    A model that represents the comparative between creditor and DTT totals of a recurral .
-    It inherits from AbstractComparative.
-    """
-
-
-class TotalUpdatedComparative(AbstractComparative):
-    """
-    A model that represents the comparative between creditor and DTT totals of a total updated.
-    It inherits from AbstractComparative.
-    """
-
-
-class DefaultInterestComparative(AbstractComparative):
-    """
-    A model that represents the comparative between creditor and DTT totals of a default interest.
-    It inherits from AbstractComparative.
-    """
-
-
-class AdvocativeHoursComparative(AbstractComparative):
-    """
-    A model that represents the comparative between creditor and DTT totals of a advocative hours.
-    It inherits from AbstractComparative.
-    """
 
 
 class ApprovedCalculation(AbstractDescription):  # Calculo homologado
@@ -143,13 +112,13 @@ class ApprovedCalculation(AbstractDescription):  # Calculo homologado
     comparative = models.OneToOneField(Comparative, on_delete=models.PROTECT)
 
     recurral = models.OneToOneField(
-        RecurralComparative, on_delete=models.PROTECT, null=True)  # V
+        ComparativeCalculation, on_delete=models.PROTECT, related_name='calc_recurral')  # V
     total_updated = models.OneToOneField(
-        TotalUpdatedComparative, on_delete=models.PROTECT, null=True)  # V
+        ComparativeCalculation, on_delete=models.PROTECT, related_name='calc_total_updated')  # V
     default_interest = models.OneToOneField(
-        DefaultInterestComparative, on_delete=models.PROTECT, null=True)  # V
+        ComparativeCalculation, on_delete=models.PROTECT, related_name='calc_default_interest')  # V
     advocative_hours = models.OneToOneField(
-        AdvocativeHoursComparative, on_delete=models.PROTECT, null=True)  # V
+        ComparativeCalculation, on_delete=models.PROTECT, related_name='calc_advocative_hours')  # V
 
     @property
     def total_due_creditor(self) -> float:  # C12 = C10 + C11 V
@@ -185,6 +154,14 @@ class ApprovedCalculation(AbstractDescription):  # Calculo homologado
             return (((self.total_due_dtt or 0) / (self.total_due_creditor or 0)) - 1) * 100
         except ZeroDivisionError:
             return 0
+
+    def get_total_due(self):
+        return {
+            'creditor': self.total_due_creditor,
+            'dtt': self.total_due_dtt,
+            'difference': self.total_due_difference,
+            'percentage': self.total_due_percentage,
+        }
 
     def get_total_advocative_hours_dtt(self) -> float:
         """Returns float: The dtt value of AdvocativeHoursComparative if it exists, otherwise returns 0."""
@@ -255,13 +232,13 @@ class ApprovedCalculation(AbstractDescription):  # Calculo homologado
         comparatives = self.get_comparatives()
         for comparative in comparatives:
             sum_total_updated_dtt += comparative.get_dtt_value()
-            sum_total_updated_creditor += comparative.value_claim_creditor
+            sum_total_updated_creditor += comparative.creditor
 
         # Add up all integration funds
         comparatives = self.get_comparatives_integrations()
         for comparative in comparatives:
             sum_total_updated_dtt += comparative.get_dtt_value()
-            sum_total_updated_creditor += comparative.value_claim_creditor
+            sum_total_updated_creditor += comparative.creditor
 
         # Save in total updated
         calculation = self.total_updated
@@ -290,8 +267,8 @@ class ApprovedCalculation(AbstractDescription):  # Calculo homologado
 
 class AbstractComparativeFunds(AbstractDescription):
     """(AbstractDescription): Class for comparing funds with approved calculations."""
-    value_claim_creditor = models.FloatField('Pedido do creditor')
-    value_dtt = models.FloatField('Calculo da DTT')
+    creditor = models.FloatField('Pedido do creditor')
+    dtt = models.FloatField('Calculo da DTT')
     calculation = models.ForeignKey(
         ApprovedCalculation, on_delete=models.PROTECT)
     total_funds = None
@@ -301,7 +278,7 @@ class AbstractComparativeFunds(AbstractDescription):
         Save the instance of AbstractComparativeFunds and calculate its dtt value
         Calculates the value of dtt using the get_dtt_value() method.
         """
-        self.value_dtt = self.get_dtt_value()
+        self.dtt = self.get_dtt_value()
         super(AbstractComparativeFunds, self).save(*args, **kwargs)
 
     def get_dtt_value(self) -> float:
@@ -315,20 +292,24 @@ class AbstractComparativeFunds(AbstractDescription):
         return self.total_funds
 
     @property
+    def name(self):
+        return self.get_total_funds().fund.name
+
+    @property
     def difference(self) -> float:
         """Returns the difference between DTT calculated value and claim creditor value"""
-        return (self.value_dtt or 0) - (self.value_claim_creditor or 0)
+        return (self.dtt or 0) - (self.creditor or 0)
 
     @property
     def percentage(self) -> float:
         """Returns the percentage of difference between DTT calculated value and claim creditor value"""
         try:
-            return (((self.value_dtt or 0) / (self.value_claim_creditor or 0)) - 1) * 100
+            return (((self.dtt or 0) / (self.creditor or 0)) - 1) * 100
         except ZeroDivisionError:
             return 0
 
     def __str__(self):
-        return f'{self.value_claim_creditor}'
+        return f'{self.name}'
 
     class Meta:
         abstract = True
