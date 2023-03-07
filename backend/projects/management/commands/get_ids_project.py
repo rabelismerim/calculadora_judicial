@@ -26,6 +26,12 @@ class Command(BaseCommand):
             'region_id': str(Region.objects.first().id),
             'lawyer_id': str(Lawyer.objects.first().id),
             'court_id': str(Court.objects.first().id),
+            "date_rj_request": "2023-03-02",
+            "date_rj_filing": "2023-03-02",
+            "date_citation": "2023-03-02",
+            "process_number": "string",
+            "status": "E",
+            "competence": "string",
             "engagement": {
                 "numbers": [
                     cpf_generator()
@@ -37,20 +43,7 @@ class Command(BaseCommand):
                         "name": "string",
                         "legal_number": cpf_generator()
                     },
-                    "archives": [
-                        {
-                            "archive": {
-                                "archive_json": {},
-                                "description": "string"
-                            }
-                        }
-                    ],
-                    "date_rj_request": "2023-03-02",
-                    "date_rj_filing": "2023-03-02",
-                    "date_citation": "2023-03-02",
-                    "process_number": "string",
                     "status": "E",
-                    "competence": "string",
                     "status_support": "E"
                 }
             ],

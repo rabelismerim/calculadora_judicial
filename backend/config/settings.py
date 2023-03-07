@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'django_extensions',  # TEMP
     'import_export',
     'rest_framework',
@@ -119,6 +120,8 @@ INSTALLED_APPS = [
     'rates',
 
 ]
+
+SITE_ID = 1
 
 AUTH_USER_MODEL = 'dttuser.User'
 

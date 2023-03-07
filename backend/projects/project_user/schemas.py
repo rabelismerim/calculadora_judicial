@@ -47,6 +47,7 @@ class ProjectUserProjectSchema(AbstractModelSchema):
         Kwargs:
             many=True, read_only=False, exclude=('field_to_exclude', )
     """
+    username = serializers.CharField(source='user.username', read_only=True)
     groups = GroupSchema(many=True, read_only=True, exclude=('permissions', ))
 
     class Meta:

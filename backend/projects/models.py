@@ -1,6 +1,6 @@
 from django.db import models
 from numpy import number
-from base.models import AbstractDescription
+from base.models import AbstractDateRecovering, AbstractDescription
 from projects.court.models import Court
 from projects.judge.models import Judge
 from projects.lawyer.models import Lawyer
@@ -17,7 +17,7 @@ STATUS_CHOICES = (
 )
 
 
-class Project(AbstractDescription):
+class Project(AbstractDescription, AbstractDateRecovering):
     """
     This class Project represents a grand project/engagement.
     It contains the properties project_start and project_end for specifying the start and end date of the project, 
@@ -31,6 +31,7 @@ class Project(AbstractDescription):
 
     project_start = models.DateField(null=True, blank=True)
     project_end = models.DateField(null=True, blank=True)
+    process_number = models.CharField("Número do processo", max_length=15)
 
     status = models.CharField(
         default="E", max_length=1, choices=STATUS_CHOICES)
@@ -39,6 +40,8 @@ class Project(AbstractDescription):
     lawyer = models.ForeignKey(Lawyer, on_delete=models.PROTECT)
     region = models.ForeignKey(Region, on_delete=models.PROTECT)
     court = models.ForeignKey(Court, on_delete=models.PROTECT)
+    competence = models.CharField(
+        "Competencia",  max_length=150, null=True)
     legal_manager = models.ForeignKey(
         User, on_delete=models.PROTECT, related_name='legal_manager', null=True)  # Gerente juridico
     calculation_manager = models.ForeignKey(

@@ -16,7 +16,7 @@ Attributes:
 from base.schemas import AbstractDescriptionSchema
 from core.entity.schemas import EntitySchema
 from creditors.schemas import CreditorSchema
-from recovering.archive_recovering.schemas import ArchiveRecoveringSchema
+# from recovering.archive_recovering.schemas import ArchiveRecoveringSchema
 from recovering.models import Recovering
 from rest_framework import serializers
 
@@ -33,10 +33,12 @@ class RecoveringSchema(AbstractDescriptionSchema):
     serializer = RecoveringSchema()
     """
     entity = EntitySchema(many=False, read_only=False)
-    archive = ArchiveRecoveringSchema(
-        source='archiverecovering_set', many=True, read_only=True, exclude=('recovering_id', ))
-    archives = ArchiveRecoveringSchema(
-        many=True, write_only=True, exclude=('recovering_id', ))
+
+    # Arquivos removidos nessa primeira release. Estruturar para subir os arquivos e gerar no front a leitura
+    # archive = ArchiveRecoveringSchema(
+    #     source='archiverecovering_set', many=True, read_only=True, exclude=('recovering_id', ))
+    # archives = ArchiveRecoveringSchema(
+    #     many=True, write_only=True, exclude=('recovering_id', ))
     creditors = CreditorSchema(
         source='creditor_set', many=True, read_only=True, allow_null=True)
 
