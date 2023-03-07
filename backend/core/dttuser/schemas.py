@@ -103,10 +103,11 @@ class UserDttSchema(serializers.ModelSerializer):
         min_length=8, write_only=True, required=True)
     user_permissions = PermissionSchema(many=True, read_only=True)
     groups = GroupSchema(many=True, read_only=False, exclude=('permissions', ))
+    full_name = serializers.CharField(read_only=True, source='get_full_name')
 
     class Meta:
         model = get_user_model()
-        fields = ['email', 'username', 'first_name', 'last_name', 'password', 'password_confirm',
+        fields = ['email', 'username', 'first_name', 'last_name', 'password', 'password_confirm', 'full_name',
                   'is_staff', 'user_permissions', 'date_joined', 'is_active', 'groups', 'id']
         read_only_fields = ('user_permissions', 'date_joined', 'is_active')
 
@@ -164,6 +165,7 @@ class UserDttSchema(serializers.ModelSerializer):
                 except:
                     pass
 
+
 class UserAuthorizeDttSchema(serializers.ModelSerializer):
     """
     Serializer for fields of the abstract model.
@@ -172,7 +174,7 @@ class UserAuthorizeDttSchema(serializers.ModelSerializer):
         renderer_classes (list): A list of JSONRenderer objects.
     """
     renderer_classes = [renderers.JSONRenderer]
+
     class Meta:
         model = get_user_model()
         fields = ['email']
-

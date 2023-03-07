@@ -16,6 +16,7 @@ Usage example:
 serializer = CalculationSchema()
 """
 
+from base.schemas import AbstractDescriptionSchema
 from calculation.comparative.schemas import ComparativeSchema
 from calculation.criterion.schemas import CriterionSchema
 from calculation.funds.schemas import FundsSchema
@@ -27,7 +28,7 @@ from calculation.models import Calculation
 from creditors.schemas import CreditorSchema
 
 
-class CalculationSchema(AbstractModelSchema):
+class CalculationSchema(AbstractDescriptionSchema):
     """
     The CalculationSchema class is a serializer for the Calculation model fields. It inherits from the AbstractModelSchema class. It includes the following fields:
 
@@ -54,6 +55,8 @@ class CalculationSchema(AbstractModelSchema):
 
     comparative = ComparativeSchema(
         read_only=True, exclude=('statement_id', ))
+
+    step_display = serializers.CharField(source='get_step_display', read_only=True)
 
     class Meta:
         model = Calculation
