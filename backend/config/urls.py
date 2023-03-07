@@ -37,10 +37,11 @@ admin.site.site_url = '/djud/admin/login'
 
 @ensure_csrf_cookie
 def frontend_index(request):
-    if request.META['REQUEST_URI'][:5].upper()=='/DJUD':
+    if request.META.get('REQUEST_URI', 'none')[:5].upper() == '/DJUD':
         return HttpResponseRedirect("/")
     else:
         return render(request, template_name='index.html')
+
 
 urlpatterns = [
     # API Authentication
@@ -75,8 +76,8 @@ urlpatterns = [
     path('djud/logout/', views.LogoutView.as_view()),
 
     # VUE FRONTEND
-    re_path(r'^(?!djud\/static|djud\/admin|djud\/api).*$',
-            frontend_index, name='frontend'),
+    re_path(r'^(?!djud\/admin|djud\/api).*$', frontend_index, name='frontend'),
+    # path('djud/<path:resource>', frontend_index, name='frontend'),
 
     # Documentation
     path(f'{BASE_URL}docs/swagger/', TemplateView.as_view(template_name='api_docs.html',

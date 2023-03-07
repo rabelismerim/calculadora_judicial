@@ -56,6 +56,7 @@ ALLOWED_HOSTS = [
     'brdcvmdev07',
     'brfojwanderley',
     'brsphearndt',  # TEMP
+    'brspwaoliveira'
 ]
 
 
@@ -69,6 +70,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'django_extensions',  # TEMP
     'import_export',
     'rest_framework',
@@ -109,11 +111,17 @@ INSTALLED_APPS = [
     'calculation.criterion',
     'calculation.verdict',
     'calculation.funds',  # Verbas
+    'calculation.statement',  # Extrato contábil
+    'calculation.statement_pf',  # Extrato contábil PF
+    'calculation.statement_pj',  # Extrato contábil PJ
+    'calculation.comparative',  # Comparativo
 
     # Rate - Indice
     'rates',
 
 ]
+
+SITE_ID = 1
 
 AUTH_USER_MODEL = 'dttuser.User'
 
@@ -136,7 +144,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            'static/src/vue/dist/', os.path.join(BASE_DIR, template)
+            'djud/static/src/vue/dist/', os.path.join(BASE_DIR, template)
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -190,8 +198,10 @@ if IS_HML:
 else:
     MIDDLEWARE.append("corsheaders.middleware.CorsMiddleware")
     INSTALLED_APPS.append('corsheaders')
-    CORS_ALLOWED_ORIGINS_REGEXES = [
-        r"*",
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:8080",
+        "https://brfojwanderley:5173",
+        'https://localhost:5173'
     ]
     CORS_ALLOW_ALL_ORIGINS = True
     CORS_ALLOW_CREDENTIALS = True
@@ -288,14 +298,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/djud/static/'
+STATIC_URL = 'djud/static/'
+# STATIC_URL = '/static/'
 STATIC_ROOT = 'var/static_root/'
-STATICFILES_DIRS = ['static']
-if DEBUG:
-    STATICFILES_DIRS = [
-        os.path.join(BASE_DIR, 'static')
-    ]
-else:
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'djud/static/'),
+    # os.path.join(BASE_DIR, 'static/'),
+]
+if DEBUG is False:
     STATIC_ROOT = os.path.join(BASE_DIR, 'var/static_root/')
 
 # Default primary key field type
@@ -340,3 +350,7 @@ if DEBUG:
     LOGOUT_URL = "/djud/logout/"
 
 RATE_FILE_TYPES = ['pdf', 'vnd.ms-excel', 'xlsx', 'xls']
+
+GROUP_NAME_EXECUTOR = 'Executor'
+GROUP_NAME_APPROVER = 'Aprovador'
+GROUP_NAME_REVIEWER = 'Revisor'
