@@ -163,3 +163,16 @@ class UserDttSchema(serializers.ModelSerializer):
                     self.fields.pop(field_name)
                 except:
                     pass
+
+class UserAuthorizeDttSchema(serializers.ModelSerializer):
+    """
+    Serializer for fields of the abstract model.
+
+    Attributes:
+        renderer_classes (list): A list of JSONRenderer objects.
+    """
+    renderer_classes = [renderers.JSONRenderer]
+    class Meta:
+        model = get_user_model()
+        fields = ['email']
+

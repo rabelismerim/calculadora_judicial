@@ -6,7 +6,8 @@ Api's classes use the DttUser model and schema DttUser to work with data.
 """
 from config.settings import ENABLE_SSO, IS_LOCALHOST, PASSWD_DEV
 from core.abstract.views import AbstractViewApi
-from core.dttuser.schemas import GroupSchema, UserDttSchema
+from core.dttuser.schemas import UserDttSchema, UserAuthorizeDttSchema, GroupSchema
+from core.dttuser.schemas import UserDttSchema, UserAuthorizeDttSchema
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 from rest_framework import status
@@ -49,6 +50,14 @@ class AbstractUserDttApi(AbstractViewApi):
             "description": "Username do usuário",
             "schema": {"type": "string"}
         },
+        {
+            "name": "is_active",
+            "field": "is_active__exact",
+            "in": "query",
+            "required": False,
+            "description": "Usuários Autenticados (True/False)",
+            "schema": {"type": "string"}
+        },
     ]
 
 
@@ -71,6 +80,30 @@ class UserDttDetailApi(AbstractUserDttApi):
         user = serializer(self.model.objects.filter(
             id=request.user.id).first(), many=False).data
         return JsonResponse({'user': user})
+
+
+class UserAuthorizeDttApi(AbstractUserDttApi):
+    """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like query_params and schema."""
+    http_method_names = ['post']
+    serializer_class = UserAuthorizeDttSchema
+    query_params = []
+    schema = AutoSchema(
+        tags=['Users'],
+        component_name='UserAuthorize',
+        operation_id_base='UserAuthorize',
+    )
+
+    def post(self, request, *args, **kwargs):
+        """
+        This method returns a JSON response that contains the user details as per authenticated user. 
+        The serializer is used to access the model object, and then the data is returned in a JSON format.
+        """
+        serializer = self.get_serializer_class()
+        user = serializer(self.model.objects.filter(
+            email=request.user.email).first(), many=False).data
+        user.is_active = True
+        user.update()
+        return JsonResponse({'user': user}, status=status.HTTP_201_CREATED)
 
 
 class GroupApi(AbstractViewApi):
