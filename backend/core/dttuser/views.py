@@ -55,7 +55,7 @@ class AbstractUserDttApi(AbstractViewApi):
             "field": "is_active__exact",
             "in": "query",
             "required": False,
-            "description": "Usuários Autenticados (True/False)",
+            "description": "Usuários Autorizados (True/False)",
             "schema": {"type": "string"}
         },
     ]
