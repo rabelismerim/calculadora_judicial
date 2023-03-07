@@ -50,8 +50,8 @@ class AbstractUserDttApi(AbstractViewApi):
             "schema": {"type": "string"}
         },
         {
-            "name": "is_staff",
-            "field": "is_staff__exact",
+            "name": "is_active",
+            "field": "is_active__exact",
             "in": "query",
             "required": False,
             "description": "Usuários Autenticados (True/False)",
@@ -99,7 +99,7 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
         serializer = self.get_serializer_class()
         user = serializer(self.model.objects.filter(
             email=request.user.email).first(), many=False).data
-        user.is_staff = True
+        user.is_active = True
         user.update()
         return JsonResponse({'user': user}, status=status.HTTP_201_CREATED)
 
