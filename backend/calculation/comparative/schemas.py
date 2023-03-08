@@ -22,8 +22,20 @@ from rest_framework import serializers
 
 
 class ComparativeCalculationSchema(AbstractDescriptionSchema):
-    difference = serializers.FloatField()
-    percentage = serializers.FloatField()
+    """
+    Serializer for the ComparativeCalculation model including difference and percentage fields.
+
+    Attributes:
+        difference (FloatField): The difference between the approved calculation and this comparative calculation.
+        percentage (FloatField): The percentage difference between the approved calculation and this comparative calculation.
+
+    Meta:
+        model (Model): The ComparativeCalculation model to serialize.
+        fields (str or list of str): A list of all the fields to be serialized. '__all__' is used to indicate that all fields are included.
+        read_only_fields (tuple of str, optional): A tuple of fields to set as read-only. Defaults to ('dtt',).
+    """
+    difference = serializers.FloatField(read_only=True)
+    percentage = serializers.FloatField(read_only=True)
 
     class Meta:
         model = ComparativeCalculation
@@ -32,12 +44,27 @@ class ComparativeCalculationSchema(AbstractDescriptionSchema):
 
 
 class AbstractComparativeFundsSchema(AbstractDescriptionSchema):
+    """
+    A serializer that defines the fields and behavior of ComparativeFunds.
+
+    Required attributes:
+        - creditor: The amount of money owed by the debtor.
+
+    Read-only attributes:
+        - name: The name of the fund.
+        - dtt: The date when the Creditor's recovering request was sent to the DTT.
+        - difference: The difference between the creditor and the debtor's requests.
+        - percentage: The percentage of the debt based on both the creditor and the debtor's requests.
+        - id: The UUID of the instance.
+
+    """
     # calculation_id = serializers.UUIDField()
-    name = serializers.CharField()
+    name = serializers.CharField(read_only=True)
     creditor = serializers.FloatField()
-    dtt = serializers.FloatField()
-    difference = serializers.FloatField()
-    percentage = serializers.FloatField()
+    dtt = serializers.FloatField(read_only=True)
+    difference = serializers.FloatField(read_only=True)
+    percentage = serializers.FloatField(read_only=True)
+    id = serializers.UUIDField()
 
     class Meta:
         model = ComparativeFunds
@@ -46,14 +73,18 @@ class AbstractComparativeFundsSchema(AbstractDescriptionSchema):
 
 
 class ComparativeFundsSchema(AbstractComparativeFundsSchema):
-
+    """
+    A schema that serializes/deserializes ComparativeFunds objects
+    """
     class Meta:
         model = ComparativeFunds
         fields = "__all__"
 
 
 class ComparativeFundsIntegrationsSchema(AbstractComparativeFundsSchema):
-
+    """
+    A schema that serializes/deserializes ComparativeFundsIntegraions objects
+    """
     class Meta:
         model = ComparativeFundsIntegrations
         fields = "__all__"
@@ -67,35 +98,70 @@ class TotalDueSchema(serializers.Serializer):
     serializer = TotalDueSchema
     """
     creditor = serializers.FloatField()
-    dtt = serializers.FloatField()
-    difference = serializers.FloatField()
-    percentage = serializers.FloatField()
+    dtt = serializers.FloatField(read_only=True)
+    difference = serializers.FloatField(read_only=True)
+    percentage = serializers.FloatField(read_only=True)
+
+
+class DatesSchema(serializers.Serializer):
+    """
+    Serializes the field id of the DatesSchema for use in the API.
+
+    Usage example:
+    serializer = DatesSchema
+    """
+    dtt = serializers.DateField(read_only=True)
+    creditor = serializers.DateField()
+    difference = serializers.IntegerField(read_only=True)
 
 
 class ApprovedCalculationSchema(AbstractDescriptionSchema):
-    recurral = ComparativeCalculationSchema()
-    total_updated = ComparativeCalculationSchema()
-    default_interest = ComparativeCalculationSchema()
-    advocative_hours = ComparativeCalculationSchema()
-    total_due = TotalDueSchema(source='get_total_due')
+    """
+    Schema that extends AbstractDescriptionSchema to include approved calculation data such as recurral, 
+    total_updated, default_interest, advocative_hours, and funds_comparatives_integrations.
+    """
+    recurral = ComparativeCalculationSchema(required=False)
+    total_updated = ComparativeCalculationSchema(
+        required=False, read_only=True)
+    default_interest = ComparativeCalculationSchema(required=False)
+    advocative_hours = ComparativeCalculationSchema(required=False)
+    total_due = TotalDueSchema(source='get_total_due', read_only=True)
 
-    funds_comparatives = AbstractComparativeFundsSchema(
-        source='get_comparatives', many=True)
-    funds_comparatives_integrations = AbstractComparativeFundsSchema(
-        source='get_comparatives_integrations', many=True)
+    funds_comparatives = AbstractComparativeFundsSchema(required=False,
+                                                        source='get_comparatives', many=True)
+    funds_comparatives_integrations = AbstractComparativeFundsSchema(required=False,
+                                                                     source='get_comparatives_integrations', many=True)
 
     class Meta:
         model = ApprovedCalculation
         exclude = ('comparative', )
 
+    def validate(self, data):
+        """It validates the provided data for serialization and deserialization. It also updates the custom fields."""
+        data['funds_comparatives'] = data.pop('get_comparatives', [])
+        data['funds_comparatives_integrations'] = data.pop(
+            'get_comparatives_integrations', [])
+        return super(ApprovedCalculationSchema, self).validate(data)
+
 
 class ComparativeSchema(AbstractDescriptionSchema):
-
+    """
+    The ComparativeSchema class represents a Serializer class for Comparative model. It extends the 
+    AbstractDescriptionSchema class and adds custom fields with nested serializers.
+    """
     approved_calculation = ApprovedCalculationSchema(
         source='approvedcalculation')
-    difference_date = serializers.IntegerField()
+    date = DatesSchema(source='get_dates')
+
+    calculation_id = serializers.UUIDField(read_only=True)
+
+    def validate(self, data):
+        """It validates the provided data for serialization and deserialization. It also updates the custom fields."""
+        data['approved_calculation'] = data.pop('approvedcalculation', None)
+        data['date'] = data.pop('get_dates', None)
+        return super(ComparativeSchema, self).validate(data)
 
     class Meta:
         model = Comparative
-        read_only_fields = ('approved_calculation', 'difference_date')
-        exclude = ('calculation', )
+        read_only_fields = ('approved_calculation', 'difference_date', 'date')
+        exclude = ('calculation', 'data_base_creditor', 'data_base_dtt')
