@@ -14,9 +14,8 @@ from rest_framework import status
 from rest_framework.schemas.openapi import AutoSchema
 from core.permission.views import CheckHasPermission, CreatePermissions
 from utils import get_user_model
-from rest_framework import permissions
-from django.contrib.auth.models import Permission, Group
-
+from rest_framework import permissions, serializers
+from django.contrib.auth.models import Group
 User = get_user_model()
 
 
@@ -98,12 +97,19 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
         This method returns a JSON response that contains the user details as per authenticated user. 
         The serializer is used to access the model object, and then the data is returned in a JSON format.
         """
+
         serializer = self.get_serializer_class()
-        user = serializer(self.model.objects.filter(
-            email=request.user.email).first(), many=False).data
-        user.is_active = True
-        user.update()
-        return JsonResponse({'user': user}, status=status.HTTP_201_CREATED)
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user_filter = serializer.validated_data
+
+        user_approved = self.model.objects.filter(**user_filter).first()
+        if not user_approved:
+            raise serializers.ValidationError(['Email não encontrado'])
+
+        user_approved.is_active = True
+        user_approved.save()
+        return JsonResponse({'user': user_filter}, status=status.HTTP_201_CREATED)
 
 
 class GroupApi(AbstractViewApi):
