@@ -27,7 +27,7 @@ def sign_status(request):
             user.first_name = ms_identity_web.id_data.username.split()[0]
             user.last_name = ms_identity_web.id_data.username.split(
             )[len(request.identity_context_data.username.split())-1]
-            user.is_active = True
+            user.is_active = False
             user.is_staff = False
             user.save()
     return Response()
