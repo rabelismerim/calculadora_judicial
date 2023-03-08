@@ -200,7 +200,7 @@ else:
     INSTALLED_APPS.append('corsheaders')
     CORS_ALLOWED_ORIGINS = [
         "http://localhost:8080",
-        "https://brfojwanderley:5173",
+        "https://0.0.0.0:5173",
         'https://localhost:5173'
     ]
     CORS_ALLOW_ALL_ORIGINS = True
