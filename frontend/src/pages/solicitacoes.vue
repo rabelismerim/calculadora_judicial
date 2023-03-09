@@ -17,7 +17,8 @@ let loading = $ref(false)
 let groups = $ref([])
 let users = $ref([])
 const pendingRequests = computed(() => users.filter(({ isActive }) => !isActive).length)
-onMounted(async () => {
+
+const loadPage = async () => {
   loading = true
   try {
     users = await usersService.getUsers()
@@ -29,7 +30,8 @@ onMounted(async () => {
   finally {
     loading = false
   }
-})
+}
+onMounted(() => loadPage())
 
 const columns = [
   {
@@ -86,20 +88,16 @@ const columns = [
       </button>
 
       <div class="mb-8 flex justify-between gap-4">
-        <h1 class="font-bold text-4xl">
-          {{ `Solicitações (${pendingRequests})` }}
-        </h1>
-        <label class="relative">
-          <span class="mr-4">Buscar</span>
-          <input
-            v-model="filterBy"
-            type="text"
-            class="border-1 border-black/12 py-1 pl-1 pr-8 rounded-.5 h-full"
-          >
-          <button class="group absolute right-.5 top-50% -translate-y-50% p-1.5 hover:bg--primary transition duration-300 ease-in-out">
-            <div class="i-carbon-search group-hover:bg-white transition duration-300 ease-in-out" />
-          </button>
-        </label>
+        <div class="flex items-center gap-2">
+          <h1 class="font-bold text-4xl">
+            {{ `Solicitações (${pendingRequests})` }}
+          </h1>
+          <ReloadBtn
+            hint="Recarregar a Lista de Usuários"
+            @click="loadPage"
+          />
+        </div>
+        <SearchFilter v-model="filterBy" />
       </div>
 
       <QTable

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import SearchFilter from '../components/common/SearchFilter.vue'
+
 const router = useRouter()
 
 let loading = $ref(false)
@@ -159,26 +161,12 @@ const columns = [
           <h2 class="font-bold text-3xl">
             Projetos ({{ projectsCount }})
           </h2>
-          <button
-            class="h-8 w-8 hover:bg-gray/30 rounded-full flex justify-center items-center transition duration-300 ease-in-out"
+          <ReloadBtn
+            hint="Recarregar a Lista de Projetos"
             @click="loadProjects"
-          >
-            <div class="i-carbon-restart h-5 w-5" />
-          </button>
+          />
         </div>
-        <div>
-          <label class="relative">
-            <span class="mr-4">Buscar</span>
-            <input
-              v-model="filterBy"
-              type="text"
-              class="border-1 border-black/12 py-1 pl-1 pr-8 rounded-.5"
-            >
-            <button class="group absolute right-.5 top-50% -translate-y-50% p-1.5 hover:bg--primary transition duration-300 ease-in-out">
-              <div class="i-carbon-search group-hover:bg-white transition duration-300 ease-in-out" />
-            </button>
-          </label>
-        </div>
+        <SearchFilter v-model="filterBy" />
       </div>
 
       <QTable
