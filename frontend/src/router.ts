@@ -15,18 +15,19 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  if (!to.meta?.authentication) {
+  if (!to.meta?.permissions) {
     next()
     return
   }
   try {
-    const { authenticated, authorized } = await usersService.getMyProfile()
+    const { authenticated, permissions: userPermissions } = await usersService.getMyProfile()
     if (!authenticated && import.meta.env.PROD)
       redirectTo(`${window.location.origin}/djud/api/drfmsal_signin/djud/`)
-    if (authorized)
+    const permissions = to.meta.permissions as string[]
+    if (permissions.every((permission: string) => userPermissions.includes(permission)))
       next()
   }
-  finally {
+  catch (error) {
     next('/')
   }
 })
