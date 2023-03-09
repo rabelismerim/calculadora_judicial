@@ -1,5 +1,15 @@
-const login = () => api
-  .get('/drfmsal_signin/djud/')
+const getPermissions = () => api
+  .get('/user/detail/')
+  .then(({ data }) => data.user)
+  .then(({
+    is_active,
+    groups,
+    user_permissions,
+  }) => ({
+    isActive: is_active,
+    groups,
+    permissions: user_permissions.map(({ codename }: any) => codename),
+  }))
 
 const getMyProfile = () => api
   .get('/drfmsal_signstatus/')
@@ -12,16 +22,54 @@ const getMyProfile = () => api
   }) => ({
     authenticated,
     authorized,
-    fullName: user_fullname,
+    name: user_fullname,
     picture: user_picture,
   }))
+  .then(async (user) => {
+    if (!user.authenticated && import.meta.env.PROD)
+      redirectTo(`${window.location.origin}/djud/api/drfmsal_signin/djud/`)
+
+    const permissions = await getPermissions()
+
+    return {
+      ...user,
+      ...permissions,
+    }
+  })
 
 const getUsers = () => api
-  .get('/v1/users/')
-  .then(({ data }) => data)
+  .get('/users/')
+  .then(({ data }) => data.users.map(({
+    id,
+    first_name,
+    last_name,
+    email,
+    groups,
+    // is_active,
+    is_staff,
+  }: any) => ({
+    id,
+    name: `${first_name} ${last_name}`,
+    email,
+    // isActive: is_active,
+    isActive: Math.random() < 0.5,
+    isStaff: is_staff,
+    groups,
+  })))
+
+const getGroups = () => api
+  .get('/groups/')
+  .then(({ data }) => data.groups.map(({
+    id,
+    name,
+  }: any) => ({
+    id,
+    name,
+  })))
 
 export default {
   getMyProfile,
+  getPermissions,
+  getGroups,
   getUsers,
-  login,
 }
