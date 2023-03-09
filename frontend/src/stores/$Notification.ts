@@ -22,10 +22,14 @@ export const notify = ({ message, id = Date.now(), timeout = 20, type = 'informa
 }
 
 export const throwError = (error: any) => {
-  let { code, message, id = Date.now(), timeout } = error
+  let { response, message, id = Date.now(), timeout } = error
 
-  if (code === 'ERR_NETWORK')
+  if (response?.status === 500)
     message = 'Problemas no Servidor...'
+  if (response?.status === 403)
+    message = 'Você não está autorizado...'
+  if (response?.data?.data?.detail)
+    message = response.data.data.detail
 
   notify({ message, id, timeout, type: 'error' })
 }
