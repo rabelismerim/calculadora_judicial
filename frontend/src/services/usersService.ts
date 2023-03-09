@@ -45,14 +45,13 @@ const getUsers = () => api
     last_name,
     email,
     groups,
-    // is_active,
+    is_active,
     is_staff,
   }: any) => ({
     id,
     name: `${first_name} ${last_name}`,
     email,
-    // isActive: is_active,
-    isActive: Math.random() < 0.5,
+    isActive: is_active,
     isStaff: is_staff,
     groups,
   })))
