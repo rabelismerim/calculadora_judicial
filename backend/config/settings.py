@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
+import sys
 from dotenv import load_dotenv
 from core.drfmsal import IdentityWebPython
 import urllib3
@@ -234,7 +235,10 @@ DRFMSAL_IDENTITY_WEB = IdentityWebPython()
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 # str(os.getenv('SECRET_KEY'))
-if BRANCH_DEV:
+#if 'test' in sys.argv:
+#    ENABLE_SSO=False
+
+if BRANCH_DEV or 'test' in sys.argv:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -298,7 +302,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = 'djud/static/'
+if IS_HML:
+    STATIC_URL = 'static/'
+else:
+    STATIC_URL = 'djud/static/'
 # STATIC_URL = '/static/'
 STATIC_ROOT = 'var/static_root/'
 STATICFILES_DIRS = [

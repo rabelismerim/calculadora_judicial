@@ -109,6 +109,32 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
         user_approved.save()
         return JsonResponse({'user': user_filter}, status=status.HTTP_201_CREATED)
 
+class UserSendMailDttApi(AbstractUserDttApi):
+    """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like query_params and schema."""
+    http_method_names = ['post']
+    serializer_class = UserAuthorizeDttSchema
+    query_params = []
+    schema = AutoSchema(
+        tags=['Users'],
+        component_name='UserAuthorize',
+    )
+
+    def post(self, request, *args, **kwargs):
+        """
+        This method returns a JSON response that contains the user details as per authenticated user. 
+        The serializer is used to access the model object, and then the data is returned in a JSON format.
+        """
+
+        serializer = self.get_serializer_class()
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user_filter = serializer.validated_data
+
+        user_mail = self.model.objects.filter(**user_filter).first()
+        if not user_mail:
+            raise serializers.ValidationError(['Email não encontrado'])
+
+        return JsonResponse({'user': user_filter}, status=status.HTTP_201_CREATED)
 
 class GroupApi(AbstractViewApi):
     """HTTP methods for interfacing with the User Deloitte modelThis method returns a JSON response that contains the user details given a filtering criteria. 

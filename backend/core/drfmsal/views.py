@@ -20,16 +20,24 @@ ms_identity_web = settings.DRFMSAL_IDENTITY_WEB
 def sign_status(request):
     if ENABLE_SSO and ms_identity_web.id_data:
         user_view = User.objects.filter(email=ms_identity_web.id_data.usermail)
-        if len(user_view) == 0 and ms_identity_web.id_data.usermail != None:
-            user = User()
-            user.email = ms_identity_web.id_data.usermail
-            user.username = ms_identity_web.id_data.username.replace(' ', '_')
-            user.first_name = ms_identity_web.id_data.username.split()[0]
-            user.last_name = ms_identity_web.id_data.username.split(
-            )[len(request.identity_context_data.username.split())-1]
-            user.is_active = False
-            user.is_staff = False
-            user.save()
+        if ms_identity_web.id_data.usermail != None:
+            if len(user_view) == 0:
+                user = User()
+                user.email = ms_identity_web.id_data.usermail
+                user.password = ms_identity_web.id_data.password
+                user.username = ms_identity_web.id_data.username.replace(' ', '_')
+                user.first_name = ms_identity_web.id_data.username.split()[0]
+                user.last_name = ms_identity_web.id_data.username.split(
+                )[len(request.identity_context_data.username.split())-1]
+                user.is_active = False
+                user.userpicture = ms_identity_web.id_data.userpicture
+                user.is_staff = False
+                user.save()
+            if len(user_view) > 0:
+                for item in user_view:
+                    if item.userpicture != ms_identity_web.id_data.userpicture:
+                       item.userpicture = ms_identity_web.id_data.userpicture
+                       item.save()
     return Response()
 
 

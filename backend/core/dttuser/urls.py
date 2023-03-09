@@ -1,5 +1,5 @@
 from django.urls import path
-from core.dttuser.views import UserAuthorizeDttApi, UserDttApi, UserDttDetailApi, GroupApi
+from core.dttuser.views import UserSendMailDttApi, UserAuthorizeDttApi, UserDttApi, UserDttDetailApi, GroupApi
 
 
 urlpatterns = [
@@ -7,4 +7,5 @@ urlpatterns = [
     path('user/detail/', UserDttDetailApi.as_view()),
     path('groups/', GroupApi.as_view()),
     path('user/authorize/', UserAuthorizeDttApi.as_view()),
+    path('user/sendmail/', UserSendMailDttApi.as_view()),
 ]
