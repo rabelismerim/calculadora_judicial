@@ -7,7 +7,6 @@ Api's classes use the DttUser model and schema DttUser to work with data.
 from config.settings import ENABLE_SSO, IS_LOCALHOST, PASSWD_DEV
 from core.abstract.views import AbstractViewApi
 from core.dttuser.schemas import UserDttSchema, UserAuthorizeDttSchema, GroupSchema
-from core.dttuser.schemas import UserDttSchema, UserAuthorizeDttSchema
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 from rest_framework import status
@@ -29,7 +28,6 @@ class AbstractUserDttApi(AbstractViewApi):
     else:
         permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = User
-    queryset = User.objects.all
     schema = AutoSchema(tags=["Users"])
 
     query_params = [
@@ -51,11 +49,11 @@ class AbstractUserDttApi(AbstractViewApi):
         },
         {
             "name": "is_active",
-            "field": "is_active__exact",
+            "field": "is_active",
             "in": "query",
             "required": False,
             "description": "Usuários Autorizados (True/False)",
-            "schema": {"type": "string"}
+            "schema": {"type": "bool"}
         },
     ]
 
@@ -123,7 +121,6 @@ class GroupApi(AbstractViewApi):
         permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Group
     http_method_names = ['get']
-    queryset = Group.objects.all
     schema = AutoSchema(tags=["Groups"])
 
 
@@ -139,12 +136,12 @@ class UserDttApi(AbstractUserDttApi):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_user = serializer.validated_data
-        groups = new_user.pop('groups', [])  # TODO: adicionar grupo ao projeto
+        groups = new_user.pop('groups', [])
         new_user.pop('password_confirm', None)
         password = new_user.pop('password', None)
         user = self.model.objects.create(**new_user)
         user.set_password(password)
-        user.groups.add(groups)
+        user.groups.add(*groups)
         user.save()
 
         if IS_LOCALHOST:
@@ -154,11 +151,6 @@ class UserDttApi(AbstractUserDttApi):
                 login(self.request, user_authenticated)
         serializer = self.get_serializer_class()
         return JsonResponse({'user': serializer(request.user, many=False).data}, status=status.HTTP_201_CREATED)
-
-    def get(self, request, *args, **kwargs):
-        """Get the details of all existing users."""
-        users = self.get_query()
-        return JsonResponse({'users': users})
 
 
 if ENABLE_SSO is False:

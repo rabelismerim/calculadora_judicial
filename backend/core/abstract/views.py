@@ -28,6 +28,11 @@ class AbstractViewApi(generics.GenericAPIView):
         """Parse string to datetime"""
         return datetime.datetime.strptime(date_string, '%Y-%m-%d %H:%M')
 
+    @staticmethod
+    def __parse_bool(text):
+        """Parse string to bool"""
+        return str(text).lower() in 'true'
+
     def __get_type_by_instance(self, instance):
         """Get instance, type, parser and legend by field schema type"""
         types = {
@@ -36,6 +41,7 @@ class AbstractViewApi(generics.GenericAPIView):
             'datetime': {'type': datetime.date, 'parser': self.__parse_datetime, 'legend': '2001-12-30 23:01'},
             'float': {'type': float, 'parser': float, 'legend': '01.00'},
             'int': {'type': int, 'parser': int, 'legend': '1'},
+            'bool': {'type': bool, 'parser': self.__parse_bool, 'legend': 'True/False'},
         }
 
         return types.get(instance, str)
