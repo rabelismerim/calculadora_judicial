@@ -60,12 +60,12 @@ const onMouseMove = (event: MouseEvent) => {
     @mouseleave="shine.show = false"
     @mousemove="onMouseMove"
   >
-    <div v-if="loading" class="pointer-events-none">
+    <div v-if="loading" class="pointer-events-none whitespace-nowrap">
       {{ loadingLabel }}
     </div>
     <div v-else class="pointer-events-none flex items-center gap-2 no-wrap">
       <slot name="before" />
-      {{ label }}
+      <span class="whitespace-nowrap">{{ label }}</span>
       <slot name="after" />
     </div>
     <Spinner v-if="loading" :color="!transparent && !outlined ? 'white' : color" class="pointer-events-none" />
