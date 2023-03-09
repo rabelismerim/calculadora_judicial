@@ -3,11 +3,19 @@ const getPermissions = () => api
   .then(({ data }) => data.user)
   .then(({
     is_active,
+    is_staff,
     groups,
+    email,
+    full_name,
     user_permissions,
+    userpicture,
   }) => ({
+    name: full_name,
     isActive: is_active,
     groups,
+    email,
+    isStaff: is_staff,
+    picture: userpicture,
     permissions: user_permissions.map(({ codename }: any) => codename),
   }))
 
@@ -66,9 +74,14 @@ const getGroups = () => api
     name,
   })))
 
+const requestAccess = (email: string) => api
+  .post('/user/sendmail/', { email })
+  // .then(({ data }) => data)
+
 export default {
   getMyProfile,
   getPermissions,
   getGroups,
   getUsers,
+  requestAccess,
 }
