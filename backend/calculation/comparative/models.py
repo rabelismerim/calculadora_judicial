@@ -30,10 +30,11 @@ class Comparative(AbstractModel):
     check_create_editable_total_funds_integrget_create_approved_calculationations(): Creates and returns an instance of the ApprovedCalculation class related to the current Comparative object if such instance does not exist yet.
     """
 
-    def __init__(self, *args, **kwargs):
-        super(Comparative, self).__init__(*args, **kwargs)
-        self.check_create_editable_total_funds()
-        self.check_create_editable_total_funds_integrations()
+    # def __init__(self, *args, **kwargs):
+    #     super(Comparative, self).__init__(*args, **kwargs)
+
+    #     if hasattr(self, 'calculation'):
+    #         self.checks()
 
     calculation = models.OneToOneField(Calculation, on_delete=models.PROTECT)
 
@@ -64,6 +65,15 @@ class Comparative(AbstractModel):
             'dtt': self.data_base_dtt,
             'difference': self.difference_date,
         }
+
+    def checks(self) -> bool:
+        """
+        Verifies if all funds related to the current Comparative object have comparable values in the TotalValuesFunds model. 
+        If not found, creates a new ComparativeFunds object for each missing fund with creditor equal zero.
+        Returns a boolean indicating wheter any funds were missing.
+        """
+        self.check_create_editable_total_funds()
+        self.check_create_editable_total_funds_integrations()
 
     def check_create_editable_total_funds(self) -> bool:
         """
@@ -96,13 +106,17 @@ class Comparative(AbstractModel):
         Creates and returns an instance of the ApprovedCalculation class related to the current Comparative object if such instance does not exist yet.
         """
         if hasattr(self, 'approvedcalculation') is False:
-            approved = ApprovedCalculation.objects.create(
-                comparative=self,
-                recurral=ComparativeCalculation.objects.create(),
-                total_updated=ComparativeCalculation.objects.create(),
-                default_interest=ComparativeCalculation.objects.create(),
-                advocative_hours=ComparativeCalculation.objects.create(),
-            )
+            approved = ApprovedCalculation.objects.filter(
+                comparative=self).first()
+            if not approved:
+                approved = ApprovedCalculation.objects.create(
+                    comparative=self,
+                    recurral=ComparativeCalculation.objects.create(),
+                    total_updated=ComparativeCalculation.objects.create(),
+                    default_interest=ComparativeCalculation.objects.create(),
+                    advocative_hours=ComparativeCalculation.objects.create(),
+                )
+            return approved
         return self.approvedcalculation
 
     def save(self, *args, **kwargs):
