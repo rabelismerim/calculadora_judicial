@@ -26,9 +26,18 @@ export default defineConfig({
       'border-color': `hsla(var(--${w},0,0%,0%),var(--opacity,1))`,
       '--opacity': +d / 100,
     })],
+    ['max-w-fill', { 'max-width': '-webkit-fill-available' }],
+    [/^ring--(\w+)$/, ([, w]) => ({
+      '--un-ring-color': `hsl(var(--${w},0,0%,0%))`,
+    })],
+    [/^ring--(\w+)\/(\d+)$/, ([, w, d]) => ({
+      '--un-ring-color': `hsla(var(--${w},0,0%,0%),var(--opacity,1))`,
+    })],
+    ['ring-inner', { 'box-shadow': 'inset var(--un-ring-offset-shadow),inset var(--un-ring-shadow), var(--un-shadow) !important' }],
   ],
-  shortcuts: [
-  ],
+  shortcuts: {
+    'with-transition': 'transition ease-in-out duration-300',
+  },
   presets: [
     presetUno(),
     presetAttributify(),
