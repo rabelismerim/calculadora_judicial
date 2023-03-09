@@ -42,7 +42,7 @@ const onMouseMove = (event: MouseEvent) => {
     ref="button"
     v-auto-animate
     :disabled="disabled"
-    class="relative overflow-hidden text-[1.05rem] min-h-10 font-semibold px-8 py-2 flex gap-4 no-wrap items-center transition duration-300 ease-in-out"
+    class="relative overflow-hidden text-[1.05rem] min-h-10 font-semibold px-6 py-2 flex gap-4 no-wrap items-center transition duration-300 ease-in-out"
     :class="{
       'text--color border-1 border--color rounded-.5': outlined,
       'hover:bg--base/10 text--color rounded-.5': transparent,
@@ -62,8 +62,10 @@ const onMouseMove = (event: MouseEvent) => {
     <div v-if="loading" class="pointer-events-none">
       {{ loadingLabel }}
     </div>
-    <div v-else class="pointer-events-none">
+    <div v-else class="pointer-events-none flex items-center gap-2 no-wrap">
+      <slot name="before" />
       {{ label }}
+      <slot name="after" />
     </div>
     <Spinner v-if="loading" :color="!transparent && !outlined ? 'white' : color" class="pointer-events-none" />
     <div v-if="icon" :class="icon" class="transition duration-300 ease-in-out pointer-events-none" />
@@ -74,7 +76,7 @@ const onMouseMove = (event: MouseEvent) => {
       }"
       :style="{
         backgroundImage: `radial-gradient(${transparent || outlined ? 'hsl(var(--color),.2)' : '#ddd5'} 10%,#0000 70%)`,
-        opacity: shine.show ? 1 : 0,
+        opacity: shine.show && !disabled ? 1 : 0,
         left: `${shine.x}px`,
         top: `${shine.y}px`,
       }"

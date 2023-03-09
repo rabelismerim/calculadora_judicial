@@ -9,6 +9,7 @@ const logout = () => {
   $user.logout()
   router.push({ path: '/' })
 }
+const { user } = $user
 </script>
 
 <template>
@@ -27,10 +28,23 @@ const logout = () => {
         transparent
         grow
         color="white"
-        label="Sair"
+        :label="user.name || 'sair'"
         icon="i-carbon-logout"
         @click="logout"
-      />
+      >
+        <template #before>
+          <div v-if="!user.picture" class="mr-2 h-8 w-8 bg--secondary text-sm flex justify-center items-center rounded-full">
+            {{ getInitials(user.name) }}
+          </div>
+          <div v-else class="h-8 w-8 rounded-full overflow-hidden bg-red">
+            <Img
+              :src="`data:image/jpeg;base64,${user.picture}`"
+              :error-image="`${baseUrl}/fallback/user.svg`"
+              class="h-8 w-8 object-cover"
+            />
+          </div>
+        </template>
+      </Btn>
       <Img
         :src="`${baseUrl}/logo/digital-lab-dark.svg`"
         :height="32"
