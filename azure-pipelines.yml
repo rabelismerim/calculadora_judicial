@@ -26,12 +26,12 @@ steps:
     versionSource: 'spec'
     versionSpec: '8.x'
 - task: DownloadSecureFile@1
-  name: EnvDev
+  name: EnvPrd
   inputs:
-    secureFile: '.env'
+    secureFile: '.envprd'
 - script: |
-    echo Installing $(EnvDev.secureFilePath) to the path backend...
-    copy $(EnvDev.secureFilePath) $(Build.SourcesDirectory)/backend 
+    echo Installing $(EnvPrd.secureFilePath) to the path backend...
+    copy $(EnvPrd.secureFilePath) $(Build.SourcesDirectory)/backend 
 - task: PythonScript@0
   displayName: 'Export project path'
   inputs:
