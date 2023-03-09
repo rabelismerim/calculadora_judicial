@@ -2,7 +2,9 @@
 const router = useRouter()
 
 let loading = $ref(false)
+const showNewProject = $ref(false)
 const filterBy = $ref('')
+
 let projects = $ref([])
 const projectsCount = computed(() => projects.length)
 const gaugeValues = computed(() => Object.entries(projects
@@ -30,7 +32,7 @@ const loadProjects = async () => {
   try {
     const projectResult = await projectService.getProjects()
 
-    const recoveringResult = await recoveringService.getRecovering()
+    const recoveringResult = await recoveringService.getRecoverings()
     const getRecovering = (project: string) => recoveringResult.find(({ projectId }: any) => projectId === project)
 
     projects = projectResult.map((project: any) => ({
@@ -130,7 +132,7 @@ const columns = [
         </h1>
         <Btn
           label="Novo Projeto"
-          disabled
+          @click="showNewProject = true"
         />
       </div>
 
@@ -179,7 +181,7 @@ const columns = [
         </div>
       </div>
 
-      <q-table
+      <QTable
         class="my-header-table"
         :rows="projects"
         :columns="columns"
@@ -191,7 +193,7 @@ const columns = [
         @row-click="openProject"
       >
         <template #body-cell-name="props">
-          <q-td :props="props">
+          <QTd :props="props">
             <div class="flex no-wrap items-center gap-3 font-bold">
               <div class="h-10 w-10 bg-gray-2 rounded-.5 flex justify-center items-center text-[16px]">
                 {{ getInitials(props.value) }}
@@ -200,10 +202,10 @@ const columns = [
                 {{ props.value }}
               </div>
             </div>
-          </q-td>
+          </QTd>
         </template>
         <template #body-cell-status="props">
-          <q-td :props="props">
+          <QTd :props="props">
             <div class="flex">
               <div
                 class="py-1 pl-3 rounded-full flex no-wrap items-center"
@@ -228,11 +230,12 @@ const columns = [
                 />
               </div>
             </div>
-          </q-td>
+          </QTd>
         </template>
-      </q-table>
+      </QTable>
     </div>
   </div>
+  <newProject v-model="showNewProject" />
 </template>
 
 <style lang="scss">
@@ -243,5 +246,5 @@ const columns = [
 
 <route lang="yaml">
 meta:
-  authentication: true
+  permissions: [view_project]
 </route>

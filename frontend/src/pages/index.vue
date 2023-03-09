@@ -15,7 +15,7 @@ const requestPermission = () => {
 }
 
 onMounted(() => $user.login())
-const { hasPermission } = $user
+const { isActive } = $user
 </script>
 
 <template>
@@ -34,7 +34,7 @@ const { hasPermission } = $user
         </p>
         <div class="flex flex-wrap gap-3">
           <Btn
-            v-if="hasPermission"
+            v-if="isActive"
             label="Entrar"
             :loading="loading"
             loading-label="carregando seus dados..."
