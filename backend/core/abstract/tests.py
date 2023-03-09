@@ -75,7 +75,7 @@ class AbstractTest(TestCase):
             "is_staff": True,
         }
 
-        response = self.client.post('/djud/api/users', user)
+        response = self.client.post('/djud/api/users/', user)
         self.assertEqual(response.status_code, 201)
         user_detail = json.loads(response.content)['user']
         self.set_user(user_detail)

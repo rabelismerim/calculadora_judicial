@@ -1,8 +1,9 @@
 from base.claim.models import Claim
+from calculation.comparative.models import Comparative
 from calculation.criterion.models import Criterion
 from calculation.funds.views import CreateFunds
-from calculation.models import Calculation
-from calculation.schemas import CalculationSchema
+from calculation.models import Calculation, Incident
+from calculation.schemas import CalculationSchema, IncidentSchema
 from calculation.verdict.models import TypeCalculation, Verdict
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
@@ -34,6 +35,28 @@ class AbstractCalculationApi(AbstractViewApi):
     ]
 
 
+class IncidentApi(AbstractViewApi):
+    """This class provides basic HTTP methods for managing Incident Objects. 
+    It includes a serializer_class and required permission_classes to authenticate the users, 
+    a model instance with a corresponding schema as well as custom query parameters to retrieve data.
+    """
+    serializer_class = IncidentSchema
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    model = Incident
+    schema = AutoSchema(tags=["Calculation - Incident"])
+    http_method_names = ['post', 'get']
+    query_params = [
+        {
+            "name": "incidente",
+            "field": "number__icontains",
+            "in": "query",
+            "required": False,
+            "description": "Nome do incidente",
+            "schema": {"type": "string"}
+        }
+    ]
+
+
 class CalculationDetailApi(AbstractCalculationApi):
     """A class for handling detail HTTP requests for a Calculation object
     HTTP methods for retrieving particular Calculation detail"""
@@ -44,18 +67,18 @@ class CalculationApi(AbstractCalculationApi):
     """HTTP methods for Calculation"""
     http_method_names = ['post', 'get']
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):  # Generate calculation
         """
         Creates a new instance of the Calculation model, receiving a dictionary as an argument and returning details of the newly created instance. 
         Before creation of the Calculation instance, it will create related Criterion and Verdict instances based on the input data. 
         Furthermore, if any Funds objects are found in the input data, it will also iteratively call the CreateFunds helper class to create the necessary
         Funds instances related to the Calculation. Finally, a JsonResponse with the serialized Calculation instance is returned upon successful completion.
-        
+
         Arguments
         request -- Containing the input data, a Request object that supports .data attribute access.
         args -- Additional positional arguments, if given.
         kwargs -- Additional keyword arguments, if given.
-        
+
         Returns
         A JsonResponse containing the serialized Calculation instance.
         """
@@ -98,4 +121,12 @@ class CalculationApi(AbstractCalculationApi):
         if new_funds:
             for fund in new_funds:
                 CreateFunds(fund, calculation.id).create_funds()
+
+        # TODO: change creation Comparative to Generate Calculation finish
+        if Comparative.objects.filter(calculation=calculation).exists() is False:
+            # comparative = Comparative.objects.create(calculation=calculation)
+            comparative = Comparative()
+            comparative.calculation = calculation
+            comparative.save()
+            comparative.checks()
         return JsonResponse({'calculation': self.serializer_class(calculation, many=False).data}, status=status.HTTP_201_CREATED)

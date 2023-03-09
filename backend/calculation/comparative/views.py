@@ -6,15 +6,56 @@ Api's classes use the Comparative model and schema Comparative to work with data
 """
 
 
+from django.http import JsonResponse
 from calculation.comparative.schemas import ComparativeSchema
-from calculation.comparative.models import Comparative
+from calculation.comparative.models import Comparative, ComparativeFunds, ComparativeFundsIntegrations
 from core.abstract.views import AbstractViewApi
 from rest_framework.schemas.openapi import AutoSchema
-from rest_framework import permissions
+from rest_framework import permissions, status
 from core.permission.views import CheckHasPermission
 
 
-class ComparativeApi(AbstractViewApi):
+class AbstractComparativeApi(AbstractViewApi):
+    """Define the AbstractComparativeApi view class for handling HTTP methods related to Comparative.
+
+    This view class extends the AbstractViewApi class, which provides a basic implementation
+    for common API actions. The AbstractComparativeApi supports HTTP POST and GET methods, and uses the ComparativeSchema
+    serializer for input/output validation. The view requires authenticated users with appropriate
+    permissions to access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission
+    permission classes.
+
+    Attributes:
+        http_method_names (list): A list of HTTP methods supported by this view.
+        serializer_class (class): The serializer class for input/output validation.
+        permission_classes (list): A list of permission classes for user authentication and authorization.
+        model (class): The model class associated with this view.
+        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
+        query_params (list): A list of dictionaries, each specifying a query parameter for the API.
+
+    Examples:
+        To retrieve comparative with a matching description:
+        ```
+        GET /api/v1/comparative/?comparative=comparative_name
+        ```
+    """
+    serializer_class = ComparativeSchema
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    model = Comparative
+    schema = AutoSchema(tags=["Calculation - Comparative"])
+
+    query_params = [
+        {
+            "name": "comparative",
+            "field": "comparative__icontains",
+            "in": "query",
+            "required": False,
+            "description": "comparative",
+            "schema": {"type": "string"}
+        }
+    ]
+
+
+class ComparativeApi(AbstractComparativeApi):
     """Define the ComparativeApi view class for handling HTTP methods related to Comparative.
 
     This view class extends the AbstractViewApi class, which provides a basic implementation
@@ -38,18 +79,117 @@ class ComparativeApi(AbstractViewApi):
         ```
     """
     http_method_names = ['get']
-    serializer_class = ComparativeSchema
-    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
-    model = Comparative
-    schema = AutoSchema(tags=["Comparative"])
 
-    query_params = [
-        {
-            "name": "comparative",
-            "field": "comparative__icontains",
-            "in": "query",
-            "required": False,
-            "description": "comparative",
-            "schema": {"type": "string"}
-        }
-    ]
+
+class ComparativeDetailApi(AbstractComparativeApi):
+    """Define the ComparativeApi view class for handling HTTP methods related to Comparative.
+
+    This view class extends the AbstractViewApi class, which provides a basic implementation
+    for common API actions. The ComparativeApi supports HTTP POST and GET methods, and uses the ComparativeSchema
+    serializer for input/output validation. The view requires authenticated users with appropriate
+    permissions to access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission
+    permission classes.
+
+    Attributes:
+        http_method_names (list): A list of HTTP methods supported by this view.
+        serializer_class (class): The serializer class for input/output validation.
+        permission_classes (list): A list of permission classes for user authentication and authorization.
+        model (class): The model class associated with this view.
+        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
+        query_params (list): A list of dictionaries, each specifying a query parameter for the API.
+
+    Examples:
+        To retrieve comparative with a matching description:
+        ```
+        GET /api/v1/comparative/?comparative=comparative_name
+        ```
+    """
+    http_method_names = ['get', 'put']
+    query_params = []
+
+    # write the docstring for each of these classes and their methods
+
+    def get(self, request, *args, **kwargs):
+        """
+        This method handles GET requests for the view. It retrieves a specific comparative object using the given calculation_id
+        from the query parameters and serializes the result into JSON format before returning it as an HTTP response.
+
+        Parameters:
+            request: The HTTP request object.
+            args: Any additional positional arguments passed to the method.
+            kwargs: Any additional keyword arguments passed to the method, with calculation_id identifying the comparative object to retrieve.
+        Returns:
+            JsonResponse: An HTTP response containing the serialized comparative data retrieved.
+        """
+        calculation_id = kwargs.get('calculation_id')
+        comparative = self.model.objects.filter(
+            calculation_id=calculation_id).first()
+        comparative_data = self.serializer_class(comparative, many=False).data
+        return JsonResponse({'comparative': comparative_data})
+
+    def put(self, request, *args, **kwargs):
+        """
+        This method handles PUT requests for the view. It expects input data that conform to the serializer used by the view class. 
+        It updates the approved_calculation or date object of a specific comparative object using the given calculation_id from the query 
+        parameters and serializes the updated object in JSON format before returning it as an HTTP response.
+
+        Parameters:
+            request: The HTTP request object.
+            args: Any additional positional arguments passed to the method.
+            kwargs: Any additional keyword arguments passed to the method, with calculation_id identifying the comparative object to update.
+        Returns:
+            JsonResponse: An HTTP response containing the updated and serialized comparative object data.
+            """
+        calculation_id = kwargs.get('calculation_id')
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        update_comparative = dict(serializer.validated_data)
+
+        comparative = self.model.objects.filter(
+            calculation_id=calculation_id).first()
+
+        approved_calculation = comparative.get_create_approved_calculation()
+
+        update_approved_calculation = update_comparative.pop(
+            'approved_calculation', None)
+        update_date = update_comparative.pop(
+            'date', None)
+
+        if update_approved_calculation:
+            description = update_approved_calculation.pop('description', None)
+            funds_comparatives = update_approved_calculation.pop(
+                'funds_comparatives', [])
+            funds_comparatives_integrations = update_approved_calculation.pop(
+                'funds_comparatives_integrations', [])
+
+            for key, value in update_approved_calculation.items():  # Update creditor value
+                attribute = getattr(approved_calculation, key)
+                if attribute:
+                    attribute.creditor = value['creditor']
+                    attribute.description = value['description']
+                    attribute.save()
+
+            for update_fund in funds_comparatives:  # Update comparative value
+                fund = ComparativeFunds.objects.filter(
+                    id=update_fund['id'], calculation__comparative=comparative).first()
+                fund.creditor = update_fund['creditor']
+                fund.description = update_fund['description']
+                fund.save(send_signal_post_save=False)
+
+            for update_fund in funds_comparatives_integrations:  # Update comparative integrations value
+                fund = ComparativeFundsIntegrations.objects.filter(
+                    id=update_fund['id'], calculation__comparative=comparative).first()
+                fund.creditor = update_fund['creditor']
+                fund.description = update_fund['description']
+                fund.save(send_signal_post_save=False)
+
+            if description:  # Update approved calculation description
+                approved_calculation.description = description
+                approved_calculation.save()
+            else:
+                approved_calculation.generate_calculations()
+
+        if update_date:  # Update comparative date
+            comparative.data_base_creditor = update_date['creditor']
+            comparative.save()
+        return JsonResponse({'comparative': self.serializer_class(comparative, many=False).data}, status=status.HTTP_201_CREATED)

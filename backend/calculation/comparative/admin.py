@@ -110,41 +110,69 @@ class AbstractCalculationAdmin(admin.ModelAdmin):
     """
     readonly_fields = readonly_fields
 
+    @admin.display(description='DTT depósito recursal liberado')
     def recurral_dtt(self, model):
         return f'{model.recurral.dtt}'
 
+    @admin.display(description='Diferença depósito recursal liberado')
     def recurral_difference(self, model):
         return f'{model.recurral.difference}'
 
+    @admin.display(description='Porcentagem depósito recursal liberado')
     def recurral_percentage(self, model):
         return f'{model.recurral.percentage}'
 
+    @admin.display(description='DTT total atualizado')
     def total_updated_dtt(self, model):
         return f'{model.total_updated.dtt}'
 
+    @admin.display(description='Diferença total atualizado')
     def total_updated_difference(self, model):
         return f'{model.total_updated.difference}'
 
+    @admin.display(description='Porcentagem total atualizado')
     def total_updated_percentage(self, model):
         return f'{model.total_updated.percentage}'
 
+    @admin.display(description='DTT juros moratorios')
     def default_interest_dtt(self, model):
         return f'{model.default_interest.dtt}'
 
+    @admin.display(description='Diferença juros moratorios')
     def default_interest_difference(self, model):
         return f'{model.default_interest.difference}'
 
+    @admin.display(description='Porcentagem juros moratorios')
     def default_interest_percentage(self, model):
         return f'{model.default_interest.percentage}'
 
+    @admin.display(description='DTT honorarios advocaticios')
     def advocative_hours_dtt(self, model):
         return f'{model.advocative_hours.dtt}'
 
+    @admin.display(description='Diferença honrarios advocaticios')
     def advocative_hours_difference(self, model):
         return f'{model.advocative_hours.difference}'
 
+    @admin.display(description='Porcentagem honorarios advocaticios')
     def advocative_hours_percentage(self, model):
         return f'{model.advocative_hours.percentage}'
+
+    @admin.display(description='DTT total devido')
+    def total_due_dtt(self, model):
+        return f'{model.total_due_dtt}'
+
+    @admin.display(description='Creditor total devido')
+    def total_due_creditor(self, model):
+        return f'{model.total_due_creditor}'
+
+    @admin.display(description='Diferença total devido')
+    def total_due_difference(self, model):
+        return f'{model.total_due_difference}'
+
+    @admin.display(description='Porcentagem total devido')
+    def total_due_percentage(self, model):
+        return f'{model.total_due_percentage}'
 
     readonly_fields = readonly_fields
 
