@@ -30,6 +30,7 @@ const { user } = $user
         color="white"
         :label="user.name || 'sair'"
         icon="i-carbon-logout"
+        tooltip="Sair do Sitema!"
         @click="logout"
       >
         <template #before>

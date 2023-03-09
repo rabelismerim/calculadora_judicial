@@ -7,6 +7,7 @@ const props = withDefaults(defineProps<{
   loading?: boolean
   color?: string
   transparent?: boolean
+  tooltip?: string
   grow?: boolean
   disabled?: boolean
   outlined?: boolean
@@ -81,5 +82,8 @@ const onMouseMove = (event: MouseEvent) => {
         top: `${shine.y}px`,
       }"
     />
+    <QTooltip v-if="tooltip">
+      {{ tooltip }}
+    </QTooltip>
   </button>
 </template>
