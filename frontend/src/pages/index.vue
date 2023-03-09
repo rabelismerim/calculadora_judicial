@@ -2,20 +2,33 @@
 const router = useRouter()
 
 let loading = $ref(false)
+let requested = $ref(false)
 const enter = async () => {
   router.push({ path: '/projetos' })
 }
 
-const requestPermission = () => {
-  loading = !loading
-  notify({
-    message: `text: adsfadsfs adsfadf, ${Date.now().toString()}`,
-    type: 'error',
-  })
-}
-
 onMounted(() => $user.login())
-const { isActive } = $user
+const { isActive, user } = $user
+
+const requestPermission = async () => {
+  try {
+    loading = true
+    const { status } = await usersService.requestAccess(user.value.email)
+    if (status === 201) {
+      requested = true
+      notify({
+        message: 'Seu pedido foi enviado para o Gestor responsável, aguarde a autorização dele!',
+        type: 'success',
+      })
+    }
+  }
+  catch (error) {
+    throwError(error)
+  }
+  finally {
+    loading = false
+  }
+}
 </script>
 
 <template>
@@ -36,14 +49,13 @@ const { isActive } = $user
           <Btn
             v-if="isActive"
             label="Entrar"
-            :loading="loading"
-            loading-label="carregando seus dados..."
             @click="enter"
           />
           <Btn
-            v-else
-            label="Solicitar acesso"
+            v-else-if="user.email"
+            :label="requested ? 'Pedido Enviado' : 'Solicitar acesso'"
             loading-label="enviando Solicitação..."
+            :disabled="requested"
             :loading="loading"
             outlined
             @click="requestPermission"
