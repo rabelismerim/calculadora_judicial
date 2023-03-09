@@ -1,39 +1,66 @@
 <script setup lang="ts">
 const router = useRouter()
+const route = useRoute()
+const getColor = (path: string) => route.path === path ? 'secondary' : 'white'
+const { hasPermissions } = $user
+
+let accessRequestsCount = $ref(0)
+onMounted(async () => {
+  try {
+    if (hasPermissions(['view_user'])) {
+      const users = await usersService.getUsers()
+      accessRequestsCount = users.filter(({ isActive }: any) => !isActive).length
+    }
+  }
+  catch (error) {
+    throwError(error)
+  }
+})
+
+const paths = $ref([
+  {
+    label: 'Home',
+    path: '/',
+  },
+  {
+    label: 'Projetos',
+    path: '/projetos',
+  },
+  {
+    label: 'Time',
+    path: '/time',
+    disabled: true,
+  },
+  {
+    label: 'Solicitações',
+    path: '/solicitacoes',
+    notification: computed(() => accessRequestsCount),
+    permissions: ['view_user'],
+  },
+])
+const filteredPaths = computed(() => paths.filter(({ permissions }: any) => hasPermissions(permissions)))
 </script>
 
 <template>
   <NavBar show-exit>
     <Btn
-      label="Home"
+      v-for="({ label, path, notification, disabled }, index) in filteredPaths"
+      :key="index"
+      :label="label"
       grow
       transparent
-      color="white"
-      @click="router.push({ path: '/' })"
-    />
-    <Btn
-      label="Projetos"
-      grow
-      transparent
-      color="secondary"
-      @click="router.push({ path: '/projetos' })"
-    />
-    <Btn
-      label="Time"
-      grow
-      transparent
-      color="white"
-      disabled
-      @click="router.push({ path: '/time' })"
-    />
-    <Btn
-      label="Atividades"
-      grow
-      transparent
-      color="white"
-      disabled
-      @click="router.push({ path: '/atividades' })"
-    />
+      :disabled="disabled"
+      :color="getColor(path)"
+      @click="router.push({ path })"
+    >
+      <template #after>
+        <div v-if="notification" class="relative inline-block mb-3">
+          <span class="bg-red text-white absolute top-0 animate-bounce text-xs rounded-full py-.3 px-1.5">
+            {{ notification }}
+          </span>
+        </div>
+      </template>
+    </Btn>
   </NavBar>
   <div class="flex flex-1 flex-col">
     <RouterView />
