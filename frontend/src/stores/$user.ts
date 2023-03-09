@@ -1,8 +1,9 @@
 const userFallback = {
-  authenticated: undefined,
-  authorized: undefined,
-  fullName: undefined,
-  picture: undefined,
+  isActive: false,
+  name: '',
+  picture: '',
+  groups: [] as any[],
+  permissions: [] as string[],
 }
 
 const store = useStorage('deloitte-user', { ...userFallback }, sessionStorage)
@@ -11,12 +12,12 @@ const login = async () => {
   const router = useRouter()
   try {
     const user = await usersService.getMyProfile()
-    store.value = user
+    store.value = {
+      ...store.value,
+      ...user,
+    }
 
-    if (!user.authenticated && import.meta.env.PROD)
-      redirectTo(`${window.location.origin}/djud/api/drfmsal_signin/djud/`)
-
-    return user.authenticated
+    return user.authorized
   }
   catch (error: any) {
     throwError(error)
@@ -27,14 +28,15 @@ const login = async () => {
 const logout = () => {
   store.value = { ...userFallback }
 }
-const getUser = computed(() => store)
-const isAuthenticated = computed(() => store.value.authenticated)
-const hasPermission = computed(() => store.value.authorized)
+const user = computed(() => store.value)
+const isActive = computed(() => store.value.isActive)
+const hasPermissions = (permissions: string[] = []) => permissions
+  .every(permission => store.value.permissions.includes(permission))
 
 export default {
   login,
   logout,
-  getUser,
-  isAuthenticated,
-  hasPermission,
+  user,
+  isActive,
+  hasPermissions,
 }
