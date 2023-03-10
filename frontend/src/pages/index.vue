@@ -3,11 +3,22 @@ const router = useRouter()
 
 let loading = $ref(false)
 let requested = $ref(false)
-const enter = async () => {
+const enter = () => {
   router.push({ path: '/projetos' })
 }
 
-onMounted(() => $user.login())
+onMounted(async () => {
+  try {
+    loading = true
+    await $user.login()
+  }
+  catch (error) {
+    throwError(error)
+  }
+  finally {
+    loading = false
+  }
+})
 const { isActive, user } = $user
 
 const requestPermission = async () => {
@@ -46,20 +57,28 @@ const requestPermission = async () => {
           <!-- Para assistir ao tutorial de uso da ferramenta Clique aqui -->
         </p>
         <div class="flex flex-wrap gap-3">
-          <Btn
-            v-if="isActive"
-            label="Entrar"
-            @click="enter"
-          />
-          <Btn
-            v-else-if="user.email"
-            :label="requested ? 'Pedido Enviado' : 'Solicitar acesso'"
-            loading-label="enviando Solicitação..."
-            :disabled="requested"
-            :loading="loading"
-            outlined
-            @click="requestPermission"
-          />
+          <div v-if="isActive === null" class="flex items-center gap-4 text--primary font-bold">
+            Carregando seus dados...
+            <Spinner color="primary" />
+          </div>
+          <div v-else>
+            <Btn
+              v-if="isActive"
+              label="Entrar"
+              loading-label="Carregando seus dados..."
+              :loading="loading"
+              @click="enter"
+            />
+            <Btn
+              v-else
+              :label="requested ? 'Pedido Enviado' : 'Solicitar acesso'"
+              loading-label="enviando Solicitação..."
+              :disabled="requested"
+              :loading="loading"
+              outlined
+              @click="requestPermission"
+            />
+          </div>
         </div>
       </div>
       <div class="px-8">
