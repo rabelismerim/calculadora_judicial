@@ -109,8 +109,9 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
         user_approved.is_active = True
         user_approved.groups.add(*groups)
         user_approved.save()
-           
+
         return JsonResponse({'user': user_filter}, status=status.HTTP_201_CREATED)
+
 
 class UserSendMailDttApi(AbstractUserDttApi):
     """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like query_params and schema."""
@@ -138,6 +139,7 @@ class UserSendMailDttApi(AbstractUserDttApi):
             raise serializers.ValidationError(['Email não encontrado'])
 
         return JsonResponse({'user': user_filter}, status=status.HTTP_201_CREATED)
+
 
 class GroupApi(AbstractViewApi):
     """HTTP methods for interfacing with the User Deloitte modelThis method returns a JSON response that contains the user details given a filtering criteria. 
@@ -183,14 +185,17 @@ class UserDttApi(AbstractUserDttApi):
 
 
 if ENABLE_SSO is False:
-    user, created = User.objects.get_or_create(
-        username='dev_admin', first_name='admin', last_name='dev', is_staff=True)
-    user.set_password(PASSWD_DEV)
-    project_manager_list, created, group_manager = CreatePermissions().create_project_manager()
-    user.groups.add(group_manager)
-    user.save()
+    try:
+        user, created = User.objects.get_or_create(
+            username='dev_admin', first_name='admin', last_name='dev', is_staff=True)
+        user.set_password(PASSWD_DEV)
+        project_manager_list, created, group_manager = CreatePermissions().create_project_manager()
+        user.groups.add(group_manager)
+        user.save()
 
-    user, created = User.objects.get_or_create(
-        username='dev_user', first_name='user', last_name='dev', is_staff=False)
-    user.set_password(PASSWD_DEV)
-    user.save()
+        user, created = User.objects.get_or_create(
+            username='dev_user', first_name='user', last_name='dev', is_staff=False)
+        user.set_password(PASSWD_DEV)
+        user.save()
+    except:
+        pass
