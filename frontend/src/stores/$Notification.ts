@@ -7,7 +7,7 @@ interface NotificationOptions {
   type?: string
 }
 
-export const notify = ({ message, id = Date.now(), timeout = 20, type = 'information' }: NotificationOptions) => {
+export const notify = ({ message, id = Date.now(), timeout = 20, type = 'success' }: NotificationOptions) => {
   state.value.set(id, {
     message,
     timeout,
@@ -21,8 +21,24 @@ export const notify = ({ message, id = Date.now(), timeout = 20, type = 'informa
   }
 }
 
-export const throwError = (error: any) => {
-  let { response, message, id = Date.now(), timeout } = error
+export const throwError = async (error: any) => {
+  let { message } = error
+  const {
+    response,
+    id = Date.now(),
+    timeout,
+    response: { data: { data = {} } = {} } = {},
+  }: any = error
+  const errorMessages = Object.entries(data)
+    .flatMap(([,message]) => message || '')
+
+  if (errorMessages.length > 0) {
+    for (const msg of errorMessages) {
+      await delay(0.5)
+      notify({ message: msg as string, id, timeout, type: 'error' })
+    }
+    return
+  }
 
   if (response?.status === 500)
     message = 'Problemas no Servidor...'
