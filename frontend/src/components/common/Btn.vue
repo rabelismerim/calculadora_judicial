@@ -41,9 +41,8 @@ const onMouseMove = (event: MouseEvent) => {
 <template>
   <button
     ref="button"
-    v-auto-animate
     :disabled="disabled"
-    class="relative overflow-hidden text-[1.05rem] min-h-10 font-semibold px-6 py-2 flex gap-4 no-wrap items-center transition duration-300 ease-in-out"
+    class="relative overflow-hidden text-[1.05rem] min-h-10 font-semibold px-4 py-2 flex gap-4 no-wrap items-center transition duration-300 ease-in-out"
     :class="{
       'text--color border-1 border--color rounded-.5': outlined,
       'hover:bg--base/10 text--color rounded-.5': transparent,
@@ -60,16 +59,20 @@ const onMouseMove = (event: MouseEvent) => {
     @mouseleave="shine.show = false"
     @mousemove="onMouseMove"
   >
-    <div v-if="loading" class="pointer-events-none whitespace-nowrap">
+    <div v-show="loading" class="flex items-center nowrap gap-4 pointer-events-none whitespace-nowrap">
       {{ loadingLabel }}
+      <Spinner
+        :color="!transparent && !outlined ? 'white' : color"
+        class="pointer-events-none transition duration-300 ease-in-out"
+        :class="loading ? 'opacity-100 scale-100' : 'opacity-0 scale-0'"
+      />
     </div>
-    <div v-else class="pointer-events-none flex items-center gap-2 no-wrap">
+    <div v-show="!loading" class="pointer-events-none flex items-center gap-2 no-wrap">
       <slot name="before" />
       <span class="whitespace-nowrap">{{ label }}</span>
       <slot name="after" />
     </div>
-    <Spinner v-if="loading" :color="!transparent && !outlined ? 'white' : color" class="pointer-events-none" />
-    <div v-if="icon" :class="icon" class="transition duration-300 ease-in-out pointer-events-none" />
+    <div v-show="icon" :class="icon" class="transition duration-300 ease-in-out pointer-events-none" />
     <div
       class="h-300% aspect-square rounded-full absolute -translate-x-50% -translate-y-50% transition-opacity duration-300 ease-in-out pointer-events-none"
       :class="{

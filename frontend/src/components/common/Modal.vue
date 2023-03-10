@@ -4,6 +4,7 @@ const props = withDefaults(defineProps<{
   title?: string
   hint?: string
   modalClass?: string
+  closeDisabled?: boolean
 }>(), {
   modelValue: false,
   modalClass: '',
@@ -37,6 +38,7 @@ const close = () => {
           <Hint :value="hint" />
         </div>
         <button
+          :disabled="closeDisabled"
           class="h-8 w-8 flex justify-center items-center text-lg rounded-full bg-black/6 hover:bg-black/12 with-transition"
           @click="close"
         >
