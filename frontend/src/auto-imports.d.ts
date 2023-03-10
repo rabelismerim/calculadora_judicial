@@ -19,6 +19,7 @@ declare global {
   const baseUrl: typeof import('./stores/baseUrl')['default']
   const blend: typeof import('animol')['blend']
   const calculationService: typeof import('./services/calculationService')['default']
+  const clone: typeof import('./composables/utils')['clone']
   const computed: typeof import('vue')['computed']
   const computedAsync: typeof import('@vueuse/core')['computedAsync']
   const computedEager: typeof import('@vueuse/core')['computedEager']
@@ -40,6 +41,7 @@ declare global {
   const debouncedWatch: typeof import('@vueuse/core')['debouncedWatch']
   const defineAsyncComponent: typeof import('vue')['defineAsyncComponent']
   const defineComponent: typeof import('vue')['defineComponent']
+  const delay: typeof import('./composables/utils')['delay']
   const eagerComputed: typeof import('@vueuse/core')['eagerComputed']
   const ease: typeof import('animol')['ease']
   const easing: typeof import('animol')['Easing']
@@ -333,6 +335,7 @@ declare module 'vue' {
     readonly baseUrl: UnwrapRef<typeof import('./stores/baseUrl')['default']>
     readonly blend: UnwrapRef<typeof import('animol')['blend']>
     readonly calculationService: UnwrapRef<typeof import('./services/calculationService')['default']>
+    readonly clone: UnwrapRef<typeof import('./composables/utils')['clone']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly computedAsync: UnwrapRef<typeof import('@vueuse/core')['computedAsync']>
     readonly computedEager: UnwrapRef<typeof import('@vueuse/core')['computedEager']>
@@ -354,6 +357,7 @@ declare module 'vue' {
     readonly debouncedWatch: UnwrapRef<typeof import('@vueuse/core')['debouncedWatch']>
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
+    readonly delay: UnwrapRef<typeof import('./composables/utils')['delay']>
     readonly eagerComputed: UnwrapRef<typeof import('@vueuse/core')['eagerComputed']>
     readonly ease: UnwrapRef<typeof import('animol')['ease']>
     readonly easing: UnwrapRef<typeof import('animol')['Easing']>
