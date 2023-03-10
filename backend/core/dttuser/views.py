@@ -9,6 +9,7 @@ from core.abstract.views import AbstractViewApi
 from core.dttuser.schemas import UserDttSchema, UserAuthorizeDttSchema, GroupSchema, UserMailDttSchema
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
+from django.core.mail import send_mail
 from rest_framework import status
 from rest_framework.schemas.openapi import AutoSchema
 from core.permission.views import CheckHasPermission, CreatePermissions
@@ -136,6 +137,9 @@ class UserSendMailDttApi(AbstractUserDttApi):
         user_mail = self.model.objects.filter(**user_filter).first()
         if not user_mail:
             raise serializers.ValidationError(['Email não encontrado'])
+        
+#        for item in user_mail:
+#            send_mail('Liberação de Uso - '+item.email,'Esse email é enviado automaticamente pelo sistema para solicitação de liberação do usuário '+item.email+' ao sistema. Para liberar o acesso favor entrar no painel de administração e cadastrar o mesmo ao sistema.',None)
 
         return JsonResponse({'user': user_filter}, status=status.HTTP_201_CREATED)
 
