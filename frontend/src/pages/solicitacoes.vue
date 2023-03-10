@@ -2,20 +2,52 @@
 const router = useRouter()
 
 const filterBy = $ref('')
+let loading = $ref(false)
 let showModal = $ref(false)
-let userEditing = {
+
+const defaultUser = {
   name: '',
   email: '',
   groups: [],
 }
-const editUser = (user: any) => {
+const form = ref(null) as any
+let groups: any = $ref([])
+let userEditing = $ref(clone(defaultUser))
+let userIndex = $ref(-1)
+let users: any[] = $ref([])
+
+const editUser = async (user: any, index: number) => {
+  userEditing = clone(user)
+  userIndex = index
   showModal = true
-  userEditing = user
+  await delay(0.01)
+  form.value.resetValidation()
+}
+const clearUser = async () => {
+  await delay(0.5)
+  userEditing = clone(defaultUser)
+  userIndex = -1
+}
+const updateUser = async () => {
+  try {
+    await usersService.requestAccess(userEditing)
+    users[userIndex] = userEditing
+    notify({
+      message: userEditing
+        ? 'Usuário Atualizado!'
+        : 'Usuário Cadastrado',
+      timeout: 5,
+    })
+    showModal = false
+  }
+  catch (error) {
+    throwError(error)
+  }
+  finally {
+    loading = false
+  }
 }
 
-let loading = $ref(false)
-let groups = $ref([])
-let users = $ref([])
 const pendingRequests = computed(() => users.filter(({ isActive }) => !isActive).length)
 
 const loadPage = async () => {
@@ -147,8 +179,8 @@ const columns = [
           <q-td :props="props">
             <div class="flex justify-end">
               <Btn
-                v-if="!props.value"
-                label="Cadastrar"
+                :label="props.value ? 'Editar' : 'Cadastrar'"
+                :outlined="props.value"
                 @click="editUser(props.row)"
               >
                 <div class="i-carbon-chevron-right" />
@@ -163,36 +195,46 @@ const columns = [
     v-model="showModal"
     :title="`Solicitação de ${userEditing.name}`"
     modal-class="max-w-120"
+    :close-disabled="loading"
+    @close="clearUser"
   >
-    <div class="px-4 pb-4">
-      <div class="text-xl mb-4">
-        Email: {{ userEditing.email }}
-      </div>
-      <QSelect
-        v-model="userEditing.groups"
-        label="Grupos"
-        multiple
-        emit-value
-        outlined
-        option-label="name"
-        :options="groups"
-      >
-        <template #selected-item="{ opt, index, removeAtIndex }">
-          <div class="flex no-wrap items-center gap-2 bg--primary/20 rounded-full pl-3 pr-1 py-1 border-1 border--primary/12">
-            {{ opt.name }}
-            <div
-              class="rounded-full bg-white/20 hover:bg-white/50 min-h-5 min-w-5 flex justify-center items-center cursor-pointer"
-              @click="removeAtIndex(index)"
-            >
-              <div class="i-carbon-close" />
+    <QForm ref="form" @submit="updateUser">
+      <div class="px-4 pb-4">
+        <div class="text-xl mb-4">
+          Email: {{ userEditing.email }}
+        </div>
+        <QSelect
+          v-model="userEditing.groups"
+          label="Grupos"
+          multiple
+          emit-value
+          outlined
+          option-label="name"
+          :rules="[(values) => values.length >= 1 || 'É necessário escolher no mínimo 1 grupo para o usuário!']"
+          :options="groups"
+        >
+          <template #selected-item="{ opt, index, removeAtIndex }">
+            <div class="flex no-wrap items-center gap-2 bg--primary/20 rounded-full pl-3 pr-1 py-1 border-1 border--primary/12">
+              {{ opt.name }}
+              <div
+                class="rounded-full bg-white/20 hover:bg-white/50 min-h-5 min-w-5 flex justify-center items-center cursor-pointer"
+                @click="removeAtIndex(index)"
+              >
+                <div class="i-carbon-close" />
+              </div>
             </div>
-          </div>
-        </template>
-      </QSelect>
-    </div>
-    <div class="flex justify-end border-t-1 border-black/12 p-4">
-      <Btn label="Atualizar" />
-    </div>
+          </template>
+        </QSelect>
+      </div>
+      <div class="flex justify-end border-t-1 border-black/12 p-4">
+        <Btn
+          :label="userEditing.isActive ? 'Atualizar' : 'Cadastrar'"
+          :loading-label="userEditing.isActive ? 'Atualizando...' : 'Cadastrando...'"
+          :loading="loading"
+          type="submit"
+        />
+      </div>
+    </QForm>
   </Modal>
 </template>
 
