@@ -16,7 +16,7 @@ const gaugeValues = computed(() => Object.entries(projects
     acc[status]++
     return acc
   }, {}))
-  .map(([label, count]) => ({ label, count })))
+  .map(([label, count = 0]) => ({ label, count: Number(count) })))
 
 const responsibleList = computed(() => Object.entries(projects
   .reduce((acc: any, { responsible }) => {
@@ -25,7 +25,7 @@ const responsibleList = computed(() => Object.entries(projects
     acc[responsible]++
     return acc
   }, {}))
-  .map(([label, count]) => ({ label, count })))
+  .map(([label, count = 0]) => ({ label, count: Number(count) })))
 
 const usageData: any[] = []
 
@@ -234,5 +234,5 @@ const columns = [
 
 <route lang="yaml">
 meta:
-  permissions: [view_project]
+  authenticated: true
 </route>
