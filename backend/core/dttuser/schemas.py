@@ -177,4 +177,18 @@ class UserAuthorizeDttSchema(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
+        groups = GroupSchema(many=True, read_only=False, exclude=('permissions', ))
+        fields = ['email','groups']
+
+class UserMailDttSchema(serializers.ModelSerializer):
+    """
+    Serializer for fields of the abstract model.
+
+    Attributes:
+        renderer_classes (list): A list of JSONRenderer objects.
+    """
+    renderer_classes = [renderers.JSONRenderer]
+
+    class Meta:
+        model = get_user_model()
         fields = ['email']
