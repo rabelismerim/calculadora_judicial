@@ -15,15 +15,19 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  if (!to.meta?.permissions) {
+  const permissions = to.meta?.permissions as string[] || []
+  const authenticated = to.meta?.authenticated
+  const { permissions: userPermissions } = JSON.parse(sessionStorage.getItem('deloitte-user') || '{}')
+  const hasAllPermissions = permissions.every((permission: string) => userPermissions.includes(permission))
+  if (!permissions && !authenticated || hasAllPermissions) {
     next()
     return
   }
-  const permissions = to.meta.permissions as string[]
-  const { permissions: userPermissions } = JSON.parse(sessionStorage.getItem('deloitte-user') || '{}')
-  if (permissions.every((permission: string) => userPermissions.includes(permission)))
-    next()
 
+  throwError({
+    message: 'Você não tem permissão de ver essa página!',
+    id: 'UNAUTHORIZED'
+  })
   next('/')
 })
 
