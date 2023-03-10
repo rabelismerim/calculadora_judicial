@@ -18,3 +18,8 @@ export const getInitials = (text: string) => {
 }
 
 export const redirectTo = (url: string) => window.location.replace(url)
+
+export const clone = (object: any) => JSON.parse(JSON.stringify(object))
+
+export const delay = (seconds: number) => new Promise(resolve =>
+  setTimeout(() => resolve(true), seconds * 1000))
