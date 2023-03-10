@@ -15,6 +15,10 @@ import { QuasarResolver } from 'unplugin-vue-components/resolvers'
 export default defineConfig({
   base: './',
 
+  define: {
+    APP_VERSION: JSON.stringify(process.env.npm_package_version),
+  },
+
   build: {
     // outDir: './dist',
     outDir: path.resolve(__dirname, '../backend/djud/static/src/vue/dist/'),
