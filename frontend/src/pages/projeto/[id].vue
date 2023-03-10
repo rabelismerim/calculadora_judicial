@@ -4,7 +4,7 @@ const router = useRouter()
 
 let loading = $ref(false)
 const filterBy = $ref('')
-let project = $ref({})
+let project: any = $ref({})
 
 onMounted(async () => {
   loading = true
