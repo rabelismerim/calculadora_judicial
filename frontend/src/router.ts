@@ -19,17 +19,12 @@ router.beforeEach(async (to, from, next) => {
     next()
     return
   }
-  try {
-    const { authenticated, permissions: userPermissions } = await usersService.getMyProfile()
-    if (!authenticated && import.meta.env.PROD)
-      redirectTo(`${window.location.origin}/djud/api/drfmsal_signin/djud/`)
-    const permissions = to.meta.permissions as string[]
-    if (permissions.every((permission: string) => userPermissions.includes(permission)))
-      next()
-  }
-  catch (error) {
-    next('/')
-  }
+  const permissions = to.meta.permissions as string[]
+  const { permissions: userPermissions } = JSON.parse(sessionStorage.getItem('deloitte-user') || '{}')
+  if (permissions.every((permission: string) => userPermissions.includes(permission)))
+    next()
+
+  next('/')
 })
 
 export default router

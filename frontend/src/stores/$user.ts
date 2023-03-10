@@ -1,5 +1,5 @@
 const userFallback = {
-  isActive: false,
+  isActive: null,
   name: '',
   picture: '',
   email: '',
