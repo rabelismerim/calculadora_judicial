@@ -71,17 +71,9 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'staff',
-    field: 'isStaff',
-    label: 'É Staff',
-    align: 'left',
-    format: (value: boolean) => value ? 'Staff' : '',
-    sortable: true,
-  },
-  {
     name: 'groups',
     field: 'groups',
-    label: 'Grupos',
+    label: 'Permissões',
     align: 'left',
     format: (value: any[]) => value.map(({ name }: any) => name),
     sortable: true,
@@ -142,7 +134,16 @@ const columns = [
         <template #body-cell-name="props">
           <q-td :props="props">
             <div class="flex no-wrap items-center gap-3 font-bold py-2">
-              <div class="h-10 w-10 mr-2 bg-gray-2 rounded-.5 flex justify-center items-center text-[16px]">
+              <Img
+                v-if="props.row.picture"
+                :src="`data:image/jpeg;base64,${props.row.picture}`"
+                :error-image="`${baseUrl}/fallback/user.svg`"
+                class="h-10 w-10 rounded-.5 object-cover"
+              />
+              <div 
+                v-else 
+                class="h-10 w-10 rounded-.5 mr-2 bg-gray-2 rounded-.5 flex justify-center items-center text-[16px]"
+              >
                 {{ getInitials(props.value) }}
               </div>
               <div class="font-medium">
@@ -201,7 +202,7 @@ const columns = [
         </div>
         <QSelect
           v-model="userEditing.groups"
-          label="Grupos"
+          label="Permissões"
           multiple
           outlined
           option-label="name"
