@@ -6,7 +6,7 @@ Api's classes use the DttUser model and schema DttUser to work with data.
 """
 from config.settings import ENABLE_SSO, IS_LOCALHOST, PASSWD_DEV
 from core.abstract.views import AbstractViewApi
-from core.dttuser.schemas import UserDttSchema, UserAuthorizeDttSchema, GroupSchema
+from core.dttuser.schemas import UserDttSchema, UserAuthorizeDttSchema, GroupSchema, UserMailDttSchema
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 from rest_framework import status
@@ -100,23 +100,26 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user_filter = serializer.validated_data
+        groups = user_filter.pop('groups', [])
 
         user_approved = self.model.objects.filter(**user_filter).first()
         if not user_approved:
             raise serializers.ValidationError(['Email não encontrado'])
 
         user_approved.is_active = True
+        user_approved.groups.add(*groups)
         user_approved.save()
+           
         return JsonResponse({'user': user_filter}, status=status.HTTP_201_CREATED)
 
 class UserSendMailDttApi(AbstractUserDttApi):
     """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like query_params and schema."""
     http_method_names = ['post']
-    serializer_class = UserAuthorizeDttSchema
+    serializer_class = UserMailDttSchema
     query_params = []
     schema = AutoSchema(
         tags=['Users'],
-        component_name='UserAuthorize',
+        component_name='UserMail',
     )
 
     def post(self, request, *args, **kwargs):
