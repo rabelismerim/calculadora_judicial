@@ -5,6 +5,8 @@ const props = withDefaults(defineProps<{
   showLinks?: boolean
 }>(), {
 })
+
+const appVersion = APP_VERSION || '0.0.0'
 </script>
 
 <template>
@@ -19,6 +21,7 @@ const props = withDefaults(defineProps<{
     </div>
     <div class="flex bg-black h-10 px-10 text-white justify-between items-center">
       <p>© 2023 Para mais informações contate a Deloitte Global</p>
+      <span>Versão: {{ appVersion }}</span>
     </div>
   </footer>
 </template>
