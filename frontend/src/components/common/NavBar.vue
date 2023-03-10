@@ -49,7 +49,7 @@ const { user } = $user
       <Img
         :src="`${baseUrl}/logo/digital-lab-dark.svg`"
         :height="32"
-        class="hidden md:block"
+        class="hidden lg:block"
       />
     </div>
   </nav>
