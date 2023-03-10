@@ -24,6 +24,7 @@ export const notify = ({ message, id = Date.now(), timeout = 20, type = 'success
 export const throwError = async (error: any) => {
   let { message } = error
   const {
+    code,
     response,
     id = Date.now(),
     timeout,
@@ -40,7 +41,7 @@ export const throwError = async (error: any) => {
     return
   }
 
-  if (response?.status === 500)
+  if (response?.status === 500 || code === 'ERR_NETWORK')
     message = 'Problemas no Servidor...'
   if (response?.status === 403)
     message = 'Você não está autorizado...'
