@@ -5,9 +5,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc && vite build",
-    "build:prod": "vite build --base=/djud/static/src/vue/dist/ --emptyOutDir",
+    "dev": "vite --mode development",
+    "build:prod": "vue-tsc && vite build --mode production --base=/djud/static/src/vue/dist/ --emptyOutDir",
+    "build:hml": "vue-tsc && vite build --mode homolog --base=/djud/static/src/vue/dist/ --emptyOutDir",
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
