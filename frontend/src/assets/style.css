@@ -28,7 +28,14 @@ a:hover {
   color: #86bc24;
 }
 
+html {
+  overflow: hidden;
+  height: 100%;
+}
+
 body {
+  height: 100%;
+  overflow: auto;
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
@@ -38,6 +45,7 @@ body {
   font-weight: 400;
   background-color: hsl(var(--background));
   color: hsl(var(--content));
+  --bar-bg: var(var(--background));
 }
 
 h1 {
@@ -62,6 +70,48 @@ button {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+::selection {
+  color: #FFF;
+  background: hsl(var(--secondary));
+}
+body,
+div {
+  --bar: 5px;
+  --bar-start: 0;
+  --bar-end: 0;
+}
+div {
+  --bar-bg: var(--base);
+}
+::-webkit-scrollbar {
+  width: var(--bar);
+  height: var(--bar);
+  right: -100px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--bar-bg));
+  margin-top: var(--bar-start);
+  margin-left: var(--bar-start);
+  margin-bottom: var(--bar-end);
+  margin-right: var(--bar-end);
+}
+::-webkit-scrollbar-thumb {
+  box-shadow: inset 0 0 var(--bar) var(--bar) hsl(var(--dark-base),.1);
+  transition: all 1s ease-in-out;
+}
+.dark ::-webkit-scrollbar-thumb {
+  box-shadow: inset 0 0 var(--bar) var(--bar) #fff9;
+}
+::-webkit-scrollbar-thumb:hover {
+  box-shadow: inset 0 0 var(--bar) var(--bar) hsl(var(--secondary));
+}
+::-webkit-scrollbar-button {
+  display: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 @media (prefers-color-scheme: light) {

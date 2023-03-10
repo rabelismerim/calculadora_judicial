@@ -1,11 +1,45 @@
 <script setup lang="ts">
 const router = useRouter()
 
-const loading = $ref(false)
-const enter = async () => {
+let loading = $ref(false)
+let requested = $ref(false)
+const enter = () => {
   router.push({ path: '/projetos' })
 }
-const { isAuthenticated, hasPermission } = $user
+
+onMounted(async () => {
+  try {
+    loading = true
+    await $user.login()
+  }
+  catch (error) {
+    throwError(error)
+  }
+  finally {
+    loading = false
+  }
+})
+const { isActive, user } = $user
+
+const requestPermission = async () => {
+  try {
+    loading = true
+    const { status } = await usersService.requestAccess(user.value.email)
+    if (status === 201) {
+      requested = true
+      notify({
+        message: 'Seu pedido foi enviado para o Gestor responsável, aguarde a autorização dele!',
+        type: 'success',
+      })
+    }
+  }
+  catch (error) {
+    throwError(error)
+  }
+  finally {
+    loading = false
+  }
+}
 </script>
 
 <template>
@@ -23,21 +57,28 @@ const { isAuthenticated, hasPermission } = $user
           <!-- Para assistir ao tutorial de uso da ferramenta Clique aqui -->
         </p>
         <div class="flex flex-wrap gap-3">
-          <Btn
-            v-if="isAuthenticated"
-            label="Entrar"
-            :loading="loading"
-            loading-label="carregando seus dados..."
-            @click="enter"
-          />
-          <Btn
-            v-else
-            color="secondary"
-            label="Solicitar acesso"
-            loading-label="enviando Solicitação..."
-            :loading="loading"
-            @click="loading = !loading"
-          />
+          <div v-if="isActive === null" class="flex items-center gap-4 text--primary font-bold">
+            Carregando seus dados...
+            <Spinner color="primary" />
+          </div>
+          <div v-else>
+            <Btn
+              v-if="isActive"
+              label="Entrar"
+              loading-label="Carregando seus dados..."
+              :loading="loading"
+              @click="enter"
+            />
+            <Btn
+              v-else
+              :label="requested ? 'Pedido Enviado' : 'Solicitar acesso'"
+              loading-label="enviando Solicitação..."
+              :disabled="requested"
+              :loading="loading"
+              outlined
+              @click="requestPermission"
+            />
+          </div>
         </div>
       </div>
       <div class="px-8">
