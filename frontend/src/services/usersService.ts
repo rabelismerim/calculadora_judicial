@@ -55,6 +55,7 @@ const getUsers = () => api
     groups,
     is_active,
     is_staff,
+    userpicture,
   }: any) => ({
     id,
     name: `${first_name} ${last_name}`,
@@ -62,6 +63,7 @@ const getUsers = () => api
     isActive: is_active,
     isStaff: is_staff,
     groups,
+    picture: userpicture,
   })))
 
 const getGroups = () => api
@@ -76,7 +78,10 @@ const getGroups = () => api
 
 const requestAccess = (email: string) => api
   .post('/user/sendmail/', { email })
-  // .then(({ data }) => data)
+
+const setPermission = (payload: any) => api
+  .post('user/authorize/', payload)
+  .then(({ data }) => data)
 
 export default {
   getMyProfile,
@@ -84,4 +89,5 @@ export default {
   getGroups,
   getUsers,
   requestAccess,
+  setPermission,
 }
