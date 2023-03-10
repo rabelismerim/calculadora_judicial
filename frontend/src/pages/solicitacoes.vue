@@ -13,40 +13,7 @@ const defaultUser = {
 const form = ref(null) as any
 let groups: any = $ref([])
 let userEditing = $ref(clone(defaultUser))
-let userIndex = $ref(-1)
 let users: any[] = $ref([])
-
-const editUser = async (user: any, index: number) => {
-  userEditing = clone(user)
-  userIndex = index
-  showModal = true
-  await delay(0.01)
-  form.value.resetValidation()
-}
-const clearUser = async () => {
-  await delay(0.5)
-  userEditing = clone(defaultUser)
-  userIndex = -1
-}
-const updateUser = async () => {
-  try {
-    await usersService.requestAccess(userEditing)
-    users[userIndex] = userEditing
-    notify({
-      message: userEditing
-        ? 'Usuário Atualizado!'
-        : 'Usuário Cadastrado',
-      timeout: 5,
-    })
-    showModal = false
-  }
-  catch (error) {
-    throwError(error)
-  }
-  finally {
-    loading = false
-  }
-}
 
 const pendingRequests = computed(() => users.filter(({ isActive }) => !isActive).length)
 
@@ -64,6 +31,35 @@ const loadPage = async () => {
   }
 }
 onMounted(() => loadPage())
+
+const editUser = async (user: any) => {
+  userEditing = clone(user)
+  userEditing.groups = userEditing.groups.map(({ id }: any) => id)
+  showModal = true
+  await delay(0.01)
+  form.value.resetValidation()
+}
+const clearUser = async () => {
+  await delay(0.5)
+  userEditing = clone(defaultUser)
+}
+const updateUser = async () => {
+  try {
+    await usersService.setPermission(userEditing)
+    showModal = false
+    notify({
+      message: userEditing ? 'Usuário Atualizado!' : 'Usuário Cadastrado',
+      timeout: 5,
+    })
+    loadPage()
+  }
+  catch (error) {
+    throwError(error)
+  }
+  finally {
+    loading = false
+  }
+}
 
 const columns = [
   {
@@ -207,9 +203,11 @@ const columns = [
           v-model="userEditing.groups"
           label="Grupos"
           multiple
-          emit-value
           outlined
           option-label="name"
+          option-value="id"
+          emit-value
+          map-options
           :rules="[(values) => values.length >= 1 || 'É necessário escolher no mínimo 1 grupo para o usuário!']"
           :options="groups"
         >
