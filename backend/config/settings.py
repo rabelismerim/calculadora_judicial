@@ -60,8 +60,13 @@ ALLOWED_HOSTS = [
     'brspwaoliveira'
 ]
 
-CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'https://brfojwanderley/djud',
-                        'https://brdcvmdev07/djud', 'https://brsphearndt/djud', 'https://uat.fadigitallab.deloitte.com.br/djud']
+CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1:8000', 
+    'https://brfojwanderley:5173',
+    'https://brdcvmdev07/djud',
+    'https://brsphearndt/djud', 
+    'https://uat.fadigitallab.deloitte.com.br/djud'
+]
 # Application definition
 
 INSTALLED_APPS = [
