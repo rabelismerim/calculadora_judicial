@@ -16,7 +16,7 @@ class Command(BaseCommand):
         """
         Create or update permissions Groups
         """
-        project_manager_list, created = CreatePermissions().create_project_manager()
+        project_manager_list, created, id_ = CreatePermissions().create_project_manager()
         self.print_start(
             f'Successfully {"created" if created else "altered"} group\nNumber of permissions: {len(project_manager_list)}')
 
