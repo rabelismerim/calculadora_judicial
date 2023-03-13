@@ -60,7 +60,7 @@ ALLOWED_HOSTS = [
     'brspwaoliveira'
 ]
 
-
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000/']
 # Application definition
 
 INSTALLED_APPS = [
@@ -235,7 +235,7 @@ DRFMSAL_IDENTITY_WEB = IdentityWebPython()
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 # str(os.getenv('SECRET_KEY'))
-#if 'test' in sys.argv:
+# if 'test' in sys.argv:
 #    ENABLE_SSO=False
 
 if BRANCH_DEV or 'test' in sys.argv:
