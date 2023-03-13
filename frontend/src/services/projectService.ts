@@ -56,6 +56,9 @@ const getProject = (id: string) => api
 const getJudges = () => api
   .get('/v1/projects/judge/')
   .then(({ data }) => data)
+const setJudge = (description: string) => api
+  .post('/v1/projects/judge', { description })
+  .then(({ data }) => data)
 
 const getLawyers = () => api
   .get('/v1/projects/lawyer/')
@@ -81,6 +84,7 @@ export default {
   getCourts,
   getEngagements,
   getJudges,
+  setJudge,
   getLawyers,
   getProjects,
   getProject,
