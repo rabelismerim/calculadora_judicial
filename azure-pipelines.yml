@@ -9,7 +9,6 @@ pool:
   name: TR
   demands:
   - Agent.Name -equals TRHMG
-  vmImage: ubuntu-latest
 strategy:
   matrix:
     DJUD:
