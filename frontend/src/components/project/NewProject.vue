@@ -41,11 +41,16 @@ const newProject = $ref({
 })
 
 let recoverings = $ref([])
+let judges = $ref([])
+let courts = $ref([])
+const addNewJudge = async (description: string) => projectService.setJudge(description)
 let users = $ref([])
 onMounted(async () => {
   try {
     users = await usersService.getUsers()
     recoverings = await recoveringService.getRecoverings()
+    judges = await projectService.getJudges()
+    courts = await projectService.getCourts()
   }
   catch (error) {
     throwError(error)
@@ -120,7 +125,8 @@ onMounted(async () => {
             <InputSelect
               v-model="newProject.judgeId"
               label="Juiz"
-              :props="[]"
+              :props="judges"
+              :to-add="addNewJudge"
             />
             <InputText
               v-model="newProject.processNumber"
