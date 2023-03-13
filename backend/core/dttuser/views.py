@@ -9,6 +9,7 @@ from core.abstract.views import AbstractViewApi
 from core.dttuser.schemas import UserDttSchema, UserAuthorizeDttSchema, GroupSchema, UserMailDttSchema
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
+from django.core.mail import send_mail
 from rest_framework import status
 from rest_framework.schemas.openapi import AutoSchema
 from core.permission.views import CheckHasPermission, CreatePermissions
@@ -109,8 +110,9 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
         user_approved.is_active = True
         user_approved.groups.add(*groups)
         user_approved.save()
-           
+
         return JsonResponse({'user': user_filter}, status=status.HTTP_201_CREATED)
+
 
 class UserSendMailDttApi(AbstractUserDttApi):
     """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like query_params and schema."""
@@ -136,8 +138,12 @@ class UserSendMailDttApi(AbstractUserDttApi):
         user_mail = self.model.objects.filter(**user_filter).first()
         if not user_mail:
             raise serializers.ValidationError(['Email não encontrado'])
+        
+#        for item in user_mail:
+#            send_mail('Liberação de Uso - '+item.email,'Esse email é enviado automaticamente pelo sistema para solicitação de liberação do usuário '+item.email+' ao sistema. Para liberar o acesso favor entrar no painel de administração e cadastrar o mesmo ao sistema.',None)
 
         return JsonResponse({'user': user_filter}, status=status.HTTP_201_CREATED)
+
 
 class GroupApi(AbstractViewApi):
     """HTTP methods for interfacing with the User Deloitte modelThis method returns a JSON response that contains the user details given a filtering criteria. 
@@ -183,14 +189,17 @@ class UserDttApi(AbstractUserDttApi):
 
 
 if ENABLE_SSO is False:
-    user, created = User.objects.get_or_create(
-        username='dev_admin', first_name='admin', last_name='dev', is_staff=True)
-    user.set_password(PASSWD_DEV)
-    project_manager_list, created, group_manager = CreatePermissions().create_project_manager()
-    user.groups.add(group_manager)
-    user.save()
+    try:
+        user, created = User.objects.get_or_create(
+            username='dev_admin', first_name='admin', last_name='dev', is_staff=True)
+        user.set_password(PASSWD_DEV)
+        project_manager_list, created, group_manager = CreatePermissions().create_project_manager()
+        user.groups.add(group_manager)
+        user.save()
 
-    user, created = User.objects.get_or_create(
-        username='dev_user', first_name='user', last_name='dev', is_staff=False)
-    user.set_password(PASSWD_DEV)
-    user.save()
+        user, created = User.objects.get_or_create(
+            username='dev_user', first_name='user', last_name='dev', is_staff=False)
+        user.set_password(PASSWD_DEV)
+        user.save()
+    except:
+        pass
