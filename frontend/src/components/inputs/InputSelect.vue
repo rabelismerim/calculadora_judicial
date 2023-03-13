@@ -5,36 +5,81 @@ const props = withDefaults(defineProps<{
   modelValue: any
   label?: string
   rules?: ValidationRule<any>[]
-  options?: any[]
-  toAdd?: (evt: Event) => void
+  options: any[]
+  toAdd: Function
 }>(), {
   rules: () => ([]),
   add: () => {},
   options: () => ([]),
 })
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'update:options'])
+
+const select = ref(null) as any
+let loading = $ref(false)
+let inputValue = $ref('')
+let filteredOptions = $ref(props.options)
+
+const addNewItem = async () => {
+  if (!inputValue) {
+    throwError({
+      message: 'Precisa de uma descrição para adicionar...',
+    })
+    return
+  }
+  loading = true
+  try {
+    const value = await props?.toAdd(inputValue)
+    filteredOptions.push(value)
+    emit('update:options', [...props.options, value])
+    inputValue = ''
+    select.value.updateInputValue('', true)
+    select.value.add(value)
+  }
+  catch (error) {
+    throwError(error)
+  }
+  finally {
+    loading = false
+  }
+}
+
+const onFilter = (val: any, update: Function) => {
+  update(() => {
+    const needle = val.toLowerCase()
+    inputValue = needle
+    filteredOptions = props.options
+      .filter(v => v.description.toLowerCase().includes(needle))
+  })
+}
 </script>
 
 <template>
   <QSelect
+    ref="select"
     :model-value="modelValue"
+    :loading="loading"
+    :options="filteredOptions"
     :label="label"
-    :rules="rules"
+    map-options
+    option-value="id"
+    option-label="description"
     outlined
-    bottom-slots
-    :options="options"
-    counter
-    maxlength="12"
-    @update:model-value="value => emit('update:modelValue', value)"
+    use-input
+    hide-selected
+    fill-input
+    input-debounce="0"
+    emit-value
+    @filter="onFilter"
+    @update:model-value="(value) => emit('update:modelValue', value)"
   >
-    <template #append>
+    <template #no-option>
       <QBtn
-        round
-        dense
-        flat
-        @click.stop.prevent="toAdd"
+        :label="`Adicionar${label ? ` ${label}` : ''}`"
+        class="w-full h-12"
+        color="primary"
+        @click="addNewItem"
       >
-        <div class="i-carbon-add" />
+        <div class="i-carbon-add-filled ml-3" />
       </QBtn>
     </template>
   </QSelect>
