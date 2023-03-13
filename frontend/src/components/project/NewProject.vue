@@ -124,8 +124,8 @@ onMounted(async () => {
             />
             <InputSelect
               v-model="newProject.judgeId"
+              v-model:options="judges"
               label="Juiz"
-              :props="judges"
               :to-add="addNewJudge"
             />
             <InputText

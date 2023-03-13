@@ -55,10 +55,10 @@ const getProject = (id: string) => api
 
 const getJudges = () => api
   .get('/v1/projects/judge/')
-  .then(({ data }) => data)
+  .then(({ data }) => data.judges)
 const setJudge = (description: string) => api
-  .post('/v1/projects/judge', { description })
-  .then(({ data }) => data)
+  .post('/v1/projects/judge/', { description })
+  .then(({ data }) => data.judges)
 
 const getLawyers = () => api
   .get('/v1/projects/lawyer/')
@@ -70,7 +70,7 @@ const getRegions = () => api
 
 const getCourts = () => api
   .get('/v1/projects/court/')
-  .then(({ data }) => data)
+  .then(({ data }) => data.courts)
 
 const getEngagements = () => api
   .get('/v1/projects/engagement/')
