@@ -130,22 +130,10 @@ const columns = [
         flat
         bordered
       >
-        hide-header
         <template #body-cell-name="props">
-          <q-td :props="props">
+          <QTd :props="props">
             <div class="flex no-wrap items-center gap-3 font-bold py-2">
-              <Img
-                v-if="props.row.picture"
-                :src="`data:image/jpeg;base64,${props.row.picture}`"
-                :error-image="`${baseUrl}/fallback/user.svg`"
-                class="h-10 w-10 rounded-.5 object-cover"
-              />
-              <div 
-                v-else 
-                class="h-10 w-10 rounded-.5 mr-2 bg-gray-2 rounded-.5 flex justify-center items-center text-[16px]"
-              >
-                {{ getInitials(props.value) }}
-              </div>
+              <UserPicture :model-value="props.row" class="h-12 w-12 rounded-1 mr-2" />
               <div class="font-medium">
                 <div class="text-lg font-bold">
                   {{ props.value }}
@@ -155,11 +143,11 @@ const columns = [
                 </div>
               </div>
             </div>
-          </q-td>
+          </QTd>
         </template>
 
         <template #body-cell-groups="props">
-          <q-td :props="props">
+          <QTd :props="props">
             <div class="flex gap-2">
               <div
                 v-for="group in props.value"
@@ -169,11 +157,11 @@ const columns = [
                 {{ group }}
               </div>
             </div>
-          </q-td>
+          </QTd>
         </template>
 
         <template #body-cell-action="props">
-          <q-td :props="props">
+          <QTd :props="props">
             <div class="flex justify-end">
               <Btn
                 :label="props.value ? 'Editar' : 'Cadastrar'"
@@ -183,7 +171,7 @@ const columns = [
                 <div class="i-carbon-chevron-right" />
               </Btn>
             </div>
-          </q-td>
+          </QTd>
         </template>
       </QTable>
     </div>
