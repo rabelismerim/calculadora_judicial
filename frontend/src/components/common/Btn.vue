@@ -11,14 +11,16 @@ const props = withDefaults(defineProps<{
   grow?: boolean
   disabled?: boolean
   outlined?: boolean
+  tag?: string
 }>(), {
   label: 'Clique aqui',
   loadingLabel: 'Carregando...',
   color: 'primary',
   align: 'center',
+  tag: 'button',
 })
 
-const emit = defineEmits(['click'])
+const emit = defineEmits(['click', 'press'])
 
 const shine = $ref({
   show: false,
@@ -39,14 +41,15 @@ const onMouseMove = (event: MouseEvent) => {
 </script>
 
 <template>
-  <button
+  <component
+    :is="tag"
     ref="button"
-    :disabled="disabled"
-    class="relative overflow-hidden text-[1.05rem] min-h-10 font-semibold px-4 py-2 flex gap-4 no-wrap items-center transition duration-300 ease-in-out"
+    :disabled="disabled ? disabled : undefined"
+    class="relative overflow-hidden text-[1.05rem] min-h-10 font-semibold px-4 py-2 flex gap-4 no-wrap items-center transition duration-300 ease-in-out cursor-pointer"
     :class="{
-      'text--color border-1 border--color rounded-.5': outlined,
-      'hover:bg--base/10 text--color rounded-.5': transparent,
-      'bg--color text-white border-1 border-black/12 rounded-.5': !transparent && !outlined,
+      'text--color border-1 border--color rounded': outlined,
+      'hover:bg--base/10 text--color rounded': transparent,
+      'bg--color text-white border-1 border-black/12 rounded': !transparent && !outlined,
       'h-full rounded-0 min-w-fit': grow,
       'active:scale-110': !grow && !disabled,
     }"
@@ -54,6 +57,8 @@ const onMouseMove = (event: MouseEvent) => {
       'justify-content': align,
       '--color': `var(--${color})`,
     }"
+    tabindex="0"
+    @keyup.space="emit('press')"
     @click="emit('click')"
     @mouseenter="shine.show = true"
     @mouseleave="shine.show = false"
@@ -88,5 +93,5 @@ const onMouseMove = (event: MouseEvent) => {
     <QTooltip v-if="tooltip">
       {{ tooltip }}
     </QTooltip>
-  </button>
+  </component>
 </template>

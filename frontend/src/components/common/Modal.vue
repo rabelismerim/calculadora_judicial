@@ -25,7 +25,7 @@ const close = () => {
     }"
   >
     <div
-      class="bg--base w-full m-4 rounded-.5 border-1 border-black/28 with-transition"
+      class="relative bg--base w-full m-4 max-h-[calc(100vh-32px)] rounded-.5 border-1 border-black/28 with-transition"
       :class="{
         'translate-y-10': !modelValue,
         'max-w-240': !modalClass,

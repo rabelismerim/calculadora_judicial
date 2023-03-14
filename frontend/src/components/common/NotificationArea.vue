@@ -14,9 +14,9 @@ const { notifications, remove } = $Notification
         v-for="[index, { message, timeout, type, createdAt }] in notifications"
         :key="createdAt"
         :class="{
-          'bg-[#007CB0]': type === 'information',
-          'bg-[#86BC25]': type === 'success',
-          'bg-[#DA291C]': type === 'error',
+          'bg--information': type === 'information',
+          'bg--success': type === 'success',
+          'bg--error': type === 'error',
         }"
         class="grid grid-cols-[32px_1fr_32px] gap-1 text-white pointer-events-auto pt-2 px-1 rounded-.5 border-1 border-black/12 shadow-xl mb-2"
       >
