@@ -17,6 +17,9 @@
   --content: 0, 0%, 0%;
   --dark-content: 0, 0%, 100%;
   --white: 0, 0%, 100%;
+  --information: 198, 100%, 35%;
+  --success: 81, 67%, 44%;
+  --error: 4, 77%, 48%;
 }
 
 a {
@@ -112,6 +115,10 @@ div {
 }
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+.q-field__bottom {
+  padding: 4px 12px 0;
 }
 
 @media (prefers-color-scheme: light) {
