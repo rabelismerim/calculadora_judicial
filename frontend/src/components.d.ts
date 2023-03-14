@@ -8,6 +8,7 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Btn: typeof import('./components/common/Btn.vue')['default']
+    copy: typeof import('./components/inputs/InputUser copy.vue')['default']
     FooterBar: typeof import('./components/common/FooterBar.vue')['default']
     GraphGauge: typeof import('./components/common/GraphGauge.vue')['default']
     GraphLine: typeof import('./components/common/GraphLine.vue')['default']
@@ -18,13 +19,17 @@ declare module '@vue/runtime-core' {
     InputTags: typeof import('./components/inputs/InputTags.vue')['default']
     InputText: typeof import('./components/inputs/InputText.vue')['default']
     InputUser: typeof import('./components/inputs/InputUser.vue')['default']
+    InputUsers: typeof import('./components/inputs/InputUsers.vue')['default']
     Modal: typeof import('./components/common/Modal.vue')['default']
     NavBar: typeof import('./components/common/NavBar.vue')['default']
     NewProject: typeof import('./components/project/NewProject.vue')['default']
     NotificationArea: typeof import('./components/common/NotificationArea.vue')['default']
     ProgressList: typeof import('./components/common/ProgressList.vue')['default']
     QItem: typeof import('quasar')['QItem']
+    QItemSection: typeof import('quasar')['QItemSection']
     QSelect: typeof import('quasar')['QSelect']
+    QStep: typeof import('quasar')['QStep']
+    QStepper: typeof import('quasar')['QStepper']
     QTd: typeof import('quasar')['QTd']
     ReloadBtn: typeof import('./components/common/ReloadBtn.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
@@ -33,5 +38,6 @@ declare module '@vue/runtime-core' {
     Spinner: typeof import('./components/common/Spinner.vue')['default']
     TimeoutBar: typeof import('./components/common/TimeoutBar.vue')['default']
     UserCell: typeof import('./components/project/UserCell.vue')['default']
+    UserPicture: typeof import('./components/common/UserPicture.vue')['default']
   }
 }
