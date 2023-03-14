@@ -3,6 +3,7 @@ const props = withDefaults(defineProps<{
   modelValue: {
     name: string
     email: string
+    picture?: string
   }
 }>(),
 {
@@ -14,8 +15,8 @@ const props = withDefaults(defineProps<{
 </script>
 
 <template>
-  <div class="bg-secondary color-white h-10 w-10 flex justify-center items-center mr-3 font-bold">
-    {{ getInitials(modelValue.name) }}
+  <div class="mr-3">
+    <UserPicture :model-value="modelValue" class="h-10 w-10" />
   </div>
   <div>
     <div class="font-bold">
