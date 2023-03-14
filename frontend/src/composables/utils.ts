@@ -4,6 +4,11 @@ export const formatDate = (date: string) => new Date(date)
   .toLocaleDateString()
   .padStart(10, '0')
 
+export const formatDateBackend = (value: string) => {
+  const [day, month, year] = value.split('/')
+  return `${year}-${month}-${day}`
+}
+
 export const getInitials = (text: string) => {
   const initials = text
     .toUpperCase()
