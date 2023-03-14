@@ -15,6 +15,8 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits(['update:modelValue', 'update:options'])
 
 const select = ref(null) as any
+const hasError = computed(() => select.value.hasError)
+
 let loading = $ref(false)
 let inputValue = $ref('')
 let filteredOptions = $ref(props.options)
@@ -60,6 +62,7 @@ const onFilter = (val: any, update: Function) => {
     :loading="loading"
     :options="filteredOptions"
     :label="label"
+    :rules="rules"
     map-options
     option-value="id"
     option-label="description"
@@ -69,6 +72,7 @@ const onFilter = (val: any, update: Function) => {
     fill-input
     input-debounce="0"
     emit-value
+    dense
     @filter="onFilter"
     @update:model-value="(value) => emit('update:modelValue', value)"
   >

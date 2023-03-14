@@ -8,15 +8,20 @@ const props = withDefaults(defineProps<{
   rules: () => ([]),
 })
 const emit = defineEmits(['update:modelValue'])
+
+const input = ref(null) as any
+const hasError = computed(() => input.hasError)
 </script>
 
 <template>
   <QInput
+    ref="input"
     :model-value="modelValue"
     :label="label"
     :rules="rules"
     outlined
     mask="##/##/####"
+    dense
     @update:model-value="value => emit('update:modelValue', value)"
   >
     <template #append>

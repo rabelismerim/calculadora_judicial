@@ -29,30 +29,37 @@ const updateItem = (event: Event, index: number) => {
   items[index] = target?.value || ''
   emit('update:modelValue', items)
 }
+
+const content = ref(null) as any
+const getContentSize = (content: string) => {
+  const div = createEl('span')
+  div.innerText = content
+  setStyle(div, {
+    whiteSpace: 'pre',
+  })
+  document.body.appendChild(div)
+  const { width } = div.getBoundingClientRect()
+  document.body.removeChild(div)
+  return width
+}
 </script>
 
 <template>
   <label
-    class="relative overflow-hidden block group ring-1 ring-inner ring-black/24 hover:ring-black focus-within:hover:ring--primary focus-within:ring--primary focus-within:ring-2 rounded-1 py-1.5 pl-2.5 pr-10 min-h-14 with-transition"
+    class="relative overflow-hidden block group ring-1 ring-inner ring-black/24 hover:ring-black focus-within:hover:ring--primary focus-within:ring--primary focus-within:ring-2 rounded-1 py-1.5 pl-2.5 pr-10 min-h-10 with-transition"
     @click.self.stop="itemEditing = -1"
   >
     <span
       v-if="label"
       class="text-xs inline-block max-w-74% origin-top-left color-black/60 group-focus-within:text--primary whitespace-nowrap overflow-hidden text-ellipsis with-transition"
       :class="{
-        'scale-133 translate-y-2.8 group-focus-within:max-w-100% group-focus-within:scale-100 group-focus-within:translate-y-0': modelValue.length <= 0,
+        'scale-120 translate-y-1.5 group-focus-within:max-w-100% group-focus-within:scale-100 group-focus-within:translate-y-0': modelValue.length <= 0,
         'scale-100 translate-y-0': modelValue.length > 0,
       }"
     >
       {{ label }}
     </span>
-    <div
-      v-auto-animate
-      class="flex gap-1"
-      :class="{
-        'pt-1': modelValue.length > 0,
-      }"
-    >
+    <div class="flex gap-1">
       <div
         v-for="(item, index) in modelValue"
         :key="index"
@@ -68,7 +75,7 @@ const updateItem = (event: Event, index: number) => {
           :value="modelValue[index]"
           class="bg-transparent outline-none max-w-fill"
           :style="{
-            width: `${item.length}ch`,
+            width: `${getContentSize(modelValue[index])}px`,
           }"
           @input="updateItem($event, index)"
           @blur="itemEditing = -1"
@@ -77,7 +84,7 @@ const updateItem = (event: Event, index: number) => {
           v-else
           class="bg-transparent flex-1 text-ellipsis overflow-hidden"
         >
-          {{ item }}
+          <span class="whitespace-pre">{{ item }}</span>
         </div>
         <div
           class="rounded-full bg-white/20 hover:bg-white/50 min-h-5 min-w-5 flex justify-center items-center cursor-pointer"
