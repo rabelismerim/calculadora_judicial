@@ -31,12 +31,17 @@ export const throwError = async (error: any) => {
     response: { data: { data = {} } = {} } = {},
   }: any = error
   const errorMessages = Object.entries(data)
-    .flatMap(([,message]) => message || '')
+    .map(([key, value]: [string, any]) => [key, value.non_field_errors ? value.non_field_errors : value])
 
   if (errorMessages.length > 0) {
-    for (const msg of errorMessages) {
+    for (const [key, msg] of errorMessages) {
       await delay(0.5)
-      notify({ message: msg as string, id, timeout, type: 'error' })
+      notify({
+        id: key,
+        message: msg as string,
+        timeout,
+        type: 'error',
+      })
     }
     return
   }
@@ -45,8 +50,6 @@ export const throwError = async (error: any) => {
     message = 'Problemas no Servidor...'
   if (response?.status === 403)
     message = 'Você não está autorizado...'
-  if (response?.data?.data?.detail)
-    message = response.data.data.detail
 
   notify({ message, id, timeout, type: 'error' })
 }
