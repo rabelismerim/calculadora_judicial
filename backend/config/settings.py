@@ -83,6 +83,7 @@ INSTALLED_APPS = [
     'django_extensions',  # TEMP
     'import_export',
     'rest_framework',
+    "drf_standardized_errors",
 
     # Base
     'base',
@@ -296,7 +297,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-BR'
 
 TIME_ZONE = 'UTC'
 
@@ -351,9 +352,10 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": (
         "core.drfmsal.renderer.APIRendererInterceptor",
         "rest_framework.renderers.BrowsableAPIRenderer"
-    )
+    ),
+    "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler"
 }
-
+DRF_STANDARDIZED_ERRORS = {"ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True}
 # Setting auth user
 AUTH_USER_MODEL = 'dttuser.User'
 BASE_URL = 'djud/api/v1/'
