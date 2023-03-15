@@ -12,3 +12,4 @@ static
 staticfiles
 **/package-lock.json
 project_ids.json
+.idea

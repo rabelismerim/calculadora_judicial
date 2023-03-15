@@ -16,7 +16,7 @@ const getPermissions = () => api
     email,
     isStaff: is_staff,
     picture: userpicture,
-    permissions: user_permissions.map(({ codename }: any) => codename),
+    permissions: user_permissions ? user_permissions.map(({ codename }: any) => codename) : [],
   }))
 
 const getMyProfile = () => api
