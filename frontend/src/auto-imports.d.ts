@@ -50,7 +50,9 @@ declare global {
   const easing: typeof import('animol')['Easing']
   const effectScope: typeof import('vue')['effectScope']
   const extendRef: typeof import('@vueuse/core')['extendRef']
+  const flatten: typeof import('./composables/utils')['flatten']
   const formatDate: typeof import('./composables/utils')['formatDate']
+  const formatDateBackend: typeof import('./composables/utils')['formatDateBackend']
   const get: typeof import('@jrnwn/utils')['get']
   const getCookie: typeof import('@jrnwn/utils')['getCookie']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
@@ -137,6 +139,7 @@ declare global {
   const tryOnScopeDispose: typeof import('@vueuse/core')['tryOnScopeDispose']
   const tryOnUnmounted: typeof import('@vueuse/core')['tryOnUnmounted']
   const typeOf: typeof import('@jrnwn/utils')['typeOf']
+  const unflatten: typeof import('./composables/utils')['unflatten']
   const unref: typeof import('vue')['unref']
   const unrefElement: typeof import('@vueuse/core')['unrefElement']
   const until: typeof import('@vueuse/core')['until']
@@ -368,7 +371,9 @@ declare module 'vue' {
     readonly easing: UnwrapRef<typeof import('animol')['Easing']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
+    readonly flatten: UnwrapRef<typeof import('./composables/utils')['flatten']>
     readonly formatDate: UnwrapRef<typeof import('./composables/utils')['formatDate']>
+    readonly formatDateBackend: UnwrapRef<typeof import('./composables/utils')['formatDateBackend']>
     readonly get: UnwrapRef<typeof import('@jrnwn/utils')['get']>
     readonly getCookie: UnwrapRef<typeof import('@jrnwn/utils')['getCookie']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
@@ -455,6 +460,7 @@ declare module 'vue' {
     readonly tryOnScopeDispose: UnwrapRef<typeof import('@vueuse/core')['tryOnScopeDispose']>
     readonly tryOnUnmounted: UnwrapRef<typeof import('@vueuse/core')['tryOnUnmounted']>
     readonly typeOf: UnwrapRef<typeof import('@jrnwn/utils')['typeOf']>
+    readonly unflatten: UnwrapRef<typeof import('./composables/utils')['unflatten']>
     readonly unref: UnwrapRef<typeof import('vue')['unref']>
     readonly unrefElement: UnwrapRef<typeof import('@vueuse/core')['unrefElement']>
     readonly until: UnwrapRef<typeof import('@vueuse/core')['until']>
