@@ -10,7 +10,7 @@ const emit = defineEmits(['update:modelValue'])
 let loading = $ref(false)
 const form = ref(null) as any
 const stepper = ref(null) as any
-const { step, hasError, setStep, nextStep, previousStep, clearErrors } = useSteps(1, stepper, form)
+const { step, hasError, setStep, nextStep, previousStep, clearErrors, validateAll } = useSteps(1, stepper, form)
 
 // Project related
 const nullRecovering = {
@@ -53,7 +53,7 @@ const removeRecovering = (index: number) => {
   newProject.recoverings.splice(index, 1)
 }
 const onSubmit = async () => {
-  form.value?.validate()
+  validateAll(4)
   if (hasError.value.includes(true)) {
     throwError({
       id: 'SUBMIT_ERROR',
@@ -114,6 +114,7 @@ onMounted(async () => {
         v-model="step"
         color="primary"
         animated
+        header-nav
         keep-alive
         flat
         header-class="shadow-md"
@@ -122,7 +123,6 @@ onMounted(async () => {
           :name="1"
           title="Informações Principais"
           icon="o_description"
-          :done="step > 1"
           :error="hasError.at(1)"
           class="overflow-y-auto max-h-[calc(100vh-326px)]"
         >
@@ -135,9 +135,103 @@ onMounted(async () => {
             />
             <InputTags
               v-model="newProject.engagements"
-              label="Engagements *"
+              label="Engagements"
               class="sm:col-span-2 mb-5"
             />
+            <InputText
+              v-model="newProject.processNumber"
+              label="Número de Processo"
+              maxlength="15"
+              :rules="[value => !!value || 'É um campo obrigatório']"
+            />
+            <InputDate
+              v-model="newProject.start"
+              label="Data do Pedido de Recuperação Judicial"
+              :rules="[
+                value => !!value || 'É um campo obrigatório',
+                (value) => value.length === 10 || 'Precisa preencher o padrão ##/##/####',
+                (value) => /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Precisa ser uma data válida!',
+              ]"
+            />
+            <InputSelect
+              v-model="newProject.judgeId"
+              v-model:options="judges"
+              label="Juiz"
+              :to-add="addJudge"
+              :rules="[value => !!value || 'É um campo obrigatório']"
+            />
+            <InputSelect
+              v-model="newProject.lawyerId"
+              v-model:options="judges"
+              label="Advogado"
+              :to-add="addJudge"
+              :rules="[value => !!value || 'É um campo obrigatório']"
+            />
+            <InputSelect
+              v-model="newProject.regionId"
+              v-model:options="regions"
+              label="Comarca"
+              :to-add="addRegion"
+              :rules="[value => !!value || 'É um campo obrigatório']"
+            />
+            <InputSelect
+              v-model="newProject.courtId"
+              v-model:options="courts"
+              label="Vara"
+              :to-add="addCourt"
+              :rules="[value => !!value || 'É um campo obrigatório']"
+            />
+          </div>
+        </QStep>
+
+        <QStep
+          :name="2"
+          title="Recuperandas"
+          icon="o_store"
+          :error="hasError.at(2)"
+          class="relative overflow-y-auto max-h-[calc(100vh-326px)] min-h-87 overflow-x-hidden"
+        >
+          <div
+            v-for="(recovering, index) in newProject.recoverings"
+            :key="index"
+            class="grid items-stretch sm:grid-cols-[1fr_1fr_42px] gap-x-4"
+            data-step="2"
+          >
+            <InputText
+              v-model="recovering.name"
+              label="Recuperanda"
+              :rules="[value => !!value || 'Este Campo é obrigatório']"
+            />
+            <InputLegal
+              v-model="recovering.legalNumber"
+            />
+            <div
+              class="border-1 border--error hover:border-black/22 rounded color--error hover:bg--error hover:color-white flex justify-center items-center text-lg cursor-pointer mb-5"
+              tabindex="0"
+              @click="removeRecovering(index)"
+              @keyup.space="removeRecovering(index)"
+            >
+              <div class="i-carbon-trash-can" />
+            </div>
+          </div>
+          <div class="sticky bg--base p-2 bottom-0 flex justify-center">
+            <Btn
+              label="Adicionar Nova Recuperanda"
+              icon="i-carbon-add-filled"
+              outlined
+              @click="addRecovering"
+            />
+          </div>
+        </QStep>
+
+        <QStep
+          :name="3"
+          title="Responsáveis"
+          icon="o_assignment_ind"
+          :error="hasError.at(3)"
+          class="overflow-y-auto min-h-87  max-h-[calc(100vh-326px)]"
+        >
+          <div data-step="3" class="grid sm:grid-cols-2 gap-x-4">
             <InputUser
               v-model="newProject.financialPartnerId"
               label="Sócio Financeiro"
@@ -168,107 +262,19 @@ onMounted(async () => {
               :users="users"
               :rules="[value => !!value || 'É um campo obrigatório']"
             />
-            <InputDate
-              v-model="newProject.start"
-              label="Data do Pedido de Recuperação Judicial"
-              :rules="[
-                value => !!value || 'É um campo obrigatório',
-                (value) => value.length === 10 || 'Precisa preencher o padrão ##/##/####',
-                (value) => /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Precisa ser uma data válida!',
-              ]"
-            />
-            <InputSelect
-              v-model="newProject.judgeId"
-              v-model:options="judges"
-              label="Juiz"
-              :to-add="addJudge"
-              :rules="[value => !!value || 'É um campo obrigatório']"
-            />
-            <InputSelect
-              v-model="newProject.lawyerId"
-              v-model:options="judges"
-              label="Advogado"
-              :to-add="addJudge"
-              :rules="[value => !!value || 'É um campo obrigatório']"
-            />
-            <InputText
-              v-model="newProject.processNumber"
-              label="Número de Processo"
-              maxlength="15"
-              :rules="[value => !!value || 'É um campo obrigatório']"
-              class="sm:col-span-2"
-            />
-            <InputSelect
-              v-model="newProject.regionId"
-              v-model:options="regions"
-              label="Comarca"
-              :to-add="addRegion"
-              :rules="[value => !!value || 'É um campo obrigatório']"
-            />
-            <InputSelect
-              v-model="newProject.courtId"
-              v-model:options="courts"
-              label="Vara"
-              :to-add="addCourt"
-              :rules="[value => !!value || 'É um campo obrigatório']"
-            />
           </div>
         </QStep>
 
         <QStep
-          :name="2"
-          title="Recuperandas"
-          icon="o_store"
-          :done="step > 1"
-          :error="hasError.at(2)"
-          class="relative overflow-y-auto max-h-[calc(100vh-326px)] min-h-102 overflow-x-hidden"
-        >
-          <div
-            v-for="(recovering, index) in newProject.recoverings"
-            :key="index"
-            class="grid items-stretch sm:grid-cols-[1fr_1fr_42px] gap-x-4"
-            data-step="2"
-          >
-            <InputText
-              v-model="recovering.name"
-              label="Recuperanda"
-              :rules="[value => !!value || 'Este Campo é obrigatório']"
-            />
-            <InputText
-              v-model="recovering.legalNumber"
-              label="CPF/CNPJ"
-              :rules="[value => !!value || 'Este Campo é obrigatório']"
-            />
-            <div
-              class="border-1 border--error hover:border-black/22 rounded color--error hover:bg--error hover:color-white flex justify-center items-center text-lg cursor-pointer mb-5"
-              tabindex="0"
-              @click="removeRecovering(index)"
-              @keyup.space="removeRecovering(index)"
-            >
-              <div class="i-carbon-trash-can" />
-            </div>
-          </div>
-          <div class="sticky bg--base p-2 bottom-0 flex justify-center">
-            <Btn
-              label="Adicionar Nova Recuperanda"
-              icon="i-carbon-add-filled"
-              outlined
-              @click="addRecovering"
-            />
-          </div>
-        </QStep>
-
-        <QStep
-          :name="3"
+          :name="4"
           title="Times e Papéis"
           icon="o_people"
-          :done="step > 1"
-          :error="hasError.at(3)"
-          class="relative overflow-y-auto max-h-[calc(100vh-326px)] min-h-102 pb-0 pt-6 px-6 overflow-x-hidden"
+          :error="hasError.at(4)"
+          class="relative overflow-y-auto max-h-[calc(100vh-326px)] min-h-87 pb-0 pt-6 px-6 overflow-x-hidden"
         >
           <div
             class=""
-            data-step="3"
+            data-step="4"
           >
             <InputUsers
               v-model="newProject.executors"
@@ -309,7 +315,7 @@ onMounted(async () => {
           @press="previousStep"
         />
         <Btn
-          v-if="step < 3"
+          v-if="step < 4"
           label="Próximo"
           outlined
           tag="div"
@@ -317,7 +323,7 @@ onMounted(async () => {
           @press="nextStep"
         />
         <Btn
-          v-if="step === 3"
+          v-if="step === 4"
           label="Concluir"
           tag="div"
           :loading="loading"
