@@ -1,3 +1,5 @@
+import { range } from '@jrnwn/utils'
+
 export default (firstStep: number, stepper: any, form: any) => {
   const data = $ref({
     step: firstStep,
@@ -16,6 +18,13 @@ export default (firstStep: number, stepper: any, form: any) => {
     data.error[ref] = toValidate
       .map(({ hasError }: any) => hasError)
       .some((value: boolean) => !!value)
+  }
+  const validateAll = (count: number) => {
+    range(1, count, 1)
+      .forEach((step) => {
+        data.step = step
+        validateStep(step)
+      })
   }
   const nextStep = () => {
     validateStep(data.step)
@@ -42,6 +51,7 @@ export default (firstStep: number, stepper: any, form: any) => {
     hasError,
     setStep,
     validateStep,
+    validateAll,
     nextStep,
     previousStep,
     clearErrors,
