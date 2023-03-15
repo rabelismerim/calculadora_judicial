@@ -1,6 +1,10 @@
 import json
 from core.abstract.tests import AbstractTest
 from projects.models import Project
+from utils import get_user_model
+
+
+User = get_user_model()
 
 
 class RecoveringTest(AbstractTest):
@@ -8,6 +12,8 @@ class RecoveringTest(AbstractTest):
 
     def test_api_E_post_recoverings(self):
         """Assert post recoverings detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('Create recovering')
         project = Project.objects.first()
         recovering = {
@@ -40,6 +46,8 @@ class RecoveringTest(AbstractTest):
 
     def test_api_F_get_recoverings(self):
         """Assert get recoverings detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('List recoverings')
         response = self.client.get('/djud/api/v1/recovering/')
         self.assertEqual(response.status_code, 200)

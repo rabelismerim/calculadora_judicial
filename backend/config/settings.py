@@ -17,6 +17,8 @@ from dotenv import load_dotenv
 from core.drfmsal import IdentityWebPython
 import urllib3
 
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
+
 urllib3.disable_warnings()
 
 load_dotenv()
@@ -341,6 +343,11 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.ScopedRateThrottle',
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": DEFAULT_AUTHENTICATION_CLASSES,
+    'TEST_REQUEST_RENDERER_CLASSES': [
+            'rest_framework.renderers.MultiPartRenderer',
+            'rest_framework.renderers.JSONRenderer',
+            'rest_framework.renderers.TemplateHTMLRenderer'
+    ],
     "DEFAULT_RENDERER_CLASSES": (
         "core.drfmsal.renderer.APIRendererInterceptor",
         "rest_framework.renderers.BrowsableAPIRenderer"

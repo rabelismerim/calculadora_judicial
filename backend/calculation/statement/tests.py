@@ -13,6 +13,10 @@ Attributes:
 - None
 """
 from core.abstract.tests import AbstractTest
+from utils import get_user_model
+
+
+User = get_user_model()
 
 
 class StatementTest(AbstractTest):
@@ -20,19 +24,23 @@ class StatementTest(AbstractTest):
 
     def test_api_a_post_statements(self):
         """Assert post statements detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('Create statements')
         statement = {
             "description": "statement"
         }
         response = self.client.post(
-            '/djud/api/v1/projects/statement', statement)
+            '/djud/api/v1/calculations/statement', statement)
         self.assertEqual(response.status_code, 201)
         self.print_success('Created statement')
 
     def test_api_b_get_statements(self):
         """Assert get statements detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('List statements')
-        response = self.client.get('/djud/api/v1/projects/statement')
+        response = self.client.get('/djud/api/v1/calculations/statement')
         self.assertEqual(response.status_code, 200)
         self.print_success('Listed statements')
         statements = response.json()['statements']

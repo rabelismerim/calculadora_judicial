@@ -2,6 +2,11 @@ import json
 import random
 from calculation.models import Calculation
 from core.abstract.tests import AbstractTest
+from utils import get_user_model
+
+
+User = get_user_model()
+
 
 str_rd = ''
 while (len(str_rd) <= 10):
@@ -13,6 +18,8 @@ class VerdictTest(AbstractTest):
 
     def test_api_E_post_verdicts(self):
         """Assert post verdicts detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('Create verdict')
         calculation = Calculation.objects.first()
         verdict = {
@@ -32,6 +39,8 @@ class VerdictTest(AbstractTest):
 
     def test_api_F_get_verdicts(self):
         """Assert get verdicts detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('List verdicts')
         response = self.client.get('/djud/api/v1/calculation/verdict')
         self.assertEqual(response.status_code, 200)

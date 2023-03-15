@@ -3,6 +3,7 @@ import sys
 import os
 from django.core.management import color_style
 from django.core.management.base import OutputWrapper
+from rest_framework.test import RequestsClient
 from django.test import TestCase
 from utils import get_user_model
 
@@ -64,23 +65,14 @@ class AbstractTest(TestCase):
     }
 
     def setUp(self):
-        """Create User for api requests that need authentication"""
-        user = {
-            "email": "user@example.com",
-            "username": "string",
-            "first_name": "string",
-            "last_name": "string",
-            "password": "stringst",
-            "password_confirm": "stringst",
-            "is_staff": True,
-        }
-
-        response = self.client.post('/djud/api/users/', user)
-        self.assertEqual(response.status_code, 201)
-        user_detail = json.loads(response.content)['user']
-        self.set_user(user_detail)
-        self.set_project('manager_id', user_detail['id'])
-        self.set_project('partner_id', user_detail['id'])
+        user_create = User.objects.create(email="user@example1.com",username="user1",
+                            first_name="User1", last_name="User1", password="User@123",
+                            is_staff=True)
+        self.assertTrue(user_create)
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
+        self.set_project('manager_id', user.id)
+        self.set_project('partner_id', user.id)
 
     def get_user(self):
         """Get user"""
