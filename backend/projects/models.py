@@ -10,7 +10,7 @@ from utils import get_user_model
 
 User = get_user_model()
 STATUS_CHOICES = (
-    ('P', 'Em Preparação'),
+    ('E', 'Em Preparação'),
     ('C', 'Concluido'),
     ('A', 'Em Andamento'),
     ('F', 'Cancelado'),
