@@ -51,5 +51,12 @@ class Calculation(AbstractModel):
     has_edital = models.BooleanField(
         'Edital art. 7º § 2 - 11.101/2005', default=False)
 
+    def get_rate(self):
+        """"Pegar o indice que vai ser utilizado"""
+        return self.creditor.rate
+    def get_date_rj(self):
+        """"Pegar a data da recuperacão judicial"""
+        return self.creditor.recovering.project.date_rj_request
+
     def __str__(self):
         return f'{self.creditor}'

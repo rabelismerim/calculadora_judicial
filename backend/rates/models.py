@@ -1,3 +1,5 @@
+import datetime
+
 import pandas as pd
 from django.db import models
 from config.settings import RATE_FILE_TYPES
@@ -8,14 +10,8 @@ from rest_framework import serializers
 
 
 class Rate(AbstractModel):  # Indices
-    """
-    Model representing a rate or index.
-
-    Attributes:
-    - index (CharField): The name of the index, with a maximum length of 50 characters.
-
-    """
-    index = models.CharField('Nome do indice', max_length=50)
+    index = models.CharField('Nome do índice', max_length=50)
+    is_per_day = models.BooleanField('O índice é por dia? dia ou mês', default=True)
 
     def __str__(self):
         return self.index
@@ -24,6 +20,11 @@ class Rate(AbstractModel):  # Indices
         if hasattr(self, 'ratefile'):
             return self.ratefile
         return None
+
+    def get_rate_by_date(self, date: datetime.date):
+        if self.is_per_day:
+            return self.ratevalues_set.filter(date=date).first()
+        return self.ratevalues_set.filter(date__month=date.month, date__year=date.year).first()
 
 
 class RateValues(AbstractModel):  # Indices
@@ -45,8 +46,8 @@ class RateValues(AbstractModel):  # Indices
         Returns a string representation of the object.
     """
     rate = models.ForeignKey(Rate, on_delete=models.PROTECT)
-    date = models.DateField('Data do indice')
-    value = models.FloatField('Valor do indice')
+    date = models.DateField('Data do índice')
+    value = models.FloatField('Valor do índice')
 
     def __str__(self):
         return f"indice: {self.rate} | data: {self.date} | value: {self.value}"
