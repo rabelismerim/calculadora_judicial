@@ -6,7 +6,7 @@ Api's classes use the DttUser model and schema DttUser to work with data.
 """
 from config.settings import ENABLE_SSO, IS_LOCALHOST, PASSWD_DEV
 from core.abstract.views import AbstractViewApi
-from core.dttuser.schemas import UserDttSchema, UserAuthorizeDttSchema, GroupSchema, UserMailDttSchema
+from core.dttuser.schemas import UserDttSchema, UserAuthorizeDttSchema, GroupSchema, SubgroupSchema, UserMailDttSchema
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 from django.core.mail import send_mail
@@ -16,6 +16,7 @@ from core.permission.views import CheckHasPermission, CreatePermissions
 from utils import get_user_model
 from rest_framework import permissions, serializers
 from django.contrib.auth.models import Group
+from core.dttuser.models import Subgroup
 User = get_user_model()
 
 
@@ -102,13 +103,15 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
         serializer.is_valid(raise_exception=True)
         user_filter = serializer.validated_data
         groups = user_filter.pop('groups', [])
+        subgroups = user_filter.pop('subgroups', [])
 
         user_approved = self.model.objects.filter(**user_filter).first()
         if not user_approved:
             raise serializers.ValidationError(['Email não encontrado'])
 
-        user_approved.is_active = True
+        user_approved.is_active = user_filter.is_active
         user_approved.groups.add(*groups)
+        user_approved.subgroups.add(*subgroups)
         user_approved.save()
 
         return JsonResponse({'user': user_filter}, status=status.HTTP_201_CREATED)
@@ -139,8 +142,8 @@ class UserSendMailDttApi(AbstractUserDttApi):
         if not user_mail:
             raise serializers.ValidationError(['Email não encontrado'])
         
-#        for item in user_mail:
-#            send_mail('Liberação de Uso - '+item.email,'Esse email é enviado automaticamente pelo sistema para solicitação de liberação do usuário '+item.email+' ao sistema. Para liberar o acesso favor entrar no painel de administração e cadastrar o mesmo ao sistema.',None)
+        for item in user_mail:
+            send_mail('Liberação de Uso - '+item.email,'Esse email é enviado automaticamente pelo sistema para solicitação de liberação do usuário '+item.email+' ao sistema. Para liberar o acesso favor entrar no painel de administração e cadastrar o mesmo ao sistema.',None)
 
         return JsonResponse({'user': user_filter}, status=status.HTTP_201_CREATED)
 
@@ -158,6 +161,19 @@ class GroupApi(AbstractViewApi):
     http_method_names = ['get']
     schema = AutoSchema(tags=["Groups"])
 
+class SubgroupApi(AbstractViewApi):
+    """HTTP methods for interfacing with the User Deloitte modelThis method returns a JSON response that contains the user details given a filtering criteria. 
+    The serializer is used to access the model object, and then the data is returned in a JSON format."""
+    serializer_class = SubgroupSchema
+
+    if IS_LOCALHOST:
+        permission_classes = [permissions.AllowAny]
+    else:
+        permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    model = Subgroup
+    http_method_names = ['get']
+    schema = AutoSchema(tags=["Subgroups"])
+
 
 class UserDttApi(AbstractUserDttApi):
     """HTTP methods for interacting with Deloitte user data."""
@@ -165,18 +181,20 @@ class UserDttApi(AbstractUserDttApi):
 
     def post(self, request, *args, **kwargs):
         """
-        Create a new user by recieving data in the form of dictionaries and 
+        Create a new user by receiving data in the form of dictionaries and 
         returning the specific user details.
         """
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_user = serializer.validated_data
         groups = new_user.pop('groups', [])
+        subgroups = new_user.pop('subgroups', [])
         new_user.pop('password_confirm', None)
         password = new_user.pop('password', None)
         user = self.model.objects.create(**new_user)
         user.set_password(password)
         user.groups.add(*groups)
+        user.groups.add(*subgroups)
         user.save()
 
         if IS_LOCALHOST:

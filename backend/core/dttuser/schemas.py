@@ -21,6 +21,7 @@ from django.core import exceptions
 from rest_framework import serializers, renderers
 from utils import get_user_model
 from django.contrib.auth.models import Permission, Group
+from core.dttuser.models import Subgroup
 
 
 class PermissionSchema(serializers.ModelSerializer):
@@ -78,6 +79,53 @@ class GroupSchema(serializers.ModelSerializer):
                     pass
 
 
+class SubgroupSchema(serializers.ModelSerializer):
+    """Serializer for fields of a Group.
+
+    This serializer contains two main fields, name and permissions, along with the extra_kwargs attribute 
+    for additional keyword arguments for the field.
+    The validate method is responsible for validating the group name and returning either the group's ID 
+    if the group exists, or raising a ValidationError if it does not exist.
+    """
+    permissions = PermissionSchema(many=True, read_only=True)
+
+    class Meta:
+        model = Subgroup
+        fields = ['name', 'permissions', 'id']
+        extra_kwargs = {
+            'name': {'validators': []},
+        }
+
+    def validate(self, data):
+        """
+        Validate password is strong and same as password confirm.
+
+        Args:
+            password (str): Password to validate.
+            password_confirm (str): Password confirmation.
+
+        Returns:
+            errors (list): List of errors found in validations.
+        """
+        data = dict(data)
+        subgroup = Subgroup.objects.filter(name=data['name']).first()
+        if subgroup:
+            return super(GroupSchema, self).validate({'id': subgroup.id})
+        raise serializers.ValidationError(['Subgrupo não encontrado'])
+
+    def __init__(self, *args, **kwargs):
+        fields = kwargs.pop('exclude', None)
+        super().__init__(*args, **kwargs)
+        if fields is not None:
+            allowed = set(fields)
+            existing = set(self.fields)
+            for field_name in allowed:
+                try:
+                    self.fields.pop(field_name)
+                except:
+                    pass
+
+
 class UserDttSchema(serializers.ModelSerializer):
     """
     Serializer for fields of the abstract model.
@@ -94,6 +142,9 @@ class UserDttSchema(serializers.ModelSerializer):
                                  Read-only.
 
         groups (GroupSchema): Groups associated with the model. Read and write access.
+
+        subgroups (SubgroupSchema): Groups associated with the model. Read and write access.
+        
     """
     renderer_classes = [renderers.JSONRenderer]
     id = serializers.UUIDField(read_only=True)
@@ -103,12 +154,13 @@ class UserDttSchema(serializers.ModelSerializer):
         min_length=8, write_only=True, required=True)
     user_permissions = PermissionSchema(many=True, read_only=True)
     groups = GroupSchema(many=True, read_only=False, exclude=('permissions', ))
+    subgroups = SubgroupSchema(many=True, read_only=False, exclude=('permissions', ))
     full_name = serializers.CharField(read_only=True, source='get_full_name')
 
     class Meta:
         model = get_user_model()
         fields = ['email', 'username', 'first_name', 'last_name', 'password', 'password_confirm', 'full_name', 'userpicture',
-                  'is_staff', 'user_permissions', 'date_joined', 'is_active', 'groups', 'id']
+                  'is_staff', 'user_permissions', 'date_joined', 'is_active', 'groups', 'subgroups', 'id']
         read_only_fields = ('user_permissions', 'date_joined', 'is_active')
 
     @staticmethod
@@ -147,6 +199,7 @@ class UserDttSchema(serializers.ModelSerializer):
         password = data.get('password')
         password_confirm = data.get('password_confirm')
         data['groups'] = [x.get('id') for x in data.get('groups', [])]
+        data['subgroups'] = [x.get('id') for x in data.get('subgroups', [])]
         errors = []
         errors.extend(self.__check_passwd(password, password_confirm))
         if errors:
@@ -178,7 +231,8 @@ class UserAuthorizeDttSchema(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         groups = GroupSchema(many=True, read_only=False, exclude=('permissions', ))
-        fields = ['email','groups']
+        subgroups = SubgroupSchema(many=True, read_only=False, exclude=('permissions', ))
+        fields = ['email','is_active','groups', 'subgroups']
 
 class UserMailDttSchema(serializers.ModelSerializer):
     """
