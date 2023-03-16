@@ -1,4 +1,8 @@
 from core.abstract.tests import AbstractTest
+from utils import get_user_model
+
+
+User = get_user_model()
 
 
 class ProjectUserTest(AbstractTest):
@@ -6,6 +10,8 @@ class ProjectUserTest(AbstractTest):
 
     def test_api_E_post_project_users(self):
         """Assert post project users detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('Create Project User')
         project_user = {
             "user": self.get_user()['id'],
@@ -17,6 +23,8 @@ class ProjectUserTest(AbstractTest):
 
     def test_api_F_get_project_users(self):
         """Assert get Project User detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('List project users')
         response = self.client.get('/djud/api/v1/projects/project_user')
         self.assertEqual(response.status_code, 200)

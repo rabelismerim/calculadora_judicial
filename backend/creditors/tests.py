@@ -4,6 +4,10 @@ from projects.engagement.models import ProjectEngagement
 from projects.project_user.models import ProjectUser
 from rates.models import Rate
 from recovering.models import Recovering
+from utils import get_user_model
+
+
+User = get_user_model()
 
 
 class CreditorTest(AbstractTest):
@@ -11,6 +15,8 @@ class CreditorTest(AbstractTest):
 
     def test_api_E_post_creditors(self):
         """Assert post creditors detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('Criar Creditor')
         recovering = Recovering.objects.first()
         rate = Rate.objects.first()
@@ -69,6 +75,8 @@ class CreditorTest(AbstractTest):
 
     def test_api_F_get_creditors(self):
         """Assert get creditors detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('Lista de Creditors')
         response = self.client.get('/djud/api/v1/creditors/')
         self.assertEqual(response.status_code, 200)

@@ -1,5 +1,9 @@
 import json
 from core.abstract.tests import AbstractTest
+from utils import get_user_model
+
+
+User = get_user_model()
 
 
 class ProjectTest(AbstractTest):
@@ -7,6 +11,8 @@ class ProjectTest(AbstractTest):
 
     def api_C_post_projects(self):
         """Assert post projects detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('Create Project')
         project = {
             "description": "Project test",
@@ -57,6 +63,8 @@ class ProjectTest(AbstractTest):
 
     def api_D_get_projects(self):
         """Assert get projects detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('List Project')
         response = self.client.get('/djud/api/v1/projects/')
         self.assertEqual(response.status_code, 200)

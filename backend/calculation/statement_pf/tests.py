@@ -13,6 +13,10 @@ Attributes:
 - None
 """
 from core.abstract.tests import AbstractTest
+from utils import get_user_model
+
+
+User = get_user_model()
 
 
 class StatementPFTest(AbstractTest):
@@ -20,19 +24,23 @@ class StatementPFTest(AbstractTest):
 
     def test_api_a_post_statementPFs(self):
         """Assert post statement_pfs detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('Create statement_pfs')
         statementPF = {
             "description": "statementPF"
         }
         response = self.client.post(
-            '/djud/api/v1/projects/statementPF', statementPF)
+            '/djud/api/v1/calculations/statementPF', statementPF)
         self.assertEqual(response.status_code, 201)
         self.print_success('Created statementPF')
 
     def test_api_b_get_statementPFs(self):
         """Assert get statementPFs detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('List statement_pfs')
-        response = self.client.get('/djud/api/v1/projects/statement_pf')
+        response = self.client.get('/djud/api/v1/calculations/statement_pf')
         self.assertEqual(response.status_code, 200)
         self.print_success('Listed statementPFs')
         statementPFs = response.json()['statement_pfs']

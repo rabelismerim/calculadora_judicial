@@ -13,26 +13,33 @@ Attributes:
 - None
 """
 from core.abstract.tests import AbstractTest
+from utils import get_user_model
 
+
+User = get_user_model()
 
 class FundsTest(AbstractTest):
     """funds related tests"""
 
     def test_api_a_post_fundss(self):
         """Assert post fundss detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('Create fundss')
         funds = {
             "description": "funds"
         }
         response = self.client.post(
-            '/djud/api/v1/projects/funds', funds)
+            '/djud/api/v1/calculation/funds/', funds)
         self.assertEqual(response.status_code, 201)
         self.print_success('Created funds')
 
     def test_api_b_get_fundss(self):
         """Assert get fundss detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('List fundss')
-        response = self.client.get('/djud/api/v1/projects/funds')
+        response = self.client.get('/djud/api/v1/calculation/funds/')
         self.assertEqual(response.status_code, 200)
         self.print_success('Listed fundss')
         fundss = response.json()['fundss']
