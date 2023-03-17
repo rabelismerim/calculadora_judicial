@@ -1,6 +1,10 @@
 import json
 from core.abstract.tests import AbstractTest
 from creditors.models import Creditor
+from utils import get_user_model
+
+
+User = get_user_model()
 
 
 class NoticeTest(AbstractTest):
@@ -8,6 +12,8 @@ class NoticeTest(AbstractTest):
 
     def test_api_E_post_notices(self):
         """Assert post notices detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('Create notice')
         creditor = Creditor.objects.first()
         notice = creditor.get_notice()
@@ -32,6 +38,8 @@ class NoticeTest(AbstractTest):
 
     def test_api_F_get_notices(self):
         """Assert get notices detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('List notices')
         response = self.client.get(
             '/djud/api/v1/creditors/notice')

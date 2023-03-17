@@ -22,6 +22,7 @@ class AbstractModel(models.Model):
         'Username de criação', max_length=150, null=True)
     update_user = models.CharField(
         'Username de atualização', max_length=150, null=True)
+    objects = models.Manager()
 
     class Meta:
         abstract = True
@@ -70,6 +71,7 @@ class AbstractModel(models.Model):
             except KeyError:
                 pass
         self.save()
+        return self
 
     @property
     def updates(self):

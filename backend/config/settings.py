@@ -17,6 +17,8 @@ from dotenv import load_dotenv
 from core.drfmsal import IdentityWebPython
 import urllib3
 
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
+
 urllib3.disable_warnings()
 
 load_dotenv()
@@ -81,6 +83,7 @@ INSTALLED_APPS = [
     'django_extensions',  # TEMP
     'import_export',
     'rest_framework',
+    "drf_standardized_errors",
 
     # Base
     'base',
@@ -294,7 +297,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-BR'
 
 TIME_ZONE = 'UTC'
 
@@ -341,12 +344,18 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.ScopedRateThrottle',
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": DEFAULT_AUTHENTICATION_CLASSES,
+    'TEST_REQUEST_RENDERER_CLASSES': [
+            'rest_framework.renderers.MultiPartRenderer',
+            'rest_framework.renderers.JSONRenderer',
+            'rest_framework.renderers.TemplateHTMLRenderer'
+    ],
     "DEFAULT_RENDERER_CLASSES": (
         "core.drfmsal.renderer.APIRendererInterceptor",
         "rest_framework.renderers.BrowsableAPIRenderer"
-    )
+    ),
+    "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler"
 }
-
+DRF_STANDARDIZED_ERRORS = {"ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True}
 # Setting auth user
 AUTH_USER_MODEL = 'dttuser.User'
 BASE_URL = 'djud/api/v1/'

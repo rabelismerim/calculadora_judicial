@@ -3,6 +3,10 @@ import random
 from core.abstract.tests import AbstractTest
 from projects.models import Project
 from projects.project_user.models import ProjectUser
+from utils import get_user_model
+
+
+User = get_user_model()
 
 
 class EngagementTest(AbstractTest):
@@ -10,6 +14,8 @@ class EngagementTest(AbstractTest):
 
     def test_api_E_post_engagements(self):
         """Assert post engagements detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('Create engagement')
         project = Project.objects.first()
         user = ProjectUser.objects.first()
@@ -32,6 +38,8 @@ class EngagementTest(AbstractTest):
 
     def test_api_F_get_engagements(self):
         """Assert get engagements detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('List engagements')
         response = self.client.get('/djud/api/v1/projects/engagement')
         self.assertEqual(response.status_code, 200)

@@ -8,6 +8,53 @@ from django.utils.translation import gettext_lazy as _
 from .managers import CustomUserManager
 from config.settings import IS_LOCALHOST
 
+class SubgroupManager(models.Manager):
+    """
+    The manager for the auth's Subgroup model.
+    """
+
+    use_in_migrations = True
+
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
+
+class Subgroup(models.Model):
+    """
+    Subgroups are a generic way of categorizing users to apply permissions, or
+    some other label, to those users. A user can belong to any number of
+    subgroups.
+
+    A user in a subgroup automatically has all the permissions granted to that
+    subgroup. For example, if the subgroup 'Site editors' has the permission
+    can_edit_home_page, any user in that subgroup will have that permission.
+
+    Beyond permissions, subgroups are a convenient way to categorize users to
+    apply some label, or extended functionality, to them. For example, you
+    could create a subgroup 'Special users', and you could write code that would
+    do special things to those users -- such as giving them access to a
+    members-only portion of your site, or sending them members-only email
+    messages.
+    """
+
+    name = models.CharField(_("name"), max_length=150, unique=True)
+    permissions = models.ManyToManyField(
+        Permission,
+        verbose_name=_("permissions"),
+        blank=True,
+    )
+
+    objects = SubgroupManager()
+
+    class Meta:
+        verbose_name = _("subgroup")
+        verbose_name_plural = _("subgroups")
+
+    def __str__(self):
+        return self.name
+
+    def natural_key(self):
+        return (self.name,)
 
 class PermissionsMixin(models.Model):
     """
@@ -21,6 +68,17 @@ class PermissionsMixin(models.Model):
         help_text=_(
             'The groups this user belongs to. A user will get all permissions '
             'granted to each of their groups.'
+        ),
+        # related_name="user_set",
+        related_query_name="user",
+    )
+    subgroups = models.ManyToManyField(
+        Subgroup,
+        verbose_name=_('subgroups'),
+        blank=True,
+        help_text=_(
+            'The subgroups this user belongs to. A user will get all permissions '
+            'granted to each of their subgroups.'
         ),
         # related_name="user_set",
         related_query_name="user",
@@ -52,6 +110,14 @@ class PermissionsMixin(models.Model):
         return only permissions matching this object.
         """
         return _user_get_permissions(self, obj, 'group')
+
+    def get_subgroup_permissions(self, obj=None):
+        """
+        Return a list of permission strings that this user has through their
+        groups. Query all available auth backends. If an object is passed in,
+        return only permissions matching this object.
+        """
+        return _user_get_permissions(self, obj, 'subgroup')
 
     def get_all_permissions(self, obj=None):
         return _user_get_permissions(self, obj, 'all')

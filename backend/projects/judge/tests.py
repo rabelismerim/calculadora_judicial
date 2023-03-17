@@ -1,5 +1,9 @@
 import json
 from core.abstract.tests import AbstractTest
+from utils import get_user_model
+
+
+User = get_user_model()
 
 
 class JudgeTest(AbstractTest):
@@ -7,6 +11,8 @@ class JudgeTest(AbstractTest):
 
     def test_api_A_post_judges(self):
         """Assert post judges detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('Create lawyers')
         judge = {
             "description": "Name Juiz 1"
@@ -17,6 +23,8 @@ class JudgeTest(AbstractTest):
 
     def test_api_B_get_judges(self):
         """Assert get judges detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('List lawyers')
         response = self.client.get('/djud/api/v1/projects/judge')
         self.assertEqual(response.status_code, 200)

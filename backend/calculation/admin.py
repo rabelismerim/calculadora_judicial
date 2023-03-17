@@ -15,6 +15,7 @@ from django.contrib import admin
 admin.site.register(Calculation)
 """
 from django.contrib import admin
-from calculation.models import Calculation
+from calculation.models import Calculation, Incident
 
 admin.site.register(Calculation)
+admin.site.register(Incident)

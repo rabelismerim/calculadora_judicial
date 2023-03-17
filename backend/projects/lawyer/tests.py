@@ -1,4 +1,8 @@
 from core.abstract.tests import AbstractTest
+from utils import get_user_model
+
+
+User = get_user_model()
 
 
 class LawyerTest(AbstractTest):
@@ -6,6 +10,8 @@ class LawyerTest(AbstractTest):
 
     def test_api_C_post_lawyers(self):
         """Assert post lawyers detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('Create lawyer')
         lawyer = {
             "description": "Name Juiz 1"
@@ -16,6 +22,8 @@ class LawyerTest(AbstractTest):
 
     def test_api_D_get_lawyers(self):
         """Assert get lawyers detail"""
+        user = User.objects.get(username='user1')  
+        self.client.force_login(user) 
         self.print_start('List lawyers')
         response = self.client.get('/djud/api/v1/projects/lawyer')
         self.assertEqual(response.status_code, 200)
