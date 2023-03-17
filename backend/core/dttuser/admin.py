@@ -36,7 +36,7 @@ class CustomUserAdmin(UserAdmin):
             'fields': ('username', 'first_name', 'last_name', 'email'),
         }),
     )
-    list_filter = ('is_staff', 'is_active', 'groups')
+    list_filter = ('is_staff', 'is_active', 'groups', 'subgroups')
 
 
 admin.site.register(User, CustomUserAdmin)
