@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ValidationRule } from 'quasar'
+import { printError } from '../../composables/utils'
 
 const props = withDefaults(defineProps<{
   modelValue: any
@@ -31,14 +32,14 @@ const addNewItem = async () => {
   loading = true
   try {
     const value = await props?.toAdd(inputValue)
-    filteredOptions.push(value)
     emit('update:options', [...props.options, value])
+    // filteredOptions.push(value)
     inputValue = ''
     select.value.updateInputValue('', true)
     select.value.add(value)
   }
   catch (error) {
-    throwError(error)
+    printError(`ERROR ON ADD ITEM TO LIST ${props.label?.toUpperCase() || ''}:`, error)
   }
   finally {
     loading = false

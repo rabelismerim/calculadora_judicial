@@ -18,9 +18,7 @@ let options = $ref(props.users)
 const onFilter = (val: string, update: any) => {
   update(() => {
     const needle = val.toLowerCase()
-    options = props.users.filter(({ name }) =>
-      name.toLowerCase().includes(needle),
-    )
+    options = props.users.filter(({ fullName }) => fullName?.toLowerCase()?.includes(needle))
   })
 }
 </script>
@@ -33,7 +31,7 @@ const onFilter = (val: string, update: any) => {
     :label="label"
     :rules="rules"
     outlined
-    option-label="name"
+    option-label="fullName"
     option-value="id"
     emit-value
     map-options

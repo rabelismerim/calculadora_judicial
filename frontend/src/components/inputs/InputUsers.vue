@@ -18,8 +18,8 @@ let options = $ref(props.users)
 const onFilter = (val: string, update: any) => {
   update(() => {
     const needle = val.toLowerCase()
-    options = props.users.filter(({ name }) =>
-      name.toLowerCase().includes(needle),
+    options = props.users.filter(({ fullName }) =>
+      fullName.toLowerCase().includes(needle),
     )
   })
 }
@@ -33,7 +33,7 @@ const onFilter = (val: string, update: any) => {
     :label="label"
     :rules="rules"
     outlined
-    option-label="name"
+    option-label="fullName"
     option-value="id"
     emit-value
     map-options
@@ -49,7 +49,7 @@ const onFilter = (val: string, update: any) => {
       <div class="max-w-fill mt-1.5 mr-1.5 flex items-center no-wrap gap-2 rounded-full pl-1 pr-1 py-1 border-1 border--primary/12 whitespace-nowrap max-w-fill with-transition bg--primary/20 color-inherit">
         <div class="bg-transparent flex nowrap items-center flex-1 text-ellipsis overflow-hidden">
           <UserPicture :model-value="scope.opt" class="h-6 w-6 rounded-full mr-2" />
-          <span class="whitespace-pre">{{ scope.opt.name }}</span>
+          <span class="whitespace-pre">{{ scope.opt.fullName }}</span>
         </div>
         <div
           class="rounded-full bg-white/20 hover:bg-white/50 min-h-5 min-w-5 flex justify-center items-center cursor-pointer"
