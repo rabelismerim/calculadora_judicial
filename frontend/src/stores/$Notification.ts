@@ -25,10 +25,10 @@ export const throwError = async (error: any) => {
   let { message } = error
   const {
     code,
-    response,
     id = Date.now(),
     timeout,
-    response: { data: { data = {} } = {} } = {},
+    data,
+    status,
   }: any = error
   const errorMessages = Object.entries(data)
     .map(([key, value]: [string, any]) => [key, value.non_field_errors ? value.non_field_errors : value])
@@ -46,9 +46,9 @@ export const throwError = async (error: any) => {
     return
   }
 
-  if (response?.status === 500 || code === 'ERR_NETWORK')
+  if (status === 500 || code === 'ERR_NETWORK')
     message = 'Problemas no Servidor...'
-  if (response?.status === 403)
+  if (status === 403)
     message = 'Você não está autorizado...'
 
   notify({ message, id, timeout, type: 'error' })

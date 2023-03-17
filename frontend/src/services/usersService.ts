@@ -1,38 +1,21 @@
 const getPermissions = () => api
   .get('/user/detail/')
-  .then(({ data }) => data.user)
-  .then(({
-    is_active,
-    is_staff,
-    groups,
-    email,
-    full_name,
-    user_permissions,
-    userpicture,
-  }) => ({
-    name: full_name,
-    isActive: is_active,
-    groups,
-    email,
-    isStaff: is_staff,
-    picture: userpicture,
-    permissions: user_permissions ? user_permissions.map(({ codename }: any) => codename) : [],
-  }))
+  .then(({ user }: any) => user)
+  .then((user: any = {}) => {
+    const {
+      userPicture: picture,
+      userPermissions: permissions,
+    } = user
+    return {
+      ...user,
+      picture,
+      permissions: permissions ? permissions.map(({ codename }: any) => codename) : [],
+    }
+  })
 
 const getMyProfile = () => api
   .get('/drfmsal_signstatus/')
-  .then(({ data }) => data.profile)
-  .then(({
-    authenticated,
-    authorized,
-    user_fullname,
-    user_picture,
-  }) => ({
-    authenticated,
-    authorized,
-    name: user_fullname,
-    picture: user_picture,
-  }))
+  .then(({ profile }: any) => profile)
   .then(async (user) => {
     if (!user.authenticated && import.meta.env.PROD)
       redirectTo(`${window.location.origin}/djud/api/drfmsal_signin/djud/`)
@@ -47,41 +30,17 @@ const getMyProfile = () => api
 
 const getUsers = () => api
   .get('/users/')
-  .then(({ data }) => data.users.map(({
-    id,
-    first_name,
-    last_name,
-    email,
-    groups,
-    is_active,
-    is_staff,
-    userpicture,
-  }: any) => ({
-    id,
-    name: `${first_name} ${last_name}`,
-    email,
-    isActive: is_active,
-    isStaff: is_staff,
-    groups,
-    picture: userpicture,
-  })))
+  .then(({ users }: any) => users)
 
 const getGroups = () => api
   .get('/groups/')
-  .then(({ data }) => data.groups.map(({
-    id,
-    name,
-  }: any) => ({
-    id,
-    name,
-  })))
+  .then(({ groups }: any) => groups)
 
 const requestAccess = (email: string) => api
   .post('/user/sendmail/', { email })
 
 const setPermission = ({ email, groups }: any) => api
   .post('user/authorize/', { email, groups })
-  .then(({ data }) => data)
 
 export default {
   getMyProfile,
