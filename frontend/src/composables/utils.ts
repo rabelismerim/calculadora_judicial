@@ -1,4 +1,4 @@
-export const toUpperCase = (text: string) => text.toUpperCase()
+export const toUpperCase = (text = '') => text.toUpperCase()
 
 export const formatDate = (date: string) => new Date(date)
   .toLocaleDateString()
@@ -9,7 +9,7 @@ export const formatDateBackend = (value: string) => {
   return `${year}-${month}-${day}`
 }
 
-export const getInitials = (text: string) => {
+export const getInitials = (text = '') => {
   const initials = text
     .toUpperCase()
     .split(' ')
@@ -74,3 +74,29 @@ export const unflatten = (data: any) => {
   }
   return resultholder[''] || resultholder
 }
+
+export const parseToCamel = (data: any) => unflatten(Object
+  .fromEntries(Object.entries(flatten(data))
+    .map(([key, value]) => {
+      const regex = /(\[\d+\]|\.)/
+      return [
+        key.split(regex)
+          .map(item => item.match(regex) ? item : toCamel(item))
+          .join(''),
+        value,
+      ]
+    }),
+  ))
+
+export const parseToSnake = (data: any) => unflatten(Object
+  .fromEntries(Object.entries(flatten(data))
+    .map(([key, value]) => {
+      const regex = /(\[\d+\]|\.)/
+      return [
+        key.split(regex)
+          .map(item => item.match(regex) ? item : toSnake(item))
+          .join(''),
+        value,
+      ]
+    }),
+  ))

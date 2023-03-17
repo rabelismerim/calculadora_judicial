@@ -1,5 +1,3 @@
-import { range } from '@jrnwn/utils'
-
 export default (firstStep: number, stepper: any, form: any) => {
   const data = $ref({
     step: firstStep,
