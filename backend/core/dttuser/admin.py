@@ -15,7 +15,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 
-from .models import User
+from .models import User, Subgroup
 from .forms import UserCreationForm
 from django.contrib.auth.models import Permission
 
@@ -26,7 +26,7 @@ class CustomUserAdmin(UserAdmin):
         (None, {'fields': ('username',)}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
         (_('Permissions'), {
-            'fields': ('is_active', 'is_staff', 'groups', 'user_permissions'),
+            'fields': ('is_active', 'is_staff', 'groups', 'subgroups', 'user_permissions'),
         }),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
@@ -40,4 +40,5 @@ class CustomUserAdmin(UserAdmin):
 
 
 admin.site.register(User, CustomUserAdmin)
+admin.site.register(Subgroup)
 admin.site.register(Permission)
