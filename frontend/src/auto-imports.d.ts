@@ -71,6 +71,7 @@ declare global {
   const makeDestructurable: typeof import('@vueuse/core')['makeDestructurable']
   const markRaw: typeof import('vue')['markRaw']
   const nextTick: typeof import('vue')['nextTick']
+  const normalizeText: typeof import('@jrnwn/utils')['normalizeText']
   const notify: typeof import('./stores/$Notification')['notify']
   const onActivated: typeof import('vue')['onActivated']
   const onBeforeMount: typeof import('vue')['onBeforeMount']
@@ -92,10 +93,13 @@ declare global {
   const onUnmounted: typeof import('vue')['onUnmounted']
   const onUpdated: typeof import('vue')['onUpdated']
   const parseColor: typeof import('animol')['parseColor']
+  const parseToCamel: typeof import('./composables/utils')['parseToCamel']
+  const parseToSnake: typeof import('./composables/utils')['parseToSnake']
   const pausableWatch: typeof import('@vueuse/core')['pausableWatch']
   const platform: typeof import('@jrnwn/utils')['platform']
   const projectService: typeof import('./services/projectService')['default']
   const provide: typeof import('vue')['provide']
+  const range: typeof import('@jrnwn/utils')['range']
   const reactify: typeof import('@vueuse/core')['reactify']
   const reactifyObject: typeof import('@vueuse/core')['reactifyObject']
   const reactive: typeof import('vue')['reactive']
@@ -127,10 +131,16 @@ declare global {
   const throttledRef: typeof import('@vueuse/core')['throttledRef']
   const throttledWatch: typeof import('@vueuse/core')['throttledWatch']
   const throwError: typeof import('./stores/$Notification')['throwError']
+  const toCamel: typeof import('@jrnwn/utils')['toCamel']
+  const toKebab: typeof import('@jrnwn/utils')['toKebab']
+  const toPascal: typeof import('@jrnwn/utils')['toPascal']
+  const toProperName: typeof import('@jrnwn/utils')['toProperName']
   const toRaw: typeof import('vue')['toRaw']
   const toReactive: typeof import('@vueuse/core')['toReactive']
   const toRef: typeof import('vue')['toRef']
   const toRefs: typeof import('vue')['toRefs']
+  const toSnake: typeof import('@jrnwn/utils')['toSnake']
+  const toSplit: typeof import('@jrnwn/utils')['toSplit']
   const toUpperCase: typeof import('./composables/utils')['toUpperCase']
   const triggerRef: typeof import('vue')['triggerRef']
   const tryOnBeforeMount: typeof import('@vueuse/core')['tryOnBeforeMount']
@@ -392,6 +402,7 @@ declare module 'vue' {
     readonly makeDestructurable: UnwrapRef<typeof import('@vueuse/core')['makeDestructurable']>
     readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
     readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
+    readonly normalizeText: UnwrapRef<typeof import('@jrnwn/utils')['normalizeText']>
     readonly notify: UnwrapRef<typeof import('./stores/$Notification')['notify']>
     readonly onActivated: UnwrapRef<typeof import('vue')['onActivated']>
     readonly onBeforeMount: UnwrapRef<typeof import('vue')['onBeforeMount']>
@@ -413,10 +424,13 @@ declare module 'vue' {
     readonly onUnmounted: UnwrapRef<typeof import('vue')['onUnmounted']>
     readonly onUpdated: UnwrapRef<typeof import('vue')['onUpdated']>
     readonly parseColor: UnwrapRef<typeof import('animol')['parseColor']>
+    readonly parseToCamel: UnwrapRef<typeof import('./composables/utils')['parseToCamel']>
+    readonly parseToSnake: UnwrapRef<typeof import('./composables/utils')['parseToSnake']>
     readonly pausableWatch: UnwrapRef<typeof import('@vueuse/core')['pausableWatch']>
     readonly platform: UnwrapRef<typeof import('@jrnwn/utils')['platform']>
     readonly projectService: UnwrapRef<typeof import('./services/projectService')['default']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
+    readonly range: UnwrapRef<typeof import('@jrnwn/utils')['range']>
     readonly reactify: UnwrapRef<typeof import('@vueuse/core')['reactify']>
     readonly reactifyObject: UnwrapRef<typeof import('@vueuse/core')['reactifyObject']>
     readonly reactive: UnwrapRef<typeof import('vue')['reactive']>
@@ -448,10 +462,16 @@ declare module 'vue' {
     readonly throttledRef: UnwrapRef<typeof import('@vueuse/core')['throttledRef']>
     readonly throttledWatch: UnwrapRef<typeof import('@vueuse/core')['throttledWatch']>
     readonly throwError: UnwrapRef<typeof import('./stores/$Notification')['throwError']>
+    readonly toCamel: UnwrapRef<typeof import('@jrnwn/utils')['toCamel']>
+    readonly toKebab: UnwrapRef<typeof import('@jrnwn/utils')['toKebab']>
+    readonly toPascal: UnwrapRef<typeof import('@jrnwn/utils')['toPascal']>
+    readonly toProperName: UnwrapRef<typeof import('@jrnwn/utils')['toProperName']>
     readonly toRaw: UnwrapRef<typeof import('vue')['toRaw']>
     readonly toReactive: UnwrapRef<typeof import('@vueuse/core')['toReactive']>
     readonly toRef: UnwrapRef<typeof import('vue')['toRef']>
     readonly toRefs: UnwrapRef<typeof import('vue')['toRefs']>
+    readonly toSnake: UnwrapRef<typeof import('@jrnwn/utils')['toSnake']>
+    readonly toSplit: UnwrapRef<typeof import('@jrnwn/utils')['toSplit']>
     readonly toUpperCase: UnwrapRef<typeof import('./composables/utils')['toUpperCase']>
     readonly triggerRef: UnwrapRef<typeof import('vue')['triggerRef']>
     readonly tryOnBeforeMount: UnwrapRef<typeof import('@vueuse/core')['tryOnBeforeMount']>

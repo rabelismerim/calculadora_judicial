@@ -8,7 +8,6 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Btn: typeof import('./components/common/Btn.vue')['default']
-    copy: typeof import('./components/inputs/InputText copy.vue')['default']
     FooterBar: typeof import('./components/common/FooterBar.vue')['default']
     GraphGauge: typeof import('./components/common/GraphGauge.vue')['default']
     GraphLine: typeof import('./components/common/GraphLine.vue')['default']
