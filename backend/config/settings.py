@@ -63,10 +63,10 @@ ALLOWED_HOSTS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'http://127.0.0.1:8000', 
+    'http://127.0.0.1:8000',
     'https://brfojwanderley:5173',
     'https://brdcvmdev07/djud',
-    'https://brsphearndt/djud', 
+    'https://brsphearndt/djud',
     'https://uat.fadigitallab.deloitte.com.br/djud'
 ]
 # Application definition
@@ -92,7 +92,6 @@ INSTALLED_APPS = [
 
     # Creditors
     'creditors',
-    'creditors.budgets',
     'creditors.classes',
     'creditors.notice',
 
@@ -138,6 +137,7 @@ AUTH_USER_MODEL = 'dttuser.User'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -297,9 +297,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'pt-BR'
+LANGUAGE_CODE = 'en'
+# LANGUAGE_CODE = 'pt-br'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Sao_Paulo'
 
 USE_I18N = True
 
@@ -307,6 +308,13 @@ USE_L10N = True
 
 USE_TZ = True
 
+# LOCALE_PATHS = [
+#     BASE_DIR / 'locale'
+# ]
+#
+# TEMPLATE_CONTEXT_PROCESSORS = (
+#     'django.template.context_processors.i18n',
+# )
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -345,9 +353,9 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": DEFAULT_AUTHENTICATION_CLASSES,
     'TEST_REQUEST_RENDERER_CLASSES': [
-            'rest_framework.renderers.MultiPartRenderer',
-            'rest_framework.renderers.JSONRenderer',
-            'rest_framework.renderers.TemplateHTMLRenderer'
+        'rest_framework.renderers.MultiPartRenderer',
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.TemplateHTMLRenderer'
     ],
     "DEFAULT_RENDERER_CLASSES": (
         "core.drfmsal.renderer.APIRendererInterceptor",
