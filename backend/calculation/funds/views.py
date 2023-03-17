@@ -5,15 +5,20 @@ The API responds with JSON data and utilizes the rest_framework.schemas.openapi.
 The FundsApi class uses the Funds model and FundsSchema for working with data.
 """
 
-
 from django.http import JsonResponse
-from calculation.funds.schemas import FundsSchema
-from calculation.funds.models import Funds, StatementDocuments, StatementFunds, StatementIRRF, StatementIntegrations, TotalValuesFunds, TotalValuesFundsIntegrations, TotalValuesIRRF
+from django.shortcuts import get_object_or_404
+
+from calculation.comparative.signals import gen_total_statement_funds, gen_total_funds
+# from rest_framework.generics import get_object_or_404
+
+from calculation.funds.schemas import FundsSchema, StatementFundsSchema, StatementFundsUpdateSchema
+from calculation.funds.models import Funds, StatementDocuments, StatementFunds, StatementIRRF, StatementIntegrations, \
+    TotalValuesFunds, TotalValuesFundsIntegrations, TotalValuesIRRF
 from core.abstract.views import AbstractViewApi
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions, status
 from core.permission.views import CheckHasPermission
-from django.apps import apps
+from django.utils.translation import gettext_lazy as _
 
 
 class FundsApi(AbstractViewApi):
@@ -72,7 +77,6 @@ class FundsApi(AbstractViewApi):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_funds = serializer.validated_data
-
         fund = CreateFunds(new_funds).create_funds()
         return JsonResponse({'funds': self.serializer_class(fund, many=False).data}, status=status.HTTP_201_CREATED)
 
@@ -121,35 +125,142 @@ class CreateFunds:
             'statement_integrations', [])
 
         fund = Funds.objects.create(**new_funds)
+
         for statement_fund in new_statement_funds:
             StatementFunds.objects.create(fund=fund, **statement_fund)
             TotalValuesFunds.objects.get_or_create(fund=fund)
-
         for statement_integration in new_statement_integrations:
             StatementIntegrations.objects.create(
                 fund=fund, **statement_integration)
             TotalValuesFundsIntegrations.objects.get_or_create(fund=fund)
-
         for statement_irrf in new_statement_irrfs:
             StatementIRRF.objects.create(
                 fund=fund, **statement_irrf)
             TotalValuesIRRF.objects.get_or_create(fund=fund)
-
         if new_statement_documents:
             StatementDocuments.objects.create(
                 fund=fund, **new_statement_documents)
+        gen_total_funds.send(sender=Funds, instance=fund)
 
         return fund
 
-# Teste de criação de formula em formato json
-# jsons = {
-#     'model': 'AbstractMonetaryCorrection',
-#     'field1': 'index_data_base',
-#     'field2': 'index_recovering',
-#     'field3': 'calculation.value_historic',
-#     'operation': 'field3*field2/field1',
-# }
+
+class AbstractStatementFundsApi(AbstractViewApi):
+    """Define the StatementFundsApi view class for handling HTTP methods related to StatementFunds.
+
+    This view class extends the AbstractViewApi class, which provides a basic implementation
+    for common API actions. The StatementFundsApi supports HTTP POST and GET methods, and uses the StatementFundsSchema
+    serializer for input/output validation. The view requires authenticated users with appropriate
+    permissions to access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission
+    permission classes.
+
+    Attributes:
+        http_method_names (list): A list of HTTP methods supported by this view.
+        serializer_class (class): The serializer class for input/output validation.
+        permission_classes (list): A list of permission classes for user authentication and authorization.
+        model (class): The model class associated with this view.
+        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
+        query_params (list): A list of dictionaries, each specifying a query parameter for the API.
+
+    Examples:
+        To retrieve funds with a matching description:
+        ```
+        GET /api/v1/calculation/funds/statement_funds/
+        ```
+    """
+    serializer_class = StatementFundsSchema
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    model = StatementFunds
+    schema = AutoSchema(tags=["Calculation - Statement Funds"])
+    query_params = []
 
 
-# User = apps.get_model(app_label='funds', model_name='Funds')
-# print(User, 'funds')
+class StatementFundsApi(AbstractStatementFundsApi):
+    """Define the StatementFundsApi view class for handling HTTP methods related to StatementFunds.
+
+    This view class extends the AbstractViewApi class, which provides a basic implementation
+    for common API actions. The StatementFundsApi supports HTTP POST and GET methods, and uses the StatementFundsSchema
+    serializer for input/output validation. The view requires authenticated users with appropriate
+    permissions to access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission
+    permission classes.
+
+    Attributes:
+        http_method_names (list): A list of HTTP methods supported by this view.
+        serializer_class (class): The serializer class for input/output validation.
+        permission_classes (list): A list of permission classes for user authentication and authorization.
+        model (class): The model class associated with this view.
+        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
+        query_params (list): A list of dictionaries, each specifying a query parameter for the API.
+
+    Examples:
+        To retrieve funds with a matching description:
+        ```
+        GET /api/v1/calculation/funds/statement_funds/
+        ```
+    """
+    http_method_names = ['post']
+
+    def post(self, request, *args, **kwargs):
+        """Abstract method for default post model. Override method in class for custom operation"""
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        new_obj = serializer.validated_data
+        statement_fund = self.model.objects.create(**new_obj)
+        gen_total_funds.send(sender=Funds, instance=statement_fund.fund)
+        return JsonResponse({'statement_fund': self.serializer_class(statement_fund, many=False).data},
+                            status=status.HTTP_201_CREATED)
+
+
+class StatementFundsDetailApi(AbstractStatementFundsApi):
+    """Define the StatementFundsApi view class for handling HTTP methods related to StatementFunds.
+
+    This view class extends the AbstractViewApi class, which provides a basic implementation
+    for common API actions. The StatementFundsApi supports HTTP POST and GET methods, and uses the StatementFundsSchema
+    serializer for input/output validation. The view requires authenticated users with appropriate
+    permissions to access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission
+    permission classes.
+
+    Attributes:
+        http_method_names (list): A list of HTTP methods supported by this view.
+        serializer_class (class): The serializer class for input/output validation.
+        permission_classes (list): A list of permission classes for user authentication and authorization.
+        model (class): The model class associated with this view.
+        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
+        query_params (list): A list of dictionaries, each specifying a query parameter for the API.
+
+    Examples:
+        To retrieve funds with a matching description:
+        ```
+        GET /api/v1/calculation/funds/statement_funds/
+        ```
+    """
+    serializer_class = StatementFundsUpdateSchema
+    http_method_names = ['get', 'put']
+
+    def put(self, request, *args, **kwargs):
+        """
+        This method handles PUT requests for the view. It expects input data that conform to the serializer used by the view class.
+        It updates the approved_calculation or date object of a specific comparative object using the given calculation_id from the query
+        parameters and serializes the updated object in JSON format before returning it as an HTTP response.
+
+        Parameters:
+            request: The HTTP request object.
+            args: Any additional positional arguments passed to the method.
+            kwargs: Any additional keyword arguments passed to the method, with calculation_id identifying the comparative object to update.
+        Returns:
+            JsonResponse: An HTTP response containing the updated and serialized comparative object data.
+            """
+        id_ = kwargs.get('id')
+        print(id_, 'id\n')
+        serializer = self.serializer_class(data=request.data, exclude=('fund_id',))
+        serializer.is_valid(raise_exception=True)
+        update_comparative = dict(serializer.validated_data)
+        statement_fund = get_object_or_404(self.model, id=id_)
+        update_comparative['status'] = 'S'
+        statement_fund.dict_update(**update_comparative)
+        gen_total_funds.send(sender=Funds, instance=statement_fund.fund)
+        print(update_comparative, 'statemnt\n\n')
+        print(statement_fund, 'statement_fund\n\n')
+
+        return JsonResponse({'statement_fund': self.serializer_class(statement_fund, many=False).data},
+                            status=status.HTTP_201_CREATED)

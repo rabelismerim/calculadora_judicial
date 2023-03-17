@@ -16,7 +16,9 @@ Usage example:
 serializer = FundsSchema()
 """
 
-from calculation.funds.models import AbstractValue, AmountDue, ArrearsCharges, Days, Fine, Funds, Interest, MonetaryCorrection, MonetaryCorrectionDocuments, MonetaryCorrectionIntegrations, StatementDocuments, StatementFunds, StatementIRRF, StatementIntegrations, TotalValuesFunds, TotalValuesFundsIntegrations, TotalValuesIRRF
+from calculation.funds.models import AbstractValue, AmountDue, ArrearsCharges, Days, Fine, Funds, Interest, \
+    MonetaryCorrection, MonetaryCorrectionDocuments, MonetaryCorrectionIntegrations, StatementDocuments, StatementFunds, \
+    StatementIRRF, StatementIntegrations, TotalValuesFunds, TotalValuesFundsIntegrations, TotalValuesIRRF
 from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
 
@@ -142,9 +144,9 @@ class ArrearsChargesSchema(AbstractDescriptionSchema):
     """
     statement_id = serializers.UUIDField(
         read_only=True)
-    days = DaysSchema(read_only=True, exclude=('arrears_charges_id', ))
-    interest = InterestSchema(read_only=True, exclude=('arrears_charges_id', ))
-    fine = FineSchema(read_only=True, exclude=('arrears_charges_id', ))
+    days = DaysSchema(read_only=True, exclude=('arrears_charges_id',))
+    interest = InterestSchema(read_only=True, exclude=('arrears_charges_id',))
+    fine = FineSchema(read_only=True, exclude=('arrears_charges_id',))
 
     class Meta:
         model = ArrearsCharges
@@ -162,10 +164,31 @@ class StatementFundsSchema(AbstractDescriptionSchema):
         read_only=True, source='monetarycorrection')
 
     fund_id = serializers.UUIDField()
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
 
     class Meta:
         model = StatementFunds
         exclude = ('fund',)
+        read_only_fields = ('status', 'status_display')
+
+
+class StatementFundsUpdateSchema(AbstractDescriptionSchema):
+    """
+    A schema for serializing and deserializing StatementFunds instances.
+
+    Attributes:
+        fund_id (serializers.UUIDField): The UUID of the related fund.
+    """
+    monetary_corretion = MonetaryCorrectionSchema(
+        read_only=True, source='monetarycorrection')
+
+    fund_id = serializers.UUIDField(read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+
+    class Meta:
+        model = StatementFunds
+        exclude = ('fund',)
+        read_only_fields = ('status', 'status_display')
 
 
 class StatementIntegrationsSchema(AbstractDescriptionSchema):
@@ -177,11 +200,13 @@ class StatementIntegrationsSchema(AbstractDescriptionSchema):
     """
     monetary_corretion = MonetaryCorrectionIntegrationsSchema(
         read_only=True, source='monetarycorrectionintegrations')
-    fund_id = serializers.UUIDField()
+    fund_id = serializers.UUIDField(read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
 
     class Meta:
         model = StatementIntegrations
         exclude = ('fund',)
+        read_only_fields = ('status', 'status_display')
 
 
 class StatementIRRFSchema(AbstractDescriptionSchema):
@@ -205,7 +230,7 @@ class StatementDocumentsSchema(AbstractDescriptionSchema):
     Attributes:
         fund_id (serializers.UUIDField): The UUID of the related fund.
     """
-    fund_id = serializers.UUIDField()
+    fund_id = serializers.UUIDField(read_only=True)
     amount_due = AmountDueSchema(
         read_only=True, source='amountdue', exclude=('statement_document_id',))
     arrears_charges = ArrearsChargesSchema(
@@ -227,7 +252,7 @@ class TotalValuesFundsSchema(AbstractDescriptionSchema):
     """
     fund_id = serializers.UUIDField(read_only=True)
     funds = StatementFundsSchema(
-        many=True, source='fund.statementfunds_set', exclude=('fund_id', ), required=False)
+        many=True, source='fund.statementfunds_set', exclude=('fund_id',), required=False)
 
     class Meta:
         model = TotalValuesFunds
@@ -243,7 +268,7 @@ class TotalValuesFundsIntegrationsSchema(AbstractDescriptionSchema):
     """
     fund_id = serializers.UUIDField(read_only=True)
     funds = StatementIntegrationsSchema(
-        many=True, source='fund.statementintegrations_set', exclude=('fund_id', ), required=False)
+        many=True, source='fund.statementintegrations_set', exclude=('fund_id',), required=False)
 
     class Meta:
         model = TotalValuesFundsIntegrations
@@ -259,7 +284,7 @@ class TotalValuesIRRFSchema(AbstractDescriptionSchema):
     """
     fund_id = serializers.UUIDField(read_only=True)
     funds = StatementIRRFSchema(
-        many=True, source='fund.statementirrf_set', exclude=('fund_id', ), required=False)
+        many=True, source='fund.statementirrf_set', exclude=('fund_id',), required=False)
 
     class Meta:
         model = TotalValuesIRRF
@@ -279,28 +304,28 @@ class FundsSchema(AbstractDescriptionSchema):
     calculation_id = serializers.UUIDField()
 
     statement_funds = StatementFundsSchema(
-        many=True, source='statementfunds_set', exclude=('fund_id', ), write_only=True, required=False)
+        many=True, source='statementfunds_set', exclude=('fund_id', 'status'), write_only=True, required=False)
 
     statement_integrations = StatementIntegrationsSchema(
-        many=True, source='statementintegrations_set', exclude=('fund_id', ), write_only=True, required=False)
+        many=True, source='statementintegrations_set', exclude=('fund_id', 'status'), write_only=True, required=False)
 
     statement_irrf = StatementIRRFSchema(
-        many=True, source='statementirrf_set', exclude=('fund_id', ), write_only=True, required=False)
+        many=True, source='statementirrf_set', exclude=('fund_id',), write_only=True, required=False)
 
     statement_documents = StatementDocumentsSchema(
-        source='statementdocuments', exclude=('fund_id', ), write_only=True, required=False)
+        source='statementdocuments', exclude=('fund_id',), write_only=True, required=False)
 
     values_funds_documents = StatementDocumentsSchema(
-        source='statementdocuments', exclude=('fund_id', ), read_only=True)
+        source='statementdocuments', exclude=('fund_id',), read_only=True)
 
     values_funds = TotalValuesFundsSchema(
-        source='totalvaluesfunds', read_only=True, exclude=('fund_id', ))
+        source='totalvaluesfunds', read_only=True, exclude=('fund_id',))
 
     values_funds_integrations = TotalValuesFundsIntegrationsSchema(
-        source='totalvaluesfundsintegrations', read_only=True, exclude=('fund_id', ))
+        source='totalvaluesfundsintegrations', read_only=True, exclude=('fund_id',))
 
     values_irrf = TotalValuesIRRFSchema(
-        source='totalvaluesirrf', read_only=True, exclude=('fund_id', ))
+        source='totalvaluesirrf', read_only=True, exclude=('fund_id',))
 
     class Meta:
         model = Funds
@@ -340,10 +365,13 @@ class FundsSchema(AbstractDescriptionSchema):
         is_documents = True if data['statement_documents'] else False
         if [is_funds, is_irrf, is_documents].count(True) > 1:
             raise serializers.ValidationError(
-                ['Utilização de verbas inválidas. Utilizar separadamente as verbas (statement_funds e statement_integrations) ou statement_irrf ou statement_documents'])
+                [
+                    'Utilização de verbas inválidas. Utilizar separadamente as verbas (statement_funds e statement_integrations) ou statement_irrf ou statement_documents'])
 
-        if any([data['statement_funds'], data['statement_integrations'], data['statement_irrf'], data['statement_documents']]) is False:
+        if any([data['statement_funds'], data['statement_integrations'], data['statement_irrf'],
+                data['statement_documents']]) is False:
             raise serializers.ValidationError(
-                ['Necessário uma verba. Opções: statement_funds, statement_integrations, statement_irrf, ou statement_documents'])
+                [
+                    'Necessário uma verba. Opções: statement_funds, statement_integrations, statement_irrf, ou statement_documents'])
 
         return super(FundsSchema, self).validate(data)

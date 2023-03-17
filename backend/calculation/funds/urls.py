@@ -14,9 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('funds/', include('funds.another_app.urls'))
 """
 from django.urls import path
-from .views import FundsApi
-
+from .views import FundsApi, StatementFundsApi, StatementFundsDetailApi
 
 urlpatterns = [
     path('', FundsApi.as_view(), name="funds-list-create"),
+    path('statement/funds/', StatementFundsApi.as_view(), name="statement-funds-list-create"),
+    path('statement/funds/<uuid:id>/', StatementFundsDetailApi.as_view(), name="statement-funds-list-create"),
+#     path('statement/calculation/funds/<uuid:calculation_id>/', StatementFundsCalculationApi.as_view(),
+#          name="calculation-statement-funds-list"),
 ]

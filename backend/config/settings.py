@@ -26,7 +26,6 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
@@ -83,7 +82,7 @@ INSTALLED_APPS = [
     'django_extensions',  # TEMP
     'import_export',
     'rest_framework',
-    "drf_standardized_errors",
+    "drf_standardized_errors",  # Alter output erros in REST API
 
     # Base
     'base',
@@ -168,7 +167,6 @@ TEMPLATES = [
     },
 ]
 
-
 DEFAULT_AUTHENTICATION_CLASSES = [
     "rest_framework.authentication.SessionAuthentication",
 ]
@@ -224,7 +222,6 @@ else:
     DEFAULT_AUTHENTICATION_CLASSES.append(
         'rest_framework.authentication.TokenAuthentication')
 
-
 # DRFMSAL AUTHENTICATION
 DRFMSAL_CONFIG = {
     'id_web_configs': 'MS_ID_WEB_CONFIGS',
@@ -274,7 +271,6 @@ else:
         }
     }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -292,7 +288,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -371,6 +366,7 @@ BASE_URL_AUTH = 'djud/api/'
 
 if DEBUG:
     import mimetypes
+
     mimetypes.add_type("application/javascript", ".js", True)
 
     # Documentation login Urls

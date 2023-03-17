@@ -115,14 +115,15 @@ class ProjectApi(AbstractProjectApi):
             entity = recovering.pop('entity')
             new_archive_recovering = recovering.pop('archives', None)
             recovering['project'] = project
-            recovering['entity'], created = Entity.objects.get_or_create(
-                **entity)
-            new_recovering = Recovering.objects.create(**recovering)
-            if new_archive_recovering:
-                for new_ in new_archive_recovering:
-                    archive = new_.pop('archive')
-                    new_archive = Archive.objects.create(**archive)
-                    ArchiveRecovering.objects.create(
-                        recovering=new_recovering, archive=new_archive)
+
+            recovering['entity'], created = Entity.objects.get_or_create(**entity)
+            new_recovering = Recovering.objects.get_or_create(**recovering)
+            # if new_archive_recovering: # Desativado na fase 1
+            #     for new_ in new_archive_recovering:
+            #         archive = new_.pop('archive')
+            #         new_archive = Archive.objects.create(**archive)
+            #         ArchiveRecovering.objects.create(
+            #             recovering=new_recovering, archive=new_archive)
 
         return JsonResponse({'project': self.serializer_class(project, many=False).data}, status=status.HTTP_201_CREATED)
+

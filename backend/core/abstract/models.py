@@ -70,7 +70,6 @@ class AbstractModel(models.Model):
                     setattr(self, name, values)
             except KeyError:
                 pass
-        self.save()
         return self
 
     @property

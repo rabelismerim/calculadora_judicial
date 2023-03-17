@@ -13,8 +13,9 @@ import datetime
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.translation import gettext_lazy as _
 
-from calculation.comparative.signals import gen_total_statement_funds
+from calculation.comparative.signals import gen_total_statement_funds, gen_statement_funds, gen_total_funds
 from calculation.models import Calculation
 from core.abstract.models import AbstractModel
 from dateutil.relativedelta import relativedelta
@@ -38,12 +39,12 @@ class Funds(AbstractModel):
     This class does not define any methods.
     """
 
-    name = models.CharField('Nome da verba', max_length=50)
+    name = models.CharField(_('Nome das verbas'), max_length=50)
     calculation = models.ForeignKey(Calculation, on_delete=models.PROTECT)
 
     class Meta:
-        verbose_name = 'Fund'
-        verbose_name_plural = 'Funds'
+        verbose_name = _('Fund')
+        verbose_name_plural = _('Funds')
 
     def __str__(self):
         return self.name
@@ -83,8 +84,8 @@ class Funds(AbstractModel):
         total_funds.set_total()
 
 
-CHOICES_STATUS_FUND = (('S', 'Solicitado'), ('C', 'Concluído'), ('E', 'Em Progresso'),
-                       ('F', 'Falha no cálculo - índice não encontrado'), ('R', 'Falha no cálculo - sem data RJ'))
+CHOICES_STATUS_FUND = (('S', _('Solicitado')), ('C', _('Concluído')), ('E', _('Em Progresso')),
+                       ('F', _('Falha no cálculo - índice não encontrado')), ('R', _('Falha no cálculo - sem data RJ')))
 
 
 class AbstractStatement(AbstractModel):
@@ -111,14 +112,14 @@ class AbstractStatement(AbstractModel):
     - `get_historical_value()` returns the `historical_value` attribute value.
     """
     data_base = models.DateField('Data base')
-    historical_value = models.FloatField('Valor histórico')
+    historical_value = models.FloatField(_('Valor histórico'))
 
     # Sumula 381 se refere a cálculos trabalhistas em que o pagamento de salário se dá no mês subsequente ao trabalhado.
     # Sendo necessário adicionar um mês na hora de calcular o valor
     # TODO: Verificar automaticamente se é ou não verba para aplicar a sumula
-    summary = models.BooleanField('Aplicar súmula 381?', default=False)
+    summary = models.BooleanField(_('Aplicar súmula 381?'), default=False)
     fund = models.ForeignKey(Funds, on_delete=models.PROTECT)
-    status = models.CharField('Status do cálculo', max_length=1, choices=CHOICES_STATUS_FUND, default='S')
+    status = models.CharField(_('Status do cálculo'), max_length=1, choices=CHOICES_STATUS_FUND, default='S')
 
     def set_in_progress(self):
         """Sets the status of the calculation to 'E'."""
@@ -145,7 +146,7 @@ class AbstractStatement(AbstractModel):
                 has_value = True
                 break
         if not has_value:
-            raise ValueError(f'O status {value} não corresponde a nenhum status válido')
+            raise ValueError(_(f'O status {value} não corresponde a nenhum status válido'))
 
     def _set_status(self, value: str):
         """Sets the status of the calculation"""
@@ -229,6 +230,19 @@ class StatementFunds(AbstractStatement):
     in the class that inherits or implements the 'AbstractStatement' class.
     """
 
+    class Meta:
+        verbose_name = _('Statement Fund')
+        verbose_name_plural = _('Statement Funds')
+
+    def save(self, send_signal_post_save=True, *args, **kwargs):
+        """
+        Save the instance of AbstractStatementFunds and calculate its dtt value
+        Calculates the value of dtt using the get_dtt_value() method.
+        """
+        super(StatementFunds, self).save(*args, **kwargs)
+        if send_signal_post_save:
+            gen_statement_funds.send(sender=self.__class__, instance=self)
+
     def has_monetary_correction(self) -> bool:
         """Returns True if the monetary correction exists for the statement."""
         return hasattr(self, 'monetarycorrection')
@@ -236,7 +250,8 @@ class StatementFunds(AbstractStatement):
     def _set_status(self, value: str):
         """Sets the status of the statement with the given value."""
         self._check_status_choice(value)
-        StatementFunds.objects.filter(id=self.id).update(status=value)
+        self.status = value
+        self.save(send_signal_post_save=False)
 
     def calcule_monetary_correction(self):
         """Retrieves the corrected value of the statement if the monetary correction exists, or else returns 0."""
@@ -281,7 +296,11 @@ class StatementIntegrations(AbstractStatement):
     The 'calcule_monetary_correction()' method uses the '_get_monetary_correction()' method, which should be defined
     in the class that inherits or implements the 'AbstractStatement' class.
     """
-    description = models.CharField('Descrição da verba', max_length=150)
+    description = models.CharField(_('Descrição da verba'), max_length=150)
+
+    class Meta:
+        verbose_name = _('Statement Fund Integration')
+        verbose_name_plural = _('Statement Funds Integrations')
 
     def has_monetary_correction(self) -> bool:
         """Returns True if the monetary correction exists for the statement."""
@@ -325,8 +344,12 @@ class StatementIRRF(AbstractModel):
     taxable_amounts (FloatField): The taxable amounts for this statement, used to calculate the IRFF.
     """
     fund = models.ForeignKey(Funds, on_delete=models.PROTECT)
-    fund_name = models.CharField('Verbas', max_length=150)
-    taxable_amounts = models.FloatField('Valores tributáveis')
+    fund_name = models.CharField(_('Verbas'), max_length=150)
+    taxable_amounts = models.FloatField(_('Valores tributáveis'))
+
+    class Meta:
+        verbose_name = _('Statement IRRF')
+        verbose_name_plural = _('Statement IRRFs')
 
 
 class StatementDocuments(AbstractStatement):
@@ -346,13 +369,17 @@ class StatementDocuments(AbstractStatement):
     Methods:
     This class does not define any methods.
     """
-    number = models.CharField('Número do documento', max_length=100)
+    number = models.CharField(_('Número do documento'), max_length=100)
     data_base = models.DateField('Data base')
-    historical_value = models.FloatField('Valor histórico')
+    historical_value = models.FloatField(_('Valor histórico'))
     fund = models.OneToOneField(Funds, on_delete=models.PROTECT)
 
     def __str__(self):
         return f'{self.data_base} - {self.historical_value}'
+
+    class Meta:
+        verbose_name = _('Statement Document')
+        verbose_name_plural = _('Statement Documents')
 
 
 class AbstractMonetaryCorrection(AbstractModel):
@@ -367,8 +394,8 @@ class AbstractMonetaryCorrection(AbstractModel):
     Methods:
         __get_statement: Return statement object associated with the current fund object
         """
-    index_data_base = models.FloatField('Índice na Data base')
-    index_recovering = models.FloatField('Índice na recuperação')
+    index_data_base = models.FloatField(_('Índice na Data base'))
+    index_recovering = models.FloatField(_('Índice na recuperação'))
 
     def __get_statement(self):
         """
@@ -405,6 +432,10 @@ class MonetaryCorrection(AbstractMonetaryCorrection):
     """
     statement = models.OneToOneField(StatementFunds, on_delete=models.PROTECT)
 
+    class Meta:
+        verbose_name = _('Monetary Correction')
+        verbose_name_plural = _('Monetary Corrections')
+
 
 class MonetaryCorrectionIntegrations(AbstractMonetaryCorrection):
     """
@@ -418,6 +449,10 @@ class MonetaryCorrectionIntegrations(AbstractMonetaryCorrection):
     """
     statement = models.OneToOneField(
         StatementIntegrations, on_delete=models.PROTECT)
+
+    class Meta:
+        verbose_name = _('Monetary Correction Integration')
+        verbose_name_plural = _('Monetary Corrections Integrations')
 
 
 class MonetaryCorrectionDocuments(AbstractMonetaryCorrection):
@@ -433,6 +468,10 @@ class MonetaryCorrectionDocuments(AbstractMonetaryCorrection):
     statement = models.OneToOneField(
         StatementDocuments, on_delete=models.PROTECT)
 
+    class Meta:
+        verbose_name = _('Monetary Correction Document')
+        verbose_name_plural = _('Monetary Corrections Documents')
+
 
 class ArrearsCharges(AbstractModel):  # Encargos moratórios
     """
@@ -446,6 +485,10 @@ class ArrearsCharges(AbstractModel):  # Encargos moratórios
     statement = models.OneToOneField(
         StatementDocuments, on_delete=models.PROTECT)
 
+    class Meta:
+        verbose_name = _('Arrears Charge')
+        verbose_name_plural = _('Arrears Charges')
+
 
 class AbstractValue(AbstractModel):
     """
@@ -456,7 +499,7 @@ class AbstractValue(AbstractModel):
     RecurralDeposit, DefaultInterest, DefaultInterestDue, TotalDue, and TotalLawyer. The abstract flag
     in the Meta class indicates that this model should not be instantiated directly.
     """
-    value = models.FloatField('Valor')
+    value = models.FloatField(_('Valor'))
     arrears_charges = models.OneToOneField(
         ArrearsCharges, on_delete=models.PROTECT)
 
@@ -472,14 +515,22 @@ class Days(AbstractValue):
     specific fields as needed and include a field description for the value type.
     """
 
+    class Meta:
+        verbose_name = _('Day')
+        verbose_name_plural = _('Days')
 
-class Interest(AbstractValue):
+
+class Interest(AbstractValue):  # Juros
     """
     Defines an abstract model for a value associated with a ArrearsCharges object. Inherits from the AbstractModel
     class, which provides common fields such as id, created_at, and updated_at. Contains a value field
     for the associated value, as well as a OneToOneField to a ArrearsCharges object. Subclass this model to add
     specific fields as needed and include a field description for the value type.
     """
+
+    class Meta:
+        verbose_name = _('Interest')
+        verbose_name_plural = _('Interests')
 
 
 class Fine(AbstractValue):
@@ -490,6 +541,10 @@ class Fine(AbstractValue):
     specific fields as needed and include a field description for the value type.
     """
 
+    class Meta:
+        verbose_name = _('Fine')
+        verbose_name_plural = _('Fines')
+
 
 class AmountDue(AbstractModel):
     """
@@ -498,9 +553,13 @@ class AmountDue(AbstractModel):
     for the associated value, as well as a OneToOneField to a StatementDocuments object. Subclass this model to add
     specific fields as needed and include a field description for the value type.
     """
-    value = models.FloatField('Valor')
+    value = models.FloatField(_('Valor'))
     statement_document = models.OneToOneField(
         StatementDocuments, on_delete=models.PROTECT)
+
+    class Meta:
+        verbose_name = _('Amount Due')
+        verbose_name_plural = _('Amount Dues')
 
 
 class TotalValuesIRRF(AbstractModel):
@@ -517,13 +576,13 @@ class TotalValuesIRRF(AbstractModel):
     irrf_per_period (float): The value of the IRRF for the entire period.
     fund (Funds): The fund to which the IRRF applies.
     """
-    taxable_amount = models.FloatField('Valor tributável', default=0)
-    months_period = models.PositiveIntegerField('Meses no período')
-    taxable_portion = models.FloatField('Parcela tributável', default=0)
-    aliquot = models.FloatField('Alíquota', default=0)
-    installment_deducted = models.FloatField('Parcela a deduzir', default=0)
-    irrf_per_month = models.FloatField('Valor IRRF por mês', default=0)
-    irrf_per_period = models.FloatField('Valor do IRRF no período', default=0)
+    taxable_amount = models.FloatField(_('Valor tributável'), default=0)
+    months_period = models.PositiveIntegerField(_('Meses no período'))
+    taxable_portion = models.FloatField(_('Parcela tributável'), default=0)
+    aliquot = models.FloatField(_('Alíquota'), default=0)
+    installment_deducted = models.FloatField(_('Parcela a deduzir'), default=0)
+    irrf_per_month = models.FloatField(_('Valor IRRF por mês'), default=0)
+    irrf_per_period = models.FloatField(_('Valor do IRRF no período'), default=0)
     fund = models.OneToOneField(Funds, on_delete=models.PROTECT)
 
     # TODO: somar todas as StatementIRRF. Calcular no evento signals.post.save ou em Procedure
@@ -531,6 +590,10 @@ class TotalValuesIRRF(AbstractModel):
 
     def __str__(self):
         return f'{self.fund} - {self.taxable_amount}'
+
+    class Meta:
+        verbose_name = _('Total value')
+        verbose_name_plural = _('Total values')
 
 
 class AbstractTotalValuesFunds(AbstractModel):
@@ -545,8 +608,8 @@ class AbstractTotalValuesFunds(AbstractModel):
     fund = models.OneToOneField(Funds, on_delete=models.PROTECT)
 
     # TODO: somar todas as StatementFunds or StatementFundsIntegrations. Calcular no evento signals.post.save
-    total_historical = models.FloatField('Total valor histórico', default=0)
-    total_corrected = models.FloatField('Total valor corrigido', default=0)
+    total_historical = models.FloatField(_('Total valor histórico'), default=0)
+    total_corrected = models.FloatField(_('Total valor corrigido'), default=0)
 
     def __str__(self):
         return f'{self.fund} - {self.total_historical} - {self.total_corrected}'
@@ -579,6 +642,7 @@ class TotalValuesFunds(AbstractTotalValuesFunds):
         statement.
         """
         statements = self.get_calculated_statement()
+
         total_corrected_value = 0
         total_historical_value = 0
         for statement in statements:
@@ -587,6 +651,10 @@ class TotalValuesFunds(AbstractTotalValuesFunds):
         self.total_historical = total_corrected_value
         self.total_corrected = total_historical_value
         self.save()
+
+    class Meta:
+        verbose_name = _('Total value fund')
+        verbose_name_plural = _('Total values funds')
 
 
 class TotalValuesFundsIntegrations(AbstractTotalValuesFunds):
@@ -622,17 +690,35 @@ class TotalValuesFundsIntegrations(AbstractTotalValuesFunds):
         self.total_corrected = total_historical_value
         self.save()
 
+    class Meta:
+        verbose_name = _('Total value fund integration')
+        verbose_name_plural = _('Total values funds integrations')
 
-@receiver(post_save, sender=StatementFunds)
+
+@receiver(gen_statement_funds, sender=StatementFunds)
 def get_save_rate(sender, instance, **kwargs) -> None:
     """
     This method is a receiver for post_save signal and is triggered when a StatementFunds object is saved. It
     calculates the monetary correction for the instance and generates the total statements of the related fund. It
     takes the sender and instance as arguments
     """
+    print('Signal gerar linha extrato verbas\n')
+
     instance.calcule_monetary_correction()
     instance.fund.gen_total_statements()
     return
+
+
+@receiver(gen_total_funds, sender=Funds)
+def get_save_rate(sender, instance, **kwargs) -> None:
+    """
+    This method is a receiver for post_save signal and is triggered when a StatementFunds object is saved. It
+    calculates the monetary correction for the instance and generates the total statements of the related fund. It
+    takes the sender and instance as arguments
+    """
+    print('Signal somar todas as linhas de extrato verbas\n\n')
+    instance.gen_total_statements()
+    instance.gen_total_integrations()
 
 
 @receiver(post_save, sender=StatementIntegrations)
@@ -643,5 +729,38 @@ def get_save_rate_integrations(sender, instance, **kwargs) -> None:
     takes the sender and instance as arguments
     """
     instance.calcule_monetary_correction()
-    instance.fund.gen_total_integrations()
-    return
+
+
+# class Template(AbstractModel):
+#     fund_name = models.CharField(_('Verbas'), max_length=150)
+#
+#
+# class TemplateFields(AbstractModel):
+#     fund_name = models.CharField(_('Nome do campo'), max_length=150)
+#     is_editable = models.BooleanField(_('É editavel?'))
+#     fund = models.ForeignKey(Template, on_delete=models.PROTECT)
+#
+#
+# json = {
+#     'nome_da_Verba': 'tst - reflexos',
+#     'campos': [
+#         {
+#             'key': 'campo1_data_base',
+#             'label': 'campo1_data_base',
+#             'e_editavel': True,
+#             'tipo_de_input': 'date',
+#             'order_by': 1,
+#         },  {
+#             'key': 'campo1_valor_historico',
+#             'label': 'Valor historico',
+#             'e_editavel': True,
+#             'tipo_de_input': 'date',
+#             'order_by': 2,
+#         },  {
+#             'key': 'campo1_indice',
+#             'label': 'Indice',
+#             'e_editavel': False,
+#             'tipo_de_input': 'float',
+#         }
+#     ]
+# }
