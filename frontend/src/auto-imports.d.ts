@@ -68,6 +68,8 @@ declare global {
   const isReactive: typeof import('vue')['isReactive']
   const isReadonly: typeof import('vue')['isReadonly']
   const isRef: typeof import('vue')['isRef']
+  const isValidCNPJ: typeof import('./composables/utils')['isValidCNPJ']
+  const isValidCPF: typeof import('./composables/utils')['isValidCPF']
   const makeDestructurable: typeof import('@vueuse/core')['makeDestructurable']
   const markRaw: typeof import('vue')['markRaw']
   const nextTick: typeof import('vue')['nextTick']
@@ -97,6 +99,7 @@ declare global {
   const parseToSnake: typeof import('./composables/utils')['parseToSnake']
   const pausableWatch: typeof import('@vueuse/core')['pausableWatch']
   const platform: typeof import('@jrnwn/utils')['platform']
+  const printError: typeof import('./composables/utils')['printError']
   const projectService: typeof import('./services/projectService')['default']
   const provide: typeof import('vue')['provide']
   const range: typeof import('@jrnwn/utils')['range']
@@ -119,12 +122,14 @@ declare global {
   const resolveComponent: typeof import('vue')['resolveComponent']
   const resolveRef: typeof import('@vueuse/core')['resolveRef']
   const resolveUnref: typeof import('@vueuse/core')['resolveUnref']
+  const rest: typeof import('./composables/utils')['rest']
   const set: typeof import('@jrnwn/utils')['set']
   const setClass: typeof import('@jrnwn/utils')['setClass']
   const setStyle: typeof import('@jrnwn/utils')['setStyle']
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']
   const shallowRef: typeof import('vue')['shallowRef']
+  const sum: typeof import('./composables/utils')['sum']
   const syncRef: typeof import('@vueuse/core')['syncRef']
   const syncRefs: typeof import('@vueuse/core')['syncRefs']
   const templateRef: typeof import('@vueuse/core')['templateRef']
@@ -167,6 +172,7 @@ declare global {
   const useAsyncQueue: typeof import('@vueuse/core')['useAsyncQueue']
   const useAsyncState: typeof import('@vueuse/core')['useAsyncState']
   const useAttrs: typeof import('vue')['useAttrs']
+  const useBackendErrors: typeof import('./composables/useBackendErrors')['default']
   const useBase64: typeof import('@vueuse/core')['useBase64']
   const useBattery: typeof import('@vueuse/core')['useBattery']
   const useBluetooth: typeof import('@vueuse/core')['useBluetooth']
@@ -399,6 +405,8 @@ declare module 'vue' {
     readonly isReactive: UnwrapRef<typeof import('vue')['isReactive']>
     readonly isReadonly: UnwrapRef<typeof import('vue')['isReadonly']>
     readonly isRef: UnwrapRef<typeof import('vue')['isRef']>
+    readonly isValidCNPJ: UnwrapRef<typeof import('./composables/utils')['isValidCNPJ']>
+    readonly isValidCPF: UnwrapRef<typeof import('./composables/utils')['isValidCPF']>
     readonly makeDestructurable: UnwrapRef<typeof import('@vueuse/core')['makeDestructurable']>
     readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
     readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
@@ -428,6 +436,7 @@ declare module 'vue' {
     readonly parseToSnake: UnwrapRef<typeof import('./composables/utils')['parseToSnake']>
     readonly pausableWatch: UnwrapRef<typeof import('@vueuse/core')['pausableWatch']>
     readonly platform: UnwrapRef<typeof import('@jrnwn/utils')['platform']>
+    readonly printError: UnwrapRef<typeof import('./composables/utils')['printError']>
     readonly projectService: UnwrapRef<typeof import('./services/projectService')['default']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
     readonly range: UnwrapRef<typeof import('@jrnwn/utils')['range']>
@@ -450,12 +459,14 @@ declare module 'vue' {
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
     readonly resolveRef: UnwrapRef<typeof import('@vueuse/core')['resolveRef']>
     readonly resolveUnref: UnwrapRef<typeof import('@vueuse/core')['resolveUnref']>
+    readonly rest: UnwrapRef<typeof import('./composables/utils')['rest']>
     readonly set: UnwrapRef<typeof import('@jrnwn/utils')['set']>
     readonly setClass: UnwrapRef<typeof import('@jrnwn/utils')['setClass']>
     readonly setStyle: UnwrapRef<typeof import('@jrnwn/utils')['setStyle']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
+    readonly sum: UnwrapRef<typeof import('./composables/utils')['sum']>
     readonly syncRef: UnwrapRef<typeof import('@vueuse/core')['syncRef']>
     readonly syncRefs: UnwrapRef<typeof import('@vueuse/core')['syncRefs']>
     readonly templateRef: UnwrapRef<typeof import('@vueuse/core')['templateRef']>
@@ -498,6 +509,7 @@ declare module 'vue' {
     readonly useAsyncQueue: UnwrapRef<typeof import('@vueuse/core')['useAsyncQueue']>
     readonly useAsyncState: UnwrapRef<typeof import('@vueuse/core')['useAsyncState']>
     readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>
+    readonly useBackendErrors: UnwrapRef<typeof import('./composables/useBackendErrors')['default']>
     readonly useBase64: UnwrapRef<typeof import('@vueuse/core')['useBase64']>
     readonly useBattery: UnwrapRef<typeof import('@vueuse/core')['useBattery']>
     readonly useBluetooth: UnwrapRef<typeof import('@vueuse/core')['useBluetooth']>
