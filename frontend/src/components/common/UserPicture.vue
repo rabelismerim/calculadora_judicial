@@ -1,14 +1,14 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
   modelValue: {
-    name: string
+    fullName: string
     email: string
     picture?: string
   }
 }>(),
 {
   modelValue: () => ({
-    name: '',
+    fullName: '',
     email: '',
   }),
 })
@@ -26,7 +26,7 @@ const props = withDefaults(defineProps<{
       v-else
       class="bg-gray-2 rounded-.5 flex justify-center items-center text-[16px] h-full"
     >
-      {{ getInitials(modelValue.name) }}
+      {{ getInitials(modelValue.fullName) }}
     </div>
   </div>
 </template>
