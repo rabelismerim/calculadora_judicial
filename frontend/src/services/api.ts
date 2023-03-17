@@ -14,29 +14,62 @@ const api = axios.create({
   headers,
 })
 
-api.interceptors.request.use((req) => {
-  if (import.meta.env.DEV)
-    console.warn('ON REQUEST:', req)
-  return req
+api.interceptors.request.use((request) => {
+  const { method, baseURL = '', url = '', data } = request
+
+  if (data)
+    request.data = parseToSnake(data)
+  if (import.meta.env.VITE_LOG)
+    console.warn(`>>>> REQUEST: ${method?.toUpperCase()} ${baseURL + url}`, request)
+
+  return request
 })
 
 api.interceptors.response.use(
-  ({ data }) => {
+  (response) => {
+    const { data, status, config: { method, baseURL = '', url = '' } } = response
+
     const result = parseToCamel(data)
-    if (import.meta.env.DEV)
-      console.warn('ON RESPONSE:', result)
+    printError(`<<<< RESPONSE(${status}): ${method?.toUpperCase()} ${baseURL + url}`, result)
+
     return result
   },
-  (error) => {
-    const { code, response: { data: { data }, status } } = error
-    const result = {
-      data: parseToCamel(data || {}),
-      status,
-      code,
+  async (error) => {
+    const { message, code, response } = error
+    const data = response?.data?.data
+    const status = response?.status
+
+    const mainErrors: any = {
+      403: 'Você não está autorizado...',
+      500: 'Problemas no Servidor...',
+      ERR_NETWORK: 'Problemas no Servidor...',
     }
-    if (import.meta.env.DEV)
-      console.warn('ON ERROR:', result)
-    throwError(result)
+
+    const mainMessage = mainErrors[status] || mainErrors[code]
+    if (mainMessage) {
+      throwError({
+        message: mainMessage,
+      })
+      return
+    }
+
+    const { errors: dataErrors } = parseToCamel(data || {})
+    const errors = dataErrors.map(({ detail, attr }: any) => ({ message: detail, attr }))
+    printError('ON ERROR:', errors)
+
+    if (errors.length > 0) {
+      for (const error of errors) {
+        throwError(error)
+        await delay(0.5)
+      }
+    }
+
+    const newError = new Error(message) as any
+    newError.errors = errors
+    newError.status = status
+    newError.code = code
+
+    throw (newError)
   })
 
 export default api

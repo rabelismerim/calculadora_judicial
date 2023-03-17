@@ -18,16 +18,24 @@ const getProject = (id: string) => api
   .then(mapProject)
 
 const newProject = (project: any) => {
-  const { projectStart, projectEnd, executors, approvers, reviewers, statusDisplay } = project
+  const { start, end, executors, approvers, reviewers, engagements, recoverings } = project
   const data = {
     ...project,
-    projectStart: projectStart ? formatDateBackend(projectStart) : undefined,
-    projectEnd: projectEnd ? formatDateBackend(projectEnd) : undefined,
+    projectStart: start ? formatDateBackend(start) : undefined,
+    projectEnd: end ? formatDateBackend(end) : undefined,
+    engagement: {
+      numbers: engagements,
+    },
+    recoverings: recoverings.map((recovering: any) => ({
+      entity: recovering,
+    })),
     executors: executors.map((id: string) => ({ id })),
     approvers: approvers.map((id: string) => ({ id })),
     reviewers: reviewers.map((id: string) => ({ id })),
   }
-  return api.post('v1/projects/', data)
+  return api
+    .post('v1/projects/', data)
+    .then(({ project }: any) => project)
 }
 
 // JUDGES
@@ -44,6 +52,11 @@ const newJudge = (description: string) => api
 const getLawyers = () => api
   .get('/v1/projects/lawyer/')
   .then(({ lawyers }: any) => lawyers)
+  .then(data => data.map(({ description, id }: any) => ({ description, id })))
+const newLawyer = (description: string) => api
+  .post('/v1/projects/lawyer/', { description })
+  .then(({ lawyers }: any) => lawyers)
+  .then(({ description, id }) => ({ description, id }))
 
 // REGIONS
 const getRegions = () => api
@@ -78,6 +91,7 @@ export default {
   getJudges,
   newJudge,
   getLawyers,
+  newLawyer,
   getProjects,
   getProject,
   newProject,
