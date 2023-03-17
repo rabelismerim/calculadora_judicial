@@ -13,7 +13,7 @@ onMounted(async () => {
     await $user.login()
   }
   catch (error) {
-    throwError(error)
+    printError('ERROR ON LOGIN:', error)
   }
   finally {
     loading = false
@@ -34,7 +34,7 @@ const requestPermission = async () => {
     }
   }
   catch (error) {
-    throwError(error)
+    printError('ERROR ON REQUEST PERMISSION:', error)
   }
   finally {
     loading = false

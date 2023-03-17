@@ -33,7 +33,8 @@ const loadProjects = async () => {
     const projectResult = await projectService.getProjects()
 
     const recoveringResult = await recoveringService.getRecoverings()
-    const getRecovering = (project: string) => recoveringResult.find(({ projectId }: any) => projectId === project)
+    const getRecovering = (project: string) => recoveringResult
+      .find(({ projectId }: any) => projectId === project)
 
     projects = projectResult.map((project: any) => ({
       ...getRecovering(project.id),
@@ -41,8 +42,7 @@ const loadProjects = async () => {
     }))
   }
   catch (error) {
-    throwError(error)
-    console.warn('ERROR LOADING PROJECTS:', error)
+    printError('ERROR ON LOAD PROJECTS:', error)
   }
   finally {
     loading = false
@@ -111,7 +111,6 @@ const columns = [
   required?: boolean
   align?: 'left' | 'right' | 'center'
   sortable?: boolean
-
 }[]
 </script>
 
@@ -221,7 +220,10 @@ const columns = [
       </QTable>
     </div>
   </div>
-  <newProject v-model="showNewProject" />
+  <newProject
+    v-model="showNewProject"
+    @success="showNewProject = false; loadProjects()"
+  />
 </template>
 
 <style lang="scss">

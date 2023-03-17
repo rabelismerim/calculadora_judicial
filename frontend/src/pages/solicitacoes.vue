@@ -24,7 +24,7 @@ const loadPage = async () => {
     groups = await usersService.getGroups()
   }
   catch (error) {
-    throwError(error)
+    printError('ERROR ON LOAD REQUEST OPTIONS:', error)
   }
   finally {
     loading = false
