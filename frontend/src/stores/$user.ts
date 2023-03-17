@@ -13,6 +13,8 @@ const login = async () => {
   const router = useRouter()
   try {
     const user = await usersService.getMyProfile()
+
+    console.warn('ON LOGIN SUCCESS:', user)
     store.value = {
       ...store.value,
       ...user,
