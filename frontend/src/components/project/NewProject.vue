@@ -5,12 +5,12 @@ const props = withDefaults(defineProps<{
 }>(), {
   modelValue: false,
 })
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'success'])
 
 let loading = $ref(false)
 const form = ref(null) as any
 const stepper = ref(null) as any
-const { step, hasError, setStep, nextStep, previousStep, clearErrors, validateAll } = useSteps(1, stepper, form)
+const { step, hasError, setStep, nextStep, previousStep, clearErrors, validateAll, loadAll } = useSteps(1, 4, stepper, form)
 
 // Project related
 const nullRecovering = {
@@ -27,7 +27,6 @@ const nullProject = {
   description: '',
   start: null,
   end: null,
-  status: '',
   legalManagerId: '',
   legalPartnerId: '',
   financialManagerId: '',
@@ -53,7 +52,7 @@ const removeRecovering = (index: number) => {
   newProject.recoverings.splice(index, 1)
 }
 const onSubmit = async () => {
-  validateAll(4)
+  validateAll()
   if (hasError.value.includes(true)) {
     throwError({
       id: 'SUBMIT_ERROR',
@@ -63,11 +62,14 @@ const onSubmit = async () => {
   }
   try {
     loading = true
-    const result = await projectService.newProject(newProject)
-    console.warn('NEW PROJECT', { result })
+    const { id, description }: any = await projectService.newProject(newProject)
+    if (id) {
+      notify({ id, message: `Novo: ${description} criado com sucesso!` })
+      emit('success')
+    }
   }
   catch (error) {
-    throwError(error)
+    printError('ERROR ON CREATE NEWPROJECT:', error)
   }
   finally {
     loading = false
@@ -78,20 +80,24 @@ const onSubmit = async () => {
 let users = $ref([])
 let judges = $ref([])
 const addJudge = async (description: string) => projectService.newJudge(description)
+let lawyers = $ref([])
+const addLawyer = async (description: string) => projectService.newLawyer(description)
 let courts = $ref([])
 const addCourt = async (description: string) => projectService.newCourt(description)
 let regions = $ref([])
 const addRegion = async (description: string) => projectService.newRegion(description)
 onMounted(async () => {
+  loadAll()
   loading = true
   try {
     users = await usersService.getUsers()
     judges = await projectService.getJudges()
+    lawyers = await projectService.getLawyers()
     courts = await projectService.getCourts()
     regions = await projectService.getRegions()
   }
   catch (error) {
-    throwError(error)
+    printError('ERROR ON LOAD OPTIONS OF NEWPROJECT:', error)
   }
   finally {
     loading = false
@@ -141,7 +147,8 @@ onMounted(async () => {
             <InputText
               v-model="newProject.processNumber"
               label="Número de Processo"
-              maxlength="15"
+              maxlength="25"
+              mask="#######-##.####.#.##.####"
               :rules="[value => !!value || 'É um campo obrigatório']"
             />
             <InputDate
@@ -162,9 +169,9 @@ onMounted(async () => {
             />
             <InputSelect
               v-model="newProject.lawyerId"
-              v-model:options="judges"
+              v-model:options="lawyers"
               label="Advogado"
-              :to-add="addJudge"
+              :to-add="addLawyer"
               :rules="[value => !!value || 'É um campo obrigatório']"
             />
             <InputSelect
