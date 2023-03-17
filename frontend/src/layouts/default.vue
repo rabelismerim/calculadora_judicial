@@ -13,7 +13,7 @@ onMounted(async () => {
     }
   }
   catch (error) {
-    throwError(error)
+    printError('ERROR ON LOAD DEFAULT LAYOUT OPTIONS:', error)
   }
 })
 
