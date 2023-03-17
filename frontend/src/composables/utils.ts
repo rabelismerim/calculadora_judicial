@@ -1,3 +1,8 @@
+export const printError = (message: string, error: any) => {
+  if (import.meta.env.VITE_LOG)
+    console.warn(message, error)
+}
+
 export const toUpperCase = (text = '') => text.toUpperCase()
 
 export const formatDate = (date: string) => new Date(date)
@@ -28,6 +33,48 @@ export const clone = (object: any) => JSON.parse(JSON.stringify(object))
 
 export const delay = (seconds: number) => new Promise(resolve =>
   setTimeout(() => resolve(true), seconds * 1000))
+
+export const sum = (array: number[], start: number) =>
+  array.reduce((total, el, i) => total + el * (start - i), 0)
+
+export const rest = (value: number) => value % 11
+
+const format = (value: string) => value.replace(/[^\d]+/g, '')
+
+const isValidNumber = (value: string, count: number) =>
+  format(value).length === count && !format(value).match(/(\d)\1{10}/)
+
+const validator = (value: string) => format(value)
+  .split('')
+  .splice(format(value).length - 2)
+  .map(el => +el)
+
+const validate = (firstDigit: number, lastDigit: number, validator: number[]) =>
+  firstDigit === validator[0] && lastDigit === validator[1]
+
+const toValidate = (value: string, end: number, start = 0) => format(value)
+  .split('')
+  .filter((digit, index) => index >= start && index <= end && digit)
+  .map(el => +el)
+
+export const isValidCPF = (cpf: string) => {
+  if (!isValidNumber(cpf, 11))
+    return false
+  const digit = (end: number, factor: number) =>
+    rest(sum(toValidate(cpf, end), factor) * 10) % 10
+  const firstDigit = digit(8, 10)
+  const lastDigit = digit(9, 11)
+  return validate(firstDigit, lastDigit, validator(cpf))
+}
+
+export const isValidCNPJ = (cnpj: string) => {
+  if (!isValidNumber(cnpj, 14))
+    return false
+  const digit = (sum: number) => rest(sum) < 2 ? 0 : 11 - rest(sum)
+  const firstDigit = digit(sum(toValidate(cnpj, 3), 5) + sum(toValidate(cnpj, 11, 4), 9))
+  const lastDigit = digit(sum(toValidate(cnpj, 4), 6) + sum(toValidate(cnpj, 12, 5), 9))
+  return validate(firstDigit, lastDigit, validator(cnpj))
+}
 
 export const flatten = (data: any) => {
   const result: any = {}
