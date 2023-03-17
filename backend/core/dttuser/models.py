@@ -47,8 +47,8 @@ class Subgroup(models.Model):
     objects = SubgroupManager()
 
     class Meta:
-        verbose_name = _("subgroup")
-        verbose_name_plural = _("subgroups")
+        verbose_name = _("Subgrupo")
+        verbose_name_plural = _("Subgrupos")
 
     def __str__(self):
         return self.name
