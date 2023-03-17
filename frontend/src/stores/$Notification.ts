@@ -22,35 +22,11 @@ export const notify = ({ message, id = Date.now(), timeout = 20, type = 'success
 }
 
 export const throwError = async (error: any) => {
-  let { message } = error
   const {
-    code,
     id = Date.now(),
     timeout,
-    data,
-    status,
+    message,
   }: any = error
-  const errorMessages = Object.entries(data)
-    .map(([key, value]: [string, any]) => [key, value.non_field_errors ? value.non_field_errors : value])
-
-  if (errorMessages.length > 0) {
-    for (const [key, msg] of errorMessages) {
-      await delay(0.5)
-      notify({
-        id: key,
-        message: msg as string,
-        timeout,
-        type: 'error',
-      })
-    }
-    return
-  }
-
-  if (status === 500 || code === 'ERR_NETWORK')
-    message = 'Problemas no Servidor...'
-  if (status === 403)
-    message = 'Você não está autorizado...'
-
   notify({ message, id, timeout, type: 'error' })
 }
 

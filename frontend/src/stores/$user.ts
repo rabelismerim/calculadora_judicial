@@ -23,8 +23,7 @@ const login = async () => {
     return user.authorized
   }
   catch (error: any) {
-    throwError(error)
-    console.warn('ERROR ON LOGIN:', error)
+    printError('ERROR ON LOGIN:', error)
     router.push({ path: '/' })
   }
 }
