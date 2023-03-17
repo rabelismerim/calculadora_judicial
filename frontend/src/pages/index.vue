@@ -57,11 +57,11 @@ const requestPermission = async () => {
           <!-- Para assistir ao tutorial de uso da ferramenta Clique aqui -->
         </p>
         <div class="flex flex-wrap gap-3">
-          <div v-if="isActive === null" class="flex items-center gap-4 text--primary font-bold">
+          <div v-if="loading" class="flex items-center gap-4 text--primary font-bold">
             Carregando seus dados...
             <Spinner color="primary" />
           </div>
-          <div v-else>
+          <div v-else-if="isActive">
             <Btn
               v-if="isActive"
               label="Entrar"

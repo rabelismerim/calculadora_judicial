@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import SearchFilter from '../components/common/SearchFilter.vue'
-
 const router = useRouter()
 
 let loading = $ref(false)
@@ -10,10 +8,10 @@ const filterBy = $ref('')
 let projects = $ref([])
 const projectsCount = computed(() => projects.length)
 const gaugeValues = computed(() => Object.entries(projects
-  .reduce((acc: any, { status }) => {
-    if (!acc[status])
-      acc[status] = 0
-    acc[status]++
+  .reduce((acc: any, { statusDisplay }) => {
+    if (!acc[statusDisplay])
+      acc[statusDisplay] = 0
+    acc[statusDisplay]++
     return acc
   }, {}))
   .map(([label, count = 0]) => ({ label, count: Number(count) })))
@@ -58,7 +56,7 @@ onMounted(() => loadProjects())
 const columns = [
   {
     name: 'name',
-    field: 'name',
+    field: 'description',
     required: true,
     label: 'Projeto',
     align: 'left',
@@ -101,7 +99,7 @@ const columns = [
   },
   {
     name: 'status',
-    field: 'status',
+    field: 'statusDisplay',
     label: 'Status',
     align: 'left',
     sortable: true,
