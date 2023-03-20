@@ -118,7 +118,7 @@ class ProjectApi(AbstractProjectApi):
 
             recovering['entity'], created = Entity.objects.get_or_create(**entity)
             new_recovering = Recovering.objects.get_or_create(**recovering)
-            # if new_archive_recovering: # Desativado na fase 1
+            # if new_archive_recovering: # TODO: fase 2. Desativado na fase 1
             #     for new_ in new_archive_recovering:
             #         archive = new_.pop('archive')
             #         new_archive = Archive.objects.create(**archive)
@@ -126,4 +126,3 @@ class ProjectApi(AbstractProjectApi):
             #             recovering=new_recovering, archive=new_archive)
 
         return JsonResponse({'project': self.serializer_class(project, many=False).data}, status=status.HTTP_201_CREATED)
-

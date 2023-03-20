@@ -31,6 +31,7 @@ class MonetaryCorrectionSchema(AbstractDescriptionSchema):
         statement_id (serializers.UUIDField): The UUID of the related statement.
     """
     statement_id = serializers.UUIDField(read_only=True)
+    corrected_value = serializers.FloatField(read_only=True)
 
     class Meta:
         model = MonetaryCorrection
@@ -45,6 +46,7 @@ class MonetaryCorrectionIntegrationsSchema(AbstractDescriptionSchema):
         statement_id (serializers.UUIDField): The UUID of the related statement.
     """
     statement_id = serializers.UUIDField(read_only=True)
+    corrected_value = serializers.FloatField(read_only=True)
 
     class Meta:
         model = MonetaryCorrectionIntegrations
@@ -189,9 +191,38 @@ class StatementFundsUpdateSchema(AbstractDescriptionSchema):
         model = StatementFunds
         exclude = ('fund',)
         read_only_fields = ('status', 'status_display')
+        extra_kwargs = {"data_base": {"required": False, "allow_null": True},
+                        "historical_value": {"required": False, "allow_null": True},
+                        }
+
+    def validate(self, data):
+        """
+        Validate the given data for the Statement Funds object and raise a `serializers.ValidationError` if any
+        validation fails.
+        """
+        data['status'] = 'S'
+        return super(StatementFundsUpdateSchema, self).validate(data)
 
 
 class StatementIntegrationsSchema(AbstractDescriptionSchema):
+    """
+    A schema for serializing and deserializing StatementIntegrations instances.
+
+    Attributes:
+        fund_id (serializers.UUIDField): The UUID of the related fund.
+    """
+    monetary_corretion = MonetaryCorrectionIntegrationsSchema(
+        read_only=True, source='monetarycorrectionintegrations')
+    fund_id = serializers.UUIDField()
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+
+    class Meta:
+        model = StatementIntegrations
+        exclude = ('fund',)
+        read_only_fields = ('status', 'status_display')
+
+
+class StatementIntegrationsUpdateSchema(AbstractDescriptionSchema):
     """
     A schema for serializing and deserializing StatementIntegrations instances.
 
@@ -207,6 +238,18 @@ class StatementIntegrationsSchema(AbstractDescriptionSchema):
         model = StatementIntegrations
         exclude = ('fund',)
         read_only_fields = ('status', 'status_display')
+        extra_kwargs = {"data_base": {"required": False, "allow_null": True},
+                        "historical_value": {"required": False, "allow_null": True},
+                        "description": {"required": False, "allow_null": True}
+                        }
+
+    def validate(self, data):
+        """
+        Validate the given data for the Statement Funds object and raise a `serializers.ValidationError` if any
+        validation fails.
+        """
+        data['status'] = 'S'
+        return super(StatementIntegrationsUpdateSchema, self).validate(data)
 
 
 class StatementIRRFSchema(AbstractDescriptionSchema):
@@ -295,11 +338,11 @@ class FundsSchema(AbstractDescriptionSchema):
     """
     A schema for serializing and deserializing Funds instances.
 
-    Attributes:
-        calculation_id (serializers.UUIDField): The UUID of the related calculation.
-        statement_funds (StatementFundsSchema): The schema for serializing and deserializing StatementFunds instances.
-        statement_integrations (StatementIntegrationsSchema): The schema for serializing and deserializing StatementIntegrations instances.
-        statement_irrf (StatementIRRFSchema): The schema for serializing and deserializing StatementIRRF instances.
+    Attributes: calculation_id (serializers.UUIDField): The UUID of the related calculation. statement_funds (
+    StatementFundsSchema): The schema for serializing and deserializing StatementFunds instances.
+    statement_integrations (StatementIntegrationsSchema): The schema for serializing and deserializing
+    StatementIntegrations instances. statement_irrf (StatementIRRFSchema): The schema for serializing and
+    deserializing StatementIRRF instances.
     """
     calculation_id = serializers.UUIDField()
 
@@ -342,11 +385,10 @@ class FundsSchema(AbstractDescriptionSchema):
         Returns:
             Returns the validated data if all validations pass.
 
-        Raises:
-            serializers.ValidationError: If the validation fails due to any of the following reasons:
-                - The Funds object with the given name and calculation_id already exists.
-                - Both `statement_irrf` and either of `statement_funds` or `statement_integrations` are present in the data.
-                - None of the `statement_funds`, `statement_integrations`, or `statement_irrf` are present in the data.
+        Raises: serializers.ValidationError: If the validation fails due to any of the following reasons: - The Funds
+        object with the given name and calculation_id already exists. - Both `statement_irrf` and either of
+        `statement_funds` or `statement_integrations` are present in the data. - None of the `statement_funds`,
+        `statement_integrations`, or `statement_irrf` are present in the data.
         """
         name = data.get('name')
         calculation_id = data.get('calculation_id')
@@ -366,12 +408,14 @@ class FundsSchema(AbstractDescriptionSchema):
         if [is_funds, is_irrf, is_documents].count(True) > 1:
             raise serializers.ValidationError(
                 [
-                    'Utilização de verbas inválidas. Utilizar separadamente as verbas (statement_funds e statement_integrations) ou statement_irrf ou statement_documents'])
+                    'Utilização de verbas inválidas. Utilizar separadamente as verbas (statement_funds e '
+                    'statement_integrations) ou statement_irrf ou statement_documents'])
 
         if any([data['statement_funds'], data['statement_integrations'], data['statement_irrf'],
                 data['statement_documents']]) is False:
             raise serializers.ValidationError(
                 [
-                    'Necessário uma verba. Opções: statement_funds, statement_integrations, statement_irrf, ou statement_documents'])
+                    'Necessário uma verba. Opções: statement_funds, statement_integrations, statement_irrf, '
+                    'ou statement_documents'])
 
         return super(FundsSchema, self).validate(data)
