@@ -35,9 +35,9 @@ const onInput = (value: string | number | null) => {
     :mask="modelValue.length <= 14 ? '###.###.###-###' : '##.###.###/####-##'"
     :rules="[
       ...rules,
-      value => value.length === 14 || value.length === 18 || 'Precisa ser um CPF ou um CNPJ',
-      value => value.length === 18 || value.length === 14 && isValidCPF(value) || 'CPF não é válido',
-      value => value.length === 14 || value.length === 18 && isValidCNPJ(value) || 'CNPJ não é válido',
+      value => !value || value.length === 14 || value.length === 18 || 'Precisa ser um CPF ou um CNPJ',
+      value => !value || value.length === 18 || value.length === 14 && isValidCPF(value) || 'CPF não é válido',
+      value => !value || value.length === 14 || value.length === 18 && isValidCNPJ(value) || 'CNPJ não é válido',
     ]"
     :error="!!errorMessages[errorKey]"
     :error-message="!!errorMessages[errorKey] ? errorMessages[errorKey] : ''"
