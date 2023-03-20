@@ -54,9 +54,18 @@ class Calculation(AbstractModel):
     def get_rate(self):
         """"Pegar o indice que vai ser utilizado"""
         return self.creditor.rate
+
     def get_date_rj(self):
         """"Pegar a data da recuperacão judicial"""
         return self.creditor.recovering.project.date_rj_request
+
+    def get_default_interest(self):
+        """"Pegar o valor da multa"""
+        return self.criterion.default_interest
+
+    def get_fine(self):
+        """"Pegar o valor da multa"""
+        return self.criterion.fine
 
     def __str__(self):
         return f'{self.creditor}'
