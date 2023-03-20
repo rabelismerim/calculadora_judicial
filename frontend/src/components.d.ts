@@ -8,6 +8,7 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Btn: typeof import('./components/common/Btn.vue')['default']
+    copy: typeof import('./components/inputs/InputTags copy.vue')['default']
     FooterBar: typeof import('./components/common/FooterBar.vue')['default']
     GraphGauge: typeof import('./components/common/GraphGauge.vue')['default']
     GraphLine: typeof import('./components/common/GraphLine.vue')['default']
@@ -17,6 +18,7 @@ declare module '@vue/runtime-core' {
     InputLegal: typeof import('./components/inputs/InputLegal.vue')['default']
     InputSelect: typeof import('./components/inputs/InputSelect.vue')['default']
     InputTags: typeof import('./components/inputs/InputTags.vue')['default']
+    InputTags2: typeof import('./components/inputs/InputTags2.vue')['default']
     InputText: typeof import('./components/inputs/InputText.vue')['default']
     InputUser: typeof import('./components/inputs/InputUser.vue')['default']
     InputUsers: typeof import('./components/inputs/InputUsers.vue')['default']
@@ -25,6 +27,7 @@ declare module '@vue/runtime-core' {
     NewProject: typeof import('./components/project/NewProject.vue')['default']
     NotificationArea: typeof import('./components/common/NotificationArea.vue')['default']
     ProgressList: typeof import('./components/common/ProgressList.vue')['default']
+    QField: typeof import('quasar')['QField']
     ReloadBtn: typeof import('./components/common/ReloadBtn.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
