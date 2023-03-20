@@ -1,32 +1,34 @@
+import type { Ref } from 'vue'
+
 interface BackendError {
   attr: string
   message: string
 }
 
-export default () => {
-  let errors: any = $ref({})
-
+export default (errorMessages: Ref) => {
   const setError = ({ attr, message }: BackendError) => {
-    errors[attr] = message
+    errorMessages.value[attr] = message
   }
 
-  const setErrors = ({ errors }: { errors: BackendError[] }) => {
-    errors = errors.reduce((acc: any, { attr, message }) => {
-      acc[attr] = message
-      return acc
-    }, {})
+  const setErrors = ({ errors }: any) => {
+    errorMessages.value = errors
+      .reduce((acc: any, { attr, message }: BackendError) => {
+        acc[attr] = message
+        return acc
+      }, {})
+    printError('setErrors', errors)
   }
 
   const clearError = (attr: string) => {
-    delete errors[attr]
+    if (errorMessages.value[attr])
+      delete errorMessages.value[attr]
   }
 
   const clearAll = () => {
-    errors = {}
+    errorMessages.value = {}
   }
 
   return {
-    errors: computed(() => errors),
     setError,
     setErrors,
     clearError,
