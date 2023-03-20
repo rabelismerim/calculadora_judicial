@@ -4,13 +4,23 @@ const props = withDefaults(defineProps<{
   modelValue: any
   label?: string
   rules?: ValidationRule<any>[]
+  errorMessages?: any
+  errorKey?: string
 }>(), {
   rules: () => ([]),
+  errorMessages: () => ({}),
+  errorKey: '',
 })
 const emit = defineEmits(['update:modelValue'])
 
 const input = ref(null) as any
 const hasError = computed(() => input.hasError)
+const { clearError } = useBackendErrors(toRef(props, 'errorMessages'))
+const onInput = (value: string | number | null) => {
+  if (props.errorKey)
+    clearError(props.errorKey)
+  emit('update:modelValue', value)
+}
 </script>
 
 <template>
@@ -19,10 +29,12 @@ const hasError = computed(() => input.hasError)
     :model-value="modelValue"
     :label="label"
     :rules="rules"
+    :error="!!errorMessages[errorKey]"
+    :error-message="!!errorMessages[errorKey] ? errorMessages[errorKey] : ''"
     outlined
     mask="##/##/####"
     dense
-    @update:model-value="value => emit('update:modelValue', value)"
+    @update:model-value="onInput"
   >
     <template #append>
       <div class="i-carbon-calendar cursor-pointer">
@@ -34,7 +46,7 @@ const hasError = computed(() => input.hasError)
           <QDate
             :model-value="modelValue"
             mask="DD/MM/YYYY"
-            @update:model-value="value => emit('update:modelValue', value)"
+            @update:model-value="onInput"
           >
             <div class="row items-center justify-end">
               <Btn
