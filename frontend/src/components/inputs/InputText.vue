@@ -5,13 +5,23 @@ const props = withDefaults(defineProps<{
   label?: string
   rules?: ValidationRule<any>[]
   maxlength?: string | number
+  errorMessages?: any
+  errorKey?: string
 }>(), {
   rules: () => ([]),
+  errorMessages: () => ({}),
+  errorKey: '',
 })
 const emit = defineEmits(['update:modelValue'])
 
 const input = ref(null) as any
 const hasError = computed(() => input.value.hasError)
+const { clearError } = useBackendErrors(toRef(props, 'errorMessages'))
+const onInput = (value: string | number | null) => {
+  if (props.errorKey)
+    clearError(props.errorKey)
+  emit('update:modelValue', value)
+}
 </script>
 
 <template>
@@ -21,8 +31,10 @@ const hasError = computed(() => input.value.hasError)
     :label="label"
     :rules="rules"
     :maxlength="maxlength"
+    :error="!!errorMessages[errorKey]"
+    :error-message="!!errorMessages[errorKey] ? errorMessages[errorKey] : ''"
     outlined
     dense
-    @update:model-value="value => emit('update:modelValue', value)"
+    @update:model-value="onInput"
   />
 </template>

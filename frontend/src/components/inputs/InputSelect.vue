@@ -8,15 +8,25 @@ const props = withDefaults(defineProps<{
   rules?: ValidationRule<any>[]
   options: any[]
   toAdd: Function
+  errorMessages?: any
+  errorKey?: string
 }>(), {
   rules: () => ([]),
   add: () => {},
   options: () => ([]),
+  errorMessages: () => ({}),
+  errorKey: '',
 })
 const emit = defineEmits(['update:modelValue', 'update:options'])
 
 const select = ref(null) as any
 const hasError = computed(() => select.value.hasError)
+const { clearError } = useBackendErrors(toRef(props, 'errorMessages'))
+const onInput = (value: string | number | null) => {
+  if (props.errorKey)
+    clearError(props.errorKey)
+  emit('update:modelValue', value)
+}
 
 let loading = $ref(false)
 let inputValue = $ref('')
@@ -64,6 +74,8 @@ const onFilter = (val: any, update: Function) => {
     :options="filteredOptions"
     :label="label"
     :rules="rules"
+    :error="!!errorMessages[errorKey]"
+    :error-message="!!errorMessages[errorKey] ? errorMessages[errorKey] : ''"
     map-options
     option-value="id"
     option-label="description"
@@ -75,7 +87,7 @@ const onFilter = (val: any, update: Function) => {
     emit-value
     dense
     @filter="onFilter"
-    @update:model-value="(value) => emit('update:modelValue', value)"
+    @update:model-value="onInput"
   >
     <template #no-option>
       <QBtn
