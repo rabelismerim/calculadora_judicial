@@ -46,7 +46,6 @@ class IncidentSchema(AbstractDescriptionSchema):
         fields = '__all__'
 
     def validate_number(self, number):
-        print(number, 'numberrrr')
         return number
 
 
@@ -69,16 +68,16 @@ class CalculationSchema(AbstractDescriptionSchema):
     creditor = CreditorSchema(many=False, read_only=True)
     creditor_id = serializers.UUIDField(write_only=True)
     verdict = VerdictSchema(source='verdict_set',
-                            many=True, required=False, exclude=('calculation_id', ))
+                            many=True, required=False, exclude=('calculation_id',))
     criterion = CriterionSchema(many=False, read_only=True)
 
     funds = FundsSchema(source='funds_set', many=True,
-                        required=False, exclude=('calculation_id', ))
+                        required=False, exclude=('calculation_id',), read_only=True)
 
-    statement = StatementSchema(read_only=True, exclude=('calculation_id', ))
+    statement = StatementSchema(read_only=True, exclude=('calculation_id',))
 
     comparative = ComparativeSchema(
-        read_only=True, exclude=('statement_id', ))
+        read_only=True, exclude=('statement_id',))
 
     step_display = serializers.CharField(
         source='get_step_display', read_only=True)

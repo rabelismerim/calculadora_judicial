@@ -1,24 +1,26 @@
 """
-This module defines a FundsApi class that provides HTTP methods for managing Funds objects.
+This module defines a FundDocumentApi class that provides HTTP methods for managing Funds objects.
 It extends the AbstractViewApi class and includes a CheckHasPermission permission class for authorization.
 The API responds with JSON data and utilizes the rest_framework.schemas.openapi.AutoSchema for generating API documentation.
-The FundsApi class uses the Funds model and FundsSchema for working with data.
+The FundDocumentApi class uses the Funds model and FundDocumentSchema for working with data.
 """
 
 from django.http import JsonResponse
-from calculation.funds.schemas import FundsSchema, StatementFundsSchema, StatementFundsUpdateSchema
-from calculation.funds.models import Funds, StatementFunds
+
+from calculation.funds.document.models import FundDocument, StatementDocument
+from calculation.funds.document.schemas import FundDocumentSchema, StatementDocumentSchema, \
+    StatementFundDocumentUpdateSchema
 from core.abstract.views import AbstractViewApi
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions, status
 from core.permission.views import CheckHasPermission
 
 
-class AbstractFundsApi(AbstractViewApi):
-    """Define the FundsApi view class for handling HTTP methods related to Funds.
+class AbstractFundDocumentApi(AbstractViewApi):
+    """Define the FundDocumentApi view class for handling HTTP methods related to Funds.
 
     This view class extends the AbstractViewApi class, which provides a basic implementation
-    for common API actions. The FundsApi supports HTTP POST and GET methods, and uses the FundsSchema
+    for common API actions. The FundDocumentApi supports HTTP POST and GET methods, and uses the FundDocumentSchema
     serializer for input/output validation. The view requires authenticated users with appropriate
     permissions to access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission
     permission classes.
@@ -38,10 +40,10 @@ class AbstractFundsApi(AbstractViewApi):
         ```
     """
     http_method_names = ['get', 'post']
-    serializer_class = FundsSchema
+    serializer_class = FundDocumentSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
-    model = Funds
-    schema = AutoSchema(tags=["Calculation - Funds"])
+    model = FundDocument
+    schema = AutoSchema(tags=["Calculation - Fund Document"])
 
     query_params = [
         {
@@ -55,11 +57,11 @@ class AbstractFundsApi(AbstractViewApi):
     ]
 
 
-class FundsApi(AbstractFundsApi):
-    """Define the FundsApi view class for handling HTTP methods related to Funds.
+class FundDocumentApi(AbstractFundDocumentApi):
+    """Define the FundDocumentApi view class for handling HTTP methods related to Funds.
 
     This view class extends the AbstractViewApi class, which provides a basic implementation
-    for common API actions. The FundsApi supports HTTP POST and GET methods, and uses the FundsSchema
+    for common API actions. The FundDocumentApi supports HTTP POST and GET methods, and uses the FundDocumentSchema
     serializer for input/output validation. The view requires authenticated users with appropriate
     permissions to access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission
     permission classes.
@@ -96,15 +98,18 @@ class FundsApi(AbstractFundsApi):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_funds = serializer.validated_data
-        fund = CreateFunds(new_funds).create_funds()
-        return JsonResponse({'funds': self.serializer_class(fund, many=False).data}, status=status.HTTP_201_CREATED)
+        statement_document = new_funds.pop('statement_document')
+        fund = self.model.objects.create(**new_funds)
+        statement_document['fund'] = fund
+        StatementDocument.objects.create(**statement_document)
+        return JsonResponse({'fund_document': self.serializer_class(fund, many=False).data}, status=status.HTTP_201_CREATED)
 
 
-class FundsDetailApi(AbstractFundsApi):
-    """Define the FundsApi view class for handling HTTP methods related to Funds.
+class FundDocumentDetailApi(AbstractFundDocumentApi):
+    """Define the FundDocumentApi view class for handling HTTP methods related to Funds.
 
     This view class extends the AbstractViewApi class, which provides a basic implementation
-    for common API actions. The FundsApi supports HTTP POST and GET methods, and uses the FundsSchema
+    for common API actions. The FundDocumentApi supports HTTP POST and GET methods, and uses the FundDocumentSchema
     serializer for input/output validation. The view requires authenticated users with appropriate
     permissions to access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission
     permission classes.
@@ -126,55 +131,13 @@ class FundsDetailApi(AbstractFundsApi):
     http_method_names = ['get', ]
 
 
-class CreateFunds:
-    """Helper class for creating Funds objects from validated data.
+class AbstractStatementFundDocumentApi(AbstractViewApi):
+    """Define the StatementFundDocumentApi view class for handling HTTP methods related to StatementFunds.
 
-    This class creates a Funds object from a validated dictionary of input data. The object is
-    created by first creating the parent Funds object, and then creating any associated child
-    objects (StatementFunds, StatementIntegrations, and StatementIRRF) if provided.
-
-    Attributes:
-        funds (dict): A dictionary containing the validated input data for the Funds object.
-        calculation_id (int): An optional integer representing the ID of the associated calculation.
-
-    Methods:
-        create_funds: Create a Funds object from the input data and return the created object.
-
-    """
-
-    def __init__(self, funds, calculation_id=None):
-        """
-        Initialize the CreateFunds object with the validated input data and an optional
-        calculation ID.
-
-        Args:
-            funds (dict): A dictionary containing the validated input data for the Funds object.
-            calculation_id (uuid): An optional integer representing the UUID of the associated calculation.
-        """
-        self.funds = funds
-        if calculation_id:
-            self.funds['calculation_id'] = calculation_id
-
-    def create_funds(self) -> Funds:
-        """
-        Create Funds object with the validated input data.
-
-        Returns:
-            Funds: A Funds object detail.
-        """
-        new_funds = self.funds
-        fund = Funds.objects.create(**new_funds)
-        return fund
-
-
-class AbstractStatementFundsApi(AbstractViewApi):
-    """Define the StatementFundsApi view class for handling HTTP methods related to StatementFunds.
-
-    This view class extends the AbstractViewApi class, which provides a basic implementation
-    for common API actions. The StatementFundsApi supports HTTP POST and GET methods, and uses the StatementFundsSchema
-    serializer for input/output validation. The view requires authenticated users with appropriate
-    permissions to access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission
-    permission classes.
+    This view class extends the AbstractViewApi class, which provides a basic implementation for common API actions.
+    The StatementFundDocumentApi supports HTTP POST and GET methods, and uses the StatementFundDocumentSchema
+    serializer for input/output validation. The view requires authenticated users with appropriate permissions to
+    access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission permission classes.
 
     Attributes:
         http_method_names (list): A list of HTTP methods supported by this view.
@@ -190,21 +153,20 @@ class AbstractStatementFundsApi(AbstractViewApi):
         GET /api/v1/calculation/funds/funds/
         ```
     """
-    serializer_class = StatementFundsSchema
+    serializer_class = StatementDocumentSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
-    model = StatementFunds
-    schema = AutoSchema(tags=["Calculation - Statement Funds"], operation_id_base='Statement Funds')
+    model = StatementDocument
+    schema = AutoSchema(tags=["Calculation - Statement Funds Documents"], operation_id_base='Statement Funds Documents')
     query_params = []
 
 
-class StatementFundsApi(AbstractStatementFundsApi):
-    """Define the StatementFundsApi view class for handling HTTP methods related to StatementFunds.
+class StatementFundDocumentApi(AbstractStatementFundDocumentApi):
+    """Define the StatementFundDocumentApi view class for handling HTTP methods related to StatementFunds.
 
-    This view class extends the AbstractViewApi class, which provides a basic implementation
-    for common API actions. The StatementFundsApi supports HTTP POST and GET methods, and uses the StatementFundsSchema
-    serializer for input/output validation. The view requires authenticated users with appropriate
-    permissions to access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission
-    permission classes.
+    This view class extends the AbstractViewApi class, which provides a basic implementation for common API actions.
+    The StatementFundDocumentApi supports HTTP POST and GET methods, and uses the StatementFundDocumentSchema
+    serializer for input/output validation. The view requires authenticated users with appropriate permissions to
+    access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission permission classes.
 
     Attributes:
         http_method_names (list): A list of HTTP methods supported by this view.
@@ -223,14 +185,13 @@ class StatementFundsApi(AbstractStatementFundsApi):
     http_method_names = ['post']
 
 
-class StatementFundsDetailApi(AbstractStatementFundsApi):
-    """Define the StatementFundsApi view class for handling HTTP methods related to StatementFunds.
+class StatementFundDocumentDetailApi(AbstractStatementFundDocumentApi):
+    """Define the StatementFundDocumentApi view class for handling HTTP methods related to StatementFunds.
 
-    This view class extends the AbstractViewApi class, which provides a basic implementation
-    for common API actions. The StatementFundsApi supports HTTP POST and GET methods, and uses the StatementFundsSchema
-    serializer for input/output validation. The view requires authenticated users with appropriate
-    permissions to access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission
-    permission classes.
+    This view class extends the AbstractViewApi class, which provides a basic implementation for common API actions.
+    The StatementFundDocumentApi supports HTTP POST and GET methods, and uses the StatementFundDocumentSchema
+    serializer for input/output validation. The view requires authenticated users with appropriate permissions to
+    access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission permission classes.
 
     Attributes:
         http_method_names (list): A list of HTTP methods supported by this view.
@@ -246,5 +207,5 @@ class StatementFundsDetailApi(AbstractStatementFundsApi):
         GET /api/v1/calculation/funds/funds/
         ```
     """
-    serializer_class = StatementFundsUpdateSchema
+    serializer_class = StatementFundDocumentUpdateSchema
     http_method_names = ['get', 'put']

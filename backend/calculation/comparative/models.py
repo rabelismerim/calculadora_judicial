@@ -8,7 +8,8 @@ to add specific fields as needed.
 from django.db import models
 from django.dispatch import receiver
 from base.models import AbstractDescription
-from calculation.funds.models import TotalValuesFunds, TotalValuesFundsIntegrations
+from calculation.funds.integrations.models import TotalValuesFundsIntegrations
+from calculation.funds.models import TotalValuesFunds
 from calculation.comparative.signals import gen_calc
 from calculation.models import Calculation
 from core.abstract.models import AbstractModel
@@ -418,8 +419,7 @@ class ComparativeFundsIntegrations(AbstractComparativeFunds):
     """
     This class is used to store a OneToOne relationship with the Comparative model.
     """
-    total_funds = models.OneToOneField(
-        TotalValuesFundsIntegrations, on_delete=models.PROTECT)
+    total_funds = models.OneToOneField(TotalValuesFundsIntegrations, on_delete=models.PROTECT)
 
 
 @receiver(gen_calc, sender=ComparativeFunds)

@@ -1,9 +1,9 @@
 """
-Serializes the fields of the Funds model for use in the API.
+Serializes the fields of the Document model for use in the API.
 
 This module defines a Django REST Framework serializer that inherits from both
 `serializers.ModelSerializer` and a custom `AbstractModelSchema` class. The serializer
-converts instances of the `Funds` model to and from JSON format, and
+converts instances of the `Document` model to and from JSON format, and
 validates incoming data based on the model's fields.
 
 Attributes:
@@ -11,19 +11,18 @@ Attributes:
       attribute specifies the model class that the serializer should be based on, and
       `fields` lists the names of all fields that should be included in the serialized
       representation.
-
-Usage example:
-serializer = FundsSchema()
 """
-from calculation.funds.integrations.schemas import StatementIntegrationsSchema, TotalValuesFundsIntegrationsSchema
-from calculation.funds.models import Funds, MonetaryCorrection, StatementFunds, TotalValuesFunds
+
 from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
 
+from calculation.funds.document.models import StatementDocument, MonetaryCorrectionDocument, TotalValuesDocument, \
+    FundDocument
 
-class MonetaryCorrectionSchema(AbstractDescriptionSchema):
+
+class MonetaryCorrectionDocumentSchema(AbstractDescriptionSchema):
     """
-    A schema for serializing and deserializing MonetaryCorrection instances.
+    A schema for serializing and deserializing MonetaryCorrectionDocuments instances.
 
     Attributes:
         statement_id (serializers.UUIDField): The UUID of the related statement.
@@ -32,48 +31,49 @@ class MonetaryCorrectionSchema(AbstractDescriptionSchema):
     corrected_value = serializers.FloatField(read_only=True)
 
     class Meta:
-        model = MonetaryCorrection
+        model = MonetaryCorrectionDocument
         exclude = ('statement',)
 
 
-class StatementFundsSchema(AbstractDescriptionSchema):
+class StatementDocumentSchema(AbstractDescriptionSchema):
     """
-    A schema for serializing and deserializing StatementFunds instances.
+    A schema for serializing and deserializing StatementDocuments instances.
 
     Attributes:
         fund_id (serializers.UUIDField): The UUID of the related fund.
     """
-    monetary_correction = MonetaryCorrectionSchema(
-        read_only=True, source='monetarycorrection')
+    monetary_correction = MonetaryCorrectionDocumentSchema(
+        read_only=True, source='monetarycorrectiondocument')
 
     fund_id = serializers.UUIDField()
     status_display = serializers.CharField(source='get_status_display', read_only=True)
 
     class Meta:
-        model = StatementFunds
+        model = StatementDocument
         exclude = ('fund',)
         read_only_fields = ('status', 'status_display')
 
 
-class StatementFundsUpdateSchema(AbstractDescriptionSchema):
+class StatementFundDocumentUpdateSchema(AbstractDescriptionSchema):
     """
     A schema for serializing and deserializing StatementFunds instances.
 
     Attributes:
         fund_id (serializers.UUIDField): The UUID of the related fund.
     """
-    monetary_correction = MonetaryCorrectionSchema(
-        read_only=True, source='monetarycorrection')
+    monetary_correction = MonetaryCorrectionDocumentSchema(
+        read_only=True, source='monetarycorrectiondocument')
 
     fund_id = serializers.UUIDField(read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
 
     class Meta:
-        model = StatementFunds
+        model = StatementDocument
         exclude = ('fund',)
         read_only_fields = ('status', 'status_display')
         extra_kwargs = {"data_base": {"required": False, "allow_null": True},
                         "historical_value": {"required": False, "allow_null": True},
+                        "number": {"required": False, "allow_null": True},
                         }
 
     def validate(self, data):
@@ -82,10 +82,10 @@ class StatementFundsUpdateSchema(AbstractDescriptionSchema):
         validation fails.
         """
         data['status'] = 'S'
-        return super(StatementFundsUpdateSchema, self).validate(data)
+        return super(StatementFundDocumentUpdateSchema, self).validate(data)
 
 
-class TotalValuesFundsSchema(AbstractDescriptionSchema):
+class TotalValuesDocumentSchema(AbstractDescriptionSchema):
     """
     A schema for serializing and deserializing TotalValuesFunds instances.
 
@@ -93,40 +93,32 @@ class TotalValuesFundsSchema(AbstractDescriptionSchema):
         fund_id (serializers.UUIDField): The UUID of the related fund.
     """
     fund_id = serializers.UUIDField(read_only=True)
-    funds = StatementFundsSchema(
-        many=True, source='fund.statementfunds_set', exclude=('fund_id',), required=False)
+    statement = StatementDocumentSchema(
+        many=False, source='fund.statementdocument', exclude=('fund_id',), required=False)
 
     class Meta:
-        model = TotalValuesFunds
+        model = TotalValuesDocument
         exclude = ('fund',)
 
 
-class FundsSchema(AbstractDescriptionSchema):
+class FundDocumentSchema(AbstractDescriptionSchema):
     """
     A schema for serializing and deserializing Funds instances.
 
     Attributes: calculation_id (serializers.UUIDField): The UUID of the related calculation. statement_funds (
-    StatementFundsSchema): The schema for serializing and deserializing StatementFunds instances.
+    StatementFundDocumentSchema): The schema for serializing and deserializing StatementFunds instances.
     statement_integrations (StatementIntegrationsSchema): The schema for serializing and deserializing
     StatementIntegrations instances. statement_irrf (StatementIRRFSchema): The schema for serializing and
     deserializing StatementIRRF instances.
     """
     calculation_id = serializers.UUIDField()
 
-    # statement_funds = StatementFundsSchema(
-    #     many=True, source='statementfunds_set', exclude=('fund_id', 'status'), write_only=True, required=False)
-    #
-    # statement_integrations = StatementIntegrationsSchema(
-    #     many=True, source='statementintegrations_set', exclude=('fund_id', 'status'), write_only=True, required=False)
+    fund = TotalValuesDocumentSchema(source='totalvaluesdocument', read_only=True, exclude=('fund_id',))
 
-    values_funds = TotalValuesFundsSchema(
-        source='totalvaluesfunds', read_only=True, exclude=('fund_id',))
-
-    values_funds_integrations = TotalValuesFundsIntegrationsSchema(
-        source='totalvaluesfundsintegrations', read_only=True, exclude=('fund_id',))
+    statement = StatementDocumentSchema(source='statementdocument', exclude=('fund_id', 'status'), write_only=True)
 
     class Meta:
-        model = Funds
+        model = FundDocument
         exclude = ('calculation',)
 
     def validate(self, data):
@@ -148,7 +140,8 @@ class FundsSchema(AbstractDescriptionSchema):
         name = data.get('name')
         calculation_id = data.get('calculation_id')
 
-        if Funds.objects.filter(calculation_id=calculation_id, name=name).exists():
+        if FundDocument.objects.filter(calculation_id=calculation_id, name=name).exists():
             raise serializers.ValidationError(['Verba já cadastrada'])
 
-        return super(FundsSchema, self).validate(data)
+        data['statement_document'] = data.pop('statementdocument')
+        return super(FundDocumentSchema, self).validate(data)

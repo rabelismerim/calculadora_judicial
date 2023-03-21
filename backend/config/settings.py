@@ -123,8 +123,10 @@ INSTALLED_APPS = [
     'calculation.statement_pf',  # Extrato contábil PF
     'calculation.statement_pj',  # Extrato contábil PJ
     'calculation.comparative',  # Comparativo
+    'calculation.funds.document',  # Verbas documento
+    'calculation.funds.integrations',  # Verbas Integratórias
 
-    # Rate - Indice
+    # Rate - Índice
     'rates',
 
 ]

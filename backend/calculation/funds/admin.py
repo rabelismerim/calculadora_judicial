@@ -18,19 +18,9 @@ admin.site.register(Funds)
 
 from django.contrib import admin
 
-from calculation.funds.models import Days, Interest, Fine, AmountDue, Funds, StatementIntegrations, StatementFunds, \
-    StatementIRRF, StatementDocuments, MonetaryCorrection, MonetaryCorrectionIntegrations, MonetaryCorrectionDocuments, \
-    TotalValuesIRRF, TotalValuesFunds, TotalValuesFundsIntegrations, ArrearsCharges
+from calculation.funds.models import Funds, StatementFunds, MonetaryCorrection, TotalValuesFunds
 
-admin.site.register(Days)
-admin.site.register(Interest)
-admin.site.register(Fine)
-admin.site.register(AmountDue)
 admin.site.register(Funds)
-admin.site.register(StatementIRRF)
-admin.site.register(MonetaryCorrectionDocuments)
-admin.site.register(TotalValuesIRRF)
-admin.site.register(ArrearsCharges)
 
 readonly_fields = ['corrected_value', 'index_data_base', 'index_recovering']
 
@@ -62,30 +52,7 @@ class StatementFundsAdmin(AbstractStatementFundsAdmin):
     """
 
 
-class StatementFundsIntegrationsAdmin(AbstractStatementFundsAdmin):
-    """
-    A ModelAdmin class containing the definition of fields displayed in the
-    admin interface for the Comparative instance.
-    """
-
-
-class StatementDocumentsAdmin(AbstractStatementFundsAdmin):
-    """
-    A ModelAdmin class containing the definition of fields displayed in the
-    admin interface for the Comparative instance.
-    """
-    readonly_fields = readonly_fields + ['days', 'has_tax', 'default_interest', 'fine']
-
-
 class MonetaryCorrectionAdmin(admin.ModelAdmin):
-    """
-    A ModelAdmin class containing the definition of fields displayed in the
-    admin interface for the Comparative instance.
-    """
-    readonly_fields = ('corrected_value',)
-
-
-class MonetaryCorrectionIntegrationsAdmin(admin.ModelAdmin):
     """
     A ModelAdmin class containing the definition of fields displayed in the
     admin interface for the Comparative instance.
@@ -101,18 +68,6 @@ class TotalValuesFundsAdmin(admin.ModelAdmin):
     readonly_fields = ('total_corrected', 'total_historical', 'total_dsr_reflexes', 'total_accurate')
 
 
-class TotalValuesFundsIntegrationsAdmin(admin.ModelAdmin):
-    """
-    A ModelAdmin class containing the definition of fields displayed in the
-    admin interface for the Comparative instance.
-    """
-    readonly_fields = ('total_corrected', 'total_historical')
-
-
 admin.site.register(MonetaryCorrection, MonetaryCorrectionAdmin)
-admin.site.register(MonetaryCorrectionIntegrations, MonetaryCorrectionIntegrationsAdmin)
 admin.site.register(StatementFunds, StatementFundsAdmin)
-admin.site.register(StatementIntegrations, StatementFundsIntegrationsAdmin)
 admin.site.register(TotalValuesFunds, TotalValuesFundsAdmin)
-admin.site.register(TotalValuesFundsIntegrations, TotalValuesFundsIntegrationsAdmin)
-admin.site.register(StatementDocuments, StatementDocumentsAdmin)

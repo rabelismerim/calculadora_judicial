@@ -1,0 +1,252 @@
+"""
+Defines an model for objects.
+Inherits from AbstractModel, which provides common fields such as id, created_at,
+and updated_at. Does not add any additional fields, so should be subclassed
+to add specific fields as needed.
+"""
+
+import datetime
+
+from django.db import models
+from django.dispatch import receiver
+from django.utils.translation import gettext_lazy as _
+
+from calculation.comparative.signals import gen_statement_documents
+from calculation.funds.models import AbstractFunds, AbstractStatement, AbstractMonetaryCorrection, \
+    AbstractTotalValuesFunds
+
+
+class FundDocument(AbstractFunds):
+    class Meta:
+        verbose_name = _('Fund document')
+        verbose_name_plural = _('Funds document')
+
+    def get_total_funds(self):
+        """
+        This method returns the TotalValuesFunds object associated with the current fund object. If the object does
+        not exist, it creates one and returns it.
+        """
+        if hasattr(self, 'totalvaluesdocument'):
+            return self.totalvaluesdocument
+        return TotalValuesDocument.objects.get_or_create(fund=self)[0]
+
+    def gen_total(self):
+        """
+        This method generates the total statements for the current fund by calling the set_total() method of the
+        TotalValuesFunds object associated with it.
+        """
+        total_funds = self.get_total_funds()
+        total_funds.set_total()
+
+
+class StatementDocument(AbstractStatement):
+    """
+    A model class that represents a financial statement for a fund.
+
+    This class inherits from the AbstractStatement class and represents a financial statement for a fund. It has the
+    same attributes as the AbstractStatement class, which include a Data base date, historical value, and a foreign
+    key relationship to a Funds object.
+
+    In <Excel>, it refers to each data that can be inserted in the document table on the accounting statement sheets (
+    document)
+
+    Attributes:
+        This class has the same attributes as the AbstractStatement class.
+
+    Methods:
+        This class does not define any methods.
+    """
+    number = models.CharField(_('Número do documento'), max_length=100)
+    fund = models.OneToOneField(FundDocument, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f'{self.data_base} - {self.historical_value}'
+
+    def has_tax(self):
+        data_base = self.get_data_base()
+        date_rj = self.fund.calculation.get_date_rj()
+        if not date_rj:
+            self.set_error_rj()
+            return False
+        return data_base <= date_rj
+
+    @staticmethod
+    def __days360(start_date, end_date) -> int:
+        if start_date.day == 31:
+            start_date = start_date.replace(day=30)
+        if end_date.day == 31 and (start_date.day == 30 or start_date.day == 31):
+            end_date = end_date.replace(day=30)
+        elif end_date.day == 31:
+            end_date = end_date.replace(day=1)
+            end_date = end_date + datetime.timedelta(days=1)
+        return (end_date.year - start_date.year) * 360 + \
+               (end_date.month - start_date.month) * 30 + \
+               (end_date.day - start_date.day)
+
+    @property
+    def days(self):
+        if self.has_tax():
+            data_base = self.get_data_base()
+            date_rj = self.fund.calculation.get_date_rj()
+            if not date_rj:
+                self.set_error_rj()
+                return 0
+            return self.__days360(data_base, date_rj)
+        return 0
+
+    @staticmethod
+    def _calc_default_interest(corrected_value, default_interest, days) -> float:
+        return (corrected_value * (default_interest / 30) * days) / 100
+
+    @property
+    def default_interest(self):
+        default_interest = self.fund.calculation.get_default_interest()
+        corrected_value = self.get_corrected_value()
+        if corrected_value * self.days * default_interest == 0:
+            return 0
+        return self._calc_default_interest(corrected_value, default_interest, self.days)
+
+    @property
+    def total_due(self) -> float:
+        return sum([self.get_fine(), self.get_default_interest(), self.get_corrected_value()])
+
+    @staticmethod
+    def _calc_fine(corrected_value, fine, default_interest) -> float:
+        return (corrected_value + default_interest * fine) / 100
+
+    @property
+    def fine(self):
+        fine = self.fund.calculation.get_fine()
+        corrected_value = self.get_corrected_value()
+        default_interest = self.default_interest
+        if corrected_value * default_interest * fine == 0:
+            return 0
+        return self._calc_fine(corrected_value, fine, default_interest)
+
+    class Meta:
+        verbose_name = _('Statement Document')
+        verbose_name_plural = _('Statement Documents')
+
+    def has_monetary_correction(self) -> bool:
+        """Returns True if the monetary correction exists for the statement."""
+        return hasattr(self, 'monetarycorrectiondocument')
+
+    def get_monetary_correction(self):
+        """Returns the `monetarycorrection` attribute value"""
+        if self.has_monetary_correction():
+            return self.monetarycorrectiondocument
+
+    def calcule_monetary_correction(self):
+        """Retrieves the corrected value of the statement if the monetary correction exists."""
+        data = self._get_index_monetary_correction()
+        if data:
+            MonetaryCorrectionDocument.objects.update_or_create(defaults=data, **{'statement': self})
+            self.set_calculation_done()
+
+    def get_corrected_value(self) -> float:
+        """Returns corrected value if the monetary correction exists for the statement, else 0"""
+        if self.has_monetary_correction():
+            return self.monetarycorrectiondocument.corrected_value
+        return 0
+
+    def get_default_interest(self) -> float:
+        """Returns default interest value for the statement"""
+        return self.default_interest
+
+    def get_total_due(self) -> float:
+        """Returns total_due value  for the statement"""
+        return self.total_due
+
+    def get_fine(self) -> float:
+        """Returns fine value  for the statement"""
+        return self.fine
+
+    def save(self, send_signal_post_save=True, *args, **kwargs):
+        """
+        Save the instance of AbstractStatementFunds and calculate its dtt value
+        Calculates the value of dtt using the get_dtt_value() method.
+        """
+        super(StatementDocument, self).save(*args, **kwargs)
+        if send_signal_post_save:
+            gen_statement_documents.send(sender=self.__class__, instance=self)
+
+
+class MonetaryCorrectionDocument(AbstractMonetaryCorrection):
+    """
+    A class that represents a monetary correction for a statement of integrations.
+
+    In <Excel>, it refers to each piece of data that can be inserted in the document table on the accounting statement
+    sheets (document)
+
+    Attributes:
+        statement (StatementIntegrations): The statement of integrations to which the monetary correction applies.
+    """
+    statement = models.OneToOneField(StatementDocument, on_delete=models.PROTECT)
+
+    @property
+    def corrected_value(self) -> float:
+        """Returns corrected value calculated"""
+        total_value = self._get_statement().get_total_value()
+        if total_value == 0:
+            return 0
+        return self.index_recovering / self.index_data_base * total_value
+
+    class Meta:
+        verbose_name = _('Monetary Correction Document')
+        verbose_name_plural = _('Monetary Corrections Documents')
+
+
+class TotalValuesDocument(AbstractTotalValuesFunds):
+    """
+    A class that represents the total values of a fund, which is a concrete implementation of AbstractTotalValuesFunds.
+
+    Attributes:
+        total_historical (float): The historical value of the fund.
+        total_corrected (float): The corrected value of the fund.
+        total_dsr_reflexes (float): The drs reflexes value of the fund.
+        total_accurate (float): The total accurate value of the fund.
+        fund (Funds): The fund to which the values apply.
+
+    Methods:
+        get_calculated_statement(): Returns the calculated statement of the fund.
+        set_total(): Calculates and sets the total corrected and historical values of the fund based on the calculated statement.
+    """
+    fund = models.OneToOneField(FundDocument, on_delete=models.PROTECT)
+    total_default_interest = models.FloatField(_('Total juros'), default=0)
+    total_fine = models.FloatField(_('Total multa'), default=0)
+    total_due = models.FloatField(_('Total devido'), default=0)
+
+    def get_calculated_statement(self):
+        """Returns the calculated statement of the fund."""
+        if hasattr(self.fund, 'statementdocument') and self.fund.statementdocument.status == 'C':
+            return self.fund.statementdocument
+
+    def set_total(self):
+        """
+        Calculates and sets the total corrected, default_interest, fine and historical values of the fund based on
+        the calculated statement.
+        """
+        statement = self.get_calculated_statement()
+        if statement:
+            self.total_historical = statement.get_total_value()
+            self.total_corrected = statement.get_corrected_value()
+            self.total_default_interest = statement.get_default_interest()
+            self.total_fine = statement.get_fine()
+            self.total_due = statement.get_total_due()
+            self.save()
+
+    class Meta:
+        verbose_name = _('Total value document')
+        verbose_name_plural = _('Total values documents')
+
+
+@receiver(gen_statement_documents, sender=StatementDocument)
+def save_rate_documents(sender, instance, **kwargs) -> None:
+    """
+    This method is a receiver for post_save signal and is triggered when a StatementIntegrations object is saved. It
+    calculates the monetary correction for the instance and generates the total integrations of the related fund. It
+    takes the sender and instance as arguments
+    """
+    print('Signal gerar linha extrato verbas documentos\n')
+    instance.calcule_monetary_correction()
+    instance.fund.gen_total()
