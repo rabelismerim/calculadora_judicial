@@ -11,12 +11,13 @@ StatementIntegrations extends AbstractStatement and includes a description field
 import datetime
 
 from django.db import models
+from django.db.models import FloatField
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
 from calculation.comparative.signals import gen_total_statement_funds, gen_statement_funds, gen_total_funds, \
-    gen_statement_integrations
+    gen_statement_integrations, gen_statement_documents
 from calculation.models import Calculation
 from core.abstract.models import AbstractModel
 from dateutil.relativedelta import relativedelta
@@ -120,7 +121,6 @@ class AbstractStatement(AbstractModel):
     # Sumula 381 se refere a cálculos trabalhistas em que o pagamento de salário se dá no mês subsequente ao trabalhado.
     # Sendo necessário adicionar um mês na hora de calcular o valor
     # TODO: Verificar automaticamente se é ou não verba para aplicar a sumula
-    summary = models.BooleanField(_('Aplicar súmula 381?'), default=False)
     fund = models.ForeignKey(Funds, on_delete=models.PROTECT)
     status = models.CharField(_('Status do cálculo'), max_length=1, choices=CHOICES_STATUS_FUND, default='S')
 
@@ -152,9 +152,10 @@ class AbstractStatement(AbstractModel):
             raise ValueError(_(f'O status {value} não corresponde a nenhum status válido'))
 
     def _set_status(self, value: str):
-        """Sets the status of the calculation"""
-        # override method in inheritance
-        raise NotImplementedError('override method in inheritance')
+        """Sets the status of the statement with the given value."""
+        self._check_status_choice(value)
+        self.status = value
+        self.save(send_signal_post_save=False)
 
     def _get_index_monetary_correction(self) -> dict or None:
         """Retrieves the monetary correction from a financial statement. It gets the calculation, data and rate
@@ -192,15 +193,15 @@ class AbstractStatement(AbstractModel):
         Returns:
             datetime object: The data base.
         """
-        if self.summary:
+        if hasattr(self, 'summary') and self.summary:
             return self.data_base + relativedelta(months=1)
         return self.data_base
 
-    def get_total_value(self) -> float:
+    def get_total_value(self) -> FloatField:
         """Returns the `historical_value` attribute value"""
         return self.historical_value
 
-    def get_historical_value(self) -> float:
+    def get_historical_value(self) -> FloatField:
         """Returns the `historical_value` attribute value"""
         return self.historical_value
 
@@ -239,6 +240,7 @@ class StatementFunds(AbstractStatement):
     in the class that inherits or implements the 'AbstractStatement' class.
     """
     dsr_reflexes = models.FloatField(_('Reflexos DSR'), default=0)  # DRS - Descanso semanal remunerado
+    summary = models.BooleanField(_('Aplicar súmula 381?'), default=False)
 
     class Meta:
         verbose_name = _('Statement Fund')
@@ -253,7 +255,7 @@ class StatementFunds(AbstractStatement):
         # TODO: check if template has option dsr_reflexes checked
         return self.historical_value + self.dsr_reflexes
 
-    def get_dsr_reflexes(self) -> float:
+    def get_dsr_reflexes(self) -> FloatField:
         """Returns the `dsr_reflexes` attribute value"""
         return self.dsr_reflexes
 
@@ -275,21 +277,11 @@ class StatementFunds(AbstractStatement):
         if self.has_monetary_correction():
             return self.monetarycorrection
 
-    def _set_status(self, value: str):
-        """Sets the status of the statement with the given value."""
-        self._check_status_choice(value)
-        self.status = value
-        self.save(send_signal_post_save=False)
-
     def calcule_monetary_correction(self):
         """Retrieves the corrected value of the statement if the monetary correction exists, or else returns 0."""
         data = self._get_index_monetary_correction()
         if data:
-            if self.has_monetary_correction():
-                self.monetarycorrection.dict_update(data)
-            else:
-                data['statement'] = self
-                MonetaryCorrection.objects.get_or_create(defaults=data, **{'statement': self})
+            MonetaryCorrection.objects.update_or_create(defaults=data, **{'statement': self})
             self.set_calculation_done()
 
     def get_corrected_value(self) -> float:
@@ -325,6 +317,7 @@ class StatementIntegrations(AbstractStatement):
         defined in the class that inherits or implements the 'AbstractStatement' class.
     """
     description = models.CharField(_('Descrição da verba'), max_length=150)
+    summary = models.BooleanField(_('Aplicar súmula 381?'), default=False)
 
     class Meta:
         verbose_name = _('Statement Fund Integration')
@@ -339,21 +332,11 @@ class StatementIntegrations(AbstractStatement):
         if self.has_monetary_correction():
             return self.monetarycorrectionintegrations
 
-    def _set_status(self, value: str):
-        """Sets the status of the statement with the given value."""
-        self._check_status_choice(value)
-        self.status = value
-        self.save(send_signal_post_save=False)
-
     def calcule_monetary_correction(self):
         """Retrieves the corrected value of the statement if the monetary correction exists, or else returns 0."""
         data = self._get_index_monetary_correction()
         if data:
-            if self.has_monetary_correction():
-                self.monetarycorrectionintegrations.dict_update(data)
-            else:
-                data['statement'] = self
-                MonetaryCorrectionIntegrations.objects.get_or_create(defaults=data, **{'statement': self})
+            MonetaryCorrectionIntegrations.objects.update_or_create(defaults=data, **{'statement': self})
             self.set_calculation_done()
 
     def get_corrected_value(self) -> float:
@@ -413,16 +396,102 @@ class StatementDocuments(AbstractStatement):
         This class does not define any methods.
     """
     number = models.CharField(_('Número do documento'), max_length=100)
-    data_base = models.DateField('Data base')
-    historical_value = models.FloatField(_('Valor histórico'))
     fund = models.OneToOneField(Funds, on_delete=models.PROTECT)
 
     def __str__(self):
         return f'{self.data_base} - {self.historical_value}'
 
+    def has_tax(self):
+        data_base = self.get_data_base()
+        date_rj = self.fund.calculation.get_date_rj()
+        if not date_rj:
+            self.set_error_rj()
+            return False
+        return data_base <= date_rj
+
+    @staticmethod
+    def __days360(start_date, end_date) -> int:
+        if start_date.day == 31:
+            start_date = start_date.replace(day=30)
+        if end_date.day == 31 and (start_date.day == 30 or start_date.day == 31):
+            end_date = end_date.replace(day=30)
+        elif end_date.day == 31:
+            end_date = end_date.replace(day=1)
+            end_date = end_date + datetime.timedelta(days=1)
+        return (end_date.year - start_date.year) * 360 + \
+               (end_date.month - start_date.month) * 30 + \
+               (end_date.day - start_date.day)
+
+    @property
+    def days(self):
+        if self.has_tax():
+            data_base = self.get_data_base()
+            date_rj = self.fund.calculation.get_date_rj()
+            if not date_rj:
+                self.set_error_rj()
+                return 0
+            return self.__days360(data_base, date_rj)
+        return 0
+
+    @staticmethod
+    def _calc_default_interest(corrected_value, default_interest, days) -> float:
+        return (corrected_value * (default_interest / 30) * days) / 100
+
+    @property
+    def default_interest(self):
+        default_interest = self.fund.calculation.get_default_interest()
+        corrected_value = self.get_corrected_value()
+        if corrected_value * self.days * default_interest == 0:
+            return 0
+        return self._calc_default_interest(corrected_value, default_interest, self.days)
+
+    @staticmethod
+    def _calc_fine(corrected_value, fine, default_interest) -> float:
+        return (corrected_value + default_interest * fine) / 100
+
+    @property
+    def fine(self):
+        fine = self.fund.calculation.get_fine()
+        corrected_value = self.get_corrected_value()
+        default_interest = self.default_interest
+        if corrected_value * default_interest * fine == 0:
+            return 0
+        return self._calc_fine(corrected_value, fine, default_interest)
+
     class Meta:
         verbose_name = _('Statement Document')
         verbose_name_plural = _('Statement Documents')
+
+    def has_monetary_correction(self) -> bool:
+        """Returns True if the monetary correction exists for the statement."""
+        return hasattr(self, 'monetarycorrectiondocuments')
+
+    def get_monetary_correction(self):
+        """Returns the `monetarycorrection` attribute value"""
+        if self.has_monetary_correction():
+            return self.monetarycorrectiondocuments
+
+    def calcule_monetary_correction(self):
+        """Retrieves the corrected value of the statement if the monetary correction exists."""
+        data = self._get_index_monetary_correction()
+        if data:
+            MonetaryCorrectionDocuments.objects.update_or_create(defaults=data, **{'statement': self})
+            self.set_calculation_done()
+
+    def get_corrected_value(self) -> float:
+        """Returns corrected value if the monetary correction exists for the statement, else 0"""
+        if self.has_monetary_correction():
+            return self.monetarycorrectiondocuments.corrected_value
+        return 0
+
+    def save(self, send_signal_post_save=True, *args, **kwargs):
+        """
+        Save the instance of AbstractStatementFunds and calculate its dtt value
+        Calculates the value of dtt using the get_dtt_value() method.
+        """
+        super(StatementDocuments, self).save(*args, **kwargs)
+        if send_signal_post_save:
+            gen_statement_documents.send(sender=self.__class__, instance=self)
 
 
 class AbstractMonetaryCorrection(AbstractModel):
@@ -435,26 +504,31 @@ class AbstractMonetaryCorrection(AbstractModel):
         index_recovering (float): The index value at the recovery date for the correction.
         corrected_value (float): The corrected value obtained by applying the correction factors.
     Methods:
-        __get_statement: Return statement object associated with the current fund object
+        _get_statement: Return statement object associated with the current fund object
         """
     index_data_base = models.FloatField(_('Índice na Data base'))
     index_recovering = models.FloatField(_('Índice na recuperação'))
 
-    def __get_statement(self):
+    def _get_statement(self):
         """
         This method returns the statement object associated with the current fund object. If the
         object does not exist, it raize implemented error.
         """
         if hasattr(self, 'statement') is False or self.statement is None:
-            raise NotImplementedError('Necessário o relacionamento OneToOneField para o StatementFunds')
+            raise NotImplementedError('Necessário o relacionamento OneToOneField para o Statement')
         return self.statement
+
+    @staticmethod
+    def _calc_corrected_value(index_recovering, index_data_base, total_value) -> float:
+        return index_recovering / index_data_base * total_value
 
     @property
     def corrected_value(self) -> float:
         """Returns corrected value calculated"""
-        total_value = self.__get_statement().get_total_value()
-        corrected_value = self.index_recovering / self.index_data_base * total_value if total_value > 0 else 0
-        return corrected_value
+        total_value = self._get_statement().get_total_value()
+        if total_value == 0:
+            return 0
+        return self._calc_corrected_value(self.index_recovering, self.index_data_base, total_value)
 
     class Meta:
         abstract = True
@@ -510,6 +584,14 @@ class MonetaryCorrectionDocuments(AbstractMonetaryCorrection):
     """
     statement = models.OneToOneField(
         StatementDocuments, on_delete=models.PROTECT)
+
+    @property
+    def corrected_value(self) -> float:
+        """Returns corrected value calculated"""
+        total_value = self._get_statement().get_total_value()
+        if total_value == 0:
+            return 0
+        return self.index_recovering / self.index_data_base * total_value
 
     class Meta:
         verbose_name = _('Monetary Correction Document')
@@ -783,6 +865,18 @@ def save_rate_integrations(sender, instance, **kwargs) -> None:
     print('Signal gerar linha extrato verbas integratorias\n')
     instance.calcule_monetary_correction()
     instance.fund.gen_total_integrations()
+
+
+@receiver(gen_statement_documents, sender=StatementDocuments)
+def save_rate_documents(sender, instance, **kwargs) -> None:
+    """
+    This method is a receiver for post_save signal and is triggered when a StatementIntegrations object is saved. It
+    calculates the monetary correction for the instance and generates the total integrations of the related fund. It
+    takes the sender and instance as arguments
+    """
+    print('Signal gerar linha extrato verbas documentos\n')
+    instance.calcule_monetary_correction()
+    # instance.fund.gen_total_integrations()
 
 # class Template(AbstractModel):
 #     fund_name = models.CharField(_('Verbas'), max_length=150)

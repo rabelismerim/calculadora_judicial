@@ -28,10 +28,11 @@ admin.site.register(Fine)
 admin.site.register(AmountDue)
 admin.site.register(Funds)
 admin.site.register(StatementIRRF)
-admin.site.register(StatementDocuments)
 admin.site.register(MonetaryCorrectionDocuments)
 admin.site.register(TotalValuesIRRF)
 admin.site.register(ArrearsCharges)
+
+readonly_fields = ['corrected_value', 'index_data_base', 'index_recovering']
 
 
 class AbstractStatementFundsAdmin(admin.ModelAdmin):
@@ -39,7 +40,7 @@ class AbstractStatementFundsAdmin(admin.ModelAdmin):
     A ModelAdmin class containing the definition of fields displayed in the
     admin interface for the Comparative instance.
     """
-    readonly_fields = ('corrected_value', 'index_data_base', 'index_recovering')
+    readonly_fields = readonly_fields
 
     @admin.display(description='Valor corrigido')
     def corrected_value(self, model):
@@ -66,6 +67,14 @@ class StatementFundsIntegrationsAdmin(AbstractStatementFundsAdmin):
     A ModelAdmin class containing the definition of fields displayed in the
     admin interface for the Comparative instance.
     """
+
+
+class StatementDocumentsAdmin(AbstractStatementFundsAdmin):
+    """
+    A ModelAdmin class containing the definition of fields displayed in the
+    admin interface for the Comparative instance.
+    """
+    readonly_fields = readonly_fields + ['days', 'has_tax', 'default_interest', 'fine']
 
 
 class MonetaryCorrectionAdmin(admin.ModelAdmin):
@@ -106,3 +115,4 @@ admin.site.register(StatementFunds, StatementFundsAdmin)
 admin.site.register(StatementIntegrations, StatementFundsIntegrationsAdmin)
 admin.site.register(TotalValuesFunds, TotalValuesFundsAdmin)
 admin.site.register(TotalValuesFundsIntegrations, TotalValuesFundsIntegrationsAdmin)
+admin.site.register(StatementDocuments, StatementDocumentsAdmin)
