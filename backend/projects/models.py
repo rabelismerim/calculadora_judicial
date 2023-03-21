@@ -32,7 +32,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
 
     project_start = models.DateField(null=True, blank=True)
     project_end = models.DateField(null=True, blank=True)
-    process_number = models.CharField("Número do processo", max_length=15)
+    process_number = models.CharField("Número do processo", max_length=25)
 
     status = models.CharField(
         default="E", max_length=1, choices=STATUS_CHOICES)
