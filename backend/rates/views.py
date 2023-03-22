@@ -81,7 +81,8 @@ class RateFileApi(AbstractViewApi):
 
         if rows == False:
             raise serializers.ValidationError(
-                [f'O arquivo {filename} não contêm os campos corretos. Necessário ao menos a coluna mes e indice, acumulado e periodo são opcionais'])
+                [
+                    f'O arquivo {filename} não contêm os campos corretos. Necessário ao menos a coluna mes e indice, acumulado e periodo são opcionais'])
 
         if len(rows) == 0:
             raise serializers.ValidationError(

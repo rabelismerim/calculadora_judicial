@@ -112,8 +112,9 @@ class StatementFunds(AbstractStatement):
 
     def save(self, send_signal_post_save=True, *args, **kwargs):
         """
-        Save the instance of AbstractStatementFunds and calculate its dtt value
-        Calculates the value of dtt using the get_dtt_value() method.
+        Save the StatementFunds object and send a post-save signal.
+        Args:
+            send_signal_post_save (bool): Set to True to send a post-save signal. Default is True.
         """
         super(StatementFunds, self).save(*args, **kwargs)
         if send_signal_post_save:

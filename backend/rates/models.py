@@ -1,7 +1,10 @@
 import datetime
 
 import pandas as pd
+from django.core.validators import MinLengthValidator
 from django.db import models
+from rest_framework.exceptions import ValidationError
+
 from config.settings import RATE_FILE_TYPES
 
 from core.abstract.models import AbstractModel
@@ -177,3 +180,31 @@ class RateFile(AbstractModel):
     @property
     def index(self):
         return self.rate.index
+
+
+def validate_reference_year(value):
+    if not value.isnumeric():
+        raise ValidationError('O ano de referência deve ser um número inteiro.')
+    if int(value) < 1984:
+        raise ValidationError('O ano de referência deve ser a partir de 1984.')
+
+
+class IndiceIRRF(AbstractModel):
+    reference_year = models.CharField(_('Ano de referência'), max_length=4,
+                                      validators=[validate_reference_year, MinLengthValidator(4)])
+    start = models.FloatField(_('De'))
+    end = models.FloatField(_('Até'))
+    aliquot = models.FloatField(_('Alíquota'))
+    deduction = models.FloatField(_('Dedução'))
+
+    def __str__(self):
+        return f"{self.start} | {self.end} | {self.aliquot} | {self.deduction}"
+
+    class Meta:
+        verbose_name = _("Índice IRRF")
+        verbose_name_plural = _("Índices IRRF")
+        ordering = ('created_at',)
+
+
+def get_aliquot_by_tax(taxable_portion: float) -> float or None:
+    return IndiceIRRF.objects.filter(start__lte=taxable_portion, end__gte=taxable_portion).first()

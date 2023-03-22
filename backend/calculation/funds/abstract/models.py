@@ -19,23 +19,11 @@ from dateutil.relativedelta import relativedelta
 
 class AbstractFunds(AbstractModel):
     """
-    A model class that represents Funds.
-
-    This class inherits from the AbstractModel class and represents a fund with a name and a foreign key relationship
-    to a Calculation object. The 'name' attribute is a character field with a maximum length of 50, and represents
-    the name of the fund. The 'calculation' attribute is a foreign key relationship to a Calculation object and
-    ensures that the relationship is protected upon deletion.
-
-    In <<Excel>>, it refers to the budget sheets (tst, irrf, moral damages, etc.)
-
-    Attributes:
-        name (CharField): Represents the name of the fund. calculation (ForeignKey): Represents a foreign key
-        relationship to a Calculation object.
-
-    Methods:
-        This class does not define any methods.
+    This class represents an abstract model for funds. It inherits from AbstractModel
+    and has the attributes 'name' and 'calculation', which represent the name of the
+    fund and the calculation method used, respectively. This class is abstract, so it
+    should not be instantiated directly.
     """
-
     name = models.CharField(_('Fund name'), max_length=50)
     calculation = models.ForeignKey(Calculation, on_delete=models.PROTECT)
 
@@ -47,10 +35,56 @@ class AbstractFunds(AbstractModel):
 
 
 CHOICES_STATUS_FUND = (('S', _('Solicitado')), ('C', _('Concluído')), ('E', _('Em Progresso')),
-                       ('F', _('Falha no cálculo - índice não encontrado')), ('R', _('Falha no cálculo - sem data RJ')))
+                       ('F', _('Falha no cálculo - índice não encontrado')),
+                       ('A', _('Falha no cálculo - alíquota não encontrado')),
+                       ('R', _('Falha no cálculo - sem data RJ')))
 
 
-class AbstractStatement(AbstractModel):
+class AbstractStatus(AbstractModel):
+    status = models.CharField(_('Status do cálculo'), max_length=1, choices=CHOICES_STATUS_FUND, default='S')
+
+    def set_in_progress(self):
+        """Sets the status of the calculation to 'E'. Calculation in progress"""
+        self._set_status('E')
+
+    def set_error_rj(self):
+        """Sets the status of the calculation to 'R'. Not found recovery request date"""
+        self._set_status('R')
+
+    def set_error_aliquot(self):
+        """Sets the status of the calculation to 'A'. Not found IRRF aliquot"""
+        self._set_status('A')
+
+    def set_error_indice(self):
+        """Sets the status of the calculation to 'F'. Not found rate index"""
+        self._set_status('F')
+
+    def set_calculation_done(self):
+        """Sets the status of the calculation to 'C'. Calculation success done"""
+        self._set_status('C')
+
+    @staticmethod
+    def _check_status_choice(value: str):
+        """Checks if the status value provided is valid"""
+        has_value = False
+        for string, legend in CHOICES_STATUS_FUND:
+            if value == string:
+                has_value = True
+                break
+        if not has_value:
+            raise ValueError(_(f'O status {value} não corresponde a nenhum status válido'))
+
+    def _set_status(self, value: str):
+        """Sets the status of the statement with the given value."""
+        self._check_status_choice(value)
+        self.status = value
+        self.save(send_signal_post_save=False)
+
+    class Meta:
+        abstract = True
+
+
+class AbstractStatement(AbstractStatus):
     """
     The `AbstractStatement` class represents an abstract financial statement model with features such as `data_base`
     field that represents the date of the statement, `historical_value` field that represents the historical value of
@@ -81,40 +115,6 @@ class AbstractStatement(AbstractModel):
     # Sendo necessário adicionar um mês na hora de calcular o valor
     # TODO: Verificar automaticamente se é ou não verba para aplicar a sumula
     fund = models.ForeignKey('funds.Funds', on_delete=models.PROTECT)
-    status = models.CharField(_('Status do cálculo'), max_length=1, choices=CHOICES_STATUS_FUND, default='S')
-
-    def set_in_progress(self):
-        """Sets the status of the calculation to 'E'."""
-        self._set_status('E')
-
-    def set_error_rj(self):
-        """Sets the status of the calculation to 'R'."""
-        self._set_status('R')
-
-    def set_error_indice(self):
-        """Sets the status of the calculation to 'F'."""
-        self._set_status('F')
-
-    def set_calculation_done(self):
-        """Sets the status of the calculation to 'C'."""
-        self._set_status('C')
-
-    @staticmethod
-    def _check_status_choice(value: str):
-        """Checks if the status value provided is valid"""
-        has_value = False
-        for string, legend in CHOICES_STATUS_FUND:
-            if value == string:
-                has_value = True
-                break
-        if not has_value:
-            raise ValueError(_(f'O status {value} não corresponde a nenhum status válido'))
-
-    def _set_status(self, value: str):
-        """Sets the status of the statement with the given value."""
-        self._check_status_choice(value)
-        self.status = value
-        self.save(send_signal_post_save=False)
 
     def _get_index_monetary_correction(self) -> dict or None:
         """Retrieves the monetary correction from a financial statement. It gets the calculation, data and rate

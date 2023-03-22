@@ -17,7 +17,19 @@ admin.site.register(Irrf)
 
 from django.contrib import admin
 
-from calculation.funds.irrf.models import StatementIRRF, TotalValuesIRRF
+from calculation.funds.irrf.models import StatementIRRF, TotalValuesIRRF, FundIRRF
 
+admin.site.register(FundIRRF)
 admin.site.register(StatementIRRF)
-admin.site.register(TotalValuesIRRF)
+
+
+class TotalValuesIRRFAdmin(admin.ModelAdmin):
+    """
+    A ModelAdmin class containing the definition of fields displayed in the
+    admin interface for the TotalValuesIRRF instance.
+    """
+    readonly_fields = (
+        'taxable_amount', 'taxable_portion', 'aliquot', 'installment_deducted', 'irrf_per_month', 'irrf_per_period')
+
+
+admin.site.register(TotalValuesIRRF, TotalValuesIRRFAdmin)

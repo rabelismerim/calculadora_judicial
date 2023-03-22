@@ -16,7 +16,7 @@ Attributes:
 from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
 
-from calculation.funds.irrf.models import StatementIRRF, TotalValuesIRRF
+from calculation.funds.irrf.models import StatementIRRF, TotalValuesIRRF, FundIRRF
 
 
 class StatementIRRFSchema(AbstractDescriptionSchema):
@@ -31,6 +31,25 @@ class StatementIRRFSchema(AbstractDescriptionSchema):
     class Meta:
         model = StatementIRRF
         exclude = ('fund',)
+        read_only_fields = ('status', 'status_display')
+
+
+class StatementIRRFUpdateSchema(AbstractDescriptionSchema):
+    """
+    A schema for serializing and deserializing StatementIntegrations instances.
+
+    Attributes:
+        fund_id (serializers.UUIDField): The UUID of the related fund.
+    """
+    fund_id = serializers.UUIDField(read_only=True)
+
+    class Meta:
+        model = StatementIRRF
+        exclude = ('fund',)
+        read_only_fields = ('status', 'status_display')
+        extra_kwargs = {"taxable_amounts": {"required": False, "allow_null": True},
+                        "fund_name": {"required": False, "allow_null": True},
+                        }
 
 
 class TotalValuesIRRFSchema(AbstractDescriptionSchema):
@@ -43,7 +62,57 @@ class TotalValuesIRRFSchema(AbstractDescriptionSchema):
     fund_id = serializers.UUIDField(read_only=True)
     funds = StatementIRRFSchema(
         many=True, source='fund.statementirrf_set', exclude=('fund_id',), required=False)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
 
     class Meta:
         model = TotalValuesIRRF
         exclude = ('fund',)
+
+    def validate(self, data):
+        """
+        Validate the given data for the TotalValuesIRRF object and raise a `serializers.ValidationError` if any
+        validation fails.
+        """
+        data['status'] = 'S'
+        return super(TotalValuesIRRFSchema, self).validate(data)
+
+
+class FundIRRFSchema(AbstractDescriptionSchema):
+    """
+    A schema for serializing and deserializing FundIRRF instances.
+
+    Attributes: calculation_id (serializers.UUIDField): The UUID of the related calculation. statement_funds (
+    StatementFundIRRFSchema): The schema for serializing and deserializing StatementFundIRRF instances.
+    statement_integrations (StatementIntegrationsSchema): The schema for serializing and deserializing
+    StatementIntegrations instances. statement_irrf (StatementIRRFSchema): The schema for serializing and
+    deserializing StatementIRRF instances.
+    """
+    calculation_id = serializers.UUIDField()
+    values_funds = TotalValuesIRRFSchema(
+        source='totalvaluesirrf', read_only=True, exclude=('fund_id',))
+
+    class Meta:
+        model = FundIRRF
+        exclude = ('calculation',)
+
+    def validate(self, data):
+        """
+        Validate the given data for the FundIRRF object and raise a `serializers.ValidationError` if any validation fails.
+
+        Args:
+            self: The object instance.
+            data: A dictionary containing the data to be validated.
+
+        Returns:
+            Returns the validated data if all validations pass.
+
+        Raises: serializers.ValidationError: If the validation fails due to any of the following reasons: - The FundIRRF
+        object with the given name and calculation_id already exists.
+        """
+        name = data.get('name')
+        calculation_id = data.get('calculation_id')
+
+        if FundIRRF.objects.filter(calculation_id=calculation_id, name=name).exists():
+            raise serializers.ValidationError(['Verba já cadastrada'])
+
+        return super(FundIRRFSchema, self).validate(data)

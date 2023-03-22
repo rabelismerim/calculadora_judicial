@@ -23,7 +23,7 @@ class FundDocument(AbstractFunds):
 
     def get_total_funds(self):
         """
-        This method returns the TotalValuesFunds object associated with the current fund object. If the object does
+        This method returns the TotalValuesDocument object associated with the current fund object. If the object does
         not exist, it creates one and returns it.
         """
         if hasattr(self, 'totalvaluesdocument'):
@@ -33,7 +33,7 @@ class FundDocument(AbstractFunds):
     def gen_total(self):
         """
         This method generates the total statements for the current fund by calling the set_total() method of the
-        TotalValuesFunds object associated with it.
+        TotalValuesDocument object associated with it.
         """
         total_funds = self.get_total_funds()
         total_funds.set_total()
@@ -54,7 +54,16 @@ class StatementDocument(AbstractStatement):
         This class has the same attributes as the AbstractStatement class.
 
     Methods:
-        This class does not define any methods.
+        - `has_tax()` Return True if this statement has tax; False otherwise.
+        - `__days360()` Return the number of days between the start_date and end_date using the 360-day method.
+        - `days()` Return the number of days between the statement's data_base and the date_rj, if it exists and has tax
+        - `_calc_default_interest()` Calculates the default interest based on the corrected value, default interest rate
+            , and the number of days.
+        - `default_interest()` Getter method for the default interest rate.
+        - `total_due()` Calculates the total amount due, which is the sum of the fine, default interest, and corrected
+            value.
+        - `_calc_fine()` Calculates the fine to be charged based on the corrected value, fine rate, and default interest
+        - `fine()` Getter method for the fine rate.
     """
     number = models.CharField(_('Número do documento'), max_length=100)
     fund = models.OneToOneField(FundDocument, on_delete=models.PROTECT)
@@ -63,6 +72,7 @@ class StatementDocument(AbstractStatement):
         return f'{self.data_base} - {self.historical_value}'
 
     def has_tax(self):
+        """Return True if this statement has tax; False otherwise."""
         data_base = self.get_data_base()
         date_rj = self.fund.calculation.get_date_rj()
         if not date_rj:
@@ -72,6 +82,7 @@ class StatementDocument(AbstractStatement):
 
     @staticmethod
     def __days360(start_date, end_date) -> int:
+        """Return the number of days between the start_date and end_date using the 360-day method."""
         if start_date.day == 31:
             start_date = start_date.replace(day=30)
         if end_date.day == 31 and (start_date.day == 30 or start_date.day == 31):
@@ -85,6 +96,7 @@ class StatementDocument(AbstractStatement):
 
     @property
     def days(self):
+        """Return the number of days between the statement's data_base and the date_rj, if it exists and has tax."""
         if self.has_tax():
             data_base = self.get_data_base()
             date_rj = self.fund.calculation.get_date_rj()
@@ -96,10 +108,27 @@ class StatementDocument(AbstractStatement):
 
     @staticmethod
     def _calc_default_interest(corrected_value, default_interest, days) -> float:
+        """
+        Calculates the default interest based on the corrected value, default interest rate, and the number of days.
+
+        Args:
+           corrected_value (float): The corrected value of the debt.
+           default_interest (float): The default interest rate.
+           days (int): The number of days the debt is overdue.
+
+        Returns:
+           float: The amount of default interest to be charged.
+        """
         return (corrected_value * (default_interest / 30) * days) / 100
 
     @property
     def default_interest(self):
+        """
+        Getter method for the default interest rate.
+
+        Returns:
+            float: The default interest rate to be charged.
+        """
         default_interest = self.fund.calculation.get_default_interest()
         corrected_value = self.get_corrected_value()
         if corrected_value * self.days * default_interest == 0:
@@ -108,14 +137,37 @@ class StatementDocument(AbstractStatement):
 
     @property
     def total_due(self) -> float:
+        """
+        Calculates the total amount due, which is the sum of the fine, default interest, and corrected value.
+
+        Returns:
+            float: The total amount due.
+        """
         return sum([self.get_fine(), self.get_default_interest(), self.get_corrected_value()])
 
     @staticmethod
     def _calc_fine(corrected_value, fine, default_interest) -> float:
+        """
+        Calculates the fine to be charged based on the corrected value, fine rate, and default interest.
+
+        Args:
+            corrected_value (float): The corrected value of the debt.
+            fine (float): The fine rate.
+            default_interest (float): The default interest rate.
+
+        Returns:
+            float: The amount of fine to be charged.
+        """
         return (corrected_value + default_interest * fine) / 100
 
     @property
     def fine(self):
+        """
+        Getter method for the fine rate.
+
+        Returns:
+            float: The fine rate to be charged.
+        """
         fine = self.fund.calculation.get_fine()
         corrected_value = self.get_corrected_value()
         default_interest = self.default_interest
@@ -154,17 +206,18 @@ class StatementDocument(AbstractStatement):
         return self.default_interest
 
     def get_total_due(self) -> float:
-        """Returns total_due value  for the statement"""
+        """Returns total_due value for the statement"""
         return self.total_due
 
     def get_fine(self) -> float:
-        """Returns fine value  for the statement"""
+        """Returns fine value for the statement"""
         return self.fine
 
     def save(self, send_signal_post_save=True, *args, **kwargs):
         """
-        Save the instance of AbstractStatementFunds and calculate its dtt value
-        Calculates the value of dtt using the get_dtt_value() method.
+        Save the StatementDocument object and send a post-save signal.
+        Args:
+            send_signal_post_save (bool): Set to True to send a post-save signal. Default is True.
         """
         super(StatementDocument, self).save(*args, **kwargs)
         if send_signal_post_save:
@@ -243,8 +296,8 @@ class TotalValuesDocument(AbstractTotalValuesFunds):
 @receiver(gen_statement_documents, sender=StatementDocument)
 def save_rate_documents(sender, instance, **kwargs) -> None:
     """
-    This method is a receiver for post_save signal and is triggered when a StatementIntegrations object is saved. It
-    calculates the monetary correction for the instance and generates the total integrations of the related fund. It
+    This method is a receiver for post_save signal and is triggered when a StatementDocument object is saved. It
+    calculates the monetary correction for the instance and generates the total document of the related fund. It
     takes the sender and instance as arguments
     """
     print('Signal gerar linha extrato verbas documentos\n')

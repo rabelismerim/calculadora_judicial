@@ -125,6 +125,7 @@ INSTALLED_APPS = [
     'calculation.comparative',  # Comparativo
     'calculation.funds.document',  # Verbas documento
     'calculation.funds.integrations',  # Verbas Integratórias
+    'calculation.funds.irrf',  # Verbas IRRF
 
     # Rate - Índice
     'rates',

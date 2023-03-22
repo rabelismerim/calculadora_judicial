@@ -14,9 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('irrf/', include('irrf.another_app.urls'))
 """
 from django.urls import path
-from .views import IrrfApi
 
+from calculation.funds.irrf.views import FundIRRFApi, FundIRRFDetailApi, StatementIRRFDetailApi, StatementIRRFApi
 
 urlpatterns = [
-    path('', IrrfApi.as_view(), name="irrf-list-create"),
+    path('', FundIRRFApi.as_view(), name="funds-irrf-list-create"),
+    path('<uuid:id>/', FundIRRFDetailApi.as_view(), name="document-detail"),
+    path('funds/', StatementIRRFApi.as_view(), name="statement-funds-irrf-detail"),
+    path('funds/<uuid:id>/', StatementIRRFDetailApi.as_view(), name="statement-fund-irrf-detail"),
 ]

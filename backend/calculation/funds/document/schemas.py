@@ -132,10 +132,8 @@ class FundDocumentSchema(AbstractDescriptionSchema):
         Returns:
             Returns the validated data if all validations pass.
 
-        Raises: serializers.ValidationError: If the validation fails due to any of the following reasons: - The Funds
-        object with the given name and calculation_id already exists. - Both `statement_irrf` and either of
-        `statement_funds` or `statement_integrations` are present in the data. - None of the `statement_funds`,
-        `statement_integrations`, or `statement_irrf` are present in the data.
+        Raises: serializers.ValidationError: If the validation fails due to any of the following reasons: - The FundIRRF
+        object with the given name and calculation_id already exists.
         """
         name = data.get('name')
         calculation_id = data.get('calculation_id')

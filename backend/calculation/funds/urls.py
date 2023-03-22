@@ -23,6 +23,7 @@ urlpatterns = [
     path('funds/<uuid:id>/', StatementFundsDetailApi.as_view(), name="statement-funds-detail"),
     path(f'integrations/', include("calculation.funds.integrations.urls")),
     path(f'documents/', include("calculation.funds.document.urls")),
+    path(f'irrf/', include("calculation.funds.irrf.urls")),
 
     #     path('statement/calculation/funds/<uuid:calculation_id>/', StatementFundsCalculationApi.as_view(),
     #          name="calculation-statement-funds-list"),

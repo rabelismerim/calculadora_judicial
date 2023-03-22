@@ -5,17 +5,33 @@ and updated_at. Does not add any additional fields, so should be subclassed
 to add specific fields as needed.
 """
 from django.db import models
-from django.db.models import FloatField
+from django.db.models import FloatField, PositiveIntegerField
+from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-from calculation.funds.abstract.models import AbstractFunds
+from calculation.comparative.signals import gen_statement_irrf
+from calculation.funds.abstract.models import AbstractFunds, AbstractStatus
 from core.abstract.models import AbstractModel
+from rates.models import get_aliquot_by_tax
 
 
 class FundIRRF(AbstractFunds):
+    """
+    This class represents a model for IRRF funds. It inherits from AbstractFunds and has
+    the attributes 'taxable_amount' and 'months_period', which represent the taxable amount
+    of the fund and the number of months in the investment period, respectively. The default
+    value for 'taxable_amount' is 0, and the default value for 'months_period' is 1.
+    Attributes:
+        months_period (int): The number of months in the period for the IRRF calculation.
+    """
+    months_period = models.PositiveIntegerField(_('Meses no período'), default=1)
+
     class Meta:
         verbose_name = _('Fund IRRF')
         verbose_name_plural = _('Funds IRRF')
+
+    def get_months_period(self) -> PositiveIntegerField:
+        return self.months_period
 
     def get_total_funds(self):
         """
@@ -34,6 +50,9 @@ class FundIRRF(AbstractFunds):
         total_funds = self.get_total_funds()
         total_funds.set_total()
 
+    def get_statements_values(self) -> list:
+        return list(self.statementirrf_set.all().values_list('taxable_amounts', flat=True))
+
 
 class StatementIRRF(AbstractModel):
     """
@@ -50,21 +69,33 @@ class StatementIRRF(AbstractModel):
         taxable_amounts (FloatField): The taxable amounts for this statement, used to calculate the IRFF.
     """
     fund = models.ForeignKey(FundIRRF, on_delete=models.PROTECT)
-    fund_name = models.CharField(_('Verbas'), max_length=150)
-    taxable_amounts = models.FloatField(_('Valores tributáveis'))
+    fund_name = models.CharField(_('Verba'), max_length=150)
+    taxable_amounts = models.FloatField(_('Valor tributável'))
 
     class Meta:
         verbose_name = _('Statement IRRF')
         verbose_name_plural = _('Statements IRRF')
 
+    def __str__(self):
+        return f'{self.fund_name} | {self.fund} | {self.taxable_amounts}'
 
-class TotalValuesIRRF(AbstractModel):
+    def save(self, send_signal_post_save=True, *args, **kwargs):
+        """
+        Save the StatementFunds object and send a post-save signal.
+        Args:
+            send_signal_post_save (bool): Set to True to send a post-save signal. Default is True.
+        """
+        super(StatementIRRF, self).save(*args, **kwargs)
+        if send_signal_post_save:
+            gen_statement_irrf.send(sender=self.__class__, instance=self)
+
+
+class TotalValuesIRRF(AbstractStatus):
     """
     A class that represents the total values of IRRF (Income Tax on Individuals) for a fund.
 
     Attributes:
         taxable_amount (float): The taxable amount of the IRRF.
-        months_period (int): The number of months in the period for the IRRF calculation.
         taxable_portion (float): The taxable portion of the IRRF.
         aliquot (float): The aliquot of the IRRF.
         installment_deducted (float): The installment deducted from the IRRF.
@@ -73,18 +104,105 @@ class TotalValuesIRRF(AbstractModel):
         fund (Funds): The fund to which the IRRF applies.
     """
     taxable_amount = models.FloatField(_('Valor tributável'), default=0)
-    months_period = models.PositiveIntegerField(_('Meses no período'))
-    taxable_portion = models.FloatField(_('Parcela tributável'), default=0)
-    aliquot = models.FloatField(_('Alíquota'), default=0)
-    installment_deducted = models.FloatField(_('Parcela a deduzir'), default=0)
-    irrf_per_month = models.FloatField(_('Valor IRRF por mês'), default=0)
-    irrf_per_period = models.FloatField(_('Valor do IRRF no período'), default=0)
+    taxable_portion = models.FloatField(_('Parcela tributável'), default=0)  # OK
+    aliquot = models.FloatField(_('Alíquota'), default=0)  # OK
+    installment_deducted = models.FloatField(_('Parcela a deduzir'), default=0)  # OK
+    irrf_per_month = models.FloatField(_('Valor IRRF por mês'), default=0)  # OK
+    irrf_per_period = models.FloatField(_('Valor do IRRF no período'), default=0)  # OK
     fund = models.OneToOneField(FundIRRF, on_delete=models.PROTECT)
-    total = models.FloatField(_('Total da soma dos valores'), default=0)
+
+    def save(self, send_signal_post_save=True, *args, **kwargs):
+        """
+        Save the StatementFunds object and send a post-save signal.
+        Args:
+            send_signal_post_save (bool): Set to True to send a post-save signal. Default is True.
+        """
+        super(TotalValuesIRRF, self).save(*args, **kwargs)
+
+    def __set_taxable_portion(self):
+        self.taxable_portion = self.get_taxable_amount() / self.fund.get_months_period()
+
+    def __set_aliquot(self, aliquot):
+        self.aliquot = aliquot
+
+    def __set_taxable_amount(self, taxable_amount):
+        self.taxable_amount = taxable_amount
+
+    def __set_installment_deducted(self, installment_deducted):
+        self.installment_deducted = installment_deducted
+
+    def __set_irrf_per_month(self, irrf_per_month):
+        self.irrf_per_month = max(0, irrf_per_month)
+
+    def __set_irrf_per_period(self, irrf_per_period):
+        self.irrf_per_period = max(0, irrf_per_period)
+
+    def get_taxable_amount(self) -> FloatField:
+        return self.taxable_amount
+
+    def get_taxable_portion(self):
+        return self.taxable_portion
+
+    def get_irrf_per_month(self):
+        return self.irrf_per_month
+
+    def get_aliquot(self):
+        return self.aliquot
+
+    def get_installment_deducted(self):
+        return self.installment_deducted
 
     def __str__(self):
-        return f'{self.fund} - {self.taxable_amount}'
+        return f'{self.fund} | {self.taxable_amount} | {self.taxable_portion}'
+
+    def __calc_irrf_per_month(self):
+        taxable_portion: float = self.get_taxable_portion()
+        aliquot: float = self.get_aliquot()
+        deduction: float = self.get_installment_deducted()
+        irrf_per_month: float = (taxable_portion * aliquot / 100) - deduction
+        self.__set_irrf_per_month(irrf_per_month)
+
+    def __calc_irrf_per_period(self):
+        irrf_per_month = self.get_irrf_per_month()
+        months_period = self.fund.get_months_period()
+        self.__set_irrf_per_period(irrf_per_month * months_period)
+
+    def __calc_taxable_amount(self):
+        total = sum(self.fund.get_statements_values())
+        self.__set_taxable_amount(total)
+
+    def set_total(self):
+        self.set_in_progress()
+
+        self.__calc_taxable_amount()
+        self.__set_taxable_portion()
+        taxable_portion = self.get_taxable_portion()
+
+        irrf = get_aliquot_by_tax(taxable_portion)
+        if not irrf:
+            self.set_error_aliquot()
+            return
+
+        self.__set_aliquot(irrf.aliquot)
+        self.__set_installment_deducted(irrf.deduction)
+
+        self.__calc_irrf_per_month()
+        self.__calc_irrf_per_period()
+        self.set_calculation_done()
+        self.save()
 
     class Meta:
         verbose_name = _('Total value IRRF')
         verbose_name_plural = _('Total values IRRF')
+
+
+@receiver(gen_statement_irrf, sender=StatementIRRF)
+def save_rate(sender, instance, **kwargs) -> None:
+    """
+    This method is a receiver for post_save signal and is triggered when a StatementFunds object is saved. It
+    calculates the monetary correction for the instance and generates the total statements of the related fund. It
+    takes the sender and instance as arguments
+    """
+    print('Signal gerar linha extrato verbas irrf\n')
+
+    instance.fund.gen_total()

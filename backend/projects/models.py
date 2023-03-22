@@ -42,7 +42,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
     region = models.ForeignKey(Region, on_delete=models.PROTECT)
     court = models.ForeignKey(Court, on_delete=models.PROTECT)
     competence = models.CharField(
-        "Competencia",  max_length=150, null=True)
+        "Competência",  max_length=150, null=True)
     legal_manager = models.ForeignKey(
         User, on_delete=models.PROTECT, related_name='legal_manager', null=True)  # Gerente juridico
     calculation_manager = models.ForeignKey(
