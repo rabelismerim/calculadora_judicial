@@ -6,7 +6,8 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from .managers import CustomUserManager
-from config.settings import IS_LOCALHOST
+from config.settings import IS_LOCALHOST, ENABLE_SSO
+
 
 class SubgroupManager(models.Manager):
     """
@@ -277,5 +278,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         if IS_LOCALHOST is False:
             if not self._state.adding and (self.id != self._loaded_values['id']):
                 raise ValueError("Updating the value of id isn't allowed")
-            self.set_unusable_password()
+            if ENABLE_SSO:
+                self.set_unusable_password()
         return super().save(force_insert, force_update, using, update_fields)
