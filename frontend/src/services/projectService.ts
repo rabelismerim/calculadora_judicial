@@ -1,5 +1,3 @@
-import { formatDateBackend } from '../composables/utils'
-
 const mapProject = (project: any) => {
   const { createdAt, isAdm, engagement } = project
   return {
@@ -21,8 +19,8 @@ const newProject = (project: any) => {
   const { start, end, executors, approvers, reviewers, engagements, recoverings } = project
   const data = {
     ...project,
-    projectStart: start ? formatDateBackend(start) : undefined,
-    projectEnd: end ? formatDateBackend(end) : undefined,
+    projectStart: start ? formatDateToBackend(start) : undefined,
+    projectEnd: end ? formatDateToBackend(end) : undefined,
     engagement: {
       numbers: engagements,
     },

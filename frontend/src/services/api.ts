@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { parseToCamel } from '../composables/utils'
+
 const headers: any = {}
 
 if (import.meta.env.VITE_TOKEN)
