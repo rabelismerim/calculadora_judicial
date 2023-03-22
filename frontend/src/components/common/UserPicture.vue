@@ -5,12 +5,14 @@ const props = withDefaults(defineProps<{
     email: string
     picture?: string
   }
+  initialsClass?: string
 }>(),
 {
   modelValue: () => ({
     fullName: '',
     email: '',
   }),
+  initialsClass: '',
 })
 </script>
 
@@ -24,7 +26,8 @@ const props = withDefaults(defineProps<{
     />
     <div
       v-else
-      class="bg-gray-2 rounded-.5 flex justify-center items-center text-[16px] h-full"
+      class="bg-gray-2 rounded-.5 flex justify-center color-slate-6 items-center text-[16px] h-full"
+      :class="initialsClass"
     >
       {{ getInitials(modelValue.fullName) }}
     </div>
