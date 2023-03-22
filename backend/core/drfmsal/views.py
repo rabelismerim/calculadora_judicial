@@ -28,7 +28,7 @@ def sign_status(request):
                 user.username = ms_identity_web.id_data.username.replace(' ', '_')
                 user.first_name = ms_identity_web.id_data.username.split()[0]
                 user.last_name = ms_identity_web.id_data.username.split(
-                )[len(request.identity_context_data.username.split())-1]
+                )[len(request.identity_context_data.username.split()) - 1]
                 user.is_active = False
                 user.userpicture = ms_identity_web.id_data.userpicture
                 user.is_staff = False
@@ -36,19 +36,21 @@ def sign_status(request):
             if len(user_view) > 0:
                 for item in user_view:
                     if item.userpicture != ms_identity_web.id_data.userpicture:
-                       item.userpicture = ms_identity_web.id_data.userpicture
-                       item.save()
+                        item.userpicture = ms_identity_web.id_data.userpicture
+                        item.save()
     return Response()
 
 
 @require_GET
 def sign_in(request, redirect_uri):
-    auth_url = ms_identity_web.get_auth_url(
-        redirect_uri=request.build_absolute_uri(
-            reverse('drfmsal_redirect', kwargs={'redirect_uri': redirect_uri})
+    if ENABLE_SSO:
+        auth_url = ms_identity_web.get_auth_url(
+            redirect_uri=request.build_absolute_uri(
+                reverse('drfmsal_redirect', kwargs={'redirect_uri': redirect_uri})
+            )
         )
-    )
-    return redirect(auth_url)
+        return redirect(auth_url)
+    return redirect('login')
 
 
 @require_GET
@@ -62,13 +64,15 @@ def aad_redirect(request, redirect_uri):
 
 @require_GET
 def sign_out(request, redirect_uri):
-    sign_out_url = ms_identity_web.get_sign_out_url(
-        redirect_uri=request.build_absolute_uri(
-            reverse('drfmsal_postsignout', kwargs={
+    if ENABLE_SSO:
+        sign_out_url = ms_identity_web.get_sign_out_url(
+            redirect_uri=request.build_absolute_uri(
+                reverse('drfmsal_postsignout', kwargs={
                     'redirect_uri': redirect_uri})
+            )
         )
-    )
-    return redirect(sign_out_url)
+        return redirect(sign_out_url)
+    return redirect('logout')
 
 
 @require_GET
