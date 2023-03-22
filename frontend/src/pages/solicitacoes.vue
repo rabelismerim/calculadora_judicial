@@ -100,10 +100,10 @@ const columns = [
   <div class="flex flex-1 justify-center">
     <div class="px-8 py-8 max-w-[min(1600px,100vw)] flex-1">
       <button
-        class="group mb-8 flex gap-1 items-center uppercase font-semibold hover:text--secondary transition duration-300 ease-in-out"
+        class="group mb-8 flex gap-1 items-center uppercase font-semibold hover:text--secondary tween"
         @click="router.push({ path: '/projetos' })"
       >
-        <div class="i-carbon-chevron-left group-hover:-translate-x-1 transition duration-300 ease-in-out" />
+        <div class="i-carbon-chevron-left group-hover:-translate-x-1 tween" />
         Voltar
       </button>
 
