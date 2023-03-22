@@ -17,6 +17,7 @@ from utils import get_user_model
 from rest_framework import permissions, serializers
 from django.contrib.auth.models import Group
 from core.dttuser.models import Subgroup
+
 User = get_user_model()
 
 
@@ -141,9 +142,11 @@ class UserSendMailDttApi(AbstractUserDttApi):
         user_mail = self.model.objects.filter(**user_filter).first()
         if not user_mail:
             raise serializers.ValidationError(['Email não encontrado'])
-        
+
         for item in user_mail:
-            send_mail('Liberação de Uso - '+item.email,'Esse email é enviado automaticamente pelo sistema para solicitação de liberação do usuário '+item.email+' ao sistema. Para liberar o acesso favor entrar no painel de administração e cadastrar o mesmo ao sistema.',None)
+            send_mail('Liberação de Uso - ' + item.email,
+                      'Esse email é enviado automaticamente pelo sistema para solicitação de liberação do usuário ' + item.email + ' ao sistema. Para liberar o acesso favor entrar no painel de administração e cadastrar o mesmo ao sistema.',
+                      None)
 
         return JsonResponse({'user': user_filter}, status=status.HTTP_201_CREATED)
 
@@ -160,6 +163,7 @@ class GroupApi(AbstractViewApi):
     model = Group
     http_method_names = ['get']
     schema = AutoSchema(tags=["Groups"])
+
 
 class SubgroupApi(AbstractViewApi):
     """HTTP methods for interfacing with the User Deloitte modelThis method returns a JSON response that contains the user details given a filtering criteria. 
@@ -219,5 +223,6 @@ if ENABLE_SSO is False:
             username='dev_user', first_name='user', last_name='dev', is_staff=False)
         user.set_password(PASSWD_DEV)
         user.save()
-    except:
-        pass
+        print('Users created\n\n')
+    except Exception as e:
+        print(e, 'err create user\n\n')

@@ -72,8 +72,8 @@ urlpatterns = [
 
     # Django
     path('djud/admin/', admin.site.urls),
-    path('djud/login/', views.LoginView.as_view()),
-    path('djud/logout/', views.LogoutView.as_view()),
+    path('djud/login/', views.LoginView.as_view(template_name='admin/login.html'), name='login'),
+    path('djud/logout/', views.LogoutView.as_view(), name='logout'),
 
     # VUE FRONTEND
     re_path(r'^(?!djud\/admin|djud\/api).*$', frontend_index, name='frontend'),
