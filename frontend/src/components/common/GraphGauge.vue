@@ -55,7 +55,6 @@ const total = computed(() => props.values.reduce((acc, { count }) => acc + count
             :r="radius"
             :stroke="i === 0 ? '#DFDFDF' : colors[mappedValues.items.length - i - 1]"
             :stroke-width="strokeWidth"
-            stroke-linecap="round"
             class="fill-none origin-center -rotate-90"
             :style="{
               strokeDasharray: strokeSize,
