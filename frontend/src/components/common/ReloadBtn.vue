@@ -9,7 +9,7 @@ const emit = defineEmits(['click'])
 
 <template>
   <button
-    class="h-8 w-8 hover:bg-gray/30 rounded-full flex justify-center items-center transition duration-300 ease-in-out"
+    class="h-8 w-8 hover:bg-gray/30 rounded-full flex justify-center items-center tween"
     @click="emit('click')"
   >
     <div class="i-carbon-restart h-5 w-5" />

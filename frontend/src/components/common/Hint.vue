@@ -7,7 +7,11 @@ const props = withDefaults(defineProps<{
 
 <template>
   <div v-if="value" class="cursor-help text-base">
-    <div class="i-carbon-help-filled mt-1 color-black/30 hover:color--primary with-transition" />
-    <QTooltip>{{ value }}</QTooltip>
+    <div class="i-carbon-help-filled mt-1 color-black/30 hover:color--primary tween" />
+    <QTooltip>
+      <div class="whitespace-pre">
+        {{ value.replaceAll('\\n', '\n') }}
+      </div>
+    </QTooltip>
   </div>
 </template>
