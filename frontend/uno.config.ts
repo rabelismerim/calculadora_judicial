@@ -34,10 +34,12 @@ export default defineConfig({
       '--un-ring-color': `hsla(var(--${w},0,0%,0%),var(--opacity,1))`,
     })],
     ['ring-inner', { 'box-shadow': 'inset var(--un-ring-offset-shadow),inset var(--un-ring-shadow), var(--un-shadow) !important' }],
+    ['text-vertical', { 'writing-mode': 'vertical-lr' }],
   ],
-  shortcuts: {
-    'with-transition': 'transition ease-in-out duration-300',
-  },
+  shortcuts: [
+    { tween: 'transition ease-in-out duration-300' },
+    [/^tween-(\d+)$/, ([, d]) => `transition ease-in-out duration-${d}`],
+  ],
   presets: [
     presetUno(),
     presetAttributify(),
