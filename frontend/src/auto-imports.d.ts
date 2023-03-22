@@ -52,7 +52,9 @@ declare global {
   const extendRef: typeof import('@vueuse/core')['extendRef']
   const flatten: typeof import('./composables/utils')['flatten']
   const formatDate: typeof import('./composables/utils')['formatDate']
-  const formatDateBackend: typeof import('./composables/utils')['formatDateBackend']
+  const formatDateFromBackend: typeof import('./composables/utils')['formatDateFromBackend']
+  const formatDateToBackend: typeof import('./composables/utils')['formatDateToBackend']
+  const formatLegalNumber: typeof import('./composables/utils')['formatLegalNumber']
   const get: typeof import('@jrnwn/utils')['get']
   const getCookie: typeof import('@jrnwn/utils')['getCookie']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
@@ -389,7 +391,9 @@ declare module 'vue' {
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
     readonly flatten: UnwrapRef<typeof import('./composables/utils')['flatten']>
     readonly formatDate: UnwrapRef<typeof import('./composables/utils')['formatDate']>
-    readonly formatDateBackend: UnwrapRef<typeof import('./composables/utils')['formatDateBackend']>
+    readonly formatDateFromBackend: UnwrapRef<typeof import('./composables/utils')['formatDateFromBackend']>
+    readonly formatDateToBackend: UnwrapRef<typeof import('./composables/utils')['formatDateToBackend']>
+    readonly formatLegalNumber: UnwrapRef<typeof import('./composables/utils')['formatLegalNumber']>
     readonly get: UnwrapRef<typeof import('@jrnwn/utils')['get']>
     readonly getCookie: UnwrapRef<typeof import('@jrnwn/utils')['getCookie']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>

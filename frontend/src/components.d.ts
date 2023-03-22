@@ -7,11 +7,16 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    Accordion: typeof import('./components/common/Accordion.vue')['default']
     Btn: typeof import('./components/common/Btn.vue')['default']
-    copy: typeof import('./components/inputs/InputTags copy.vue')['default']
+    copy: typeof import('./components/common/GraphLine copy.vue')['default']
     FooterBar: typeof import('./components/common/FooterBar.vue')['default']
+    Graph: typeof import('./components/common/Graph.vue')['default']
+    GraphCard: typeof import('./components/common/GraphCard.vue')['default']
     GraphGauge: typeof import('./components/common/GraphGauge.vue')['default']
     GraphLine: typeof import('./components/common/GraphLine.vue')['default']
+    GraphNumber: typeof import('./components/common/GraphNumber.vue')['default']
+    GraphResume: typeof import('./components/common/GraphResume.vue')['default']
     Hint: typeof import('./components/common/Hint.vue')['default']
     Img: typeof import('./components/common/Img.vue')['default']
     InputDate: typeof import('./components/inputs/InputDate.vue')['default']
@@ -27,6 +32,7 @@ declare module '@vue/runtime-core' {
     NewProject: typeof import('./components/project/NewProject.vue')['default']
     NotificationArea: typeof import('./components/common/NotificationArea.vue')['default']
     ProgressList: typeof import('./components/common/ProgressList.vue')['default']
+    ProjectDetailCell: typeof import('./components/project/ProjectDetailCell.vue')['default']
     QField: typeof import('quasar')['QField']
     ReloadBtn: typeof import('./components/common/ReloadBtn.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
@@ -34,7 +40,8 @@ declare module '@vue/runtime-core' {
     SearchFilter: typeof import('./components/common/SearchFilter.vue')['default']
     Spinner: typeof import('./components/common/Spinner.vue')['default']
     TimeoutBar: typeof import('./components/common/TimeoutBar.vue')['default']
-    UserCell: typeof import('./components/project/UserCell.vue')['default']
+    UserCell: typeof import('./components/common/UserCell.vue')['default']
     UserPicture: typeof import('./components/common/UserPicture.vue')['default']
+    UserTag: typeof import('./components/common/UserTag.vue')['default']
   }
 }
