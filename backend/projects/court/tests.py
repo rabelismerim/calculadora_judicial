@@ -16,7 +16,7 @@ class CourtTest(AbstractTest):
         court = {
             "description": "Name Juiz 1"
         }
-        response = self.client.post('/djud/api/v1/projects/court', court)
+        response = self.client.post('/djud/api/v1/projects/court/', court)
         self.assertEqual(response.status_code, 201)
         self.print_success('Created court')
 
@@ -25,7 +25,7 @@ class CourtTest(AbstractTest):
         user = User.objects.get(username='user1')  
         self.client.force_login(user) 
         self.print_start('List courts')
-        response = self.client.get('/djud/api/v1/projects/court')
+        response = self.client.get('/djud/api/v1/projects/court/')
         self.assertEqual(response.status_code, 200)
         self.print_success('Listed courts')
         courts = response.json()['courts']

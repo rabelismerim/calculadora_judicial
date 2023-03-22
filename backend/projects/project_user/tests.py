@@ -1,3 +1,5 @@
+import time
+
 from core.abstract.tests import AbstractTest
 from utils import get_user_model
 
@@ -14,10 +16,9 @@ class ProjectUserTest(AbstractTest):
         self.client.force_login(user) 
         self.print_start('Create Project User')
         project_user = {
-            "user": self.get_user()['id'],
+            "user": user.id,
         }
-        response = self.client.post(
-            '/djud/api/v1/projects/project_user', project_user)
+        response = self.client.post('/djud/api/v1/projects/project_user/', project_user)
         self.assertEqual(response.status_code, 201)
         self.print_success('Created project user')
 
@@ -26,7 +27,7 @@ class ProjectUserTest(AbstractTest):
         user = User.objects.get(username='user1')  
         self.client.force_login(user) 
         self.print_start('List project users')
-        response = self.client.get('/djud/api/v1/projects/project_user')
+        response = self.client.get('/djud/api/v1/projects/project_user/')
         self.assertEqual(response.status_code, 200)
         self.print_success('Listed project users')
         project_users = response.json()['project_users']

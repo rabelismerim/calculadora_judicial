@@ -33,7 +33,7 @@ class VerdictTest(AbstractTest):
         }
 
         response = self.client.post(
-            '/djud/api/v1/calculation/verdict', json.dumps(verdict), content_type="application/json")
+            '/djud/api/v1/calculation/verdict/', json.dumps(verdict), content_type="application/json")
         self.assertEqual(response.status_code, 201)
         self.print_success('Created verdict')
 
@@ -42,7 +42,7 @@ class VerdictTest(AbstractTest):
         user = User.objects.get(username='user1')  
         self.client.force_login(user) 
         self.print_start('List verdicts')
-        response = self.client.get('/djud/api/v1/calculation/verdict')
+        response = self.client.get('/djud/api/v1/calculation/verdict/')
         self.assertEqual(response.status_code, 200)
         self.print_success('Listed verdicts')
         verdicts = response.json()['verdicts']

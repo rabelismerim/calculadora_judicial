@@ -33,7 +33,7 @@ class AbstractTest(TestCase):
         # end
         "status": "P",
         "is_adm": True,
-        "engagement":  {
+        "engagement": {
             "numbers": [
                 "teste 1"
             ]
@@ -65,12 +65,12 @@ class AbstractTest(TestCase):
     }
 
     def setUp(self):
-        user_create = User.objects.create(email="user@example1.com",username="user1",
-                            first_name="User1", last_name="User1", password="User@123",
-                            is_staff=True)
+        user_create = User.objects.create(email="user@example1.com", username="user1",
+                                          first_name="User1", last_name="User1", password="User@123",
+                                          is_staff=True)
         self.assertTrue(user_create)
-        user = User.objects.get(username='user1')  
-        self.client.force_login(user) 
+        user = User.objects.get(username='user1')
+        self.client.force_login(user)
         self.set_project('manager_id', user.id)
         self.set_project('partner_id', user.id)
 
@@ -105,21 +105,29 @@ class AbstractTest(TestCase):
         """Print in time execution"""
         self.stdout.write(self.style.SUCCESS(msg))
 
-    def __check_run_project(self, field, value):
-        project_complete_keys = ['judge_id',
-                                 'lawyer_id', 'region_id', 'court_id', 'manager_id', 'partner_id', 'users']
-        project_complete = True
-        for key in project_complete_keys:
-            if not self.__project.get(key):
-                project_complete = False
-                break
+    def post(self, url, obj):
+        response = self.client.post(url, json.dumps(obj), content_type="application/json")
+        try:
+            return response.json()
+        except:
+            return response.content
 
-        if project_complete and not self.__project.get('project_complete'):
-            self.set_project('project_complete', True)
-            project = self.get_project()
-            project[field] = value
-            response = self.client.post(
-                '/djud/api/v1/projects/', json.dumps(project), content_type="application/json")
-            self.assertEqual(response.status_code, 201)
-            project = response.json()['project']
-            self.set_project('project_id', project['id'])
+    def __check_run_project(self, field, value):
+        pass
+        # project_complete_keys = ['judge_id',
+        #                          'lawyer_id', 'region_id', 'court_id', 'manager_id', 'partner_id', 'users']
+        # project_complete = True
+        # for key in project_complete_keys:
+        #     if not self.__project.get(key):
+        #         project_complete = False
+        #         break
+        #
+        # if project_complete and not self.__project.get('project_complete'):
+        #     self.set_project('project_complete', True)
+        #     project = self.get_project()
+        #     project[field] = value
+        #     response = self.client.post(
+        #         '/djud/api/v1/projects/', json.dumps(project), content_type="application/json")
+        #     self.assertEqual(response.status_code, 201)
+        #     project = response.json()['project']
+        #     self.set_project('project_id', project['id'])

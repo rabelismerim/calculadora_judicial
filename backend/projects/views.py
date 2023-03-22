@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth.models import Group
 from config.settings import GROUP_NAME_APPROVER, GROUP_NAME_EXECUTOR, GROUP_NAME_REVIEWER
 from core.abstract.views import AbstractViewApi
@@ -15,6 +17,7 @@ from recovering.archive.models import Archive
 from recovering.archive_recovering.models import ArchiveRecovering
 from recovering.models import Recovering
 from utils import get_user_model
+
 User = get_user_model()
 
 
@@ -116,7 +119,8 @@ class ProjectApi(AbstractProjectApi):
             new_archive_recovering = recovering.pop('archives', None)
             recovering['project'] = project
 
-            recovering['entity'], created = Entity.objects.get_or_create(**entity)
+            recovering['entity'], created = Entity.objects.get_or_create(defaults=entity,
+                                                                         **{'legal_number': entity.get('legal_number')})
             new_recovering = Recovering.objects.get_or_create(**recovering)
             # if new_archive_recovering: # TODO: fase 2. Desativado na fase 1
             #     for new_ in new_archive_recovering:
@@ -125,4 +129,5 @@ class ProjectApi(AbstractProjectApi):
             #         ArchiveRecovering.objects.create(
             #             recovering=new_recovering, archive=new_archive)
 
-        return JsonResponse({'project': self.serializer_class(project, many=False).data}, status=status.HTTP_201_CREATED)
+        return JsonResponse({'project': self.serializer_class(project, many=False).data},
+                            status=status.HTTP_201_CREATED)
