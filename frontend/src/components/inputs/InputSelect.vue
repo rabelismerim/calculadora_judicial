@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { ValidationRule } from 'quasar'
-import { printError } from '../../composables/utils'
 
 const props = withDefaults(defineProps<{
   modelValue: any

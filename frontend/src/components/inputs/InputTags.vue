@@ -104,7 +104,7 @@ const getContentSize = (content: string) => {
         <div
           v-for="(item, index) in modelValue"
           :key="index"
-          class="max-w-fill flex items-center no-wrap gap-2 rounded-full pl-3 pr-1 py-1 border-1 border--primary/12 whitespace-nowrap max-w-fill with-transition cursor-pointer"
+          class="max-w-fill flex items-center no-wrap gap-2 rounded-full pl-3 pr-1 py-1 border-1 border--primary/12 whitespace-nowrap max-w-fill tween cursor-pointer"
           :class="{
             'bg--primary color-white': itemEditing === index,
             'bg--primary/20 color-inherit': itemEditing !== index,
@@ -156,7 +156,7 @@ const getContentSize = (content: string) => {
         </div>
         <div
           v-else-if="modelValue.length > 0"
-          class="h-8 w-8 rounded-full bg-black/12 hover:bg--error hover:color-white flex justify-center items-center cursor-pointer with-transition"
+          class="h-8 w-8 rounded-full bg-black/12 hover:bg--error hover:color-white flex justify-center items-center cursor-pointer tween"
           @dblclick.stop="clear"
         >
           <div class="i-carbon-trash-can" />

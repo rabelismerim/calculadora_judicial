@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { ValidationRule } from 'quasar'
-import { isValidCNPJ, isValidCPF } from '../../composables/utils'
 const props = withDefaults(defineProps<{
   modelValue: any
   label?: string

@@ -58,7 +58,7 @@ const onFilter = (val: string, update: any) => {
     @update:model-value="onInput"
   >
     <template #selected-item="scope">
-      <div class="max-w-fill mt-1.5 mr-1.5 flex items-center no-wrap gap-2 rounded-full pl-1 pr-1 py-1 border-1 border--primary/12 whitespace-nowrap max-w-fill with-transition bg--primary/20 color-inherit">
+      <div class="max-w-fill mt-1.5 mr-1.5 flex items-center no-wrap gap-2 rounded-full pl-1 pr-1 py-1 border-1 border--primary/12 whitespace-nowrap max-w-fill tween bg--primary/20 color-inherit">
         <div class="bg-transparent flex nowrap items-center flex-1 text-ellipsis overflow-hidden">
           <UserPicture :model-value="scope.opt" class="h-6 w-6 rounded-full mr-2" />
           <span class="whitespace-pre">{{ scope.opt.fullName }}</span>
