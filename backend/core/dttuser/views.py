@@ -223,6 +223,5 @@ if ENABLE_SSO is False:
             username='dev_user', first_name='user', last_name='dev', is_staff=False)
         user.set_password(PASSWD_DEV)
         user.save()
-        print('Users created\n\n')
     except Exception as e:
         print(e, 'err create user\n\n')
