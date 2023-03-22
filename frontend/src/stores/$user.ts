@@ -1,6 +1,7 @@
 const userFallback = {
   isActive: null,
   name: '',
+  fullName: '',
   picture: '',
   email: '',
   groups: [] as any[],
