@@ -6,8 +6,15 @@ let loading = $ref(false)
 const filterBy = $ref('')
 const sideOpen = $ref(true)
 const showTime = $ref(false)
+const tab = $ref('all')
 let project: any = $ref({})
 let users: any = $ref([])
+
+const filteredRecoverings = computed(() => {
+  if (tab === 'all')
+    return project?.recoverings || []
+  return project?.recoverings?.filter(() => false)
+})
 
 const time = computed(() => {
   const { users: usersList = [] } = project
@@ -16,15 +23,17 @@ const time = computed(() => {
     groups.forEach(({ name }: any) => {
       if (!acc[name])
         acc[name] = []
-      const user = users.find((user: any) => id === user.id)
-      if (user)
-        acc[name].push(user)
+      // const user = users.find((user: any) => id === user.id)
+      // if (user)
+      //   acc[name].push(user)
+      if (username)
+        acc[name].push(username)
     })
     return acc
   }, {})
 })
 
-onMounted(async () => {
+const loadProject = async () => {
   loading = true
   try {
     users = await usersService.getUsers()
@@ -36,6 +45,9 @@ onMounted(async () => {
   finally {
     loading = false
   }
+}
+onMounted(() => {
+  loadProject()
 })
 </script>
 
@@ -52,7 +64,7 @@ onMounted(async () => {
       class="relative flex-1 grid grid-cols-[320px_1fr] tween-800"
       :class="{ '-translate-x-284px w-[calc(100vw+284px)]': !sideOpen }"
     >
-      <div class="relative bg--base pb-0 pr-9">
+      <div class="relative bg--base pb-0 pr-9 border-r-1 border-black/12">
         <div class="h-full max-h-[calc(100vh-96px)] overflow-x-hidden overflow-y-auto scroll-left">
           <div class="p-8 pr-0">
             <h2 class="font-bold text-2xl bg--base sticky top-0 py-4">
@@ -107,7 +119,11 @@ onMounted(async () => {
               </ProjectDetailCell>
 
               <ProjectDetailCell label="Juiz">
-                {{ toProperName(project?.judge?.description || '-') }}
+                {{ toProperName(project?.judge?.description || '') || '-' }}
+              </ProjectDetailCell>
+
+              <ProjectDetailCell label="Advogado">
+                {{ toProperName(project?.lawyer?.description || '') || '-' }}
               </ProjectDetailCell>
 
               <ProjectDetailCell label="Comarca">
@@ -121,25 +137,31 @@ onMounted(async () => {
           </div>
         </div>
         <div
-          class="absolute right-0 top-0 bottom-0 p-1 flex flex-col items-center gap-4 hover:bg--secondary/10 cursor-pointer pt-10 tween"
+          class="absolute right-0 top-0 bottom-0 p-1 flex cursor-pointer"
           @click="sideOpen = !sideOpen"
         >
-          <div class="i-carbon-chevron-right text-lg tween-800" :class="{ 'rotate-180': sideOpen }" />
-          <div class="text-vertical whitespace-nowrap font-bold text-lg tween-800" :class="{ 'opacity-0': sideOpen }">
-            Informações Principais
+          <div class="hover:bg--secondary/15 pt-7 flex-1 flex flex-col items-center gap-4 rounded-2 tween">
+            <div class="i-carbon-chevron-right text-lg tween-800" :class="{ 'rotate-180': sideOpen }" />
+            <div class="text-vertical whitespace-nowrap font-bold text-lg tween-800" :class="{ 'opacity-0': sideOpen }">
+              Informações Principais
+            </div>
           </div>
         </div>
       </div>
 
       <div class="px-8 py-8 max-h-[calc(100vh-96px)] overflow-y-auto overflow-x-hidden flex justify-center">
         <div class="max-w-[min(1600px,100%)]">
-          <button
-            class="mb-8 group flex gap-1 items-center uppercase font-semibold hover:text--secondary tween-800 z-1"
-            @click="router.push({ path: '/projetos' })"
-          >
-            <div class="i-carbon-chevron-left group-hover:-translate-x-1 tween-800" />
-            Voltar
-          </button>
+          <div class="flex gap-8 items-center mb-8">
+            <button
+              class="group flex gap-1 items-center uppercase font-semibold hover:text--secondary tween-800 z-1"
+              @click="router.push({ path: '/projetos' })"
+            >
+              <div class="i-carbon-chevron-left group-hover:-translate-x-1 tween-800" />
+              Voltar
+            </button>
+
+            <Breadcrumbs :links="[{ label: 'Projetos', url: '/projetos' }, { label: project.description }]" />
+          </div>
 
           <div class="mb-8 flex justify-between gap-4">
             <h1 class="font-bold text-4xl">
@@ -156,7 +178,6 @@ onMounted(async () => {
                 label="Editar"
                 icon="i-carbon-edit"
                 disabled
-                outlined
               />
             </div>
           </div>
@@ -184,12 +205,12 @@ onMounted(async () => {
                 R$ 0 mil
               </div>
             </GraphCard>
-            <GraphLine
+            <ProgressList
               :values="[]"
               title="Quantidade de Cálculos por Classe"
               hint="Classes na Recuperação Judicial:\n  • Classe I - Créditos Trabalhistas\n  • Classe II - Créditos com Garantia Real\n  • Classe III - Créditos Quirográficos\n  • Classe IV - Créditos enquadrados como Microempresa ou Empresa de pequeno porte."
             />
-            <GraphLine
+            <ProgressList
               :values="[]"
               title="Valores dos Cálculos por Classe (mil R$)"
               hint="Classes na Recuperação Judicial:\n  • Classe I - Créditos Trabalhistas\n  • Classe II - Créditos com Garantia Real\n  • Classe III - Créditos Quirográficos\n  • Classe IV - Créditos enquadrados como Microempresa ou Empresa de pequeno porte."
@@ -197,9 +218,15 @@ onMounted(async () => {
           </div>
 
           <div class="mb-8 flex justify-between gap-4">
-            <h1 class="font-bold text-4xl">
-              Cálculos
-            </h1>
+            <div class="flex gap-2 no-wrap items-center">
+              <h1 class="font-bold text-4xl">
+                Cálculos
+              </h1>
+              <ReloadBtn
+                hint="Recarregar a Lista de Cálculos"
+                @click="loadProject"
+              />
+            </div>
             <div class="flex gap-2">
               <Btn
                 label="Exportar Cálculos Válidos"
@@ -209,21 +236,40 @@ onMounted(async () => {
             </div>
           </div>
 
-          <div v-if="project?.recoverings" class="grid gap-3">
+          <div class="mb-4 border-b-2 boder-black/12 flex justify-between items-center">
+            <q-tabs
+              v-model="tab"
+              class=""
+              align="left"
+              active-color="secondary"
+            >
+              <q-tab name="all" label="Todos" />
+              <q-tab name="d" label="A revisar" />
+              <q-tab name="c" label="A aprovar" />
+              <q-tab name="p" label="Aprovado" />
+            </q-tabs>
+            <SearchFilter v-model="filterBy" />
+          </div>
+
+          <div v-if="filteredRecoverings.length > 0" class="grid gap-3">
             <Accordion
-              v-for="recovering in project?.recoverings"
+              v-for="recovering in filteredRecoverings"
               :key="recovering.id"
               :title="recovering.entity.name"
               :subtitle="formatLegalNumber(recovering.entity.legalNumber)"
             >
               <template #header-right>
-                <div class="flex-1 flex items-center pl-8">
+                <div class="flex-1 flex justify-between items-center pl-8 pr-4">
                   <Btn
                     label="Novo Credor"
                     icon="i-carbon-add-filled"
                     outlined
                     disabled
                   />
+                  <div class="font-bold flex no-wrap items-center gap-2">
+                    Total: R$ 0
+                    <Hint value="Total dos Cálculos Aprovados." />
+                  </div>
                 </div>
               </template>
               <div v-if="recovering.creditors.length > 0">
@@ -251,8 +297,8 @@ onMounted(async () => {
               </div>
             </Accordion>
           </div>
-          <div v-else class="text-lg">
-            Nenhuma Recuperanda Cadastrada no momento...
+          <div v-else class="text-lg text-center pt-5">
+            Nenhuma Recuperanda nessa listagem...
           </div>
         </div>
       </div>
@@ -269,13 +315,20 @@ onMounted(async () => {
           class="mb-4"
         >
           <div class="font-bold mb-3">
-            {{ key }}es:
+            {{ key }}:
           </div>
           <div class="flex gap-2">
-            <UserTag
+            <!-- <UserTag
               v-for="user in participants" :key="user.id"
               :model-value="user"
-            />
+            /> -->
+            <div
+              v-for="user in participants" :key="user.id"
+              :model-value="user"
+              class="rounded-full px-3 py-1 border-1 border--primary/12 bg--primary/20 whitespace-nowrap"
+            >
+              {{ user }}
+            </div>
           </div>
         </div>
       </div>
