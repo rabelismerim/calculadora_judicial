@@ -31,7 +31,7 @@ const total = computed(() => props.values.reduce((acc, { count }) => acc + count
   <div class="bg--base flex flex-col items-stretch gap-3 py-4 px-6 border-1 border-black/12 rounded-.5">
     <div v-if="title" class="flex no-wrap gap-3 items-start font-bold text-xl">
       {{ title }}
-      <Hint :value="hint" />
+      <Hint :value="hint" class="mt-1.25" />
     </div>
     <div class="grid grid-cols-2 flex-1 items-center gap-6">
       <div class="flex justify-center items-center">
