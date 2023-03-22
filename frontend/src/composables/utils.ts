@@ -9,9 +9,32 @@ export const formatDate = (date: string) => new Date(date)
   .toLocaleDateString()
   .padStart(10, '0')
 
-export const formatDateBackend = (value: string) => {
+export const formatDateToBackend = (value: string) => {
+  if (!value)
+    return
   const [day, month, year] = value.split('/')
   return `${year}-${month}-${day}`
+}
+export const formatDateFromBackend = (value: string) => {
+  if (!value)
+    return
+  const [year, month, day] = value.split('-')
+  return `${day}/${month}/${year}`
+}
+
+export const formatLegalNumber = (value: string) => {
+  value = value.replace(/[./-]/gi, '')
+  if (value.length < 14) {
+    const [,first, second, third, digit] = value
+      .padEnd(11, '0')
+      .split(/^(\d{3})(\d{3})(\d{3})(\d{2})/)
+    return `${first}.${second}.${third}-${digit}`
+  }
+
+  const [,first, second, third, fourth, digit] = value
+    .padEnd(14, '0')
+    .split(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/)
+  return `${first}.${second}.${third}/${fourth}-${digit}`
 }
 
 export const getInitials = (text = '') => {
