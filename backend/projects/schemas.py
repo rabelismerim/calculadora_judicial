@@ -84,8 +84,6 @@ class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):
     approvers = serializers.ListField(write_only=True, child=UserSerializer())
     reviewers = serializers.ListField(write_only=True, child=UserSerializer())
 
-    users = UserDttSchema(many=True, read_only=True, source='project.users')
-
     project_users = ProjectUserProjectSchema(
         read_only=True, many=True, source='engagement.users')
 
@@ -170,7 +168,7 @@ class ProjectListSchema(ProjectSchema):
     class Meta:
         model = Project
         fields = ("id", 'description', 'status', 'status_display', 'created_at', 'project_users',
-                  'users', 'engagement', 'num_recovering', 'is_adm', 'process_number')
+                  'engagement', 'num_recovering', 'is_adm', 'process_number')
 
 
 exclude = ('create_user', 'created_at',
