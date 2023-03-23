@@ -19,16 +19,16 @@ class ProjectUserApi(AbstractViewApi):
     model = ProjectUser
     schema = AutoSchema(tags=["Project - ProjectUser"])
 
-    query_params = [
-        {
-            "name": "nome",
-            "field": "description__icontains",
-            "in": "query",
-            "required": False,
-            "description": "Nome do advogado",
-            "schema": {"type": "string"}
-        }
-    ]
+    def get(self, request, *args, **kwargs):
+        """
+           get projects from user authenticated, return ProjectUser id
+        """
+        serializer = self.get_serializer_class()
+        projects_user = serializer(self.model.objects.filter(
+            user=request.user), many=True).data
+        return JsonResponse({'project_user': projects_user}, status=status.HTTP_200_OK)
+
+
 
     def post(self, request, *args, **kwargs):
         """
