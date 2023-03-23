@@ -11,8 +11,7 @@ from utils import get_user_model
 User = get_user_model()
 STATUS_CHOICES = (
     ('E', 'Em Preparação'),
-    ('P', 'Em Preparação'),
-    ('C', 'Concluido'),
+    ('C', 'Concluído'),
     ('A', 'Em Andamento'),
     ('F', 'Cancelado'),
 )
@@ -36,7 +35,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
 
     status = models.CharField(
         default="E", max_length=1, choices=STATUS_CHOICES)
-    is_adm = models.BooleanField(default=True)  # É adminstrativa ou judicial
+    is_adm = models.BooleanField(default=True)  # É administrativa ou judicial
     judge = models.ForeignKey(Judge, on_delete=models.PROTECT)
     lawyer = models.ForeignKey(Lawyer, on_delete=models.PROTECT)
     region = models.ForeignKey(Region, on_delete=models.PROTECT)
@@ -44,13 +43,13 @@ class Project(AbstractDescription, AbstractDateRecovering):
     competence = models.CharField(
         "Competência",  max_length=150, null=True)
     legal_manager = models.ForeignKey(
-        User, on_delete=models.PROTECT, related_name='legal_manager', null=True)  # Gerente juridico
+        User, on_delete=models.PROTECT, related_name='legal_manager', null=True)  # Gerente jurídico
     calculation_manager = models.ForeignKey(
         User, on_delete=models.PROTECT, related_name='calculation_manager', null=True)  # Gerente de calculos
     financial_manager = models.ForeignKey(
         User, on_delete=models.PROTECT, related_name='financial_manager', null=True)  # Gerente Financeiro
     legal_partner = models.ForeignKey(
-        User, on_delete=models.PROTECT, related_name='legal_partner', null=True)  # Socio juridico
+        User, on_delete=models.PROTECT, related_name='legal_partner', null=True)  # Socio jurídico
     financial_partner = models.ForeignKey(
         User, on_delete=models.PROTECT, related_name='financial_partner', null=True)  # Socio Financeiro
     engagement = models.OneToOneField(
