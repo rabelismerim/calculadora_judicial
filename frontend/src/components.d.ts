@@ -37,6 +37,7 @@ declare module '@vue/runtime-core' {
     RouterView: typeof import('vue-router')['RouterView']
     SearchFilter: typeof import('./components/inputs/SearchFilter.vue')['default']
     Spinner: typeof import('./components/common/Spinner.vue')['default']
+    StatusTag: typeof import('./components/common/StatusTag.vue')['default']
     TimeoutBar: typeof import('./components/common/TimeoutBar.vue')['default']
     UserCell: typeof import('./components/common/UserCell.vue')['default']
     UserPicture: typeof import('./components/common/UserPicture.vue')['default']

@@ -105,6 +105,7 @@ declare global {
   const projectService: typeof import('./services/projectService')['default']
   const provide: typeof import('vue')['provide']
   const range: typeof import('@jrnwn/utils')['range']
+  const rangeBetween: typeof import('./composables/utils')['rangeBetween']
   const reactify: typeof import('@vueuse/core')['reactify']
   const reactifyObject: typeof import('@vueuse/core')['reactifyObject']
   const reactive: typeof import('vue')['reactive']
@@ -124,14 +125,12 @@ declare global {
   const resolveComponent: typeof import('vue')['resolveComponent']
   const resolveRef: typeof import('@vueuse/core')['resolveRef']
   const resolveUnref: typeof import('@vueuse/core')['resolveUnref']
-  const rest: typeof import('./composables/utils')['rest']
   const set: typeof import('@jrnwn/utils')['set']
   const setClass: typeof import('@jrnwn/utils')['setClass']
   const setStyle: typeof import('@jrnwn/utils')['setStyle']
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']
   const shallowRef: typeof import('vue')['shallowRef']
-  const sum: typeof import('./composables/utils')['sum']
   const syncRef: typeof import('@vueuse/core')['syncRef']
   const syncRefs: typeof import('@vueuse/core')['syncRefs']
   const templateRef: typeof import('@vueuse/core')['templateRef']
@@ -444,6 +443,7 @@ declare module 'vue' {
     readonly projectService: UnwrapRef<typeof import('./services/projectService')['default']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
     readonly range: UnwrapRef<typeof import('@jrnwn/utils')['range']>
+    readonly rangeBetween: UnwrapRef<typeof import('./composables/utils')['rangeBetween']>
     readonly reactify: UnwrapRef<typeof import('@vueuse/core')['reactify']>
     readonly reactifyObject: UnwrapRef<typeof import('@vueuse/core')['reactifyObject']>
     readonly reactive: UnwrapRef<typeof import('vue')['reactive']>
@@ -463,14 +463,12 @@ declare module 'vue' {
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
     readonly resolveRef: UnwrapRef<typeof import('@vueuse/core')['resolveRef']>
     readonly resolveUnref: UnwrapRef<typeof import('@vueuse/core')['resolveUnref']>
-    readonly rest: UnwrapRef<typeof import('./composables/utils')['rest']>
     readonly set: UnwrapRef<typeof import('@jrnwn/utils')['set']>
     readonly setClass: UnwrapRef<typeof import('@jrnwn/utils')['setClass']>
     readonly setStyle: UnwrapRef<typeof import('@jrnwn/utils')['setStyle']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
-    readonly sum: UnwrapRef<typeof import('./composables/utils')['sum']>
     readonly syncRef: UnwrapRef<typeof import('@vueuse/core')['syncRef']>
     readonly syncRefs: UnwrapRef<typeof import('@vueuse/core')['syncRefs']>
     readonly templateRef: UnwrapRef<typeof import('@vueuse/core')['templateRef']>
