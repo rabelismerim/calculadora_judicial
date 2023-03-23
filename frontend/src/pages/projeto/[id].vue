@@ -71,7 +71,7 @@ onMounted(() => {
               Informações Principais
             </h2>
             <div>
-              <ProjectDetailCell label="Engagment">
+              <ProjectDetailCell label="Engagement">
                 <div v-for="engagement in project?.engagement?.numbers" :key="engagement">
                   {{ engagement }}
                 </div>
