@@ -57,24 +57,18 @@ export const clone = (object: any) => JSON.parse(JSON.stringify(object))
 export const delay = (seconds: number) => new Promise(resolve =>
   setTimeout(() => resolve(true), seconds * 1000))
 
-export const sum = (array: number[], start: number) =>
+const sum = (array: number[], start: number) =>
   array.reduce((total, el, i) => total + el * (start - i), 0)
-
-export const rest = (value: number) => value % 11
-
+const rest = (value: number) => value % 11
 const format = (value: string) => value.replace(/[^\d]+/g, '')
-
 const isValidNumber = (value: string, count: number) =>
   format(value).length === count && !format(value).match(/(\d)\1{10}/)
-
 const validator = (value: string) => format(value)
   .split('')
   .splice(format(value).length - 2)
   .map(el => +el)
-
 const validate = (firstDigit: number, lastDigit: number, validator: number[]) =>
   firstDigit === validator[0] && lastDigit === validator[1]
-
 const toValidate = (value: string, end: number, start = 0) => format(value)
   .split('')
   .filter((digit, index) => index >= start && index <= end && digit)
@@ -98,6 +92,9 @@ export const isValidCNPJ = (cnpj: string) => {
   const lastDigit = digit(sum(toValidate(cnpj, 4), 6) + sum(toValidate(cnpj, 12, 5), 9))
   return validate(firstDigit, lastDigit, validator(cnpj))
 }
+
+export const rangeBetween = (start = 0, end = 0, count = 1) => Array(count < 0 ? 0 : count).fill(0)
+  .map((_, i) => start + ((end - start) / (count <= 1 ? 1 : count - 1) * i))
 
 export const flatten = (data: any) => {
   const result: any = {}
