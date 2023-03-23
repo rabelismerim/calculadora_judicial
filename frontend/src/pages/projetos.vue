@@ -7,14 +7,29 @@ const filterBy = $ref('')
 
 let projects = $ref([])
 const projectsCount = computed(() => projects.length)
+
+const statusColors: any = {
+  p: '#c4d600', // Em Preparação
+  e: '#c4d600', // Em Preparação
+  c: '#86bc25', // Concluído
+  a: '#007cb0', // Em Andamento
+  f: '#cccccc', // Cancelado
+}
 const gaugeValues = computed(() => Object.entries(projects
-  .reduce((acc: any, { statusDisplay }) => {
-    if (!acc[statusDisplay])
-      acc[statusDisplay] = 0
-    acc[statusDisplay]++
+  .reduce((acc: any, { statusDisplay, status }: any) => {
+    if (!acc[statusDisplay]) {
+      acc[statusDisplay] = {
+        count: 0,
+        color: statusColors[status.toLowerCase()],
+      }
+    }
+    acc[statusDisplay].count += 1
     return acc
   }, {}))
-  .map(([label, count = 0]) => ({ label, count: Number(count) })))
+  .map(([label, content]) => {
+    const { count, color }: any = content
+    return { label, count, color }
+  }))
 
 const responsibleList = computed(() => Object.entries(projects
   .reduce((acc: any, { responsible }) => {
@@ -75,6 +90,10 @@ const columns = [
     label: 'Data de Criação',
     align: 'left',
     sortable: true,
+    format: (value) => {
+      const [month, day, year] = value.split('/')
+      return `${day}/${month}/${year}`
+    },
   },
   {
     name: 'responsible',
@@ -111,6 +130,7 @@ const columns = [
   required?: boolean
   align?: 'left' | 'right' | 'center'
   sortable?: boolean
+  format?: (val: any, row: any) => any
 }[]
 </script>
 
@@ -135,21 +155,31 @@ const columns = [
         />
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-12 gap-6 mb-8">
         <GraphGauge
           :values="gaugeValues"
           title="Status dos projetos"
           hint="Esse gráfico apresenta a quantidade de cálculo total de todos os projetos pelo tempo."
+          class="md:col-span-2 xl:col-span-3"
+        />
+        <GraphGauge
+          :values="[]"
+          title="Quantidade de Cálculos por Fase"
+          hint="Esse gráfico apresenta a quantidade de cálculos em cada fase."
+          empty-label="Sem cálculos disponíveis"
+          class="md:col-span-2 xl:col-span-3"
         />
         <GraphLine
           :values="usageData"
           title="Uso da Ferramenta x Tempo"
           hint="Esse gráfico mostra o uso da ferramenta no último mês."
+          class="sm:col-span-2 xl-col-span-3"
         />
         <ProgressList
           :values="responsibleList"
           title="Projetos x Responsável"
           hint="Esse gráfico apresenta o número de Projetos por Responsável."
+          class="sm:col-span-2 xl:col-span-3"
         />
       </div>
 
@@ -192,28 +222,10 @@ const columns = [
         <template #body-cell-status="props">
           <QTd :props="props">
             <div class="flex">
-              <div
-                class="py-1 pl-3 rounded-full flex no-wrap items-center"
-                :class="{
-                  'bg-red/20': props.value === 'Em Atraso',
-                  'bg-orange/20': props.value === 'Em Preparação',
-                  'bg-blue/20': props.value === 'Em Andamento',
-                  'bg-green/20': props.value === 'Concluído',
-                }"
-              >
-                <div class="flex-1">
-                  {{ props.value }}
-                </div>
-                <div
-                  class="h-4 w-4 bg-red rounded-full mr-2 ml-1.5"
-                  :class="{
-                    'bg-red': props.value === 'Em Atraso',
-                    'bg-orange': props.value === 'Em Preparação',
-                    'bg-blue': props.value === 'Em Andamento',
-                    'bg-green': props.value === 'Concluído',
-                  }"
-                />
-              </div>
+              <StatusTag
+                :label="props.value"
+                :color="statusColors[props.row.status.toLowerCase()]"
+              />
             </div>
           </QTd>
         </template>

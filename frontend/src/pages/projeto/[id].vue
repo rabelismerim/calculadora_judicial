@@ -17,17 +17,18 @@ const filteredRecoverings = computed(() => {
 })
 
 const time = computed(() => {
-  const { users: usersList = [] } = project
-  return usersList.reduce((acc: any, current: any) => {
-    const { id, username, groups } = current
+  const { projectUsers = [] } = project
+  return projectUsers.reduce((acc: any, current: any) => {
+    const { firstName, lastName, username, userpicture, groups } = current
+    const user = {
+      picture: userpicture,
+      fullName: `${firstName} ${lastName}`,
+      email: `${username}@deloitte.com`,
+    }
     groups.forEach(({ name }: any) => {
       if (!acc[name])
         acc[name] = []
-      // const user = users.find((user: any) => id === user.id)
-      // if (user)
-      //   acc[name].push(user)
-      if (username)
-        acc[name].push(username)
+      acc[name].push(user)
     })
     return acc
   }, {})
@@ -61,11 +62,14 @@ onMounted(() => {
       size="md"
     />
     <div
-      class="relative flex-1 grid grid-cols-[320px_1fr] tween-800"
-      :class="{ '-translate-x-284px w-[calc(100vw+284px)]': !sideOpen }"
+      class="relative flex-1 grid lg:grid-cols-[320px_1fr] tween-800"
+      :class="{ 'lg:-translate-x-284px lg:w-[calc(100vw+284px)]': !sideOpen }"
     >
-      <div class="relative bg--base pb-0 pr-9 border-r-1 border-black/12">
-        <div class="h-full max-h-[calc(100vh-96px)] overflow-x-hidden overflow-y-auto scroll-left">
+      <div
+        class="fixed z-10 inset-block-0 pt-14 pb-10 left-0 max-w-80  lg:py-0 lg:relative bg--base pb-0 border-r-1 border-black/12 tween-800"
+        :class="{ '-translate-x-284px lg:translate-0': !sideOpen }"
+      >
+        <div class="relative pr-9 h-full max-h-[calc(100vh-96px)] overflow-x-hidden overflow-y-auto scroll-left">
           <div class="p-8 pr-0">
             <h2 class="font-bold text-2xl bg--base sticky top-0 py-4">
               Informações Principais
@@ -135,21 +139,21 @@ onMounted(() => {
               </ProjectDetailCell>
             </div>
           </div>
-        </div>
-        <div
-          class="absolute right-0 top-0 bottom-0 p-1 flex cursor-pointer"
-          @click="sideOpen = !sideOpen"
-        >
-          <div class="hover:bg--secondary/15 pt-7 flex-1 flex flex-col items-center gap-4 rounded-2 tween">
-            <div class="i-carbon-chevron-right text-lg tween-800" :class="{ 'rotate-180': sideOpen }" />
-            <div class="text-vertical whitespace-nowrap font-bold text-lg tween-800" :class="{ 'opacity-0': sideOpen }">
-              Informações Principais
+          <div
+            class="absolute right-0 top-0 bottom-0 p-1 flex cursor-pointer"
+            @click="sideOpen = !sideOpen"
+          >
+            <div class="hover:bg--secondary/15 pt-7 flex-1 flex flex-col items-center gap-4 rounded-2 tween">
+              <div class="i-carbon-chevron-right text-lg tween-800" :class="{ 'rotate-180': sideOpen }" />
+              <div class="text-vertical whitespace-nowrap font-bold text-lg tween-800" :class="{ 'opacity-0': sideOpen }">
+                Informações Principais
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="px-8 py-8 max-h-[calc(100vh-96px)] overflow-y-auto overflow-x-hidden flex justify-center">
+      <div class="pr-8 py-8 pl-16 lg:pl-8 max-h-[calc(100vh-96px)] overflow-y-auto overflow-x-hidden flex justify-center">
         <div class="max-w-[min(1600px,100%)]">
           <div class="flex gap-8 items-center mb-8">
             <button
@@ -259,7 +263,7 @@ onMounted(() => {
               :subtitle="formatLegalNumber(recovering.entity.legalNumber)"
             >
               <template #header-right>
-                <div class="flex-1 flex justify-between items-center pl-8 pr-4">
+                <div class="flex-1 flex gap-2 justify-between items-center pl-8 pr-4">
                   <Btn
                     label="Novo Credor"
                     icon="i-carbon-add-filled"
@@ -318,17 +322,10 @@ onMounted(() => {
             {{ key }}:
           </div>
           <div class="flex gap-2">
-            <!-- <UserTag
+            <UserTag
               v-for="user in participants" :key="user.id"
               :model-value="user"
-            /> -->
-            <div
-              v-for="user in participants" :key="user.id"
-              :model-value="user"
-              class="rounded-full px-3 py-1 border-1 border--primary/12 bg--primary/20 whitespace-nowrap"
-            >
-              {{ user }}
-            </div>
+            />
           </div>
         </div>
       </div>
