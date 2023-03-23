@@ -57,7 +57,7 @@ const onToggle = () => {
         </div>
       </div>
       <slot name="header-left" />
-      <div>
+      <div class="flex flex-col justify-center">
         <div v-if="title" class="font-bold text-xl">
           {{ title }}
         </div>
