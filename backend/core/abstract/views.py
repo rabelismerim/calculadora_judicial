@@ -89,8 +89,7 @@ class AbstractViewApi(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         new_obj = serializer.validated_data
         obj = self.model.objects.create(**new_obj)
-        obj_name = self.model._meta.verbose_name_plural.lower(
-        )
+        obj_name = self.model._meta.verbose_name_plural.lower().replace(' ', '_')
         return JsonResponse({obj_name: self.serializer_class(obj, many=False).data}, status=status.HTTP_201_CREATED)
 
     def put(self, request, *args, **kwargs):

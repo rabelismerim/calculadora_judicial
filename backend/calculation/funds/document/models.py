@@ -95,7 +95,7 @@ class StatementDocument(AbstractStatement):
                (end_date.day - start_date.day)
 
     @property
-    def days(self):
+    def days(self) -> int:
         """Return the number of days between the statement's data_base and the date_rj, if it exists and has tax."""
         if self.has_tax():
             data_base = self.get_data_base()

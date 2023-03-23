@@ -5,38 +5,71 @@ The DocumentTest class inherits from the AbstractTest class and includes two met
 the HTTP POST and GET methods for managing Document objects. The tests use the Django test client to
 send HTTP requests and assert the responses. 
 
-Methods:
-- test_api_a_post_documents: Sends a POST request to create a new Document object and asserts a successful response status code
-- test_api_b_get_documents: Sends a GET request to retrieve a list of Document objects and asserts a successful response status code and the presence of at least one Document object in the response data
+Methods: - test_api_a_post_documents: Sends a POST request to create a new Document object and asserts a successful
+response status code - test_api_b_get_documents: Sends a GET request to retrieve a list of Document objects and
+asserts a successful response status code and the presence of at least one Document object in the response data
 
 Attributes:
 - None
 """
+from calculation.models import Calculation
 from core.abstract.tests import AbstractTest
 
 
-# class DocumentTest(AbstractTest):
-#     """document related tests"""
+class FundsDocumentTest(AbstractTest):
+    """Funds Document related tests"""
 
-#     def test_api_a_post_documents(self):
-#         """Assert post documents detail"""
-#         self.print_start('Create documents')
-#         document = {
-#             "description": "document"
-#         }
-#         response = self.client.post(
-#             '/djud/api/v1/projects/document', document)
-#         self.assertEqual(response.status_code, 201)
-#         self.print_success('Created document')
+    @AbstractTest.execute_before_and_after
+    def test_api_post_statement_funds_integrations(self):
+        """Assert get lawyers detail"""
+        calculation = Calculation.objects.first()
+        statements = [
+            ({
+                 "calculation_id": str(calculation.id),
+                 "statement": {
+                     "data_base": "2014-01-02",
+                     "historical_value": 1500,
+                     "number": "aleatory number 1"
+                 },
+                 "name": "Faturas"
+             },
+             {'corrected_value': 1520.5231791763986, 'index_data_base': 2.748073182623919,
+              'index_recovering': 2.7856726481684837},
+             {'total_historical': 1500, 'total_default_interest': 262.03682787806605,
+              'total_fine': 17.825600070544645,
+              'total_due': 1800.3856071250093,
+              'total_days': 517,
+              }),
+            ({
+                 "calculation_id": str(calculation.id),
+                 "statement": {
+                     "data_base": "1999-06-09",
+                     "historical_value": 500,
+                     "number": "aleatory number 2"
+                 },
+                 "name": "Notas fiscais"
+             }, {'corrected_value': 658.6255085039053,
+                 'index_data_base': 2.114762192020358,
+                 'index_recovering': 2.7856726481684837},
+             {'total_historical': 500, 'total_default_interest': 1264.560976327498,
+              'total_fine': 19.231864848314036,
+              'total_due': 1942.4183496797173,
+              'total_days': 5760,
+              }),
+        ]
 
-#     def test_api_b_get_documents(self):
-#         """Assert get documents detail"""
-#         self.print_start('List documents')
-#         response = self.client.get('/djud/api/v1/projects/document')
-#         self.assertEqual(response.status_code, 200)
-#         self.print_success('Listed documents')
-#         documents = response.json()['documents']
-#         document = documents[0]
-#         self.assertGreaterEqual(len(documents), 1)
-#         self.print_success('Listed documents >= 1')
-#         self.set_project('document_id', document['id'])
+        for statement, true_monetary_correction, arrears_charges in statements:
+            response = self.post('calculation/funds/documents', statement)
+            new_statement = response.content['fund_document']
+            fund = new_statement['fund']
+            monetary_correction = new_statement['fund']['statement']['monetary_correction']
+            self.assertEqual(fund['total_historical'], arrears_charges['total_historical'])
+            self.assertEqual(fund['total_default_interest'], arrears_charges['total_default_interest'])
+            self.assertEqual(fund['total_fine'], arrears_charges['total_fine'])
+            self.assertEqual(fund['total_due'], arrears_charges['total_due'])
+            self.assertEqual(fund['total_days'], arrears_charges['total_days'])
+
+            self.assertEqual(monetary_correction['corrected_value'], true_monetary_correction['corrected_value'])
+            self.assertEqual(monetary_correction['index_data_base'], true_monetary_correction['index_data_base'])
+            self.assertEqual(monetary_correction['index_recovering'], true_monetary_correction['index_recovering'])
+        return statements

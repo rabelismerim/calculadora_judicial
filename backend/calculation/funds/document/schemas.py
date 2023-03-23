@@ -95,6 +95,7 @@ class TotalValuesDocumentSchema(AbstractDescriptionSchema):
     fund_id = serializers.UUIDField(read_only=True)
     statement = StatementDocumentSchema(
         many=False, source='fund.statementdocument', exclude=('fund_id',), required=False)
+    total_days = serializers.IntegerField(read_only=True, source='fund.statementdocument.days')
 
     class Meta:
         model = TotalValuesDocument

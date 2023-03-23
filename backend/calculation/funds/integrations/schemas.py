@@ -42,7 +42,7 @@ class StatementIntegrationsSchema(AbstractDescriptionSchema):
     Attributes:
         fund_id (serializers.UUIDField): The UUID of the related fund.
     """
-    monetary_corretion = MonetaryCorrectionIntegrationsSchema(
+    monetary_correction = MonetaryCorrectionIntegrationsSchema(
         read_only=True, source='monetarycorrectionintegrations')
     fund_id = serializers.UUIDField()
     status_display = serializers.CharField(source='get_status_display', read_only=True)
@@ -60,7 +60,7 @@ class StatementIntegrationsUpdateSchema(AbstractDescriptionSchema):
     Attributes:
         fund_id (serializers.UUIDField): The UUID of the related fund.
     """
-    monetary_corretion = MonetaryCorrectionIntegrationsSchema(
+    monetary_correction = MonetaryCorrectionIntegrationsSchema(
         read_only=True, source='monetarycorrectionintegrations')
     fund_id = serializers.UUIDField(read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)

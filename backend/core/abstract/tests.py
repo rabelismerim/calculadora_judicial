@@ -1,8 +1,10 @@
 import json
+import os.path
 import re
 import sys
 import time
 import uuid
+import webbrowser
 
 from django.core.management import color_style
 from django.core.management.base import OutputWrapper
@@ -177,13 +179,11 @@ class AbstractTest(TestCase):
         except ValueError:
             is_json = False
 
-        # if is_json:
-        #     keys = list(data['content'].keys())
-        #     key = keys[0]
-        #     values = [dict(data['content'][key])]
-        #     df = pd.DataFrame(values)
-
-            # df.to_excel(f'file_{uuid.uuid4()}.xlsx')
+        if is_json:
+            keys = list(data['content'].keys())
+            key = keys[0]
+            values = [dict(data['content'][key])]
+            self._write_html(values, key)
         return AttrDict(data)
 
     def get(self, path):
@@ -191,6 +191,139 @@ class AbstractTest(TestCase):
         data = {'status_code': response.status_code, 'content': response.content}
         try:
             data['content'] = response.json()
+            is_json = True
         except ValueError:
-            pass
+            is_json = False
+
+        if is_json:
+            keys = list(data['content'].keys())
+            key = keys[0]
+            values = data['content'][key]
+            self._write_html(values, key)
         return AttrDict(data)
+
+    def print_dict(self, obj, index=4, key='Exibir', range_=0):
+        key = key.capitalize()
+        card_body = f""" 
+            <a href="#{key}{range_}" class="list-group-item collapsed" data-toggle="collapse" 
+                            data-parent="#sidebar" aria-expanded="false"> 
+            <i class="fa fa-dashboard"></i> 
+            <h5 class="hidden-sm-down">{key}</h5>
+        </a>
+        <div id="{key}{range_}" class='collapse' data-toggle='collapse' aria-expanded="false">\n"""
+
+        index += 1
+        if index > 6:
+            index = 6
+        items = list(obj.items())
+        for i in range(len(items)):
+            key = items[i][0]
+            value = items[i][1]
+            next_elm = None
+            if i < len(items) - 1:
+                next_elm = items[i + 1]
+
+            elm = "<div class='card-body pt-1 pb-1'>\n"
+
+            if key in ['created_at', 'updated_at', 'update_user', 'create_user', 'id']:
+                continue
+
+            if str(key).endswith('_id'):
+                continue
+            # elm = f"""<
+            #         div class='row'>
+            #             <div class='col-sm-6'>
+            #                 "<h{index} class='card-title'>{key}</h{index}>\n"
+            #             </div>
+            #             <div class='col-sm-6'>
+            #                 "<p class='card-text'>{value}</p>\n"
+            #             </div>
+            #         </div>
+            # """
+
+            # if next_elm:
+            #     if not isinstance(next_elm[1], (dict, list)):
+            #         elm += f"<h{index} class='card-title'>{key}</h{index}>\n"
+            # else:
+            #     elm += f"<h{index} class='card-title'>{key}</h{index}>\n"
+
+            if isinstance(value, dict):
+                elm += self.print_dict(value, index, key)
+            elif isinstance(value, list):
+                card_body += "".join(self.print_dict(elm, index, key) for elm in value)
+            else:
+                if next_elm:
+                    if not isinstance(next_elm[1], (dict, list)):
+                        # elm += f"<p class='card-text'>{value}</p>\n"
+                        elm += f"""<div class='row'>
+                                    <div class='col-sm-6'>
+                                        <h{index} class='card-title'>{key}</h{index}>\n
+                                    </div>
+                                    <div class='col-sm-6'>
+                                        <p class='card-text'>{value}</p>\n
+                                    </div>
+                                </div>
+                                """
+                else:
+                    elm += f"""<div class='row'>
+                                <div class='col-sm-6'>
+                                    <h{index} class='card-title'>{key}</h{index}>\n
+                                </div>
+                                <div class='col-sm-6'>
+                                    <p class='card-text'>{value}</p>\n
+                                </div>
+                            </div>
+                        """
+
+            elm += "</div>\n"
+            card_body += elm
+        card_body += "</div>\n"
+        return card_body
+
+    def _write_html(self, data, key):
+        card_body = ''
+        card_row = """
+                 <div class="col-sm-12 p-5">
+                    <div class="card" id="sidebar">
+                            {}
+                    </div>
+                </div>
+                """
+        for i in range(len(data)):
+            card_body += card_row.format(self.print_dict(data[i], key=key, range_=i))
+
+        message = f"""
+            <!DOCTYPE html>
+            <html>
+                <head>
+                    <title>JUCA Api Tests</title>
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+                    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+                    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+                </head>
+                </head>
+                <body>
+                     <div class="container">
+                        <div class="row">
+                           {card_body}
+                        </div>
+                    </div>
+                </body>
+            </html>
+            """
+
+        filename = os.path.join(os.getcwd(), 'tests.html')
+        f = open(filename, 'w')
+        f.write(message)
+        f.close()
+
+        webbrowser.open_new_tab(filename)
+
+        self.print('opened')
+
+        while True:
+            next_ = input('Aperte a tecla q para sair\n')
+            if next_ == 'q':
+                break
