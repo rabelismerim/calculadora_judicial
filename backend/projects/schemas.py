@@ -17,6 +17,7 @@ from projects.region.models import Region
 from projects.region.schemas import RegionSchema
 from recovering.schemas import RecoveringSchema
 from utils import get_user_model
+
 User = get_user_model()
 
 
@@ -83,7 +84,9 @@ class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):
     approvers = serializers.ListField(write_only=True, child=UserSerializer())
     reviewers = serializers.ListField(write_only=True, child=UserSerializer())
 
-    users = ProjectUserProjectSchema(
+    users = UserDttSchema(many=True, read_only=True, source='project.users')
+
+    project_users = ProjectUserProjectSchema(
         read_only=True, many=True, source='engagement.users')
 
     status_display = serializers.CharField(
@@ -166,8 +169,8 @@ class ProjectListSchema(ProjectSchema):
 
     class Meta:
         model = Project
-        fields = ("id", 'description', 'status', 'status_display', 'created_at', 'users',
-                  'engagement', 'num_recovering', 'is_adm', 'process_number')
+        fields = ("id", 'description', 'status', 'status_display', 'created_at', 'project_users',
+                  'users', 'engagement', 'num_recovering', 'is_adm', 'process_number')
 
 
 exclude = ('create_user', 'created_at',
@@ -178,7 +181,8 @@ class ProjectCreateSchema(serializers.Serializer):
     """Serializer Project fields to options to ccreate project"""
 
     user_options = UserDttSchema(
-        User.objects.all(), many=True, read_only=True, exclude=('create_user', 'created_at', 'is_staff', 'user_permissions', 'date_joined', 'is_active', 'groups'))
+        User.objects.all(), many=True, read_only=True,
+        exclude=('create_user', 'created_at', 'is_staff', 'user_permissions', 'date_joined', 'is_active', 'groups'))
 
     judge_options = JudgeSchema(Judge.objects.all(),
                                 many=True, read_only=True)
