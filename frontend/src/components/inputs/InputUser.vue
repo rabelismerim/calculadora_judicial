@@ -5,22 +5,30 @@ const props = withDefaults(defineProps<{
   label?: string
   rules?: ValidationRule<any>[]
   users?: any[]
+  errorMessages?: any
+  errorKey?: string
 }>(), {
   rules: () => ([]),
   users: () => ([]),
+  errorMessages: () => ({}),
+  errorKey: '',
 })
 const emit = defineEmits(['update:modelValue'])
 
 const input = ref(null) as any
 const hasError = computed(() => input.value.hasError)
+const { clearError } = useBackendErrors(toRef(props, 'errorMessages'))
+const onInput = (value: string | number | null) => {
+  if (props.errorKey)
+    clearError(props.errorKey)
+  emit('update:modelValue', value)
+}
 
 let options = $ref(props.users)
 const onFilter = (val: string, update: any) => {
   update(() => {
     const needle = val.toLowerCase()
-    options = props.users.filter(({ name }) =>
-      name.toLowerCase().includes(needle),
-    )
+    options = props.users.filter(({ fullName }) => fullName?.toLowerCase()?.includes(needle))
   })
 }
 </script>
@@ -32,8 +40,10 @@ const onFilter = (val: string, update: any) => {
     :options="options"
     :label="label"
     :rules="rules"
+    :error="!!errorMessages[errorKey]"
+    :error-message="!!errorMessages[errorKey] ? errorMessages[errorKey] : ''"
     outlined
-    option-label="name"
+    option-label="fullName"
     option-value="id"
     emit-value
     map-options
@@ -43,7 +53,7 @@ const onFilter = (val: string, update: any) => {
     input-debounce="0"
     dense
     @filter="onFilter"
-    @update:model-value="(value: number) => emit('update:modelValue', value)"
+    @update:model-value="onInput"
   >
     <template #option="scope">
       <QItem v-bind="scope.itemProps">

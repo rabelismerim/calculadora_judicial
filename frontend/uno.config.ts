@@ -12,17 +12,17 @@ import presetIcons from '@unocss/preset-icons'
 export default defineConfig({
   rules: [
     ['block', { display: 'block !important' }],
-    [/^bg--(\w+)$/, ([, w]) => ({ background: `hsl(var(--${w},0,0%,0%))` })],
-    [/^bg--(\w+)\/(\d+)$/, ([, w, d]) => ({
+    [/^bg--([\w-]+)$/, ([, w]) => ({ background: `hsl(var(--${w},0,0%,0%))` })],
+    [/^bg--([\w-]+)\/(\d+)$/, ([, w, d]) => ({
       'background': `hsla(var(--${w},0,0%,0%),var(--opacity,1))`,
       '--opacity': +d / 100,
     })],
-    [/^text--(\w+)$/, ([, w]) => ({ color: `hsl(var(--${w},0,0%,0%))` })],
-    [/^color--(\w+)$/, ([, w]) => ({ color: `hsl(var(--${w},0,0%,0%))` })],
-    [/^fill--(\w+)$/, ([, w]) => ({ fill: `hsl(var(--${w},0,0%,0%))` })],
-    [/^stroke--(\w+)$/, ([, w]) => ({ stroke: `hsl(var(--${w},0,0%,0%))` })],
-    [/^border--(\w+)$/, ([, w]) => ({ 'border-color': `hsl(var(--${w},0,0%,0%))` })],
-    [/^border--(\w+)\/(\d+)$/, ([, w, d]) => ({
+    [/^text--([\w-]+)$/, ([, w]) => ({ color: `hsl(var(--${w},0,0%,0%))` })],
+    [/^color--([\w-]+)$/, ([, w]) => ({ color: `hsl(var(--${w},0,0%,0%))` })],
+    [/^fill--([\w-]+)$/, ([, w]) => ({ fill: `hsl(var(--${w},0,0%,0%))` })],
+    [/^stroke--([\w-]+)$/, ([, w]) => ({ stroke: `hsl(var(--${w},0,0%,0%))` })],
+    [/^border--([\w-]+)$/, ([, w]) => ({ 'border-color': `hsl(var(--${w},0,0%,0%))` })],
+    [/^border--([\w-]+)\/(\d+)$/, ([, w, d]) => ({
       'border-color': `hsla(var(--${w},0,0%,0%),var(--opacity,1))`,
       '--opacity': +d / 100,
     })],
@@ -30,14 +30,16 @@ export default defineConfig({
     [/^ring--(\w+)$/, ([, w]) => ({
       '--un-ring-color': `hsl(var(--${w},0,0%,0%))`,
     })],
-    [/^ring--(\w+)\/(\d+)$/, ([, w, d]) => ({
+    [/^ring--([\w-]+)\/(\d+)$/, ([, w, d]) => ({
       '--un-ring-color': `hsla(var(--${w},0,0%,0%),var(--opacity,1))`,
     })],
     ['ring-inner', { 'box-shadow': 'inset var(--un-ring-offset-shadow),inset var(--un-ring-shadow), var(--un-shadow) !important' }],
+    ['text-vertical', { 'writing-mode': 'vertical-lr' }],
   ],
-  shortcuts: {
-    'with-transition': 'transition ease-in-out duration-300',
-  },
+  shortcuts: [
+    { tween: 'transition ease-in-out duration-300' },
+    [/^tween-(\d+)$/, ([, d]) => `transition ease-in-out duration-${d}`],
+  ],
   presets: [
     presetUno(),
     presetAttributify(),

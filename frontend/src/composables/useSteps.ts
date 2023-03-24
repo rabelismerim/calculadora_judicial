@@ -1,4 +1,4 @@
-export default (firstStep: number, stepper: any, form: any) => {
+export default (firstStep: number, count: number, stepper: any, form: any) => {
   const data = $ref({
     step: firstStep,
     error: [] as boolean[],
@@ -16,6 +16,18 @@ export default (firstStep: number, stepper: any, form: any) => {
     data.error[ref] = toValidate
       .map(({ hasError }: any) => hasError)
       .some((value: boolean) => !!value)
+  }
+  const validateAll = () => {
+    range(1, count)
+      .forEach((step) => {
+        validateStep(step)
+      })
+  }
+  const loadAll = async () => {
+    for (const step of range(count, 1)) {
+      data.step = step
+      await delay(0.01)
+    }
   }
   const nextStep = () => {
     validateStep(data.step)
@@ -42,6 +54,8 @@ export default (firstStep: number, stepper: any, form: any) => {
     hasError,
     setStep,
     validateStep,
+    validateAll,
+    loadAll,
     nextStep,
     previousStep,
     clearErrors,

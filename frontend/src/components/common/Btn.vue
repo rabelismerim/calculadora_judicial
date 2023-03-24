@@ -45,7 +45,7 @@ const onMouseMove = (event: MouseEvent) => {
     :is="tag"
     ref="button"
     :disabled="disabled ? disabled : undefined"
-    class="relative overflow-hidden text-[1.05rem] min-h-10 font-semibold px-4 py-2 flex gap-4 no-wrap items-center transition duration-300 ease-in-out cursor-pointer"
+    class="relative overflow-hidden text-[1.05rem] min-h-10 font-semibold px-4 py-2 flex gap-4 no-wrap items-center tween cursor-pointer"
     :class="{
       'text--color border-1 border--color rounded': outlined,
       'hover:bg--base/10 text--color rounded': transparent,
@@ -68,7 +68,7 @@ const onMouseMove = (event: MouseEvent) => {
       {{ loadingLabel }}
       <Spinner
         :color="!transparent && !outlined ? 'white' : color"
-        class="pointer-events-none transition duration-300 ease-in-out"
+        class="pointer-events-none tween"
         :class="loading ? 'opacity-100 scale-100' : 'opacity-0 scale-0'"
       />
     </div>
@@ -77,7 +77,7 @@ const onMouseMove = (event: MouseEvent) => {
       <span class="whitespace-nowrap">{{ label }}</span>
       <slot name="after" />
     </div>
-    <div v-show="icon" :class="icon" class="transition duration-300 ease-in-out pointer-events-none" />
+    <div v-show="icon" :class="icon" class="tween pointer-events-none" />
     <div
       class="h-300% aspect-square rounded-full absolute -translate-x-50% -translate-y-50% transition-opacity duration-300 ease-in-out pointer-events-none"
       :class="{

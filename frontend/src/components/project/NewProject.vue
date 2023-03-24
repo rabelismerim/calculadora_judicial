@@ -5,12 +5,14 @@ const props = withDefaults(defineProps<{
 }>(), {
   modelValue: false,
 })
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'success'])
 
 let loading = $ref(false)
 const form = ref(null) as any
 const stepper = ref(null) as any
-const { step, hasError, setStep, nextStep, previousStep, clearErrors } = useSteps(1, stepper, form)
+const { step, hasError, setStep, nextStep, previousStep, clearErrors, validateAll, loadAll } = useSteps(1, 4, stepper, form)
+const errorMessages = ref({})
+const { setErrors, clearAll } = useBackendErrors(errorMessages)
 
 // Project related
 const nullRecovering = {
@@ -27,7 +29,6 @@ const nullProject = {
   description: '',
   start: null,
   end: null,
-  status: '',
   legalManagerId: '',
   legalPartnerId: '',
   financialManagerId: '',
@@ -44,6 +45,7 @@ const clear = async () => {
   await delay(0.5)
   form.value.resetValidation ()
   setStep(1)
+  clearAll()
   clearErrors()
 }
 const addRecovering = () => {
@@ -53,21 +55,27 @@ const removeRecovering = (index: number) => {
   newProject.recoverings.splice(index, 1)
 }
 const onSubmit = async () => {
-  form.value?.validate()
+  validateAll()
   if (hasError.value.includes(true)) {
     throwError({
       id: 'SUBMIT_ERROR',
-      message: 'Você precisa preencher os campos obrigatórios!',
+      message: 'Você precisa resolver todos os problemas antes de concluir!',
     })
     return
   }
   try {
     loading = true
-    const result = await projectService.newProject(newProject)
-    console.warn('NEW PROJECT', { result })
+    const { id, description }: any = await projectService.newProject(newProject)
+    if (id) {
+      notify({ id, message: `Novo: ${description} criado com sucesso!` })
+      emit('success')
+    }
   }
   catch (error) {
-    throwError(error)
+    setErrors(error)
+    await delay (0.01)
+    validateAll()
+    printError('ERROR ON CREATE NEWPROJECT:', error)
   }
   finally {
     loading = false
@@ -78,20 +86,24 @@ const onSubmit = async () => {
 let users = $ref([])
 let judges = $ref([])
 const addJudge = async (description: string) => projectService.newJudge(description)
+let lawyers = $ref([])
+const addLawyer = async (description: string) => projectService.newLawyer(description)
 let courts = $ref([])
 const addCourt = async (description: string) => projectService.newCourt(description)
 let regions = $ref([])
 const addRegion = async (description: string) => projectService.newRegion(description)
 onMounted(async () => {
+  loadAll()
   loading = true
   try {
     users = await usersService.getUsers()
     judges = await projectService.getJudges()
+    lawyers = await projectService.getLawyers()
     courts = await projectService.getCourts()
     regions = await projectService.getRegions()
   }
   catch (error) {
-    throwError(error)
+    printError('ERROR ON LOAD OPTIONS OF NEWPROJECT:', error)
   }
   finally {
     loading = false
@@ -114,6 +126,7 @@ onMounted(async () => {
         v-model="step"
         color="primary"
         animated
+        header-nav
         keep-alive
         flat
         header-class="shadow-md"
@@ -122,7 +135,6 @@ onMounted(async () => {
           :name="1"
           title="Informações Principais"
           icon="o_description"
-          :done="step > 1"
           :error="hasError.at(1)"
           class="overflow-y-auto max-h-[calc(100vh-326px)]"
         >
@@ -130,43 +142,27 @@ onMounted(async () => {
             <InputText
               v-model="newProject.description"
               label="Nome do Projeto"
-              :rules="[value => !!value || 'É um campo obrigatório']"
               class="sm:col-span-2"
+              :rules="[value => !!value || 'É um campo obrigatório']"
+              :error-messages="errorMessages"
+              error-key="description"
             />
             <InputTags
               v-model="newProject.engagements"
-              label="Engagements *"
-              class="sm:col-span-2 mb-5"
+              label="Engagements"
+              class="sm:col-span-2"
+              :rules="[value => value.length > 0 || 'É um campo obrigatório']"
+              :error-messages="errorMessages"
+              error-key="engagement.non_field_errors"
             />
-            <InputUser
-              v-model="newProject.financialPartnerId"
-              label="Sócio Financeiro"
-              :users="users"
+            <InputText
+              v-model="newProject.processNumber"
+              label="Número de Processo"
+              maxlength="25"
+              mask="#######-##.####.#.##.####"
               :rules="[value => !!value || 'É um campo obrigatório']"
-            />
-            <InputUser
-              v-model="newProject.legalPartnerId"
-              label="Sócio Jurídico"
-              :users="users"
-              :rules="[value => !!value || 'É um campo obrigatório']"
-            />
-            <InputUser
-              v-model="newProject.financialManagerId"
-              label="Gerente Financeiro"
-              :users="users"
-              :rules="[value => !!value || 'É um campo obrigatório']"
-            />
-            <InputUser
-              v-model="newProject.legalManagerId"
-              label="Gerente Jurídico"
-              :users="users"
-              :rules="[value => !!value || 'É um campo obrigatório']"
-            />
-            <InputUser
-              v-model="newProject.calculationManagerId"
-              label="Gerente de Cálculo"
-              :users="users"
-              :rules="[value => !!value || 'É um campo obrigatório']"
+              :error-messages="errorMessages"
+              error-key="process_number"
             />
             <InputDate
               v-model="newProject.start"
@@ -176,6 +172,8 @@ onMounted(async () => {
                 (value) => value.length === 10 || 'Precisa preencher o padrão ##/##/####',
                 (value) => /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Precisa ser uma data válida!',
               ]"
+              :error-messages="errorMessages"
+              error-key="project_start"
             />
             <InputSelect
               v-model="newProject.judgeId"
@@ -183,20 +181,17 @@ onMounted(async () => {
               label="Juiz"
               :to-add="addJudge"
               :rules="[value => !!value || 'É um campo obrigatório']"
+              :error-messages="errorMessages"
+              error-key="judge_id"
             />
             <InputSelect
               v-model="newProject.lawyerId"
-              v-model:options="judges"
+              v-model:options="lawyers"
               label="Advogado"
-              :to-add="addJudge"
+              :to-add="addLawyer"
               :rules="[value => !!value || 'É um campo obrigatório']"
-            />
-            <InputText
-              v-model="newProject.processNumber"
-              label="Número de Processo"
-              maxlength="15"
-              :rules="[value => !!value || 'É um campo obrigatório']"
-              class="sm:col-span-2"
+              :error-messages="errorMessages"
+              error-key="lawyer_id"
             />
             <InputSelect
               v-model="newProject.regionId"
@@ -204,6 +199,8 @@ onMounted(async () => {
               label="Comarca"
               :to-add="addRegion"
               :rules="[value => !!value || 'É um campo obrigatório']"
+              :error-messages="errorMessages"
+              error-key="region_id"
             />
             <InputSelect
               v-model="newProject.courtId"
@@ -211,6 +208,8 @@ onMounted(async () => {
               label="Vara"
               :to-add="addCourt"
               :rules="[value => !!value || 'É um campo obrigatório']"
+              :error-messages="errorMessages"
+              error-key="court_id"
             />
           </div>
         </QStep>
@@ -219,25 +218,27 @@ onMounted(async () => {
           :name="2"
           title="Recuperandas"
           icon="o_store"
-          :done="step > 1"
           :error="hasError.at(2)"
-          class="relative overflow-y-auto max-h-[calc(100vh-326px)] min-h-102 overflow-x-hidden"
+          class="relative overflow-y-auto max-h-[calc(100vh-326px)] min-h-87 overflow-x-hidden"
         >
           <div
             v-for="(recovering, index) in newProject.recoverings"
             :key="index"
-            class="grid items-stretch sm:grid-cols-[1fr_1fr_42px] gap-x-4"
+            class="grid items-stretch grid-cols-[1fr_1fr_42px] gap-x-4"
             data-step="2"
           >
             <InputText
               v-model="recovering.name"
               label="Recuperanda"
               :rules="[value => !!value || 'Este Campo é obrigatório']"
+              :error-messages="errorMessages"
+              :error-key="`recoverings.${index}.entity.name`"
             />
-            <InputText
+            <InputLegal
               v-model="recovering.legalNumber"
-              label="CPF/CNPJ"
               :rules="[value => !!value || 'Este Campo é obrigatório']"
+              :error-messages="errorMessages"
+              :error-key="`recoverings.${index}.entity.legal_number`"
             />
             <div
               class="border-1 border--error hover:border-black/22 rounded color--error hover:bg--error hover:color-white flex justify-center items-center text-lg cursor-pointer mb-5"
@@ -260,33 +261,89 @@ onMounted(async () => {
 
         <QStep
           :name="3"
+          title="Responsáveis"
+          icon="o_assignment_ind"
+          :error="hasError.at(3)"
+          class="overflow-y-auto min-h-87  max-h-[calc(100vh-326px)]"
+        >
+          <div data-step="3" class="grid sm:grid-cols-2 gap-x-4">
+            <InputUser
+              v-model="newProject.financialPartnerId"
+              label="Sócio Financeiro"
+              :users="users"
+              :rules="[value => !!value || 'É um campo obrigatório']"
+              :error-messages="errorMessages"
+              error-key="financial_partner_id"
+            />
+            <InputUser
+              v-model="newProject.legalPartnerId"
+              label="Sócio Jurídico"
+              :users="users"
+              :rules="[value => !!value || 'É um campo obrigatório']"
+              :error-messages="errorMessages"
+              error-key="legal_partner_id"
+            />
+            <InputUser
+              v-model="newProject.financialManagerId"
+              label="Gerente Financeiro"
+              :users="users"
+              :rules="[value => !!value || 'É um campo obrigatório']"
+              :error-messages="errorMessages"
+              error-key="financial_manager_id"
+            />
+            <InputUser
+              v-model="newProject.legalManagerId"
+              label="Gerente Jurídico"
+              :users="users"
+              :rules="[value => !!value || 'É um campo obrigatório']"
+              :error-messages="errorMessages"
+              error-key="legal_manager_id"
+            />
+            <InputUser
+              v-model="newProject.calculationManagerId"
+              label="Gerente de Cálculo"
+              :users="users"
+              :rules="[value => !!value || 'É um campo obrigatório']"
+              :error-messages="errorMessages"
+              error-key="calculation_manager_id"
+            />
+          </div>
+        </QStep>
+
+        <QStep
+          :name="4"
           title="Times e Papéis"
           icon="o_people"
-          :done="step > 1"
-          :error="hasError.at(3)"
-          class="relative overflow-y-auto max-h-[calc(100vh-326px)] min-h-102 pb-0 pt-6 px-6 overflow-x-hidden"
+          :error="hasError.at(4)"
+          class="relative overflow-y-auto max-h-[calc(100vh-326px)] min-h-87 pb-0 pt-6 px-6 overflow-x-hidden"
         >
           <div
             class=""
-            data-step="3"
+            data-step="4"
           >
             <InputUsers
               v-model="newProject.executors"
               :users="users"
               label="Executores"
               :rules="[value => value.length > 0 || 'Este campo é obrigatório!']"
+              :error-messages="errorMessages"
+              error-key="executors"
             />
             <InputUsers
               v-model="newProject.approvers"
               :users="users"
               label="Aprovadores"
               :rules="[value => value.length > 0 || 'Este campo é obrigatório!']"
+              :error-messages="errorMessages"
+              error-key="approvers"
             />
             <InputUsers
               v-model="newProject.reviewers"
               :users="users"
               label="Revisores"
               :rules="[value => value.length > 0 || 'Este campo é obrigatório!']"
+              :error-messages="errorMessages"
+              error-key="reviewers"
             />
           </div>
         </QStep>
@@ -309,7 +366,7 @@ onMounted(async () => {
           @press="previousStep"
         />
         <Btn
-          v-if="step < 3"
+          v-if="step < 4"
           label="Próximo"
           outlined
           tag="div"
@@ -317,7 +374,7 @@ onMounted(async () => {
           @press="nextStep"
         />
         <Btn
-          v-if="step === 3"
+          v-if="step === 4"
           label="Concluir"
           tag="div"
           :loading="loading"

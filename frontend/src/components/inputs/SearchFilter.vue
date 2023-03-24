@@ -29,7 +29,7 @@ const clear = () => {
     >
     <button
       v-if="modelValue.length > 0"
-      class="group absolute right-1 flex justify-center items-center top-50% -translate-y-50% h-8 w-8 rounded-.5 hover:bg--primary transition duration-300 ease-in-out"
+      class="group absolute right-1 flex justify-center items-center top-50% -translate-y-50% h-8 w-8 rounded-.5 hover:bg--primary tween"
       @click="clear"
     >
       <div class="i-carbon-close text-lg group-hover:text-white" />

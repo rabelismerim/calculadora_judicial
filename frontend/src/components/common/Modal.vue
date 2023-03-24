@@ -9,23 +9,23 @@ const props = withDefaults(defineProps<{
   modelValue: false,
   modalClass: '',
 })
-const emit = defineEmits(['update:modelValue', 'close'])
+const emit = defineEmits(['update:model-value', 'close'])
 const close = () => {
-  emit('update:modelValue', false)
+  emit('update:model-value', false)
   emit('close')
 }
 </script>
 
 <template>
   <div
-    class="fixed inset-0 flex justify-center items-center bg-black/20 z-1000 with-transition"
+    class="fixed inset-0 flex justify-center items-center bg-black/20 z-1000 tween"
     :class="{
       'opacity-100 pointer-events-auto': modelValue,
       'opacity-0 pointer-events-none': !modelValue,
     }"
   >
     <div
-      class="relative bg--base w-full m-4 max-h-[calc(100vh-32px)] rounded-.5 border-1 border-black/28 with-transition"
+      class="relative bg--base w-full m-4 max-h-[calc(100vh-32px)] rounded-.5 border-1 border-black/28 tween"
       :class="{
         'translate-y-10': !modelValue,
         'max-w-240': !modalClass,
@@ -39,7 +39,7 @@ const close = () => {
         </div>
         <button
           :disabled="closeDisabled"
-          class="h-8 w-8 flex justify-center items-center text-lg rounded-full bg-black/6 hover:bg-black/12 with-transition"
+          class="h-8 w-8 flex justify-center items-center text-lg rounded-full bg-black/6 hover:bg-black/12 tween"
           @click="close"
         >
           <div class="i-carbon-close" />

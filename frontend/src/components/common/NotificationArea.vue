@@ -4,7 +4,7 @@ const { notifications, remove } = $Notification
 
 <template>
   <div
-    class="fixed top-14 left-0 right-0 p-3 pointer-events-none transform transition duration-300 ease-out translate-0 z-1000000"
+    class="fixed top-14 left-0 right-0 p-3 pointer-events-none transform tween translate-0 z-1000000"
   >
     <div
       v-auto-animate
@@ -33,7 +33,7 @@ const { notifications, remove } = $Notification
           {{ message }}
         </div>
         <div
-          class="relative right-0 top-0 h-7 aspect-square hover:bg-white/30 rounded-full flex justify-center items-center cursor-pointer transition duration-300 ease-out"
+          class="relative right-0 top-0 h-7 aspect-square hover:bg-white/30 rounded-full flex justify-center items-center cursor-pointer tween"
           @click="remove(index)"
         >
           <div class="i-carbon-close text-lg" />

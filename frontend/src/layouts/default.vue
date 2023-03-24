@@ -13,11 +13,18 @@ onMounted(async () => {
     }
   }
   catch (error) {
-    throwError(error)
+    printError('ERROR ON LOAD DEFAULT LAYOUT OPTIONS:', error)
   }
 })
 
-const paths = $ref([
+interface Link {
+  label: string
+  path: string
+  disabled?: boolean
+  permissions?: string[]
+  notification?: number
+}
+const paths: Link[] = $ref([
   {
     label: 'Home',
     path: '/',
@@ -29,11 +36,6 @@ const paths = $ref([
   {
     label: 'Time',
     path: '/time',
-    disabled: true,
-  },
-  {
-    label: 'Solicitações',
-    path: '/solicitacoes',
     notification: computed(() => accessRequestsCount),
     permissions: ['view_user'],
   },
@@ -55,7 +57,7 @@ const filteredPaths = computed(() => paths.filter(({ permissions }: any) => hasP
     >
       <template #after>
         <div v-if="notification" class="relative inline-block mb-3">
-          <span class="bg-red text-white absolute top-0 animate-bounce text-xs rounded-full py-.3 px-1.5">
+          <span class="bg--error text-white absolute top-0 animate-bounce text-xs rounded-full py-.3 px-1.5">
             {{ notification }}
           </span>
         </div>

@@ -34,7 +34,11 @@ const { user } = $user
         @click="logout"
       >
         <template #before>
-          <UserPicture :model-value="user" class="h-8 w-8 rounded-full" />
+          <UserPicture
+            :model-value="user"
+            class="h-8 w-8 rounded-full"
+            initials-class="text-sm"
+          />
         </template>
       </Btn>
       <Img

@@ -19,9 +19,11 @@ const appVersion = APP_VERSION || '0.0.0'
         {{ title }}
       </a>
     </div>
-    <div class="flex bg-black h-10 px-10 text-white justify-between items-center">
-      <p>© 2023 Para mais informações contate a Deloitte Global</p>
-      <span>Versão: {{ appVersion }}</span>
+    <div class="flex items-center justify-center sm:justify-between bg-black h-10 px-10 text-white overflow-hidden">
+      <div class="inline sm:block">
+        © 2023 Para mais informações contate a Deloitte Global
+      </div>
+      <span class="ml-4 whitespace-pre">Versão: {{ appVersion }}</span>
     </div>
   </footer>
 </template>

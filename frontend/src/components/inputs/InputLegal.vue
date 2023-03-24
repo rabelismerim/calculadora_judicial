@@ -4,9 +4,11 @@ const props = withDefaults(defineProps<{
   modelValue: any
   label?: string
   rules?: ValidationRule<any>[]
+  maxlength?: string | number
   errorMessages?: any
   errorKey?: string
 }>(), {
+  label: 'CPF / CNPJ',
   rules: () => ([]),
   errorMessages: () => ({}),
   errorKey: '',
@@ -14,7 +16,7 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits(['update:modelValue'])
 
 const input = ref(null) as any
-const hasError = computed(() => input.hasError)
+const hasError = computed(() => input.value.hasError)
 const { clearError } = useBackendErrors(toRef(props, 'errorMessages'))
 const onInput = (value: string | number | null) => {
   if (props.errorKey)
@@ -28,37 +30,18 @@ const onInput = (value: string | number | null) => {
     ref="input"
     :model-value="modelValue"
     :label="label"
-    :rules="rules"
+    :maxlength="maxlength"
+    :mask="modelValue.length <= 14 ? '###.###.###-###' : '##.###.###/####-##'"
+    :rules="[
+      ...rules,
+      value => !value || value.length === 14 || value.length === 18 || 'Precisa ser um CPF ou um CNPJ',
+      value => !value || value.length === 18 || value.length === 14 && isValidCPF(value) || 'CPF não é válido',
+      value => !value || value.length === 14 || value.length === 18 && isValidCNPJ(value) || 'CNPJ não é válido',
+    ]"
     :error="!!errorMessages[errorKey]"
     :error-message="!!errorMessages[errorKey] ? errorMessages[errorKey] : ''"
     outlined
-    mask="##/##/####"
     dense
     @update:model-value="onInput"
-  >
-    <template #append>
-      <div class="i-carbon-calendar cursor-pointer">
-        <QPopupProxy
-          cover
-          transition-show="scale"
-          transition-hide="scale"
-        >
-          <QDate
-            :model-value="modelValue"
-            mask="DD/MM/YYYY"
-            @update:model-value="onInput"
-          >
-            <div class="row items-center justify-end">
-              <Btn
-                v-close-popup
-                label="Close"
-                color="primary"
-                flat
-              />
-            </div>
-          </QDate>
-        </QPopupProxy>
-      </div>
-    </template>
-  </QInput>
+  />
 </template>

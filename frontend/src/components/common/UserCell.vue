@@ -1,14 +1,14 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
   modelValue: {
-    name: string
+    fullName: string
     email: string
     picture?: string
   }
 }>(),
 {
   modelValue: () => ({
-    name: '',
+    fullName: '',
     email: '',
   }),
 })
@@ -20,7 +20,7 @@ const props = withDefaults(defineProps<{
   </div>
   <div>
     <div class="font-bold">
-      {{ modelValue.name }}
+      {{ modelValue.fullName }}
     </div>
     <div>
       {{ modelValue.email }}

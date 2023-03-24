@@ -50,8 +50,11 @@ declare global {
   const easing: typeof import('animol')['Easing']
   const effectScope: typeof import('vue')['effectScope']
   const extendRef: typeof import('@vueuse/core')['extendRef']
+  const flatten: typeof import('./composables/utils')['flatten']
   const formatDate: typeof import('./composables/utils')['formatDate']
-  const formatDateBackend: typeof import('./composables/utils')['formatDateBackend']
+  const formatDateFromBackend: typeof import('./composables/utils')['formatDateFromBackend']
+  const formatDateToBackend: typeof import('./composables/utils')['formatDateToBackend']
+  const formatLegalNumber: typeof import('./composables/utils')['formatLegalNumber']
   const get: typeof import('@jrnwn/utils')['get']
   const getCookie: typeof import('@jrnwn/utils')['getCookie']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
@@ -67,9 +70,12 @@ declare global {
   const isReactive: typeof import('vue')['isReactive']
   const isReadonly: typeof import('vue')['isReadonly']
   const isRef: typeof import('vue')['isRef']
+  const isValidCNPJ: typeof import('./composables/utils')['isValidCNPJ']
+  const isValidCPF: typeof import('./composables/utils')['isValidCPF']
   const makeDestructurable: typeof import('@vueuse/core')['makeDestructurable']
   const markRaw: typeof import('vue')['markRaw']
   const nextTick: typeof import('vue')['nextTick']
+  const normalizeText: typeof import('@jrnwn/utils')['normalizeText']
   const notify: typeof import('./stores/$Notification')['notify']
   const onActivated: typeof import('vue')['onActivated']
   const onBeforeMount: typeof import('vue')['onBeforeMount']
@@ -91,10 +97,15 @@ declare global {
   const onUnmounted: typeof import('vue')['onUnmounted']
   const onUpdated: typeof import('vue')['onUpdated']
   const parseColor: typeof import('animol')['parseColor']
+  const parseToCamel: typeof import('./composables/utils')['parseToCamel']
+  const parseToSnake: typeof import('./composables/utils')['parseToSnake']
   const pausableWatch: typeof import('@vueuse/core')['pausableWatch']
   const platform: typeof import('@jrnwn/utils')['platform']
+  const printError: typeof import('./composables/utils')['printError']
   const projectService: typeof import('./services/projectService')['default']
   const provide: typeof import('vue')['provide']
+  const range: typeof import('@jrnwn/utils')['range']
+  const rangeBetween: typeof import('./composables/utils')['rangeBetween']
   const reactify: typeof import('@vueuse/core')['reactify']
   const reactifyObject: typeof import('@vueuse/core')['reactifyObject']
   const reactive: typeof import('vue')['reactive']
@@ -126,10 +137,16 @@ declare global {
   const throttledRef: typeof import('@vueuse/core')['throttledRef']
   const throttledWatch: typeof import('@vueuse/core')['throttledWatch']
   const throwError: typeof import('./stores/$Notification')['throwError']
+  const toCamel: typeof import('@jrnwn/utils')['toCamel']
+  const toKebab: typeof import('@jrnwn/utils')['toKebab']
+  const toPascal: typeof import('@jrnwn/utils')['toPascal']
+  const toProperName: typeof import('@jrnwn/utils')['toProperName']
   const toRaw: typeof import('vue')['toRaw']
   const toReactive: typeof import('@vueuse/core')['toReactive']
   const toRef: typeof import('vue')['toRef']
   const toRefs: typeof import('vue')['toRefs']
+  const toSnake: typeof import('@jrnwn/utils')['toSnake']
+  const toSplit: typeof import('@jrnwn/utils')['toSplit']
   const toUpperCase: typeof import('./composables/utils')['toUpperCase']
   const triggerRef: typeof import('vue')['triggerRef']
   const tryOnBeforeMount: typeof import('@vueuse/core')['tryOnBeforeMount']
@@ -138,6 +155,7 @@ declare global {
   const tryOnScopeDispose: typeof import('@vueuse/core')['tryOnScopeDispose']
   const tryOnUnmounted: typeof import('@vueuse/core')['tryOnUnmounted']
   const typeOf: typeof import('@jrnwn/utils')['typeOf']
+  const unflatten: typeof import('./composables/utils')['unflatten']
   const unref: typeof import('vue')['unref']
   const unrefElement: typeof import('@vueuse/core')['unrefElement']
   const until: typeof import('@vueuse/core')['until']
@@ -155,6 +173,7 @@ declare global {
   const useAsyncQueue: typeof import('@vueuse/core')['useAsyncQueue']
   const useAsyncState: typeof import('@vueuse/core')['useAsyncState']
   const useAttrs: typeof import('vue')['useAttrs']
+  const useBackendErrors: typeof import('./composables/useBackendErrors')['default']
   const useBase64: typeof import('@vueuse/core')['useBase64']
   const useBattery: typeof import('@vueuse/core')['useBattery']
   const useBluetooth: typeof import('@vueuse/core')['useBluetooth']
@@ -369,8 +388,11 @@ declare module 'vue' {
     readonly easing: UnwrapRef<typeof import('animol')['Easing']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
+    readonly flatten: UnwrapRef<typeof import('./composables/utils')['flatten']>
     readonly formatDate: UnwrapRef<typeof import('./composables/utils')['formatDate']>
-    readonly formatDateBackend: UnwrapRef<typeof import('./composables/utils')['formatDateBackend']>
+    readonly formatDateFromBackend: UnwrapRef<typeof import('./composables/utils')['formatDateFromBackend']>
+    readonly formatDateToBackend: UnwrapRef<typeof import('./composables/utils')['formatDateToBackend']>
+    readonly formatLegalNumber: UnwrapRef<typeof import('./composables/utils')['formatLegalNumber']>
     readonly get: UnwrapRef<typeof import('@jrnwn/utils')['get']>
     readonly getCookie: UnwrapRef<typeof import('@jrnwn/utils')['getCookie']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
@@ -386,9 +408,12 @@ declare module 'vue' {
     readonly isReactive: UnwrapRef<typeof import('vue')['isReactive']>
     readonly isReadonly: UnwrapRef<typeof import('vue')['isReadonly']>
     readonly isRef: UnwrapRef<typeof import('vue')['isRef']>
+    readonly isValidCNPJ: UnwrapRef<typeof import('./composables/utils')['isValidCNPJ']>
+    readonly isValidCPF: UnwrapRef<typeof import('./composables/utils')['isValidCPF']>
     readonly makeDestructurable: UnwrapRef<typeof import('@vueuse/core')['makeDestructurable']>
     readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
     readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
+    readonly normalizeText: UnwrapRef<typeof import('@jrnwn/utils')['normalizeText']>
     readonly notify: UnwrapRef<typeof import('./stores/$Notification')['notify']>
     readonly onActivated: UnwrapRef<typeof import('vue')['onActivated']>
     readonly onBeforeMount: UnwrapRef<typeof import('vue')['onBeforeMount']>
@@ -410,10 +435,15 @@ declare module 'vue' {
     readonly onUnmounted: UnwrapRef<typeof import('vue')['onUnmounted']>
     readonly onUpdated: UnwrapRef<typeof import('vue')['onUpdated']>
     readonly parseColor: UnwrapRef<typeof import('animol')['parseColor']>
+    readonly parseToCamel: UnwrapRef<typeof import('./composables/utils')['parseToCamel']>
+    readonly parseToSnake: UnwrapRef<typeof import('./composables/utils')['parseToSnake']>
     readonly pausableWatch: UnwrapRef<typeof import('@vueuse/core')['pausableWatch']>
     readonly platform: UnwrapRef<typeof import('@jrnwn/utils')['platform']>
+    readonly printError: UnwrapRef<typeof import('./composables/utils')['printError']>
     readonly projectService: UnwrapRef<typeof import('./services/projectService')['default']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
+    readonly range: UnwrapRef<typeof import('@jrnwn/utils')['range']>
+    readonly rangeBetween: UnwrapRef<typeof import('./composables/utils')['rangeBetween']>
     readonly reactify: UnwrapRef<typeof import('@vueuse/core')['reactify']>
     readonly reactifyObject: UnwrapRef<typeof import('@vueuse/core')['reactifyObject']>
     readonly reactive: UnwrapRef<typeof import('vue')['reactive']>
@@ -445,10 +475,16 @@ declare module 'vue' {
     readonly throttledRef: UnwrapRef<typeof import('@vueuse/core')['throttledRef']>
     readonly throttledWatch: UnwrapRef<typeof import('@vueuse/core')['throttledWatch']>
     readonly throwError: UnwrapRef<typeof import('./stores/$Notification')['throwError']>
+    readonly toCamel: UnwrapRef<typeof import('@jrnwn/utils')['toCamel']>
+    readonly toKebab: UnwrapRef<typeof import('@jrnwn/utils')['toKebab']>
+    readonly toPascal: UnwrapRef<typeof import('@jrnwn/utils')['toPascal']>
+    readonly toProperName: UnwrapRef<typeof import('@jrnwn/utils')['toProperName']>
     readonly toRaw: UnwrapRef<typeof import('vue')['toRaw']>
     readonly toReactive: UnwrapRef<typeof import('@vueuse/core')['toReactive']>
     readonly toRef: UnwrapRef<typeof import('vue')['toRef']>
     readonly toRefs: UnwrapRef<typeof import('vue')['toRefs']>
+    readonly toSnake: UnwrapRef<typeof import('@jrnwn/utils')['toSnake']>
+    readonly toSplit: UnwrapRef<typeof import('@jrnwn/utils')['toSplit']>
     readonly toUpperCase: UnwrapRef<typeof import('./composables/utils')['toUpperCase']>
     readonly triggerRef: UnwrapRef<typeof import('vue')['triggerRef']>
     readonly tryOnBeforeMount: UnwrapRef<typeof import('@vueuse/core')['tryOnBeforeMount']>
@@ -457,6 +493,7 @@ declare module 'vue' {
     readonly tryOnScopeDispose: UnwrapRef<typeof import('@vueuse/core')['tryOnScopeDispose']>
     readonly tryOnUnmounted: UnwrapRef<typeof import('@vueuse/core')['tryOnUnmounted']>
     readonly typeOf: UnwrapRef<typeof import('@jrnwn/utils')['typeOf']>
+    readonly unflatten: UnwrapRef<typeof import('./composables/utils')['unflatten']>
     readonly unref: UnwrapRef<typeof import('vue')['unref']>
     readonly unrefElement: UnwrapRef<typeof import('@vueuse/core')['unrefElement']>
     readonly until: UnwrapRef<typeof import('@vueuse/core')['until']>
@@ -474,6 +511,7 @@ declare module 'vue' {
     readonly useAsyncQueue: UnwrapRef<typeof import('@vueuse/core')['useAsyncQueue']>
     readonly useAsyncState: UnwrapRef<typeof import('@vueuse/core')['useAsyncState']>
     readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>
+    readonly useBackendErrors: UnwrapRef<typeof import('./composables/useBackendErrors')['default']>
     readonly useBase64: UnwrapRef<typeof import('@vueuse/core')['useBase64']>
     readonly useBattery: UnwrapRef<typeof import('@vueuse/core')['useBattery']>
     readonly useBluetooth: UnwrapRef<typeof import('@vueuse/core')['useBluetooth']>

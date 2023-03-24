@@ -1,6 +1,7 @@
 const userFallback = {
   isActive: null,
   name: '',
+  fullName: '',
   picture: '',
   email: '',
   groups: [] as any[],
@@ -13,6 +14,8 @@ const login = async () => {
   const router = useRouter()
   try {
     const user = await usersService.getMyProfile()
+
+    console.warn('ON LOGIN SUCCESS:', user)
     store.value = {
       ...store.value,
       ...user,
@@ -21,8 +24,7 @@ const login = async () => {
     return user.authorized
   }
   catch (error: any) {
-    throwError(error)
-    console.warn('ERROR ON LOGIN:', error)
+    printError('ERROR ON LOGIN:', error)
     router.push({ path: '/' })
   }
 }

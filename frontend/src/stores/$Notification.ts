@@ -22,32 +22,11 @@ export const notify = ({ message, id = Date.now(), timeout = 20, type = 'success
 }
 
 export const throwError = async (error: any) => {
-  let { message } = error
   const {
-    code,
-    response,
     id = Date.now(),
     timeout,
-    response: { data: { data = {} } = {} } = {},
+    message,
   }: any = error
-  const errorMessages = Object.entries(data)
-    .flatMap(([,message]) => message || '')
-
-  if (errorMessages.length > 0) {
-    for (const msg of errorMessages) {
-      await delay(0.5)
-      notify({ message: msg as string, id, timeout, type: 'error' })
-    }
-    return
-  }
-
-  if (response?.status === 500 || code === 'ERR_NETWORK')
-    message = 'Problemas no Servidor...'
-  if (response?.status === 403)
-    message = 'Você não está autorizado...'
-  if (response?.data?.data?.detail)
-    message = response.data.data.detail
-
   notify({ message, id, timeout, type: 'error' })
 }
 

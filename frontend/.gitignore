@@ -26,5 +26,7 @@ dist-ssr
 # Envs
 .env 
 .env.development
+.env.devlocal
+.env.devremote
 .env.homolog
 .env.production
