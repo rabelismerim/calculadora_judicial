@@ -30,7 +30,10 @@ const getMyProfile = () => api
 
 const getUsers = () => api
   .get('/users/')
-  .then(({ users }: any) => users)
+  .then(({ users }: any) => users.map((user: any) => ({
+    ...user,
+    picture: user.userpicture,
+  })))
 
 const getGroups = () => api
   .get('/groups/')

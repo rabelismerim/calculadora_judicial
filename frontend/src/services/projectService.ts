@@ -14,6 +14,25 @@ const getProject = (id: string) => api
   .get(`/v1/projects/${id}/`)
   .then(({ project }: any) => project)
   .then(mapProject)
+  .then((project: any) => {
+    const { projectUsers = [] } = project
+    project.participants = projectUsers.reduce((acc: any, current: any) => {
+      const { firstName, lastName, username, userpicture, groups } = current
+      const user = {
+        picture: userpicture,
+        fullName: `${firstName} ${lastName}`,
+        email: `${username}@deloitte.com`,
+      }
+      groups.forEach(({ name }: any) => {
+        if (!acc[name])
+          acc[name] = []
+        acc[name].push(user)
+      })
+      return acc
+    }, {})
+
+    return project
+  })
 
 const newProject = (project: any) => {
   const { start, end, executors, approvers, reviewers, engagements, recoverings } = project
