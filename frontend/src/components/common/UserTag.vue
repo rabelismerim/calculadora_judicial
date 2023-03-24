@@ -15,13 +15,19 @@ const props = withDefaults(defineProps<{
 </script>
 
 <template>
-  <div class="flex items-center no-wrap gap-2 rounded-full pl-1 pr-3 py-1 border-1 border--primary/12 bg--primary/20 whitespace-nowrap">
-    <UserPicture :model-value="modelValue" class="h-6 w-6 rounded-full" />
+  <div class="flex items-center no-wrap gap-2 rounded-full pl-.5 pr-3 py-.5 border-1 border--primary/12 bg--primary/20 whitespace-nowrap cursor-help">
+    <UserPicture :model-value="modelValue" class="h-5 w-5 rounded-full" />
     <div class="font-bold">
       {{ modelValue.fullName }}
     </div>
     <QTooltip>
-      {{ modelValue.email }}
+      <div class="flex flex-col gap-2 text-sm pt-2 justify-center items-center">
+        <UserPicture :model-value="modelValue" class="h-16 w-16 rounded-1" />
+        <div class="font-bold">
+          {{ modelValue.fullName }}
+        </div>
+        <div>{{ modelValue.email }}</div>
+      </div>
     </QTooltip>
   </div>
 </template>
