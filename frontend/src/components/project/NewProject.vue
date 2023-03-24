@@ -224,7 +224,7 @@ onMounted(async () => {
           <div
             v-for="(recovering, index) in newProject.recoverings"
             :key="index"
-            class="grid items-stretch sm:grid-cols-[1fr_1fr_42px] gap-x-4"
+            class="grid items-stretch grid-cols-[1fr_1fr_42px] gap-x-4"
             data-step="2"
           >
             <InputText
