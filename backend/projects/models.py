@@ -55,6 +55,10 @@ class Project(AbstractDescription, AbstractDateRecovering):
     engagement = models.OneToOneField(
         ProjectEngagement, on_delete=models.PROTECT)
 
+    def get_num_calculations(self) -> int:
+        """Get number of calculations"""
+        return Calculation
+
     @property
     def num_recovering(self) -> number:
         return self.recovering_set.all().count()

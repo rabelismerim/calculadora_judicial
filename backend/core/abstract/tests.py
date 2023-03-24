@@ -2,8 +2,6 @@ import json
 import os.path
 import re
 import sys
-import time
-import uuid
 import webbrowser
 
 from django.core.management import color_style
@@ -14,7 +12,7 @@ from utils import get_user_model
 
 User = get_user_model()
 
-import pandas as pd
+show_result = False
 
 
 class AttrDict(dict):
@@ -281,6 +279,9 @@ class AbstractTest(TestCase):
         return card_body
 
     def _write_html(self, data, key):
+
+        if show_result is False:
+            return
         card_body = ''
         card_row = """
                  <div class="col-sm-12 p-5">

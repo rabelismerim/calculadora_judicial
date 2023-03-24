@@ -85,7 +85,7 @@ class CalculationSchema(AbstractDescriptionSchema):
     class Meta:
         model = Calculation
         fields = '__all__'
-        read_only_fields = ('step',)
+        read_only_fields = ('step', 'number')
 
     def validate(self, data):
         data['verdict'] = data.pop('verdict_set', None)

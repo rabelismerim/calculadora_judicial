@@ -12,6 +12,7 @@ asserts a successful response status code and the presence of at least one Docum
 Attributes:
 - None
 """
+from calculation.funds.models import Funds
 from calculation.models import Calculation
 from core.abstract.tests import AbstractTest
 
@@ -21,7 +22,7 @@ class FundsDocumentTest(AbstractTest):
 
     @AbstractTest.execute_before_and_after
     def test_api_post_statement_funds_integrations(self):
-        """Assert get lawyers detail"""
+        """Assert post statements detail"""
         calculation = Calculation.objects.first()
         statements = [
             ({
@@ -73,3 +74,64 @@ class FundsDocumentTest(AbstractTest):
             self.assertEqual(monetary_correction['index_data_base'], true_monetary_correction['index_data_base'])
             self.assertEqual(monetary_correction['index_recovering'], true_monetary_correction['index_recovering'])
         return statements
+
+    @AbstractTest.execute_before_and_after
+    def test_api_a_post_statement_funds_documents(self):
+        """Assert get lawyers detail"""
+        calculation = Calculation.objects.first()
+        value = 1500
+        data_base = "2014-01-02"
+        number = '12344923'
+        statement = {
+            "calculation_id": str(calculation.id),
+            "statement": {
+                "data_base": data_base,
+                "historical_value": value,
+                "number": number
+            },
+            "name": "Faturas"
+        }
+
+        response = self.post('calculation/funds/documents', statement)
+        new_statement = response.content['fund_document']
+        return new_statement
+
+    @AbstractTest.execute_before_and_after
+    def test_api_b_post_statement_funds(self):
+        """Assert get lawyers detail"""
+        fund = Funds.objects.first()
+        value = 200
+        data_base = "2020-03-23"
+        dsr_reflexes = 100
+
+        statement_funds = {
+            "fund_id": str(fund.id),
+            "data_base": data_base,
+            "historical_value": value,
+            "dsr_reflexes": dsr_reflexes,
+            "summary": True
+        }
+
+        response = self.post('calculation/funds/funds', statement_funds)
+        new_statement = response.content['statement_funds']
+        return new_statement
+
+    @AbstractTest.execute_before_and_after
+    def test_api_c_post_statement_funds_integrations(self):
+        """Assert get lawyers detail"""
+        fund = Funds.objects.first()
+        value = 559
+        data_base = "2007-11-12"
+        description = 'Descrição da verba 1'
+
+        statement = {
+            "fund_id": str(fund.id),
+            'description': description,
+            "data_base": data_base,
+            "historical_value": value,
+            "summary": True
+        }
+
+        response = self.post('calculation/funds/integrations', statement)
+        new_statement = response.content['statement_funds_integrations']
+        return new_statement

@@ -10,6 +10,10 @@ class Creditor(AbstractDateCreditor):
         Recovering, on_delete=models.PROTECT)
     description = models.CharField('Descrição', max_length=255, null=True)
 
+    def get_count_calculations(self) -> int:
+        """Get number of calculations"""
+        return self.calculation_set.exclude(number__isnull=True).count()
+
     def get_clain_creditor(self):
         if hasattr(self, 'claimcreditor'):
             return self.claimcreditor

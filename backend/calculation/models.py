@@ -6,7 +6,7 @@ to add specific fields as needed.
 """
 
 from django.db import models
-
+from django.utils.translation import gettext_lazy as _
 from core.abstract.models import AbstractModel
 from creditors.models import Creditor
 
@@ -50,6 +50,21 @@ class Calculation(AbstractModel):
     # True If edital AJ else False
     has_edital = models.BooleanField(
         'Edital art. 7º § 2 - 11.101/2005', default=False)
+    number = models.CharField(_('Número do cálculo'), max_length=10, null=True, blank=True, default=None)
+
+    def _get_number(self) -> str:
+        """Returns the number of calculations for the creditor."""
+        return f'{self._get_count_process_calculation() + 1} - {self.creditor.get_count_calculations() + 1}'
+
+    def _get_count_process_calculation(self) -> int:
+        """Returns the count of Calculation objects for the creditor's project"""
+        return Calculation.objects.filter(creditor__recovering__project=self.creditor.recovering.project).exclude(
+            number__isnull=True).count()
+
+    def save(self, *args, **kwargs):
+        if not self.id or not self.number:
+            self.number = self._get_number()
+        super(Calculation, self).save(*args, **kwargs)
 
     def get_rate(self):
         """"Pegar o indice que vai ser utilizado"""
@@ -69,3 +84,4 @@ class Calculation(AbstractModel):
 
     def __str__(self):
         return f'{self.creditor}'
+
