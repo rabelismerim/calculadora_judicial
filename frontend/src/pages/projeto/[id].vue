@@ -4,31 +4,20 @@ const attrs = useAttrs() as any
 let loading = $ref(false)
 const filterBy = $ref('')
 const showParticipants = $ref(false)
-const tab = $ref('all')
 let project: any = $ref({})
+
+const tab = $ref('all')
+const tabFilters = [
+  { label: 'Todos', value: 'all' },
+  { label: 'A Revisar', value: 'd' },
+  { label: 'A Aprovar', value: 'c' },
+  { label: 'Aprovado', value: 'p' },
+]
 
 const filteredRecoverings = computed(() => {
   if (tab === 'all')
     return project?.recoverings || []
   return project?.recoverings?.filter(() => false)
-})
-
-const participants = computed(() => {
-  const { projectUsers = [] } = project
-  return projectUsers.reduce((acc: any, current: any) => {
-    const { firstName, lastName, username, userpicture, groups } = current
-    const user = {
-      picture: userpicture,
-      fullName: `${firstName} ${lastName}`,
-      email: `${username}@deloitte.com`,
-    }
-    groups.forEach(({ name }: any) => {
-      if (!acc[name])
-        acc[name] = []
-      acc[name].push(user)
-    })
-    return acc
-  }, {})
 })
 
 const loadProject = async () => {
@@ -182,20 +171,11 @@ onMounted(() => {
       />
     </Header>
 
-    <div class="mb-4 border-b-2 boder-black/12 flex justify-between items-center">
-      <q-tabs
-        v-model="tab"
-        class=""
-        align="left"
-        active-color="secondary"
-      >
-        <q-tab name="all" label="Todos" />
-        <q-tab name="d" label="A revisar" />
-        <q-tab name="c" label="A aprovar" />
-        <q-tab name="p" label="Aprovado" />
-      </q-tabs>
-      <SearchFilter v-model="filterBy" />
-    </div>
+    <TabFilter
+      v-model="tab"
+      v-model:search="filterBy"
+      :items="tabFilters"
+    />
 
     <div v-if="filteredRecoverings.length > 0" class="grid gap-3">
       <Accordion
@@ -255,7 +235,7 @@ onMounted(() => {
       >
         <div class="p-8 pt-4">
           <div
-            v-for="(group, key) in participants"
+            v-for="(group, key) in project.participants"
             :key="key"
             class="mb-4"
           >
