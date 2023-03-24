@@ -64,7 +64,7 @@ const isOpen = $ref(false)
             'pl-16': $slots.menu,
           }"
         >
-          <div class="max-w-[min(1600px,100%)]">
+          <div class="max-w-[min(1600px,100%)] w-full">
             <div class="flex gap-8 items-center mb-8">
               <button
                 class="group flex gap-1 items-center uppercase font-semibold hover:text--secondary tween-800 z-1"

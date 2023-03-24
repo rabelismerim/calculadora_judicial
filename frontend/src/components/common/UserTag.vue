@@ -5,6 +5,7 @@ const props = withDefaults(defineProps<{
     email: string
     picture?: string
   }
+  transparent?: boolean
 }>(),
 {
   modelValue: () => ({
@@ -15,7 +16,10 @@ const props = withDefaults(defineProps<{
 </script>
 
 <template>
-  <div class="flex items-center no-wrap gap-2 rounded-full pl-.5 pr-3 py-.5 border-1 border--primary/12 bg--primary/20 whitespace-nowrap cursor-help">
+  <div
+    class="flex items-center no-wrap gap-2 rounded-full pl-.5 pr-3 py-.5 whitespace-nowrap cursor-help"
+    :class="{ 'border-1 border--primary/12 bg--primary/20': !transparent }"
+  >
     <UserPicture :model-value="modelValue" class="h-5 w-5 rounded-full" />
     <div class="font-bold">
       {{ modelValue.fullName }}
