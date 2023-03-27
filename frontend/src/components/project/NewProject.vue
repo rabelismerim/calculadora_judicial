@@ -330,20 +330,20 @@ onMounted(async () => {
               error-key="executors"
             />
             <InputUsers
-              v-model="newProject.approvers"
-              :users="users"
-              label="Aprovadores"
-              :rules="[value => value.length > 0 || 'Este campo é obrigatório!']"
-              :error-messages="errorMessages"
-              error-key="approvers"
-            />
-            <InputUsers
               v-model="newProject.reviewers"
               :users="users"
               label="Revisores"
               :rules="[value => value.length > 0 || 'Este campo é obrigatório!']"
               :error-messages="errorMessages"
               error-key="reviewers"
+            />
+            <InputUsers
+              v-model="newProject.approvers"
+              :users="users"
+              label="Aprovadores"
+              :rules="[value => value.length > 0 || 'Este campo é obrigatório!']"
+              :error-messages="errorMessages"
+              error-key="approvers"
             />
           </div>
         </QStep>
