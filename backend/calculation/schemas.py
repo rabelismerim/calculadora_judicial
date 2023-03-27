@@ -23,7 +23,7 @@ from calculation.funds.schemas import FundsSchema
 from calculation.statement.schemas import StatementSchema
 from calculation.verdict.schemas import VerdictSchema
 from rest_framework import serializers
-from calculation.models import Calculation, Incident
+from calculation.models import Calculation, Incident, CHOICES_STEP
 from creditors.schemas import CreditorSchema
 
 
@@ -91,3 +91,29 @@ class CalculationSchema(AbstractDescriptionSchema):
         data['verdict'] = data.pop('verdict_set', None)
         data['funds'] = data.pop('funds_set', None)
         return super(CalculationSchema, self).validate(data)
+
+
+class ChangeStepSerializer(serializers.Serializer):
+    """
+    Serializes the field id of the Change Step for use in the API.
+
+    Usage example:
+    serializer = ChangeStepSerializer
+    """
+    next_step = serializers.ChoiceField(source='step', choices=CHOICES_STEP)
+
+    def __init__(self, *args, **kwargs):
+        fields = kwargs.pop('exclude', None)
+        super().__init__(*args, **kwargs)
+        if fields is not None:
+            allowed = set(fields)
+            existing = set(self.fields)
+            for field_name in allowed:
+                try:
+                    self.fields.pop(field_name)
+                except:
+                    pass
+
+    def validate(self, data):
+        data['next_step'] = data.pop('step')
+        return super(ChangeStepSerializer, self).validate(data)

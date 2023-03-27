@@ -1,10 +1,10 @@
 from django.urls import path, include
 
-from calculation.views import CalculationApi, CalculationDetailApi, IncidentApi
-
+from calculation.views import CalculationApi, CalculationDetailApi, IncidentApi, ChangeStepApi
 
 urlpatterns = [
     path('', CalculationApi.as_view(), name="calculation-list-create"),
+    path('<uuid:id>/change_step/', ChangeStepApi.as_view(), name="calculation-change-step"),
     path('incident/', IncidentApi.as_view(), name="incident-list-create"),
     path('<uuid:id>/', CalculationDetailApi.as_view(), name="calculation-detail"),
     path(f'criterion/', include("calculation.criterion.urls")),

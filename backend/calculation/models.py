@@ -9,14 +9,16 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from core.abstract.models import AbstractModel
 from creditors.models import Creditor
+from utils import check_choice
 
-CHOICES_STEP = (('S', 'Solicitado'), ('E', 'Em revisão'), ('C', 'Calculado'),
-                ('A', 'Aprovado'), ('R', 'Reprovado'))
+CHOICES_STEP = (
+    ('S', _('Solicitado')), ('C', _('Calculado')), ('E', _('Revisado')), ('A', _('Aprovado')), ('R', _('Reprovado')),
+    ('B', _('Aprovado Especialmente')))
 
 
 class Incident(AbstractModel):
     """Attributes:
-    incident_number (models.CharField): The number of incidente.
+    number (models.CharField): The number of incidente.
     """
     number = models.CharField('Número do incidente', max_length=100)
 
@@ -82,6 +84,8 @@ class Calculation(AbstractModel):
         """"Pegar o valor da multa"""
         return self.criterion.fine
 
-    def __str__(self):
-        return f'{self.creditor}'
-
+    def set_step_by_char(self, char: str):
+        """"Pegar o valor da multa"""
+        check_choice(char, CHOICES_STEP)
+        self.step = char
+        self.save()

@@ -3,14 +3,14 @@ from calculation.comparative.models import Comparative
 from calculation.criterion.models import Criterion
 from calculation.funds.views import CreateFunds
 from calculation.models import Calculation, Incident
-from calculation.schemas import CalculationSchema, IncidentSchema
+from calculation.schemas import CalculationSchema, IncidentSchema, ChangeStepSerializer
 from calculation.verdict.models import TypeCalculation, Verdict
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions
-from core.permission.views import CheckHasPermission
+from core.permission.views import CheckHasPermission, CanChangeStep
 
 
 class AbstractCalculationApi(AbstractViewApi):
@@ -129,4 +129,50 @@ class CalculationApi(AbstractCalculationApi):
             comparative.calculation = calculation
             comparative.save()
             comparative.checks()
-        return JsonResponse({'calculation': self.serializer_class(calculation, many=False).data}, status=status.HTTP_201_CREATED)
+        return JsonResponse({'calculation': self.serializer_class(calculation, many=False).data},
+                            status=status.HTTP_201_CREATED)
+
+
+class ChangeStepApi(AbstractViewApi):
+    """
+    API view to change the step of a Calculation model instance.
+
+    Only authenticated users with permissions and access to the Calculation can change the step.
+
+    Allowed HTTP Method: PUT
+
+    Required data to be sent in the request body:
+    - next_step (string): The next step to be set.
+
+    URL query parameters: None
+
+    Response data format:
+    - calculation (object): Serialized Calculation object with the updated step.
+
+    Response status code:
+    - 200 OK: Successfully updated the Calculation step.
+    """
+    http_method_names = ['put']
+
+    serializer_class = ChangeStepSerializer
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CanChangeStep]
+    schema = AutoSchema(tags=["Calculation - Change Step"])
+    query_params = []
+    model = Calculation
+
+    def put(self, request, *args, **kwargs):
+        """
+        PUT method to change the step of the Calculation instance.
+
+        Receives and validates JSON data with the next_step string.
+        Finds the Calculation instance based on the URL parameter id.
+        Returns a JSON response with the updated Calculation object.
+
+        """
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        new_calculation = serializer.validated_data
+        calculation_id = kwargs.get('id', None)
+        calculation = self.model.objects.filter(id=calculation_id).first()
+        calculation.set_step_by_char(new_calculation['next_step'])
+        return JsonResponse({'calculation': CalculationSchema(calculation, many=False).data}, status=status.HTTP_200_OK)

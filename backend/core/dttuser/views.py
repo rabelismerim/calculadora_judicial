@@ -209,19 +209,18 @@ class UserDttApi(AbstractUserDttApi):
         serializer = self.get_serializer_class()
         return JsonResponse({'user': serializer(request.user, many=False).data}, status=status.HTTP_201_CREATED)
 
-
-if ENABLE_SSO is False:
-    try:
-        user, created = User.objects.get_or_create(
-            username='dev_admin', first_name='admin', last_name='dev', is_staff=True)
-        user.set_password(PASSWD_DEV)
-        project_manager_list, created, group_manager = CreatePermissions().create_project_manager()
-        user.groups.add(group_manager)
-        user.save()
-
-        user, created = User.objects.get_or_create(
-            username='dev_user', first_name='user', last_name='dev', is_staff=False)
-        user.set_password(PASSWD_DEV)
-        user.save()
-    except Exception as e:
-        print(e, 'err create user\n\n')
+# if ENABLE_SSO is False:
+#     try:
+#         user, created = User.objects.get_or_create(
+#             username='dev_admin', first_name='admin', last_name='dev', is_staff=True)
+#         user.set_password(PASSWD_DEV)
+#         project_manager_list, created, group_manager = CreatePermissions().create_group_project_manager()
+#         user.groups.add(group_manager)
+#         user.save()
+#
+#         user, created = User.objects.get_or_create(
+#             username='dev_user', first_name='user', last_name='dev', is_staff=False)
+#         user.set_password(PASSWD_DEV)
+#         user.save()
+#     except Exception as e:
+#         print(e, 'err create user\n\n')

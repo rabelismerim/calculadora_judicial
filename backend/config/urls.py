@@ -81,9 +81,13 @@ urlpatterns = [
 
     # Documentation
     path(f'{BASE_URL}docs/swagger/', TemplateView.as_view(template_name='api_docs.html',
-         extra_context={'schema_url': 'schema-api'}), name='DJUD'),
-    path(f'{BASE_URL}docs/redoc/', get_schema_view(title="Deloitte DJUD Project", description="System that integrates the legal, calculation and financial teams of RJ / Bankruptcy processes (liabilities monitoring)",
-         version="1.0.0", permission_classes=[permissions.AllowAny]), name='schema-api'),
+                                                          extra_context={'schema_url': 'schema-api'}), name='DJUD'),
+    path(f'{BASE_URL}docs/redoc/', get_schema_view(title="Deloitte DJUD Project",
+                                                   description="System that integrates the legal, calculation and "
+                                                               "financial teams of RJ / Bankruptcy processes ("
+                                                               "liabilities monitoring)",
+                                                   version="1.0.0", permission_classes=[permissions.AllowAny]),
+         name='schema-api'),
 ]
 
 # TODO: definir se frontend MFA pode ter alteração de versões
@@ -107,5 +111,5 @@ if ENABLE_SSO is False:
 #     urlpatterns.extend([])
 
 if (str(os.getenv('ENV', )) == 'branch') or (str(os.getenv('ENV')) == 'hml'):
-    urlpatterns += static("/djud"+settings.MEDIA_URL,
+    urlpatterns += static("/djud" + settings.MEDIA_URL,
                           document_root=settings.MEDIA_ROOT)

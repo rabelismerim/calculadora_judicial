@@ -106,9 +106,13 @@ class AbstractViewApi(generics.GenericAPIView):
         """
         id_ = kwargs.get('id')
         exclude = self.__get_exclude_values()
-        serializer = self.serializer_class(data=request.data, exclude=exclude)
+        try:
+            serializer = self.serializer_class(data=request.data, exclude=exclude)
+        except ValueError:
+            serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         data_obj = dict(serializer.validated_data)
+        print(data_obj, 'obj\n')
         obj = get_object_or_404(self.model, id=id_)
         obj.dict_update(**data_obj)
         model_name = self.model._meta.verbose_name.lower().replace(' ', '_')

@@ -382,4 +382,5 @@ RATE_FILE_TYPES = ['pdf', 'vnd.ms-excel', 'xlsx', 'xls']
 
 GROUP_NAME_EXECUTOR = 'Executor'
 GROUP_NAME_APPROVER = 'Aprovador'
+GROUP_NAME_SPECIAL_APPROVE = 'Aprovador Especial'
 GROUP_NAME_REVIEWER = 'Revisor'
