@@ -8,6 +8,13 @@ from django.utils.translation import gettext_lazy as _
 from .managers import CustomUserManager
 from config.settings import IS_LOCALHOST, ENABLE_SSO
 
+ROLES_CHOICES = (
+    ('S', 'Sócio'),
+    ('G', 'Gerente'),
+    ('D', 'Diretor'),
+    ('A', 'Analista'),
+    ('C', 'Consultor Sênior'),
+)
 
 class SubgroupManager(models.Manager):
     """
@@ -201,6 +208,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         },
     )
     password = models.CharField(max_length=128, editable=False)
+    role = models.CharField(_('role'),default="A", max_length=1, choices=ROLES_CHOICES)
     first_name = models.CharField(_('first name'), max_length=150, blank=True)
     last_name = models.CharField(_('last name'), max_length=150, blank=True)
     email = models.EmailField(_('email address'), blank=True)

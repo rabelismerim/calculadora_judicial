@@ -19,9 +19,11 @@ serializer = StatementSchema()
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 from rest_framework import serializers, renderers
+from base.schemas import AbstractChoicesSerializer
 from utils import get_user_model
 from django.contrib.auth.models import Permission, Group
 from core.dttuser.models import Subgroup
+from core.dttuser.models import ROLES_CHOICES
 
 
 class PermissionSchema(serializers.ModelSerializer):
@@ -140,7 +142,6 @@ class UserDttSchema(serializers.ModelSerializer):
                                      required. 
         user_permissions (PermissionSchema): Permissions authorization details associated with model.
                                  Read-only.
-
         groups (GroupSchema): Groups associated with the model. Read and write access.
 
         subgroups (SubgroupSchema): Groups associated with the model. Read and write access.
@@ -155,12 +156,16 @@ class UserDttSchema(serializers.ModelSerializer):
     user_permissions = PermissionSchema(many=True, read_only=True)
     groups = GroupSchema(many=True, read_only=False, exclude=('permissions', ))
     subgroups = SubgroupSchema(many=True, read_only=False, exclude=('permissions', ))
+    role_display = serializers.CharField(
+        source='get_status_display', read_only=True)
+
+
     full_name = serializers.CharField(read_only=True, source='get_full_name')
 
     class Meta:
         model = get_user_model()
         fields = ['email', 'username', 'first_name', 'last_name', 'password', 'password_confirm', 'full_name', 'userpicture',
-                  'is_staff', 'user_permissions', 'date_joined', 'is_active', 'groups', 'subgroups', 'id']
+                  'is_staff', 'user_permissions', 'date_joined', 'is_active', 'role', 'role_display', 'groups', 'subgroups', 'id']
         read_only_fields = ('user_permissions', 'date_joined', 'is_active')
 
     @staticmethod
