@@ -24,7 +24,7 @@ class CustomUserAdmin(UserAdmin):
     add_form = UserCreationForm
     fieldsets = (
         (None, {'fields': ('username',)}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
+        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'role',)}),
         (_('Permissions'), {
             'fields': ('is_active', 'is_staff', 'groups', 'subgroups', 'user_permissions'),
         }),
@@ -33,7 +33,7 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'first_name', 'last_name', 'email'),
+            'fields': ('username', 'first_name', 'last_name', 'email',),
         }),
     )
     list_filter = ('is_staff', 'is_active', 'groups', 'subgroups')

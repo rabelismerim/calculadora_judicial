@@ -157,7 +157,7 @@ class UserDttSchema(serializers.ModelSerializer):
     groups = GroupSchema(many=True, read_only=False, exclude=('permissions', ))
     subgroups = SubgroupSchema(many=True, read_only=False, exclude=('permissions', ))
     role_display = serializers.CharField(
-        source='get_status_display', read_only=True)
+        source='get_role_display', read_only=True)
 
 
     full_name = serializers.CharField(read_only=True, source='get_full_name')
