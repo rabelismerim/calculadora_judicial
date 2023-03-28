@@ -168,7 +168,8 @@ class ProjectListSchema(ProjectSchema):
     class Meta:
         model = Project
         fields = ("id", 'description', 'status', 'status_display', 'created_at', 'project_users',
-                  'engagement', 'num_recovering', 'is_adm', 'process_number')
+                  'engagement', 'num_recovering', 'is_adm', 'process_number', 'legal_manager', 
+                  'calculation_manager', 'financial_manager', 'legal_partner' ,'financial_partner')
 
 
 exclude = ('create_user', 'created_at',
@@ -180,7 +181,7 @@ class ProjectCreateSchema(serializers.Serializer):
 
     user_options = UserDttSchema(
         User.objects.all(), many=True, read_only=True,
-        exclude=('create_user', 'created_at', 'is_staff', 'user_permissions', 'date_joined', 'is_active', 'groups'))
+        exclude=('create_user', 'created_at', 'is_staff', 'user_permissions', 'date_joined', 'is_active', 'groups', ))
 
     judge_options = JudgeSchema(Judge.objects.all(),
                                 many=True, read_only=True)
