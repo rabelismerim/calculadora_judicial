@@ -6,6 +6,7 @@ from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 from projects.project_user.schemas import ProjectUserSchema
 from projects.project_user.models import ProjectUser
+from projects.engagement.models import ProjectEngagement
 from utils import get_user_model
 
 User = get_user_model()
@@ -24,9 +25,13 @@ class ProjectUserApi(AbstractViewApi):
            get projects from user authenticated, return ProjectUser id
         """
         serializer = self.get_serializer_class()
-        projects_user = serializer(self.model.objects.filter(
-            user=request.user), many=True).data
-        return JsonResponse({'project_user': projects_user}, status=status.HTTP_200_OK)
+        projects_user_all = self.model.objects.all()
+        projects_user = serializer(ProjectEngagement.objects.filter(
+            users__user=request.user), many=True).data
+        projects_user_data = []
+        for item in projects_user:
+            projects_user_data.append(item['id'])
+        return JsonResponse({'project_user': projects_user_data}, status=status.HTTP_200_OK)
 
 
 
