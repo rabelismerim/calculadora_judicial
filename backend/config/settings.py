@@ -83,6 +83,7 @@ INSTALLED_APPS = [
     'import_export',
     'rest_framework',
     "drf_standardized_errors",  # Alter output erros in REST API
+    'drf_api_logger',
 
     # Base
     'base',
@@ -146,9 +147,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'crum.CurrentRequestUserMiddleware',  # Get current request in Models
+    'drf_api_logger.middleware.api_logger_middleware.APILoggerMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
+
+DRF_API_LOGGER_DATABASE = True
 
 template = 'templates'
 
