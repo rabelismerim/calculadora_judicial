@@ -89,8 +89,8 @@ class CalculationApi(AbstractCalculationApi):
         new_funds = new_calculation.pop('funds', None)
         calculation = self.model.objects.create(**new_calculation)
         creditor = calculation.creditor
-        clain_creditor = creditor.get_clain_creditor()
-        clain_lawyer = creditor.get_clain_lawyer()
+        claim_creditor = creditor.get_claim_creditor()
+        claim_lawyer = creditor.get_claim_lawyer()
         new_criterion = {
             'calculation': calculation,
             'rate': creditor.rate,
@@ -101,13 +101,13 @@ class CalculationApi(AbstractCalculationApi):
             'advocative_hours': creditor.advocative_hours,
         }
 
-        if clain_creditor:
+        if claim_creditor:
             new_criterion['claim_credor'] = Claim.objects.create(
-                classes=clain_creditor.classes, coins=clain_creditor.coins, archive_json=clain_creditor.archive_json)
+                classes=claim_creditor.classes, coins=claim_creditor.coins, archive_json=claim_creditor.archive_json)
 
-        if clain_lawyer:
+        if claim_lawyer:
             new_criterion['claim_lawyer'] = Claim.objects.create(
-                classes=clain_lawyer.classes, coins=clain_lawyer.coins, archive_json=clain_lawyer.archive_json)
+                classes=claim_lawyer.classes, coins=claim_lawyer.coins, archive_json=claim_lawyer.archive_json)
 
         Criterion.objects.create(**new_criterion)
 

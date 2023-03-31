@@ -10,8 +10,8 @@ from core.permission.views import CheckHasPermission
 from creditors.notice.models import Notice
 from creditors.schemas import CreditorCreateSchema, CreditorSchema
 from creditors.models import Creditor
-from rates.models import Rate
 from utils import get_user_model
+
 User = get_user_model()
 
 
@@ -96,4 +96,5 @@ class CreditorApi(AbstractCreditorApi):
             notice['coins'] = Coins.objects.create(**coins)
             notice['creditor'] = new_creditor
             Notice.objects.create(**notice)
-        return JsonResponse({'creditor': self.serializer_class(new_creditor, many=False).data}, status=status.HTTP_201_CREATED)
+        return JsonResponse({'creditor': self.serializer_class(new_creditor, many=False).data},
+                            status=status.HTTP_201_CREATED)

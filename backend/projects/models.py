@@ -41,7 +41,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
     region = models.ForeignKey(Region, on_delete=models.PROTECT)
     court = models.ForeignKey(Court, on_delete=models.PROTECT)
     competence = models.CharField(
-        "Competência",  max_length=150, null=True)
+        "Competência", max_length=150, null=True)
     legal_manager = models.ForeignKey(
         User, on_delete=models.PROTECT, related_name='legal_manager', null=True)  # Gerente jurídico
     calculation_manager = models.ForeignKey(
@@ -54,10 +54,6 @@ class Project(AbstractDescription, AbstractDateRecovering):
         User, on_delete=models.PROTECT, related_name='financial_partner', null=True)  # Socio Financeiro
     engagement = models.OneToOneField(
         ProjectEngagement, on_delete=models.PROTECT)
-
-    def get_num_calculations(self) -> int:
-        """Get number of calculations"""
-        return Calculation
 
     @property
     def num_recovering(self) -> number:

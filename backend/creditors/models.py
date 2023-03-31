@@ -14,12 +14,12 @@ class Creditor(AbstractDateCreditor):
         """Get number of calculations"""
         return self.calculation_set.exclude(number__isnull=True).count()
 
-    def get_clain_creditor(self):
+    def get_claim_creditor(self):
         if hasattr(self, 'claimcreditor'):
             return self.claimcreditor
         return None
 
-    def get_clain_lawyer(self):
+    def get_claim_lawyer(self):
         if hasattr(self, 'claimlawyer'):
             return self.claimlawyer
         return None
@@ -29,7 +29,10 @@ class Creditor(AbstractDateCreditor):
             return self.notice
         return None
 
-    # TODO: pegar a classe que está nos calculos, exibindo como lista
+    # def get_classes(self):
+    #     return self.calculation_set.all().values_list('')
+    #
+    # # TODO: pegar a classe que está nos calculos, exibindo como lista
 
     def __str__(self):
         return f'{self.entity}'
