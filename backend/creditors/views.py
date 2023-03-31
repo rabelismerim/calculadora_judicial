@@ -7,8 +7,8 @@ from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions
 from core.entity.models import Entity
 from core.permission.views import CheckHasPermission
-from creditors.notice.models import Notice
-from creditors.schemas import CreditorCreateSchema, CreditorSchema
+from creditors.notice.models import Notice, NoticeRecovering
+from creditors.schemas import CreditorCreateSchema, CreditorSchema, CreditorUpdateSchema
 from creditors.models import Creditor
 from utils import get_user_model
 
@@ -58,7 +58,7 @@ class CreditorCreateApi(AbstractCreditorApi):
 
 
 class CreditorApi(AbstractCreditorApi):
-    """HTTP methods for creditor"""
+    """HTTP methods for create creditor"""
     http_method_names = ['get', 'post']
 
     def post(self, request, *args, **kwargs):
@@ -72,10 +72,12 @@ class CreditorApi(AbstractCreditorApi):
 
         entity = creditor.pop('entity')
         notice = creditor.pop('notice', None)
+        notice_recovering = creditor.pop('notice_recovering', None)
         claim_creditor = creditor.pop('claimcreditor', None)
         claim_lawyer = creditor.pop('claimlawyer', None)
 
-        creditor['entity'] = Entity.objects.create(**entity)
+        creditor['entity'], created = Entity.objects.get_or_create(defaults=entity,
+                                                                   **{'legal_number': entity['legal_number']})
 
         new_creditor = self.model.objects.create(**creditor)
 
@@ -96,5 +98,17 @@ class CreditorApi(AbstractCreditorApi):
             notice['coins'] = Coins.objects.create(**coins)
             notice['creditor'] = new_creditor
             Notice.objects.create(**notice)
+
+        if notice_recovering:
+            coins = notice_recovering.get('coins')
+            notice_recovering['coins'] = Coins.objects.create(**coins)
+            notice_recovering['creditor'] = new_creditor
+            NoticeRecovering.objects.create(**notice_recovering)
         return JsonResponse({'creditor': self.serializer_class(new_creditor, many=False).data},
                             status=status.HTTP_201_CREATED)
+
+
+class CreditorUpdateApi(AbstractCreditorApi):
+    """HTTP methods for update creditor"""
+    http_method_names = ['put']
+    serializer_class = CreditorUpdateSchema

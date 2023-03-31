@@ -1,10 +1,14 @@
 from creditors.classes.schemas import AbstractClassesSchema
-from creditors.notice.models import Notice
+from creditors.notice.models import Notice, NoticeRecovering
 
 
 class NoticeSchema(AbstractClassesSchema):
-    model = Notice
-
     class Meta:
         model = Notice
-        exclude = ('creditor', )
+        exclude = ('creditor',)
+
+
+class NoticeRecoveringSchema(AbstractClassesSchema):
+    class Meta:
+        model = NoticeRecovering
+        exclude = ('creditor',)
