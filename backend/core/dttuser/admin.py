@@ -10,7 +10,6 @@ Modules:
 - django.contrib.auth.models: Built-in Permission model.
 """
 
-
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
@@ -24,7 +23,7 @@ class CustomUserAdmin(UserAdmin):
     add_form = UserCreationForm
     fieldsets = (
         (None, {'fields': ('username',)}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'role',)}),
+        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'role', 'status')}),
         (_('Permissions'), {
             'fields': ('is_active', 'is_staff', 'groups', 'subgroups', 'user_permissions'),
         }),

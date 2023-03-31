@@ -1,20 +1,31 @@
-from django.contrib.auth.models import AbstractBaseUser, Group, Permission, _user_get_permissions, _user_has_perm, _user_has_module_perms
+from django.contrib.auth.models import AbstractBaseUser, Group, Permission, _user_get_permissions, _user_has_perm, \
+    _user_has_module_perms
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.mail import send_mail
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from utils import check_choice
 from .managers import CustomUserManager
 from config.settings import IS_LOCALHOST, ENABLE_SSO
 
 ROLES_CHOICES = (
-    ('S', 'Sócio'),
-    ('G', 'Gerente'),
-    ('D', 'Diretor'),
-    ('A', 'Analista'),
-    ('C', 'Consultor Sênior'),
+    ('S', _('Sócio')),
+    ('G', _('Gerente')),
+    ('D', _('Diretor')),
+    ('A', _('Analista')),
+    ('C', _('Consultor Sênior')),
 )
+STATUS_CHOICES = (  # Status para o User DTT
+    ('A', _('Ativo')),
+    ('I', _('Inativo')),
+    ('P', _('Pendente')),
+    ('R', _('Rejeitado')),
+    ('F', _('Ferias')),
+)
+STATUS_ACTIVE = ['A', 'C']  # Definir status ativo
+
 
 class SubgroupManager(models.Manager):
     """
@@ -63,6 +74,7 @@ class Subgroup(models.Model):
 
     def natural_key(self):
         return (self.name,)
+
 
 class PermissionsMixin(models.Model):
     """
@@ -171,7 +183,8 @@ class PermissionsMixin(models.Model):
                 return self.groups.filter(name='gerente').exists()
             return True
 
-        return any([self.groups.filter(permissions__codename=perm).exists(), self.user_permissions.filter(codename=perm).exists()])
+        return any([self.groups.filter(permissions__codename=perm).exists(),
+                    self.user_permissions.filter(codename=perm).exists()])
 
     def has_perms(self, perm_list, obj=None):
         """
@@ -193,7 +206,6 @@ class PermissionsMixin(models.Model):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-
     username_validator = UnicodeUsernameValidator()
 
     username = models.CharField(
@@ -208,7 +220,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         },
     )
     password = models.CharField(max_length=128, editable=False)
-    role = models.CharField(_('role'),default="A", max_length=1, choices=ROLES_CHOICES)
+    role = models.CharField(_('role'), default="A", max_length=1, choices=ROLES_CHOICES)
+    status = models.CharField('status', default="A", max_length=1, choices=STATUS_CHOICES)
     first_name = models.CharField(_('first name'), max_length=150, blank=True)
     last_name = models.CharField(_('last name'), max_length=150, blank=True)
     email = models.EmailField(_('email address'), blank=True)
@@ -283,9 +296,18 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         # Allowing or blocking to use django user with password
+        self.is_active = self.status in STATUS_ACTIVE
         if IS_LOCALHOST is False:
             if not self._state.adding and (self.id != self._loaded_values['id']):
                 raise ValueError("Updating the value of id isn't allowed")
             if ENABLE_SSO:
                 self.set_unusable_password()
         return super().save(force_insert, force_update, using, update_fields)
+
+    def set_status_by_choice(self, choice):
+        check_choice(choice, STATUS_CHOICES)
+        self.status = choice
+        self.save()
+
+    def get_status_pending(self):
+        return 'P'

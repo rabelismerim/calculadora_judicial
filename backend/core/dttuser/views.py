@@ -62,7 +62,8 @@ class AbstractUserDttApi(AbstractViewApi):
 
 
 class UserDttDetailApi(AbstractUserDttApi):
-    """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like query_params and schema."""
+    """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like
+    query_params and schema. """
     http_method_names = ['get']
     query_params = []
     schema = AutoSchema(
@@ -83,10 +84,12 @@ class UserDttDetailApi(AbstractUserDttApi):
 
 
 class UserAuthorizeDttApi(AbstractUserDttApi):
-    """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like query_params and schema."""
+    """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like
+    query_params and schema. """
     http_method_names = ['post']
     serializer_class = UserAuthorizeDttSchema
     query_params = []
+    # TODO: create permission class
     schema = AutoSchema(
         tags=['Users'],
         component_name='UserAuthorize',
@@ -94,32 +97,36 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
     )
 
     def post(self, request, *args, **kwargs):
-        """
-        This method returns a JSON response that contains the user details as per authenticated user. 
-        The serializer is used to access the model object, and then the data is returned in a JSON format.
-        """
+        """Handles HTTP POST request to authorize or unauthorize user access.
 
-        serializer = self.get_serializer_class()
+        - Validates request data.
+        - Alter status by choice.
+        - Filters user by email and validates if it exists.
+        - Adds specified permission groups and subgroups to the user.
+        """
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user_filter = serializer.validated_data
         groups = user_filter.pop('groups', [])
         subgroups = user_filter.pop('subgroups', [])
 
-        user_approved = self.model.objects.filter(**user_filter).first()
+        user_approved = self.model.objects.filter(email=user_filter['email']).first()
         if not user_approved:
-            raise serializers.ValidationError(['Email não encontrado'])
+            raise serializers.ValidationError([f'O Email {user_filter["email"]}, não foi encontrado'])
 
-        user_approved.is_active = user_filter.is_active
-        user_approved.groups.add(*groups)
-        user_approved.subgroups.add(*subgroups)
+        user_approved.status = user_filter['status']
+        if groups:
+            user_approved.groups.add(*groups)
+        if subgroups:
+            user_approved.subgroups.add(*subgroups)
         user_approved.save()
 
-        return JsonResponse({'user': user_filter}, status=status.HTTP_201_CREATED)
+        return JsonResponse({'user': UserDttSchema(user_approved).data}, status=status.HTTP_201_CREATED)
 
 
 class UserSendMailDttApi(AbstractUserDttApi):
-    """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like query_params and schema."""
+    """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like
+    query_params and schema. """
     http_method_names = ['post']
     serializer_class = UserMailDttSchema
     query_params = []
@@ -134,7 +141,6 @@ class UserSendMailDttApi(AbstractUserDttApi):
         The serializer is used to access the model object, and then the data is returned in a JSON format.
         """
 
-        serializer = self.get_serializer_class()
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user_filter = serializer.validated_data
@@ -145,15 +151,18 @@ class UserSendMailDttApi(AbstractUserDttApi):
 
         for item in user_mail:
             send_mail('Liberação de Uso - ' + item.email,
-                      'Esse email é enviado automaticamente pelo sistema para solicitação de liberação do usuário ' + item.email + ' ao sistema. Para liberar o acesso favor entrar no painel de administração e cadastrar o mesmo ao sistema.',
+                      'Esse email é enviado automaticamente pelo sistema para solicitação de liberação do usuário ' +
+                      item.email + ' ao sistema. Para liberar o acesso favor entrar no painel de administração e '
+                                   'cadastrar o mesmo ao sistema.',
                       None)
 
-        return JsonResponse({'user': user_filter}, status=status.HTTP_201_CREATED)
+        return JsonResponse({'user': UserDttSchema(user_mail).data}, status=status.HTTP_201_CREATED)
 
 
 class GroupApi(AbstractViewApi):
-    """HTTP methods for interfacing with the User Deloitte modelThis method returns a JSON response that contains the user details given a filtering criteria. 
-    The serializer is used to access the model object, and then the data is returned in a JSON format."""
+    """HTTP methods for interfacing with the User Deloitte modelThis method returns a JSON response that contains the
+    user details given a filtering criteria. The serializer is used to access the model object, and then the data is
+    returned in a JSON format. """
     serializer_class = GroupSchema
 
     if IS_LOCALHOST:
@@ -166,8 +175,9 @@ class GroupApi(AbstractViewApi):
 
 
 class SubgroupApi(AbstractViewApi):
-    """HTTP methods for interfacing with the User Deloitte modelThis method returns a JSON response that contains the user details given a filtering criteria. 
-    The serializer is used to access the model object, and then the data is returned in a JSON format."""
+    """HTTP methods for interfacing with the User Deloitte modelThis method returns a JSON response that contains the
+    user details given a filtering criteria. The serializer is used to access the model object, and then the data is
+    returned in a JSON format. """
     serializer_class = SubgroupSchema
 
     if IS_LOCALHOST:
@@ -201,26 +211,9 @@ class UserDttApi(AbstractUserDttApi):
         user.groups.add(*subgroups)
         user.save()
 
-        if IS_LOCALHOST:
-            user_authenticated = authenticate(
-                username=new_user['username'], password=password)
+        if IS_LOCALHOST:  # Authenticate User to testes and local host
+            user_authenticated = authenticate(username=new_user['username'], password=password)
             if user_authenticated:
                 login(self.request, user_authenticated)
         serializer = self.get_serializer_class()
         return JsonResponse({'user': serializer(request.user, many=False).data}, status=status.HTTP_201_CREATED)
-
-# if ENABLE_SSO is False:
-#     try:
-#         user, created = User.objects.get_or_create(
-#             username='dev_admin', first_name='admin', last_name='dev', is_staff=True)
-#         user.set_password(PASSWD_DEV)
-#         project_manager_list, created, group_manager = CreatePermissions().create_group_project_manager()
-#         user.groups.add(group_manager)
-#         user.save()
-#
-#         user, created = User.objects.get_or_create(
-#             username='dev_user', first_name='user', last_name='dev', is_staff=False)
-#         user.set_password(PASSWD_DEV)
-#         user.save()
-#     except Exception as e:
-#         print(e, 'err create user\n\n')

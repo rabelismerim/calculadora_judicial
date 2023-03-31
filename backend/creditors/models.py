@@ -29,5 +29,7 @@ class Creditor(AbstractDateCreditor):
             return self.notice
         return None
 
+    # TODO: pegar a classe que está nos calculos, exibindo como lista
+
     def __str__(self):
         return f'{self.entity}'

@@ -15,7 +15,7 @@ class CriterionSchema(AbstractDescriptionSchema):
 
     class Meta:
         model = Criterion
-        exclude = ('calculation', )
+        exclude = ('calculation',)
         # fields = ('calculation_id', )
         read_only_fields = ('admission', 'dismissal',
                             'default_interest', 'fine', 'advocative_hours', 'rate', 'claim_credor', 'claim_lawyer')

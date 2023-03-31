@@ -30,10 +30,11 @@ def sign_status(request):
                 user.last_name = ms_identity_web.id_data.username.split(
                 )[len(request.identity_context_data.username.split()) - 1]
                 user.is_active = False
+                user.status = user.get_status_pending()
                 user.userpicture = ms_identity_web.id_data.userpicture
                 user.is_staff = False
                 user.save()
-            if len(user_view) > 0:
+            elif len(user_view) > 0:
                 for item in user_view:
                     if item.userpicture != ms_identity_web.id_data.userpicture:
                         item.userpicture = ms_identity_web.id_data.userpicture

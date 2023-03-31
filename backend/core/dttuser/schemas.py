@@ -154,18 +154,19 @@ class UserDttSchema(serializers.ModelSerializer):
     password_confirm = serializers.CharField(
         min_length=8, write_only=True, required=True)
     user_permissions = PermissionSchema(many=True, read_only=True)
-    groups = GroupSchema(many=True, read_only=False, exclude=('permissions', ))
-    subgroups = SubgroupSchema(many=True, read_only=False, exclude=('permissions', ))
-    role_display = serializers.CharField(
-        source='get_role_display', read_only=True)
-
+    groups = GroupSchema(many=True, read_only=False, exclude=('permissions',))
+    subgroups = SubgroupSchema(many=True, read_only=False, exclude=('permissions',))
+    role_display = serializers.CharField(source='get_role_display', read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
 
     full_name = serializers.CharField(read_only=True, source='get_full_name')
 
     class Meta:
         model = get_user_model()
-        fields = ['email', 'username', 'first_name', 'last_name', 'password', 'password_confirm', 'full_name', 'userpicture',
-                  'is_staff', 'user_permissions', 'date_joined', 'is_active', 'role', 'role_display', 'groups', 'subgroups', 'id']
+        fields = ['email', 'username', 'first_name', 'last_name', 'password', 'password_confirm', 'full_name',
+                  'userpicture', 'status', 'status_display',
+                  'is_staff', 'user_permissions', 'date_joined', 'is_active', 'role', 'role_display', 'groups',
+                  'subgroups', 'id']
         read_only_fields = ('user_permissions', 'date_joined', 'is_active')
 
     @staticmethod
@@ -235,9 +236,10 @@ class UserAuthorizeDttSchema(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        groups = GroupSchema(many=True, read_only=False, exclude=('permissions', ))
-        subgroups = SubgroupSchema(many=True, read_only=False, exclude=('permissions', ))
-        fields = ['email','is_active','groups', 'subgroups']
+        groups = GroupSchema(many=True, read_only=False, exclude=('permissions',))
+        subgroups = SubgroupSchema(many=True, read_only=False, exclude=('permissions',))
+        fields = ['email', 'status', 'groups', 'subgroups']
+
 
 class UserMailDttSchema(serializers.ModelSerializer):
     """

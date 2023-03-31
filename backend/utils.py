@@ -10,7 +10,11 @@ def get_user_model():
 
 
 def check_choice(value: str, choices: tuple):
-    """Checks if the status value provided is valid"""
+    """Checks if the status value provided is valid
+    Params:
+        -value: str
+        -choices: list of tuple
+    """
     has_value = False
     for string, legend in choices:
         if value == string:
