@@ -18,9 +18,9 @@ const props = withDefaults(defineProps<{
 <template>
   <div
     class="flex items-center no-wrap gap-2 rounded-full pl-.5 pr-3 py-.5 whitespace-nowrap cursor-help"
-    :class="{ 'border-1 border--primary/12 bg--primary/20': !transparent }"
+    :class="{ 'border-1 border-gray/20 bg-gray/20': !transparent }"
   >
-    <UserPicture :model-value="modelValue" class="h-5 w-5 rounded-full" />
+    <UserPicture :model-value="modelValue" class="h-5 w-5 rounded-full" initials-class="text-[9px] font-bold" />
     <div class="font-bold">
       {{ modelValue.fullName }}
     </div>
