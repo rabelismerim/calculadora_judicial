@@ -14,7 +14,6 @@ class AbstractRecoveringApi(AbstractViewApi):
     """HTTP methods for Recovering"""
     http_method_names = ['post', 'get']
     serializer_class = RecoveringSchema
-    permission_classes = [permissions.IsAdminUser]
     model = Recovering
     schema = AutoSchema(tags=["Recovering"])
 
