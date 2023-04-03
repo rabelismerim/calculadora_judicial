@@ -32,12 +32,20 @@ const gaugeValues = computed(() => Object.entries(projects
   }))
 
 const responsibleList = computed(() => Object.entries(projects
-  .reduce((acc: any, { responsible }) => {
-    if (!acc[responsible])
-      acc[responsible] = 0
-    acc[responsible]++
+  .reduce((acc: any, project) => {
+    const { legalManager, legalPartner, financialManager, financialPartner, calculationManager } = project
+    const responsibles = [legalManager, legalPartner, financialManager, financialPartner, calculationManager]
+      .map((responsible: any) => responsible?.fullName)
+    responsibles.forEach((responsible) => {
+      if (!responsible)
+        return acc
+      if (!acc[responsible])
+        acc[responsible] = 0
+      acc[responsible]++
+    })
     return acc
   }, {}))
+  .sort(([labelA], [labelB]) => (labelA < labelB) ? -1 : 1)
   .map(([label, count = 0]) => ({ label, count: Number(count) })))
 
 const usageData: any[] = []
@@ -51,7 +59,7 @@ const loadProjects = async () => {
     const getRecovering = (project: string) => recoveringResult
       .find(({ projectId }: any) => projectId === project)
 
-    projects = projectResult.map((project: any) => ({
+    projects = projectResult?.map((project: any) => ({
       ...getRecovering(project.id),
       ...project,
     }))
@@ -96,9 +104,9 @@ const columns = [
     },
   },
   {
-    name: 'responsible',
-    field: 'responsible',
-    label: 'Responsável',
+    name: 'responsibles',
+    field: 'responsibles',
+    label: 'Responsáveis',
     align: 'left',
     sortable: true,
   },
@@ -202,6 +210,27 @@ const columns = [
             </div>
             <div class="text-[14px]">
               {{ props.value }}
+            </div>
+          </div>
+        </QTd>
+      </template>
+      <template #body-cell-responsibles="props">
+        <QTd :props="props">
+          <div class="flex">
+            <div class="flex items-center no-wrap rounded-full px-3 py-1 border-1 border-gray/20 bg-gray/20 whitespace-nowrap cursor-help">
+              {{ props.value.length }} responsáveis
+              <QTooltip v-if="props.value.length">
+                <div class="grid gap-2 p-2">
+                  <div
+                    v-for="(item, index) in props.value"
+                    :key="index"
+                    class="flex no-wrap items-center justify-between gap-2"
+                  >
+                    {{ item.role }}:
+                    <UserTag :model-value="item.user" />
+                  </div>
+                </div>
+              </QTooltip>
             </div>
           </div>
         </QTd>

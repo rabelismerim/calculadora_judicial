@@ -108,7 +108,7 @@ onMounted(() => {
       </ProjectDetailCell>
     </template>
 
-    <Header :title="`Projeto ${project.description}`">
+    <Header :title="`Projeto ${project.description || ''}`">
       <Btn
         label="Participantes"
         icon="i-carbon-events"
@@ -189,8 +189,8 @@ onMounted(() => {
             <Btn
               label="Novo Credor"
               icon="i-carbon-add-filled"
-              outlined
-              disabled
+              transparent
+              class="uppercase text-sm"
             />
             <div class="font-bold flex no-wrap items-center gap-2">
               Total: R$ 0
