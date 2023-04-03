@@ -8,6 +8,18 @@ const props = withDefaults(defineProps<{
 
 })
 const emit = defineEmits(['update:tab', 'update:filter'])
+const router = useRouter()
+
+const { hasProject, user } = $user
+const showUserModal = $ref(false)
+const modalUser = $ref({ fullName: '' })
+
+const canGoTo = (project: any) => hasProject(project.id)
+const goTo = (project: any) => {
+  if (!canGoTo(project))
+    return
+  router.push({ path: `/projeto/${project.id}` })
+}
 
 const filteredItems = computed(() => {
   if (props.tab === 'all')
@@ -47,6 +59,14 @@ const columns = [
     sortable: true,
   },
   {
+    name: 'email',
+    field: 'email',
+    label: 'Email',
+    align: 'left',
+    style: 'width: 100px',
+    sortable: true,
+  },
+  {
     name: 'permission',
     field: 'groups',
     label: 'Permissão',
@@ -56,18 +76,9 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'position',
-    field: 'position',
+    name: 'role',
+    field: 'roleDisplay',
     label: 'Cargo',
-    align: 'left',
-    format: (value: string) => value || '-',
-    style: 'width: 100px',
-    sortable: true,
-  },
-  {
-    name: 'area',
-    field: 'area',
-    label: 'Área',
     align: 'left',
     format: (value: string) => value || '-',
     style: 'width: 100px',
@@ -82,12 +93,20 @@ const columns = [
     sortable: true,
   },
   {
+    name: 'count',
+    field: 'projects',
+    label: 'Total',
+    align: 'left',
+    style: 'width: 100px',
+    format: (value: string) => value?.length || 0,
+    sortable: true,
+  },
+  {
     name: 'projects',
     field: 'projects',
     label: 'Projetos',
-    align: 'center',
     sortable: true,
-    style: 'width: 100px',
+    align: 'center',
   },
 ] as TableColumn[]
 </script>
@@ -113,28 +132,11 @@ const columns = [
     <template #body-cell-name="props">
       <QTd :props="props">
         <div class="flex no-wrap items-center gap-3 font-bold py-2">
-          <UserPicture :model-value="props.row" class="h-12 w-12 rounded-1 mr-2" />
+          <UserPicture :model-value="props.row" class="h-10 w-10 rounded-1 mr-2" />
           <div class="font-medium">
             <div class="text-lg font-bold">
               {{ props.value }}
             </div>
-            <div>
-              {{ props.row.email }}
-            </div>
-          </div>
-        </div>
-      </QTd>
-    </template>
-
-    <template #body-cell-permission="props">
-      <QTd :props="props">
-        <div class="flex gap-2">
-          <div
-            v-for="group in props.value"
-            :key="group"
-            class="rounded-full px-3 py-1 border-1 border--primary/12 bg--primary/50 whitespace-nowrap"
-          >
-            {{ group }}
           </div>
         </div>
       </QTd>
@@ -151,17 +153,34 @@ const columns = [
       </QTd>
     </template>
 
-    <template #body-cell-action="props">
+    <template #body-cell-projects="props">
       <QTd :props="props">
-        <div class="flex justify-end">
-          <Btn
-            :label="props.value ? 'Editar' : 'Cadastrar'"
-            :outlined="props.value"
+        <div class="flex justify-end gap-1 no-wrap">
+          <div class="flex justify-end gap-1  max-h-7.5 overflow-hidden">
+            <div
+              v-for="project in props.value"
+              :key="project.id"
+              class="rounded-full px-3 py-1 border-1 border--black/10 bg-gray/10 whitespace-nowrap"
+              :class="canGoTo(project) ? 'cursor-pointer hover:bg--primary/20 hover:border--primary/50' : 'cursor-not-allowed'"
+              @click="goTo(project)"
+            >
+              {{ project.description }}
+            </div>
+          </div>
+          <div
+            v-if="props.value?.length > 0"
+            class="flex justify-end"
           >
-            <div class="i-carbon-chevron-right" />
-          </Btn>
+            <div class="flex items-center rounded-full px-3 py-1 border-1 border--black/12 bg-gray/10 whitespace-nowrap cursor-pointer hover:bg--primary/50 hover:border--primary/12" @click="{ modalUser = props.row; showUserModal = true }">
+              Ver Todos
+            </div>
+          </div>
         </div>
       </QTd>
     </template>
   </QTable>
+  <TeamProjectsModal
+    v-model="showUserModal"
+    :user="modalUser"
+  />
 </template>
