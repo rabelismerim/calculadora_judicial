@@ -6,6 +6,8 @@ from creditors.classes.schemas import AbstractClassesSchema, AbstractClassesLawy
 
 
 class ClaimLawyerSchema(AbstractClassesLawyerSchema):
+    model = ClaimLawyer
+
     class Meta:
         model = ClaimLawyer
         exclude = ('creditor', 'classes')

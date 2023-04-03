@@ -14,10 +14,8 @@ class Creditor(AbstractDateCreditor):
         """Get number of calculations"""
         return self.calculation_set.exclude(number__isnull=True).count()
 
-    def get_claim_creditor(self):
-        if hasattr(self, 'claimcreditor'):
-            return self.claimcreditor
-        return None
+    def get_claims_creditor(self):
+            return self.claimcreditor_set.all()
 
     def get_claim_lawyer(self):
         if hasattr(self, 'claimlawyer'):

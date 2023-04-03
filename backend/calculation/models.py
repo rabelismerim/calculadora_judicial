@@ -7,6 +7,8 @@ to add specific fields as needed.
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
+from base.models import AbstractCredit
 from core.abstract.models import AbstractModel
 from creditors.models import Creditor
 from utils import check_choice
@@ -23,7 +25,7 @@ class Incident(AbstractModel):
     number = models.CharField('Número do incidente', max_length=100)
 
 
-class Calculation(AbstractModel):
+class Calculation(AbstractCredit):
     """Attributes:
     creditor (models.ForeignKey): The creditor associated with the calculation.
     incident (models.ForeignKey): The incident associated with the calculation.

@@ -1,3 +1,5 @@
+from django.db import transaction
+
 from base.claim.models import ClaimCreditor, ClaimLawyer
 from base.coins.models import Coins
 from core.abstract.views import AbstractViewApi
@@ -65,45 +67,49 @@ class CreditorApi(AbstractCreditorApi):
         """
            Create creditor receiving a dict, return creditor detail
         """
-        serializer = self.serializer_class(data=request.data)
+        with transaction.atomic():
+            serializer = self.serializer_class(data=request.data)
 
-        serializer.is_valid(raise_exception=True)
-        creditor = serializer.validated_data
+            serializer.is_valid(raise_exception=True)
+            creditor = serializer.validated_data
 
-        entity = creditor.pop('entity')
-        notice = creditor.pop('notice', None)
-        notice_recovering = creditor.pop('notice_recovering', None)
-        claim_creditor = creditor.pop('claimcreditor', None)
-        claim_lawyer = creditor.pop('claimlawyer', None)
+            entity = creditor.pop('entity')
+            notices = creditor.pop('notice', [])
+            notice_recoverings = creditor.pop('notice_recovering', [])
+            claims_creditor = creditor.pop('claim_creditor', [])
+            claim_lawyer = creditor.pop('claimlawyer', None)
 
-        creditor['entity'], created = Entity.objects.get_or_create(defaults=entity,
-                                                                   **{'legal_number': entity['legal_number']})
+            creditor['entity'], created = Entity.objects.get_or_create(defaults=entity,
+                                                                       **{'legal_number': entity['legal_number']})
 
-        new_creditor = self.model.objects.create(**creditor)
+            new_creditor = self.model.objects.create(**creditor)
 
-        if claim_creditor:
-            coins = claim_creditor.get('coins')
-            claim_creditor['coins'] = Coins.objects.create(**coins)
-            claim_creditor['creditor'] = new_creditor
-            ClaimCreditor.objects.create(**claim_creditor)
+            if claims_creditor:
+                for claim_creditor in claims_creditor:
+                    coins = claim_creditor.get('coins')
+                    claim_creditor['coins'] = Coins.objects.create(**coins)
+                    claim_creditor['creditor'] = new_creditor
+                    ClaimCreditor.objects.create(**claim_creditor)
 
-        if claim_lawyer:
-            coins = claim_lawyer.get('coins')
-            claim_lawyer['coins'] = Coins.objects.create(**coins)
-            claim_lawyer['creditor'] = new_creditor
-            ClaimLawyer.objects.create(**claim_lawyer)
+            if claim_lawyer:
+                coins = claim_lawyer.get('coins')
+                claim_lawyer['coins'] = Coins.objects.create(**coins)
+                claim_lawyer['creditor'] = new_creditor
+                ClaimLawyer.objects.create(**claim_lawyer)
 
-        if notice:
-            coins = notice.get('coins')
-            notice['coins'] = Coins.objects.create(**coins)
-            notice['creditor'] = new_creditor
-            Notice.objects.create(**notice)
+            if notices:
+                for notice in notices:
+                    coins = notice.get('coins')
+                    notice['coins'] = Coins.objects.create(**coins)
+                    notice['creditor'] = new_creditor
+                    Notice.objects.create(**notice)
 
-        if notice_recovering:
-            coins = notice_recovering.get('coins')
-            notice_recovering['coins'] = Coins.objects.create(**coins)
-            notice_recovering['creditor'] = new_creditor
-            NoticeRecovering.objects.create(**notice_recovering)
+            if notice_recoverings:
+                for notice_recovering in notice_recoverings:
+                    coins = notice_recovering.get('coins')
+                    notice_recovering['coins'] = Coins.objects.create(**coins)
+                    notice_recovering['creditor'] = new_creditor
+                    NoticeRecovering.objects.create(**notice_recovering)
         return JsonResponse({'creditor': self.serializer_class(new_creditor, many=False).data},
                             status=status.HTTP_201_CREATED)
 

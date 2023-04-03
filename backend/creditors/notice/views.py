@@ -4,8 +4,9 @@ from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions
-from creditors.notice.models import Notice
-from creditors.notice.schemas import NoticeSchema
+from creditors.notice.models import Notice, NoticeRecovering
+from creditors.notice.schemas import NoticeSchema, NoticeUpdateSchema, NoticeRecoveringSchema, \
+    NoticeRecoveringUpdateSchema
 
 
 class NoticeApi(AbstractViewApi):
@@ -16,16 +17,7 @@ class NoticeApi(AbstractViewApi):
     model = Notice
     schema = AutoSchema(tags=["Creditors - Notice - Edital"])
 
-    query_params = [
-        {
-            "name": "valor",
-            "field": "value__icontains",
-            "in": "query",
-            "required": False,
-            "description": "Valor",
-            "schema": {"type": "string"}
-        }
-    ]
+    query_params = []
 
     def post(self, request, *args, **kwargs):
         """Abstract method for default get model. Overide method in class for custom operation"""
@@ -37,3 +29,97 @@ class NoticeApi(AbstractViewApi):
         notice = self.model.objects.create(**new_notice)
 
         return JsonResponse({'notice': self.serializer_class(notice, many=False).data}, status=status.HTTP_201_CREATED)
+
+
+class NoticeUpdateApi(AbstractViewApi):
+    """HTTP methods for Notice"""
+    http_method_names = ['put']
+    serializer_class = NoticeUpdateSchema
+    permission_classes = [permissions.IsAdminUser]
+    model = Notice
+    schema = AutoSchema(tags=["Creditors - Notice - Edital"])
+
+    query_params = []
+
+    def put(self, request, *args, **kwargs):
+        """
+        Method to update existing claim for a creditor.
+        It validates the serializer data, gets the 'creditor' and 'classes' objects from the input data,
+        updates the claim using the model instance and returns a JsonResponse with the serialized 'creditor'
+        object.
+        """
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        new_notice = serializer.validated_data
+
+        notice_id = kwargs.get('id')
+        notice = self.model.objects.filter(id=notice_id).first()
+        coins = new_notice.pop('coins', None)
+        classes = new_notice.pop('classes', None)
+        if new_notice:
+            notice.dict_update(**new_notice)
+        if coins:
+            notice.coins.dict_update(**coins)
+        if classes and notice.classes != classes:
+            notice.classes = classes
+            notice.save()
+
+        return JsonResponse({'creditor': NoticeSchema(notice).data}, status=status.HTTP_201_CREATED)
+
+
+class NoticeRecoveringApi(AbstractViewApi):
+    """HTTP methods for Notice"""
+    http_method_names = ['post', 'get']
+    serializer_class = NoticeRecoveringSchema
+    permission_classes = [permissions.IsAdminUser]
+    model = NoticeRecovering
+    schema = AutoSchema(tags=["Creditors - Notice - Edital"])
+
+    query_params = []
+
+    def post(self, request, *args, **kwargs):
+        """Abstract method for default get model. Overide method in class for custom operation"""
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        new_notice = serializer.validated_data
+        coins = new_notice.get('coins')
+        new_notice['coins'] = Coins.objects.create(**coins)
+        notice = self.model.objects.create(**new_notice)
+
+        return JsonResponse({'notice': self.serializer_class(notice, many=False).data}, status=status.HTTP_201_CREATED)
+
+
+class NoticeRecoveringUpdateApi(AbstractViewApi):
+    """HTTP methods for Notice"""
+    http_method_names = ['put']
+    serializer_class = NoticeRecoveringUpdateSchema
+    permission_classes = [permissions.IsAdminUser]
+    model = NoticeRecovering
+    schema = AutoSchema(tags=["Creditors - Notice - Edital"])
+
+    query_params = []
+
+    def put(self, request, *args, **kwargs):
+        """
+        Method to update existing claim for a creditor.
+        It validates the serializer data, gets the 'creditor' and 'classes' objects from the input data,
+        updates the claim using the model instance and returns a JsonResponse with the serialized 'creditor'
+        object.
+        """
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        new_notice = serializer.validated_data
+
+        notice_id = kwargs.get('id')
+        notice = self.model.objects.filter(id=notice_id).first()
+        coins = new_notice.pop('coins', None)
+        classes = new_notice.pop('classes', None)
+        if new_notice:
+            notice.dict_update(**new_notice)
+        if coins:
+            notice.coins.dict_update(**coins)
+        if classes and notice.classes != classes:
+            notice.classes = classes
+            notice.save()
+
+        return JsonResponse({'creditor': NoticeRecoveringSchema(notice).data}, status=status.HTTP_201_CREATED)

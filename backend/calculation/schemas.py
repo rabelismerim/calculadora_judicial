@@ -24,6 +24,7 @@ from calculation.statement.schemas import StatementSchema
 from calculation.verdict.schemas import VerdictSchema
 from rest_framework import serializers
 from calculation.models import Calculation, Incident, CHOICES_STEP
+from creditors.classes.schemas import AbstractClassesSchema
 from creditors.schemas import CreditorSchema
 
 
@@ -49,7 +50,7 @@ class IncidentSchema(AbstractDescriptionSchema):
         return number
 
 
-class CalculationSchema(AbstractDescriptionSchema):
+class CalculationSchema(AbstractClassesSchema):
     """
     The CalculationSchema class is a serializer for the Calculation model fields. It inherits from the AbstractModelSchema class. It includes the following fields:
 

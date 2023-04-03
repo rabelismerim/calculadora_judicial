@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from rest_framework import permissions, status, serializers
 from rest_framework.schemas.openapi import AutoSchema
 from base.claim.models import ClaimCreditor, ClaimLawyer
-from base.claim.schemas import ClaimCreditorUpdateSchema, ClaimLawyerUpdateSchema
+from base.claim.schemas import ClaimCreditorUpdateSchema, ClaimLawyerUpdateSchema,  ClaimCreditorSchema
 from base.coins.models import Coins
 from core.abstract.views import AbstractViewApi
 from core.permission.views import CheckHasPermission
@@ -15,19 +15,18 @@ class ClaimCreditorApi(AbstractViewApi):
     It includes a serializer_class and required permission_classes to authenticate the users,
     a model instance with a corresponding schema as well as custom query parameters to retrieve data.
     """
-    serializer_class = ClaimCreditorUpdateSchema
+    serializer_class = ClaimCreditorSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = ClaimCreditor
     schema = AutoSchema(tags=["Creditor - Claim"])
     query_params = []
-    http_method_names = ['post', ]
+    http_method_names = ['post']
 
     def post(self, request, *args, **kwargs):
         """
-        Method to create a new claim for a creditor or update an existing.
+        Method to create a new claim for a creditor.
         It validates the serializer data, gets the 'creditor' and 'classes' objects from the input data,
-        updates or creates the claim using the model instance and returns a JsonResponse with the serialized 'creditor'
-        object.
+        creates the claim using the model instance and returns a JsonResponse with the serialized 'creditor' object.
         """
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -35,26 +34,51 @@ class ClaimCreditorApi(AbstractViewApi):
 
         creditor_id = new_claim.pop('creditor_id')
         creditor = Creditor.objects.filter(id=creditor_id).first()
-        claim = creditor.get_claim_creditor()
         coins = new_claim.get('coins')
         classes = new_claim.get('classes')
-
-        if not claim:
-            if not coins:
-                raise serializers.ValidationError([f'Necessário informar coins'])
-            if not classes:
-                raise serializers.ValidationError([f'Necessário informar a classe'])
-            new_claim['coins'] = Coins.objects.create(**coins)
-            new_claim['creditor'] = creditor
-            self.model.objects.create(classes_id=classes.id, **new_claim)
-        else:
-            if coins:
-                claim.coins.dict_update(**coins)
-            if classes and claim.classes != classes:
-                claim.classes = classes
-                claim.save()
+        new_claim['coins'] = Coins.objects.create(**coins)
+        new_claim['creditor'] = creditor
+        self.model.objects.create(classes_id=classes.id, **new_claim)
 
         return JsonResponse({'creditor': CreditorSchema(creditor).data}, status=status.HTTP_201_CREATED)
+
+
+class ClaimCreditorUpdateApi(AbstractViewApi):
+    """This class provides basic HTTP methods for managing Calculation Objects.
+    It includes a serializer_class and required permission_classes to authenticate the users,
+    a model instance with a corresponding schema as well as custom query parameters to retrieve data.
+    """
+    serializer_class = ClaimCreditorUpdateSchema
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    model = ClaimCreditor
+    schema = AutoSchema(tags=["Creditor - Claim"])
+    query_params = []
+    http_method_names = ['put']
+
+    def put(self, request, *args, **kwargs):
+        """
+        Method to update existing claim for a creditor.
+        It validates the serializer data, gets the 'creditor' and 'classes' objects from the input data,
+        updates the claim using the model instance and returns a JsonResponse with the serialized 'creditor'
+        object.
+        """
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        new_claim = serializer.validated_data
+
+        claim_id = kwargs.get('id')
+        claim = ClaimCreditor.objects.filter(id=claim_id).first()
+        coins = new_claim.pop('coins', None)
+        classes = new_claim.pop('classes', None)
+        if new_claim:
+            claim.dict_update(**new_claim)
+        if coins:
+            claim.coins.dict_update(**coins)
+        if classes and claim.classes != classes:
+            claim.classes = classes
+            claim.save()
+
+        return JsonResponse({'creditor': CreditorSchema(claim.creditor).data}, status=status.HTTP_201_CREATED)
 
 
 class ClaimLawyerApi(AbstractViewApi):

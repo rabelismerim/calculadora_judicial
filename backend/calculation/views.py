@@ -1,6 +1,9 @@
+from django.db import transaction
+
 from base.claim.models import Claim
+from base.coins.models import Coins
 from calculation.comparative.models import Comparative
-from calculation.criterion.models import Criterion
+from calculation.criterion.models import Criterion, CriterionClaimCredor
 from calculation.funds.views import CreateFunds
 from calculation.models import Calculation, Incident
 from calculation.schemas import CalculationSchema, IncidentSchema, ChangeStepSerializer
@@ -82,53 +85,60 @@ class CalculationApi(AbstractCalculationApi):
         Returns
         A JsonResponse containing the serialized Calculation instance.
         """
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        new_calculation = serializer.validated_data
-        new_verdicts = new_calculation.pop('verdict', None)
-        new_funds = new_calculation.pop('funds', None)
-        calculation = self.model.objects.create(**new_calculation)
-        creditor = calculation.creditor
-        claim_creditor = creditor.get_claim_creditor()
-        claim_lawyer = creditor.get_claim_lawyer()
-        new_criterion = {
-            'calculation': calculation,
-            'rate': creditor.rate,
-            'admission': creditor.admission,
-            'dismissal': creditor.dismissal,
-            'default_interest': creditor.default_interest,
-            'fine': creditor.fine,
-            'advocative_hours': creditor.advocative_hours,
-        }
+        with transaction.atomic():
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            new_calculation = serializer.validated_data
+            new_verdicts = new_calculation.pop('verdict', None)
+            new_funds = new_calculation.pop('funds', None)
+            coins = new_calculation.get('coins')
 
-        if claim_creditor:
-            new_criterion['claim_credor'] = Claim.objects.create(
-                classes=claim_creditor.classes, coins=claim_creditor.coins, archive_json=claim_creditor.archive_json)
+            new_calculation['coins'] = Coins.objects.create(**coins)
 
-        if claim_lawyer:
-            new_criterion['claim_lawyer'] = Claim.objects.create(
-                classes=claim_lawyer.classes, coins=claim_lawyer.coins, archive_json=claim_lawyer.archive_json)
+            calculation = self.model.objects.create(**new_calculation)
+            creditor = calculation.creditor
+            claims_creditor = creditor.get_claims_creditor()
+            claim_lawyer = creditor.get_claim_lawyer()
+            new_criterion = {
+                'calculation': calculation,
+                'rate': creditor.rate,
+                'admission': creditor.admission,
+                'dismissal': creditor.dismissal,
+                'default_interest': creditor.default_interest,
+                'fine': creditor.fine,
+                'advocative_hours': creditor.advocative_hours,
+            }
 
-        Criterion.objects.create(**new_criterion)
+            if claim_lawyer:
+                new_criterion['claim_lawyer'] = Claim.objects.create(
+                    classes=claim_lawyer.classes, coins=claim_lawyer.coins, archive_json=claim_lawyer.archive_json)
 
-        if new_verdicts:
-            for new_verdict in new_verdicts:
-                new_verdict['calculation'] = calculation
-                type_calculation = new_verdict.pop('type_calculation')
-                new_verdict['type_calculation'] = TypeCalculation.objects.create(
-                    **type_calculation)
-                Verdict.objects.create(**new_verdict)
-        if new_funds:
-            for fund in new_funds:
-                CreateFunds(fund, calculation.id).create_funds()
+            criterion = Criterion.objects.create(**new_criterion)
 
-        # TODO: change creation Comparative to Generate Calculation finish
-        if Comparative.objects.filter(calculation=calculation).exists() is False:
-            # comparative = Comparative.objects.create(calculation=calculation)
-            comparative = Comparative()
-            comparative.calculation = calculation
-            comparative.save()
-            comparative.checks()
+            if claims_creditor:
+                for claim_creditor in claims_creditor:
+                    new_claim = Claim.objects.create(
+                        classes=claim_creditor.classes, coins=claim_creditor.coins,
+                        archive_json=claim_creditor.archive_json)
+                    CriterionClaimCredor.objects.create(claim_creditor=new_claim, criterion=criterion)
+            if new_verdicts:
+                for new_verdict in new_verdicts:
+                    new_verdict['calculation'] = calculation
+                    type_calculation = new_verdict.pop('type_calculation')
+                    new_verdict['type_calculation'] = TypeCalculation.objects.create(
+                        **type_calculation)
+                    Verdict.objects.create(**new_verdict)
+            if new_funds:
+                for fund in new_funds:
+                    CreateFunds(fund, calculation.id).create_funds()
+
+            # TODO: change creation Comparative to Generate Calculation finish
+            if Comparative.objects.filter(calculation=calculation).exists() is False:
+                # comparative = Comparative.objects.create(calculation=calculation)
+                comparative = Comparative()
+                comparative.calculation = calculation
+                comparative.save()
+                comparative.checks()
         return JsonResponse({'calculation': self.serializer_class(calculation, many=False).data},
                             status=status.HTTP_201_CREATED)
 

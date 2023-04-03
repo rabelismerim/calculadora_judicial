@@ -1,6 +1,8 @@
 import datetime
 
 from django.contrib.auth.models import Group
+from django.db import transaction
+
 from config.settings import GROUP_NAME_APPROVER, GROUP_NAME_EXECUTOR, GROUP_NAME_REVIEWER
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
@@ -68,66 +70,69 @@ class ProjectApi(AbstractProjectApi):
         """
            Create Project receiving a dict, return project detail
         """
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        new_project = dict(serializer.validated_data)
 
-        recoverings = new_project.pop('recovering_set')
-        engagements = new_project.pop('engagement')
-        executors = new_project.pop('executors', [])
-        approvers = new_project.pop('approvers', [])
-        reviewers = new_project.pop('reviewers', [])
+        with transaction.atomic():
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            new_project = dict(serializer.validated_data)
 
-        users = []
+            recoverings = new_project.pop('recovering_set')
+            engagements = new_project.pop('engagement')
+            executors = new_project.pop('executors', [])
+            approvers = new_project.pop('approvers', [])
+            reviewers = new_project.pop('reviewers', [])
 
-        group_executor, created = Group.objects.get_or_create(
-            name=GROUP_NAME_EXECUTOR)
-        group_approver, created = Group.objects.get_or_create(
-            name=GROUP_NAME_APPROVER)
-        group_reviewer, created = Group.objects.get_or_create(
-            name=GROUP_NAME_REVIEWER)
+            users = []
 
-        for user_django_id in executors:
-            project_user = ProjectUser.objects.create(user_id=user_django_id)
-            project_user.groups.add(group_executor.id)
-            project_user.save()
-            users.append(project_user.id)
-        for user_django_id in approvers:
-            project_user = ProjectUser.objects.create(user_id=user_django_id)
-            project_user.groups.add(group_approver.id)
-            project_user.save()
-            users.append(project_user.id)
-        for user_django_id in reviewers:
-            project_user = ProjectUser.objects.create(user_id=user_django_id)
-            project_user.groups.add(group_reviewer.id)
-            project_user.save()
-            users.append(project_user.id)
+            group_executor, created = Group.objects.get_or_create(
+                name=GROUP_NAME_EXECUTOR)
+            group_approver, created = Group.objects.get_or_create(
+                name=GROUP_NAME_APPROVER)
+            group_reviewer, created = Group.objects.get_or_create(
+                name=GROUP_NAME_REVIEWER)
 
-        project_engagement = ProjectEngagement.objects.create()  # Create ProjectEngagement
-        project_engagement.users.add(*users)
-        project_engagement.save()
+            for user_django_id in executors:
+                project_user = ProjectUser.objects.create(user_id=user_django_id)
+                project_user.groups.add(group_executor.id)
+                project_user.save()
+                users.append(project_user.id)
+            for user_django_id in approvers:
+                project_user = ProjectUser.objects.create(user_id=user_django_id)
+                project_user.groups.add(group_approver.id)
+                project_user.save()
+                users.append(project_user.id)
+            for user_django_id in reviewers:
+                project_user = ProjectUser.objects.create(user_id=user_django_id)
+                project_user.groups.add(group_reviewer.id)
+                project_user.save()
+                users.append(project_user.id)
 
-        new_project['engagement_id'] = project_engagement.id
-        project = self.model.objects.create(**new_project)  # Create Project
+            project_engagement = ProjectEngagement.objects.create()  # Create ProjectEngagement
+            project_engagement.users.add(*users)
+            project_engagement.save()
 
-        for number in engagements:  # Create Engagement Project number
-            Engagement.objects.create(
-                **{'number': number, 'project_id': project_engagement.id})
+            new_project['engagement_id'] = project_engagement.id
+            project = self.model.objects.create(**new_project)  # Create Project
 
-        for recovering in recoverings:
-            entity = recovering.pop('entity')
-            new_archive_recovering = recovering.pop('archives', None)
-            recovering['project'] = project
+            for number in engagements:  # Create Engagement Project number
+                Engagement.objects.create(
+                    **{'number': number, 'project_id': project_engagement.id})
 
-            recovering['entity'], created = Entity.objects.get_or_create(defaults=entity,
-                                                                         **{'legal_number': entity.get('legal_number')})
-            new_recovering = Recovering.objects.get_or_create(**recovering)
-            # if new_archive_recovering: # TODO: fase 2. Desativado na fase 1
-            #     for new_ in new_archive_recovering:
-            #         archive = new_.pop('archive')
-            #         new_archive = Archive.objects.create(**archive)
-            #         ArchiveRecovering.objects.create(
-            #             recovering=new_recovering, archive=new_archive)
+            for recovering in recoverings:
+                entity = recovering.pop('entity')
+                new_archive_recovering = recovering.pop('archives', None)
+                recovering['project'] = project
+
+                recovering['entity'], created = Entity.objects.get_or_create(defaults=entity,
+                                                                             **{'legal_number': entity.get(
+                                                                                 'legal_number')})
+                new_recovering = Recovering.objects.get_or_create(**recovering)
+                # if new_archive_recovering: # TODO: fase 2. Desativado na fase 1
+                #     for new_ in new_archive_recovering:
+                #         archive = new_.pop('archive')
+                #         new_archive = Archive.objects.create(**archive)
+                #         ArchiveRecovering.objects.create(
+                #             recovering=new_recovering, archive=new_archive)
 
         return JsonResponse({'project': self.serializer_class(project, many=False).data},
                             status=status.HTTP_201_CREATED)

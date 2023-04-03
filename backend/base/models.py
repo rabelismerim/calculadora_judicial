@@ -60,8 +60,8 @@ class AbstractDateRecovering(AbstractModel):
 
 
 class AbstractCredit(AbstractModel):
-    classes = models.ForeignKey(Classes, on_delete=models.PROTECT)
-    coins = models.ForeignKey(Coins, on_delete=models.PROTECT)
+    classes = models.ForeignKey(Classes, on_delete=models.PROTECT, null=True)
+    coins = models.ForeignKey(Coins, on_delete=models.PROTECT, null=True)
     archive_json = models.TextField(blank=True)
 
     class Meta:
