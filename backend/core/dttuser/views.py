@@ -114,7 +114,7 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
         if not user_approved:
             raise serializers.ValidationError([f'O Email {user_filter["email"]}, não foi encontrado'])
 
-        user_approved.status = user_filter['status']
+        user_approved.status = user_filter['is_active']
         if groups:
             user_approved.groups.add(*groups)
         if subgroups:
