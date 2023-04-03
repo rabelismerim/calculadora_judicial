@@ -3,7 +3,7 @@ const getPermissions = () => api
   .then(({ user }: any) => user)
   .then((user: any = {}) => {
     const {
-      userPicture: picture,
+      userpicture: picture,
       userPermissions: permissions,
     } = user
     return {
@@ -21,10 +21,12 @@ const getMyProfile = () => api
       redirectTo(`${window.location.origin}/djud/api/drfmsal_signin/djud/`)
 
     const permissions = await getPermissions()
+    const projects = await projectService.getUserProjects()
 
     return {
       ...user,
       ...permissions,
+      projects,
     }
   })
 

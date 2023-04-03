@@ -37,7 +37,7 @@ api.interceptors.response.use(
   async (error) => {
     const { message, code, response } = error
     const data = response?.data?.data
-    const status = response?.status
+    const status = response?.status || 500
 
     const mainErrors: any = {
       403: 'Você não está autorizado...',
@@ -48,6 +48,7 @@ api.interceptors.response.use(
     const mainMessage = mainErrors[status] || mainErrors[code]
     if (mainMessage) {
       throwError({
+        id: status,
         message: mainMessage,
       })
       return
