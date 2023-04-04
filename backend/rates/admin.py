@@ -13,13 +13,17 @@ Modules:
 """
 
 from django.contrib import admin, messages
-from rates.models import Accumulated, Period, Rate, RateValues, RateFile, IndiceIRRF
+from rates.models import Accumulated, Period, Rate, RateValues, RateFile, IndiceIRRF, Template, TemplateRate, \
+    TemplateField
 from rates.schemas import RateSchema
 
 admin.site.register(Accumulated)
 admin.site.register(Period)
 admin.site.register(Rate)
 admin.site.register(IndiceIRRF)
+admin.site.register(Template)
+admin.site.register(TemplateRate)
+admin.site.register(TemplateField)
 
 
 def load_files(modeladmin, request, queryset):
@@ -29,7 +33,8 @@ def load_files(modeladmin, request, queryset):
         if rows == False:
             messages.error(
                 request,
-                f'O arquivo {obj.filename} não contêm os campos corretos. Necessário ao menos a coluna mes e indice, acumulado e periodo são opcionais')
+                f'O arquivo {obj.filename} não contêm os campos corretos. Necessário ao menos a coluna mes e indice, '
+                f'acumulado e periodo são opcionais')
             continue
 
         if len(rows) == 0:

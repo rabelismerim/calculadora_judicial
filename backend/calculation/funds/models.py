@@ -17,6 +17,7 @@ from calculation.comparative.signals import gen_statement_funds, gen_total_funds
 from calculation.funds.abstract.models import AbstractFunds, AbstractStatement, AbstractMonetaryCorrection, \
     AbstractTotalValuesFunds
 from calculation.funds.integrations.models import TotalValuesFundsIntegrations
+from core.abstract.models import AbstractModel
 
 
 class Funds(AbstractFunds):
@@ -235,38 +236,3 @@ def save_total_funds(sender, instance, **kwargs) -> None:
     print('Signal somar todas as linhas de extrato verbas\n\n')
     instance.gen_total_statements()
     instance.gen_total_integrations()
-
-# class Template(AbstractModel):
-#     fund_name = models.CharField(_('Verbas'), max_length=150)
-#
-#
-# class TemplateFields(AbstractModel):
-#     fund_name = models.CharField(_('Nome do campo'), max_length=150)
-#     is_editable = models.BooleanField(_('É editavel?'))
-#     fund = models.ForeignKey(Template, on_delete=models.PROTECT)
-#
-#
-# json = {
-#     'nome_da_Verba': 'tst - reflexos',
-#      'many': False,
-#     'campos': [
-#         {
-#             'key': 'campo1_data_base',
-#             'label': 'campo1_data_base',
-#             'e_editavel': True,
-#             'tipo_de_input': 'date',
-#             'order_by': 1,
-#         },  {
-#             'key': 'campo1_valor_historico',
-#             'label': 'Valor historico',
-#             'e_editavel': True,
-#             'tipo_de_input': 'date',
-#             'order_by': 2,
-#         },  {
-#             'key': 'campo1_indice',
-#             'label': 'Indice',
-#             'e_editavel': False,
-#             'tipo_de_input': 'float',
-#         }
-#     ]
-# }

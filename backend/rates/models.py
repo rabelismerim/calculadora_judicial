@@ -208,3 +208,72 @@ class IndiceIRRF(AbstractModel):
 
 def get_aliquot_by_tax(taxable_portion: float) -> float or None:
     return IndiceIRRF.objects.filter(start__lte=taxable_portion, end__gte=taxable_portion).first()
+
+
+class Template(AbstractModel):
+    """
+    This class represents a template used for calculating funds. Each template has fields that store information
+    about the data used in the calculation.
+
+    Attributes:
+        name (str): The template name.
+    """
+    name = models.CharField(_('Verbas'), max_length=150)
+
+    def __str__(self):
+        return self.name
+
+
+class TemplateRate(AbstractModel):
+    """
+    This class represents a template used for calculating funds. Each template has fields that store information
+    about the data used in the calculation.
+
+    Attributes:
+        description (str): The description name.
+        end_point (str): The endpoint where the data can be accessed.
+        many (bool): Whether there can be multiple instances of the template.
+    """
+    template = models.ForeignKey(Template, on_delete=models.PROTECT)
+    description = models.CharField('Descrição', max_length=150)
+    end_point = models.CharField(_('End Point'), max_length=150)
+    many = models.BooleanField(_('É múltiplo?'))
+
+    def __str__(self):
+        return f'{self.description} | {self.template.name}'
+
+
+TYPE_CHOICES = (
+    ('D', 'date'),
+    ('B', 'boolean'),
+    ('C', 'char'),
+    ('F', 'float'),
+    ('I', 'integer'),
+    ('U', 'uuid'),
+    ('T', 'datetime'),
+)
+
+
+class TemplateField(AbstractModel):
+    """
+    This class represents the fields for a template.
+
+    Attributes:
+        rate (Template): The template the field belongs to.
+        label (str): The name of the field.
+        key (str): A unique key used to identify the field.
+        type (str): The type of data stored in the field.
+        order (str): The order in which the field is displayed.
+        is_editable (bool): Whether the field is editable.
+        required (bool): Whether the field is required.
+    """
+    label = models.CharField(_('Nome do campo'), max_length=150)
+    key = models.CharField(_('Chave do campo'), max_length=150)
+    type = models.CharField(_('Tipo de campo'), choices=TYPE_CHOICES, max_length=1)
+    order = models.PositiveIntegerField(_('Ordenação'))
+    is_editable = models.BooleanField(_('É editável?'))
+    required = models.BooleanField(_('É obrigatório?'))
+    rate = models.ForeignKey(TemplateRate, on_delete=models.PROTECT, null=True)
+
+    def __str__(self):
+        return f'{self.label} | {self.rate.description} | {self.rate.template.name}'

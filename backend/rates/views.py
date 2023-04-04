@@ -3,8 +3,8 @@ from django.http import JsonResponse
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions, serializers, status
 from core.permission.views import CheckHasPermission
-from rates.models import Rate, RateFile
-from rates.schemas import RateFileSchema, RateSchema
+from rates.models import Rate, RateFile, Template
+from rates.schemas import RateFileSchema, RateSchema, TemplateSchema, TemplateListSchema
 
 
 class RateApi(AbstractViewApi):
@@ -93,3 +93,25 @@ class RateFileApi(AbstractViewApi):
             serializer.is_valid(raise_exception=False)
 
         return JsonResponse({'rate': RateSchema(new_index, many=False).data}, status=status.HTTP_201_CREATED)
+
+
+class TemplateApi(AbstractViewApi):
+    """HTTP methods for Template"""
+    http_method_names = ['get']
+    serializer_class = TemplateListSchema
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    model = Template
+    schema = AutoSchema(tags=["Rate - Template"])
+
+    query_params = []
+
+
+class TemplateDetailApi(AbstractViewApi):
+    """HTTP methods for Template"""
+    http_method_names = ['get']
+    serializer_class = TemplateSchema
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    model = Template
+    schema = AutoSchema(tags=["Rate - Template"])
+
+    query_params = []

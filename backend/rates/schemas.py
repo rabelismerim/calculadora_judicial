@@ -1,5 +1,6 @@
 from base.schemas import AbstractDescriptionSchema
-from rates.models import Accumulated, Period, Rate, RateFile, RateValues, AbstractCalcule
+from rates.models import Accumulated, Period, Rate, RateFile, RateValues, AbstractCalcule, TemplateField, TemplateRate, \
+    Template
 from rest_framework import serializers
 
 
@@ -17,7 +18,7 @@ class PeriodSchema(AbstractDescriptionSchema):
     class Meta:
         model = Period
         fields = '__all__'
-        read_only_fields = ('rate', )
+        read_only_fields = ('rate',)
 
 
 class AccumulatedSchema(AbstractDescriptionSchema):
@@ -26,7 +27,7 @@ class AccumulatedSchema(AbstractDescriptionSchema):
     class Meta:
         model = Accumulated
         fields = '__all__'
-        read_only_fields = ('rate', )
+        read_only_fields = ('rate',)
 
 
 class RateValuesSchema(AbstractDescriptionSchema):
@@ -39,7 +40,7 @@ class RateValuesSchema(AbstractDescriptionSchema):
 
     class Meta:
         model = RateValues
-        exclude = ('rate', )
+        exclude = ('rate',)
 
 
 class RateSchema(AbstractDescriptionSchema):
@@ -93,4 +94,41 @@ class RateFileSchema(AbstractDescriptionSchema):
 
     class Meta:
         model = RateFile
-        exclude = ('rate', )
+        exclude = ('rate',)
+
+
+class TemplateFieldSchema(AbstractDescriptionSchema):
+    """Serializer TemplateField fields"""
+
+    class Meta:
+        model = TemplateField
+        exclude = ('rate',)
+
+
+class TemplateRateSchema(AbstractDescriptionSchema):
+    """Serializer TemplateRate fields"""
+
+    fields = TemplateFieldSchema(source='templatefield_set', many=True, read_only=True)
+
+    class Meta:
+        model = TemplateRate
+        exclude = ('template',)
+
+
+class TemplateSchema(AbstractDescriptionSchema):
+    """Serializer Template fields"""
+
+    tables = TemplateRateSchema(source='templaterate_set', many=True, read_only=True)
+
+    class Meta:
+        model = Template
+        # exclude = ('rate',)
+        fields = '__all__'
+
+
+class TemplateListSchema(AbstractDescriptionSchema):
+    """Serializer Template fields"""
+
+    class Meta:
+        model = Template
+        fields = ('id', 'name')
