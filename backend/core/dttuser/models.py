@@ -164,7 +164,7 @@ class PermissionsMixin(models.Model):
         # Otherwise we need to check the backends.
         return _user_has_perm(self, perm, obj)
 
-    def has_permission(self, perm, obj=None):
+    def has_permission(self, perms: list or str, obj=None):
         """
         Return True if the user has the specified permission in individual or group. Query all
         available auth backends, but return immediately if any backend returns
@@ -172,19 +172,18 @@ class PermissionsMixin(models.Model):
         assumed to have permission in general. If an object is provided, check
         permissions for that object.
         """
-        sensitive_permissions = ['projetos',
-                                 'credores']  # Only managers have permissions
-        is_sensitive = perm.split('.')[0] in sensitive_permissions
+        if isinstance(perms, str):
+            perms = [perms]
+        has_perm = False
 
-        # Active superusers have all permissions, except in sensitive permissions.
-        if hasattr(self, 'is_active') and self.is_active and self.is_superuser:
-            if is_sensitive:
-                # TODO: verificar nome do grupo de gerente
-                return self.groups.filter(name='gerente').exists()
+        for perm in perms:
+            has_perm = any([self.groups.filter(permissions__codename=perm).exists(),
+                            self.user_permissions.filter(codename=perm).exists()])
+            if has_perm is False:
+                break
+        if self.is_active and self.is_superuser:
             return True
-
-        return any([self.groups.filter(permissions__codename=perm).exists(),
-                    self.user_permissions.filter(codename=perm).exists()])
+        return has_perm
 
     def has_perms(self, perm_list, obj=None):
         """

@@ -56,6 +56,10 @@ System that integrates the legal, calculation and financial teams of RJ / Bankru
 
 * `python manage.py create_indice_templates`
 
+### Criação de grupos e suas permissões
+
+* `python manage.py create_groups`
+
 ### Criação de app django
 
 * `django-admin startapp --template=base\app_template app_name`

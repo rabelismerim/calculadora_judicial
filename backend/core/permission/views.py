@@ -342,3 +342,39 @@ class CanChangeStep(BasePermission):
                                               projectengagement__project__recovering__creditor__calculation__id=
                                               calculation_id).exists()
         return IS_LOCALHOST
+
+
+class CheckPermissions(BasePermission):
+    """
+    Permission check for allowing a user to change steps in a process.
+
+    Methods:
+        - has_permission(self, request, view): Checks if the requesting user has permission to change the process step.
+    """
+    message = 'Você não tem permissão. Contate o adminstrador'
+
+    def has_permission(self, request, view):
+        """
+        This method checks if the user has permission to change the step of a Calculation object. Receives request
+        and view objects as parameters. It gets the calculation_id from the view, checks if the user has the
+        necessary permission codename, and returns a boolean indicating if the user has permission or not. If the
+        user doesn't have permission, it raises a ValidationError with a message indicating the current and next
+        steps that cannot be changed.
+        """
+        if hasattr(view, 'perms') is False:
+            raise AttributeError(_('Necessário adicionar o atributo "perms: list" para usar a classe CheckPermissions'))
+        perms = view.perms
+        return request.user.has_permission(perms)
+
+
+def check_query_permission(perms):
+    def decorator(func):
+        def wrapper(self, *args, **kwargs):
+            has_perm = self.request.user.has_permission(perms)
+            if has_perm:
+                return {}
+            return func(self, *args, **kwargs)
+
+        return wrapper
+
+    return decorator

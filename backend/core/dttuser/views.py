@@ -12,7 +12,7 @@ from django.http import JsonResponse
 from django.core.mail import send_mail
 from rest_framework import status
 from rest_framework.schemas.openapi import AutoSchema
-from core.permission.views import CheckHasPermission, CreatePermissions
+from core.permission.views import CheckHasPermission, CreatePermissions, CheckPermissions
 from utils import get_user_model
 from rest_framework import permissions, serializers
 from django.contrib.auth.models import Group
@@ -88,8 +88,9 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
     query_params and schema. """
     http_method_names = ['post']
     serializer_class = UserAuthorizeDttSchema
+    permission_classes = [permissions.IsAuthenticated, CheckPermissions]
     query_params = []
-    # TODO: create permission class
+    perms = ['can_authorize_users']
     schema = AutoSchema(
         tags=['Users'],
         component_name='UserAuthorize',

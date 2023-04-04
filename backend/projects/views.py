@@ -10,7 +10,7 @@ from rest_framework import status
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework import permissions
 from core.entity.models import Entity
-from core.permission.views import CheckHasPermission
+from core.permission.views import CheckHasPermission, check_query_permission
 from projects.models import Project
 from projects.project_user.models import ProjectUser
 from projects.schemas import ProjectSchema, ProjectListSchema
@@ -30,7 +30,6 @@ class AbstractProjectApi(AbstractViewApi):
     model = Project
     http_method_names = ['get']
     schema = AutoSchema(tags=["Project"])
-
     query_params = [
         {
             "name": "descrição",
@@ -41,7 +40,9 @@ class AbstractProjectApi(AbstractViewApi):
             "schema": {"type": "string"}
         }
     ]
+    perms = ['can_view_all_projects']
 
+    @check_query_permission(perms)
     def get_queryset(self):
         return {'engagement__users__user': self.request.user}
 
