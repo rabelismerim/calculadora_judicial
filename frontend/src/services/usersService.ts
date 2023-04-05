@@ -44,8 +44,8 @@ const getGroups = () => api
 const requestAccess = (email: string) => api
   .post('/user/sendmail/', { email })
 
-const setPermission = ({ email, groups }: any) => api
-  .post('user/authorize/', { email, groups })
+const setPermission = ({ email, groups, isActive }: any) => api
+  .post('user/authorize/', { email, groups, isActive })
 
 export default {
   getMyProfile,
