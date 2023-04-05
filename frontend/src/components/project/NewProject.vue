@@ -116,7 +116,6 @@ onMounted(async () => {
     :model-value="modelValue"
     title="Cadastro de Projeto"
     hint="Existe um cadastro prévio para o cadastro de projetos na ferramenta."
-    :loading="loading"
     @update:model-value="(value: boolean) => emit('update:modelValue', value)"
     @close="clear"
   >
