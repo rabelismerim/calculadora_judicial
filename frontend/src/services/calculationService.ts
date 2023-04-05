@@ -58,4 +58,5 @@ const getProject = (id: string) => api
 
 export default {
   getCalculation,
+  getUserCalculation,
 }
