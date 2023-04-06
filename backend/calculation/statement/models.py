@@ -24,15 +24,36 @@ class Statement(AbstractModel):
     conclusion = models.CharField('Legenda da conclusão', max_length=1, choices=CHOICES_CONCLUSION, default='I')
 
     def get_statement_pf(self):
+        """
+        Gets the statementpf attribute of the object if it exists.
+
+        Returns:
+            - The statementpf attribute of the object, if it exists.
+            - None, otherwise.
+        """
         if hasattr(self, 'statementpf'):
             return self.statementpf
 
     def get_total_lawyer(self):
+        """
+        Gets the value of the totallawyer attribute of the object if it exists.
+
+        Returns:
+            - The value of the totallawyer attribute of the object, if it exists.
+            - 0, otherwise.
+        """
         if hasattr(self, 'totallawyer'):
             return self.totallawyer.value
         return 0
 
     def get_recurral_deposit(self):
+        """
+        Calls the get_recurral_deposit method of the object's statementpf attribute if it exists.
+
+        Returns:
+            - The result of calling the get_recurral_deposit method of the object's statementpf attribute, if it exists.
+            - 0, otherwise.
+        """
         statement_pf = self.get_statement_pf()
         if statement_pf:
             return statement_pf.get_recurral_deposit()
@@ -46,6 +67,13 @@ class Statement(AbstractModel):
 
     @property
     def total_conclusion(self) -> float or None:
+        """
+        Calls the get_default_interest method of the object's statementpf attribute if it exists.
+
+        Returns:
+            - The result of calling the get_default_interest method of the object's statementpf attribute, if it exists.
+            - 0, otherwise.
+        """
         # TODO: verify statement pj
         statement_pf = self.get_statement_pf()
         if statement_pf:
@@ -67,12 +95,23 @@ class TotalLawyer(AbstractModel):
     statement = models.OneToOneField(Statement, on_delete=models.PROTECT)
 
     def _get_lawyers(self):
+        """
+        Returns a queryset of all the lawyers associated with this instance.
+        """
         return self.lawyer_set.all()
 
     def calcule_total(self):
+        """
+        Calculates the total cost of all lawyers associated with this instance, and saves the instance.
+        """
         self.save()
 
     def save(self, *args, **kwargs):
+        """
+        Overrides the save method to calculate the total cost of all lawyers associated with this instance,
+        and then saves the instance. Also includes optional arguments *args and **kwargs that can be passed
+        to the parent class's save method.
+        """
         lawyers = self._get_lawyers()
         self.total = sum([x.total_calculated for x in lawyers if x.total_calculated])
         super().save(*args, **kwargs)
@@ -92,10 +131,18 @@ class Lawyer(AbstractModel):
     total_lawyer = models.ForeignKey(TotalLawyer, on_delete=models.PROTECT)
 
     def _get_advocative_hours(self) -> float:
+        """
+        Return the number of advocative hours calculated based on the lawyer's total statement and calculation criterion.
+        """
         return self.total_lawyer.statement.calculation.criterion.advocative_hours
 
     @property
     def total_calculated(self) -> float or None:
+        """
+        Return the total calculated value based on the lawyer's total statement and calculation criterion,
+        considering the advocative hours if they are greater than 0. The calculation follows a specific formula,
+        which includes the total conclusion and advocative hours percentage.
+        """
         advocative_hours = self._get_advocative_hours()
         if advocative_hours > 0:
             """=IF(N7="Sim";C40;IF($B$19<$B$18;IFERROR(C38;C36);IF($B$19>=$B$18;IFERROR($C$40;$C$35))))*B23"""
