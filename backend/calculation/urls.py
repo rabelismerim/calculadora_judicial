@@ -11,4 +11,5 @@ urlpatterns = [
     path(f'verdict/', include("calculation.verdict.urls")),
     path(f'funds/', include("calculation.funds.urls")),
     path(f'comparative/', include("calculation.comparative.urls")),
+    path(f'statement/', include("calculation.statement.urls")),
 ]

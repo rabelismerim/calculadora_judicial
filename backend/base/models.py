@@ -1,3 +1,4 @@
+from django.utils.translation import gettext_lazy as _
 from base.coins.models import Coins
 from creditors.classes.models import Classes
 from django.db import models
@@ -6,7 +7,7 @@ from rates.models import Rate
 
 
 class AbstractDescription(AbstractModel):
-    description = models.CharField('Descrição', max_length=150)
+    description = models.CharField(_('Descrição'), max_length=150)
 
     class Meta:
         abstract = True
@@ -16,7 +17,7 @@ class AbstractDescription(AbstractModel):
 
 
 class AbstractInfo(AbstractModel):
-    name = models.CharField('Descrição', max_length=150)
+    name = models.CharField(_('Descrição'), max_length=150)
     legal_number = models.CharField('CPF/CNPJ', max_length=18, unique=True)
 
     class Meta:
@@ -26,16 +27,21 @@ class AbstractInfo(AbstractModel):
         return f'{self.name} - {self.legal_number}'
 
 
+CHOICES_OCCURENCE = (
+    ('A', _('Ajuizamento da Reclamação Trabalhista')), ('C', _('Citação')), ('S', _('Sentença')), ('O', _('Outro')))
+
+
 class AbstractDateCreditor(AbstractModel):
     # TODO: Verificar se admissão e demissão podem ser alterados, se não possivel, migrar campos para tabela Creditor
-    admission = models.DateTimeField("Data de admissão", blank=True, null=True)
-    dismissal = models.DateTimeField("Data de demissão", blank=True, null=True)
+    admission = models.DateTimeField(_("Data de admissão"), blank=True, null=True)
+    dismissal = models.DateTimeField(_("Data de demissão"), blank=True, null=True)
 
     # TODO: Verificar se esses valores são para cada credor ou cada recuperanda
     rate = models.ForeignKey(Rate, on_delete=models.PROTECT)
-    default_interest = models.FloatField('Juros moratórios', default=0)
-    fine = models.FloatField('Multa', default=0)
-    advocative_hours = models.FloatField('Honorários advocatícios', default=0)
+    default_interest = models.FloatField(_('Juros moratórios'), default=0)
+    fine = models.FloatField(_('Multa'), default=0)
+    advocative_hours = models.FloatField(_('Honorários advocatícios'), default=0)
+    occurrence = models.CharField(_('Ocorrência'), max_length=1, choices=CHOICES_OCCURENCE, default='O')
 
     class Meta:
         abstract = True
@@ -45,12 +51,9 @@ class AbstractDateCreditor(AbstractModel):
 
 
 class AbstractDateRecovering(AbstractModel):
-    date_rj_request = models.DateField(
-        "Data do pedido de RJ", blank=True, null=True)
-    date_rj_filing = models.DateField(
-        "Data de ajuizamento da RJ", blank=True, null=True)
-    date_citation = models.DateField(
-        "Data da Citação", blank=True, null=True)
+    date_rj_request = models.DateField(_("Data do pedido de RJ"), blank=True, null=True)
+    date_rj_filing = models.DateField(_("Data de ajuizamento da RJ"), blank=True, null=True)
+    date_citation = models.DateField(_("Data da Citação"), blank=True, null=True)
 
     class Meta:
         abstract = True

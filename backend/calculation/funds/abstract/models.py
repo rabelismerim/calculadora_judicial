@@ -37,7 +37,10 @@ class AbstractFunds(AbstractModel):
 CHOICES_STATUS_FUND = (('S', _('Solicitado')), ('C', _('Concluído')), ('E', _('Em Progresso')),
                        ('F', _('Falha no cálculo - índice não encontrado')),
                        ('A', _('Falha no cálculo - alíquota não encontrado')),
-                       ('R', _('Falha no cálculo - sem data RJ')))
+                       ('P', _('Falha no cálculo - parâmetros inválidos')),
+                       ('R', _('Falha no cálculo - sem data RJ')),
+                       ('D', _('Falha no cálculo - sem data Citação')),
+                       )
 
 
 class AbstractStatus(AbstractModel):
@@ -51,6 +54,10 @@ class AbstractStatus(AbstractModel):
         """Sets the status of the calculation to 'R'. Not found recovery request date"""
         self._set_status('R')
 
+    def set_error_citation(self):
+        """Sets the status of the calculation to 'D'. Not found citation date"""
+        self._set_status('D')
+
     def set_error_aliquot(self):
         """Sets the status of the calculation to 'A'. Not found IRRF aliquot"""
         self._set_status('A')
@@ -58,6 +65,11 @@ class AbstractStatus(AbstractModel):
     def set_error_indice(self):
         """Sets the status of the calculation to 'F'. Not found rate index"""
         self._set_status('F')
+
+    def set_error_parameters(self):
+        """Sets the status of the calculation to 'P'. Calculation invalid parameters"""
+        if self.status in ['S', 'E']:
+            self._set_status('P')
 
     def set_calculation_done(self):
         """Sets the status of the calculation to 'C'. Calculation success done"""
@@ -233,3 +245,9 @@ class AbstractTotalValuesFunds(AbstractModel):
 
     class Meta:
         abstract = True
+
+    def get_description(self):
+        return self.fund.name
+
+    def get_calculation(self):
+        return self.fund.calculation

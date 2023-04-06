@@ -35,7 +35,7 @@ class LawyerSchema(AbstractDescriptionSchema):
 
     class Meta:
         model = Lawyer
-        exclude = ('total_lawyer', )
+        exclude = ('total_lawyer',)
 
 
 class TotalLawyerSchema(AbstractDescriptionSchema):
@@ -54,7 +54,7 @@ class TotalLawyerSchema(AbstractDescriptionSchema):
 
     class Meta:
         model = TotalLawyer
-        exclude = ('statement', )
+        exclude = ('statement',)
 
 
 class StatementSchema(AbstractDescriptionSchema):
@@ -77,18 +77,12 @@ class StatementSchema(AbstractDescriptionSchema):
     Usage example:
     serializer = StatementSchema()
     """
-    statement_pf = StatementPFSchema(
-        read_only=True, source='statementpf', exclude=('statement_id', ))
-
-    statement_pj = StatementPJSchema(
-        read_only=True, source='statementpj', exclude=('statement_id', ))
-
+    statement_pf = StatementPFSchema(read_only=True, source='statementpf', exclude=('statement_id',))
+    statement_pj = StatementPJSchema(read_only=True, source='statementpj', exclude=('statement_id',))
     lawyer = TotalLawyerSchema(read_only=True, source='totallawyer')
-
     calculation_id = serializers.UUIDField(read_only=True)
-
     conclusion_display = serializers.CharField(source='get_conclusion_display')
 
     class Meta:
         model = Statement
-        exclude = ('calculation', )
+        exclude = ('calculation',)

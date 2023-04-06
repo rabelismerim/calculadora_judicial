@@ -41,7 +41,7 @@ class AbstractFundIRRFApi(AbstractViewApi):
     serializer_class = FundIRRFSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = FundIRRF
-    schema = AutoSchema(tags=["Calculation - Fund IRRF"])
+    schema = AutoSchema(tags=["Calculation - Fund IRRF - Verbas IRRF"])
 
     query_params = [
         {
@@ -151,7 +151,8 @@ class AbstractStatementIRRFApi(AbstractViewApi):
     serializer_class = StatementIRRFSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = StatementIRRF
-    schema = AutoSchema(tags=["Calculation - Statement IRRF"], operation_id_base='Statement IRRF')
+    schema = AutoSchema(tags=["Calculation - Statement IRRF - Extrato de verbas IRRF"],
+                        operation_id_base='Statement IRRF')
     query_params = []
 
 

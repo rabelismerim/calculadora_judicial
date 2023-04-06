@@ -16,6 +16,9 @@ class Rate(AbstractModel):  # Indices
     index = models.CharField('Nome do índice', max_length=50)
     is_per_day = models.BooleanField('O índice é por dia? dia ou mês', default=True)
 
+    def is_ipca_e_selic(self):
+        return self.index == "IPCA-E/SELIC"
+
     def __str__(self):
         return self.index
 

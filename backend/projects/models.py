@@ -33,8 +33,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
     project_end = models.DateField(null=True, blank=True)
     process_number = models.CharField("Número do processo", max_length=25)
 
-    status = models.CharField(
-        default="E", max_length=1, choices=STATUS_CHOICES)
+    status = models.CharField(default="E", max_length=1, choices=STATUS_CHOICES)
     is_adm = models.BooleanField(default=True)  # É administrativa ou judicial
     judge = models.ForeignKey(Judge, on_delete=models.PROTECT)
     lawyer = models.ForeignKey(Lawyer, on_delete=models.PROTECT)
@@ -52,8 +51,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
         User, on_delete=models.PROTECT, related_name='legal_partner', null=True)  # Socio jurídico
     financial_partner = models.ForeignKey(
         User, on_delete=models.PROTECT, related_name='financial_partner', null=True)  # Socio Financeiro
-    engagement = models.OneToOneField(
-        ProjectEngagement, on_delete=models.PROTECT)
+    engagement = models.OneToOneField(ProjectEngagement, on_delete=models.PROTECT)
 
     @property
     def num_recovering(self) -> number:

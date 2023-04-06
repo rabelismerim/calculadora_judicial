@@ -43,7 +43,7 @@ class AbstractFundDocumentApi(AbstractViewApi):
     serializer_class = FundDocumentSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = FundDocument
-    schema = AutoSchema(tags=["Calculation - Fund Document"])
+    schema = AutoSchema(tags=["Calculation - Fund Document - Verbas documentos"])
 
     query_params = [
         {
@@ -156,7 +156,7 @@ class AbstractStatementFundDocumentApi(AbstractViewApi):
     serializer_class = StatementDocumentSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = StatementDocument
-    schema = AutoSchema(tags=["Calculation - Statement Funds Documents"], operation_id_base='Statement Funds Documents')
+    schema = AutoSchema(tags=["Calculation - Statement Funds Documents - Extrato de verbas documentos"], operation_id_base='Statement Funds Documents')
     query_params = []
 
 

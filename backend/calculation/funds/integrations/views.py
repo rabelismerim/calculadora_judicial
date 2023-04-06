@@ -37,7 +37,8 @@ class AbstractStatementIntegrationsApi(AbstractViewApi):
     serializer_class = StatementIntegrationsSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = StatementIntegrations
-    schema = AutoSchema(tags=["Calculation - Statement Integrations"], operation_id_base='Statement Integrations')
+    schema = AutoSchema(tags=["Calculation - Statement Integrations - Extrato de verbas Integratórias"],
+                        operation_id_base='Statement Integrations')
     query_params = []
 
 

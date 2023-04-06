@@ -17,8 +17,8 @@ from core.permission.views import CheckHasPermission, CanChangeStep
 
 
 class AbstractCalculationApi(AbstractViewApi):
-    """This class provides basic HTTP methods for managing Calculation Objects. 
-    It includes a serializer_class and required permission_classes to authenticate the users, 
+    """This class provides basic HTTP methods for managing Calculation Objects.
+    It includes a serializer_class and required permission_classes to authenticate the users,
     a model instance with a corresponding schema as well as custom query parameters to retrieve data.
     """
     serializer_class = CalculationSchema
@@ -39,8 +39,8 @@ class AbstractCalculationApi(AbstractViewApi):
 
 
 class IncidentApi(AbstractViewApi):
-    """This class provides basic HTTP methods for managing Incident Objects. 
-    It includes a serializer_class and required permission_classes to authenticate the users, 
+    """This class provides basic HTTP methods for managing Incident Objects.
+    It includes a serializer_class and required permission_classes to authenticate the users,
     a model instance with a corresponding schema as well as custom query parameters to retrieve data.
     """
     serializer_class = IncidentSchema
@@ -72,8 +72,8 @@ class CalculationApi(AbstractCalculationApi):
 
     def post(self, request, *args, **kwargs):  # Generate calculation
         """
-        Creates a new instance of the Calculation model, receiving a dictionary as an argument and returning details of the newly created instance. 
-        Before creation of the Calculation instance, it will create related Criterion and Verdict instances based on the input data. 
+        Creates a new instance of the Calculation model, receiving a dictionary as an argument and returning details of the newly created instance.
+        Before creation of the Calculation instance, it will create related Criterion and Verdict instances based on the input data.
         Furthermore, if any Funds objects are found in the input data, it will also iteratively call the CreateFunds helper class to create the necessary
         Funds instances related to the Calculation. Finally, a JsonResponse with the serialized Calculation instance is returned upon successful completion.
 
@@ -97,6 +97,7 @@ class CalculationApi(AbstractCalculationApi):
 
             calculation = self.model.objects.create(**new_calculation)
             creditor = calculation.creditor
+            project = creditor.recovering.project
             claims_creditor = creditor.get_claims_creditor()
             claim_lawyer = creditor.get_claim_lawyer()
             new_criterion = {
@@ -107,6 +108,10 @@ class CalculationApi(AbstractCalculationApi):
                 'default_interest': creditor.default_interest,
                 'fine': creditor.fine,
                 'advocative_hours': creditor.advocative_hours,
+                'occurrence': creditor.occurrence,
+                'date_rj_request': project.date_rj_request,
+                'date_rj_filing': project.date_rj_filing,
+                'date_citation': project.date_citation,
             }
 
             if claim_lawyer:
@@ -125,8 +130,7 @@ class CalculationApi(AbstractCalculationApi):
                 for new_verdict in new_verdicts:
                     new_verdict['calculation'] = calculation
                     type_calculation = new_verdict.pop('type_calculation')
-                    new_verdict['type_calculation'] = TypeCalculation.objects.create(
-                        **type_calculation)
+                    new_verdict['type_calculation'] = TypeCalculation.objects.create(**type_calculation)
                     Verdict.objects.create(**new_verdict)
             if new_funds:
                 for fund in new_funds:

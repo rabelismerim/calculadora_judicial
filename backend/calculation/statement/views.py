@@ -5,7 +5,6 @@ The API responds with JSON data and utilizes the rest_framework.schemas.openapi.
 The StatementApi class uses the Statement model and StatementSchema for working with data.
 """
 
-
 from calculation.statement.schemas import StatementSchema
 from calculation.statement.models import Statement
 from core.abstract.views import AbstractViewApi
@@ -41,7 +40,7 @@ class StatementApi(AbstractViewApi):
     serializer_class = StatementSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Statement
-    schema = AutoSchema(tags=["Statement"])
+    schema = AutoSchema(tags=["Calculation - Statement - Extrato contábil"])
 
     query_params = [
         {

@@ -157,17 +157,32 @@ groups = [
 
 
 class Command(BaseCommand):
+    """
+    This base command is responsible for creating groups with specific permissions for the Django platform.
+    """
     help = 'run create permissions group'
 
     def print_start(self, msg):
+        """
+        Print the message msg with the success style on the console.
+        """
         self.stdout.write(self.style.SUCCESS(msg))
 
     def __get_apps(self, app_label):
+        """
+        Parameters:
+        - app_label (string): label of the application.
+        Return the list of applications that start with the app_label parameter.
+        """
         apps = INSTALLED_APPS.copy()
         apps.append('dttuser.User')
         return [app for app in apps if app.startswith(app_label)]
 
     def create_groups(self):
+        """
+        Create the groups with their respective permissions using the Django Group and Permission models,
+        based on the parameters of the classes and actions.
+        """
         for group in groups:
             group_object, created = Group.objects.get_or_create(name=group['name'])
             perms = []
@@ -200,6 +215,17 @@ class Command(BaseCommand):
             self.print_start(
                 f'Successfully {"created" if created else "altered"} group {group["name"]}\nNumber of permissions: '
                 f'{len(perms)}')
+        group_object, created = Group.objects.get_or_create(name='Administrador')
+        perms = list(
+            Permission.objects.exclude(content_type__app_label__in=['authtoken', 'admin', 'auth', 'contenttypes',
+                                                                    'sessions', 'sites']).values_list('id', flat=True))
+
+        # Create group Admin
+        group_object.permissions.add(*perms)
+        group_object.save()
+        self.print_start(
+            f'Successfully {"created" if created else "altered"} group Administrador\nNumber of permissions: '
+            f'{len(perms)}')
 
     def handle(self, *args, **options):
         self.create_groups()

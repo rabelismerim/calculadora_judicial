@@ -1,11 +1,11 @@
 from django.db import models
 from calculation.models import Calculation
 from base.claim.models import Claim
-from base.models import AbstractDateCreditor
+from base.models import AbstractDateCreditor, AbstractDateRecovering
 from core.abstract.models import AbstractModel
 
 
-class Criterion(AbstractDateCreditor):
+class Criterion(AbstractDateCreditor, AbstractDateRecovering):
     """
     This class represents a criterion for a creditor's claim. It extends the AbstractDateCreditor class and has a
     OneToOne relationship with the Calculation model. It also includes a ForeignKey to the Claim model to retrieve
