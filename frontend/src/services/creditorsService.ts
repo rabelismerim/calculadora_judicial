@@ -17,7 +17,7 @@ const mapCreditor = (creditor: any) => {
     description,
   } = creditor
 }
-// CREDITOR
+// CREDORES
 const getCreditor = () => api
   .get('/v1/creditors/')
   .then(({ creditor }: any) => creditor)
@@ -25,9 +25,20 @@ const getCreditor = () => api
 const newCreditor = (name: string) => api
   .post('/v1/creditors/', { name })
   .then(({ creditor }: any) => creditor)
-  .then(({ description, id }) => ({ description, id }))
+  .then(({ name, id }) => ({ name, id }))
+
+// FICHA DE ANALISE
+const getAnalysis = () => api
+  .get('/v1/creditors/')
+  .then(({ analysis }: any) => analysis)
+  .then(data => data.map(({ name, id }: any) => ({ name, id })))
+const newAnalysis = (name: string) => api
+  .post('/v1/creditors/', { name })
+  .then(({ analysis }: any) => analysis)
+  .then(({ name, id }) => ({ name, id }))
 
 
 export default {
   getCreditor,
+  getAnalysis,
 }
