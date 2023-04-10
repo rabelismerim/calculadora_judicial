@@ -83,6 +83,8 @@ class CalculationSchema(AbstractClassesSchema):
     step_display = serializers.CharField(
         source='get_step_display', read_only=True)
 
+    archive_json = serializers.JSONField(allow_null=True, required=False)
+
     class Meta:
         model = Calculation
         fields = '__all__'

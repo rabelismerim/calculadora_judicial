@@ -13,20 +13,29 @@
 # - None
 # """
 # from core.abstract.tests import AbstractTest
+# from projects.create_project import get_data_project
+# from projects.models import Project
 #
 #
 # class StatementTest(AbstractTest):
 #     """statement related tests"""
 #
-#     parameters = {
-#         "description": "statement"
-#     }
+#     data_project = get_data_project()
+#     data_project["date_rj_request"] = "2023-03-02"
+#     data_project["date_rj_filing"] = "2023-03-02"
+#     data_project["date_citation"] = "2023-03-02"
 #
-#     path = 'calculations/statement'
-#
-#     def test_api_get(self):
-#         """Assert get statements detail"""
-#         response = super().test_api_get()
-#         objs = response.content['statements']
-#         self.assertGreaterEqual(len(objs), 1)
-#         return objs
+#     new_project = Project.objects.create(**data_project)
+#     print(new_project, 'new project\n')
+#     # parameters = {
+#     #     "description": "statement"
+#     # }
+#     #
+#     # path = 'calculations/statement'
+#     #
+#     # def test_api_get(self):
+#     #     """Assert get statements detail"""
+#     #     response = super().test_api_get()
+#     #     objs = response.content['statements']
+#     #     self.assertGreaterEqual(len(objs), 1)
+#     #     return objs

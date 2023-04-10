@@ -16,7 +16,7 @@ class CreditorTest(AbstractTest):
         },
         "recovering_id": str(recovering.id),
         "rate_id": str(rate.id),
-        "notice": {
+        "notice_aj": [{
             "classes": {
                 "classe": "1"
             },
@@ -25,8 +25,8 @@ class CreditorTest(AbstractTest):
                 "value": 50
             },
             "archive_json": {}
-        },
-        "claim_creditor": {
+        }],
+        "claim_creditor": [{
             "classes": {
                 "classe": "1"
             },
@@ -35,7 +35,7 @@ class CreditorTest(AbstractTest):
                 "value": 40
             },
             "archive_json": {}
-        },
+        }],
         "claim_lawyer": {
             "coins": {
                 "coin": "B",
@@ -51,5 +51,6 @@ class CreditorTest(AbstractTest):
         "default_interest": 1,
         "fine": 1,
         "advocative_hours": 1,
+        "occurrence": "A",
         "description": "string"
     }

@@ -20,4 +20,25 @@ class NoticeTest(AbstractTest):
         "archive_json": {},
         "creditor_id": str(creditor.id)
     }
-    path = 'creditors/notice'
+    path = 'creditors/notice/aj'
+
+
+class NoticeRecoveringTest(AbstractTest):
+    """NoticeRecovering related tests"""
+
+    creditor = Creditor.objects.first()
+    notice = creditor.get_notice()
+    if notice:
+        notice.delete()
+    parameters = {
+        "classes": {
+            "classe": "1"
+        },
+        "coins": {
+            "coin": "B",
+            "value": 1
+        },
+        "archive_json": {},
+        "creditor_id": str(creditor.id)
+    }
+    path = 'creditors/notice/recovering'

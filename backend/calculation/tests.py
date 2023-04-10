@@ -11,6 +11,13 @@ class CalculationTest(AbstractTest):
     creditor = Creditor.objects.first()
     incident = Incident.objects.first()
     parameters = {
+        "classes": {
+            "classe": "1"
+        },
+        "coins": {
+            "coin": "B",
+            "value": 0
+        },
         "creditor_id": str(creditor.id),
         "incident_id": str(incident.id),
         "verdict": [
@@ -20,9 +27,16 @@ class CalculationTest(AbstractTest):
                     "calculation": "string"
                 },
                 "description": "string",
-                "value": 100
+                "value": 200
             }
-        ]
+        ],
+        "appeal_credit": True,
+        "appeal_deposit": True,
+        "has_advocative_hours": True,
+        "credit_authorization_date": "2023-04-10",
+        "has_edital": True,
+        "recurral_deposit": 100,
+        "archive_json": {'teste': 'teste'}
     }
 
     path = 'calculation'

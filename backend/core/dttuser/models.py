@@ -1,3 +1,5 @@
+import itertools
+
 from django.contrib.auth.models import AbstractBaseUser, Group, Permission, _user_get_permissions, _user_has_perm, \
     _user_has_module_perms
 from django.contrib.auth.validators import UnicodeUsernameValidator
@@ -288,6 +290,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_short_name(self):
         """Return the short name for the user."""
         return self.first_name
+
+    def get_list_permissions(self):
+        """Return the list permissions for the user."""
+        user_permissions = list(self.user_permissions.all().values('name', 'codename'))
+        group_permissions = (group.permissions.all().values('name', 'codename') for group in self.groups.all())
+        return list(itertools.chain(user_permissions, *group_permissions))
 
     def email_user(self, subject, message, from_email=None, **kwargs):
         """Send an email to this user."""

@@ -153,7 +153,7 @@ class UserDttSchema(serializers.ModelSerializer):
         min_length=8, write_only=True, required=True)
     password_confirm = serializers.CharField(
         min_length=8, write_only=True, required=True)
-    user_permissions = PermissionSchema(many=True, read_only=True)
+    user_permissions = PermissionSchema(source='get_list_permissions', many=True, read_only=True)
     groups = GroupSchema(many=True, read_only=False, exclude=('permissions',))
     subgroups = SubgroupSchema(many=True, read_only=False, exclude=('permissions',))
     role_display = serializers.CharField(source='get_role_display', read_only=True)

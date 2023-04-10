@@ -171,12 +171,15 @@ class AbstractTest(TestCase):
     def post(self, path, obj):
         response = self.client.post(self.__format_url(path), json.dumps(obj), content_type="application/json")
         data = {'status_code': response.status_code, 'content': response.content}
+        dat = AttrDict(data)
         try:
             data['content'] = response.json()
             is_json = True
         except ValueError:
             is_json = False
-
+        ab = response.status_code in [200, 201]
+        if ab is False:
+            self.print(dat.content)
         if is_json:
             keys = list(data['content'].keys())
             key = keys[0]
