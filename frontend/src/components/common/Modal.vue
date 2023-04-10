@@ -5,6 +5,7 @@ const props = withDefaults(defineProps<{
   hint?: string
   modalClass?: string
   closeDisabled?: boolean
+  loading?: boolean
 }>(), {
   modelValue: false,
   modalClass: '',
@@ -32,7 +33,7 @@ const close = () => {
         [modalClass]: modalClass,
       }"
     >
-      <div class="flex gap-2 p-4 mb-1">
+      <div class="flex gap-2 p-4 pb-5 relative">
         <div class="flex-1 flex items-center gap-3">
           <span class="font-bold text-2xl">{{ title }}</span>
           <Hint :value="hint" />
@@ -44,6 +45,13 @@ const close = () => {
         >
           <div class="i-carbon-close" />
         </button>
+        <QLinearProgress
+          v-if="loading"
+          indeterminate
+          color="secondary"
+          class="absolute bottom-0 left-0"
+          size="xs"
+        />
       </div>
       <slot />
     </div>

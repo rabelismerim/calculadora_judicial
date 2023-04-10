@@ -30,9 +30,11 @@ const biggestValue = computed(() => [...props.values]?.sort(({ count: a }, { cou
         <div
           v-for="{ label, count } in values"
           :key="label"
-          class="grid grid-cols-[1fr_2fr] items-center"
+          class="grid grid-cols-[130px_auto_30px] gap-1 items-center"
         >
-          <div>{{ label }}</div>
+          <div class="overflow-hidden text-ellipsis whitespace-nowrap">
+            {{ label }}
+          </div>
           <div class="relative h-4 bg-gray-3 rounded-full overflow-hidden">
             <div
               class="h-full bg--secondary rounded-full"
@@ -40,6 +42,9 @@ const biggestValue = computed(() => [...props.values]?.sort(({ count: a }, { cou
                 width: `${count / biggestValue * 100}%`,
               }"
             />
+          </div>
+          <div class="text-end font-bold">
+            {{ count }}
           </div>
         </div>
       </div>

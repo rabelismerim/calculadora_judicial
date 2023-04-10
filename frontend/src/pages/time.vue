@@ -1,12 +1,14 @@
 <script setup lang="ts">
 const router = useRouter()
 
+const tab = $ref('all')
 const filterBy = $ref('')
 let loading = $ref(false)
 const showingRequests = $ref(false)
 const mode = $ref('person')
 let users: any[] = $ref([])
 let projects: any[] = $ref([])
+
 const mapProjects = computed(() => projects.map((project) => {
   const newProject = clone(project)
   const { id, description, projectUsers, status, statusDisplay } = newProject
@@ -31,9 +33,23 @@ const mapProjects = computed(() => projects.map((project) => {
     statusDisplay,
   }
 }))
-
-const tab = $ref('all')
-const pendingRequests = computed(() => users.filter(({ isActive }) => !isActive).length)
+const activeUsers = computed(() => users.filter(({ isActive }) => isActive))
+const pendingUsers = computed(() => users.filter(({ status }) => ['p', 'r'].includes(status.toLowerCase())))
+const pendingUsersCount = computed(() => users.filter(({ status }) => status.toLowerCase() === 'p').length)
+const projectsPerUser: any = computed(() => projects?.reduce((acc, project) => {
+  const { id, description, projectUsers, engagement } = project
+  projectUsers.forEach(({ idUser }: any) => {
+    if (!acc[idUser])
+      acc[idUser] = []
+    acc[idUser].push({ id, description, engagement: engagement.id })
+  })
+  return acc
+}, {}))
+const mapUsers = computed(() => activeUsers.value.map((user) => {
+  const { id } = user
+  user.projects = projectsPerUser.value[id] || []
+  return user
+}))
 
 const loadPage = async () => {
   loading = true
@@ -70,10 +86,16 @@ onMounted(() => loadPage())
       />
       <Btn
         label="Solicitações"
-        icon="i-carbon-request-quote"
-        disabled
+        :icon="pendingUsersCount === 0 ? 'i-carbon-request-quote' : ''"
         @click="showingRequests = true"
-      />
+      >
+        <span
+          v-if="pendingUsersCount > 0"
+          class="bg-white color--primary rounded-full px-1.5 text-sm"
+        >
+          {{ pendingUsersCount }}
+        </span>
+      </Btn>
     </Header>
 
     <TeamProjectsTable
@@ -87,19 +109,15 @@ onMounted(() => loadPage())
       v-if="mode === 'person'"
       v-model:tab="tab"
       v-model:filter="filterBy"
-      :items="users"
+      :items="mapUsers"
       :loading="loading"
     />
 
     <template #out>
-      <Modal
+      <RequestModal
         v-model="showingRequests"
-        title="Solicitações"
-        modal-class="max-w-120"
-        :close-disabled="loading"
-      >
-        content...
-      </Modal>
+        :users="pendingUsers"
+      />
     </template>
   </Page>
 </template>

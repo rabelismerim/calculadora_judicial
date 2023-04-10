@@ -10,7 +10,7 @@ const enter = () => {
 onMounted(async () => {
   try {
     loading = true
-    await $user.login()
+    $user.login()
   }
   catch (error) {
     printError('ERROR ON LOGIN:', error)

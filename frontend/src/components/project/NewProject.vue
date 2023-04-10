@@ -116,7 +116,6 @@ onMounted(async () => {
     :model-value="modelValue"
     title="Cadastro de Projeto"
     hint="Existe um cadastro prévio para o cadastro de projetos na ferramenta."
-    :loading="loading"
     @update:model-value="(value: boolean) => emit('update:modelValue', value)"
     @close="clear"
   >
@@ -330,20 +329,20 @@ onMounted(async () => {
               error-key="executors"
             />
             <InputUsers
-              v-model="newProject.approvers"
-              :users="users"
-              label="Aprovadores"
-              :rules="[value => value.length > 0 || 'Este campo é obrigatório!']"
-              :error-messages="errorMessages"
-              error-key="approvers"
-            />
-            <InputUsers
               v-model="newProject.reviewers"
               :users="users"
               label="Revisores"
               :rules="[value => value.length > 0 || 'Este campo é obrigatório!']"
               :error-messages="errorMessages"
               error-key="reviewers"
+            />
+            <InputUsers
+              v-model="newProject.approvers"
+              :users="users"
+              label="Aprovadores"
+              :rules="[value => value.length > 0 || 'Este campo é obrigatório!']"
+              :error-messages="errorMessages"
+              error-key="approvers"
             />
           </div>
         </QStep>

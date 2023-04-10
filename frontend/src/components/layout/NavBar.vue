@@ -28,7 +28,7 @@ const { user } = $user
         transparent
         grow
         color="white"
-        :label="user.name || 'sair'"
+        :label="user.fullName || 'sair'"
         icon="i-carbon-logout"
         tooltip="Sair do Sitema!"
         @click="logout"

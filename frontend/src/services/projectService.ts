@@ -1,21 +1,52 @@
 const mapProject = (project: any) => {
-  const { createdAt, isAdm, engagement } = project
+  const {
+    createdAt,
+    isAdm,
+    engagement,
+    financialPartner,
+    financialManager,
+    legalPartner,
+    legalManager,
+    calculationManager,
+  } = project
+
+  const responsibles = [
+    { role: 'Sócio Financeiro', user: financialPartner },
+    { role: 'Sócio Jurídico', user: legalPartner },
+    { role: 'Gerente Financeiro', user: financialManager },
+    { role: 'Gerente Jurídico', user: legalManager },
+    { role: 'Gerente de Cálculo', user: calculationManager },
+  ]
+    .filter(({ user }) => user)
+    .map(({ user, role }) => ({
+      role,
+      user: {
+        ...user,
+        picture: user.userpicture,
+      },
+    }))
+
   return {
     ...project,
     createdAt: formatDate(createdAt),
     fase: isAdm ? 'Administrativa' : 'Judicial',
     responsible: engagement?.createUser,
+    responsibles,
   }
 }
+const getUserProjects = () => api
+  .get('/v1/projects/project_user/')
+  .then(({ projectUser }: any) => [...new Set(projectUser)])
 const getProjects = () => api
   .get('/v1/projects/')
-  .then(({ projects }: any) => projects.map(mapProject))
+  .then((res: any) => res?.projects?.map(mapProject))
 const getProject = (id: string) => api
   .get(`/v1/projects/${id}/`)
   .then(({ project }: any) => project)
   .then(mapProject)
   .then((project: any) => {
     const { projectUsers = [] } = project
+
     project.participants = projectUsers.reduce((acc: any, current: any) => {
       const { firstName, lastName, username, userpicture, groups } = current
       const user = {
@@ -111,6 +142,7 @@ export default {
   newLawyer,
   getProjects,
   getProject,
+  getUserProjects,
   newProject,
   getCourts,
   newCourt,

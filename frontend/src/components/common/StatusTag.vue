@@ -13,6 +13,7 @@ const props = withDefaults(defineProps<{
     class="py-1 pl-3 rounded-full flex no-wrap items-center"
     :style="{
       background: `${color}20`,
+      border: `1px solid ${color}20`,
     }"
   >
     <div class="flex-1">
