@@ -24,7 +24,6 @@ def sign_status(request):
             if len(user_view) == 0:
                 user = User()
                 user.email = ms_identity_web.id_data.usermail
-                user.password = ms_identity_web.id_data.password
                 user.username = ms_identity_web.id_data.username.replace(' ', '_')
                 user.first_name = ms_identity_web.id_data.username.split()[0]
                 user.last_name = ms_identity_web.id_data.username.split(
