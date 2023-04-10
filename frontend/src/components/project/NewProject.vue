@@ -142,7 +142,7 @@ onMounted(async () => {
               v-model="newProject.description"
               label="Nome do Projeto"
               class="sm:col-span-2"
-              :rules="[value => !!value || 'É um campo obrigatório']"
+              :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="description"
             />
@@ -150,7 +150,7 @@ onMounted(async () => {
               v-model="newProject.engagements"
               label="Engagements"
               class="sm:col-span-2"
-              :rules="[value => value.length > 0 || 'É um campo obrigatório']"
+              :rules="[(value: any) => value.length > 0 || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="engagement.non_field_errors"
             />
@@ -159,7 +159,7 @@ onMounted(async () => {
               label="Número de Processo"
               maxlength="25"
               mask="#######-##.####.#.##.####"
-              :rules="[value => !!value || 'É um campo obrigatório']"
+              :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="process_number"
             />
@@ -167,9 +167,9 @@ onMounted(async () => {
               v-model="newProject.start"
               label="Data do Pedido de Recuperação Judicial"
               :rules="[
-                value => !!value || 'É um campo obrigatório',
-                (value) => value.length === 10 || 'Precisa preencher o padrão ##/##/####',
-                (value) => /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Precisa ser uma data válida!',
+                (value: any) => !!value || 'É um campo obrigatório',
+                (value: any) => value.length === 10 || 'Precisa preencher o padrão ##/##/####',
+                (value: any) => /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Precisa ser uma data válida!',
               ]"
               :error-messages="errorMessages"
               error-key="project_start"
@@ -179,7 +179,7 @@ onMounted(async () => {
               v-model:options="judges"
               label="Juiz"
               :to-add="addJudge"
-              :rules="[value => !!value || 'É um campo obrigatório']"
+              :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="judge_id"
             />
@@ -188,7 +188,7 @@ onMounted(async () => {
               v-model:options="lawyers"
               label="Advogado"
               :to-add="addLawyer"
-              :rules="[value => !!value || 'É um campo obrigatório']"
+              :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="lawyer_id"
             />
@@ -197,7 +197,7 @@ onMounted(async () => {
               v-model:options="regions"
               label="Comarca"
               :to-add="addRegion"
-              :rules="[value => !!value || 'É um campo obrigatório']"
+              :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="region_id"
             />
@@ -206,7 +206,7 @@ onMounted(async () => {
               v-model:options="courts"
               label="Vara"
               :to-add="addCourt"
-              :rules="[value => !!value || 'É um campo obrigatório']"
+              :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="court_id"
             />
@@ -229,13 +229,13 @@ onMounted(async () => {
             <InputText
               v-model="recovering.name"
               label="Recuperanda"
-              :rules="[value => !!value || 'Este Campo é obrigatório']"
+              :rules="[(value: any) => !!value || 'Este Campo é obrigatório']"
               :error-messages="errorMessages"
               :error-key="`recoverings.${index}.entity.name`"
             />
             <InputLegal
               v-model="recovering.legalNumber"
-              :rules="[value => !!value || 'Este Campo é obrigatório']"
+              :rules="[(value: any) => !!value || 'Este Campo é obrigatório']"
               :error-messages="errorMessages"
               :error-key="`recoverings.${index}.entity.legal_number`"
             />
@@ -270,7 +270,7 @@ onMounted(async () => {
               v-model="newProject.financialPartnerId"
               label="Sócio Financeiro"
               :users="users"
-              :rules="[value => !!value || 'É um campo obrigatório']"
+              :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="financial_partner_id"
             />
@@ -278,7 +278,7 @@ onMounted(async () => {
               v-model="newProject.legalPartnerId"
               label="Sócio Jurídico"
               :users="users"
-              :rules="[value => !!value || 'É um campo obrigatório']"
+              :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="legal_partner_id"
             />
@@ -286,7 +286,7 @@ onMounted(async () => {
               v-model="newProject.financialManagerId"
               label="Gerente Financeiro"
               :users="users"
-              :rules="[value => !!value || 'É um campo obrigatório']"
+              :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="financial_manager_id"
             />
@@ -294,7 +294,7 @@ onMounted(async () => {
               v-model="newProject.legalManagerId"
               label="Gerente Jurídico"
               :users="users"
-              :rules="[value => !!value || 'É um campo obrigatório']"
+              :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="legal_manager_id"
             />
@@ -302,7 +302,7 @@ onMounted(async () => {
               v-model="newProject.calculationManagerId"
               label="Gerente de Cálculo"
               :users="users"
-              :rules="[value => !!value || 'É um campo obrigatório']"
+              :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="calculation_manager_id"
             />
@@ -324,7 +324,7 @@ onMounted(async () => {
               v-model="newProject.executors"
               :users="users"
               label="Executores"
-              :rules="[value => value.length > 0 || 'Este campo é obrigatório!']"
+              :rules="[(value: any) => value.length > 0 || 'Este campo é obrigatório!']"
               :error-messages="errorMessages"
               error-key="executors"
             />
@@ -332,7 +332,7 @@ onMounted(async () => {
               v-model="newProject.reviewers"
               :users="users"
               label="Revisores"
-              :rules="[value => value.length > 0 || 'Este campo é obrigatório!']"
+              :rules="[(value: any) => value.length > 0 || 'Este campo é obrigatório!']"
               :error-messages="errorMessages"
               error-key="reviewers"
             />
@@ -340,7 +340,7 @@ onMounted(async () => {
               v-model="newProject.approvers"
               :users="users"
               label="Aprovadores"
-              :rules="[value => value.length > 0 || 'Este campo é obrigatório!']"
+              :rules="[(value: any) => value.length > 0 || 'Este campo é obrigatório!']"
               :error-messages="errorMessages"
               error-key="approvers"
             />
