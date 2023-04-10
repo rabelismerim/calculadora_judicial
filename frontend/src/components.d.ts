@@ -35,8 +35,6 @@ declare module '@vue/runtime-core' {
     ProgressList: typeof import('./components/graph/ProgressList.vue')['default']
     ProjectDetailCell: typeof import('./components/project/ProjectDetailCell.vue')['default']
     QField: typeof import('quasar')['QField']
-    QTab: typeof import('quasar')['QTab']
-    QTabs: typeof import('quasar')['QTabs']
     ReloadBtn: typeof import('./components/common/ReloadBtn.vue')['default']
     RequestModal: typeof import('./components/team/RequestModal.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
