@@ -20,6 +20,9 @@ const getMyProfile = () => api
     if (!user.authenticated && import.meta.env.PROD)
       redirectTo(`${window.location.origin}/djud/api/drfmsal_signin/djud/`)
 
+    if (!user.authorized)
+      return user
+
     const permissions = await getPermissions()
     const projects = await projectService.getUserProjects()
 
