@@ -14,16 +14,18 @@ Attributes:
 """
 from calculation.funds.models import Funds
 from calculation.models import Calculation
-from core.abstract.tests import AbstractTest
+from core.abstract.tests import AbstractTest, generate_name
 
 
 class FundsTest(AbstractTest):
     """funds related tests"""
 
     calculation = Calculation.objects.first()
+    name = generate_name()
+    print(name, 'name\n\n')
     parameters = {
-        "description": "funds",
-        "name": 'Teste de verba',
+        "description": generate_name(),
+        "name": name,
         'calculation_id': str(calculation.id)
     }
 
@@ -70,7 +72,7 @@ class FundsTest(AbstractTest):
                  "data_base": "2011-08-10",
                  "historical_value": 2300,
                  "summary": True
-             }, {'corrected_value': 2349.6542360353938, 'index_data_base':  2.726804221883394,
+             }, {'corrected_value': 2349.6542360353938, 'index_data_base': 2.726804221883394,
                  'index_recovering': 2.7856726481684837}),
 
         ]

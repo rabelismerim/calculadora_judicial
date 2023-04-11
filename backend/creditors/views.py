@@ -59,13 +59,43 @@ class CreditorCreateApi(AbstractCreditorApi):
         return JsonResponse({'options': data}, status=status.HTTP_200_OK)
 
 
+class CreditorListApi(AbstractCreditorApi):
+    """
+    A view for retrieving a list of creditors from a specific project.
+    Inherits from AbstractCreditorApi.
+
+    Methods
+    -------
+    get(self, request, *args, **kwargs):
+        Retrieves a queryset of creditors related to a given project ID,
+        serializes it using self.serializer_class, and returns a JSON response
+        with the serialized data.
+    """
+    http_method_names = ['get']
+
+    def get(self, request, *args, **kwargs):
+        """
+        Retrieves a queryset of creditors related to a given project ID,
+        serializes it and returns a JSON response with the serialized data.
+
+        Returns
+        -------
+        JsonResponse
+            A response with a JSON object containing a list of serialized creditor data.
+        """
+        project_id = kwargs.get('id')
+        creditors = self.serializer_class(self.model.objects.filter(recovering__project_id=project_id), many=True).data
+        return JsonResponse({'creditors': creditors})
+
+
 class CreditorApi(AbstractCreditorApi):
-    """HTTP methods for create creditor"""
-    http_method_names = ['get', 'post']
+    """ AbstractCreditorApi's HTTP methods for creating new creditor with required fields."""
+    http_method_names = ['post']
 
     def post(self, request, *args, **kwargs):
         """
-           Create creditor receiving a dict, return creditor detail
+        Create creditor by receiving a dictionary object with required fields.
+        Creditor detail will be returned upon successful completion of operation
         """
         with transaction.atomic():
             serializer = self.serializer_class(data=request.data)

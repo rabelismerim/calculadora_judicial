@@ -42,6 +42,7 @@ class AbstractDateCreditor(AbstractModel):
     fine = models.FloatField(_('Multa'), default=0)
     advocative_hours = models.FloatField(_('Honorários advocatícios'), default=0)
     occurrence = models.CharField(_('Ocorrência'), max_length=1, choices=CHOICES_OCCURENCE, default='O')
+    physical_person = models.BooleanField(_('É pessoa física?'), default=True)
 
     class Meta:
         abstract = True

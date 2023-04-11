@@ -1,16 +1,12 @@
-import json
-
 from calculation.models import Incident
 from core.abstract.tests import AbstractTest
 from creditors.models import Creditor
 
 
-class CalculationTest(AbstractTest):
-    """Calculation related tests"""
-
+class CalculationValues:
     creditor = Creditor.objects.first()
     incident = Incident.objects.first()
-    parameters = {
+    calculation = {
         "classes": {
             "classe": "1"
         },
@@ -39,6 +35,13 @@ class CalculationTest(AbstractTest):
         "archive_json": {'teste': 'teste'}
     }
 
+
+class CalculationTest(AbstractTest):
+    """Calculation related tests"""
+
+    creditor = Creditor.objects.first()
+    incident = Incident.objects.first()
+    parameters = CalculationValues.calculation
     path = 'calculation'
 
     def test_api_get(self):

@@ -14,7 +14,7 @@ Attributes:
 """
 from calculation.funds.models import Funds
 from calculation.models import Calculation
-from core.abstract.tests import AbstractTest
+from core.abstract.tests import AbstractTest, generate_name
 
 
 class FundsDocumentTest(AbstractTest):
@@ -30,9 +30,9 @@ class FundsDocumentTest(AbstractTest):
                  "statement": {
                      "data_base": "2014-01-02",
                      "historical_value": 1500,
-                     "number": "aleatory number 1"
+                     "number": generate_name()
                  },
-                 "name": "Faturas"
+                 "name": generate_name()
              },
              {'corrected_value': 1520.5231791763986, 'index_data_base': 2.748073182623919,
               'index_recovering': 2.7856726481684837},
@@ -46,9 +46,9 @@ class FundsDocumentTest(AbstractTest):
                  "statement": {
                      "data_base": "1999-06-09",
                      "historical_value": 500,
-                     "number": "aleatory number 2"
+                     "number": generate_name()
                  },
-                 "name": "Notas fiscais"
+                 "name": generate_name()
              }, {'corrected_value': 658.6255085039053,
                  'index_data_base': 2.114762192020358,
                  'index_recovering': 2.7856726481684837},
@@ -81,7 +81,7 @@ class FundsDocumentTest(AbstractTest):
         calculation = Calculation.objects.first()
         value = 1500
         data_base = "2014-01-02"
-        number = '12344923'
+        number = generate_name()
         statement = {
             "calculation_id": str(calculation.id),
             "statement": {
@@ -89,7 +89,7 @@ class FundsDocumentTest(AbstractTest):
                 "historical_value": value,
                 "number": number
             },
-            "name": "Faturas"
+            "name": generate_name()
         }
 
         response = self.post('calculation/funds/documents', statement)
@@ -122,7 +122,7 @@ class FundsDocumentTest(AbstractTest):
         fund = Funds.objects.first()
         value = 559
         data_base = "2007-11-12"
-        description = 'Descrição da verba 1'
+        description = generate_name()
 
         statement = {
             "fund_id": str(fund.id),

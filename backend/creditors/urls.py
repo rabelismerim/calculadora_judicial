@@ -1,9 +1,10 @@
 from django.urls import include, path
 
-from creditors.views import CreditorDetailApi, CreditorCreateApi, CreditorApi, CreditorUpdateApi
+from creditors.views import CreditorDetailApi, CreditorCreateApi, CreditorApi, CreditorUpdateApi, CreditorListApi
 
 urlpatterns = [
-    path('', CreditorApi.as_view(), name="creditor-list-create"),
+    path('', CreditorApi.as_view(), name="creditor-create"),
+    path('project/<uuid:id>/', CreditorListApi.as_view(), name="creditor-list"),
     path('detail/<uuid:id>/', CreditorDetailApi.as_view(), name="creditor-detail"),
     path('<uuid:id>/', CreditorUpdateApi.as_view(), name="creditor-update"),
     path('options/', CreditorCreateApi.as_view(), name="creditor-options"),

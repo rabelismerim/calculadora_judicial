@@ -6,9 +6,16 @@ import webbrowser
 
 from django.core.management import color_style
 from django.core.management.base import OutputWrapper
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 from config.settings import DEBUG
 from utils import get_user_model
+from faker import Faker
+
+
+def generate_name():
+    faker = Faker()
+    return faker.name()
+
 
 User = get_user_model()
 
@@ -23,7 +30,7 @@ class AttrDict(dict):
         self[attr] = value
 
 
-class AbstractTest(TestCase):
+class AbstractTest(TransactionTestCase):
     """Add common methods to all testcase"""
     stdout = OutputWrapper(sys.stdout)
     stderr = OutputWrapper(sys.stderr)
@@ -131,9 +138,11 @@ class AbstractTest(TestCase):
             return response
 
     def setUp(self):
-        user_create = User.objects.create(email="user@example1.com", username="user1",
-                                          first_name="User1", last_name="User1", password="User@123",
-                                          is_staff=True)
+        user_create = User.objects.filter(username='user1').first()
+        if not user_create:
+            user_create = User.objects.create(email="user@example1.com", username="user1",
+                                              first_name="User1", last_name="User1", password="User@123",
+                                              is_staff=True)
         self.assertTrue(user_create)
         user = User.objects.get(username='user1')
         self.client.force_login(user)
@@ -155,15 +164,15 @@ class AbstractTest(TestCase):
 
     def print_start(self, msg):
         """Print in time execution"""
-        self.stdout.write(self.style.WARNING(msg))
+        self.stdout.write(self.style.WARNING(str(msg)))
 
     def print(self, msg):
         """Print in time execution"""
-        self.stdout.write(self.style.ERROR(msg))
+        self.stdout.write(self.style.ERROR(str(msg)))
 
     def print_success(self, msg):
         """Print in time execution"""
-        self.stdout.write(self.style.SUCCESS(msg))
+        self.stdout.write(self.style.SUCCESS(str(msg)))
 
     def __format_url(self, path: str) -> str:
         return f'{self.base_url}{path}/'.replace('//', '/')
@@ -216,6 +225,8 @@ class AbstractTest(TestCase):
         index += 1
         if index > 6:
             index = 6
+        if isinstance(obj, str):
+            return ''
         items = list(obj.items())
         for i in range(len(items)):
             key = items[i][0]
@@ -281,9 +292,9 @@ class AbstractTest(TestCase):
         card_body += "</div>\n"
         return card_body
 
-    def _write_html(self, data, key):
+    def _write_html(self, data, key, show=False):
 
-        if show_result is False:
+        if any([show_result, show]) is False:
             return
         card_body = ''
         card_row = """
@@ -293,6 +304,8 @@ class AbstractTest(TestCase):
                     </div>
                 </div>
                 """
+        if isinstance(data, list) is False:
+            data = [data]
         for i in range(len(data)):
             card_body += card_row.format(self.print_dict(data[i], key=key, range_=i))
 

@@ -5,7 +5,9 @@ and updated_at. Does not add any additional fields, so should be subclassed
 to add specific fields as needed.
 """
 import datetime
+import time
 
+import django.db.utils
 from django.db import models
 from django.db.models import signals
 from django.dispatch import receiver
@@ -481,6 +483,7 @@ class StatementPF(AbstractStatus):
         Args:
             send_signal_post_save (bool): Whether to send a signal after saving the object (default True).
         """
+        super(StatementPF, self).save(*args, **kwargs)
         if send_signal_post_save:
             try:
                 self.set_in_progress()
@@ -495,7 +498,6 @@ class StatementPF(AbstractStatus):
                 self.set_error_parameters()
             else:
                 self.set_calculation_done()
-        super().save(*args, **kwargs)
 
 
 class AbstractValue(AbstractModel):
@@ -633,6 +635,7 @@ def new_calculation(sender, instance, **kwargs) -> None:
     Returns:
         None.
     """
+    print('Signal gerar novo calculo em statement')
     get_create_statement_pf_by_calculation(instance)
 
 
@@ -650,8 +653,12 @@ def new_total_funds_rate(sender, instance, **kwargs) -> None:
     Returns:
         None.
     """
+    print('Signal total values funds')
+
     statement_pf = get_create_statement_pf_by_calculation(instance.get_calculation())
-    FundsDescription.objects.get_or_create(statement_pf_id=statement_pf.id, rate_id=instance.id)
+    defaults = {'statement_pf_id': statement_pf.id, 'rate_id': instance.id}
+    filters = {'statement_pf_id': statement_pf.id}
+    FundsDescription.objects.get_or_create(defaults=defaults, **filters)
     statement_pf.calcule_total()
 
 
@@ -669,6 +676,9 @@ def new_total_funds_rate_integrations(sender, instance, **kwargs) -> None:
     Returns:
         None.
     """
+    print('Signal total values funds integrations')
     statement_pf = get_create_statement_pf_by_calculation(instance.get_calculation())
-    FundsDescription.objects.get_or_create(statement_pf_id=statement_pf.id, rate_integrations_id=instance.id)
+    defaults = {'statement_pf_id': statement_pf.id, 'rate_integrations_id': instance.id}
+    filters = {'statement_pf_id': statement_pf.id}
+    FundsDescription.objects.get_or_create(defaults=defaults, **filters)
     statement_pf.calcule_total()

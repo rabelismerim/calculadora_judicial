@@ -1,4 +1,5 @@
 from core.abstract.tests import AbstractTest
+from projects.create_project import cpf_generator
 from projects.models import Project
 
 
@@ -9,7 +10,7 @@ class RecoveringTest(AbstractTest):
     parameters = {
         "entity": {
             "name": "string",
-            "legal_number": "149.291.410-01"
+            "legal_number": cpf_generator()
         },
         "archives": [
             {

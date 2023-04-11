@@ -61,11 +61,11 @@ class Calculation(AbstractCredit):
             number__isnull=True).count()
 
     def save(self, *args, **kwargs):
+        super(Calculation, self).save(*args, **kwargs)
         if not self.id or not self.number:
             self.number = self._get_number()
             if not self.id:
                 new_calc.send(sender=self.__class__, instance=self)
-        super(Calculation, self).save(*args, **kwargs)
 
     def get_rate(self):
         """"Pegar o indice que vai ser utilizado"""

@@ -16,7 +16,7 @@ class CreditorSchema(AbstractDescriptionSchema):
     entity = EntitySchema(many=False, read_only=False)
 
     # recovering = RecoveringSchema(many=False, read_only=True)
-    recovering_id = serializers.UUIDField(write_only=True)
+    recovering_id = serializers.UUIDField()
 
     # rate = RateSchema(many=False, read_only=False, exclude=('rate_value', ))
     rate_id = serializers.UUIDField()

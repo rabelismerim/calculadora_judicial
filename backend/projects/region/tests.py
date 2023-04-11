@@ -1,4 +1,4 @@
-from core.abstract.tests import AbstractTest
+from core.abstract.tests import AbstractTest, generate_name
 
 
 class RegionTest(AbstractTest):
@@ -7,7 +7,7 @@ class RegionTest(AbstractTest):
     path = 'projects/region'
 
     parameters = {
-        "description": "Name Comarca 1"
+        "description": generate_name()
     }
 
     def test_api_get(self):

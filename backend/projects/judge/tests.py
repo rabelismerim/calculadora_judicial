@@ -1,11 +1,11 @@
-from core.abstract.tests import AbstractTest
+from core.abstract.tests import AbstractTest, generate_name
 
 
 class JudgeTest(AbstractTest):
     """judge related tests"""
 
     parameters = {
-        "description": "Name Juiz 1"
+        "description": generate_name()
     }
 
     path = 'projects/judge'
