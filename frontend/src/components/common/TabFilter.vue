@@ -19,7 +19,7 @@ const emit = defineEmits(['update:model-value', 'update:search'])
       :model-value="modelValue"
       align="left"
       active-color="secondary"
-      @update:model-value="value => emit('update:model-value', value)"
+      @update:model-value="(value: any) => emit('update:model-value', value)"
     >
       <QTab
         v-for="(tab, index) in items"
@@ -30,7 +30,7 @@ const emit = defineEmits(['update:model-value', 'update:search'])
     </QTabs>
     <SearchFilter
       :model-value="search"
-      @update:model-value="value => emit('update:search', value)"
+      @update:model-value="(value: any) => emit('update:search', value)"
     />
   </div>
 </template>
