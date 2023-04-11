@@ -8,6 +8,8 @@ const filterBy = $ref('')
 let projects = $ref([])
 const projectsCount = computed(() => projects.length)
 
+const { hasPermissions } = $user
+
 const statusColors: any = {
   p: '#c4d600', // Em Preparação
   e: '#c4d600', // Em Preparação
@@ -148,6 +150,7 @@ const columns = [
   >
     <Header title="Projetos">
       <Btn
+        v-if="hasPermissions(['add_project'])"
         label="Novo Projeto"
         @click="showNewProject = true"
       />

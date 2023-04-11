@@ -116,8 +116,8 @@ const columns = [
     :model-value="tab"
     :search="filter"
     :items="filters"
-    @update:model-value="value => emit('update:tab', value)"
-    @update:search="value => emit('update:filter', value)"
+    @update:model-value="(value: any) => emit('update:tab', value)"
+    @update:search="(value: any) => emit('update:filter', value)"
   />
   <QTable
     class="my-header-table"
