@@ -20,6 +20,9 @@ const getMyProfile = () => api
     if (!user.authenticated && import.meta.env.PROD)
       redirectTo(`${window.location.origin}/djud/api/drfmsal_signin/djud/`)
 
+    if (!user.authorized)
+      return user
+
     const permissions = await getPermissions()
     const projects = await projectService.getUserProjects()
 
@@ -44,8 +47,8 @@ const getGroups = () => api
 const requestAccess = (email: string) => api
   .post('/user/sendmail/', { email })
 
-const setPermission = ({ email, groups }: any) => api
-  .post('user/authorize/', { email, groups })
+const setPermission = ({ email, groups, isActive }: any) => api
+  .post('user/authorize/', { email, groups, isActive })
 
 export default {
   getMyProfile,
