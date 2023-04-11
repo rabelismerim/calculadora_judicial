@@ -19,63 +19,46 @@ from projects.create_project import get_data_project, cpf_generator
 
 
 class StatementTest(AbstractTest):
-    """statement related tests"""
-    calculation = None
+    """Represents tests related to statement calculations and correction"""
 
-    # def setUp(self):
-    #     super().setUp()
-    #     self._new_project()
-
-    def _new_project(self, date_request, date_filling, date_citation):
+    def _new_project(self, date_request, date_filling, date_citation, rate):
+        """Creates a new project with specified dates and interest rate"""
         self._set_project(date_request, date_filling, date_citation)
-        self._set_creditor()
+        self._set_creditor(rate)
         self._set_calculation()
         self._set_funds()
 
-    def get_statement(self):
-        response = self.get(f'calculation/statement/')
-        self.assertEqual(response.status_code, 200)
-        calcs = response.content['statements']
-        print(len(calcs))
-
     def _assert_calc(self, statement_result):
+        """
+        Makes a request to get the calculation with the current statement and compares it to the provided statement
+        result
+        """
+
         response = self.get(f'calculation/{self.calculation.id}/')
         self.assertEqual(response.status_code, 200)
         calc = AttrDict(response.content['calculation'])
         comparative = self._compare_statements(calc.statement, statement_result)
-        print(comparative, 'comparative\n')
-        self.assertTrue(comparative)
+        self.assertEqual(0, len(comparative))
 
-    def _compare_statements(self, statement, statement_result):
-        # for key, value in statement_result.items():
-        #     if isinstance(value, dict):
-        #         comparison_result, (mismatch_key, mismatch_value) = self._compare_statements(statement.get(key, {}), value)
-        #         if not comparison_result:
-        #             return False, (mismatch_key, mismatch_value)
-        #     elif isinstance(value, list):
-        #         comparison_result = all(
-        #             self._compare_statements(i_stmt, i_stmt_result)
-        #             for i_stmt, i_stmt_result in zip(statement.get(key, []), value)
-        #         )
-        #         if not comparison_result:
-        #             return False, (key, (i, (k, v)) for i, (k, v) in enumerate(statement_result.get(key, [])))
-        #     else:
-        #         if statement.get(key) != value:
-        #             return False, (key, value)
-        # return True, (None, None)
+    def _compare_statements(self, statement, statement_result, errors=None):
+        """Recursively compares a statement object to a provided statement result object and returns any errors"""
+
+        if errors is None:
+            errors = []
         for key, value in statement_result.items():
             if isinstance(value, dict):
-                if not self._compare_statements(statement.get(key, {}), value):
-                    return False
+                errors = self._compare_statements(statement.get(key, {}), value, errors)
             elif isinstance(value, list):
-                if not all(self._compare_statements(i_stmt, i_stmt_result) for i_stmt, i_stmt_result in zip(statement.get(key, []), value)):
-                    return False
+                for i, (i_stmt, i_stmt_result) in enumerate(zip(statement.get(key, []), value)):
+                    errors = self._compare_statements(i_stmt, i_stmt_result, errors)
             else:
                 if statement.get(key) != value:
-                    return False
-        return True
+                    errors.append({'field_error': key, 'value': value, 'expected': statement.get(key)})
+        return errors
 
     def _set_project(self, date_request, date_filling, date_citation):
+        """Creates a new project with the specified dates"""
+
         data_project = get_data_project()
         data_project["date_rj_request"] = date_request
         data_project["date_rj_filing"] = date_filling
@@ -84,8 +67,10 @@ class StatementTest(AbstractTest):
         self.assertEqual(response.status_code, 201)
         self.project = AttrDict(response.content['project'])
 
-    def _set_creditor(self):
-        creditor = CreditorValues().get_creditor()
+    def _set_creditor(self, rate):
+        """Creates a new creditor with the specified rate for the project"""
+
+        creditor = CreditorValues().get_creditor(rate)
         creditor['entity']['name'] = generate_name()
         creditor['entity']['legal_number'] = cpf_generator()
         creditor['recovering_id'] = self.project['recoverings'][0]['id']
@@ -94,6 +79,8 @@ class StatementTest(AbstractTest):
         self.creditor = AttrDict(response.content['creditor'])
 
     def _set_calculation(self):
+        """Creates a new calculation object for the creditor"""
+
         calculation = CalculationValues.calculation
         calculation['creditor_id'] = self.creditor['id']
 
@@ -102,6 +89,8 @@ class StatementTest(AbstractTest):
         self.calculation = AttrDict(response.content['calculation'])
 
     def _set_funds(self):
+        """Creates a new fund object associated with the calculation"""
+
         fund = {
             "description": generate_name(),
             "name": generate_name(),
@@ -113,10 +102,13 @@ class StatementTest(AbstractTest):
         self.fund = AttrDict(response.content['funds'])
 
     def test_a_funds(self):
+        """Runs a series of tests using a fund and a set of statements with expected results"""
+
         date_request = "2015-06-09"
         date_filling = "2010-10-14"
         date_citation = "2010-10-14"
-        self._new_project(date_request, date_filling, date_citation)
+        rate = 'TST'
+        self._new_project(date_request, date_filling, date_citation, rate)
 
         fund = self.fund
         statements = [
@@ -185,11 +177,15 @@ class StatementTest(AbstractTest):
             "conclusion": "I"
         }
         self._assert_statements(statements)
-        self.get_statement()
         self._assert_calc(statement_result)
         return statements
 
     def _assert_statements(self, statements):
+        """
+        Sends a set of statement objects, checks the response statement, and compares monetary correction values to
+        expected results.
+        """
+
         for statement, true_monetary_correction in statements:
             response = self.post('calculation/funds/funds', statement)
             new_statement = response.content['statement_funds']
