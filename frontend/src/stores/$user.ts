@@ -6,6 +6,7 @@ const userFallback = {
   email: '',
   groups: [] as any[],
   permissions: [] as string[],
+  projects: [] as string[],
 }
 
 const store = useStorage('deloitte-user', { ...userFallback }, sessionStorage)
@@ -20,8 +21,7 @@ const login = async () => {
       ...store.value,
       ...user,
     }
-
-    return user.authorized
+    return user
   }
   catch (error: any) {
     printError('ERROR ON LOGIN:', error)
@@ -35,6 +35,7 @@ const user = computed(() => store.value)
 const isActive = computed(() => store.value.isActive)
 const hasPermissions = (permissions: string[] = []) => permissions
   .every(permission => store.value.permissions.includes(permission))
+const hasProject = (id: string) => store.value.projects.includes(id)
 
 export default {
   login,
@@ -42,4 +43,5 @@ export default {
   user,
   isActive,
   hasPermissions,
+  hasProject,
 }

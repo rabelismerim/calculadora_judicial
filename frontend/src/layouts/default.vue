@@ -9,7 +9,7 @@ onMounted(async () => {
   try {
     if (hasPermissions(['view_user'])) {
       const users = await usersService.getUsers()
-      accessRequestsCount = users.filter(({ isActive }: any) => !isActive).length
+      accessRequestsCount = users.filter(({ status }: any) => status.toLowerCase() === 'p').length
     }
   }
   catch (error) {
@@ -53,15 +53,14 @@ const filteredPaths = computed(() => paths.filter(({ permissions }: any) => hasP
       transparent
       :disabled="disabled"
       :color="getColor(path)"
+      :class="{ 'pr-6': notification }"
       @click="router.push({ path })"
     >
-      <template #after>
-        <div v-if="notification" class="relative inline-block mb-3">
-          <span class="bg--error text-white absolute top-0 animate-bounce text-xs rounded-full py-.3 px-1.5">
-            {{ notification }}
-          </span>
-        </div>
-      </template>
+      <div v-if="notification" class="relative inline-block mb-3">
+        <span class="bg--error text-white absolute top-0 animate-bounce text-xs rounded-full py-.3 px-1.5">
+          {{ notification }}
+        </span>
+      </div>
     </Btn>
   </NavBar>
   <div class="flex flex-1 flex-col">

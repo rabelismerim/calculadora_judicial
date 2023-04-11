@@ -27,14 +27,18 @@ const onClick = (link: Link) => {
     </div>
     <div
       v-else
-      class="px-3 py-1 rounded-2 hover:bg--secondary/20 text--content tween cursor-pointer"
+      class="px-3 py-1 rounded-2 hover:bg--secondary/20 hover:border--secondary/20 border-1 border-transparent text--content tween cursor-pointer"
       @click="router.push('/')"
     >
       Home
     </div>
     <div v-if="links.length > 0" class="i-carbon-chevron-right" />
     <template v-for="(link, index) in filteredLinks" :key="index">
-      <div v-if="index < filteredLinks.length - 1" class="px-3 py-1 rounded-2 hover:bg--secondary/20 tween cursor-pointer" @click="onClick(link)">
+      <div
+        v-if="index < filteredLinks.length - 1"
+        class="px-3 py-1 rounded-2 hover:bg--secondary/20 hover:border--secondary/20 border-1 border-transparent tween cursor-pointer"
+        @click="onClick(link)"
+      >
         {{ link.label }}
       </div>
       <div v-else class="px-3 py-1 rounded-2 text--secondary font-bold">
