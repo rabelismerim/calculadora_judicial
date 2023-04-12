@@ -7,6 +7,7 @@ const props = withDefaults(defineProps<{
   maxlength?: string | number
   errorMessages?: any
   errorKey?: string
+  grow?: boolean
 }>(), {
   rules: () => ([]),
   errorMessages: () => ({}),
@@ -34,7 +35,7 @@ const onInput = (value: string | number | null) => {
     :error="!!errorMessages[errorKey]"
     :error-message="!!errorMessages[errorKey] ? errorMessages[errorKey] : ''"
     outlined
-    dense
+    :dense="!grow"
     @update:model-value="onInput"
   />
 </template>
