@@ -2,24 +2,23 @@ const getCalculation = () => api
   .get('/v1/calculation/')
   .then(({ data }) => data)
 
-  const mapCalculation = (calculation: any) => {
-    const {
-      classe,
-      coin,
-      value,
-      archive_json,
-      creditor_id,
-      incident_id,
-      description,
-      calculation_type,
-      appeal_credit,
-      appeal_deposit,
-      has_advocative_hours,
-      credit_authorization_date,
-      has_edital,
-    } = calculation
+const mapCalculation = (calculation: any) => {
+  const {
+    classe,
+    coin,
+    value,
+    archive_json,
+    creditor_id,
+    incident_id,
+    description,
+    calculation_type,
+    appeal_credit,
+    appeal_deposit,
+    has_advocative_hours,
+    credit_authorization_date,
+    has_edital,
+  } = calculation
 
-  
   return {
     calculation,
   }
@@ -54,7 +53,6 @@ const getProject = (id: string) => api
 
     return calculation
   })
-
 
 export default {
   getCalculation,
