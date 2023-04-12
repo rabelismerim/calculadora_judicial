@@ -11,7 +11,7 @@ from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 from django.core.mail import send_mail
 from rest_framework import status
-from rest_framework.schemas.openapi import AutoSchema
+from core.abstract.views import CustomSchema as AutoSchema
 from core.permission.views import CheckHasPermission, CreatePermissions, CheckPermissions
 from utils import get_user_model
 from rest_framework import permissions, serializers
@@ -111,9 +111,11 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
         groups = user_filter.pop('groups', [])
         subgroups = user_filter.pop('subgroups', [])
 
-        user_approved = self.model.objects.filter(email=user_filter['email']).first()
+        user_approved = self.model.objects.filter(
+            email=user_filter['email']).first()
         if not user_approved:
-            raise serializers.ValidationError([f'O Email {user_filter["email"]}, não foi encontrado'])
+            raise serializers.ValidationError(
+                [f'O Email {user_filter["email"]}, não foi encontrado'])
 
         user_approved.status = user_filter['is_active']
         if groups:
@@ -213,7 +215,8 @@ class UserDttApi(AbstractUserDttApi):
         user.save()
 
         if IS_LOCALHOST:  # Authenticate User to testes and local host
-            user_authenticated = authenticate(username=new_user['username'], password=password)
+            user_authenticated = authenticate(
+                username=new_user['username'], password=password)
             if user_authenticated:
                 login(self.request, user_authenticated)
         serializer = self.get_serializer_class()

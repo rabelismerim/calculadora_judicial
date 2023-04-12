@@ -42,8 +42,8 @@ class StatementIntegrations(AbstractStatement):
     summary = models.BooleanField(_('Aplicar súmula 381?'), default=False)
 
     class Meta:
-        verbose_name = _('Statement Fund Integration')
-        verbose_name_plural = _('Statement Funds Integrations')
+        verbose_name = 'Statement Fund Integration'
+        verbose_name_plural = 'Statement Funds Integrations'
 
     def has_monetary_correction(self) -> bool:
         """Returns True if the monetary correction exists for the statement."""
@@ -58,7 +58,8 @@ class StatementIntegrations(AbstractStatement):
         """Retrieves the corrected value of the statement if the monetary correction exists, or else returns 0."""
         data = self._get_index_monetary_correction()
         if data:
-            MonetaryCorrectionIntegrations.objects.update_or_create(defaults=data, **{'statement': self})
+            MonetaryCorrectionIntegrations.objects.update_or_create(
+                defaults=data, **{'statement': self})
             self.set_calculation_done()
 
     def get_corrected_value(self) -> float:
@@ -75,7 +76,8 @@ class StatementIntegrations(AbstractStatement):
         """
         super(StatementIntegrations, self).save(*args, **kwargs)
         if send_signal_post_save:
-            gen_statement_integrations.send(sender=self.__class__, instance=self)
+            gen_statement_integrations.send(
+                sender=self.__class__, instance=self)
 
 
 class MonetaryCorrectionIntegrations(AbstractMonetaryCorrection):
@@ -90,10 +92,6 @@ class MonetaryCorrectionIntegrations(AbstractMonetaryCorrection):
     """
     statement = models.OneToOneField(
         StatementIntegrations, on_delete=models.PROTECT)
-
-    class Meta:
-        verbose_name = _('Monetary Correction Integration')
-        verbose_name_plural = _('Monetary Corrections Integrations')
 
 
 class TotalValuesFundsIntegrations(AbstractTotalValuesFunds):
@@ -131,8 +129,8 @@ class TotalValuesFundsIntegrations(AbstractTotalValuesFunds):
         self.save()
 
     class Meta:
-        verbose_name = _('Total value fund integration')
-        verbose_name_plural = _('Total values funds integrations')
+        verbose_name = 'Total value fund integration'
+        verbose_name_plural = 'Total values funds integrations'
 
 
 @receiver(gen_statement_integrations, sender=StatementIntegrations)

@@ -10,15 +10,15 @@ class Recovering(AbstractModel):
     project = models.ForeignKey(Project, on_delete=models.PROTECT)
     entity = models.ForeignKey(Entity, on_delete=models.PROTECT)
     STATUS_CHOICES = (
-        ("E", _("Em Análise")),
-        ("C", _("Concluído")),
-        ("A", _("Em Andamento")),
-        ("D", _("Cancelado"))
+        ("E", _("Under Analysis")),
+        ("C", _("Concluded")),
+        ("A", _("In Progress")),
+        ("D", _("Canceled"))
     )
     status = models.CharField(
         max_length=1, verbose_name='Status', choices=STATUS_CHOICES, default='E')
     status_support = models.CharField(
-        max_length=2, verbose_name=_('Status Suporte'), choices=STATUS_CHOICES, default='E')
+        max_length=2, verbose_name=_('Support Status'), choices=STATUS_CHOICES, default='E')
 
     def __str__(self):
         return f"{self.project} | {str(self.entity)}"

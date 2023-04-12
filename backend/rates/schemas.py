@@ -3,8 +3,10 @@ from rates.models import Accumulated, Period, Rate, RateFile, RateValues, Abstra
     Template
 from rest_framework import serializers
 
+from utils import _
 
-class AbstractCalcule(AbstractDescriptionSchema):
+
+class AbstractCalculeSchema(AbstractDescriptionSchema):
     """Serializer AbstractCalcule fields"""
 
     class Meta:
@@ -70,19 +72,17 @@ class RateSchema(AbstractDescriptionSchema):
             index=index_name, ratevalues__date=date).first()
 
         if rate:
-            raise serializers.ValidationError(['Indice já cadastrado'])
+            raise serializers.ValidationError([_('Rate already registered')])
 
         new_rate, created = Rate.objects.get_or_create(index=index_name)
 
         new_rate_values = RateValues.objects.create(
             rate=new_rate, date=date, value=value)
 
-        if accumulated != None:
-            Accumulated.objects.create(
-                rate=new_rate_values, value=accumulated)
-        if period != None:
-            Period.objects.create(
-                rate=new_rate_values, value=period)
+        if accumulated is not None:
+            Accumulated.objects.create(rate=new_rate_values, value=accumulated)
+        if period is not None:
+            Period.objects.create(rate=new_rate_values, value=period)
 
         return super(RateSchema, self).validate(new_rate)
 
@@ -122,7 +122,6 @@ class TemplateSchema(AbstractDescriptionSchema):
 
     class Meta:
         model = Template
-        # exclude = ('rate',)
         fields = '__all__'
 
 

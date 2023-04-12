@@ -11,7 +11,7 @@ from calculation.verdict.models import TypeCalculation, Verdict
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from rest_framework import status
-from rest_framework.schemas.openapi import AutoSchema
+from core.abstract.views import CustomSchema as AutoSchema
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission, CanChangeStep
 
@@ -126,12 +126,14 @@ class CalculationApi(AbstractCalculationApi):
                     new_claim = Claim.objects.create(
                         classes=claim_creditor.classes, coins=claim_creditor.coins,
                         archive_json=claim_creditor.archive_json)
-                    CriterionClaimCredor.objects.create(claim_creditor=new_claim, criterion=criterion)
+                    CriterionClaimCredor.objects.create(
+                        claim_creditor=new_claim, criterion=criterion)
             if new_verdicts:
                 for new_verdict in new_verdicts:
                     new_verdict['calculation'] = calculation
                     type_calculation = new_verdict.pop('type_calculation')
-                    new_verdict['type_calculation'] = TypeCalculation.objects.create(**type_calculation)
+                    new_verdict['type_calculation'] = TypeCalculation.objects.create(
+                        **type_calculation)
                     Verdict.objects.create(**new_verdict)
             if new_funds:
                 for fund in new_funds:
@@ -170,7 +172,8 @@ class ChangeStepApi(AbstractViewApi):
     http_method_names = ['put']
 
     serializer_class = ChangeStepSerializer
-    permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CanChangeStep]
+    permission_classes = [permissions.IsAuthenticated,
+                          CheckHasPermission, CanChangeStep]
     schema = AutoSchema(tags=["Calculation - Change Step"])
     query_params = []
     model = Calculation

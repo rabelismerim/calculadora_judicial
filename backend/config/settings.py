@@ -84,6 +84,7 @@ INSTALLED_APPS = [
     'rest_framework',
     "drf_standardized_errors",  # Alter output erros in REST API
     'drf_api_logger',
+    'drf_yasg',
 
     # Base
     'base',
@@ -140,7 +141,7 @@ AUTH_USER_MODEL = 'dttuser.User'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    # 'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -310,13 +311,13 @@ USE_L10N = True
 
 USE_TZ = True
 
-# LOCALE_PATHS = [
-#     BASE_DIR / 'locale'
-# ]
-#
-# TEMPLATE_CONTEXT_PROCESSORS = (
-#     'django.template.context_processors.i18n',
-# )
+LOCALE_PATHS = [
+    BASE_DIR / 'locale'
+]
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.template.context_processors.i18n',
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -349,6 +350,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
+    'DEFAULT_AUTO_SCHEMA_CLASS': 'core.abstract.views.CustomSwaggerAutoSchema',
 
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.ScopedRateThrottle',
@@ -388,3 +390,8 @@ GROUP_NAME_EXECUTOR = 'Executor'
 GROUP_NAME_APPROVER = 'Aprovador'
 GROUP_NAME_SPECIAL_APPROVE = 'Aprovador Especial'
 GROUP_NAME_REVIEWER = 'Revisor'
+
+SWAGGER_SETTINGS = {
+    'DEFAULT_AUTO_SCHEMA_CLASS': 'core.abstract.views.CustomSwaggerAutoSchema',
+    # ...
+}

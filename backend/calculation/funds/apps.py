@@ -19,4 +19,4 @@ from django.utils.translation import gettext_lazy as _
 class FundsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'calculation.funds'
-    verbose_name = _('Funds')
+    verbose_name = _('Verba')

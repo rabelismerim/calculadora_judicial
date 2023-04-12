@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from projects.court.models import Court
 from base.schemas import AbstractDescriptionSchema
+from utils import _
 
 
 class CourtSchema(AbstractDescriptionSchema):
@@ -14,5 +15,5 @@ class CourtSchema(AbstractDescriptionSchema):
         court_name = dict(data).get('description')
         court = Court.objects.filter(description=court_name).exists()
         if court:
-            raise serializers.ValidationError(['Vara já cadastrada'])
+            raise serializers.ValidationError([_('Court already registered')])
         return super(CourtSchema, self).validate(data)

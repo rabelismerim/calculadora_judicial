@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-16 22:09-0300\n"
+"POT-Creation-Date: 2023-04-12 12:00-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,264 +18,367 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: .\base\coins\apps.py:8
+#: .\base\claim\apps.py:9
+msgid "Pleito"
+msgstr ""
+
+#: .\base\coins\apps.py:9 .\base\coins\models.py:14
 msgid "Moeda"
 msgstr ""
 
-#: .\calculation\funds\apps.py:22 .\calculation\funds\models.py:47
-msgid "Funds"
-msgstr "Verbas"
-
-#: .\calculation\funds\models.py:42
-msgid "Nome das verbas"
+#: .\base\models.py:10 .\base\models.py:20
+msgid "Descrição"
 msgstr ""
 
-#: .\calculation\funds\models.py:46
-msgid "Fund"
+#: .\base\models.py:31
+msgid "Ajuizamento da Reclamação Trabalhista"
+msgstr ""
+
+#: .\base\models.py:31
+msgid "Citação"
+msgstr ""
+
+#: .\base\models.py:31 .\calculation\verdict\apps.py:9
+msgid "Sentença"
+msgstr ""
+
+#: .\base\models.py:31
+msgid "Outro"
+msgstr ""
+
+#: .\base\models.py:36
+msgid "Data de admissão"
+msgstr ""
+
+#: .\base\models.py:37
+msgid "Data de demissão"
+msgstr ""
+
+#: .\base\models.py:41
+msgid "Juros moratórios"
+msgstr ""
+
+#: .\base\models.py:42
+msgid "Multa"
+msgstr ""
+
+#: .\base\models.py:43
+msgid "Honorários advocatícios"
+msgstr ""
+
+#: .\base\models.py:44
+msgid "Ocorrência"
+msgstr ""
+
+#: .\base\models.py:45
+msgid "É pessoa física?"
+msgstr ""
+
+#: .\base\models.py:55
+msgid "Data do pedido de RJ"
+msgstr ""
+
+#: .\base\models.py:56
+msgid "Data de ajuizamento da RJ"
+msgstr ""
+
+#: .\base\models.py:57
+msgid "Data da Citação"
+msgstr ""
+
+#: .\calculation\apps.py:9
+msgid "Cálculo"
+msgstr ""
+
+#: .\calculation\comparative\apps.py:21
+msgid "Comparativo"
+msgstr ""
+
+#: .\calculation\criterion\apps.py:9
+msgid "Critério"
+msgstr ""
+
+#: .\calculation\funds\abstract\models.py:27
+#, fuzzy
+#| msgid "Fund"
+msgid "Fund name"
 msgstr "Verba"
 
-#: .\calculation\funds\models.py:87
+#: .\calculation\funds\abstract\models.py:37 .\calculation\funds\models.py:62
+#: .\calculation\models.py:18
 msgid "Solicitado"
 msgstr ""
 
-#: .\calculation\funds\models.py:87
+#: .\calculation\funds\abstract\models.py:37 .\calculation\funds\models.py:62
+#: .\calculation\statement\tests.py:173 .\recovering\models.py:14
 msgid "Concluído"
-msgstr ""
+msgstr "Concluded"
 
-#: .\calculation\funds\models.py:87
+#: .\calculation\funds\abstract\models.py:37 .\calculation\funds\models.py:62
 msgid "Em Progresso"
 msgstr ""
 
-#: .\calculation\funds\models.py:88
+#: .\calculation\funds\abstract\models.py:38 .\calculation\funds\models.py:63
 msgid "Falha no cálculo - índice não encontrado"
 msgstr ""
 
-#: .\calculation\funds\models.py:88
+#: .\calculation\funds\abstract\models.py:39
+msgid "Falha no cálculo - alíquota não encontrado"
+msgstr ""
+
+#: .\calculation\funds\abstract\models.py:40
+msgid "Falha no cálculo - parâmetros inválidos"
+msgstr ""
+
+#: .\calculation\funds\abstract\models.py:41 .\calculation\funds\models.py:63
 msgid "Falha no cálculo - sem data RJ"
 msgstr ""
 
-#: .\calculation\funds\models.py:115 .\calculation\funds\models.py:364
-msgid "Valor histórico"
+#: .\calculation\funds\abstract\models.py:42
+msgid "Falha no cálculo - sem data Citação"
 msgstr ""
 
-#: .\calculation\funds\models.py:120
-msgid "Aplicar súmula 381?"
-msgstr ""
-
-#: .\calculation\funds\models.py:122
+#: .\calculation\funds\abstract\models.py:47
 msgid "Status do cálculo"
 msgstr ""
 
-#: .\calculation\funds\models.py:149
+#: .\calculation\funds\abstract\models.py:87
 #, python-brace-format
 msgid "O status {value} não corresponde a nenhum status válido"
 msgstr ""
 
-#: .\calculation\funds\models.py:234
-msgid "Statement Fund"
-msgstr "Extrato da verba"
-
-#: .\calculation\funds\models.py:235
-msgid "Statement Funds"
-msgstr "Extrato das verbas"
-
-#: .\calculation\funds\models.py:289
-msgid "Descrição da verba"
+#: .\calculation\funds\abstract\models.py:124
+msgid "Valor histórico"
 msgstr ""
 
-#: .\calculation\funds\models.py:292
-msgid "Statement Fund Integration"
-msgstr "Extrato da verba de integração"
-
-#: .\calculation\funds\models.py:293
-msgid "Statement Funds Integrations"
-msgstr "Extrato das verbas de integrações"
-
-#: .\calculation\funds\models.py:337
-msgid "Verbas"
-msgstr ""
-
-#: .\calculation\funds\models.py:338
-msgid "Valores tributáveis"
-msgstr ""
-
-#: .\calculation\funds\models.py:341
-msgid "Statement IRRF"
-msgstr "Extrato da verba IRRF"
-
-#: .\calculation\funds\models.py:342
-msgid "Statement IRRFs"
-msgstr "Extrato das verbas IRRF"
-
-#: .\calculation\funds\models.py:362
-msgid "Número do documento"
-msgstr ""
-
-#: .\calculation\funds\models.py:371
-msgid "Statement Document"
-msgstr "Extrato da verba do documento"
-
-#: .\calculation\funds\models.py:372
-msgid "Statement Documents"
-msgstr "Extrato das verbas dos documentos"
-
-#: .\calculation\funds\models.py:387
+#: .\calculation\funds\abstract\models.py:198
 msgid "Índice na Data base"
 msgstr ""
 
-#: .\calculation\funds\models.py:388
+#: .\calculation\funds\abstract\models.py:199
 msgid "Índice na recuperação"
 msgstr ""
 
-#: .\calculation\funds\models.py:426
-msgid "Monetary Correction"
-msgstr "Correção Monetária"
-
-#: .\calculation\funds\models.py:427
-msgid "Monetary Corrections"
-msgstr "Correções Monetária"
-
-#: .\calculation\funds\models.py:444
-msgid "Monetary Correction Integration"
-msgstr "Correção Monetária da integração"
-
-#: .\calculation\funds\models.py:445
-msgid "Monetary Corrections Integrations"
-msgstr "Correções Monetária das integrações"
-
-#: .\calculation\funds\models.py:462
-msgid "Monetary Correction Document"
-msgstr "Correções Monetária do documento"
-
-#: .\calculation\funds\models.py:463
-msgid "Monetary Corrections Documents"
-msgstr "Correções Monetária dos documentos"
-
-#: .\calculation\funds\models.py:479
-msgid "Arrears Charge"
-msgstr "Encargo moratório"
-
-#: .\calculation\funds\models.py:480
-msgid "Arrears Charges"
-msgstr "Encargos moratórios"
-
-#: .\calculation\funds\models.py:492 .\calculation\funds\models.py:546
-msgid "Valor"
-msgstr ""
-
-#: .\calculation\funds\models.py:509
-msgid "Day"
-msgstr "Dia"
-
-#: .\calculation\funds\models.py:510
-msgid "Days"
-msgstr "Dia"
-
-#: .\calculation\funds\models.py:522
-msgid "Interest"
-msgstr "Juros"
-
-#: .\calculation\funds\models.py:523
-msgid "Interests"
-msgstr "Juros"
-
-#: .\calculation\funds\models.py:535
-msgid "Fine"
-msgstr "Multa"
-
-#: .\calculation\funds\models.py:536
-msgid "Fines"
-msgstr "Multas"
-
-#: .\calculation\funds\models.py:551
-msgid "Amount Due"
-msgstr "Total devido"
-
-#: .\calculation\funds\models.py:552
-msgid "Amount Dues"
-msgstr "Total devido"
-
-#: .\calculation\funds\models.py:569
-msgid "Valor tributável"
-msgstr ""
-
-#: .\calculation\funds\models.py:570
-msgid "Meses no período"
-msgstr ""
-
-#: .\calculation\funds\models.py:571
-msgid "Parcela tributável"
-msgstr ""
-
-#: .\calculation\funds\models.py:572
-msgid "Alíquota"
-msgstr ""
-
-#: .\calculation\funds\models.py:573
-msgid "Parcela a deduzir"
-msgstr ""
-
-#: .\calculation\funds\models.py:574
-msgid "Valor IRRF por mês"
-msgstr ""
-
-#: .\calculation\funds\models.py:575
-msgid "Valor do IRRF no período"
-msgstr ""
-
-#: .\calculation\funds\models.py:585
-msgid "Total value"
-msgstr "Valor total"
-
-#: .\calculation\funds\models.py:586
-msgid "Total values"
-msgstr "Valor total"
-
-#: .\calculation\funds\models.py:601
+#: .\calculation\funds\abstract\models.py:240
 msgid "Total valor histórico"
 msgstr ""
 
-#: .\calculation\funds\models.py:602
+#: .\calculation\funds\abstract\models.py:241
 msgid "Total valor corrigido"
 msgstr ""
 
-#: .\calculation\funds\models.py:645
-msgid "Total value fund"
-msgstr "Valor total do extrato das verbas"
+#: .\calculation\funds\apps.py:22 .\calculation\funds\irrf\models.py:68
+msgid "Verba"
+msgstr ""
 
-#: .\calculation\funds\models.py:646
-msgid "Total values funds"
-msgstr "Valor total do extrato das verbas"
+#: .\calculation\funds\document\apps.py:22
+msgid "Verbas Documento"
+msgstr ""
 
-#: .\calculation\funds\models.py:683
-msgid "Total value fund integration"
-msgstr "Valor total do extrato das verbas de integração"
+#: .\calculation\funds\document\models.py:65
+msgid "Número do documento"
+msgstr ""
 
-#: .\calculation\funds\models.py:684
-msgid "Total values funds integrations"
-msgstr "Valor total do extrato das verbas de integrações"
+#: .\calculation\funds\document\models.py:258
+#, fuzzy
+#| msgid "Total values"
+msgid "Total juros"
+msgstr "Valor total"
 
-#: .\core\dttuser\admin.py:27
+#: .\calculation\funds\document\models.py:259
+#, fuzzy
+#| msgid "Total value"
+msgid "Total multa"
+msgstr "Valor total"
+
+#: .\calculation\funds\document\models.py:260
+#, fuzzy
+#| msgid "Total value"
+msgid "Total devido"
+msgstr "Valor total"
+
+#: .\calculation\funds\integrations\apps.py:22
+msgid "Verbas - Integratórias"
+msgstr ""
+
+#: .\calculation\funds\integrations\models.py:41
+msgid "Descrição da verba"
+msgstr ""
+
+#: .\calculation\funds\integrations\models.py:42
+#: .\calculation\funds\models.py:95
+msgid "Aplicar súmula 381?"
+msgstr ""
+
+#: .\calculation\funds\irrf\apps.py:23
+msgid "Verbas - IRRF"
+msgstr ""
+
+#: .\calculation\funds\irrf\models.py:27
+msgid "Meses no período"
+msgstr ""
+
+#: .\calculation\funds\irrf\models.py:69 .\calculation\funds\irrf\models.py:98
+msgid "Valor tributável"
+msgstr ""
+
+#: .\calculation\funds\irrf\models.py:99
+msgid "Parcela tributável"
+msgstr ""
+
+#: .\calculation\funds\irrf\models.py:100 .\rates\models.py:202
+msgid "Alíquota"
+msgstr ""
+
+#: .\calculation\funds\irrf\models.py:101
+msgid "Parcela a deduzir"
+msgstr ""
+
+#: .\calculation\funds\irrf\models.py:102
+msgid "Valor IRRF por mês"
+msgstr ""
+
+#: .\calculation\funds\irrf\models.py:103
+msgid "Valor do IRRF no período"
+msgstr ""
+
+#: .\calculation\funds\models.py:94
+msgid "Reflexos DSR"
+msgstr ""
+
+#: .\calculation\funds\models.py:176
+#, fuzzy
+#| msgid "Total values"
+msgid "Total valor reflexos DSR"
+msgstr "Valor total"
+
+#: .\calculation\funds\models.py:177
+#, fuzzy
+#| msgid "Total value"
+msgid "Total apurado"
+msgstr "Valor total"
+
+#: .\calculation\models.py:18
+msgid "Calculado"
+msgstr ""
+
+#: .\calculation\models.py:18
+msgid "Revisado"
+msgstr ""
+
+#: .\calculation\models.py:18
+msgid "Aprovado"
+msgstr ""
+
+#: .\calculation\models.py:18
+msgid "Reprovado"
+msgstr ""
+
+#: .\calculation\models.py:19
+msgid "Aprovado Especialmente"
+msgstr ""
+
+#: .\calculation\models.py:51
+msgid "Número do cálculo"
+msgstr ""
+
+#: .\calculation\statement\apps.py:23
+msgid "Extrato Contábil"
+msgstr ""
+
+#: .\calculation\statement_pf\apps.py:23
+msgid "Extrato Contábil PF"
+msgstr ""
+
+#: .\calculation\statement_pf\models.py:530
+msgid "Legenda"
+msgstr ""
+
+#: .\calculation\statement_pf\models.py:571
+msgid "Não é permitido salvar rate e rate_integrations ao mesmo tempo."
+msgstr ""
+
+#: .\calculation\statement_pj\apps.py:23
+msgid "Extrato Contábil PJ"
+msgstr ""
+
+#: .\core\abstract\apps.py:9
+msgid "Abstract User"
+msgstr ""
+
+#: .\core\dttuser\admin.py:26
 msgid "Personal info"
 msgstr "Informação pessoal"
 
-#: .\core\dttuser\admin.py:28
+#: .\core\dttuser\admin.py:27
 msgid "Permissions"
 msgstr "Permissões"
 
-#: .\core\dttuser\admin.py:31
+#: .\core\dttuser\admin.py:30
 msgid "Important dates"
 msgstr "Datas importantes"
 
-#: .\core\dttuser\apps.py:8
+#: .\core\dttuser\apps.py:10
 msgid "DTTUser"
 msgstr ""
 
-#: .\core\dttuser\models.py:19 .\projects\project_user\models.py:15
+#: .\core\dttuser\models.py:16
+msgid "Sócio"
+msgstr ""
+
+#: .\core\dttuser\models.py:17
+msgid "Gerente"
+msgstr ""
+
+#: .\core\dttuser\models.py:18
+msgid "Diretor"
+msgstr ""
+
+#: .\core\dttuser\models.py:19
+msgid "Analista"
+msgstr ""
+
+#: .\core\dttuser\models.py:20
+msgid "Consultor Sênior"
+msgstr ""
+
+#: .\core\dttuser\models.py:23
+msgid "Ativo"
+msgstr ""
+
+#: .\core\dttuser\models.py:24
+msgid "Inativo"
+msgstr ""
+
+#: .\core\dttuser\models.py:25
+msgid "Pendente"
+msgstr ""
+
+#: .\core\dttuser\models.py:26
+msgid "Rejeitado"
+msgstr ""
+
+#: .\core\dttuser\models.py:27
+msgid "Ferias"
+msgstr ""
+
+#: .\core\dttuser\models.py:61 .\rates\views.py:120
+#, fuzzy
+#| msgid "first name"
+msgid "name"
+msgstr "primeiro nome"
+
+#: .\core\dttuser\models.py:64
+#, fuzzy
+#| msgid "Permissions"
+msgid "permissions"
+msgstr "Permissões"
+
+#: .\core\dttuser\models.py:84 .\projects\project_user\models.py:16
 msgid "groups"
 msgstr "Grupos"
 
-#: .\core\dttuser\models.py:22 .\projects\project_user\models.py:18
+#: .\core\dttuser\models.py:87 .\projects\project_user\models.py:19
 msgid ""
 "The groups this user belongs to. A user will get all permissions granted to "
 "each of their groups."
@@ -283,58 +386,80 @@ msgstr ""
 "Os grupos aos quais este usuário pertence. Um usuário obterá todas as "
 "permissões concedidas a cada um de seus grupos."
 
-#: .\core\dttuser\models.py:30 .\projects\project_user\models.py:24
+#: .\core\dttuser\models.py:95
+#, fuzzy
+#| msgid "groups"
+msgid "subgroups"
+msgstr "Grupos"
+
+#: .\core\dttuser\models.py:98
+#, fuzzy
+#| msgid ""
+#| "The groups this user belongs to. A user will get all permissions granted "
+#| "to each of their groups."
+msgid ""
+"The subgroups this user belongs to. A user will get all permissions granted "
+"to each of their subgroups."
+msgstr ""
+"Os grupos aos quais este usuário pertence. Um usuário obterá todas as "
+"permissões concedidas a cada um de seus grupos."
+
+#: .\core\dttuser\models.py:106 .\projects\project_user\models.py:25
 msgid "user permissions"
 msgstr "Permissões do usuário"
 
-#: .\core\dttuser\models.py:32 .\projects\project_user\models.py:26
+#: .\core\dttuser\models.py:108 .\projects\project_user\models.py:27
 msgid "Specific permissions for this user."
 msgstr "Permissões específicas para este usuário."
 
-#: .\core\dttuser\models.py:126
+#: .\core\dttuser\models.py:209
 msgid "username"
 msgstr ""
 
-#: .\core\dttuser\models.py:130
+#: .\core\dttuser\models.py:213
 msgid "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
 msgstr ""
 "Obrigatório. 150 caracteres ou menos. Somente letras, dígitos e @/./+/-/_."
 
-#: .\core\dttuser\models.py:133
+#: .\core\dttuser\models.py:216
 msgid "A user with that username already exists."
 msgstr "Um usuário com esse nome já existe."
 
-#: .\core\dttuser\models.py:137
+#: .\core\dttuser\models.py:220
+msgid "role"
+msgstr ""
+
+#: .\core\dttuser\models.py:222
 msgid "first name"
 msgstr "primeiro nome"
 
-#: .\core\dttuser\models.py:138
+#: .\core\dttuser\models.py:223
 #, fuzzy
 #| msgid "first name"
 msgid "last name"
 msgstr "primeiro nome"
 
-#: .\core\dttuser\models.py:139
+#: .\core\dttuser\models.py:224
 msgid "email address"
 msgstr "email"
 
-#: .\core\dttuser\models.py:140
+#: .\core\dttuser\models.py:225
 msgid "user picture"
 msgstr "foto do usuário"
 
-#: .\core\dttuser\models.py:142
+#: .\core\dttuser\models.py:227
 msgid "staff status"
 msgstr ""
 
-#: .\core\dttuser\models.py:145
+#: .\core\dttuser\models.py:230
 msgid "Designates whether the user can log into this admin site."
 msgstr "Designa se o usuário pode fazer login neste site de administração."
 
-#: .\core\dttuser\models.py:148
+#: .\core\dttuser\models.py:233
 msgid "active"
 msgstr "ativo"
 
-#: .\core\dttuser\models.py:151
+#: .\core\dttuser\models.py:236
 msgid ""
 "Designates whether this user should be treated as active. Unselect this "
 "instead of deleting accounts."
@@ -342,34 +467,376 @@ msgstr ""
 "Designa se este usuário deve ser tratado como ativo. Desmarque esta em vez "
 "de excluir contas."
 
-#: .\core\dttuser\models.py:155
+#: .\core\dttuser\models.py:240
 msgid "date joined"
 msgstr "data de entrada"
 
-#: .\core\dttuser\models.py:186
-msgid "user"
-msgstr "usuário"
+#: .\core\entity\apps.py:9
+msgid "Entidade"
+msgstr ""
 
-#: .\core\dttuser\models.py:187
-msgid "users"
-msgstr "usuários"
+#: .\core\permission\apps.py:9
+#, fuzzy
+#| msgid "Permissions"
+msgid "Permissão"
+msgstr "Permissões"
 
-#: .\creditors\classes\apps.py:8
+#: .\core\permission\views.py:81
+msgid "Can Request failed Calculation"
+msgstr ""
+
+#: .\core\permission\views.py:84
+msgid "Can Reviewer Calculation"
+msgstr ""
+
+#: .\core\permission\views.py:87
+msgid "Can Approve Requested Calculation"
+msgstr ""
+
+#: .\core\permission\views.py:88
+msgid "Can Approve Calculated Calculation"
+msgstr ""
+
+#: .\core\permission\views.py:91
+msgid "Can Special Approve Requested Calculation"
+msgstr ""
+
+#: .\core\permission\views.py:92
+msgid "Can Special Approve Calculated Calculation"
+msgstr ""
+
+#: .\core\permission\views.py:365
+msgid ""
+"Necessário adicionar o atributo \"perms: list\" para usar a classe "
+"CheckPermissions"
+msgstr ""
+
+#: .\creditors\classes\apps.py:10
 msgid "Classes"
 msgstr ""
 
-#: .\creditors\notice\apps.py:7
+#: .\creditors\notice\apps.py:10
 msgid "Edital"
+msgstr ""
+
+#: .\projects\court\apps.py:9
+msgid "Corte"
+msgstr ""
+
+#: .\projects\judge\apps.py:9
+msgid "Juiz"
+msgstr ""
+
+#: .\projects\lawyer\apps.py:9
+msgid "Advogado"
+msgstr ""
+
+#: .\projects\project_user\apps.py:9
+msgid "Usuário do Projeto"
+msgstr ""
+
+#: .\projects\region\apps.py:9
+msgid "Comarca"
+msgstr ""
+
+#: .\rates\apps.py:9
+msgid "Índice"
+msgstr ""
+
+#: .\rates\models.py:17
+msgid "Nome do índice"
+msgstr ""
+
+#: .\rates\models.py:18
+msgid "O índice é por dia? dia ou mês"
+msgstr ""
+
+#: .\rates\models.py:56
+msgid "Data do índice"
+msgstr ""
+
+#: .\rates\models.py:57
+msgid "Valor do índice"
+msgstr ""
+
+#: .\rates\models.py:61
+msgid "rate: {} | date: {} | value: {}"
+msgstr "índice: {} | data: {} | valor: {}"
+
+#: .\rates\models.py:198
+msgid "Ano de referência"
+msgstr ""
+
+#: .\rates\models.py:200
+msgid "De"
+msgstr ""
+
+#: .\rates\models.py:201
+msgid "Até"
+msgstr ""
+
+#: .\rates\models.py:203
+msgid "Dedução"
+msgstr ""
+
+#: .\rates\models.py:224
+msgid "Verbas"
+msgstr ""
+
+#: .\rates\models.py:242
+msgid "End Point"
+msgstr ""
+
+#: .\rates\models.py:243
+msgid "É múltiplo?"
+msgstr ""
+
+#: .\rates\models.py:273
+msgid "Nome do campo"
+msgstr ""
+
+#: .\rates\models.py:274
+msgid "Chave do campo"
+msgstr ""
+
+#: .\rates\models.py:275
+msgid "Tipo de campo"
+msgstr ""
+
+#: .\rates\models.py:276
+msgid "Ordenação"
+msgstr ""
+
+#: .\rates\models.py:277
+msgid "É editável?"
+msgstr ""
+
+#: .\rates\models.py:278
+msgid "É obrigatório?"
+msgstr ""
+
+#: .\rates\views.py:17 .\rates\views.py:29 .\rates\views.py:56
+msgid "Rate"
+msgstr ""
+
+#: .\rates\views.py:20
+msgid "Returns the index and its accumulated values, period and date"
+msgstr ""
+
+#: .\rates\views.py:25 .\rates\views.py:52
+msgid "rate"
+msgstr ""
+
+#: .\rates\views.py:35
+msgid "Saves an index according to its name and values"
+msgstr ""
+
+#: .\rates\views.py:48
+msgid "RateFile"
+msgstr ""
+
+#: .\rates\views.py:62
+msgid "Returns the index and filename"
+msgstr ""
+
+#: .\rates\views.py:66
+msgid ""
+"\n"
+"        Saves an index using an excel file. This file must contain the "
+"columns mes and indice. Optionally\n"
+"        according to the index have the fields acumulado and periodo\n"
+"        "
+msgstr ""
+
+#: .\rates\views.py:75
+msgid "Necessário o campo: index"
+msgstr ""
+
+#: .\rates\views.py:78
+msgid "Necessário o campo: file"
+msgstr ""
+
+#: .\rates\views.py:96
+#, python-brace-format
+msgid ""
+"O arquivo {filename} não contêm os campos corretos. Necessário ao menos a "
+"coluna mes e indice, "
+msgstr ""
+
+#: .\rates\views.py:101
+#, python-brace-format
+msgid "O arquivo {filename} está vazio"
+msgstr ""
+
+#: .\rates\views.py:116 .\rates\views.py:141
+msgid "Rate Template"
+msgstr ""
+
+#: .\rates\views.py:124 .\recovering\views.py:29
+msgid "Nome"
+msgstr ""
+
+#: .\rates\views.py:130
+msgid ""
+"Example of how templates should look for each selected index type\n"
+"            Returns a list of templates with their id and name"
+msgstr ""
+
+#: .\rates\views.py:146
+msgid ""
+"Example of how templates should look for each selected index type\n"
+"        Returns a detail of template with their id, name, tables and fields "
+"in tables"
 msgstr ""
 
 #: .\recovering\apps.py:8
 msgid "Recuperanda"
 msgstr ""
 
-#: .\recovering\archive\apps.py:8
+#: .\recovering\archive\apps.py:10
 msgid "Arquivo"
 msgstr ""
 
-#: .\recovering\archive_recovering\apps.py:8
+#: .\recovering\archive_recovering\apps.py:10
 msgid "Arquivo Recuperanda"
 msgstr ""
+
+#: .\recovering\models.py:13
+msgid "Em Análise"
+msgstr ""
+
+#: .\recovering\models.py:15
+msgid "Em Andamento"
+msgstr ""
+
+#: .\recovering\models.py:16
+msgid "Cancelado"
+msgstr ""
+
+#: .\recovering\models.py:21
+msgid "Status Suporte"
+msgstr ""
+
+#: .\recovering\schemas.py:59
+msgid "Recuperanda já cadastrada"
+msgstr ""
+
+#: .\recovering\views.py:21
+msgid "Recovering"
+msgstr "Recuperanda"
+
+#: .\recovering\views.py:25
+msgid "nome"
+msgstr ""
+
+#: .\recovering\views.py:37
+msgid "CPF/CNPJ"
+msgstr ""
+
+#: .\recovering\views.py:48
+msgid ""
+"Returns a list of recoverings, containing the details of the recovering, the "
+"creditors"
+msgstr ""
+
+#: .\recovering\views.py:52
+msgid "Create recovering receiving a dict, return recovering detail"
+msgstr ""
+
+#: .\utils.py:25
+#, python-brace-format
+msgid "O valor {value} não corresponde a nenhuma escolha válida"
+msgstr ""
+
+#~ msgid "Funds"
+#~ msgstr "Verbas"
+
+#~ msgid "Statement Fund"
+#~ msgstr "Extrato da verba"
+
+#~ msgid "Statement Funds"
+#~ msgstr "Extrato das verbas"
+
+#~ msgid "Statement Fund Integration"
+#~ msgstr "Extrato da verba de integração"
+
+#~ msgid "Statement Funds Integrations"
+#~ msgstr "Extrato das verbas de integrações"
+
+#~ msgid "Statement IRRF"
+#~ msgstr "Extrato da verba IRRF"
+
+#~ msgid "Statement IRRFs"
+#~ msgstr "Extrato das verbas IRRF"
+
+#~ msgid "Statement Document"
+#~ msgstr "Extrato da verba do documento"
+
+#~ msgid "Statement Documents"
+#~ msgstr "Extrato das verbas dos documentos"
+
+#~ msgid "Monetary Correction"
+#~ msgstr "Correção Monetária"
+
+#~ msgid "Monetary Corrections"
+#~ msgstr "Correções Monetária"
+
+#~ msgid "Monetary Correction Integration"
+#~ msgstr "Correção Monetária da integração"
+
+#~ msgid "Monetary Corrections Integrations"
+#~ msgstr "Correções Monetária das integrações"
+
+#~ msgid "Monetary Correction Document"
+#~ msgstr "Correções Monetária do documento"
+
+#~ msgid "Monetary Corrections Documents"
+#~ msgstr "Correções Monetária dos documentos"
+
+#~ msgid "Arrears Charge"
+#~ msgstr "Encargo moratório"
+
+#~ msgid "Arrears Charges"
+#~ msgstr "Encargos moratórios"
+
+#~ msgid "Day"
+#~ msgstr "Dia"
+
+#~ msgid "Days"
+#~ msgstr "Dia"
+
+#~ msgid "Interest"
+#~ msgstr "Juros"
+
+#~ msgid "Interests"
+#~ msgstr "Juros"
+
+#~ msgid "Fine"
+#~ msgstr "Multa"
+
+#~ msgid "Fines"
+#~ msgstr "Multas"
+
+#~ msgid "Amount Due"
+#~ msgstr "Total devido"
+
+#~ msgid "Amount Dues"
+#~ msgstr "Total devido"
+
+#~ msgid "Total value fund"
+#~ msgstr "Valor total do extrato das verbas"
+
+#~ msgid "Total values funds"
+#~ msgstr "Valor total do extrato das verbas"
+
+#~ msgid "Total value fund integration"
+#~ msgstr "Valor total do extrato das verbas de integração"
+
+#~ msgid "Total values funds integrations"
+#~ msgstr "Valor total do extrato das verbas de integrações"
+
+#~ msgid "user"
+#~ msgstr "usuário"
+
+#~ msgid "users"
+#~ msgstr "usuários"

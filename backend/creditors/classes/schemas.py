@@ -5,8 +5,7 @@ from rest_framework import serializers
 
 
 class ClassesSchema(AbstractDescriptionSchema):
-    classe_display = serializers.CharField(
-        source='get_classe_display', read_only=True)
+    classe_display = serializers.CharField(source='get_classe_display', read_only=True)
 
     class Meta:
         model = Classes
@@ -21,7 +20,7 @@ class ClassesSchema(AbstractDescriptionSchema):
 class AbstractClassesSchema(AbstractDescriptionSchema):
     classes = ClassesSchema(many=False, read_only=False)
     coins = CoinsSchema(many=False, read_only=False)
-    archive_json = serializers.JSONField()
+    archive_json = serializers.JSONField(allow_null=True, required=False)
     creditor_id = serializers.UUIDField()
 
     # def validate_creditor_id(self, creditor_id):
@@ -33,12 +32,12 @@ class AbstractClassesSchema(AbstractDescriptionSchema):
 class AbstractClassesUpdateSchema(AbstractDescriptionSchema):
     classes = ClassesSchema(many=False, read_only=False, required=False)
     coins = CoinsSchema(many=False, read_only=False, required=False)
-    archive_json = serializers.JSONField(required=False)
+    archive_json = serializers.JSONField(allow_null=True, required=False)
 
 
 class AbstractClassesLawyerUpdateSchema(AbstractDescriptionSchema):
     coins = CoinsSchema(many=False, read_only=False)
-    archive_json = serializers.JSONField()
+    archive_json = serializers.JSONField(allow_null=True, required=False)
     creditor_id = serializers.UUIDField()
 
     def validate(self, data):
@@ -51,7 +50,7 @@ class AbstractClassesLawyerUpdateSchema(AbstractDescriptionSchema):
 
 class AbstractClassesLawyerSchema(AbstractDescriptionSchema):
     coins = CoinsSchema(many=False, read_only=False, required=False)
-    archive_json = serializers.JSONField(required=False)
+    archive_json = serializers.JSONField(allow_null=True, required=False)
     creditor_id = serializers.UUIDField()
 
     def validate_creditor_id(self, creditor_id):

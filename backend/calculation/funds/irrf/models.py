@@ -26,10 +26,6 @@ class FundIRRF(AbstractFunds):
     """
     months_period = models.PositiveIntegerField(_('Meses no período'), default=1)
 
-    class Meta:
-        verbose_name = _('Fund IRRF')
-        verbose_name_plural = _('Funds IRRF')
-
     def get_months_period(self) -> PositiveIntegerField:
         return self.months_period
 
@@ -71,10 +67,6 @@ class StatementIRRF(AbstractModel):
     fund = models.ForeignKey(FundIRRF, on_delete=models.PROTECT)
     fund_name = models.CharField(_('Verba'), max_length=150)
     taxable_amounts = models.FloatField(_('Valor tributável'))
-
-    class Meta:
-        verbose_name = _('Statement IRRF')
-        verbose_name_plural = _('Statements IRRF')
 
     def __str__(self):
         return f'{self.fund_name} | {self.fund} | {self.taxable_amounts}'
@@ -191,9 +183,6 @@ class TotalValuesIRRF(AbstractStatus):
         self.set_calculation_done()
         self.save()
 
-    class Meta:
-        verbose_name = _('Total value IRRF')
-        verbose_name_plural = _('Total values IRRF')
 
 
 @receiver(gen_statement_irrf, sender=StatementIRRF)

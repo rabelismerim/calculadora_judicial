@@ -1,7 +1,7 @@
 from calculation.criterion.models import Criterion
 from calculation.criterion.schemas import CriterionSchema
 from core.abstract.views import AbstractViewApi
-from rest_framework.schemas.openapi import AutoSchema
+from core.abstract.views import CustomSchema as AutoSchema
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 

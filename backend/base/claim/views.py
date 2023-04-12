@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from rest_framework import permissions, status, serializers
-from rest_framework.schemas.openapi import AutoSchema
+from core.abstract.views import CustomSchema as AutoSchema
 from base.claim.models import ClaimCreditor, ClaimLawyer
 from base.claim.schemas import ClaimCreditorUpdateSchema, ClaimLawyerUpdateSchema,  ClaimCreditorSchema
 from base.coins.models import Coins
@@ -112,9 +112,11 @@ class ClaimLawyerApi(AbstractViewApi):
 
         if not claim:
             if not coins:
-                raise serializers.ValidationError([f'Necessário informar coins'])
+                raise serializers.ValidationError(
+                    [f'Necessário informar coins'])
             if not classes:
-                raise serializers.ValidationError([f'Necessário informar a classe'])
+                raise serializers.ValidationError(
+                    [f'Necessário informar a classe'])
             new_claim['coins'] = Coins.objects.create(**coins)
             new_claim['creditor'] = creditor
             self.model.objects.create(classes_id=classes.id, **new_claim)

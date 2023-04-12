@@ -22,8 +22,7 @@ from core.abstract.models import AbstractModel
 
 class Funds(AbstractFunds):
     class Meta:
-        verbose_name = _('Fund')
-        verbose_name_plural = _('Funds')
+        verbose_name_plural = 'Funds'
 
     def get_total_funds(self):
         """
@@ -91,12 +90,12 @@ class StatementFunds(AbstractStatement):
     The 'calcule_monetary_correction()' method uses the '_get_index_monetary_correction()' method, which should be defined
     in the class that inherits or implements the 'AbstractStatement' class.
     """
-    dsr_reflexes = models.FloatField(_('Reflexos DSR'), default=0)  # DRS - Descanso semanal remunerado
+    dsr_reflexes = models.FloatField(
+        _('Reflexos DSR'), default=0)  # DRS - Descanso semanal remunerado
     summary = models.BooleanField(_('Aplicar súmula 381?'), default=False)
 
     class Meta:
-        verbose_name = _('Statement Fund')
-        verbose_name_plural = _('Statement Funds')
+        verbose_name_plural = 'Statement Funds'
 
     def get_total_value(self) -> float:
         """Returns the total value of an asset by summing its historical value and the value of its DSR reflexes.
@@ -134,7 +133,8 @@ class StatementFunds(AbstractStatement):
         """Retrieves the corrected value of the statement if the monetary correction exists, or else returns 0."""
         data = self._get_index_monetary_correction()
         if data:
-            MonetaryCorrection.objects.update_or_create(defaults=data, **{'statement': self})
+            MonetaryCorrection.objects.update_or_create(
+                defaults=data, **{'statement': self})
             self.set_calculation_done()
 
     def get_corrected_value(self) -> float:
@@ -151,14 +151,10 @@ class MonetaryCorrection(AbstractMonetaryCorrection):
     In <Excel>, it refers to each piece of data that can be inserted in the table of funds, monetary correction in the
     rates sheets (tst, moral damages, etc.)
 
-    Attributes:
+    Attributes:ø
         statement (StatementFunds): The statement of funds to which the monetary correction applies.
     """
     statement = models.OneToOneField(StatementFunds, on_delete=models.PROTECT)
-
-    class Meta:
-        verbose_name = _('Monetary Correction')
-        verbose_name_plural = _('Monetary Corrections')
 
 
 class TotalValuesFunds(AbstractTotalValuesFunds):
@@ -176,7 +172,8 @@ class TotalValuesFunds(AbstractTotalValuesFunds):
         get_calculated_statement(): Returns the calculated statement of the fund.
         set_total(): Calculates and sets the total corrected and historical values of the fund based on the calculated statement.
     """
-    total_dsr_reflexes = models.FloatField(_('Total valor reflexos DSR'), default=0)
+    total_dsr_reflexes = models.FloatField(
+        _('Total valor reflexos DSR'), default=0)
     total_accurate = models.FloatField(_('Total apurado'), default=0)
     fund = models.OneToOneField(Funds, on_delete=models.PROTECT)
 
@@ -209,8 +206,7 @@ class TotalValuesFunds(AbstractTotalValuesFunds):
         self.save()
 
     class Meta:
-        verbose_name = _('Total value fund')
-        verbose_name_plural = _('Total values funds')
+        verbose_name_plural = 'Total values funds'
 
 
 @receiver(gen_statement_funds, sender=StatementFunds)

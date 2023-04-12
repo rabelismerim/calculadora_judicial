@@ -5,7 +5,7 @@ from base.coins.models import Coins
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from rest_framework import status
-from rest_framework.schemas.openapi import AutoSchema
+from core.abstract.views import CustomSchema as AutoSchema
 from rest_framework import permissions
 from core.entity.models import Entity
 from core.permission.views import CheckHasPermission
@@ -84,7 +84,8 @@ class CreditorListApi(AbstractCreditorApi):
             A response with a JSON object containing a list of serialized creditor data.
         """
         project_id = kwargs.get('id')
-        creditors = self.serializer_class(self.model.objects.filter(recovering__project_id=project_id), many=True).data
+        creditors = self.serializer_class(self.model.objects.filter(
+            recovering__project_id=project_id), many=True).data
         return JsonResponse({'creditors': creditors})
 
 

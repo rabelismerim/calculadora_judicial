@@ -7,7 +7,7 @@ Api's classes use the Integrations model and schema Integrations to work with da
 from calculation.funds.integrations.models import StatementIntegrations
 from calculation.funds.integrations.schemas import StatementIntegrationsUpdateSchema, StatementIntegrationsSchema
 from core.abstract.views import AbstractViewApi
-from rest_framework.schemas.openapi import AutoSchema
+from core.abstract.views import CustomSchema as AutoSchema
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 

@@ -10,7 +10,7 @@ from django.http import JsonResponse
 from calculation.comparative.schemas import ComparativeSchema
 from calculation.comparative.models import Comparative, ComparativeFunds, ComparativeFundsIntegrations
 from core.abstract.views import AbstractViewApi
-from rest_framework.schemas.openapi import AutoSchema
+from core.abstract.views import CustomSchema as AutoSchema
 from rest_framework import permissions, status
 from core.permission.views import CheckHasPermission
 

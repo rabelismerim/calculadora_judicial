@@ -16,7 +16,7 @@ from projects.project_user.schemas import ProjectUserProjectSchema
 from projects.region.models import Region
 from projects.region.schemas import RegionSchema
 from recovering.schemas import RecoveringSchema
-from utils import get_user_model
+from utils import get_user_model, _
 
 User = get_user_model()
 
@@ -96,37 +96,34 @@ class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):
         model = Project
         fields = '__all__'
 
-    def validate_executors(self, executors):
+    @staticmethod
+    def validate_executors(executors):
         """Validate executors with a list format"""
         if not executors:
-            raise serializers.ValidationError(
-                ['Necessário selecionar ao menos um usuário'])
+            raise serializers.ValidationError([_('Must select at least one user')])
 
         if isinstance(executors, list) is False:
-            raise serializers.ValidationError(
-                ['O campo executors deve estar no formato de lista'])
+            raise serializers.ValidationError([_('The executors field must be in list format')])
         return executors
 
-    def validate_approvers(self, approvers):
+    @staticmethod
+    def validate_approvers(approvers):
         """Validate approvers with a list format"""
         if not approvers:
-            raise serializers.ValidationError(
-                ['Necessário selecionar ao menos um usuário'])
+            raise serializers.ValidationError([_('Must select at least one user')])
 
         if isinstance(approvers, list) is False:
-            raise serializers.ValidationError(
-                ['O campo approvers deve estar no formato de lista'])
+            raise serializers.ValidationError([_('The approvers field must be in list format')])
         return approvers
 
-    def validate_reviewers(self, reviewers):
+    @staticmethod
+    def validate_reviewers(reviewers):
         """Validate reviewers with a list format"""
         if not reviewers:
-            raise serializers.ValidationError(
-                ['Necessário selecionar ao menos um usuário'])
+            raise serializers.ValidationError([_('Must select at least one user')])
 
         if isinstance(reviewers, list) is False:
-            raise serializers.ValidationError(
-                ['O campo reviewers deve estar no formato de lista'])
+            raise serializers.ValidationError([_('The reviewers field must be in list format')])
         return reviewers
 
     def validate(self, data):
@@ -168,8 +165,8 @@ class ProjectListSchema(ProjectSchema):
     class Meta:
         model = Project
         fields = ("id", 'description', 'status', 'status_display', 'created_at', 'project_users',
-                  'engagement', 'num_recovering', 'is_adm', 'process_number', 'legal_manager', 
-                  'calculation_manager', 'financial_manager', 'legal_partner' ,'financial_partner')
+                  'engagement', 'num_recovering', 'is_adm', 'process_number', 'legal_manager',
+                  'calculation_manager', 'financial_manager', 'legal_partner', 'financial_partner')
 
 
 exclude = ('create_user', 'created_at',
@@ -181,7 +178,7 @@ class ProjectCreateSchema(serializers.Serializer):
 
     user_options = UserDttSchema(
         User.objects.all(), many=True, read_only=True,
-        exclude=('create_user', 'created_at', 'is_staff', 'user_permissions', 'date_joined', 'is_active', 'groups', ))
+        exclude=('create_user', 'created_at', 'is_staff', 'user_permissions', 'date_joined', 'is_active', 'groups',))
 
     judge_options = JudgeSchema(Judge.objects.all(),
                                 many=True, read_only=True)

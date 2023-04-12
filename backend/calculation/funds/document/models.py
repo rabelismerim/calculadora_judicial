@@ -17,9 +17,6 @@ from calculation.funds.models import AbstractFunds, AbstractStatement, AbstractM
 
 
 class FundDocument(AbstractFunds):
-    class Meta:
-        verbose_name = _('Fund document')
-        verbose_name_plural = _('Funds document')
 
     def get_total_funds(self):
         """
@@ -175,10 +172,6 @@ class StatementDocument(AbstractStatement):
             return 0
         return self._calc_fine(corrected_value, fine, default_interest)
 
-    class Meta:
-        verbose_name = _('Statement Document')
-        verbose_name_plural = _('Statement Documents')
-
     def has_monetary_correction(self) -> bool:
         """Returns True if the monetary correction exists for the statement."""
         return hasattr(self, 'monetarycorrectiondocument')
@@ -244,9 +237,6 @@ class MonetaryCorrectionDocument(AbstractMonetaryCorrection):
             return 0
         return self.index_recovering / self.index_data_base * total_value
 
-    class Meta:
-        verbose_name = _('Monetary Correction Document')
-        verbose_name_plural = _('Monetary Corrections Documents')
 
 
 class TotalValuesDocument(AbstractTotalValuesFunds):
@@ -287,10 +277,6 @@ class TotalValuesDocument(AbstractTotalValuesFunds):
             self.total_fine = statement.get_fine()
             self.total_due = statement.get_total_due()
             self.save()
-
-    class Meta:
-        verbose_name = _('Total value document')
-        verbose_name_plural = _('Total values documents')
 
 
 @receiver(gen_statement_documents, sender=StatementDocument)

@@ -67,10 +67,6 @@ class Subgroup(models.Model):
 
     objects = SubgroupManager()
 
-    class Meta:
-        verbose_name = _("Subgrupo")
-        verbose_name_plural = _("Subgrupos")
-
     def __str__(self):
         return self.name
 
@@ -270,10 +266,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         # customization to store the original field values on the instance
         instance._loaded_values = dict(zip(field_names, values))
         return instance
-
-    class Meta:
-        verbose_name = _('user')
-        verbose_name_plural = _('users')
 
     def clean(self):
         super().clean()

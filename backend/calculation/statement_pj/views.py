@@ -7,7 +7,7 @@ The StatementPJApi class uses the Statement_Pj model and Statement_PjSchema for 
 
 
 from core.abstract.views import AbstractViewApi
-from rest_framework.schemas.openapi import AutoSchema
+from core.abstract.views import CustomSchema as AutoSchema
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 from calculation.statement_pj.models import StatementPJ

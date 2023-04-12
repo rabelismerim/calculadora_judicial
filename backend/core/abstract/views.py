@@ -1,20 +1,53 @@
 import datetime
+from abc import ABC
+
 from django.http import JsonResponse
+from django.utils.encoding import smart_str
 from rest_framework import generics, serializers, status
 from rest_framework.filters import BaseFilterBackend
 from rest_framework.generics import get_object_or_404
+from rest_framework.utils import formatting
+from rest_framework.schemas.openapi import AutoSchema
 
 
-class SimpleFilterBackend(BaseFilterBackend):
+class CustomSchema(AutoSchema):
+    def get_description(self, path, method):
+        view = self.view
+        init = self._get_init_description()
+        method_name = getattr(view, 'action', method.lower())
+        method_docstring = getattr(view, method_name, None).__doc__
+        if hasattr(view, 'docs') and isinstance(view.docs, dict) and view.docs.get(method.lower()):
+            method_docstring = view.docs.get(method.lower())
+            docstring = self._get_description_section(view, method.lower(),
+                                                      formatting.dedent(smart_str(method_docstring)))
+
+        elif method_docstring:
+            docstring = self._get_description_section(view, method.lower(),
+                                                      formatting.dedent(smart_str(method_docstring)))
+        else:
+            docstring = self._get_description_section(view, getattr(view, 'action', method.lower()),
+                                                      view.get_view_description())
+
+        return formatting.dedent(smart_str(init + str(docstring)))
+
+    def _get_init_description(self) -> str:
+        view = self.view
+        if hasattr(view, 'docs') and isinstance(view.docs, dict) and view.docs.get('init'):
+            return view.docs.get('init') + '\r\n'
+        return ''
+
+
+class SimpleFilterBackend(BaseFilterBackend, ABC):
     def get_schema_operation_parameters(self, view):
         return view.query_params
 
 
 class AbstractViewApi(generics.GenericAPIView):
-    """HTTP methods for Student"""
+    """HTTP methods for Api VIew"""
     filter_backends = (SimpleFilterBackend,)
     query_params = []
     model = None
+    schema = CustomSchema()
 
     @staticmethod
     def get_schema_operation_parameters(view):
@@ -107,7 +140,8 @@ class AbstractViewApi(generics.GenericAPIView):
         id_ = kwargs.get('id')
         exclude = self.__get_exclude_values()
         try:
-            serializer = self.serializer_class(data=request.data, exclude=exclude)
+            serializer = self.serializer_class(
+                data=request.data, exclude=exclude)
         except ValueError:
             serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -125,3 +159,34 @@ class AbstractViewApi(generics.GenericAPIView):
 
     def get_queryset(self):
         return {}
+
+
+class AbstractViewsApi(generics.GenericAPIView):
+    """HTTP methods for Api VIew"""
+    cont_called = 0
+
+    def get(self, request, *args, **kwargs):
+        """Override if necessary"""
+        return JsonResponse({})
+
+    def __init__(self, *args, **kwargs):
+        self.cont_called += 1
+        super(AbstractViewsApi, self).__init__(*args, **kwargs)
+        if hasattr(self, 'docs') and isinstance(self.docs, dict):
+            for key, value in self.docs.items():
+                if key in self.http_method_names:
+                    attribute = getattr(self, key)
+                    attribute.__func__.__doc__ = value
+        print(self.cont_called, 'total called')  # 2
+
+
+class GetViewApi(AbstractViewApi):
+    docs = {
+        'get': 'Override __docs__ in abstract class'
+    }
+
+
+class AnotherViewApi(AbstractViewApi):
+    def get(self, request, *args, **kwargs):
+        """Comentário OK"""
+        return JsonResponse({})

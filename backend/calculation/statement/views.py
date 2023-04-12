@@ -8,7 +8,7 @@ The StatementApi class uses the Statement model and StatementSchema for working 
 from calculation.statement.schemas import StatementSchema
 from calculation.statement.models import Statement
 from core.abstract.views import AbstractViewApi
-from rest_framework.schemas.openapi import AutoSchema
+from core.abstract.views import CustomSchema as AutoSchema
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 

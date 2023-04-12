@@ -1,5 +1,3 @@
-import datetime
-
 from django.contrib.auth.models import Group
 from django.db import transaction
 
@@ -7,7 +5,7 @@ from config.settings import GROUP_NAME_APPROVER, GROUP_NAME_EXECUTOR, GROUP_NAME
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from rest_framework import status
-from rest_framework.schemas.openapi import AutoSchema
+from core.abstract.views import CustomSchema as AutoSchema
 from rest_framework import permissions
 from core.entity.models import Entity
 from core.permission.views import CheckHasPermission, check_query_permission
@@ -15,10 +13,8 @@ from projects.models import Project
 from projects.project_user.models import ProjectUser
 from projects.schemas import ProjectSchema, ProjectListSchema
 from projects.engagement.models import Engagement, ProjectEngagement
-from recovering.archive.models import Archive
-from recovering.archive_recovering.models import ArchiveRecovering
 from recovering.models import Recovering
-from utils import get_user_model
+from utils import get_user_model, _, doc
 
 User = get_user_model()
 
@@ -29,16 +25,51 @@ class AbstractProjectApi(AbstractViewApi):
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Project
     http_method_names = ['get']
-    schema = AutoSchema(tags=["Project"])
+    schema = AutoSchema(tags=[str(_("Project"))])
+
+    docs = {
+        'init': _("""The `Project` class represents a large project/engagement in a legal or administrative process. It 
+        contains properties like `project_start` and `project_end` to specify the start and end date of the project, 
+        as well as a `status` field with choices specified by the `STATUS_CHOICES`
+        """),
+
+        'get': _("""Get the list of projects, with some information about it, 
+        being able to filter by process_number, status, description and engagement number"""),
+
+    }
     query_params = [
         {
-            "name": "descrição",
+            "name": "description",
             "field": "description__icontains",
             "in": "query",
             "required": False,
-            "description": "Descrição do projeto",
+            "description": str(_("Description")),
             "schema": {"type": "string"}
-        }
+        },
+        {
+            "name": "process_number",
+            "field": "process_number__icontains",
+            "in": "query",
+            "required": False,
+            "description": str(_("Process number")),
+            "schema": {"type": "string"}
+        },
+        {
+            "name": "status",
+            "field": "status__icontains",
+            "in": "query",
+            "required": False,
+            "description": "Status",
+            "schema": {"type": "string"}
+        },
+        {
+            "name": "engagement",
+            "field": "engagement__engagement__number__icontains",
+            "in": "query",
+            "required": False,
+            "description": "Engagement",
+            "schema": {"type": "string"}
+        },
     ]
     perms = ['can_view_all_projects']
 
@@ -67,10 +98,8 @@ class ProjectApi(AbstractProjectApi):
         return self.layout_serializers.get(self.request.method.lower(),
                                            self.layout_serializers['default'])
 
+    @doc("""Create Project receiving a dict, return project detail""")
     def post(self, request, *args, **kwargs):
-        """
-           Create Project receiving a dict, return project detail
-        """
 
         with transaction.atomic():
             serializer = self.serializer_class(data=request.data)
@@ -93,17 +122,20 @@ class ProjectApi(AbstractProjectApi):
                 name=GROUP_NAME_REVIEWER)
 
             for user_django_id in executors:
-                project_user = ProjectUser.objects.create(user_id=user_django_id)
+                project_user = ProjectUser.objects.create(
+                    user_id=user_django_id)
                 project_user.groups.add(group_executor.id)
                 project_user.save()
                 users.append(project_user.id)
             for user_django_id in approvers:
-                project_user = ProjectUser.objects.create(user_id=user_django_id)
+                project_user = ProjectUser.objects.create(
+                    user_id=user_django_id)
                 project_user.groups.add(group_approver.id)
                 project_user.save()
                 users.append(project_user.id)
             for user_django_id in reviewers:
-                project_user = ProjectUser.objects.create(user_id=user_django_id)
+                project_user = ProjectUser.objects.create(
+                    user_id=user_django_id)
                 project_user.groups.add(group_reviewer.id)
                 project_user.save()
                 users.append(project_user.id)
@@ -113,7 +145,8 @@ class ProjectApi(AbstractProjectApi):
             project_engagement.save()
 
             new_project['engagement_id'] = project_engagement.id
-            project = self.model.objects.create(**new_project)  # Create Project
+            project = self.model.objects.create(
+                **new_project)  # Create Project
 
             for number in engagements:  # Create Engagement Project number
                 Engagement.objects.create(

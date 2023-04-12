@@ -2,7 +2,7 @@
 import datetime
 
 from django.contrib.auth import get_user_model as md
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy
 
 
 def get_user_model():
@@ -37,3 +37,15 @@ def days360(start_date, end_date) -> int:
     return (end_date.year - start_date.year) * 360 + \
            (end_date.month - start_date.month) * 30 + \
            (end_date.day - start_date.day)
+
+
+def _(text):
+    return gettext_lazy(text)
+
+
+def doc(docstring):
+    def decorate(fn):
+        fn.__doc__ = _(docstring)
+        return fn
+
+    return decorate

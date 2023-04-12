@@ -9,7 +9,7 @@ from django.http import JsonResponse
 from calculation.funds.irrf.models import StatementIRRF, FundIRRF
 from calculation.funds.irrf.schemas import StatementIRRFSchema, StatementIRRFUpdateSchema, FundIRRFSchema
 from core.abstract.views import AbstractViewApi
-from rest_framework.schemas.openapi import AutoSchema
+from core.abstract.views import CustomSchema as AutoSchema
 from rest_framework import permissions, status
 from core.permission.views import CheckHasPermission
 

@@ -16,6 +16,7 @@ from calculation.tests import CalculationValues
 from core.abstract.tests import AbstractTest, AttrDict, generate_name
 from creditors.tests import CreditorValues
 from projects.create_project import get_data_project, cpf_generator
+from utils import _
 
 
 class StatementTest(AbstractTest):
@@ -38,6 +39,9 @@ class StatementTest(AbstractTest):
         self.assertEqual(response.status_code, 200)
         calc = AttrDict(response.content['calculation'])
         comparative = self._compare_statements(calc.statement, statement_result)
+        total = len(comparative)
+        if total > 0:
+            print(comparative, 'comparatives erros\n')
         self.assertEqual(0, len(comparative))
 
     def _compare_statements(self, statement, statement_result, errors=None):
@@ -166,7 +170,7 @@ class StatementTest(AbstractTest):
                     }
                 ],
                 "description_display": "Total atualizado",
-                "status_display": "Concluído",
+                "status_display": _("Concluído"),
                 "status": "C",
                 "description": "A",
                 "total": 3602.205701283164

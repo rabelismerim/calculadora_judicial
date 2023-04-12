@@ -12,10 +12,11 @@ Attributes:
 """
 
 from django.apps import AppConfig
+
 from django.utils.translation import gettext_lazy as _
 
 
 class DocumentConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'calculation.funds.document'
-    verbose_name = _("Funds document")
+    verbose_name = _("Verbas Documento")

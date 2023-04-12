@@ -9,7 +9,7 @@ Api's classes use the {{app_name | title}} model and schema {{app_name | title}}
 from {{app_name}}.schemas import {{app_name | title}}Schema
 from {{app_name}}.models import {{app_name | title}}
 from core.abstract.views import AbstractViewApi
-from rest_framework.schemas.openapi import AutoSchema
+from core.abstract.views import CustomSchema as AutoSchema
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 

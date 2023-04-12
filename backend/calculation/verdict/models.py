@@ -10,8 +10,8 @@ class TypeCalculation(AbstractModel):
 
 
 class Verdict(AbstractModel):
+    """Sentença adicional"""
     description = models.CharField('Descrição', max_length=50)
     value = models.FloatField('Valor')
-    type_calculation = models.ForeignKey(
-        TypeCalculation, on_delete=models.PROTECT)
+    type_calculation = models.ForeignKey(TypeCalculation, on_delete=models.PROTECT)
     calculation = models.ForeignKey(Calculation, on_delete=models.PROTECT)

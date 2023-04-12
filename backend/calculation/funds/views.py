@@ -9,7 +9,7 @@ from django.http import JsonResponse
 from calculation.funds.schemas import FundsSchema, StatementFundsSchema, StatementFundsUpdateSchema
 from calculation.funds.models import Funds, StatementFunds
 from core.abstract.views import AbstractViewApi
-from rest_framework.schemas.openapi import AutoSchema
+from core.abstract.views import CustomSchema as AutoSchema
 from rest_framework import permissions, status
 from core.permission.views import CheckHasPermission
 
@@ -193,7 +193,8 @@ class AbstractStatementFundsApi(AbstractViewApi):
     serializer_class = StatementFundsSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = StatementFunds
-    schema = AutoSchema(tags=["Calculation - Statement Funds - Extrato de verbas"], operation_id_base='Statement Funds')
+    schema = AutoSchema(
+        tags=["Calculation - Statement Funds - Extrato de verbas"], operation_id_base='Statement Funds')
     query_params = []
 
 

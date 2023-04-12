@@ -11,7 +11,7 @@ from calculation.funds.document.models import FundDocument, StatementDocument
 from calculation.funds.document.schemas import FundDocumentSchema, StatementDocumentSchema, \
     StatementFundDocumentUpdateSchema
 from core.abstract.views import AbstractViewApi
-from rest_framework.schemas.openapi import AutoSchema
+from core.abstract.views import CustomSchema as AutoSchema
 from rest_framework import permissions, status
 from core.permission.views import CheckHasPermission
 
@@ -43,7 +43,8 @@ class AbstractFundDocumentApi(AbstractViewApi):
     serializer_class = FundDocumentSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = FundDocument
-    schema = AutoSchema(tags=["Calculation - Fund Document - Verbas documentos"])
+    schema = AutoSchema(
+        tags=["Calculation - Fund Document - Verbas documentos"])
 
     query_params = [
         {
@@ -156,7 +157,8 @@ class AbstractStatementFundDocumentApi(AbstractViewApi):
     serializer_class = StatementDocumentSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = StatementDocument
-    schema = AutoSchema(tags=["Calculation - Statement Funds Documents - Extrato de verbas documentos"], operation_id_base='Statement Funds Documents')
+    schema = AutoSchema(tags=["Calculation - Statement Funds Documents - Extrato de verbas documentos"],
+                        operation_id_base='Statement Funds Documents')
     query_params = []
 
 

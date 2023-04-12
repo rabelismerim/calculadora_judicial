@@ -18,12 +18,11 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import include, path, re_path, reverse
 from django.shortcuts import render, redirect
-from django.views.generic import TemplateView
 from config.settings import ENABLE_SSO, IS_LOCALHOST
 from django.conf import settings
 from django.views.generic import TemplateView
 from rest_framework import permissions
-from rest_framework.schemas import get_schema_view, AutoSchema
+from rest_framework.schemas import get_schema_view
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.conf.urls.static import static
 from django.contrib.auth import views
