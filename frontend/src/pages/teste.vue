@@ -8,7 +8,7 @@ let creditors = $ref([''])
 
 const createCreditor = async () => {
   try {
-    const result = await creditorsService.newCreditor(newCreditor)
+    const result = await creditorsService.createCreditor(newCreditor)
     console.warn('print result', result)
   }
   catch (error) {
