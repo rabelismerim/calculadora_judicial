@@ -75,6 +75,8 @@ const isOpen = $ref(false)
               </button>
 
               <Breadcrumbs v-if="links.length > 0" :links="links" />
+
+              <slot name="header" />
             </div>
             <slot />
           </div>
