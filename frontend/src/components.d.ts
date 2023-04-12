@@ -28,6 +28,7 @@ declare module '@vue/runtime-core' {
     Modal: typeof import('./components/common/Modal.vue')['default']
     MultiUsersCell: typeof import('./components/team/MultiUsersCell.vue')['default']
     NavBar: typeof import('./components/layout/NavBar.vue')['default']
+    NewCreditor: typeof import('./components/creditors/NewCreditor.vue')['default']
     NewProject: typeof import('./components/project/NewProject.vue')['default']
     NotificationArea: typeof import('./components/common/NotificationArea.vue')['default']
     Page: typeof import('./components/common/Page.vue')['default']
