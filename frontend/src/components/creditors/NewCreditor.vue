@@ -65,6 +65,7 @@ const onSubmit = async () => {
     :model-value="modelValue"
     :title="newCreditor?.id ? `Editar Credor: ${newCreditor.name}` : 'Cadastro de Credor'"
     hint="Vincular o Novo Credor às Recuperandas do Projeto."
+    modal-class="max-w-200"
     @update:model-value="(value: boolean) => emit('update:modelValue', value)"
     @close="clear"
   >
