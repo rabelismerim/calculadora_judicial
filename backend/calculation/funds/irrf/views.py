@@ -12,6 +12,22 @@ from core.abstract.views import AbstractViewApi
 from core.abstract.views import CustomSchema as AutoSchema
 from rest_framework import permissions, status
 from core.permission.views import CheckHasPermission
+from utils import _, doc
+
+docs = {
+    'init': _("""Statement IRRF is a financial statement of a fund IRRF, and includes attributes such as 
+    `fund_name` and `taxable_amounts`. It also has the calculation, `taxable amount` and the `taxable portion` used in 
+    the calculations. It has a relationship with a fund IRRF where this fund can n Statement IRRF.
+    """)
+}
+
+docs_fund = {
+    'init': _("""Represent a template for IRRF funds. He has the attributes `taxable_amount` and `months_period`, 
+    which represent the taxable amount of the fund and the number of months of the application period, respectively. 
+    It has a 1 to n relationship, where several amounts and their respective values can be allocated, to calculate 
+    the IRRF due, returning fields such as: `tax amount`, `taxable portion` and `aliquot`.
+    """)
+}
 
 
 class AbstractFundIRRFApi(AbstractViewApi):
@@ -37,22 +53,11 @@ class AbstractFundIRRFApi(AbstractViewApi):
         GET /api/v1/calculation/funds/?funds=funds_name
         ```
     """
-    http_method_names = ['get', 'post']
     serializer_class = FundIRRFSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = FundIRRF
-    schema = AutoSchema(tags=["Calculation - Fund IRRF - Verbas IRRF"])
-
-    query_params = [
-        {
-            "name": "name",
-            "field": "name__icontains",
-            "in": "query",
-            "required": False,
-            "description": "Nome da verba",
-            "schema": {"type": "string"}
-        }
-    ]
+    schema = AutoSchema(tags=[str(_("Calculation - Fund IRRF"))])
+    query_params = []
 
 
 class FundIRRFApi(AbstractFundIRRFApi):
@@ -78,10 +83,10 @@ class FundIRRFApi(AbstractFundIRRFApi):
         GET /api/v1/calculation/funds/?funds=funds_name
         ```
     """
-    http_method_names = ['get', 'post']
+    docs = docs_fund
+    http_method_names = ['post']
 
-    def post(self, request, *args, **kwargs):
-        """
+    @doc("""
         Create FundIRRF object from request data and return FundIRRF detail.
         Args:
             request (HttpRequest): HTTP request object containing the POST data.
@@ -91,8 +96,8 @@ class FundIRRFApi(AbstractFundIRRFApi):
 
         Raises:
             serializers.ValidationError: If the input data is invalid.
-            rest_framework.exceptions.PermissionDenied: If the user does not have permission to perform the action.
-        """
+        """)
+    def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_funds = serializer.validated_data
@@ -124,6 +129,14 @@ class FundIRRFDetailApi(AbstractFundIRRFApi):
         ```
     """
     http_method_names = ['get', ]
+    docs = docs_fund
+    docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific fund IRRF 
+        object using the given id from the query parameters and serializes the result into JSON format before returning
+         it as an HTTP response. 
+
+            Returns:
+                JsonResponse: An HTTP response containing the serialized document fund data retrieved.
+        """)
 
 
 class AbstractStatementIRRFApi(AbstractViewApi):
@@ -151,8 +164,7 @@ class AbstractStatementIRRFApi(AbstractViewApi):
     serializer_class = StatementIRRFSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = StatementIRRF
-    schema = AutoSchema(tags=["Calculation - Statement IRRF - Extrato de verbas IRRF"],
-                        operation_id_base='Statement IRRF')
+    schema = AutoSchema(tags=[str(_("Calculation - Statement IRRF"))], operation_id_base='Statement IRRF')
     query_params = []
 
 
@@ -179,6 +191,15 @@ class StatementIRRFApi(AbstractStatementIRRFApi):
         ```
     """
     http_method_names = ['post']
+    docs = docs
+    docs['post'] = _("""Create Statement IRRF object from request data and return Statement IRRF detail.
+        Returns:
+            JsonResponse: A JSON response containing the created Funds
+             object detail.
+
+        Raises:
+            serializers.ValidationError: If the input data is invalid.
+            """)
 
 
 class StatementIRRFDetailApi(AbstractStatementIRRFApi):
@@ -207,3 +228,17 @@ class StatementIRRFDetailApi(AbstractStatementIRRFApi):
     serializer_class = StatementIRRFUpdateSchema
     http_method_names = ['get', 'put']
     exclude = ('fund_id',)
+    docs = docs
+    docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific statement IRRF 
+        object using the given id from the query parameters and serializes the result into JSON format before returning
+         it as an HTTP response. 
+
+            Returns:
+                JsonResponse: An HTTP response containing the serialized document fund data retrieved.
+        """)
+    docs['put'] = _("""This method handles PUT requests for the view. It updates a specific statement IRRF 
+        object using the given id from the query parameters and the serialized input data from the request body. 
+
+            Returns:
+                JsonResponse: An HTTP response containing the serialized statement IRRF data updated.
+                """)

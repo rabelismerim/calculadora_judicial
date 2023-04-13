@@ -64,8 +64,7 @@ class ComparativeDetailApi(AbstractViewApi):
     def get(self, request, *args, **kwargs):
 
         calculation_id = kwargs.get('calculation_id')
-        comparative = self.model.objects.filter(
-            calculation_id=calculation_id).first()
+        comparative = self.model.objects.filter(calculation_id=calculation_id).first()
         comparative_data = self.serializer_class(comparative, many=False).data
         return JsonResponse({'comparative': comparative_data})
 

@@ -17,11 +17,30 @@ from calculation.comparative.signals import gen_statement_funds, gen_total_funds
 from calculation.funds.abstract.models import AbstractFunds, AbstractStatement, AbstractMonetaryCorrection, \
     AbstractTotalValuesFunds
 from calculation.funds.integrations.models import TotalValuesFundsIntegrations
-from core.abstract.models import AbstractModel
 
 
 class Funds(AbstractFunds):
+    """
+    This class defines methods for generating total statements and fetching the TotalValuesFunds and
+    TotalValuesFundsIntegrations objects associated with a fund. These objects store the total values and
+    integrations for the fund respectively.
+
+    Methods:
+        get_total_funds(): Returns the TotalValuesFunds object associated with the current fund object. If the
+                           object does not exist, it creates one and returns it.
+
+        get_total_integrations(): Rerturns the TotalValuesFundsIntegrations object associated with the current
+                                 fund object. If the object does not exist, it creates one and returns it.
+
+        gen_total_statements(): Generates total statements for the current fund by calling the set_total() method
+                                of the TotalValuesFunds object associated with it.
+
+        gen_total_integrations(): Generates total statements for the current fund by calling the set_total() method
+                                  of the TotalValuesFundsIntegrations object associated with it.
+    """
+
     class Meta:
+        verbose_name = 'Fund'
         verbose_name_plural = 'Funds'
 
     def get_total_funds(self):
@@ -59,10 +78,6 @@ class Funds(AbstractFunds):
         total_funds.set_total()
 
 
-CHOICES_STATUS_FUND = (('S', _('Solicitado')), ('C', _('Concluído')), ('E', _('Em Progresso')),
-                       ('F', _('Falha no cálculo - índice não encontrado')), ('R', _('Falha no cálculo - sem data RJ')))
-
-
 class StatementFunds(AbstractStatement):
     """
     A model class representing a financial statement for a fund.
@@ -90,11 +105,11 @@ class StatementFunds(AbstractStatement):
     The 'calcule_monetary_correction()' method uses the '_get_index_monetary_correction()' method, which should be defined
     in the class that inherits or implements the 'AbstractStatement' class.
     """
-    dsr_reflexes = models.FloatField(
-        _('Reflexos DSR'), default=0)  # DRS - Descanso semanal remunerado
-    summary = models.BooleanField(_('Aplicar súmula 381?'), default=False)
+    dsr_reflexes = models.FloatField(_('DSR Reflexes'), default=0)  # DRS - Descanso semanal remunerado
+    summary = models.BooleanField(_('Apply Precedent 381?'), default=False)
 
     class Meta:
+        verbose_name = 'Statement Fund'
         verbose_name_plural = 'Statement Funds'
 
     def get_total_value(self) -> float:
@@ -170,11 +185,12 @@ class TotalValuesFunds(AbstractTotalValuesFunds):
 
     Methods:
         get_calculated_statement(): Returns the calculated statement of the fund.
-        set_total(): Calculates and sets the total corrected and historical values of the fund based on the calculated statement.
+        set_total(): Calculates and sets the total corrected and historical values of the fund based on the calculated
+         statement.
     """
     total_dsr_reflexes = models.FloatField(
         _('Total valor reflexos DSR'), default=0)
-    total_accurate = models.FloatField(_('Total apurado'), default=0)
+    total_accurate = models.FloatField(_('Total accurate'), default=0)
     fund = models.OneToOneField(Funds, on_delete=models.PROTECT)
 
     def get_calculated_statement(self):
@@ -206,6 +222,7 @@ class TotalValuesFunds(AbstractTotalValuesFunds):
         self.save()
 
     class Meta:
+        verbose_name = 'Total values fund'
         verbose_name_plural = 'Total values funds'
 
 

@@ -38,8 +38,8 @@ class StatementIntegrations(AbstractStatement):
         The 'calcule_monetary_correction()' method uses the '_get_index_monetary_correction()' method, which should be
         defined in the class that inherits or implements the 'AbstractStatement' class.
     """
-    description = models.CharField(_('Descrição da verba'), max_length=150)
-    summary = models.BooleanField(_('Aplicar súmula 381?'), default=False)
+    description = models.CharField(_('Description fund'), max_length=150)
+    summary = models.BooleanField(_('Apply summary 381?'), default=False)
 
     class Meta:
         verbose_name = 'Statement Fund Integration'
@@ -58,8 +58,7 @@ class StatementIntegrations(AbstractStatement):
         """Retrieves the corrected value of the statement if the monetary correction exists, or else returns 0."""
         data = self._get_index_monetary_correction()
         if data:
-            MonetaryCorrectionIntegrations.objects.update_or_create(
-                defaults=data, **{'statement': self})
+            MonetaryCorrectionIntegrations.objects.update_or_create(defaults=data, **{'statement': self})
             self.set_calculation_done()
 
     def get_corrected_value(self) -> float:

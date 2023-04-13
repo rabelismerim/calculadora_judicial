@@ -20,6 +20,8 @@ from calculation.funds.models import Funds, MonetaryCorrection, StatementFunds, 
 from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
 
+from utils import _
+
 
 class MonetaryCorrectionSchema(AbstractDescriptionSchema):
     """
@@ -147,6 +149,6 @@ class FundsSchema(AbstractDescriptionSchema):
         calculation_id = data.get('calculation_id')
 
         if Funds.objects.filter(calculation_id=calculation_id, name=name).exists():
-            raise serializers.ValidationError(['Verba já cadastrada'])
+            raise serializers.ValidationError([_('Fund already registered')])
 
         return super(FundsSchema, self).validate(data)

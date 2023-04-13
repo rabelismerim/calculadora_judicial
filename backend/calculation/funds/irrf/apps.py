@@ -20,4 +20,4 @@ from django.utils.translation import gettext_lazy as _
 class IrrfConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'calculation.funds.irrf'
-    verbose_name = _('Verbas - IRRF')
+    verbose_name = _('Funds - IRRF')

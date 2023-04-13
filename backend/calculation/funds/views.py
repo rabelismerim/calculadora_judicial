@@ -12,6 +12,22 @@ from core.abstract.views import AbstractViewApi
 from core.abstract.views import CustomSchema as AutoSchema
 from rest_framework import permissions, status
 from core.permission.views import CheckHasPermission
+from utils import _, doc
+
+docs = {
+    'init': _("""Statement Fund is a financial statement of a fund, and includes attributes such as 
+    `base date` and `historical value`. It also has the calculation, `monetary correction` and the `indexes` used in the 
+    calculations. It has a relationship with a fund where this fund can n Statement Fund.
+    """)
+}
+
+docs_fund = {
+    'init': _("""Represents a template for funds. It has the attributes `name` and `calculated total values`,
+    that represent the values that were inserted in the extracts.
+    It has a ratio of 1 to n for the statement funds and statement funds integrations, where several values and their 
+    respective values can be allocated to calculate the corrections.
+    """)
+}
 
 
 class AbstractFundsApi(AbstractViewApi):
@@ -37,22 +53,12 @@ class AbstractFundsApi(AbstractViewApi):
         GET /api/v1/calculation/funds/?funds=funds_name
         ```
     """
-    http_method_names = ['get', 'post']
     serializer_class = FundsSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Funds
-    schema = AutoSchema(tags=["Calculation - Funds - Verbas"])
+    schema = AutoSchema(tags=[str(_("Calculation - Funds"))])
 
-    query_params = [
-        {
-            "name": "name",
-            "field": "name__icontains",
-            "in": "query",
-            "required": False,
-            "description": "Nome da verba",
-            "schema": {"type": "string"}
-        }
-    ]
+    query_params = []
 
 
 class FundsApi(AbstractFundsApi):
@@ -78,10 +84,10 @@ class FundsApi(AbstractFundsApi):
         GET /api/v1/calculation/funds/?funds=funds_name
         ```
     """
-    http_method_names = ['get', 'post']
+    http_method_names = ['post']
+    docs = docs_fund
 
-    def post(self, request, *args, **kwargs):
-        """
+    @doc("""
         Create Funds object from request data and return Funds detail.
         Args:
             request (HttpRequest): HTTP request object containing the POST data.
@@ -92,7 +98,8 @@ class FundsApi(AbstractFundsApi):
         Raises:
             serializers.ValidationError: If the input data is invalid.
             rest_framework.exceptions.PermissionDenied: If the user does not have permission to perform the action.
-        """
+        """)
+    def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_funds = serializer.validated_data
@@ -124,6 +131,14 @@ class FundsDetailApi(AbstractFundsApi):
         ```
     """
     http_method_names = ['get', ]
+    docs = docs_fund
+    docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific fund 
+        object using the given id from the query parameters and serializes the result into JSON format before returning it
+         as an HTTP response. 
+
+            Returns:
+                JsonResponse: An HTTP response containing the serialized fund data retrieved.
+        """)
 
 
 class CreateFunds:
@@ -193,8 +208,7 @@ class AbstractStatementFundsApi(AbstractViewApi):
     serializer_class = StatementFundsSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = StatementFunds
-    schema = AutoSchema(
-        tags=["Calculation - Statement Funds - Extrato de verbas"], operation_id_base='Statement Funds')
+    schema = AutoSchema(tags=[str(_("Calculation - Statement Funds"))], operation_id_base='Statement Funds')
     query_params = []
 
 
@@ -222,6 +236,15 @@ class StatementFundsApi(AbstractStatementFundsApi):
         ```
     """
     http_method_names = ['post']
+    docs = docs
+    docs['post'] = _("""Create Statement Fund object from request data and return Statement Fund detail.
+            Returns:
+                JsonResponse: A JSON response containing the created Funds
+                 object detail.
+
+            Raises:
+                serializers.ValidationError: If the input data is invalid.
+                """)
 
 
 class StatementFundsDetailApi(AbstractStatementFundsApi):
@@ -249,3 +272,17 @@ class StatementFundsDetailApi(AbstractStatementFundsApi):
     """
     serializer_class = StatementFundsUpdateSchema
     http_method_names = ['get', 'put']
+    docs = docs
+    docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific statement fund object 
+    using the given id from the query parameters and serializes the result into JSON format before returning it as an 
+    HTTP response. 
+
+            Returns:
+                JsonResponse: An HTTP response containing the serialized statement fund data retrieved.
+        """)
+    docs['put'] = _("""This method handles PUT requests for the view. It updates a specific statement fund 
+        object using the given id from the query parameters and the serialized input data from the request body. 
+
+            Returns:
+                JsonResponse: An HTTP response containing the serialized statement fund data updated.
+                """)

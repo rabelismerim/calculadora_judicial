@@ -8,8 +8,9 @@ to add specific fields as needed.
 from django.db import models
 from calculation.models import Calculation
 from core.abstract.models import AbstractModel
+from utils import _
 
-CHOICES_CONCLUSION = (('I', 'Impugnação'), ('H', 'Habilitação'))
+CHOICES_CONCLUSION = (('I', _('Impugnment')), ('H', _('Qualification')))
 
 
 class Statement(AbstractModel):
@@ -21,7 +22,7 @@ class Statement(AbstractModel):
         conclusion (str): A one-character string indicating the conclusion of the statement.
     """
     calculation = models.OneToOneField(Calculation, on_delete=models.PROTECT)
-    conclusion = models.CharField('Legenda da conclusão', max_length=1, choices=CHOICES_CONCLUSION, default='I')
+    conclusion = models.CharField(_('Conclusion legend'), max_length=1, choices=CHOICES_CONCLUSION, default='I')
 
     def get_statement_pf(self):
         """
@@ -91,7 +92,7 @@ class TotalLawyer(AbstractModel):
         total (float): The total value of the lawyers' fees.
         statement (Statement): The statement that this total belongs to.
     """
-    total = models.FloatField('Valor')
+    total = models.FloatField(_('Total'))
     statement = models.OneToOneField(Statement, on_delete=models.PROTECT)
 
     def _get_lawyers(self):
@@ -126,8 +127,8 @@ class Lawyer(AbstractModel):
         total (float): The value of the lawyer's fee.
         total_lawyer (TotalLawyer): The total value that this fee contributes to.
     """
-    name = models.CharField('Nome do advogado', max_length=150)
-    total = models.FloatField('Valor')
+    name = models.CharField(_('Lawyer name'), max_length=150)
+    total = models.FloatField(_('Total'))
     total_lawyer = models.ForeignKey(TotalLawyer, on_delete=models.PROTECT)
 
     def _get_advocative_hours(self) -> float:

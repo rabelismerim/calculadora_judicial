@@ -4,6 +4,7 @@ It extends the AbstractViewApi class and includes a CheckHasPermission permissio
 The API responds with JSON data and utilizes the rest_framework.schemas.openapi.AutoSchema for generating API documentation.
 The StatementApi class uses the Statement model and StatementSchema for working with data.
 """
+from django.http import JsonResponse
 
 from calculation.statement.schemas import StatementSchema
 from calculation.statement.models import Statement
@@ -11,6 +12,7 @@ from core.abstract.views import AbstractViewApi
 from core.abstract.views import CustomSchema as AutoSchema
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission
+from utils import _, doc
 
 
 class StatementApi(AbstractViewApi):
@@ -40,15 +42,23 @@ class StatementApi(AbstractViewApi):
     serializer_class = StatementSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Statement
-    schema = AutoSchema(tags=["Calculation - Statement - Extrato contábil"])
+    schema = AutoSchema(tags=[str(_("Calculation - Statement"))])
+    docs = {
+        'init': _("""Represents the entire extract of the calculation. All results of `calculations`, `fines`, 
+        `amounts due`, `claims`, `summary of funds`, `DTT opinion`, `classes` and `used assumptions`.
+        """)
+    }
+    query_params = []
 
-    query_params = [
-        {
-            "name": "statement",
-            "field": "statement__icontains",
-            "in": "query",
-            "required": False,
-            "description": "statement",
-            "schema": {"type": "string"}
-        }
-    ]
+    @doc("""This method handles GET requests for the view. It retrieves a specific statement object using the given 
+        calculation_id from the query parameters and serializes the result into JSON format before returning it as an 
+        HTTP response. 
+
+            Returns:
+                JsonResponse: An HTTP response containing the serialized statement data retrieved.
+            """)
+    def get(self, request, *args, **kwargs):
+        calculation_id = kwargs.get('calculation_id')
+        statement = self.model.objects.filter(calculation_id=calculation_id).first()
+        statement_data = self.serializer_class(statement, many=False).data
+        return JsonResponse({'statement': statement_data})
