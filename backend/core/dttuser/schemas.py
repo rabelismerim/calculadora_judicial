@@ -20,7 +20,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 from rest_framework import serializers, renderers
 from base.schemas import AbstractChoicesSerializer
-from utils import get_user_model
+from utils import get_user_model, _
 from django.contrib.auth.models import Permission, Group
 from core.dttuser.models import Subgroup
 from core.dttuser.models import ROLES_CHOICES
@@ -112,8 +112,8 @@ class SubgroupSchema(serializers.ModelSerializer):
         data = dict(data)
         subgroup = Subgroup.objects.filter(name=data['name']).first()
         if subgroup:
-            return super(GroupSchema, self).validate({'id': subgroup.id})
-        raise serializers.ValidationError(['Subgrupo não encontrado'])
+            return super(SubgroupSchema, self).validate({'id': subgroup.id})
+        raise serializers.ValidationError([_('Subgroup not found')])
 
     def __init__(self, *args, **kwargs):
         fields = kwargs.pop('exclude', None)
@@ -164,9 +164,8 @@ class UserDttSchema(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ['email', 'username', 'first_name', 'last_name', 'password', 'password_confirm', 'full_name',
-                  'userpicture', 'status', 'status_display',
-                  'is_staff', 'user_permissions', 'date_joined', 'is_active', 'role', 'role_display', 'groups',
-                  'subgroups', 'id']
+                  'userpicture', 'status', 'status_display', 'is_staff', 'user_permissions', 'date_joined', 'is_active',
+                  'role', 'role_display', 'groups', 'subgroups', 'id']
         read_only_fields = ('user_permissions', 'date_joined', 'is_active')
 
     @staticmethod
@@ -189,7 +188,7 @@ class UserDttSchema(serializers.ModelSerializer):
             errors = list(e.messages)
 
         if password != password_confirm:
-            errors.append('As senhas não correspondem')
+            errors.append(_('Passwords do not match'))
         return errors
 
     def validate(self, data):

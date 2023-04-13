@@ -94,10 +94,6 @@ class ProjectApi(AbstractProjectApi):
         'post': ProjectSchema,
     }
 
-    def get_serializer_class(self):
-        return self.layout_serializers.get(self.request.method.lower(),
-                                           self.layout_serializers['default'])
-
     @doc("""Create Project receiving a dict, return project detail""")
     def post(self, request, *args, **kwargs):
 

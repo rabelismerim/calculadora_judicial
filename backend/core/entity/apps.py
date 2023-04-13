@@ -6,5 +6,5 @@ from utils import _
 class EntityConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'core.entity'
-    verbose_name = _("Entidade")
+    verbose_name = _("Entity")
 

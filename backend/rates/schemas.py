@@ -100,6 +100,8 @@ class RateFileSchema(AbstractDescriptionSchema):
 class TemplateFieldSchema(AbstractDescriptionSchema):
     """Serializer TemplateField fields"""
 
+    type_display = serializers.CharField(source='get_type_display')
+
     class Meta:
         model = TemplateField
         exclude = ('rate',)

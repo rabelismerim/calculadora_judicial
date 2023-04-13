@@ -12,9 +12,15 @@ from core.permission.views import CheckHasPermission
 from creditors.notice.models import Notice, NoticeRecovering
 from creditors.schemas import CreditorCreateSchema, CreditorSchema, CreditorUpdateSchema
 from creditors.models import Creditor
-from utils import get_user_model
+from utils import get_user_model, _, doc
 
 User = get_user_model()
+docs = {
+    'init': """The `Creditor` class represents a creditor of an entity in the context of a credit recovery process. 
+    It stores relationship with the `Entity` model and with the `Recovering` model. In addition, it has a description 
+    of the creditor stored in the `description` field.
+    """
+}
 
 
 class AbstractCreditorApi(AbstractViewApi):
@@ -22,15 +28,15 @@ class AbstractCreditorApi(AbstractViewApi):
     serializer_class = CreditorSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Creditor
-    schema = AutoSchema(tags=["Creditor"])
-
+    schema = AutoSchema(tags=[str(_("Creditor"))])
+    docs = docs
     query_params = [
         {
-            "name": "descrição",
+            "name": "description",
             "field": "description__icontains",
             "in": "query",
             "required": False,
-            "description": "Descrição do projeto",
+            "description": str(_("Description")),
             "schema": {"type": "string"}
         }
     ]
@@ -42,17 +48,30 @@ class AbstractCreditorApi(AbstractViewApi):
 class CreditorDetailApi(AbstractCreditorApi):
     """HTTP methods for creditor Detail"""
     http_method_names = ['get', ]
+    init_docs = docs.copy()
+    schema = AutoSchema(tags=[str(_("Creditor"))], operation_id_base='CreditorDetailID')
+    docs_get = {
+        'get': """Retrieve a creditor by their given ID,
+        serializes it and returns a JSON response with the serialized data.
+
+        Returns
+        -------
+        JsonResponse
+            A response with a JSON object containing a serialized creditor data object."""
+    }
+    init_docs.update(docs_get)
+    docs = init_docs
 
 
 class CreditorCreateApi(AbstractCreditorApi):
-    """HTTP methods for Project Create"""
+    """HTTP methods for CreditorCreate options"""
     http_method_names = ['get']
     serializer_class = CreditorCreateSchema
-
+    docs = docs
     query_params = []
 
+    @doc("""Options for creating creditors or calculations""")
     def get(self, request, *args, **kwargs):
-        """Abstract method for default get model. Overide method in class for custom operation"""
         data = {}
         for key, field in self.serializer_class(many=False).fields.items():
             data[key] = list(field.data)
@@ -72,9 +91,9 @@ class CreditorListApi(AbstractCreditorApi):
         with the serialized data.
     """
     http_method_names = ['get']
+    docs = docs
 
-    def get(self, request, *args, **kwargs):
-        """
+    @doc("""
         Retrieves a queryset of creditors related to a given project ID,
         serializes it and returns a JSON response with the serialized data.
 
@@ -82,22 +101,23 @@ class CreditorListApi(AbstractCreditorApi):
         -------
         JsonResponse
             A response with a JSON object containing a list of serialized creditor data.
-        """
+        """)
+    def get(self, request, *args, **kwargs):
         project_id = kwargs.get('id')
-        creditors = self.serializer_class(self.model.objects.filter(
-            recovering__project_id=project_id), many=True).data
+        creditors = self.serializer_class(self.model.objects.filter(recovering__project_id=project_id), many=True).data
         return JsonResponse({'creditors': creditors})
 
 
 class CreditorApi(AbstractCreditorApi):
     """ AbstractCreditorApi's HTTP methods for creating new creditor with required fields."""
     http_method_names = ['post']
+    docs = docs
 
-    def post(self, request, *args, **kwargs):
-        """
+    @doc("""
         Create creditor by receiving a dictionary object with required fields.
         Creditor detail will be returned upon successful completion of operation
-        """
+        """)
+    def post(self, request, *args, **kwargs):
         with transaction.atomic():
             serializer = self.serializer_class(data=request.data)
 
@@ -149,3 +169,4 @@ class CreditorUpdateApi(AbstractCreditorApi):
     """HTTP methods for update creditor"""
     http_method_names = ['put']
     serializer_class = CreditorUpdateSchema
+    docs = docs

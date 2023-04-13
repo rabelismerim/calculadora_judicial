@@ -1,6 +1,8 @@
 import json
 from rest_framework import serializers, renderers
 
+from utils import _
+
 
 class AbstractModelSchema(serializers.Serializer):
     """Serializer AbstractModel fields"""
@@ -34,8 +36,7 @@ class AbstractModelSchema(serializers.Serializer):
                 file_json = archive_json
 
             if isinstance(file_json, dict) is False:
-                raise serializers.ValidationError(
-                    ['O campo archive_json é necessário estar no formato json'])
+                raise serializers.ValidationError([_('The archive_json field must be in json format')])
 
         return archive_json
 

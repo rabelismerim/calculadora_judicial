@@ -247,10 +247,9 @@ class TemplateRate(AbstractModel):
 TYPE_CHOICES = (
     ('D', 'date'),
     ('B', 'boolean'),
-    ('C', 'char'),
+    ('C', 'text'),
     ('F', 'float'),
     ('I', 'integer'),
-    ('U', 'uuid'),
     ('T', 'datetime'),
 )
 

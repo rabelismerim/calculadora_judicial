@@ -55,8 +55,7 @@ class AbstractClassesLawyerSchema(AbstractDescriptionSchema):
 
     def validate_creditor_id(self, creditor_id):
         if self.model.objects.filter(creditor_id=creditor_id).exists():
-            raise serializers.ValidationError(
-                [f'{self.model.__name__} já cadastrado para esse credor'])
+            raise serializers.ValidationError(['{} already registered for this creditor'.format(self.model.__name__)])
         return creditor_id
 
     def validate(self, data):

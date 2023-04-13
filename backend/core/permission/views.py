@@ -10,7 +10,6 @@ from calculation.models import Calculation, CHOICES_STEP
 from calculation.schemas import ChangeStepSerializer
 from config.settings import GROUP_NAME_APPROVER, GROUP_NAME_REVIEWER, GROUP_NAME_EXECUTOR, GROUP_NAME_SPECIAL_APPROVE, \
     IS_LOCALHOST
-from projects.models import Project
 from projects.project_user.models import ProjectUser
 
 
@@ -335,8 +334,8 @@ class CanChangeStep(BasePermission):
             codename = f'can_change_{current_step}_to_{next_step}'
             has_codename = PermissionsName().check_exist_codename(codename)
             if not has_codename:
-                text = f'Não é possível alterar o status de {self.__get_choice_step(current_step)} para' \
-                       f' {self.__get_choice_step(next_step)}'
+                text = _('Unable to change status from {} to {}').format(self.__get_choice_step(current_step),
+                                                                         self.__get_choice_step(next_step))
                 raise serializers.ValidationError([text])
             return ProjectUser.objects.filter(user=user, groups__permissions__codename=codename,
                                               projectengagement__project__recovering__creditor__calculation__id=
@@ -351,7 +350,7 @@ class CheckPermissions(BasePermission):
     Methods:
         - has_permission(self, request, view): Checks if the requesting user has permission to change the process step.
     """
-    message = 'Você não tem permissão. Contate o adminstrador'
+    message = _('You do not have permission. Contact admin')
 
     def has_permission(self, request, view):
         """
@@ -362,7 +361,7 @@ class CheckPermissions(BasePermission):
         steps that cannot be changed.
         """
         if hasattr(view, 'perms') is False:
-            raise AttributeError(_('Necessário adicionar o atributo "perms: list" para usar a classe CheckPermissions'))
+            raise AttributeError(_('Need to add "perms: list" attribute to use CheckPermissions class'))
         perms = view.perms
         return request.user.has_permission(perms)
 

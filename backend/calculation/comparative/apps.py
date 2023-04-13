@@ -18,4 +18,4 @@ from django.utils.translation import gettext_lazy as _
 class ComparativeConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'calculation.comparative'
-    verbose_name = _('Comparativo')
+    verbose_name = _('Comparative')

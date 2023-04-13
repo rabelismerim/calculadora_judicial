@@ -18,6 +18,7 @@ from rest_framework import serializers
 
 from calculation.funds.document.models import StatementDocument, MonetaryCorrectionDocument, TotalValuesDocument, \
     FundDocument
+from utils import _
 
 
 class MonetaryCorrectionDocumentSchema(AbstractDescriptionSchema):
@@ -47,6 +48,27 @@ class StatementDocumentSchema(AbstractDescriptionSchema):
 
     fund_id = serializers.UUIDField()
     status_display = serializers.CharField(source='get_status_display', read_only=True)
+
+    class Meta:
+        model = StatementDocument
+        exclude = ('fund',)
+        read_only_fields = ('status', 'status_display')
+
+
+class StatementDocumentUpdateSchema(AbstractDescriptionSchema):
+    """
+    A schema for serializing and deserializing StatementDocuments instances.
+
+    Attributes:
+        fund_id (serializers.UUIDField): The UUID of the related fund.
+    """
+    monetary_correction = MonetaryCorrectionDocumentSchema(read_only=True, source='monetarycorrectiondocument')
+
+    fund_id = serializers.UUIDField(read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    data_base = serializers.DateField(required=False)
+    historical_value = serializers.FloatField(required=False)
+    number = serializers.CharField(required=False)
 
     class Meta:
         model = StatementDocument
@@ -140,7 +162,44 @@ class FundDocumentSchema(AbstractDescriptionSchema):
         calculation_id = data.get('calculation_id')
 
         if FundDocument.objects.filter(calculation_id=calculation_id, name=name).exists():
-            raise serializers.ValidationError(['Verba já cadastrada'])
+            raise serializers.ValidationError([_('Document Fund already registered')])
 
         data['statement_document'] = data.pop('statementdocument')
         return super(FundDocumentSchema, self).validate(data)
+
+
+class FundDocumentUpdateSchema(AbstractDescriptionSchema):
+    """
+    A schema for serializing and deserializing Funds instances.
+
+    Attributes: calculation_id (serializers.UUIDField): The UUID of the related calculation. statement_funds (
+    StatementFundDocumentSchema): The schema for serializing and deserializing StatementFunds instances.
+    statement_integrations (StatementIntegrationsSchema): The schema for serializing and deserializing
+    StatementIntegrations instances. statement_irrf (StatementIRRFSchema): The schema for serializing and
+    deserializing StatementIRRF instances.
+    """
+    calculation_id = serializers.UUIDField(read_only=True)
+    fund = TotalValuesDocumentSchema(source='totalvaluesdocument', read_only=True, exclude=('fund_id',))
+    statement = StatementDocumentUpdateSchema(source='statementdocument', exclude=('fund_id', 'status'), write_only=True, required=False)
+    name = serializers.CharField(required=False)
+
+    class Meta:
+        model = FundDocument
+        exclude = ('calculation',)
+
+    def validate(self, data):
+        """
+        Validate the given data for the Funds object and raise a `serializers.ValidationError` if any validation fails.
+
+        Args:
+            self: The object instance.
+            data: A dictionary containing the data to be validated.
+
+        Returns:
+            Returns the validated data if all validations pass.
+
+        Raises: serializers.ValidationError: If the validation fails due to any of the following reasons: - The FundIRRF
+        object with the given name and calculation_id already exists.
+        """
+        data['statement_document'] = data.pop('statementdocument', None)
+        return super(FundDocumentUpdateSchema, self).validate(data)

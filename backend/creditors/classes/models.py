@@ -12,4 +12,4 @@ CLASSE_CHOICES = (
 
 
 class Classes(AbstractModel):
-    classe = models.CharField(_('Classe'), max_length=1, default='1', choices=CLASSE_CHOICES)
+    classe = models.CharField(_('Class'), max_length=1, default='1', choices=CLASSE_CHOICES)

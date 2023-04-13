@@ -6,14 +6,21 @@ The FundDocumentApi class uses the Funds model and FundDocumentSchema for workin
 """
 
 from django.http import JsonResponse
+from rest_framework.generics import get_object_or_404
 
 from calculation.funds.document.models import FundDocument, StatementDocument
-from calculation.funds.document.schemas import FundDocumentSchema, StatementDocumentSchema, \
-    StatementFundDocumentUpdateSchema
+from calculation.funds.document.schemas import FundDocumentSchema, FundDocumentUpdateSchema
 from core.abstract.views import AbstractViewApi
 from core.abstract.views import CustomSchema as AutoSchema
 from rest_framework import permissions, status
 from core.permission.views import CheckHasPermission
+from utils import _, doc
+
+docs = {
+    'init': _("""Represents the values that are used for documents, such as `invoices`, `Indemnities`, `agreements`, 
+    etc. Contains fields such as `base date`, `value`, `monetary correction` and `economic charges`.
+    """)
+}
 
 
 class AbstractFundDocumentApi(AbstractViewApi):
@@ -39,20 +46,17 @@ class AbstractFundDocumentApi(AbstractViewApi):
         GET /api/v1/calculation/funds/?funds=funds_name
         ```
     """
-    http_method_names = ['get', 'post']
     serializer_class = FundDocumentSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = FundDocument
-    schema = AutoSchema(
-        tags=["Calculation - Fund Document - Verbas documentos"])
-
+    schema = AutoSchema(tags=[str(_("Calculation - Fund Document"))])
     query_params = [
         {
             "name": "name",
             "field": "name__icontains",
             "in": "query",
             "required": False,
-            "description": "Nome da verba",
+            "description": str(_("Fund name")),
             "schema": {"type": "string"}
         }
     ]
@@ -81,21 +85,19 @@ class FundDocumentApi(AbstractFundDocumentApi):
         GET /api/v1/calculation/funds/?funds=funds_name
         ```
     """
-    http_method_names = ['get', 'post']
+    http_method_names = ['post']
+    docs = docs
 
-    def post(self, request, *args, **kwargs):
-        """
-        Create Funds object from request data and return Funds detail.
-        Args:
-            request (HttpRequest): HTTP request object containing the POST data.
+    @doc("""
+        Create Document Fund object from request data and return Document Fund detail.
 
         Returns:
             JsonResponse: A JSON response containing the created Funds object detail.
 
         Raises:
             serializers.ValidationError: If the input data is invalid.
-            rest_framework.exceptions.PermissionDenied: If the user does not have permission to perform the action.
-        """
+        """)
+    def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_funds = serializer.validated_data
@@ -103,7 +105,8 @@ class FundDocumentApi(AbstractFundDocumentApi):
         fund = self.model.objects.create(**new_funds)
         statement_document['fund'] = fund
         StatementDocument.objects.create(**statement_document)
-        return JsonResponse({'fund_document': self.serializer_class(fund, many=False).data}, status=status.HTTP_201_CREATED)
+        return JsonResponse({'fund_document': self.serializer_class(fund, many=False).data},
+                            status=status.HTTP_201_CREATED)
 
 
 class FundDocumentDetailApi(AbstractFundDocumentApi):
@@ -129,85 +132,40 @@ class FundDocumentDetailApi(AbstractFundDocumentApi):
         GET /api/v1/calculation/funds/?funds=funds_name
         ```
     """
-    http_method_names = ['get', ]
+    docs = docs
+    docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific document fund object 
+    using the given  id from the query parameters and serializes the result into JSON format before returning it as an 
+        HTTP response. 
 
-
-class AbstractStatementFundDocumentApi(AbstractViewApi):
-    """Define the StatementFundDocumentApi view class for handling HTTP methods related to StatementFunds.
-
-    This view class extends the AbstractViewApi class, which provides a basic implementation for common API actions.
-    The StatementFundDocumentApi supports HTTP POST and GET methods, and uses the StatementFundDocumentSchema
-    serializer for input/output validation. The view requires authenticated users with appropriate permissions to
-    access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission permission classes.
-
-    Attributes:
-        http_method_names (list): A list of HTTP methods supported by this view.
-        serializer_class (class): The serializer class for input/output validation.
-        permission_classes (list): A list of permission classes for user authentication and authorization.
-        model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
-        query_params (list): A list of dictionaries, each specifying a query parameter for the API.
-
-    Examples:
-        To retrieve funds with a matching description:
-        ```
-        GET /api/v1/calculation/funds/funds/
-        ```
-    """
-    serializer_class = StatementDocumentSchema
-    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
-    model = StatementDocument
-    schema = AutoSchema(tags=["Calculation - Statement Funds Documents - Extrato de verbas documentos"],
-                        operation_id_base='Statement Funds Documents')
-    query_params = []
-
-
-class StatementFundDocumentApi(AbstractStatementFundDocumentApi):
-    """Define the StatementFundDocumentApi view class for handling HTTP methods related to StatementFunds.
-
-    This view class extends the AbstractViewApi class, which provides a basic implementation for common API actions.
-    The StatementFundDocumentApi supports HTTP POST and GET methods, and uses the StatementFundDocumentSchema
-    serializer for input/output validation. The view requires authenticated users with appropriate permissions to
-    access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission permission classes.
-
-    Attributes:
-        http_method_names (list): A list of HTTP methods supported by this view.
-        serializer_class (class): The serializer class for input/output validation.
-        permission_classes (list): A list of permission classes for user authentication and authorization.
-        model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
-        query_params (list): A list of dictionaries, each specifying a query parameter for the API.
-
-    Examples:
-        To retrieve funds with a matching description:
-        ```
-        GET /api/v1/calculation/funds/funds/
-        ```
-    """
-    http_method_names = ['post']
-
-
-class StatementFundDocumentDetailApi(AbstractStatementFundDocumentApi):
-    """Define the StatementFundDocumentApi view class for handling HTTP methods related to StatementFunds.
-
-    This view class extends the AbstractViewApi class, which provides a basic implementation for common API actions.
-    The StatementFundDocumentApi supports HTTP POST and GET methods, and uses the StatementFundDocumentSchema
-    serializer for input/output validation. The view requires authenticated users with appropriate permissions to
-    access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission permission classes.
-
-    Attributes:
-        http_method_names (list): A list of HTTP methods supported by this view.
-        serializer_class (class): The serializer class for input/output validation.
-        permission_classes (list): A list of permission classes for user authentication and authorization.
-        model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
-        query_params (list): A list of dictionaries, each specifying a query parameter for the API.
-
-    Examples:
-        To retrieve funds with a matching description:
-        ```
-        GET /api/v1/calculation/funds/funds/
-        ```
-    """
-    serializer_class = StatementFundDocumentUpdateSchema
+            Returns:
+                JsonResponse: An HTTP response containing the serialized document fund data retrieved.
+            """)
     http_method_names = ['get', 'put']
+
+    layout_serializers = {
+        'default': FundDocumentSchema,
+        'get': FundDocumentSchema,
+        'put': FundDocumentUpdateSchema,
+    }
+
+    @doc("""This method handles PUT requests for the view. It updates a specific document fund object using the given id 
+    from the query parameters and the serialized input data from the request body. 
+    
+        Returns:
+            JsonResponse: An HTTP response containing the serialized document fund data updated.
+            """)
+    def put(self, request, *args, **kwargs):
+        id_ = kwargs.get('id')
+        serializer = self.get_serializer_class()
+        serializer = serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        data_obj = dict(serializer.validated_data)
+        document = get_object_or_404(self.model, id=id_)
+        statement_document = data_obj.pop('statement_document', None)
+
+        if statement_document:
+            statement = document.statementdocument
+            statement.dict_update(**statement_document)
+        document.dict_update(**data_obj)
+        return JsonResponse({'fund_document': self.serializer_class(document, many=False).data})

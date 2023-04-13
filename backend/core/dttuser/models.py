@@ -13,18 +13,19 @@ from .managers import CustomUserManager
 from config.settings import IS_LOCALHOST, ENABLE_SSO
 
 ROLES_CHOICES = (
-    ('S', _('Sócio')),
-    ('G', _('Gerente')),
-    ('D', _('Diretor')),
-    ('A', _('Analista')),
-    ('C', _('Consultor Sênior')),
+    ('S', _('Partner')),
+    ('G', _('Manager')),
+    ('D', _('Director')),
+    ('A', _('Analyst')),
+    ('C', _('Senior advisor')),
 )
+
 STATUS_CHOICES = (  # Status para o User DTT
-    ('A', _('Ativo')),
-    ('I', _('Inativo')),
-    ('P', _('Pendente')),
-    ('R', _('Rejeitado')),
-    ('F', _('Ferias')),
+    ('A', _('Active')),
+    ('I', _('Inactive')),
+    ('P', _('Pending')),
+    ('R', _('Rejected')),
+    ('F', _('Vacation')),
 )
 STATUS_ACTIVE = ['A', 'C']  # Definir status ativo
 
@@ -71,7 +72,7 @@ class Subgroup(models.Model):
         return self.name
 
     def natural_key(self):
-        return (self.name,)
+        return self.name,
 
 
 class PermissionsMixin(models.Model):
@@ -209,12 +210,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         _('username'),
         max_length=150,
         unique=True,
-        help_text=_(
-            'Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
+        help_text=_( 'Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
         validators=[username_validator],
-        error_messages={
-            'unique': _("A user with that username already exists."),
-        },
+        error_messages={'unique': _("A user with that username already exists.")},
     )
     password = models.CharField(max_length=128, editable=False)
     role = models.CharField(_('role'), default="A", max_length=1, choices=ROLES_CHOICES)
@@ -226,8 +224,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
-        help_text=_(
-            'Designates whether the user can log into this admin site.'),
+        help_text=_('Designates whether the user can log into this admin site.'),
     )
     is_active = models.BooleanField(
         _('active'),
@@ -298,7 +295,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.is_active = self.status in STATUS_ACTIVE
         if IS_LOCALHOST is False:
             if not self._state.adding and (self.id != self._loaded_values['id']):
-                raise ValueError("Updating the value of id isn't allowed")
+                raise ValueError(_("Updating the value of id isn't allowed"))
             if ENABLE_SSO:
                 self.set_unusable_password()
         return super().save(force_insert, force_update, using, update_fields)

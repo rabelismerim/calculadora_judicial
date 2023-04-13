@@ -28,12 +28,12 @@ class CustomSchema(AutoSchema):
             docstring = self._get_description_section(view, getattr(view, 'action', method.lower()),
                                                       view.get_view_description())
 
-        return formatting.dedent(smart_str(init + str(docstring)))
+        return formatting.dedent(smart_str(init + '\r\n' + str(docstring)))
 
     def _get_init_description(self) -> str:
         view = self.view
         if hasattr(view, 'docs') and isinstance(view.docs, dict) and view.docs.get('init'):
-            return view.docs.get('init') + '\r\n'
+            return view.docs.get('init')
         return ''
 
 
@@ -48,6 +48,11 @@ class AbstractViewApi(generics.GenericAPIView):
     query_params = []
     model = None
     schema = CustomSchema()
+
+    def get_serializer_class(self):
+        if hasattr(self, 'layout_serializers'):
+            return self.layout_serializers.get(self.request.method.lower(), self.layout_serializers['default'])
+        return super(AbstractViewApi, self).get_serializer_class()
 
     @staticmethod
     def get_schema_operation_parameters(view):

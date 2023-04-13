@@ -62,7 +62,7 @@ class StatementDocument(AbstractStatement):
         - `_calc_fine()` Calculates the fine to be charged based on the corrected value, fine rate, and default interest
         - `fine()` Getter method for the fine rate.
     """
-    number = models.CharField(_('Número do documento'), max_length=100)
+    number = models.CharField(_('Document number'), max_length=100)
     fund = models.OneToOneField(FundDocument, on_delete=models.PROTECT)
 
     def __str__(self):
@@ -238,7 +238,6 @@ class MonetaryCorrectionDocument(AbstractMonetaryCorrection):
         return self.index_recovering / self.index_data_base * total_value
 
 
-
 class TotalValuesDocument(AbstractTotalValuesFunds):
     """
     A class that represents the total values of a fund, which is a concrete implementation of AbstractTotalValuesFunds.
@@ -252,7 +251,8 @@ class TotalValuesDocument(AbstractTotalValuesFunds):
 
     Methods:
         get_calculated_statement(): Returns the calculated statement of the fund.
-        set_total(): Calculates and sets the total corrected and historical values of the fund based on the calculated statement.
+        set_total(): Calculates and sets the total corrected and historical values of the fund based on the calculated
+         statement.
     """
     fund = models.OneToOneField(FundDocument, on_delete=models.PROTECT)
     total_default_interest = models.FloatField(_('Total juros'), default=0)

@@ -39,6 +39,7 @@ SECRET_KEY = str(os.getenv('SECRET_KEY'))
 #     DEBUG = str(os.getenv('ENV')) == "True"
 
 PASSWD_DEV = str(os.getenv('PASSWD_DEV', 'fake_passwd'))
+DTT_EMAIL = os.getenv('DTT_EMAIL')
 
 DEBUG = str(os.getenv('DEBUG', 'false')).lower() == 'true'
 ENABLE_SSO = str(os.getenv('ENABLE_SSO', 'true')).lower() == 'true'

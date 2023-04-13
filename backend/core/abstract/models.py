@@ -6,7 +6,7 @@ from django.db import models
 from crum import get_current_request
 from django.db.models.signals import pre_save
 from django.forms import model_to_dict
-from utils import get_user_model
+from utils import get_user_model, _
 
 User = get_user_model()
 
@@ -15,13 +15,10 @@ class AbstractModel(models.Model):
     """Abstraction of common fields in all models"""
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    created_at = models.DateTimeField(
-        'Data de criação', auto_now_add=True, editable=False)
+    created_at = models.DateTimeField(_('Creation date'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
-    create_user = models.CharField(
-        'Username de criação', max_length=150, null=True)
-    update_user = models.CharField(
-        'Username de atualização', max_length=150, null=True)
+    create_user = models.CharField(_('Creation username'), max_length=150, null=True)
+    update_user = models.CharField(_('Update username'), max_length=150, null=True)
     objects = models.Manager()
 
     class Meta:
@@ -84,11 +81,9 @@ class UpdateUser(models.Model):
         primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     object_id = models.UUIDField()  # uuid AbstractModel
-    field_changed = models.CharField(
-        'Field alterado', max_length=100, null=True)
-    current_value = models.CharField('Valor atual', max_length=400, null=True)
-    previous_value = models.CharField(
-        'Valor anterior', max_length=400, null=True)
+    field_changed = models.CharField(_('Field changed'), max_length=100, null=True)
+    current_value = models.CharField(_('Current value'), max_length=400, null=True)
+    previous_value = models.CharField(_('Previous value '), max_length=400, null=True)
     create_user = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
     content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
     content_object = GenericForeignKey()
@@ -97,7 +92,8 @@ class UpdateUser(models.Model):
         ordering = ('created_at',)
 
     def __str__(self):
-        return f'Field alterado: {self.field_changed} | Valor anterior: {self.previous_value} | Valor atual: {self.current_value} | User: {self.create_user} | Hora de criação: {self.created_at}'
+        return _('Field alterado: {} | Valor anterior: {} | Valor atual: {} | User: {} | Hora de criação: {}').format(
+            self.field_changed, self.previous_value, self.current_value, self.create_user, self.created_at)
 
 
 def get_user(sender, **kwargs):

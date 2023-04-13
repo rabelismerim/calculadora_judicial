@@ -1,13 +1,16 @@
 import re
 from base.claim.schemas import ClaimCreditorSchema, ClaimLawyerSchema
 from base.coins.models import COIN_CHOICES
-from base.schemas import AbstractChoicesSerializer, AbstractDescriptionSchema
+from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
+
+from core.dttuser.models import ROLES_CHOICES, STATUS_CHOICES
 from core.entity.schemas import EntitySchema
 from creditors.classes.models import CLASSE_CHOICES
 from creditors.models import Creditor
 from creditors.notice.schemas import NoticeSchema, NoticeRecoveringSchema
-from rates.schemas import RateSchema
+from rates.models import TYPE_CHOICES
+from utils import _
 
 
 class CreditorSchema(AbstractDescriptionSchema):
@@ -24,11 +27,9 @@ class CreditorSchema(AbstractDescriptionSchema):
                              required=False, allow_null=True, exclude=('creditor_id',))
     notice_recovering = NoticeRecoveringSchema(source='noticerecovering_set', many=True, read_only=False,
                                                required=False, allow_null=True, exclude=('creditor_id',))
-    claim_creditor = ClaimCreditorSchema(source='claimcreditor_set',
-                                         many=True, read_only=False, required=False, allow_null=True,
-                                         exclude=('creditor_id',))
-    claim_lawyer = ClaimLawyerSchema(source='claimlawyer',
-                                     many=False, read_only=False, required=False, allow_null=True,
+    claim_creditor = ClaimCreditorSchema(source='claimcreditor_set', many=True, read_only=False, required=False,
+                                         allow_null=True, exclude=('creditor_id',))
+    claim_lawyer = ClaimLawyerSchema(source='claimlawyer', many=False, read_only=False, required=False, allow_null=True,
                                      exclude=('creditor_id',))
 
     class Meta:
@@ -45,18 +46,30 @@ class CreditorSchema(AbstractDescriptionSchema):
         legal_number = ''.join(re.findall(r'\d', str(legal_number)))
 
         if Creditor.objects.filter(recovering_id=recovering_id, entity__legal_number=legal_number).exists():
-            raise serializers.ValidationError(['Credor já cadastrado nessa recuperanda'])
+            raise serializers.ValidationError([_('Creditor already registered in this recovering')])
         return super(CreditorSchema, self).validate(data)
+
+
+class AbstractChoicesSerializer(serializers.Serializer):
+    """
+    This serializer creates fields for objects that have an ID and legend associated with them.
+    The id field must be a CharField, while the legend field needs to be a CharField of maximum length of 1.
+    """
+    id = serializers.CharField()
+    legend = serializers.CharField(max_length=1)
+
+    def to_representation(self, choice):
+        return {'id': choice[0], 'legend': choice[1]}
 
 
 class CreditorCreateSchema(serializers.Serializer):
     """Serializer Creditor fields"""
 
-    classes_options = AbstractChoicesSerializer(
-        [{'id': x[0], 'legend': x[1]} for x in CLASSE_CHOICES], many=True, read_only=True)
-
-    coin_options = AbstractChoicesSerializer(
-        [{'id': x[0], 'legend': x[1]} for x in COIN_CHOICES], many=True, read_only=True)
+    classes_options = AbstractChoicesSerializer(CLASSE_CHOICES, many=True)
+    coin_options = AbstractChoicesSerializer(COIN_CHOICES, many=True)
+    template_type_options = AbstractChoicesSerializer(TYPE_CHOICES, many=True)
+    roles_options = AbstractChoicesSerializer(ROLES_CHOICES, many=True)
+    user_status_options = AbstractChoicesSerializer(STATUS_CHOICES, many=True)
 
     class Meta:
         fields = '__all__'

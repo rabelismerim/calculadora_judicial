@@ -34,17 +34,17 @@ class AbstractFunds(AbstractModel):
         return self.name
 
 
-CHOICES_STATUS_FUND = (('S', _('Solicitado')), ('C', _('Concluído')), ('E', _('Em Progresso')),
-                       ('F', _('Falha no cálculo - índice não encontrado')),
-                       ('A', _('Falha no cálculo - alíquota não encontrado')),
-                       ('P', _('Falha no cálculo - parâmetros inválidos')),
-                       ('R', _('Falha no cálculo - sem data RJ')),
-                       ('D', _('Falha no cálculo - sem data Citação')),
+CHOICES_STATUS_FUND = (('S', _('Requested')), ('C', _('Concluded')), ('E', _('In Progress')),
+                       ('F', _('Calculation failed - rate not found')),
+                       ('A', _('Calculation failed - aliquot not found')),
+                       ('P', _('Calculation failed - invalid parameters')),
+                       ('R', _('Calculation failed - no date RJ')),
+                       ('D', _('Calculation failed - no date Citation')),
                        )
 
 
 class AbstractStatus(AbstractModel):
-    status = models.CharField(_('Status do cálculo'), max_length=1, choices=CHOICES_STATUS_FUND, default='S')
+    status = models.CharField(_('Calculation status'), max_length=1, choices=CHOICES_STATUS_FUND, default='S')
 
     def set_in_progress(self):
         """Sets the status of the calculation to 'E'. Calculation in progress"""
@@ -84,7 +84,7 @@ class AbstractStatus(AbstractModel):
                 has_value = True
                 break
         if not has_value:
-            raise ValueError(_(f'O status {value} não corresponde a nenhum status válido'))
+            raise ValueError(_('Status {} does not match any valid status').format(value))
 
     def _set_status(self, value: str):
         """Sets the status of the statement with the given value."""
@@ -120,8 +120,8 @@ class AbstractStatement(AbstractStatus):
         - `get_data_base()` returns the `data_base` attribute with or without a summary applied.
         - `get_total_value()` returns the `historical_value` attribute value.
     """
-    data_base = models.DateField('Data base')
-    historical_value = models.FloatField(_('Valor histórico'))
+    data_base = models.DateField(_('Base date'))
+    historical_value = models.FloatField(_('Historical value'))
 
     # Sumula 381 se refere a cálculos trabalhistas em que o pagamento de salário se dá no mês subsequente ao trabalhado.
     # Sendo necessário adicionar um mês na hora de calcular o valor
@@ -195,8 +195,8 @@ class AbstractMonetaryCorrection(AbstractModel):
     Methods:
         _get_statement: Return statement object associated with the current fund object
         """
-    index_data_base = models.FloatField(_('Índice na Data base'))
-    index_recovering = models.FloatField(_('Índice na recuperação'))
+    index_data_base = models.FloatField(_('Index on Base Date'))
+    index_recovering = models.FloatField(_('Index in recovery'))
 
     def _get_statement(self):
         """
@@ -204,7 +204,7 @@ class AbstractMonetaryCorrection(AbstractModel):
         object does not exist, it raize implemented error.
         """
         if hasattr(self, 'statement') is False or self.statement is None:
-            raise NotImplementedError('Necessário o relacionamento OneToOneField para o Statement')
+            raise NotImplementedError(_('OneToOneField relationship required for Statement'))
         return self.statement
 
     @staticmethod
@@ -237,8 +237,8 @@ class AbstractTotalValuesFunds(AbstractModel):
     """
 
     # TODO: somar todas as StatementFunds or StatementFundsIntegrations. Calcular no evento signals.post.save
-    total_historical = models.FloatField(_('Total valor histórico'), default=0)
-    total_corrected = models.FloatField(_('Total valor corrigido'), default=0)
+    total_historical = models.FloatField(_('Total historical value'), default=0)
+    total_corrected = models.FloatField(_('Total corrected amount'), default=0)
 
     def __str__(self):
         return f'{self.total_historical} - {self.total_corrected}'
