@@ -4,6 +4,7 @@ from base.coins.models import COIN_CHOICES
 from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
 
+from calculation.funds.abstract.models import CHOICES_STATUS_FUND
 from core.dttuser.models import ROLES_CHOICES, STATUS_CHOICES
 from core.entity.schemas import EntitySchema
 from creditors.classes.models import CLASSE_CHOICES
@@ -70,6 +71,7 @@ class CreditorCreateSchema(serializers.Serializer):
     template_type_options = AbstractChoicesSerializer(TYPE_CHOICES, many=True)
     roles_options = AbstractChoicesSerializer(ROLES_CHOICES, many=True)
     user_status_options = AbstractChoicesSerializer(STATUS_CHOICES, many=True)
+    status_funds_options = AbstractChoicesSerializer(CHOICES_STATUS_FUND, many=True)
 
     class Meta:
         fields = '__all__'

@@ -17,6 +17,7 @@ from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
 
 from calculation.funds.irrf.models import StatementIRRF, TotalValuesIRRF, FundIRRF
+from utils import _
 
 
 class StatementIRRFSchema(AbstractDescriptionSchema):
@@ -113,6 +114,6 @@ class FundIRRFSchema(AbstractDescriptionSchema):
         calculation_id = data.get('calculation_id')
 
         if FundIRRF.objects.filter(calculation_id=calculation_id, name=name).exists():
-            raise serializers.ValidationError(['Verba já cadastrada'])
+            raise serializers.ValidationError([_('Fund already registered')])
 
         return super(FundIRRFSchema, self).validate(data)

@@ -24,7 +24,7 @@ class FundIRRF(AbstractFunds):
     Attributes:
         months_period (int): The number of months in the period for the IRRF calculation.
     """
-    months_period = models.PositiveIntegerField(_('Meses no período'), default=1)
+    months_period = models.PositiveIntegerField(_('Months period'), default=1)
 
     def get_months_period(self) -> PositiveIntegerField:
         return self.months_period
@@ -65,8 +65,8 @@ class StatementIRRF(AbstractModel):
         taxable_amounts (FloatField): The taxable amounts for this statement, used to calculate the IRFF.
     """
     fund = models.ForeignKey(FundIRRF, on_delete=models.PROTECT)
-    fund_name = models.CharField(_('Verba'), max_length=150)
-    taxable_amounts = models.FloatField(_('Valor tributável'))
+    fund_name = models.CharField(_('Fund'), max_length=150)
+    taxable_amounts = models.FloatField(_('Taxable amounts'))
 
     def __str__(self):
         return f'{self.fund_name} | {self.fund} | {self.taxable_amounts}'
@@ -95,12 +95,12 @@ class TotalValuesIRRF(AbstractStatus):
         irrf_per_period (float): The value of the IRRF for the entire period.
         fund (Funds): The fund to which the IRRF applies.
     """
-    taxable_amount = models.FloatField(_('Valor tributável'), default=0)
-    taxable_portion = models.FloatField(_('Parcela tributável'), default=0)  # OK
-    aliquot = models.FloatField(_('Alíquota'), default=0)  # OK
-    installment_deducted = models.FloatField(_('Parcela a deduzir'), default=0)  # OK
-    irrf_per_month = models.FloatField(_('Valor IRRF por mês'), default=0)  # OK
-    irrf_per_period = models.FloatField(_('Valor do IRRF no período'), default=0)  # OK
+    taxable_amount = models.FloatField(_('Taxable amount'), default=0)
+    taxable_portion = models.FloatField(_('Taxable portion'), default=0)  # OK
+    aliquot = models.FloatField(_('Aliquot'), default=0)  # OK
+    installment_deducted = models.FloatField(_('Installment deducted'), default=0)  # OK
+    irrf_per_month = models.FloatField(_('IRRF per month'), default=0)  # OK
+    irrf_per_period = models.FloatField(_('IRRF per period'), default=0)  # OK
     fund = models.OneToOneField(FundIRRF, on_delete=models.PROTECT)
 
     def save(self, send_signal_post_save=True, *args, **kwargs):
@@ -182,7 +182,6 @@ class TotalValuesIRRF(AbstractStatus):
         self.__calc_irrf_per_period()
         self.set_calculation_done()
         self.save()
-
 
 
 @receiver(gen_statement_irrf, sender=StatementIRRF)
