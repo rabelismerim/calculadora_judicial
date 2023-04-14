@@ -1,5 +1,5 @@
 from core.abstract.views import AbstractViewApi
-from core.abstract.views import CustomSchema as AutoSchema
+
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 from projects.region.models import Region
@@ -13,7 +13,6 @@ class RegionApi(AbstractViewApi):
     serializer_class = RegionSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Region
-    schema = AutoSchema(tags=[str(_("Project - Region"))])
 
     docs = {
         'init': _("""The `Region` represents a region (jurisdictional body) of Brazilian justice in the project. 

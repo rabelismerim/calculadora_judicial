@@ -25,7 +25,8 @@ class VerdictTest(AbstractTest):
 
     def test_api_get(self):
         """Assert get lawyers detail"""
+        self.path = f'{self.path}/{Calculation.objects.first().id}'
         response = super().test_api_get()
-        verdicts = response.content['verdicts']
-        self.assertGreaterEqual(len(verdicts), 1)
-        return verdicts
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('verdict', response.content)
+        return response.content['verdict']

@@ -39,7 +39,6 @@ class ComparativeDetailApi(AbstractViewApi):
     serializer_class = ComparativeSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Comparative
-    tags=[_("Calculation - Comparative")]
 
     docs = {
         'init': _("""It represents the comparisons between the amounts requested by the creditor, the notices of the 

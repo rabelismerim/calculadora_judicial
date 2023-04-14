@@ -9,7 +9,7 @@ from django.http import JsonResponse
 from calculation.statement.schemas import StatementSchema
 from calculation.statement.models import Statement
 from core.abstract.views import AbstractViewApi
-from core.abstract.views import CustomSchema as AutoSchema
+
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 from utils import _, doc
@@ -42,7 +42,6 @@ class StatementApi(AbstractViewApi):
     serializer_class = StatementSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Statement
-    schema = AutoSchema(tags=[str(_("Calculation - Statement"))])
     docs = {
         'init': _("""Represents the entire extract of the calculation. All results of `calculations`, `fines`, 
         `amounts due`, `claims`, `summary of funds`, `DTT opinion`, `classes` and `used assumptions`.

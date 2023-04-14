@@ -34,7 +34,6 @@ class CriterionApi(AbstractViewApi):
     serializer_class = CriterionSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Criterion
-    tags=[_("Calculation - Criterion")]
 
     query_params = []
 

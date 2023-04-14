@@ -7,7 +7,7 @@ The StatementPJApi class uses the Statement_Pj model and Statement_PjSchema for 
 from compat import JsonResponse
 
 from core.abstract.views import AbstractViewApi
-from core.abstract.views import CustomSchema as AutoSchema
+
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 from calculation.statement_pj.models import StatementPJ
@@ -42,7 +42,6 @@ class StatementPJApi(AbstractViewApi):
     serializer_class = StatementPJSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = StatementPJ
-    schema = AutoSchema(tags=[str(_("Calculation - StatementPJ"))])
 
     docs = {
         'init': _("""Represents the entire extract from the calculation of the truths of legal entities. All results 

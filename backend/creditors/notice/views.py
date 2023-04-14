@@ -2,7 +2,7 @@ from base.coins.models import Coins
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from rest_framework import status
-from core.abstract.views import CustomSchema as AutoSchema
+
 from rest_framework import permissions
 from creditors.notice.models import Notice, NoticeRecovering
 from creditors.notice.schemas import NoticeSchema, NoticeUpdateSchema, NoticeRecoveringSchema, \
@@ -16,7 +16,6 @@ class NoticeApi(AbstractViewApi):
     serializer_class = NoticeSchema
     permission_classes = [permissions.IsAdminUser]
     model = Notice
-    schema = AutoSchema(tags=[str(_("Creditors - Notice"))])
 
     query_params = []
 
@@ -46,7 +45,6 @@ class NoticeUpdateApi(AbstractViewApi):
     serializer_class = NoticeUpdateSchema
     permission_classes = [permissions.IsAdminUser]
     model = Notice
-    schema = AutoSchema(tags=[str(_("Creditors - Notice"))])
 
     query_params = []
 
@@ -89,7 +87,6 @@ class NoticeRecoveringApi(AbstractViewApi):
     serializer_class = NoticeRecoveringSchema
     permission_classes = [permissions.IsAdminUser]
     model = NoticeRecovering
-    schema = AutoSchema(tags=[str(_("Creditors - Notice"))])
 
     query_params = []
 
@@ -118,7 +115,6 @@ class NoticeRecoveringUpdateApi(AbstractViewApi):
     serializer_class = NoticeRecoveringUpdateSchema
     permission_classes = [permissions.IsAdminUser]
     model = NoticeRecovering
-    schema = AutoSchema(tags=[str(_("Creditors - Notice"))])
 
     query_params = []
 

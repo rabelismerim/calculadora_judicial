@@ -9,7 +9,7 @@ from django.http import JsonResponse
 from calculation.funds.irrf.models import StatementIRRF, FundIRRF
 from calculation.funds.irrf.schemas import StatementIRRFSchema, StatementIRRFUpdateSchema, FundIRRFSchema
 from core.abstract.views import AbstractViewApi
-from core.abstract.views import CustomSchema as AutoSchema
+
 from rest_framework import permissions, status
 from core.permission.views import CheckHasPermission
 from utils import _, doc
@@ -56,7 +56,6 @@ class AbstractFundIRRFApi(AbstractViewApi):
     serializer_class = FundIRRFSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = FundIRRF
-    schema = AutoSchema(tags=[str(_("Calculation - Fund IRRF"))])
     query_params = []
 
 
@@ -164,8 +163,6 @@ class AbstractStatementIRRFApi(AbstractViewApi):
     serializer_class = StatementIRRFSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = StatementIRRF
-    schema = AutoSchema(
-        tags=[str(_("Calculation - Statement IRRF"))], operation_id_base='Statement IRRF')
     query_params = []
 
 

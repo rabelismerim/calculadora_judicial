@@ -7,7 +7,7 @@ Api's classes use the Integrations model and schema Integrations to work with da
 from calculation.funds.integrations.models import StatementIntegrations
 from calculation.funds.integrations.schemas import StatementIntegrationsUpdateSchema, StatementIntegrationsSchema
 from core.abstract.views import AbstractViewApi
-from core.abstract.views import CustomSchema as AutoSchema
+
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 from utils import _
@@ -45,8 +45,6 @@ class AbstractStatementIntegrationsApi(AbstractViewApi):
     serializer_class = StatementIntegrationsSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = StatementIntegrations
-    schema = AutoSchema(tags=[str(
-        _("Calculation - Statement Integrations"))], operation_id_base='Statement Integra')
     query_params = []
 
 

@@ -13,7 +13,7 @@ from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 from django.core.mail import send_mail
 from rest_framework import status
-from core.abstract.views import CustomSchema as AutoSchema
+
 from core.permission.views import CheckHasPermission, CheckPermissions
 from utils import get_user_model, _, doc
 from rest_framework import permissions, serializers
@@ -45,7 +45,6 @@ class AbstractUserDttApi(AbstractViewApi):
     else:
         permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = User
-    schema = AutoSchema(tags=[str(_("Users"))])
 
     query_params = [
         {
@@ -80,7 +79,6 @@ class UserDttDetailApi(AbstractUserDttApi):
     query_params and schema. """
     http_method_names = ['get']
     query_params = []
-    schema = AutoSchema(tags=[str(_("Users"))], component_name='UserDetail', operation_id_base='UserDetail')
     docs = docs
 
     @doc("""
@@ -89,7 +87,8 @@ class UserDttDetailApi(AbstractUserDttApi):
         """)
     def get(self, request, *args, **kwargs):
         serializer = self.get_serializer_class()
-        user = serializer(self.model.objects.filter(id=request.user.id).first(), many=False).data
+        user = serializer(self.model.objects.filter(
+            id=request.user.id).first(), many=False).data
         return JsonResponse({'user': user})
 
 
@@ -101,7 +100,6 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
     permission_classes = [permissions.IsAuthenticated, CheckPermissions]
     query_params = []
     perms = ['can_authorize_users']
-    schema = AutoSchema(tags=[str(_("Users"))], component_name='UserAuthorize', operation_id_base='UserAuthorize')
     docs = docs
 
     @doc("""Handles HTTP POST request to authorize or unauthorize user access.
@@ -118,9 +116,11 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
         groups = user_filter.pop('groups', [])
         subgroups = user_filter.pop('subgroups', [])
 
-        user_approved = self.model.objects.filter(email=user_filter['email']).first()
+        user_approved = self.model.objects.filter(
+            email=user_filter['email']).first()
         if not user_approved:
-            raise serializers.ValidationError([_('Email {}, not found').format(user_filter["email"])])
+            raise serializers.ValidationError(
+                [_('Email {}, not found').format(user_filter["email"])])
 
         user_approved.status = user_filter['is_active']
         if groups:
@@ -139,7 +139,6 @@ class UserSendMailDttApi(AbstractUserDttApi):
     http_method_names = ['post']
     serializer_class = UserMailDttSchema
     query_params = []
-    schema = AutoSchema(tags=[str(_("Users"))], component_name='UserMail')
     docs = docs
 
     @doc("""
@@ -148,7 +147,8 @@ class UserSendMailDttApi(AbstractUserDttApi):
         """)
     def post(self, request, *args, **kwargs):
         if not DTT_EMAIL:
-            raise serializers.ValidationError([_('DTT sending email not configured')])
+            raise serializers.ValidationError(
+                [_('DTT sending email not configured')])
 
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -156,7 +156,8 @@ class UserSendMailDttApi(AbstractUserDttApi):
 
         user_mail = self.model.objects.filter(**user_filter).first()
         if not user_mail:
-            raise serializers.ValidationError([_('Email {}, not found').format(user_filter["email"])])
+            raise serializers.ValidationError(
+                [_('Email {}, not found').format(user_filter["email"])])
 
         send_mail(_('Release of Use - {}').format(user_mail.email),
                   _('This email is automatically sent by the system to request the release of user {} to system. To '
@@ -196,7 +197,6 @@ class GroupApi(AbstractViewApi):
         permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Group
     http_method_names = ['get']
-    schema = AutoSchema(tags=[str(_("Groups"))])
 
 
 class SubgroupApi(AbstractViewApi):
@@ -226,7 +226,6 @@ class SubgroupApi(AbstractViewApi):
         permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Subgroup
     http_method_names = ['get']
-    schema = AutoSchema(tags=[str(_("Subgroups"))])
 
 
 class UserDttApi(AbstractUserDttApi):
@@ -245,6 +244,7 @@ class UserDttApi(AbstractUserDttApi):
         Can filter a user by `username`, `email`, `first_name`, `last_name` or `is_active`.
         """)
     }
+    operation_id_base = 'UserDetail'
 
     @doc("""
         Only LocalHost. Create a new user by receiving data in the form of dictionaries and 
@@ -266,7 +266,8 @@ class UserDttApi(AbstractUserDttApi):
         user.groups.add(*subgroups)
         user.save()
 
-        user_authenticated = authenticate(username=new_user['username'], password=password)
+        user_authenticated = authenticate(
+            username=new_user['username'], password=password)
         if user_authenticated:
             login(self.request, user_authenticated)
         serializer = self.get_serializer_class()

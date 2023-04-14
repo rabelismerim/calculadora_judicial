@@ -41,7 +41,6 @@ class CoinsApi(AbstractViewApi):
     serializer_class = CoinsSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Coins
-    tags=[_("Base - Coins")]
 
     docs = {
         'init': _("""Coins is an abstraction to have a value and related coin type""")

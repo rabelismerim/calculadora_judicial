@@ -7,7 +7,7 @@ The StatementPFApi class uses the Statement_Pf model and Statement_PfSchema for 
 from django.http import JsonResponse
 
 from core.abstract.views import AbstractViewApi
-from core.abstract.views import CustomSchema as AutoSchema
+
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 from calculation.statement_pf.models import StatementPF
@@ -42,7 +42,6 @@ class StatementPFApi(AbstractViewApi):
     serializer_class = StatementPFSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = StatementPF
-    schema = AutoSchema(tags=[str(_("Calculation - StatementPF"))])
 
     docs = {
         'init': _("""Represents the entire extract from the calculation of the truths of natural persons. All results 

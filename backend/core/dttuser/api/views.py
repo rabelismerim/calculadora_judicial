@@ -20,7 +20,6 @@ class UserListView(AbstractViewApi):
         `last_name`.
         """)
     }
-    tags = [_("Users")]
     http_method_names = ['get']
     query_params = [
         {

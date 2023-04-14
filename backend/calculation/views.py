@@ -13,7 +13,7 @@ from rest_framework import status
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission, CanChangeStep
 from utils import _, doc
-from core.abstract.views import CustomSchema as AutoSchema
+
 docs = {
     'init': _("""Represents all the calculation information. It gathers all the information relevant to the process.
      It gathers the information of `extract`, `appropriations`, `assumptions`, claims, `comparative`, `sentences`,
@@ -30,7 +30,6 @@ class AbstractCalculationApi(AbstractViewApi):
     serializer_class = CalculationSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Calculation
-    tags = [_("Calculation")]
 
     query_params = [
         {
@@ -53,9 +52,8 @@ class IncidentApi(AbstractViewApi):
     serializer_class = IncidentSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Incident
-    tags = [_("Calculation - Incident")]
-    http_method_names=['post']
-    query_params=[
+    http_method_names = ['post']
+    query_params = [
         {
             "name": "number",
             "field": "incident__number__icontains",
@@ -65,7 +63,7 @@ class IncidentApi(AbstractViewApi):
             "schema": {"type": "string"}
         }
     ]
-    docs={
+    docs = {
         'init': _("""Represents the `incident number` related to the process. Within a process there can be several
         `numbers of incidents`, and when doing the calculation, it is necessary to pass which number is related.
             """),
@@ -83,10 +81,10 @@ class IncidentApi(AbstractViewApi):
 class CalculationDetailApi(AbstractCalculationApi):
     """A class for handling detail HTTP requests for a Calculation object
     HTTP methods for retrieving particular Calculation detail"""
-    http_method_names=['get']
-    docs=docs.copy()
-    query_params=[]
-    docs['get']=_("""This method handles GET requests for the view. It retrieves a specific Calculation using the
+    http_method_names = ['get']
+    docs = docs.copy()
+    query_params = []
+    docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific Calculation using the
     given id from the query parameters and serializes the result into JSON format before returning it as
                  an HTTP response.
 
@@ -97,11 +95,11 @@ class CalculationDetailApi(AbstractCalculationApi):
 
 class CalculationListApi(AbstractCalculationApi):
     """HTTP methods for Calculation"""
-    http_method_names=['get']
-    docs=docs.copy()
-    schema=AutoSchema(tags=[str(_("Calculation"))], operation_id_base='CreditorCalculationList')
+    http_method_names = ['get']
+    docs = docs.copy()
+    operation_id_base = 'CreditorListCalculation'
 
-    @ doc("""This method handles GET requests for the view. It retrieves a list of objects Calculation using the given
+    @doc("""This method handles GET requests for the view. It retrieves a list of objects Calculation using the given
                 creditor_id from the query parameters and serializes the result into JSON format before returning it as
                  anHTTP response.
 
@@ -109,18 +107,18 @@ class CalculationListApi(AbstractCalculationApi):
                         JsonResponse: An HTTP response containing the serialized Calculation data retrieved.
                     """)
     def get(self, request, *args, **kwargs):
-        creditor_id=kwargs.get('creditor_id')
-        statement=self.model.objects.filter(creditor_id=creditor_id)
-        statement_data=self.serializer_class(statement, many=True).data
+        creditor_id = kwargs.get('creditor_id')
+        statement = self.model.objects.filter(creditor_id=creditor_id)
+        statement_data = self.serializer_class(statement, many=True).data
         return JsonResponse({'calculations': statement_data})
 
 
 class CalculationApi(AbstractCalculationApi):
     """HTTP methods for Calculation"""
-    http_method_names=['post']
-    docs=docs.copy()
+    http_method_names = ['post']
+    docs = docs.copy()
 
-    @ doc("""
+    @doc("""
         Creates a new instance of the Calculation model, receiving a dictionary as an argument and returning details
          of the newly created instance.
         Before creation of the Calculation instance, it will create related Criterion and Verdict instances based on
@@ -136,21 +134,21 @@ class CalculationApi(AbstractCalculationApi):
         """)
     def post(self, request, *args, **kwargs):  # Generate calculation
         with transaction.atomic():
-            serializer=self.serializer_class(data=request.data)
+            serializer = self.serializer_class(data=request.data)
             serializer.is_valid(raise_exception=True)
-            new_calculation=serializer.validated_data
-            new_verdicts=new_calculation.pop('verdict', None)
-            new_funds=new_calculation.pop('funds', None)
-            coins=new_calculation.get('coins')
+            new_calculation = serializer.validated_data
+            new_verdicts = new_calculation.pop('verdict', None)
+            new_funds = new_calculation.pop('funds', None)
+            coins = new_calculation.get('coins')
 
-            new_calculation['coins']=Coins.objects.create(**coins)
+            new_calculation['coins'] = Coins.objects.create(**coins)
 
-            calculation=self.model.objects.create(**new_calculation)
-            creditor=calculation.creditor
-            project=creditor.recovering.project
-            claims_creditor=creditor.get_claims_creditor()
-            claim_lawyer=creditor.get_claim_lawyer()
-            new_criterion={
+            calculation = self.model.objects.create(**new_calculation)
+            creditor = calculation.creditor
+            project = creditor.recovering.project
+            claims_creditor = creditor.get_claims_creditor()
+            claim_lawyer = creditor.get_claim_lawyer()
+            new_criterion = {
                 'calculation': calculation,
                 'rate': creditor.rate,
                 'admission': creditor.admission,
@@ -166,23 +164,23 @@ class CalculationApi(AbstractCalculationApi):
             }
 
             if claim_lawyer:
-                new_criterion['claim_lawyer']=Claim.objects.create(
+                new_criterion['claim_lawyer'] = Claim.objects.create(
                     classes=claim_lawyer.classes, coins=claim_lawyer.coins, archive_json=claim_lawyer.archive_json)
 
-            criterion=Criterion.objects.create(**new_criterion)
+            criterion = Criterion.objects.create(**new_criterion)
 
             if claims_creditor:
                 for claim_creditor in claims_creditor:
-                    new_claim=Claim.objects.create(
+                    new_claim = Claim.objects.create(
                         classes=claim_creditor.classes, coins=claim_creditor.coins,
                         archive_json=claim_creditor.archive_json)
                     CriterionClaimCredor.objects.create(
                         claim_creditor=new_claim, criterion=criterion)
             if new_verdicts:
                 for new_verdict in new_verdicts:
-                    new_verdict['calculation']=calculation
-                    type_calculation=new_verdict.pop('type_calculation')
-                    new_verdict['type_calculation']=TypeCalculation.objects.create(
+                    new_verdict['calculation'] = calculation
+                    type_calculation = new_verdict.pop('type_calculation')
+                    new_verdict['type_calculation'] = TypeCalculation.objects.create(
                         **type_calculation)
                     Verdict.objects.create(**new_verdict)
             if new_funds:
@@ -192,8 +190,8 @@ class CalculationApi(AbstractCalculationApi):
             # TODO: change creation Comparative to Generate Calculation finish
             if Comparative.objects.filter(calculation=calculation).exists() is False:
                 # comparative = Comparative.objects.create(calculation=calculation)
-                comparative=Comparative()
-                comparative.calculation=calculation
+                comparative = Comparative()
+                comparative.calculation = calculation
                 comparative.save()
                 comparative.checks()
         return JsonResponse({'calculation': self.serializer_class(calculation, many=False).data},
@@ -219,17 +217,16 @@ class ChangeStepApi(AbstractViewApi):
     Response status code:
     - 200 OK: Successfully updated the Calculation step.
     """
-    http_method_names=['put']
+    http_method_names = ['put']
 
-    serializer_class=ChangeStepSerializer
-    permission_classes=[permissions.IsAuthenticated,
+    serializer_class = ChangeStepSerializer
+    permission_classes = [permissions.IsAuthenticated,
                           CheckHasPermission, CanChangeStep]
-    tags=[_("Calculation - Change Step")]
-    query_params=[]
-    model=Calculation
-    docs=docs.copy()
+    query_params = []
+    model = Calculation
+    docs = docs.copy()
 
-    @ doc("""
+    @doc("""
         PUT method to change the step of the Calculation instance.
 
         Receives and validates JSON data with the next_step string.
@@ -239,10 +236,10 @@ class ChangeStepApi(AbstractViewApi):
         Possible statuses are `Requested`, `Calculated`, `Revised`, `Approved`, `Failed`, `Specially Approved`,
         """)
     def put(self, request, *args, **kwargs):
-        serializer=self.serializer_class(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        new_calculation=serializer.validated_data
-        calculation_id=kwargs.get('id', None)
-        calculation=self.model.objects.filter(id=calculation_id).first()
+        new_calculation = serializer.validated_data
+        calculation_id = kwargs.get('id', None)
+        calculation = self.model.objects.filter(id=calculation_id).first()
         calculation.set_step_by_char(new_calculation['next_step'])
         return JsonResponse({'calculation': CalculationSchema(calculation, many=False).data}, status=status.HTTP_200_OK)

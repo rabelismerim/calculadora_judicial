@@ -1,5 +1,5 @@
 from core.abstract.views import AbstractViewApi
-from core.abstract.views import CustomSchema as AutoSchema
+
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 from projects.lawyer.models import Lawyer
@@ -13,7 +13,6 @@ class LawyerApi(AbstractViewApi):
     serializer_class = LawyerSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Lawyer
-    schema = AutoSchema(tags=[str(_("Project - Lawyer"))])
 
     docs = {
         'init': _("""The `Lawyer` represents a lawyer (jurisdictional body) of Brazilian justice in the project. 

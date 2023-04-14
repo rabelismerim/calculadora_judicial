@@ -22,7 +22,6 @@ class SignStatusApi(AbstractViewApi):
     query_params and schema. """
     http_method_names = ['get']
     query_params = []
-    schema = AutoSchema(tags=[str(_("Users"))])
     docs = {
         'init': _("""Sign Status shows details of the user who made the request, such as `authorized`, `authenticated`,
          `profile` and others.
@@ -38,7 +37,8 @@ class SignStatusApi(AbstractViewApi):
         """)
     def get(self, request, *args, **kwargs):
         if ENABLE_SSO and ms_identity_web.id_data:
-            user_view = User.objects.filter(email=ms_identity_web.id_data.usermail)
+            user_view = User.objects.filter(
+                email=ms_identity_web.id_data.usermail)
             if ms_identity_web.id_data.usermail is not None:
                 if user_view.count() == 0:
                     serializer = UserDttMFASchema(data=ms_identity_web.id_data)

@@ -5,7 +5,7 @@ from base.coins.models import Coins
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from rest_framework import status
-from core.abstract.views import CustomSchema as AutoSchema
+
 from rest_framework import permissions
 from core.entity.models import Entity
 from core.permission.views import CheckHasPermission
@@ -28,7 +28,6 @@ class AbstractCreditorApi(AbstractViewApi):
     serializer_class = CreditorSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Creditor
-    schema = AutoSchema(tags=[str(_("Creditor"))])
     docs = docs
     query_params = [
         {
@@ -49,7 +48,6 @@ class CreditorDetailApi(AbstractCreditorApi):
     """HTTP methods for creditor Detail"""
     http_method_names = ['get', ]
     init_docs = docs.copy()
-    schema = AutoSchema(tags=[str(_("Creditor"))], operation_id_base='CreditorDetailID')
     docs_get = {
         'get': """Retrieve a creditor by their given ID,
         serializes it and returns a JSON response with the serialized data.
@@ -92,6 +90,7 @@ class CreditorListApi(AbstractCreditorApi):
     """
     http_method_names = ['get']
     docs = docs
+    operation_id_base = 'CreditorList'
 
     @doc("""
         Retrieves a queryset of creditors related to a given project ID,
@@ -103,8 +102,9 @@ class CreditorListApi(AbstractCreditorApi):
             A response with a JSON object containing a list of serialized creditor data.
         """)
     def get(self, request, *args, **kwargs):
-        project_id = kwargs.get('id')
-        creditors = self.serializer_class(self.model.objects.filter(recovering__project_id=project_id), many=True).data
+        project_id = kwargs.get('project_id')
+        creditors = self.serializer_class(self.model.objects.filter(
+            recovering__project_id=project_id), many=True).data
         return JsonResponse({'creditors': creditors})
 
 

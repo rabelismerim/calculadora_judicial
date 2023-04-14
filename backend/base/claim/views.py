@@ -25,7 +25,6 @@ class ClaimCreditorApi(AbstractViewApi):
     serializer_class = ClaimCreditorSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = ClaimCreditor
-    tags=[_("Creditor - Claim")]
     query_params = []
     http_method_names = ['post']
     docs = docs
@@ -58,7 +57,6 @@ class ClaimCreditorUpdateApi(AbstractViewApi):
     serializer_class = ClaimCreditorUpdateSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = ClaimCreditor
-    tags=[_("Creditor - Claim")]
     query_params = []
     http_method_names = ['put']
 
@@ -96,7 +94,6 @@ class ClaimLawyerApi(AbstractViewApi):
     serializer_class = ClaimLawyerUpdateSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = ClaimLawyer
-    tags=[_("Creditor - Claim")]
     query_params = []
     http_method_names = ['post']
     docs = docs

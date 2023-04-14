@@ -1,6 +1,6 @@
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
-from core.abstract.views import CustomSchema as AutoSchema
+
 from rest_framework import permissions, serializers, status
 from core.permission.views import CheckHasPermission
 from rates.models import Rate, RateFile, Template
@@ -14,7 +14,6 @@ class RateApi(AbstractViewApi):
     serializer_class = RateSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Rate
-    schema = AutoSchema(tags=[str(_("Rate"))])
 
     docs = {
         'init': _("""Represents the indices that can be applied to rates to calculate debt updates.
@@ -47,7 +46,6 @@ class RateFileApi(AbstractViewApi):
     serializer_class = RateFileSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Rate
-    schema = AutoSchema(tags=[str(_("RateFile"))])
 
     query_params = [
         {
@@ -110,7 +108,6 @@ class TemplateApi(AbstractViewApi):
     serializer_class = TemplateListSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Template
-    tags = [_("Rate Template")]
 
     query_params = [
         {
@@ -135,7 +132,6 @@ class TemplateDetailApi(AbstractViewApi):
     serializer_class = TemplateSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Template
-    schema = AutoSchema(tags=[str(_("Rate Template"))])
 
     query_params = []
 

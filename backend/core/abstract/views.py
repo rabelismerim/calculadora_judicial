@@ -17,6 +17,12 @@ from utils import _
 
 class CustomSchema(AutoSchema):
 
+    def get_operation_id_base(self, path, method, action):
+        view = self.view
+        if hasattr(view, 'operation_id_base') and isinstance(view.operation_id_base, str):
+            return view.operation_id_base
+        return super(CustomSchema, self).get_operation_id_base(path, method, action)
+
     def get_operation(self, path, method):
         op = super(CustomSchema, self).get_operation(path, method)
         op['parameters'] = list(map(lambda x: {**x, 'description': str(x['description'])}, op['parameters']))
@@ -26,6 +32,12 @@ class CustomSchema(AutoSchema):
         view = self.view
         if hasattr(view, 'tags') and isinstance(view.tags, list):
             return list(map(str, view.tags))
+        if view.model:
+            app = view.model._meta.app_config.name.split('.')[0].capitalize()
+            app_label = view.model._meta.app_label.capitalize()
+            if app == app_label:
+                return ['{}'.format(app)]
+            return ['{} - {}'.format(app, app_label)]
         return super(CustomSchema, self).get_tags(path, method)
 
     def map_field(self, field):

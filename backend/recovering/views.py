@@ -3,7 +3,7 @@ from django.utils.translation import gettext
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from rest_framework import status
-from core.abstract.views import CustomSchema as AutoSchema
+
 from rest_framework import permissions
 from core.entity.models import Entity
 from core.permission.views import CheckHasPermission
@@ -21,7 +21,6 @@ class RecoveringApi(AbstractViewApi):
     serializer_class = RecoveringSchema
     model = Recovering
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
-    tags = [str(_("Recovering"))]
 
     query_params = [
         {
@@ -63,6 +62,7 @@ class RecoveringApi(AbstractViewApi):
             for new_ in new_archive_recovering:
                 archive = new_.pop('archive')
                 new_archive = Archive.objects.create(**archive)
-                ArchiveRecovering.objects.create(recovering=new_recovering, archive=new_archive)
+                ArchiveRecovering.objects.create(
+                    recovering=new_recovering, archive=new_archive)
         return JsonResponse({'recovering': self.serializer_class(new_recovering, many=False).data},
                             status=status.HTTP_201_CREATED)

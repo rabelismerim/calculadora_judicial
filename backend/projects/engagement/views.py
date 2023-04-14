@@ -1,7 +1,7 @@
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from rest_framework import status
-from core.abstract.views import CustomSchema as AutoSchema
+
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 from projects.engagement.models import ProjectEngagement, Engagement
@@ -15,7 +15,6 @@ class EngagementApi(AbstractViewApi):
     serializer_class = ProjectEngagementSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = ProjectEngagement
-    schema = AutoSchema(tags=[str(_("Project - Engagement"))])
 
     query_params = [
         {

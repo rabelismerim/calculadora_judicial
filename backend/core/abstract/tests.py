@@ -83,6 +83,9 @@ class AbstractTest(TransactionTestCase):
         "users": [{'id': '1'}]
     }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.keep_db = '--keepdb' in sys.argv
     @staticmethod
     def execute_before_and_after(func):
         stdout = OutputWrapper(sys.stdout)
@@ -119,6 +122,10 @@ class AbstractTest(TransactionTestCase):
         """Assert post objects detail"""
         if hasattr(self, 'path') and hasattr(self, 'parameters'):
             response = self.post(self.path, self.parameters)
+            if response.status_code == 404:
+                self.print('\n\n')
+                self.print(self.path)
+                self.print('\n\n')
             self.assertEqual(response.status_code, 201)
             return response.content
 
@@ -127,6 +134,10 @@ class AbstractTest(TransactionTestCase):
         """Assert get objects list detail"""
         if hasattr(self, 'path'):
             response = self.get(self.path)
+            if response.status_code == 404:
+                self.print('\n\n')
+                self.print(self.path)
+                self.print('\n\n')
 
             if DEBUG:
                 try:

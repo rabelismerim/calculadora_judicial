@@ -1,7 +1,7 @@
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from rest_framework import status
-from core.abstract.views import CustomSchema as AutoSchema
+
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 from projects.project_user.schemas import ProjectUserSchema
@@ -19,7 +19,6 @@ class ProjectUserApi(AbstractViewApi):
     serializer_class = ProjectUserSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = ProjectUser
-    schema = AutoSchema(tags=[str(_("Project - ProjectUser"))])
     docs = {
         'init': _("""The Project User defines the roles that he can have within a project, being able to be executor, 
         reviewer, approver or special approver.
@@ -43,7 +42,8 @@ class ProjectUserApi(AbstractViewApi):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_project_user = serializer.validated_data.pop('user')
-        project_user = self.model.objects.create(user=User.objects.filter(id=new_project_user).first())
+        project_user = self.model.objects.create(
+            user=User.objects.filter(id=new_project_user).first())
         project_user.save()
         project_user_data = self.serializer_class(
             project_user, many=False).data

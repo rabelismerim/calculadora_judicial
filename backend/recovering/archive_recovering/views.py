@@ -1,7 +1,7 @@
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from rest_framework import status
-from core.abstract.views import CustomSchema as AutoSchema
+
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 from recovering.archive.models import Archive
@@ -15,7 +15,6 @@ class ArchiveRecoveringApi(AbstractViewApi):
     serializer_class = ArchiveRecoveringSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = ArchiveRecovering
-    schema = AutoSchema(tags=["Recovering - Archive Recovering"])
 
     query_params = [
         {

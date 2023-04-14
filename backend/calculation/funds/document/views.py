@@ -11,7 +11,7 @@ from rest_framework.generics import get_object_or_404
 from calculation.funds.document.models import FundDocument, StatementDocument
 from calculation.funds.document.schemas import FundDocumentSchema, FundDocumentUpdateSchema
 from core.abstract.views import AbstractViewApi
-from core.abstract.views import CustomSchema as AutoSchema
+
 from rest_framework import permissions, status
 from core.permission.views import CheckHasPermission
 from utils import _, doc
@@ -49,7 +49,6 @@ class AbstractFundDocumentApi(AbstractViewApi):
     serializer_class = FundDocumentSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = FundDocument
-    schema = AutoSchema(tags=[str(_("Calculation - Fund Document"))])
     query_params = [
         {
             "name": "name",

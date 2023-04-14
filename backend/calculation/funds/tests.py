@@ -22,29 +22,29 @@ class FundsTest(AbstractTest):
 
     calculation = Calculation.objects.first()
     name = generate_name()
-    print(name, 'name\n\n')
     parameters = {
         "description": generate_name(),
         "name": name,
         'calculation_id': str(calculation.id)
     }
-
+    fund_id = str(Funds.objects.first().id)
     path = 'calculation/funds'
 
     def test_api_get(self):
         """Assert get lawyers detail"""
+        self.path = f'{self.path}/{self.fund_id}'
         response = super().test_api_get()
-        funds = response.content['funds']
-        self.assertGreaterEqual(len(funds), 1)
-        return funds
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('fund', response.content)
+        return response.content['fund']
 
     @AbstractTest.execute_before_and_after
     def test_api_post_statement_fund(self):
         """Assert get lawyers detail"""
-        fund = Funds.objects.first()
+
         statements = [
             ({
-                 "fund_id": str(fund.id),
+                 "fund_id": self.fund_id,
                  "data_base": "2020-03-23",
                  "historical_value": 200,
                  "dsr_reflexes": 100,
@@ -52,7 +52,7 @@ class FundsTest(AbstractTest):
              }, {'corrected_value': 288.6442100028066, 'index_data_base': 2.8952660940000126,
                  'index_recovering': 2.7856726481684837}),
             ({
-                 "fund_id": str(fund.id),
+                 "fund_id": self.fund_id,
                  "data_base": "2011-10-10",
                  "historical_value": 555.94,
                  "dsr_reflexes": 188.94,
@@ -61,14 +61,14 @@ class FundsTest(AbstractTest):
                  'index_data_base': 2.7310656005592993,
                  'index_recovering': 2.7856726481684837}),
             ({
-                 "fund_id": str(fund.id),
+                 "fund_id": self.fund_id,
                  "data_base": "2011-10-10",
                  "historical_value": 200,
                  "summary": False
              }, {'corrected_value': 204.1335457658509, 'index_data_base': 2.729264940475544,
                  'index_recovering': 2.7856726481684837}),
             ({
-                 "fund_id": str(fund.id),
+                 "fund_id": self.fund_id,
                  "data_base": "2011-08-10",
                  "historical_value": 2300,
                  "summary": True

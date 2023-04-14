@@ -9,7 +9,7 @@ Api's classes use the {{app_name | title}} model and schema {{app_name | title}}
 from {{app_name}}.schemas import {{app_name | title}}Schema
 from {{app_name}}.models import {{app_name | title}}
 from core.abstract.views import AbstractViewApi
-from core.abstract.views import CustomSchema as AutoSchema
+
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 
@@ -41,7 +41,6 @@ class {{app_name | title}}Api(AbstractViewApi):
     serializer_class = {{app_name | title}}Schema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = {{app_name | title}}
-    schema = AutoSchema(tags=["{{app_name | title}}"])
 
     query_params = [
         {

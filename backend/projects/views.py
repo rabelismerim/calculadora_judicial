@@ -5,7 +5,7 @@ from config.settings import GROUP_NAME_APPROVER, GROUP_NAME_EXECUTOR, GROUP_NAME
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from rest_framework import status
-from core.abstract.views import CustomSchema as AutoSchema
+
 from rest_framework import permissions
 from core.entity.models import Entity
 from core.permission.views import CheckHasPermission, check_query_permission
@@ -25,7 +25,6 @@ class AbstractProjectApi(AbstractViewApi):
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Project
     http_method_names = ['get']
-    schema = AutoSchema(tags=[str(_("Project"))])
 
     docs = {
         'init': _("""The `Project` class represents a large project/engagement in a legal or administrative process. It 

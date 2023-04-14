@@ -1,4 +1,4 @@
-from calculation.models import Incident
+from calculation.models import Incident, Calculation
 from core.abstract.tests import AbstractTest
 from creditors.models import Creditor
 
@@ -46,7 +46,8 @@ class CalculationTest(AbstractTest):
 
     def test_api_get(self):
         """Assert get lawyers detail"""
+        self.path = f'{self.path}/{Calculation.objects.first().id}'
         response = super().test_api_get()
-        objs = response.content['calculations']
-        self.assertGreaterEqual(len(objs), 1)
-        return objs
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('calculation', response.content)
+        return response.content['calculation']
