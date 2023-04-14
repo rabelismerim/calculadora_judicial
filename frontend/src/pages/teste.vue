@@ -1,24 +1,25 @@
 <script setup lang="ts">
-const newCreditor = {
-  name: 'Empresa Teste 4',
-  legalNumber: '52.824.237/0001-90',
-  recoveringsId: ['f84f063f-e944-4dfc-85e5-7ac04de04fdb', '2313d4a1-ee03-4e94-b86e-fd39b955c632', '2b218f7d-f132-458a-8ab7-80a0c1c6c7a2'],
+const newAnalysis = {
+  classe: '1',
+  coin: 'B',
+  recoveringsId: ['2b218f7d-f132-458a-8ab7-80a0c1c6c7a2'],
+  value: 1000,
 }
-let creditors = $ref([''])
+let analysis = $ref([''])
 
-const createCreditor = async () => {
+const createAnalysis = async () => {
   try {
-    const result = await creditorsService.newCreditor(newCreditor)
+    const result = await creditorsService.newAnalysis(newAnalysis)
     console.warn('print result', result)
   }
   catch (error) {
     printError('ERROR ON NEW CREDITOR:', error)
   }
 }
-const loadCreditors = async () => {
+const loadAnalysis = async () => {
   try {
-    const result = await creditorsService.getCreditors('227b3c32-7e7b-42f4-a10f-289c15aa1701')
-    creditors = result
+    const result = await creditorsService.getAnalysis()
+    analysis = result
   }
   catch (error) {
     printError('ERROR ON LOAD CREDITORS:', error)
@@ -30,15 +31,15 @@ const loadCreditors = async () => {
   <div class="p-6 grid gap-4 justify-start">
     <h1>Teste</h1>
     <Btn
-      label="Cadastrar Credor"
-      @click="createCreditor"
+      label="Criar Ficha de Analise"
+      @click="createAnalysis"
     />
     <Btn
-      label="Carregar Credores"
-      @click="loadCreditors"
+      label="Carregar Ficha de Analise"
+      @click="loadAnalysis"
     />
     <div>
-      <pre>{{ creditors }}</pre>
+      <pre>{{ analysis }}</pre>
     </div>
   </div>
 </template>
