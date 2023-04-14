@@ -1,51 +1,7 @@
 const mapCreditor = (creditor: any) => {
-<<<<<<< HEAD
-  const {
-    name,
-    legal_number,
-    recovering_id,
-    rate_id,
-    classe,
-    coin,
-    value,
-    archive_json,
-    notice_recovering,
-    admission,
-    dismissal,
-    default_interest,
-    fine,
-    advocative_hours,
-    description,
-  } = creditor
-}
-// CREDORES
-const getCreditor = () => api
-  .get('/v1/creditors/')
-  .then(({ creditor }: any) => creditor)
-  .then(data => data.map(({ name, id }: any) => ({ name, id })))
-const newCreditor = (name: string) => api
-  .post('/v1/creditors/', { name })
-  .then(({ creditor }: any) => creditor)
-  .then(({ name, id }) => ({ name, id }))
-
-// FICHA DE ANALISE
-const getAnalysis = () => api
-  .get('/v1/creditors/')
-  .then(({ analysis }: any) => analysis)
-  .then(data => data.map(({ name, id }: any) => ({ name, id })))
-const newAnalysis = (name: string) => api
-  .post('/v1/creditors/', { name })
-  .then(({ analysis }: any) => analysis)
-  .then(({ name, id }) => ({ name, id }))
-
-
-export default {
-  getCreditor,
-=======
-
 }
 
-const mapAnalysi = (creditor: any) => {
+const mapAnalysi = (notice: any) => {
   // const {
   //   rateId: '',
   //   classe: '1',
@@ -73,7 +29,7 @@ interface Creditor {
 }
 const getCreditors = (id: string) => api
   .get(`/v1/creditors/project/${id}/`)
-  .then(({ creditors }: any) => creditors)
+  .then(({ analysis }: any) => analysis)
 const newCreditor = async (creditor: Creditor) => {
   const { recoveringsId, name, legalNumber } = creditor
   const results = []
@@ -95,22 +51,97 @@ const newCreditor = async (creditor: Creditor) => {
     return results
   }
   catch (error) {
-    printError('ERROR ON NEW CREDITOR', error)
+    printError('ERROR ON NEW CREDITORS', error)
   }
 }
 
 // FICHA DE ANALISE - EDITAL DA AJ
+
+interface Analysis {
+  classe: string[]
+  coin: string[]
+  recoveringsId: string[]
+  value: number
+}
+
 const getAnalysis = () => api
   .get('/v1/creditors/notice/aj/')
   .then(({ analysis }: any) => analysis)
-const newAnalysi = (name: string) => api
-  .post('/v1/creditors/', { name })
-  .then(({ analysis }: any) => analysis)
-  .then(({ name, id }) => ({ name, id }))
+const newAnalysis = async (notice: Analysis) => {
+  const { classe, coin, recoveringsId, value } = notice
+  const results = []
+  try {
+    for (const id of recoveringsId) {
+      const result = await api
+        .post('/v1/creditors/notice/aj/',
+          ({
+            classes: {
+              classe,
+            },
+
+            coins: {
+              coin,
+              value,
+            },
+            recoveringsId: id,
+          }))
+        .then((result: any) => result.notice)
+      results.push(result)
+    }
+    return results
+  }
+  catch (error) {
+    printError('ERROR ON NEW ANALYSIS', error)
+  }
+}
+
+// FICHA DE ANALISE - PLEITO DO CREDOR
+
+interface CreditorClaim {
+  classe: string[]
+  coin: string[]
+  creditorId: string[]
+  value: number
+}
+
+const newCreditorClaim = async (claim: CreditorClaim) => {
+  const { classe, coin, creditorId, value } = claim
+  const results = []
+  try {
+    for (const id of creditorId) {
+      const result = await api
+        .post('/v1/creditors/claim/claim-creditor/',
+          ({
+            classes: {
+              classe,
+            },
+
+            coins: {
+              coin,
+              value,
+            },
+            creditorId: id,
+          }))
+        .then((result: any) => result.claim)
+      results.push(result)
+    }
+    return results
+  }
+  catch (error) {
+    printError('ERROR ON NEW CREDITOR CLAIM', error)
+  }
+}
+
+const updateCreditorClaim = async () => {
+  api.put('/v1/creditors/notice/aj/')
+    .then(({ analysis }: any) => analysis)
+}
 
 export default {
   getCreditors,
   newCreditor,
->>>>>>> front-dev
+  updateCreditorClaim,
   getAnalysis,
+  newAnalysis,
+  newCreditorClaim,
 }
