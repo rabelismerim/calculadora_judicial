@@ -24,8 +24,8 @@ User = get_user_model()
 
 docs = {
     'init': _("""The `User` class represents a user on the system, has common properties such as `username` 
-        `email`, `password`, as well as additional information such as `role` , `status` , `first_name`, `last_name` 
-        `userpicture ` and `is_active` (if the user is active) He can also be a staff member and have access to the 
+        `email` as well as additional information such as `role`, `status`, `first_name`, `last_name` 
+        `userpicture` and `is_active` (if the user is active) He can also be a staff member and have access to the 
         admin site, as controlled by the `is_staff` field, some permission fields that can be used to control access 
         to resources in the system.
         The status(`Active`, `Inactive`, `Pending`, `Rejected`, `Vacation`) controls whether the user is active or 
@@ -53,7 +53,7 @@ class AbstractUserDttApi(AbstractViewApi):
             "field": "first_name__icontains",
             "in": "query",
             "required": False,
-            "description": str(_("Name")),
+            "description": _("Name"),
             "schema": {"type": "string"}
         },
         {
@@ -241,8 +241,8 @@ class UserDttApi(AbstractUserDttApi):
         The status(`Active`, `Inactive`, `Pending`, `Rejected`, `Vacation`) controls whether the user is active or 
         inactive.
         """),
-        'get': _("""Get the list of all users. Include user fields like name, userpicture, permissions list, etc.
-        Can filter a user by username, name, or if it is active.
+        'get': _("""Get the list of all users. Include user fields like  `name`, `userpicture`, `permissions list`, etc.
+        Can filter a user by `username`, `email`, `first_name`, `last_name` or `is_active`.
         """)
     }
 

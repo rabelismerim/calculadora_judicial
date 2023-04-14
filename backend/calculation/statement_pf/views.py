@@ -4,7 +4,7 @@ It extends the AbstractViewApi class and includes a CheckHasPermission permissio
 The API responds with JSON data and utilizes the rest_framework.schemas.openapi.AutoSchema for generating API documentation.
 The StatementPFApi class uses the Statement_Pf model and Statement_PfSchema for working with data.
 """
-
+from django.http import JsonResponse
 
 from core.abstract.views import AbstractViewApi
 from core.abstract.views import CustomSchema as AutoSchema
@@ -12,6 +12,7 @@ from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 from calculation.statement_pf.models import StatementPF
 from calculation.statement_pf.schemas import StatementPFSchema
+from utils import _, doc
 
 
 class StatementPFApi(AbstractViewApi):
@@ -28,7 +29,7 @@ class StatementPFApi(AbstractViewApi):
         serializer_class (class): The serializer class for input/output validation.
         permission_classes (list): A list of permission classes for user authentication and authorization.
         model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
+
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:
@@ -41,15 +42,27 @@ class StatementPFApi(AbstractViewApi):
     serializer_class = StatementPFSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = StatementPF
-    schema = AutoSchema(tags=["Calculation - StatementPF"])
+    schema = AutoSchema(tags=[str(_("Calculation - StatementPF"))])
 
-    query_params = [
-        {
-            "name": "statement_pf",
-            "field": "statement_pf__icontains",
-            "in": "query",
-            "required": False,
-            "description": "statement_pf",
-            "schema": {"type": "string"}
-        }
-    ]
+    docs = {
+        'init': _("""Represents the entire extract from the calculation of the truths of natural persons. All results 
+        of `calculations`, `fines`, `amounts due`, `claims`, `summary of funds`, `DTT opinion`, `classes` and 
+        `used assumptions`.
+            """),
+    }
+
+    query_params = []
+
+    @doc("""This method handles GET requests for the view. It retrieves a specific statement PF object using the given 
+            calculation_id from the query parameters and serializes the result into JSON format before returning it as
+             an  HTTP response. 
+
+                Returns:
+                    JsonResponse: An HTTP response containing the serialized statement PF data retrieved.
+                """)
+    def get(self, request, *args, **kwargs):
+        calculation_id = kwargs.get('calculation_id')
+        statement = self.model.objects.filter(
+            statement__calculation_id=calculation_id).first()
+        statement_data = self.serializer_class(statement, many=False).data
+        return JsonResponse({'statement_pf': statement_data})

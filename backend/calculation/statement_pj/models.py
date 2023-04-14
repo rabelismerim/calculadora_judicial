@@ -9,6 +9,7 @@ from django.db import models
 from calculation.funds.models import Funds
 from calculation.statement.models import Statement
 from core.abstract.models import AbstractModel
+from utils import _
 
 
 # TODO: Tabela estatica. Calcular no evento signals.post.save ou em Procedure
@@ -25,11 +26,11 @@ class StatementPJ(AbstractModel):
         amount_due (float): The amount due on the statement.
     """
     statement = models.OneToOneField(Statement, on_delete=models.PROTECT)
-    value = models.FloatField('Valor total', default=0)
-    corrected_value = models.FloatField('Valor corrigido', default=0)
-    interest = models.FloatField('Juros', default=0)
-    fine = models.FloatField('Multa', default=0)
-    amount_due = models.FloatField('Valor devido', default=0)
+    value = models.FloatField(_('Updated total'), default=0)
+    corrected_value = models.FloatField(_('Total due'), default=0)
+    interest = models.FloatField(_('Interest'), default=0)
+    fine = models.FloatField(_('Fine'), default=0)
+    amount_due = models.FloatField(_('Total due'), default=0)
 
 
 # TODO: Tabela estatica. Criar no evento signals.post.save ou em Procedure

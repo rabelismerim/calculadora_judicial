@@ -22,7 +22,8 @@ class ProjectUserApi(AbstractViewApi):
     schema = AutoSchema(tags=[str(_("Project - ProjectUser"))])
     docs = {
         'init': _("""The Project User defines the roles that he can have within a project, being able to be executor, 
-        reviewer, approver or special approver""")
+        reviewer, approver or special approver.
+        """)
     }
 
     @doc("""Get projects from user authenticated, return ProjectUser detail""")

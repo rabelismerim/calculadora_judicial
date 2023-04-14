@@ -1,7 +1,6 @@
 """
 This module defines a Api's classes that provides HTTP methods for managing Comparative objects models.
 It is extended from an AbstractViewApi class and includes a CheckHasPermission permission class for authorization.
-Api's responds with JSON data and uses rest_framework.schemas.openapi.AutoSchema to generate the API documents.
 Api's classes use the Comparative model and schema Comparative to work with data.
 """
 
@@ -9,7 +8,6 @@ from django.http import JsonResponse
 from calculation.comparative.schemas import ComparativeSchema
 from calculation.comparative.models import Comparative, ComparativeFunds, ComparativeFundsIntegrations
 from core.abstract.views import AbstractViewApi
-from core.abstract.views import CustomSchema as AutoSchema
 from rest_framework import permissions, status
 from core.permission.views import CheckHasPermission
 from utils import _, doc
@@ -29,7 +27,6 @@ class ComparativeDetailApi(AbstractViewApi):
         serializer_class (class): The serializer class for input/output validation.
         permission_classes (list): A list of permission classes for user authentication and authorization.
         model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:
@@ -42,7 +39,7 @@ class ComparativeDetailApi(AbstractViewApi):
     serializer_class = ComparativeSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Comparative
-    schema = AutoSchema(tags=[str(_("Calculation - Comparative"))])
+    tags=[_("Calculation - Comparative")]
 
     docs = {
         'init': _("""It represents the comparisons between the amounts requested by the creditor, the notices of the 

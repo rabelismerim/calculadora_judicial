@@ -23,7 +23,8 @@ class NoticeApi(AbstractViewApi):
     docs = {
         'init': _("""NoticeAJ gathers information about the creditor's process. It contains data relevant to the 
         process, such as what was requested by the creditor, how much was calculated due, the dates and amounts."""),
-        'get': _("""Get the entire list of notices, containing the classes and values"""),
+        'get': _("""Get the entire list of notices, containing the classes and values.
+        """),
     }
 
     @doc("""Create a new NoticeAJ, if it does not exist in the base, if it exists, an exception will be 
@@ -52,7 +53,8 @@ class NoticeUpdateApi(AbstractViewApi):
     docs = {
         'init': _("""NoticeAJ gathers information about the creditor's process. It contains data relevant to the 
             process, such as what was requested by the creditor, how much was calculated due, the dates and amounts"""),
-        'get': _("""Get the entire list of notices, containing the classes and values"""),
+        'get': _("""Get the entire list of notices, containing the classes and values.
+        """),
     }
 
     @doc("""
@@ -123,7 +125,8 @@ class NoticeRecoveringUpdateApi(AbstractViewApi):
     docs = {
         'init': _("""NoticeAJ gathers information about the creditor's process. It contains data relevant to the 
                 process, such as what was requested by the creditor, how much was calculated due, the dates and 
-                amounts"""),
+                amounts.
+                """),
     }
 
     @doc("""

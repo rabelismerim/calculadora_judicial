@@ -5,9 +5,6 @@ and updated_at. Does not add any additional fields, so should be subclassed
 to add specific fields as needed.
 """
 import datetime
-import time
-
-import django.db.utils
 from django.db import models
 from django.db.models import signals
 from django.dispatch import receiver
@@ -22,9 +19,9 @@ from calculation.statement.models import Statement
 from core.abstract.models import AbstractModel
 from utils import days360
 
-CHOICES_TOTAL_PF = (('A', 'Total atualizado'), ('D', 'Total devido'))
-CHOICES_TAX_DAYS = (('T', 'Taxa SELIC no período'), ('D', 'Dias em atraso'))
-CHOICES_DEFAULT_INTEREST_DUE = (('T', 'Total após juros de mora'), ('D', 'Total devido'))
+CHOICES_TOTAL_PF = (('A', _('Updated total')), ('D', _('Total due')))
+CHOICES_TAX_DAYS = (('T', _('SELIC rate in the period')), ('D', _('Delayed days')))
+CHOICES_DEFAULT_INTEREST_DUE = (('T', _('Total after default interest')), ('D', _('Total due')))
 
 
 class StatementPF(AbstractStatus):
@@ -73,8 +70,8 @@ class StatementPF(AbstractStatus):
         save: Overrides the base class's save method to carry out additional calculations and set the status of the
         statement.
     """
-    description = models.CharField('Legenda', max_length=1, choices=CHOICES_TOTAL_PF, default='A')
-    total = models.FloatField('Valor total', default=0)
+    description = models.CharField(_('Legend'), max_length=1, choices=CHOICES_TOTAL_PF, default='A')
+    total = models.FloatField(_('Amount'), default=0)
     statement = models.OneToOneField(Statement, on_delete=models.PROTECT)
 
     def get_recurral_deposit(self) -> float:
@@ -527,7 +524,7 @@ class TaxDays(AbstractValue):
     specific fields as needed and include a field description for the value type.
     """
     # Taxa SELIC no período, dias em atraso ou EXCLUIR LINHA
-    description = models.CharField(_('Legenda'), max_length=1, choices=CHOICES_TAX_DAYS)
+    description = models.CharField(_('Legend'), max_length=1, choices=CHOICES_TAX_DAYS)
 
 
 class DefaultInterest(AbstractValue):
@@ -568,7 +565,7 @@ class FundsDescription(AbstractModel):
 
     def save(self, *args, **kwargs):
         if self.rate and self.rate_integrations:
-            raise AttributeError(_('Não é permitido salvar rate e rate_integrations ao mesmo tempo.'))
+            raise AttributeError(_('Saving rate and rate_integrations at the same time is not allowed.'))
         super().save(*args, **kwargs)
 
     def _get_rate(self):
@@ -584,7 +581,7 @@ class FundsDescription(AbstractModel):
             return self.rate
         elif self.rate_integrations:
             return self.rate_integrations
-        raise AttributeError('Necessário ter uma verba linkada')
+        raise AttributeError(_('Need to have a budget tied up'))
 
     @property
     def total(self) -> float:

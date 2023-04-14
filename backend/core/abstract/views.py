@@ -1,16 +1,40 @@
 import datetime
 from abc import ABC
 
+import uritemplate
 from django.http import JsonResponse
-from django.utils.encoding import smart_str
+from django.utils.encoding import smart_str, force_str
 from rest_framework import generics, serializers, status
 from rest_framework.filters import BaseFilterBackend
 from rest_framework.generics import get_object_or_404
+from rest_framework.schemas.utils import get_pk_description
 from rest_framework.utils import formatting
 from rest_framework.schemas.openapi import AutoSchema
 
+from core.drfmsal.schemas import CustomDictField
+from utils import _
+
 
 class CustomSchema(AutoSchema):
+
+    def get_operation(self, path, method):
+        op = super(CustomSchema, self).get_operation(path, method)
+        op['parameters'] = list(map(lambda x: {**x, 'description': str(x['description'])}, op['parameters']))
+        return op
+
+    def get_tags(self, path, method):
+        view = self.view
+        if hasattr(view, 'tags') and isinstance(view.tags, list):
+            return list(map(str, view.tags))
+        return super(CustomSchema, self).get_tags(path, method)
+
+    def map_field(self, field):
+        if isinstance(field, CustomDictField):
+            return {
+                'type': 'any',
+            }
+        return super(CustomSchema, self).map_field(field)
+
     def get_description(self, path, method):
         view = self.view
         init = self._get_init_description()
@@ -106,7 +130,7 @@ class AbstractViewApi(generics.GenericAPIView):
                     query[field] = value
                 else:
                     raise serializers.ValidationError(
-                        {name: f'Campo no formato inválido. Deve ser estar no formato {instance["legend"]}'})
+                        {name: _('Field in invalid format. It must be in the format{}').format(instance["legend"])})
         serializer = self.get_serializer_class()
         if id_:
             return serializer(self.model.objects.filter(id=id_, **query, **kwargs).first(), many=False,
@@ -151,7 +175,6 @@ class AbstractViewApi(generics.GenericAPIView):
             serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         data_obj = dict(serializer.validated_data)
-        print(data_obj, 'obj\n')
         obj = get_object_or_404(self.model, id=id_)
         obj.dict_update(**data_obj)
         model_name = self.model._meta.verbose_name.lower().replace(' ', '_')
@@ -164,34 +187,3 @@ class AbstractViewApi(generics.GenericAPIView):
 
     def get_queryset(self):
         return {}
-
-
-class AbstractViewsApi(generics.GenericAPIView):
-    """HTTP methods for Api VIew"""
-    cont_called = 0
-
-    def get(self, request, *args, **kwargs):
-        """Override if necessary"""
-        return JsonResponse({})
-
-    def __init__(self, *args, **kwargs):
-        self.cont_called += 1
-        super(AbstractViewsApi, self).__init__(*args, **kwargs)
-        if hasattr(self, 'docs') and isinstance(self.docs, dict):
-            for key, value in self.docs.items():
-                if key in self.http_method_names:
-                    attribute = getattr(self, key)
-                    attribute.__func__.__doc__ = value
-        print(self.cont_called, 'total called')  # 2
-
-
-class GetViewApi(AbstractViewApi):
-    docs = {
-        'get': 'Override __docs__ in abstract class'
-    }
-
-
-class AnotherViewApi(AbstractViewApi):
-    def get(self, request, *args, **kwargs):
-        """Comentário OK"""
-        return JsonResponse({})

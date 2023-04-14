@@ -56,8 +56,7 @@ class GroupSchema(serializers.ModelSerializer):
         Validate password is strong and same as password confirm.
 
         Args:
-            password (str): Password to validate.
-            password_confirm (str): Password confirmation.
+            data (dict): Data to validate.
 
         Returns:
             errors (list): List of errors found in validations.
@@ -103,8 +102,7 @@ class SubgroupSchema(serializers.ModelSerializer):
         Validate password is strong and same as password confirm.
 
         Args:
-            password (str): Password to validate.
-            password_confirm (str): Password confirmation.
+            data (dict): Data to validate.
 
         Returns:
             errors (list): List of errors found in validations.
@@ -124,7 +122,7 @@ class SubgroupSchema(serializers.ModelSerializer):
             for field_name in allowed:
                 try:
                     self.fields.pop(field_name)
-                except:
+                except KeyError:
                     pass
 
 
@@ -222,6 +220,49 @@ class UserDttSchema(serializers.ModelSerializer):
                     self.fields.pop(field_name)
                 except:
                     pass
+
+
+class UserDttMFASchema(serializers.ModelSerializer):
+    """
+    Serializer for fields of the abstract model.
+
+    Attributes:
+        renderer_classes (list): A list of JSONRenderer objects.
+    """
+    renderer_classes = [renderers.JSONRenderer]
+    username = serializers.CharField()
+
+    class Meta:
+        model = get_user_model()
+        fields = ['email', 'username', 'first_name', 'last_name', 'userpicture']
+        read_only_fields = ('is_active', 'is_staff')
+
+    def __init__(self, *args, **kwargs):
+        fields = kwargs.pop('exclude', None)
+        super().__init__(*args, **kwargs)
+        if fields is not None:
+            allowed = set(fields)
+            existing = set(self.fields)
+            for field_name in allowed:
+                try:
+                    self.fields.pop(field_name)
+                except KeyError:
+                    pass
+
+    def validate(self, data):
+        """
+        Validate password is strong and same as password confirm.
+
+        Args:
+            data (dict): Data to validate.
+
+        Returns:
+            errors (list): List of errors found in validations.
+        """
+        data['first_name'] = data['username'].split(' ')[0]
+        data['last_name'] = ' '.join(data['username'].split(' ')[1:])
+        data['username'] = data['username'].replace(' ', '_')
+        return super(UserDttMFASchema, self).validate(data)
 
 
 class UserAuthorizeDttSchema(serializers.ModelSerializer):

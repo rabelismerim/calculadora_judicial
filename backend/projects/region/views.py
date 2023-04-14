@@ -19,11 +19,14 @@ class RegionApi(AbstractViewApi):
         'init': _("""The `Region` represents a region (jurisdictional body) of Brazilian justice in the project. 
                     It contains properties such as `description` (name of the region) It is used as a reference model to 
                     establish the relationship between the `Project` class and the region that has jurisdiction over the 
-                    case."""),
-        'get': _("""Get the list of all regions, being able to filter by name"""),
+                    case.
+                    """),
+        'get': _("""Get the list of all regions, being able to filter by name.
+        """),
         'post': _("""Create a new region, if it does not exist in the base, if it exists, an exception will be 
         generated.
-            Returns region details if successful""")
+            Returns region details if successful.
+            """)
     }
 
     query_params = [

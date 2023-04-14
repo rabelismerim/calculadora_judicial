@@ -16,7 +16,6 @@ Including another URLconf
 from django.urls import path
 from .views import StatementPJApi
 
-
 urlpatterns = [
-    path('', StatementPJApi.as_view(), name="statement_pj-list-create"),
+    path('<uuid:calculation_id>', StatementPJApi.as_view(), name="statement_pj-list-create"),
 ]

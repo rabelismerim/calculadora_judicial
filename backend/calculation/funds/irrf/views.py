@@ -44,7 +44,7 @@ class AbstractFundIRRFApi(AbstractViewApi):
         serializer_class (class): The serializer class for input/output validation.
         permission_classes (list): A list of permission classes for user authentication and authorization.
         model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
+
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:
@@ -74,7 +74,7 @@ class FundIRRFApi(AbstractFundIRRFApi):
         serializer_class (class): The serializer class for input/output validation.
         permission_classes (list): A list of permission classes for user authentication and authorization.
         model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
+
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:
@@ -119,7 +119,7 @@ class FundIRRFDetailApi(AbstractFundIRRFApi):
         serializer_class (class): The serializer class for input/output validation.
         permission_classes (list): A list of permission classes for user authentication and authorization.
         model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
+
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:
@@ -152,7 +152,7 @@ class AbstractStatementIRRFApi(AbstractViewApi):
         serializer_class (class): The serializer class for input/output validation.
         permission_classes (list): A list of permission classes for user authentication and authorization.
         model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
+
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:
@@ -164,7 +164,8 @@ class AbstractStatementIRRFApi(AbstractViewApi):
     serializer_class = StatementIRRFSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = StatementIRRF
-    schema = AutoSchema(tags=[str(_("Calculation - Statement IRRF"))], operation_id_base='Statement IRRF')
+    schema = AutoSchema(
+        tags=[str(_("Calculation - Statement IRRF"))], operation_id_base='Statement IRRF')
     query_params = []
 
 
@@ -181,7 +182,7 @@ class StatementIRRFApi(AbstractStatementIRRFApi):
         serializer_class (class): The serializer class for input/output validation.
         permission_classes (list): A list of permission classes for user authentication and authorization.
         model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
+
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:
@@ -216,7 +217,7 @@ class StatementIRRFDetailApi(AbstractStatementIRRFApi):
         serializer_class (class): The serializer class for input/output validation.
         permission_classes (list): A list of permission classes for user authentication and authorization.
         model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
+
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:

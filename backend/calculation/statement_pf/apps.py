@@ -20,4 +20,4 @@ from django.utils.translation import gettext_lazy as _
 class StatementPFConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'calculation.statement_pf'
-    verbose_name = _('Extrato Contábil PF')
+    verbose_name = _('Statement PF')

@@ -11,7 +11,7 @@ COIN_CHOICES = (
 
 
 class Coins(AbstractModel):
-    coin = models.CharField(max_length=1, verbose_name=_('Moeda'), choices=COIN_CHOICES, default='B')
+    coin = models.CharField(max_length=1, verbose_name=_(_('Coin')), choices=COIN_CHOICES, default='B')
     value = models.FloatField(default=0)
 
     def __str__(self):

@@ -366,7 +366,7 @@ REST_FRAMEWORK = {
         "core.drfmsal.renderer.APIRendererInterceptor",
         "rest_framework.renderers.BrowsableAPIRenderer"
     ),
-    "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler"
+    # "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler"
 }
 DRF_STANDARDIZED_ERRORS = {"ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True}
 # Setting auth user
@@ -391,8 +391,3 @@ GROUP_NAME_EXECUTOR = 'Executor'
 GROUP_NAME_APPROVER = 'Aprovador'
 GROUP_NAME_SPECIAL_APPROVE = 'Aprovador Especial'
 GROUP_NAME_REVIEWER = 'Revisor'
-
-SWAGGER_SETTINGS = {
-    'DEFAULT_AUTO_SCHEMA_CLASS': 'core.abstract.views.CustomSwaggerAutoSchema',
-    # ...
-}

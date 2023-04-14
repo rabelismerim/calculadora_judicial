@@ -6,4 +6,4 @@ from utils import _
 class RecoveringConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'base.coins'
-    verbose_name = _("Moeda")
+    verbose_name = _("Coins")

@@ -1,9 +1,9 @@
 from core.abstract.views import AbstractViewApi
-from core.abstract.views import CustomSchema as AutoSchema
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 from base.coins.models import Coins
 from base.coins.schemas import CoinsSchema
+from utils import _
 
 
 class CoinsApi(AbstractViewApi):
@@ -20,7 +20,6 @@ class CoinsApi(AbstractViewApi):
         serializer_class (class): The serializer class for input/output validation.
         permission_classes (list): A list of permission classes for user authentication and authorization.
         model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:
@@ -42,15 +41,18 @@ class CoinsApi(AbstractViewApi):
     serializer_class = CoinsSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Coins
-    schema = AutoSchema(tags=["Base - Coins"])
+    tags=[_("Base - Coins")]
 
+    docs = {
+        'init': _("""Coins is an abstraction to have a value and related coin type""")
+    }
     query_params = [
         {
-            "name": "description",
-            "field": "description__icontains",
+            "name": "coin",
+            "field": "coin__icontains",
             "in": "query",
             "required": False,
-            "description": "Descrição",
+            "description": str(_("Type Coin")),
             "schema": {"type": "string"}
         }
     ]

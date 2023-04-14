@@ -15,15 +15,15 @@ from creditors.models import Creditor
 from utils import check_choice
 
 CHOICES_STEP = (
-    ('S', _('Solicitado')), ('C', _('Calculado')), ('E', _('Revisado')), ('A', _('Aprovado')), ('R', _('Reprovado')),
-    ('B', _('Aprovado Especialmente')))
+    ('S', _('Requested')), ('C', _('Calculated')), ('E', _('Revised')), ('A', _('Approved')), ('R', _('Failed')),
+    ('B', _('Specially Approved')))
 
 
 class Incident(AbstractModel):
     """Attributes:
     number (models.CharField): The number of incidente.
     """
-    number = models.CharField('Número do incidente', max_length=100)
+    number = models.CharField(_('Incident number'), max_length=100)
 
 
 class Calculation(AbstractCredit):
@@ -39,17 +39,17 @@ class Calculation(AbstractCredit):
     """
     incident = models.ForeignKey(Incident, on_delete=models.PROTECT, null=True)
     creditor = models.ForeignKey(Creditor, on_delete=models.PROTECT)
-    step = models.CharField('Passo do cálculo', max_length=1, choices=CHOICES_STEP, default='S')
-    appeal_credit = models.BooleanField('Crédito inteiramente concursal?', default=False)
-    appeal_deposit = models.BooleanField('Levantamento de depósito recursal?', default=False)
-    has_advocative_hours = models.BooleanField('Há honorários no cálculo homologado?', default=False)
-    credit_authorization_date = models.DateField('Data da certidão de habilitação de crédito', null=True, default=None)
+    step = models.CharField(_('Calculation step'), max_length=1, choices=CHOICES_STEP, default='S')
+    appeal_credit = models.BooleanField(_('Fully competitive credit?'), default=False)
+    appeal_deposit = models.BooleanField(_('Recursal deposit withdrawal?'), default=False)
+    has_advocative_hours = models.BooleanField(_('Are there fees in the approved calculation?'), default=False)
+    credit_authorization_date = models.DateField(_('Date of credit qualification certificate'), null=True, default=None)
 
     # TODO: definir como @property?
     # True If edital AJ else False
-    has_edital = models.BooleanField('Edital art. 7º § 2 - 11.101/2005', default=False)
-    number = models.CharField(_('Número do cálculo'), max_length=10, null=True, blank=True, default=None)
-    recurral_deposit = models.FloatField('Depósito recursal liberado', default=0)
+    has_edital = models.BooleanField(_('Edital art. 7º § 2 - 11.101/2005'), default=False)
+    number = models.CharField(_('Calculation number'), max_length=10, null=True, blank=True, default=None)
+    recurral_deposit = models.FloatField(_('Recurral deposit released'), default=0)
 
     def _get_number(self) -> str:
         """Returns the number of calculations for the creditor."""

@@ -3,7 +3,6 @@ from django.http import JsonResponse
 from calculation.criterion.models import Criterion
 from calculation.criterion.schemas import CriterionSchema
 from core.abstract.views import AbstractViewApi
-from core.abstract.views import CustomSchema as AutoSchema
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 from utils import _, doc
@@ -23,7 +22,6 @@ class CriterionApi(AbstractViewApi):
         serializer_class (class): The serializer class for input/output validation.
         permission_classes (list): A list of permission classes for user authentication and authorization.
         model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:
@@ -36,7 +34,7 @@ class CriterionApi(AbstractViewApi):
     serializer_class = CriterionSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Criterion
-    schema = AutoSchema(tags=[str(_("Calculation - Criterion"))])
+    tags=[_("Calculation - Criterion")]
 
     query_params = []
 

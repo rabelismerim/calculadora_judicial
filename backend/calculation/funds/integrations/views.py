@@ -33,7 +33,7 @@ class AbstractStatementIntegrationsApi(AbstractViewApi):
         serializer_class (class): The serializer class for input/output validation.
         permission_classes (list): A list of permission classes for user authentication and authorization.
         model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
+
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:
@@ -45,7 +45,8 @@ class AbstractStatementIntegrationsApi(AbstractViewApi):
     serializer_class = StatementIntegrationsSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = StatementIntegrations
-    schema = AutoSchema(tags=[str(_("Calculation - Statement Integrations"))], operation_id_base='Statement Integra')
+    schema = AutoSchema(tags=[str(
+        _("Calculation - Statement Integrations"))], operation_id_base='Statement Integra')
     query_params = []
 
 
@@ -62,7 +63,7 @@ class StatementIntegrationsApi(AbstractStatementIntegrationsApi):
         serializer_class (class): The serializer class for input/output validation.
         permission_classes (list): A list of permission classes for user authentication and authorization.
         model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
+
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:
@@ -98,7 +99,7 @@ class StatementIntegrationsDetailApi(AbstractStatementIntegrationsApi):
         serializer_class (class): The serializer class for input/output validation.
         permission_classes (list): A list of permission classes for user authentication and authorization.
         model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
+
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:

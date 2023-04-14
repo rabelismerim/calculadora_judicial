@@ -6,4 +6,4 @@ from utils import _
 class VerdictConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'calculation.verdict'
-    verbose_name = _('Sentença')
+    verbose_name = _('Verdict')

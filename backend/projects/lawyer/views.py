@@ -19,10 +19,13 @@ class LawyerApi(AbstractViewApi):
         'init': _("""The `Lawyer` represents a lawyer (jurisdictional body) of Brazilian justice in the project. 
                 It contains properties such as `description` (name of the lawyer) It is used as a reference model to 
                 establish the relationship between the `Project` class and the lawyer that has jurisdiction over the 
-                case."""),
-        'get': _("""Get the list of all lawyers, being able to filter by name."""),
+                case.
+                """),
+        'get': _("""Get the list of all lawyers, being able to filter by name.
+        """),
         'post': _("""Create a new lawyer, if it does not exist in the base, if it exists, an exception will be generated.
-                Returns lawyer details if successful.""")
+                Returns lawyer details if successful.
+                """)
     }
 
     query_params = [

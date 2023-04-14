@@ -21,7 +21,7 @@ class RecoveringApi(AbstractViewApi):
     serializer_class = RecoveringSchema
     model = Recovering
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
-    schema = AutoSchema(tags=[str(_("Recovering"))])
+    tags = [str(_("Recovering"))]
 
     query_params = [
         {
@@ -29,7 +29,7 @@ class RecoveringApi(AbstractViewApi):
             "field": "entity__name__icontains",
             "in": "query",
             "required": False,
-            "description": str(_("Name")),
+            "description": _("Name"),
             "schema": {"type": "string"}
         },
         {
@@ -37,7 +37,7 @@ class RecoveringApi(AbstractViewApi):
             "field": "entity__legal_number__icontains",
             "in": "query",
             "required": False,
-            "description": str(_("CPF/CNPJ")),
+            "description": _("CPF/CNPJ"),
             "schema": {"type": "string"}
         }
     ]

@@ -19,7 +19,8 @@ from base.models import AbstractDescription
 
 
 class AbstractDescriptionSchema(serializers.ModelSerializer, AbstractModelSchema):
-    """This class uses serializers.ModelSerializer and AbstractModelSchema to serialize the project fields of the AbstractDescription model."""
+    """This class uses serializers.ModelSerializer and AbstractModelSchema to serialize the project fields of the
+     AbstractDescription model."""
 
     class Meta:
         model = AbstractDescription

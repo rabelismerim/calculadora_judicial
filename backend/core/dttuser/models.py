@@ -210,13 +210,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         _('username'),
         max_length=150,
         unique=True,
-        help_text=_( 'Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
+        help_text=_('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
         validators=[username_validator],
         error_messages={'unique': _("A user with that username already exists.")},
     )
     password = models.CharField(max_length=128, editable=False)
     role = models.CharField(_('role'), default="A", max_length=1, choices=ROLES_CHOICES)
-    status = models.CharField('status', default="A", max_length=1, choices=STATUS_CHOICES)
+    status = models.CharField('status', default="P", max_length=1, choices=STATUS_CHOICES)
     first_name = models.CharField(_('first name'), max_length=150, blank=True)
     last_name = models.CharField(_('last name'), max_length=150, blank=True)
     email = models.EmailField(_('email address'), blank=True)
@@ -305,5 +305,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.status = choice
         self.save()
 
-    def get_status_pending(self):
+    @staticmethod
+    def get_status_pending():
         return 'P'

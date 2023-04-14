@@ -7,7 +7,7 @@ from rates.models import Rate
 
 
 class AbstractDescription(AbstractModel):
-    description = models.CharField(_('Descrição'), max_length=150)
+    description = models.CharField(_('Description'), max_length=150)
 
     class Meta:
         abstract = True
@@ -17,7 +17,7 @@ class AbstractDescription(AbstractModel):
 
 
 class AbstractInfo(AbstractModel):
-    name = models.CharField(_('Descrição'), max_length=150)
+    name = models.CharField(_('Description'), max_length=150)
     legal_number = models.CharField('CPF/CNPJ', max_length=18, unique=True)
 
     class Meta:
@@ -27,40 +27,41 @@ class AbstractInfo(AbstractModel):
         return f'{self.name} - {self.legal_number}'
 
 
-CHOICES_OCCURENCE = (
-    ('A', _('Ajuizamento da Reclamação Trabalhista')), ('C', _('Citação')), ('S', _('Sentença')), ('O', _('Outro')))
+CHOICES_OCCURRENCE = (
+    ('A', _('Labour Complaint Filing')), ('C', _('Citation')), ('S', _('Judgement')), ('O', _(' Other')))
 
 
 class AbstractDateCreditor(AbstractModel):
-    # TODO: Verificar se admissão e demissão podem ser alterados, se não possivel, migrar campos para tabela Creditor
-    admission = models.DateTimeField(_("Data de admissão"), blank=True, null=True)
-    dismissal = models.DateTimeField(_("Data de demissão"), blank=True, null=True)
+    # TODO: Verificar se admissão e demissão podem ser alterados, se não possível, migrar campos para tabela Creditor
+    admission = models.DateTimeField(_("Admission date"), blank=True, null=True)
+    dismissal = models.DateTimeField(_("Resignation date"), blank=True, null=True)
 
     # TODO: Verificar se esses valores são para cada credor ou cada recuperanda
     rate = models.ForeignKey(Rate, on_delete=models.PROTECT)
-    default_interest = models.FloatField(_('Juros moratórios'), default=0)
-    fine = models.FloatField(_('Multa'), default=0)
-    advocative_hours = models.FloatField(_('Honorários advocatícios'), default=0)
-    occurrence = models.CharField(_('Ocorrência'), max_length=1, choices=CHOICES_OCCURENCE, default='O')
-    physical_person = models.BooleanField(_('É pessoa física?'), default=True)
+    default_interest = models.FloatField(_('Default interest'), default=0)
+    fine = models.FloatField(_('Fine'), default=0)
+    advocative_hours = models.FloatField(_('Advocative hours'), default=0)
+    occurrence = models.CharField(_('Occurrence'), max_length=1, choices=CHOICES_OCCURRENCE, default='O')
+    physical_person = models.BooleanField(_('Are you an individual?'), default=True)
 
     class Meta:
         abstract = True
 
     def __str__(self):
-        return f'Admissão: {self.admission} | Demissão: {self.dismissal}'
+        return _('Admission: {} | Resignation: {}').format(self.admission, self.dismissal)
 
 
 class AbstractDateRecovering(AbstractModel):
-    date_rj_request = models.DateField(_("Data do pedido de RJ"), blank=True, null=True)
-    date_rj_filing = models.DateField(_("Data de ajuizamento da RJ"), blank=True, null=True)
-    date_citation = models.DateField(_("Data da Citação"), blank=True, null=True)
+    date_rj_request = models.DateField(_("RJ order date"), blank=True, null=True)
+    date_rj_filing = models.DateField(_("RJ filing date"), blank=True, null=True)
+    date_citation = models.DateField(_("Citation Date"), blank=True, null=True)
 
     class Meta:
         abstract = True
 
     def __str__(self):
-        return f'Pedido RJ: {self.date_rj_request} | Ajuizamento RJ: {self.date_rj_filing} | Citação: {self.date_citation}'
+        return _('Request RJ: {} | Filing RJ: {} | Citation: {}').format(self.date_rj_request, self.date_rj_filing,
+                                                                         self.date_citation)
 
 
 class AbstractCredit(AbstractModel):

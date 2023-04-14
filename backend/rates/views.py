@@ -17,7 +17,8 @@ class RateApi(AbstractViewApi):
     schema = AutoSchema(tags=[str(_("Rate"))])
 
     docs = {
-        'init': _("""Represents the indices that can be applied to rates to calculate debt updates"""),
+        'init': _("""Represents the indices that can be applied to rates to calculate debt updates.
+        """),
         'get': _("""Returns the rate and its accumulated values, period and date""")
     }
 
@@ -109,7 +110,7 @@ class TemplateApi(AbstractViewApi):
     serializer_class = TemplateListSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Template
-    schema = AutoSchema(tags=[str(_("Rate Template"))])
+    tags = [_("Rate Template")]
 
     query_params = [
         {
@@ -117,7 +118,7 @@ class TemplateApi(AbstractViewApi):
             "field": "name__icontains",
             "in": "query",
             "required": False,
-            "description": str(_("Name")),
+            "description": _("Name"),
             "schema": {"type": "string"}
         }
     ]

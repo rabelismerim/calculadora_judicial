@@ -1,10 +1,12 @@
 import re
 from base.claim.schemas import ClaimCreditorSchema, ClaimLawyerSchema
 from base.coins.models import COIN_CHOICES
+from base.models import CHOICES_OCCURRENCE
 from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
 
 from calculation.funds.abstract.models import CHOICES_STATUS_FUND
+from calculation.models import CHOICES_STEP
 from core.dttuser.models import ROLES_CHOICES, STATUS_CHOICES
 from core.entity.schemas import EntitySchema
 from creditors.classes.models import CLASSE_CHOICES
@@ -72,6 +74,8 @@ class CreditorCreateSchema(serializers.Serializer):
     roles_options = AbstractChoicesSerializer(ROLES_CHOICES, many=True)
     user_status_options = AbstractChoicesSerializer(STATUS_CHOICES, many=True)
     status_funds_options = AbstractChoicesSerializer(CHOICES_STATUS_FUND, many=True)
+    step_calculation_options = AbstractChoicesSerializer(CHOICES_STEP, many=True)
+    occurrence_options = AbstractChoicesSerializer(CHOICES_OCCURRENCE, many=True)
 
     class Meta:
         fields = '__all__'

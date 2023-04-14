@@ -52,7 +52,8 @@ class IncidentSchema(AbstractDescriptionSchema):
 
 class CalculationSchema(AbstractClassesSchema):
     """
-    The CalculationSchema class is a serializer for the Calculation model fields. It inherits from the AbstractModelSchema class. It includes the following fields:
+    The CalculationSchema class is a serializer for the Calculation model fields. It inherits from the
+     AbstractModelSchema class. It includes the following fields:
 
     creditor: a CreditorSchema instance that is read-only and not serialized.
     creditor_id: a UUIDField instance that is write-only and serialized.
@@ -68,8 +69,7 @@ class CalculationSchema(AbstractClassesSchema):
     incident_id = serializers.UUIDField(write_only=True)
     creditor = CreditorSchema(many=False, read_only=True)
     creditor_id = serializers.UUIDField(write_only=True)
-    verdict = VerdictSchema(source='verdict_set',
-                            many=True, required=False, exclude=('calculation_id',))
+    verdict = VerdictSchema(source='verdict_set', many=True, required=False, exclude=('calculation_id',))
     criterion = CriterionSchema(many=False, read_only=True)
 
     funds = FundsSchema(source='funds_set', many=True,
@@ -77,8 +77,7 @@ class CalculationSchema(AbstractClassesSchema):
 
     statement = StatementSchema(read_only=True, exclude=('calculation_id',))
 
-    comparative = ComparativeSchema(
-        read_only=True, exclude=('statement_id',))
+    comparative = ComparativeSchema(read_only=True, exclude=('statement_id',))
 
     step_display = serializers.CharField(
         source='get_step_display', read_only=True)

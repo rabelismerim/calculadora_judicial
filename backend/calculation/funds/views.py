@@ -44,7 +44,6 @@ class AbstractFundsApi(AbstractViewApi):
         serializer_class (class): The serializer class for input/output validation.
         permission_classes (list): A list of permission classes for user authentication and authorization.
         model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:
@@ -56,7 +55,7 @@ class AbstractFundsApi(AbstractViewApi):
     serializer_class = FundsSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Funds
-    schema = AutoSchema(tags=[str(_("Calculation - Funds"))])
+    tags = [_("Calculation - Funds")]
 
     query_params = []
 
@@ -75,7 +74,6 @@ class FundsApi(AbstractFundsApi):
         serializer_class (class): The serializer class for input/output validation.
         permission_classes (list): A list of permission classes for user authentication and authorization.
         model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:
@@ -121,7 +119,7 @@ class FundsDetailApi(AbstractFundsApi):
         serializer_class (class): The serializer class for input/output validation.
         permission_classes (list): A list of permission classes for user authentication and authorization.
         model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
+
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:
@@ -196,7 +194,7 @@ class AbstractStatementFundsApi(AbstractViewApi):
         serializer_class (class): The serializer class for input/output validation.
         permission_classes (list): A list of permission classes for user authentication and authorization.
         model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
+
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:
@@ -208,7 +206,8 @@ class AbstractStatementFundsApi(AbstractViewApi):
     serializer_class = StatementFundsSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = StatementFunds
-    schema = AutoSchema(tags=[str(_("Calculation - Statement Funds"))], operation_id_base='Statement Funds')
+    schema = AutoSchema(
+        tags=[str(_("Calculation - Statement Funds"))], operation_id_base='Statement Funds')
     query_params = []
 
 
@@ -226,7 +225,7 @@ class StatementFundsApi(AbstractStatementFundsApi):
         serializer_class (class): The serializer class for input/output validation.
         permission_classes (list): A list of permission classes for user authentication and authorization.
         model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
+
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:
@@ -261,7 +260,7 @@ class StatementFundsDetailApi(AbstractStatementFundsApi):
         serializer_class (class): The serializer class for input/output validation.
         permission_classes (list): A list of permission classes for user authentication and authorization.
         model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
+
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:

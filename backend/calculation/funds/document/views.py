@@ -37,7 +37,7 @@ class AbstractFundDocumentApi(AbstractViewApi):
         serializer_class (class): The serializer class for input/output validation.
         permission_classes (list): A list of permission classes for user authentication and authorization.
         model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
+
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:
@@ -76,7 +76,7 @@ class FundDocumentApi(AbstractFundDocumentApi):
         serializer_class (class): The serializer class for input/output validation.
         permission_classes (list): A list of permission classes for user authentication and authorization.
         model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
+
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:
@@ -123,7 +123,7 @@ class FundDocumentDetailApi(AbstractFundDocumentApi):
         serializer_class (class): The serializer class for input/output validation.
         permission_classes (list): A list of permission classes for user authentication and authorization.
         model (class): The model class associated with this view.
-        schema (AutoSchema): An OpenAPI schema object for generating API documentation.
+
         query_params (list): A list of dictionaries, each specifying a query parameter for the API.
 
     Examples:

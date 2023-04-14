@@ -1,5 +1,4 @@
 from django.db import transaction
-
 from base.claim.models import Claim
 from base.coins.models import Coins
 from calculation.comparative.models import Comparative
@@ -11,9 +10,16 @@ from calculation.verdict.models import TypeCalculation, Verdict
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from rest_framework import status
-from core.abstract.views import CustomSchema as AutoSchema
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission, CanChangeStep
+from utils import _, doc
+from core.abstract.views import CustomSchema as AutoSchema
+docs = {
+    'init': _("""Represents all the calculation information. It gathers all the information relevant to the process.
+     It gathers the information of `extract`, `appropriations`, `assumptions`, claims, `comparative`, `sentences`,
+    `editais` and the `status of the calculation`.
+    """),
+}
 
 
 class AbstractCalculationApi(AbstractViewApi):
@@ -24,18 +30,19 @@ class AbstractCalculationApi(AbstractViewApi):
     serializer_class = CalculationSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Calculation
-    schema = AutoSchema(tags=["Calculation"])
+    tags = [_("Calculation")]
 
     query_params = [
         {
-            "name": "nome",
-            "field": "description__icontains",
+            "name": "number",
+            "field": "incident__number__icontains",
             "in": "query",
             "required": False,
-            "description": "Nome do advogado",
+            "description": _("Incident number"),
             "schema": {"type": "string"}
         }
     ]
+    docs = docs
 
 
 class IncidentApi(AbstractViewApi):
@@ -46,61 +53,104 @@ class IncidentApi(AbstractViewApi):
     serializer_class = IncidentSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Incident
-    schema = AutoSchema(tags=["Calculation - Incident"])
-    http_method_names = ['post', 'get']
-    query_params = [
+    tags = [_("Calculation - Incident")]
+    http_method_names=['post']
+    query_params=[
         {
-            "name": "incidente",
-            "field": "number__icontains",
+            "name": "number",
+            "field": "incident__number__icontains",
             "in": "query",
             "required": False,
-            "description": "Nome do incidente",
+            "description": _("Incident number"),
             "schema": {"type": "string"}
         }
     ]
+    docs={
+        'init': _("""Represents the `incident number` related to the process. Within a process there can be several
+        `numbers of incidents`, and when doing the calculation, it is necessary to pass which number is related.
+            """),
+        'post': _("""Create Incident object from request data and return Incident detail.
+            Returns:
+                JsonResponse: A JSON response containing the created Funds
+                 object detail.
+
+            Raises:
+                serializers.ValidationError: If the input data is invalid.
+                """)
+    }
 
 
 class CalculationDetailApi(AbstractCalculationApi):
     """A class for handling detail HTTP requests for a Calculation object
     HTTP methods for retrieving particular Calculation detail"""
-    http_method_names = ['get']
+    http_method_names=['get']
+    docs=docs.copy()
+    query_params=[]
+    docs['get']=_("""This method handles GET requests for the view. It retrieves a specific Calculation using the
+    given id from the query parameters and serializes the result into JSON format before returning it as
+                 an HTTP response.
+
+                    Returns:
+                        JsonResponse: An HTTP response containing the serialized Calculation data retrieved.
+                    """)
+
+
+class CalculationListApi(AbstractCalculationApi):
+    """HTTP methods for Calculation"""
+    http_method_names=['get']
+    docs=docs.copy()
+    schema=AutoSchema(tags=[str(_("Calculation"))], operation_id_base='CreditorCalculationList')
+
+    @ doc("""This method handles GET requests for the view. It retrieves a list of objects Calculation using the given
+                creditor_id from the query parameters and serializes the result into JSON format before returning it as
+                 anHTTP response.
+
+                    Returns:
+                        JsonResponse: An HTTP response containing the serialized Calculation data retrieved.
+                    """)
+    def get(self, request, *args, **kwargs):
+        creditor_id=kwargs.get('creditor_id')
+        statement=self.model.objects.filter(creditor_id=creditor_id)
+        statement_data=self.serializer_class(statement, many=True).data
+        return JsonResponse({'calculations': statement_data})
 
 
 class CalculationApi(AbstractCalculationApi):
     """HTTP methods for Calculation"""
-    http_method_names = ['post', 'get']
+    http_method_names=['post']
+    docs=docs.copy()
 
-    def post(self, request, *args, **kwargs):  # Generate calculation
-        """
-        Creates a new instance of the Calculation model, receiving a dictionary as an argument and returning details of the newly created instance.
-        Before creation of the Calculation instance, it will create related Criterion and Verdict instances based on the input data.
-        Furthermore, if any Funds objects are found in the input data, it will also iteratively call the CreateFunds helper class to create the necessary
-        Funds instances related to the Calculation. Finally, a JsonResponse with the serialized Calculation instance is returned upon successful completion.
+    @ doc("""
+        Creates a new instance of the Calculation model, receiving a dictionary as an argument and returning details
+         of the newly created instance.
+        Before creation of the Calculation instance, it will create related Criterion and Verdict instances based on
+        the input data.
+        Furthermore, if any Funds objects are found in the input data, it will also iteratively call the CreateFunds
+         helper class to create the necessary
+        Funds instances related to the Calculation. Finally, a JsonResponse with the serialized Calculation instance
+         is returned upon successful completion.
 
-        Arguments
-        request -- Containing the input data, a Request object that supports .data attribute access.
-        args -- Additional positional arguments, if given.
-        kwargs -- Additional keyword arguments, if given.
 
         Returns
         A JsonResponse containing the serialized Calculation instance.
-        """
+        """)
+    def post(self, request, *args, **kwargs):  # Generate calculation
         with transaction.atomic():
-            serializer = self.serializer_class(data=request.data)
+            serializer=self.serializer_class(data=request.data)
             serializer.is_valid(raise_exception=True)
-            new_calculation = serializer.validated_data
-            new_verdicts = new_calculation.pop('verdict', None)
-            new_funds = new_calculation.pop('funds', None)
-            coins = new_calculation.get('coins')
+            new_calculation=serializer.validated_data
+            new_verdicts=new_calculation.pop('verdict', None)
+            new_funds=new_calculation.pop('funds', None)
+            coins=new_calculation.get('coins')
 
-            new_calculation['coins'] = Coins.objects.create(**coins)
+            new_calculation['coins']=Coins.objects.create(**coins)
 
-            calculation = self.model.objects.create(**new_calculation)
-            creditor = calculation.creditor
-            project = creditor.recovering.project
-            claims_creditor = creditor.get_claims_creditor()
-            claim_lawyer = creditor.get_claim_lawyer()
-            new_criterion = {
+            calculation=self.model.objects.create(**new_calculation)
+            creditor=calculation.creditor
+            project=creditor.recovering.project
+            claims_creditor=creditor.get_claims_creditor()
+            claim_lawyer=creditor.get_claim_lawyer()
+            new_criterion={
                 'calculation': calculation,
                 'rate': creditor.rate,
                 'admission': creditor.admission,
@@ -116,23 +166,23 @@ class CalculationApi(AbstractCalculationApi):
             }
 
             if claim_lawyer:
-                new_criterion['claim_lawyer'] = Claim.objects.create(
+                new_criterion['claim_lawyer']=Claim.objects.create(
                     classes=claim_lawyer.classes, coins=claim_lawyer.coins, archive_json=claim_lawyer.archive_json)
 
-            criterion = Criterion.objects.create(**new_criterion)
+            criterion=Criterion.objects.create(**new_criterion)
 
             if claims_creditor:
                 for claim_creditor in claims_creditor:
-                    new_claim = Claim.objects.create(
+                    new_claim=Claim.objects.create(
                         classes=claim_creditor.classes, coins=claim_creditor.coins,
                         archive_json=claim_creditor.archive_json)
                     CriterionClaimCredor.objects.create(
                         claim_creditor=new_claim, criterion=criterion)
             if new_verdicts:
                 for new_verdict in new_verdicts:
-                    new_verdict['calculation'] = calculation
-                    type_calculation = new_verdict.pop('type_calculation')
-                    new_verdict['type_calculation'] = TypeCalculation.objects.create(
+                    new_verdict['calculation']=calculation
+                    type_calculation=new_verdict.pop('type_calculation')
+                    new_verdict['type_calculation']=TypeCalculation.objects.create(
                         **type_calculation)
                     Verdict.objects.create(**new_verdict)
             if new_funds:
@@ -142,8 +192,8 @@ class CalculationApi(AbstractCalculationApi):
             # TODO: change creation Comparative to Generate Calculation finish
             if Comparative.objects.filter(calculation=calculation).exists() is False:
                 # comparative = Comparative.objects.create(calculation=calculation)
-                comparative = Comparative()
-                comparative.calculation = calculation
+                comparative=Comparative()
+                comparative.calculation=calculation
                 comparative.save()
                 comparative.checks()
         return JsonResponse({'calculation': self.serializer_class(calculation, many=False).data},
@@ -169,28 +219,30 @@ class ChangeStepApi(AbstractViewApi):
     Response status code:
     - 200 OK: Successfully updated the Calculation step.
     """
-    http_method_names = ['put']
+    http_method_names=['put']
 
-    serializer_class = ChangeStepSerializer
-    permission_classes = [permissions.IsAuthenticated,
+    serializer_class=ChangeStepSerializer
+    permission_classes=[permissions.IsAuthenticated,
                           CheckHasPermission, CanChangeStep]
-    schema = AutoSchema(tags=["Calculation - Change Step"])
-    query_params = []
-    model = Calculation
+    tags=[_("Calculation - Change Step")]
+    query_params=[]
+    model=Calculation
+    docs=docs.copy()
 
-    def put(self, request, *args, **kwargs):
-        """
+    @ doc("""
         PUT method to change the step of the Calculation instance.
 
         Receives and validates JSON data with the next_step string.
         Finds the Calculation instance based on the URL parameter id.
         Returns a JSON response with the updated Calculation object.
 
-        """
-        serializer = self.serializer_class(data=request.data)
+        Possible statuses are `Requested`, `Calculated`, `Revised`, `Approved`, `Failed`, `Specially Approved`,
+        """)
+    def put(self, request, *args, **kwargs):
+        serializer=self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        new_calculation = serializer.validated_data
-        calculation_id = kwargs.get('id', None)
-        calculation = self.model.objects.filter(id=calculation_id).first()
+        new_calculation=serializer.validated_data
+        calculation_id=kwargs.get('id', None)
+        calculation=self.model.objects.filter(id=calculation_id).first()
         calculation.set_step_by_char(new_calculation['next_step'])
         return JsonResponse({'calculation': CalculationSchema(calculation, many=False).data}, status=status.HTTP_200_OK)
