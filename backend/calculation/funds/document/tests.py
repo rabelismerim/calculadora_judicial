@@ -112,7 +112,7 @@ class FundsDocumentTest(AbstractTest):
             "summary": True
         }
 
-        response = self.post('calculation/funds/funds', statement_funds)
+        response = self.post('calculation/funds/labor', statement_funds)
         new_statement = response.content['statement_funds']
         return new_statement
 
@@ -132,6 +132,6 @@ class FundsDocumentTest(AbstractTest):
             "summary": True
         }
 
-        response = self.post('calculation/funds/integrations', statement)
+        response = self.post('calculation/funds/labor/integrations', statement)
         new_statement = response.content['statement_funds_integrations']
         return new_statement

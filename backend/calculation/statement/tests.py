@@ -192,7 +192,7 @@ class StatementTest(AbstractTest):
         """
 
         for statement, true_monetary_correction in statements:
-            response = self.post('calculation/funds/funds', statement)
+            response = self.post('calculation/funds/labor', statement)
             new_statement = response.content['statement_funds']
             monetary_correction = new_statement['monetary_correction']
             self.assertEqual(monetary_correction['corrected_value'], true_monetary_correction['corrected_value'])

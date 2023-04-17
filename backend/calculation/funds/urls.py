@@ -19,9 +19,9 @@ from .views import FundsApi, FundsDetailApi, StatementFundsApi, StatementFundsDe
 urlpatterns = [
     path('', FundsApi.as_view(), name="funds-list-create"),
     path('<uuid:id>/', FundsDetailApi.as_view(), name="fund-detail"),
-    path('funds/', StatementFundsApi.as_view(), name="statement-funds-list-create"),
-    path('funds/<uuid:id>/', StatementFundsDetailApi.as_view(), name="statement-funds-detail"),
-    path(f'integrations/', include("calculation.funds.integrations.urls")),
+    path('labor/', StatementFundsApi.as_view(), name="statement-funds-list-create"),
+    path('labor/<uuid:id>/', StatementFundsDetailApi.as_view(), name="statement-funds-detail"),
+    path(f'labor/integrations/', include("calculation.funds.integrations.urls")),
     path(f'documents/', include("calculation.funds.document.urls")),
     path(f'irrf/', include("calculation.funds.irrf.urls")),
 
