@@ -22,7 +22,7 @@ def check_choice(value: str, choices: tuple):
             has_value = True
             break
     if not has_value:
-        raise ValueError(_(f'O valor {value} não corresponde a nenhuma escolha válida'))
+        raise ValueError(_('The value {} does not match any valid choice'.format(value)))
 
 
 def days360(start_date, end_date) -> int:

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-14 12:38-0300\n"
+"POT-Creation-Date: 2023-04-17 11:09-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,352 +20,332 @@ msgstr ""
 
 #: .\base\claim\apps.py:9
 msgid "Claim"
-msgstr ""
+msgstr "Pleito"
 
-#: .\base\claim\views.py:14
+#: .\base\claim\views.py:13
 msgid ""
-"Represents creditor and attorney claims. The `claim` are the `values` and "
-"`class` representative of \n"
-"    what is being requested. The creditor may have several claims, according "
-"to each amount requested. At the end, \n"
+"Represents creditor and attorney claims. The `claim` are the `values` and `class` representative of \n"
+"    what is being requested. The creditor may have several claims, according to each amount requested. At the end, \n"
 "    this claim is used to compare with the calculation of the DTT.\n"
 "    "
 msgstr ""
+"Representa o pleito de credores e advogados. O `pleito` são os `valores` e `classe` representativos de \n"
+"    o que está sendo solicitado. O credor pode ter vários pleitos, de acordo com cada montante solicitado. Ao final, \n"
+"    essa alegação é utilizada para comparar com o cálculo da TDT."
 
-#: .\base\claim\views.py:29 .\base\claim\views.py:62 .\base\claim\views.py:100
-msgid "Creditor - Claim"
-msgstr ""
-
-#: .\base\claim\views.py:124
+#: .\base\claim\views.py:120
 msgid "Need to inform the coins"
-msgstr ""
+msgstr "Necessidade de informar as moedas"
 
-#: .\base\claim\views.py:126
+#: .\base\claim\views.py:122
 msgid "Need to inform the class"
-msgstr ""
+msgstr "Precisa informar a classe"
 
 #: .\base\coins\apps.py:9
 msgid "Coins"
-msgstr ""
+msgstr "Moedas"
 
 #: .\base\coins\models.py:14
 msgid "Coin"
-msgstr ""
+msgstr "Moeda"
 
 #: .\base\coins\views.py:46
-msgid "Base - Coins"
-msgstr ""
-
-#: .\base\coins\views.py:49
 msgid "Coins is an abstraction to have a value and related coin type"
-msgstr ""
+msgstr "Moedas é uma abstração para ter um valor e tipo de moeda relacionado"
 
-#: .\base\coins\views.py:57
+#: .\base\coins\views.py:54
 msgid "Type Coin"
-msgstr ""
+msgstr "Tipo Moeda"
 
 #: .\base\models.py:10 .\base\models.py:20 .\calculation\verdict\models.py:9
 #: .\calculation\verdict\models.py:15 .\creditors\models.py:11
-#: .\creditors\views.py:39 .\projects\views.py:46
+#: .\creditors\views.py:38 .\projects\views.py:45
 msgid "Description"
-msgstr ""
+msgstr "Descrição"
 
 #: .\base\models.py:31
 msgid "Labour Complaint Filing"
-msgstr ""
+msgstr "Ajuizamento de Reclamação Trabalhista"
 
 #: .\base\models.py:31
 msgid "Citation"
-msgstr ""
+msgstr "Citação"
 
 #: .\base\models.py:31
 msgid "Judgement"
-msgstr ""
+msgstr "Julgamento"
 
 #: .\base\models.py:31
 msgid " Other"
-msgstr ""
+msgstr "Outro"
 
 #: .\base\models.py:36
 msgid "Admission date"
-msgstr ""
+msgstr "Data de admissão"
 
 #: .\base\models.py:37
 msgid "Resignation date"
-msgstr ""
+msgstr "Data de demissão"
 
 #: .\base\models.py:41
 msgid "Default interest"
-msgstr ""
+msgstr "Juros moratórios"
 
 #: .\base\models.py:42 .\calculation\statement_pj\models.py:32
 msgid "Fine"
-msgstr ""
+msgstr "Multa"
 
 #: .\base\models.py:43
 msgid "Advocative hours"
-msgstr ""
+msgstr "Honorários advocatícios"
 
 #: .\base\models.py:44
 msgid "Occurrence"
-msgstr ""
+msgstr "Ocorrência"
 
 #: .\base\models.py:45
 msgid "Are you an individual?"
-msgstr ""
+msgstr "É pessoa física?"
 
 #: .\base\models.py:51
 msgid "Admission: {} | Resignation: {}"
-msgstr ""
+msgstr "Entrada: {} | Demissão: {}"
 
 #: .\base\models.py:55
 msgid "RJ order date"
-msgstr ""
+msgstr "Data do pedido da RJ"
 
 #: .\base\models.py:56
 msgid "RJ filing date"
-msgstr ""
+msgstr "Data de ajuizamento do RJ"
 
 #: .\base\models.py:57
 msgid "Citation Date"
-msgstr ""
+msgstr "Data de Citação"
 
 #: .\base\models.py:63
 msgid "Request RJ: {} | Filing RJ: {} | Citation: {}"
-msgstr ""
+msgstr "Solicitar RJ: {} | Ajuizamento RJ: {} | Citação: {}"
 
 #: .\calculation\apps.py:9 .\calculation\verdict\models.py:10
-#: .\calculation\views.py:35 .\calculation\views.py:104
 msgid "Calculation"
-msgstr ""
+msgstr "Cálculo"
 
 #: .\calculation\comparative\apps.py:21
 msgid "Comparative"
-msgstr ""
+msgstr "Comparativo"
 
 #: .\calculation\comparative\models.py:47
 msgid "Creditor base date"
-msgstr ""
+msgstr "Data base do credor"
 
 #: .\calculation\comparative\models.py:48
 msgid "DTT base date"
-msgstr ""
+msgstr "Data base TDT"
 
 #: .\calculation\comparative\models.py:152
 msgid "Creditor's total"
-msgstr ""
+msgstr "Total do credor"
 
 #: .\calculation\comparative\models.py:153
 msgid "DTT total"
-msgstr ""
+msgstr "TDT total"
 
 #: .\calculation\comparative\models.py:373
 msgid "Creditor's request"
-msgstr ""
+msgstr "Solicitação do credor"
 
 #: .\calculation\comparative\models.py:374
 msgid "DTT calculation"
-msgstr ""
+msgstr "Cálculo DTT"
 
 #: .\calculation\comparative\models.py:395
 msgid "Must have the total_funds relation to inherit this method"
-msgstr ""
+msgstr "Deve ter a relação total_funds para herdar este método"
 
-#: .\calculation\comparative\views.py:45
-msgid "Calculation - Comparative"
-msgstr ""
-
-#: .\calculation\comparative\views.py:48
+#: .\calculation\comparative\views.py:44
 msgid ""
-"It represents the comparisons between the amounts requested by the creditor, "
-"the notices of the \n"
-"            AJ and the Company under Recovering, compared with the "
-"calculation made by DTT. The result is the \n"
-"            difference in amounts and percentage of the rates, the sum of "
-"the rates, the interest applied and the\n"
+"It represents the comparisons between the amounts requested by the creditor, the notices of the \n"
+"            AJ and the Company under Recovering, compared with the calculation made by DTT. The result is the \n"
+"            difference in amounts and percentage of the rates, the sum of the rates, the interest applied and the\n"
 "            advocative hours\n"
 "            "
 msgstr ""
+"Representa as comparações entre os valores solicitados pelo credor, os editais da \n"
+"            AJ e a Recuperanda, em comparação com o cálculo feito pela DTT. O resultado é a \n"
+"            diferença nos valores e percentual das taxas, a soma das taxas, os juros aplicados e as\n"
+"            honorários advocatícios"
 
 #: .\calculation\criterion\apps.py:9
 msgid "Criterion"
-msgstr ""
+msgstr "Critério"
 
-#: .\calculation\criterion\views.py:39
-msgid "Calculation - Criterion"
-msgstr ""
-
-#: .\calculation\criterion\views.py:44
+#: .\calculation\criterion\views.py:41
 msgid ""
-"Represents the amounts used as assumptions for the calculation at the time "
-"it was requested, \n"
-"        to maintain the values in case there are changes later in the "
-"creditor, recovering or in the assumptions of the \n"
-"        calculation. It has values such as `date of RJ's request`, `claims`, "
-"`fines` and `interest`.\n"
+"Represents the amounts used as assumptions for the calculation at the time it was requested, \n"
+"        to maintain the values in case there are changes later in the creditor, recovering or in the assumptions of the \n"
+"        calculation. It has values such as `date of RJ's request`, `claims`, `fines` and `interest`.\n"
 "        "
 msgstr ""
+"Representa os valores utilizados como premissas para o cálculo no momento em que foi solicitado, \n"
+"        manter os valores no caso de haver alterações posteriormente no credor, recuperanda ou nas premissas do \n"
+"        cálculo. Possui valores como `data do pedido da RJ`, `pleitos`, `multas` e `juros`."
 
 #: .\calculation\funds\abstract\models.py:27
-#: .\calculation\funds\document\views.py:59
+#: .\calculation\funds\document\views.py:58
 msgid "Fund name"
-msgstr ""
+msgstr "Nome do Verba"
 
 #: .\calculation\funds\abstract\models.py:37 .\calculation\models.py:18
 msgid "Requested"
-msgstr ""
+msgstr "Solicitado"
 
-#: .\calculation\funds\abstract\models.py:37 .\projects\models.py:14
+#: .\calculation\funds\abstract\models.py:37
+#: .\calculation\statement\tests.py:174 .\projects\models.py:14
 #: .\recovering\models.py:14
 msgid "Concluded"
-msgstr ""
+msgstr "Concluído"
 
 #: .\calculation\funds\abstract\models.py:37 .\recovering\models.py:15
 msgid "In Progress"
-msgstr ""
+msgstr "Em Andamento"
 
 #: .\calculation\funds\abstract\models.py:38
 msgid "Calculation failed - rate not found"
-msgstr ""
+msgstr "Falha no cálculo - taxa não encontrada"
 
 #: .\calculation\funds\abstract\models.py:39
 msgid "Calculation failed - aliquot not found"
-msgstr ""
+msgstr "Falha no cálculo - alíquota não encontrada"
 
 #: .\calculation\funds\abstract\models.py:40
 msgid "Calculation failed - invalid parameters"
-msgstr ""
+msgstr "Falha no cálculo - parâmetros inválidos"
 
 #: .\calculation\funds\abstract\models.py:41
 msgid "Calculation failed - no date RJ"
-msgstr ""
+msgstr "Falha no cálculo - sem data RJ"
 
 #: .\calculation\funds\abstract\models.py:42
 msgid "Calculation failed - no date Citation"
-msgstr ""
+msgstr "Falha no cálculo - sem data Citação"
 
 #: .\calculation\funds\abstract\models.py:47
 msgid "Calculation status"
-msgstr ""
+msgstr "Status do cálculo"
 
 #: .\calculation\funds\abstract\models.py:87
 msgid "Status {} does not match any valid status"
-msgstr ""
+msgstr "O status {} não corresponde a nenhum status válido"
 
 #: .\calculation\funds\abstract\models.py:123
 msgid "Base date"
-msgstr ""
+msgstr "Data base"
 
 #: .\calculation\funds\abstract\models.py:124
 msgid "Historical value"
-msgstr ""
+msgstr "Valor histórico"
 
 #: .\calculation\funds\abstract\models.py:198
 msgid "Index on Base Date"
-msgstr ""
+msgstr "Índice na Data Base"
 
 #: .\calculation\funds\abstract\models.py:199
 msgid "Index in recovery"
-msgstr ""
+msgstr "Índice em recuperação"
 
 #: .\calculation\funds\abstract\models.py:207
 msgid "OneToOneField relationship required for Statement"
-msgstr ""
+msgstr "Relação OneToOneField necessária para Extrato"
 
 #: .\calculation\funds\abstract\models.py:240
 msgid "Total historical value"
-msgstr ""
+msgstr "Valor histórico total"
 
 #: .\calculation\funds\abstract\models.py:241
 msgid "Total corrected amount"
-msgstr ""
+msgstr "Valor total corrigido"
 
 #: .\calculation\funds\apps.py:22 .\calculation\funds\irrf\models.py:68
 msgid "Fund"
-msgstr ""
+msgstr "Verba"
 
 #: .\calculation\funds\document\apps.py:22
 msgid "Document Funds"
-msgstr ""
+msgstr "Verbas de Documentos"
 
 #: .\calculation\funds\document\models.py:65
 msgid "Document number"
-msgstr ""
+msgstr "Número do documento"
 
 #: .\calculation\funds\document\models.py:258
 msgid "Total juros"
-msgstr ""
+msgstr "Total de juros"
 
 #: .\calculation\funds\document\models.py:259
 msgid "Total multa"
-msgstr ""
+msgstr "multa total"
 
 #: .\calculation\funds\document\models.py:260
 msgid "Total devido"
-msgstr ""
+msgstr "Total devido"
 
 #: .\calculation\funds\document\schemas.py:165
 msgid "Document Fund already registered"
-msgstr ""
+msgstr "Verba de documento já registrado"
 
 #: .\calculation\funds\document\views.py:20
 msgid ""
-"Represents the values that are used for documents, such as `invoices`, "
-"`Indemnities`, `agreements`, \n"
-"    etc. Contains fields such as `base date`, `value`, `monetary correction` "
-"and `economic charges`.\n"
+"Represents the values that are used for documents, such as `invoices`, `Indemnities`, `agreements`, \n"
+"    etc. Contains fields such as `base date`, `value`, `monetary correction` and `economic charges`.\n"
 "    "
 msgstr ""
+"Representa os valores que são usados para documentos, como `faturas`, `Indenizações`, `contratos`, \n"
+"    etc. Contém campos como `data de base`, `valor`, `correção monetária` e `encargos econômicos`."
 
-#: .\calculation\funds\document\views.py:52
-msgid "Calculation - Fund Document"
-msgstr ""
-
-#: .\calculation\funds\document\views.py:136
+#: .\calculation\funds\document\views.py:135
 msgid ""
-"This method handles GET requests for the view. It retrieves a specific "
-"document fund object \n"
-"    using the given  id from the query parameters and serializes the result "
-"into JSON format before returning it as an \n"
+"This method handles GET requests for the view. It retrieves a specific document fund object \n"
+"    using the given  id from the query parameters and serializes the result into JSON format before returning it as an \n"
 "        HTTP response. \n"
 "\n"
 "            Returns:\n"
-"                JsonResponse: An HTTP response containing the serialized "
-"document fund data retrieved.\n"
+"                JsonResponse: An HTTP response containing the serialized document fund data retrieved.\n"
 "            "
 msgstr ""
+"Este método lida com solicitações GET para a visualização. Recupera um objeto de verba de documento específico \n"
+"    usando o id fornecido a partir dos parâmetros de consulta e serializa o resultado no formato JSON antes de retorná-lo como uma \n"
+"        Resposta HTTP. \n"
+"\n"
+"            Retorna: JsonResponse:\n"
+"Uma resposta HTTP contendo os dados de verba de documentos serializados recuperados."
 
 #: .\calculation\funds\integrations\apps.py:22
 msgid "Funds Integrations"
-msgstr ""
+msgstr "Integrações de Verbas"
 
 #: .\calculation\funds\integrations\models.py:41
 msgid "Description fund"
-msgstr ""
+msgstr "Descrição da Verba"
 
 #: .\calculation\funds\integrations\models.py:42
 msgid "Apply summary 381?"
-msgstr ""
+msgstr "Aplicar sumário 381?"
 
 #: .\calculation\funds\integrations\views.py:16
 msgid ""
-"Statement Integrations is a financial statement of a fund, and includes "
-"attributes such as \n"
-"    `base date` and `historical value`. It also has the calculation, "
-"`monetary correction` and the `indexes` used in the \n"
-"    calculations. It has a relationship with a fund where this fund can n "
-"Statement Integrations.\n"
+"Statement Integrations is a financial statement of a fund, and includes attributes such as \n"
+"    `base date` and `historical value`. It also has the calculation, `monetary correction` and the `indexes` used in the \n"
+"    calculations. It has a relationship with a fund where this fund can n Statement Integrations.\n"
 "    "
 msgstr ""
+"A Integração de Demonstrações é uma demonstração financeira de um fundo e inclui atributos como \n"
+"    `Data de base` e `valor histórico`. Ele também tem o cálculo, `correção monetária` e os `índices` utilizados no \n"
+"    cálculos. Tem uma relação com uma verba onde este fundo pode n Integrações de Demonstrativos."
 
-#: .\calculation\funds\integrations\views.py:48
-msgid "Calculation - Statement Integrations"
-msgstr ""
-
-#: .\calculation\funds\integrations\views.py:75
+#: .\calculation\funds\integrations\views.py:74
 msgid ""
-"Create Statement Integration object from request data and return Statement "
-"Integration detail.\n"
+"Create Statement Integration object from request data and return Statement Integration detail.\n"
 "        Returns:\n"
 "            JsonResponse: A JSON response containing the created Funds\n"
 "             object detail.\n"
@@ -374,124 +354,130 @@ msgid ""
 "            serializers.ValidationError: If the input data is invalid.\n"
 "            "
 msgstr ""
+"Criar objeto de Integração de Instrução a partir de dados de solicitação e retornar detalhes de extrato de Integração.\n"
+"        Devoluções:\n"
+"            JsonResponse: Uma resposta JSON contendo os Verbas criados\n"
+"             detalhe do objeto.\n"
+"\n"
+"        Eleva:\n"
+"            serializers.ValidationError: Se os dados de entrada forem inválidos."
 
-#: .\calculation\funds\integrations\views.py:114
+#: .\calculation\funds\integrations\views.py:113
 msgid ""
-"This method handles GET requests for the view. It retrieves a specific "
-"statement integration \n"
-"    object using the given id from the query parameters and serializes the "
-"result into JSON format before returning it\n"
+"This method handles GET requests for the view. It retrieves a specific statement integration \n"
+"    object using the given id from the query parameters and serializes the result into JSON format before returning it\n"
 "     as an HTTP response. \n"
 "     \n"
 "        Returns:\n"
-"            JsonResponse: An HTTP response containing the serialized "
-"document fund data retrieved.\n"
+"            JsonResponse: An HTTP response containing the serialized document fund data retrieved.\n"
 "    "
 msgstr ""
+"Este método lida com solicitações GET para a visualização. Recupera um extrato de integração específica \n"
+"    objeto usando o id fornecido a partir dos parâmetros de consulta e serializa o resultado no formato JSON antes de retorná-lo\n"
+"     como uma resposta HTTP. \n"
+"     \n"
+"        Retorna:\n"
+"            JsonResponse: Uma resposta HTTP contendo os dados de fundo de documento serializado recuperados."
 
-#: .\calculation\funds\integrations\views.py:121
+#: .\calculation\funds\integrations\views.py:120
 msgid ""
-"This method handles PUT requests for the view. It updates a specific "
-"statement integration \n"
-"    object using the given id from the query parameters and the serialized "
-"input data from the request body. \n"
+"This method handles PUT requests for the view. It updates a specific statement integration \n"
+"    object using the given id from the query parameters and the serialized input data from the request body. \n"
 "    \n"
 "        Returns:\n"
-"            JsonResponse: An HTTP response containing the serialized "
-"statement integration data updated.\n"
+"            JsonResponse: An HTTP response containing the serialized statement integration data updated.\n"
 "            "
 msgstr ""
+"Este método lida com solicitações de COLOCAÇÃO para a visualização. Atualiza uma integração de declaração específica \n"
+"    objeto usando o id fornecido dos parâmetros de consulta e os dados de entrada serializados do corpo da solicitação. \n"
+"    \n"
+"        Retorna:\n"
+"            JsonResponse: Uma resposta HTTP contendo os dados de integração de instruções serializadas atualizados."
 
 #: .\calculation\funds\irrf\apps.py:23
 msgid "Funds - IRRF"
-msgstr ""
+msgstr "Verbas - IRRF"
 
 #: .\calculation\funds\irrf\models.py:27
 msgid "Months period"
-msgstr ""
+msgstr "Período de meses"
 
 #: .\calculation\funds\irrf\models.py:69
 msgid "Taxable amounts"
-msgstr ""
+msgstr "Valores tributáveis"
 
 #: .\calculation\funds\irrf\models.py:98
 msgid "Taxable amount"
-msgstr ""
+msgstr "Valor tributável"
 
 #: .\calculation\funds\irrf\models.py:99
 msgid "Taxable portion"
-msgstr ""
+msgstr "Parcela Tributável"
 
 #: .\calculation\funds\irrf\models.py:100 .\rates\models.py:200
 msgid "Aliquot"
-msgstr ""
+msgstr "Alíquota"
 
 #: .\calculation\funds\irrf\models.py:101
 msgid "Installment deducted"
-msgstr ""
+msgstr "Parcela deduzida"
 
 #: .\calculation\funds\irrf\models.py:102
 msgid "IRRF per month"
-msgstr ""
+msgstr "IRRF por mês"
 
 #: .\calculation\funds\irrf\models.py:103
 msgid "IRRF per period"
-msgstr ""
+msgstr "IRRF por período"
 
 #: .\calculation\funds\irrf\schemas.py:117 .\calculation\funds\schemas.py:152
 msgid "Fund already registered"
-msgstr ""
+msgstr "Verba já cadastrado"
 
 #: .\calculation\funds\irrf\views.py:18
 msgid ""
-"Statement IRRF is a financial statement of a fund IRRF, and includes "
-"attributes such as \n"
-"    `fund_name` and `taxable_amounts`. It also has the calculation, `taxable "
-"amount` and the `taxable portion` used in \n"
-"    the calculations. It has a relationship with a fund IRRF where this fund "
-"can n Statement IRRF.\n"
+"Statement IRRF is a financial statement of a fund IRRF, and includes attributes such as \n"
+"    `fund_name` and `taxable_amounts`. It also has the calculation, `taxable amount` and the `taxable portion` used in \n"
+"    the calculations. It has a relationship with a fund IRRF where this fund can n Statement IRRF.\n"
 "    "
 msgstr ""
+"A demonstração IRRF é uma demonstração financeira de um fundo IRRF e inclui atributos como \n"
+"    `fund_name` e `taxable_amounts`. Possui também o cálculo, `valor tributável` e a `parcela tributável` utilizada na \n"
+"    os cálculos. Tem uma relação com um fundo IRRF onde este fundo pode n Demonstração IRRF."
 
 #: .\calculation\funds\irrf\views.py:25
 msgid ""
-"Represent a template for IRRF funds. He has the attributes `taxable_amount` "
-"and `months_period`, \n"
-"    which represent the taxable amount of the fund and the number of months "
-"of the application period, respectively. \n"
-"    It has a 1 to n relationship, where several amounts and their respective "
-"values can be allocated, to calculate \n"
-"    the IRRF due, returning fields such as: `tax amount`, `taxable portion` "
-"and `aliquot`.\n"
+"Represent a template for IRRF funds. He has the attributes `taxable_amount` and `months_period`, \n"
+"    which represent the taxable amount of the fund and the number of months of the application period, respectively. \n"
+"    It has a 1 to n relationship, where several amounts and their respective values can be allocated, to calculate \n"
+"    the IRRF due, returning fields such as: `tax amount`, `taxable portion` and `aliquot`.\n"
 "    "
 msgstr ""
+"Representar um modelo para fundos de IRRF. Ele tem os atributos `taxable_amount` e `months_period`, \n"
+"    que representam o valor tributável do fundo e o número de meses do período de aplicação, respectivamente. \n"
+"    Tem uma relação de 1 para n, onde vários valores e seus respectivos valores podem ser alocados, para calcular \n"
+"    o IRRF devido, devolvendo campos como: `valor do imposto`, `parcela tributável` e `alíquota`."
 
-#: .\calculation\funds\irrf\views.py:59
-msgid "Calculation - Fund IRRF"
-msgstr ""
-
-#: .\calculation\funds\irrf\views.py:133
+#: .\calculation\funds\irrf\views.py:132
 msgid ""
-"This method handles GET requests for the view. It retrieves a specific fund "
-"IRRF \n"
-"        object using the given id from the query parameters and serializes "
-"the result into JSON format before returning\n"
+"This method handles GET requests for the view. It retrieves a specific fund IRRF \n"
+"        object using the given id from the query parameters and serializes the result into JSON format before returning\n"
 "         it as an HTTP response. \n"
 "\n"
 "            Returns:\n"
-"                JsonResponse: An HTTP response containing the serialized "
-"document fund data retrieved.\n"
+"                JsonResponse: An HTTP response containing the serialized document fund data retrieved.\n"
 "        "
 msgstr ""
+"Este método lida com solicitações GET para a visualização. Recupera um fundo específico IRRF \n"
+"        objeto usando o id fornecido a partir dos parâmetros de consulta e serializa o resultado no formato JSON antes de retornar\n"
+"         como uma resposta HTTP. \n"
+"\n"
+"            Retorna:\n"
+"                JsonResponse: Uma resposta HTTP contendo os dados de fundo de documento serializado recuperados."
 
-#: .\calculation\funds\irrf\views.py:167
-msgid "Calculation - Statement IRRF"
-msgstr ""
-
-#: .\calculation\funds\irrf\views.py:195
+#: .\calculation\funds\irrf\views.py:193
 msgid ""
-"Create Statement IRRF object from request data and return Statement IRRF "
-"detail.\n"
+"Create Statement IRRF object from request data and return Statement IRRF detail.\n"
 "        Returns:\n"
 "            JsonResponse: A JSON response containing the created Funds\n"
 "             object detail.\n"
@@ -500,98 +486,106 @@ msgid ""
 "            serializers.ValidationError: If the input data is invalid.\n"
 "            "
 msgstr ""
+"Criar objeto de Declaração IRRF a partir dos dados da solicitação e retornar detalhe da Declaração IRRF.\n"
+"        Devoluções:\n"
+"            JsonResponse: Uma resposta JSON contendo os Verbas criados\n"
+"             detalhe do objeto.\n"
+"\n"
+"        Eleva:\n"
+"            serializers.ValidationError: Se os dados de entrada forem inválidos."
 
-#: .\calculation\funds\irrf\views.py:232
+#: .\calculation\funds\irrf\views.py:230
 msgid ""
-"This method handles GET requests for the view. It retrieves a specific "
-"statement IRRF \n"
-"        object using the given id from the query parameters and serializes "
-"the result into JSON format before returning\n"
+"This method handles GET requests for the view. It retrieves a specific statement IRRF \n"
+"        object using the given id from the query parameters and serializes the result into JSON format before returning\n"
 "         it as an HTTP response. \n"
 "\n"
 "            Returns:\n"
-"                JsonResponse: An HTTP response containing the serialized "
-"document fund data retrieved.\n"
+"                JsonResponse: An HTTP response containing the serialized document fund data retrieved.\n"
 "        "
 msgstr ""
+"Este método lida com solicitações GET para a visualização. Recupera um extrato específico IRRF \n"
+"        objeto usando o id fornecido a partir dos parâmetros de consulta e serializa o resultado no formato JSON antes de retornar\n"
+"         como uma resposta HTTP. \n"
+"\n"
+"            Retorna:\n"
+"                JsonResponse: Uma resposta HTTP contendo os dados de fundo de documento serializado recuperados."
 
-#: .\calculation\funds\irrf\views.py:239
+#: .\calculation\funds\irrf\views.py:237
 msgid ""
-"This method handles PUT requests for the view. It updates a specific "
-"statement IRRF \n"
-"        object using the given id from the query parameters and the "
-"serialized input data from the request body. \n"
+"This method handles PUT requests for the view. It updates a specific statement IRRF \n"
+"        object using the given id from the query parameters and the serialized input data from the request body. \n"
 "\n"
 "            Returns:\n"
-"                JsonResponse: An HTTP response containing the serialized "
-"statement IRRF data updated.\n"
+"                JsonResponse: An HTTP response containing the serialized statement IRRF data updated.\n"
 "                "
 msgstr ""
+"Este método lida com solicitações de COLOCAÇÃO para a visualização. Atualiza declaração específica IRRF \n"
+"        objeto usando o id fornecido dos parâmetros de consulta e os dados de entrada serializados do corpo da solicitação. \n"
+"\n"
+"            Retorna:\n"
+"                JsonResponse: Uma resposta HTTP contendo os dados IRRF de instrução serializados atualizados."
 
 #: .\calculation\funds\models.py:108
 msgid "DSR Reflexes"
-msgstr ""
+msgstr "Reflexos DSR"
 
 #: .\calculation\funds\models.py:109
 msgid "Apply Precedent 381?"
-msgstr ""
+msgstr "Aplicar a sumula 381?"
 
 #: .\calculation\funds\models.py:192
 msgid "Total valor reflexos DSR"
-msgstr ""
+msgstr "Total valor reflexos DSR"
 
 #: .\calculation\funds\models.py:193
 msgid "Total accurate"
-msgstr ""
+msgstr "Total preciso"
 
 #: .\calculation\funds\views.py:18
 msgid ""
-"Statement Fund is a financial statement of a fund, and includes attributes "
-"such as \n"
-"    `base date` and `historical value`. It also has the calculation, "
-"`monetary correction` and the `indexes` used in the \n"
-"    calculations. It has a relationship with a fund where this fund can n "
-"Statement Fund.\n"
+"Statement Fund is a financial statement of a fund, and includes attributes such as \n"
+"    `base date` and `historical value`. It also has the calculation, `monetary correction` and the `indexes` used in the \n"
+"    calculations. It has a relationship with a fund where this fund can n Statement Fund.\n"
 "    "
 msgstr ""
+"O Verba de Demonstração é uma demonstração financeira de um fundo e inclui atributos como \n"
+"    `Data de base` e `valor histórico`. Ele também tem o cálculo, `correção monetária` e os `índices` utilizados no \n"
+"    cálculos. Tem uma relação com um fundo onde este fundo pode n Verba de Declaração."
 
 #: .\calculation\funds\views.py:25
 msgid ""
-"Represents a template for funds. It has the attributes `name` and "
-"`calculated total values`,\n"
+"Represents a template for funds. It has the attributes `name` and `calculated total values`,\n"
 "    that represent the values that were inserted in the extracts.\n"
-"    It has a ratio of 1 to n for the statement funds and statement funds "
-"integrations, where several values and their \n"
+"    It has a ratio of 1 to n for the statement funds and statement funds integrations, where several values and their \n"
 "    respective values can be allocated to calculate the corrections.\n"
 "    "
 msgstr ""
+"Representa um modelo para fundos. Possui os atributos `nome` e `valores totais calculados`,\n"
+"    que representam os valores que foram inseridos nos extratos.\n"
+"    Tem uma proporção de 1 para n para as integrações de fundos de extrato e fundos de extrato, onde vários valores e seus \n"
+"    os respectivos valores podem ser alocados para calcular as correções."
 
-#: .\calculation\funds\views.py:59
-msgid "Calculation - Funds"
-msgstr ""
-
-#: .\calculation\funds\views.py:135
+#: .\calculation\funds\views.py:132
 msgid ""
-"This method handles GET requests for the view. It retrieves a specific "
-"fund \n"
-"        object using the given id from the query parameters and serializes "
-"the result into JSON format before returning it\n"
+"This method handles GET requests for the view. It retrieves a specific fund \n"
+"        object using the given id from the query parameters and serializes the result into JSON format before returning it\n"
 "         as an HTTP response. \n"
 "\n"
 "            Returns:\n"
-"                JsonResponse: An HTTP response containing the serialized "
-"fund data retrieved.\n"
+"                JsonResponse: An HTTP response containing the serialized fund data retrieved.\n"
 "        "
 msgstr ""
+"Este método lida com solicitações GET para a visualização. Recupera um fundo específico \n"
+"        objeto usando o id fornecido a partir dos parâmetros de consulta e serializa o resultado no formato JSON antes de retorná-lo\n"
+"         como uma resposta HTTP. \n"
+"\n"
+"            Returns:\n"
+"                JsonResponse: Uma resposta HTTP contendo os dados de fundos serializados recuperados."
 
-#: .\calculation\funds\views.py:211
-msgid "Calculation - Statement Funds"
-msgstr ""
-
-#: .\calculation\funds\views.py:240
+#: .\calculation\funds\views.py:236
 msgid ""
-"Create Statement Fund object from request data and return Statement Fund "
-"detail.\n"
+"Create Statement Fund object from request data and return Statement Fund detail.\n"
 "            Returns:\n"
 "                JsonResponse: A JSON response containing the created Funds\n"
 "                 object detail.\n"
@@ -600,260 +594,256 @@ msgid ""
 "                serializers.ValidationError: If the input data is invalid.\n"
 "                "
 msgstr ""
+"Criar objeto do Verba de Declaração a partir de dados de solicitação e detalhes do Fundo de Declaração de retorno.\n"
+"            Devoluções:\n"
+"                JsonResponse: Uma resposta JSON contendo os Fundos criados\n"
+"                 detalhe do objeto.\n"
+"\n"
+"            Eleva:\n"
+"                serializers.ValidationError: Se os dados de entrada forem inválidos."
 
-#: .\calculation\funds\views.py:276
+#: .\calculation\funds\views.py:272
 msgid ""
-"This method handles GET requests for the view. It retrieves a specific "
-"statement fund object \n"
-"    using the given id from the query parameters and serializes the result "
-"into JSON format before returning it as an \n"
+"This method handles GET requests for the view. It retrieves a specific statement fund object \n"
+"    using the given id from the query parameters and serializes the result into JSON format before returning it as an \n"
 "    HTTP response. \n"
 "\n"
 "            Returns:\n"
-"                JsonResponse: An HTTP response containing the serialized "
-"statement fund data retrieved.\n"
+"                JsonResponse: An HTTP response containing the serialized statement fund data retrieved.\n"
 "        "
 msgstr ""
+"Este método lida com solicitações GET para a visualização. Ele recupera um objeto de fundo de declaração específico \n"
+"    usando o id fornecido a partir dos parâmetros de consulta e serializa o resultado no formato JSON antes de retorná-lo como um \n"
+"    Resposta HTTP. \n"
+"\n"
+"            Retorna: JsonResponse:\n"
+"Uma resposta HTTP contendo os dados de fundo de instrução serializados recuperados."
 
-#: .\calculation\funds\views.py:283
+#: .\calculation\funds\views.py:279
 msgid ""
-"This method handles PUT requests for the view. It updates a specific "
-"statement fund \n"
-"        object using the given id from the query parameters and the "
-"serialized input data from the request body. \n"
+"This method handles PUT requests for the view. It updates a specific statement fund \n"
+"        object using the given id from the query parameters and the serialized input data from the request body. \n"
 "\n"
 "            Returns:\n"
-"                JsonResponse: An HTTP response containing the serialized "
-"statement fund data updated.\n"
+"                JsonResponse: An HTTP response containing the serialized statement fund data updated.\n"
 "                "
 msgstr ""
+"Este método lida com solicitações de COLOCAÇÃO para a visualização. Atualiza um fundo de declaração específico \n"
+"        objeto usando o id fornecido dos parâmetros de consulta e os dados de entrada serializados do corpo da solicitação. \n"
+"\n"
+"            Retorna:\n"
+"                JsonResponse: Uma resposta HTTP contendo os dados de fundo de instrução serializados atualizados."
 
 #: .\calculation\models.py:18
 msgid "Calculated"
-msgstr ""
+msgstr "Calculado"
 
 #: .\calculation\models.py:18
 msgid "Revised"
-msgstr ""
+msgstr "Revisado"
 
 #: .\calculation\models.py:18
 msgid "Approved"
-msgstr ""
+msgstr "Aprovado"
 
 #: .\calculation\models.py:18
 msgid "Failed"
-msgstr ""
+msgstr "Falha"
 
 #: .\calculation\models.py:19
 msgid "Specially Approved"
-msgstr ""
+msgstr "Aprovado Especialmente"
 
-#: .\calculation\models.py:26
+#: .\calculation\models.py:26 .\calculation\views.py:40
+#: .\calculation\views.py:62
 msgid "Incident number"
-msgstr ""
+msgstr "Número do incidente"
 
 #: .\calculation\models.py:42
 msgid "Calculation step"
-msgstr ""
+msgstr "Etapa de cálculo"
 
 #: .\calculation\models.py:43
 msgid "Fully competitive credit?"
-msgstr ""
+msgstr "Crédito totalmente concursal?"
 
 #: .\calculation\models.py:44
 msgid "Recursal deposit withdrawal?"
-msgstr ""
+msgstr "Retirada de depósito recursal?"
 
 #: .\calculation\models.py:45
 msgid "Are there fees in the approved calculation?"
-msgstr ""
+msgstr "Existem taxas no cálculo aprovado?"
 
 #: .\calculation\models.py:46
 msgid "Date of credit qualification certificate"
-msgstr ""
+msgstr "Data da autorização de crédito"
 
 #: .\calculation\models.py:50
 msgid "Edital art. 7º § 2 - 11.101/2005"
-msgstr ""
+msgstr "Edital art. 7º § 2 - 11.101/2005"
 
 #: .\calculation\models.py:51
 msgid "Calculation number"
-msgstr ""
+msgstr "Número de cálculo"
 
 #: .\calculation\models.py:52
 msgid "Recurral deposit released"
-msgstr ""
+msgstr "Depósito recursal liberado"
 
 #: .\calculation\statement\apps.py:23
 msgid "Statement"
-msgstr ""
+msgstr "Declaração"
 
-#: .\calculation\statement\models.py:13
+#: .\calculation\statement\models.py:13 .\calculation\statement\tests.py:181
 msgid "Impugnment"
-msgstr ""
+msgstr "Impugnação"
 
 #: .\calculation\statement\models.py:13
 msgid "Qualification"
-msgstr ""
+msgstr "Qualificação"
 
 #: .\calculation\statement\models.py:25
 msgid "Conclusion legend"
-msgstr ""
+msgstr "Legenda de conclusão"
 
 #: .\calculation\statement\models.py:95 .\calculation\statement\models.py:131
 msgid "Total"
-msgstr ""
+msgstr "Total"
 
 #: .\calculation\statement\models.py:130
 msgid "Lawyer name"
-msgstr ""
+msgstr "Nome do advogado"
+
+#: .\calculation\statement\tests.py:156
+#: .\calculation\statement_pf\models.py:23
+msgid "Delayed days"
+msgstr "Dias de atraso"
+
+#: .\calculation\statement\tests.py:164
+#: .\calculation\statement_pf\models.py:24
+msgid "Total after default interest"
+msgstr "Total após juros de mora"
 
 #: .\calculation\statement\tests.py:173
-msgid "Concluído"
-msgstr ""
-
-#: .\calculation\statement\views.py:45
-msgid "Calculation - Statement"
-msgstr ""
-
-#: .\calculation\statement\views.py:47
-msgid ""
-"Represents the entire extract of the calculation. All results of "
-"`calculations`, `fines`, \n"
-"        `amounts due`, `claims`, `summary of funds`, `DTT opinion`, "
-"`classes` and `used assumptions`.\n"
-"        "
-msgstr ""
-
-#: .\calculation\statement_pf\apps.py:23
-msgid "Statement PF"
-msgstr ""
-
 #: .\calculation\statement_pf\models.py:22
 #: .\calculation\statement_pj\models.py:29
 msgid "Updated total"
+msgstr "Total atualizado"
+
+#: .\calculation\statement\views.py:46
+msgid ""
+"Represents the entire extract of the calculation. All results of `calculations`, `fines`, \n"
+"        `amounts due`, `claims`, `summary of funds`, `DTT opinion`, `classes` and `used assumptions`.\n"
+"        "
 msgstr ""
+"Representa todo o extrato do cálculo. Todos os resultados de `cálculos`, `multas`, \n"
+"        `montantes devidos`, `pleitos`, `resumo dos fundos`, `parecer da TDT`, `classes` e `premissas utilizadas`."
+
+#: .\calculation\statement_pf\apps.py:23
+msgid "Statement PF"
+msgstr "Declaração PF"
 
 #: .\calculation\statement_pf\models.py:22
 #: .\calculation\statement_pf\models.py:24
 #: .\calculation\statement_pj\models.py:30
 #: .\calculation\statement_pj\models.py:33
 msgid "Total due"
-msgstr ""
+msgstr "Total devido"
 
 #: .\calculation\statement_pf\models.py:23
 msgid "SELIC rate in the period"
-msgstr ""
-
-#: .\calculation\statement_pf\models.py:23
-msgid "Delayed days"
-msgstr ""
-
-#: .\calculation\statement_pf\models.py:24
-msgid "Total after default interest"
-msgstr ""
+msgstr "Taxa SELIC no período"
 
 #: .\calculation\statement_pf\models.py:73
 #: .\calculation\statement_pf\models.py:527
 msgid "Legend"
-msgstr ""
+msgstr "Legenda"
 
 #: .\calculation\statement_pf\models.py:74
 msgid "Amount"
-msgstr ""
+msgstr "Valor"
 
 #: .\calculation\statement_pf\models.py:568
 msgid "Saving rate and rate_integrations at the same time is not allowed."
-msgstr ""
+msgstr "Salvar rate e rate_integrations ao mesmo tempo não é permitido."
 
 #: .\calculation\statement_pf\models.py:584
 msgid "Need to have a budget tied up"
-msgstr ""
+msgstr "Precisa ter um orçamento atrelado"
 
-#: .\calculation\statement_pf\views.py:45
-msgid "Calculation - StatementPF"
-msgstr ""
-
-#: .\calculation\statement_pf\views.py:48
+#: .\calculation\statement_pf\views.py:47
 msgid ""
-"Represents the entire extract from the calculation of the truths of natural "
-"persons. All results \n"
-"        of `calculations`, `fines`, `amounts due`, `claims`, `summary of "
-"funds`, `DTT opinion`, `classes` and \n"
+"Represents the entire extract from the calculation of the truths of natural persons. All results \n"
+"        of `calculations`, `fines`, `amounts due`, `claims`, `summary of funds`, `DTT opinion`, `classes` and \n"
 "        `used assumptions`.\n"
 "            "
 msgstr ""
+"Representa todo o extrato do cálculo das verdades das pessoas físicas. Todos os resultados \n"
+"        de `cálculos`, `coimas`, `montantes devidos`, `pleito`, `resumo dos fundos`, `parecer da TDT`, `classes` e \n"
+"        `premissas utilizados`."
 
 #: .\calculation\statement_pj\apps.py:23
 msgid "Statement PJ"
-msgstr ""
+msgstr "Declaração PJ"
 
 #: .\calculation\statement_pj\models.py:31
 msgid "Interest"
-msgstr ""
+msgstr "Juros"
 
-#: .\calculation\statement_pj\views.py:45
-msgid "Calculation - StatementPJ"
-msgstr ""
-
-#: .\calculation\statement_pj\views.py:48
+#: .\calculation\statement_pj\views.py:47
 msgid ""
-"Represents the entire extract from the calculation of the truths of legal "
-"entities. All results \n"
-"        of `calculations`, `fines`, `amounts due`, `claims`, `summary of "
-"funds`, `DTT opinion`, `classes` and \n"
-"        `used assumptions`.\n"
+"Represents the entire extract from the calculation of the truths of legal entities. All results \n"
+"        of `calculations`, `fines`, `amounts due`, `claims`, `summary of funds`, `DTT opinion`, `classes` and \n"
+"        `premissas utilizadas`.\n"
 "            "
 msgstr ""
+"Representa todo o extrato do cálculo das verdades das pessoas jurídicas. Todos os resultados \n"
+"        de `cálculos`, `coimas`, `montantes devidos`, `pleito`, `resumo dos fundos`, `parecer da TDT`, `classes` e \n"
+"        `premissas utilizadas`."
 
 #: .\calculation\verdict\apps.py:9
 msgid "Verdict"
-msgstr ""
+msgstr "Sentença"
 
 #: .\calculation\verdict\models.py:16
 msgid "Value"
-msgstr ""
+msgstr "Valor"
 
 #: .\calculation\verdict\schemas.py:32
 msgid "Verdict already registered"
-msgstr ""
+msgstr "Veredicto já registrado"
 
-#: .\calculation\verdict\views.py:18
-msgid "Calculation - Verdict"
-msgstr ""
-
-#: .\calculation\verdict\views.py:22
+#: .\calculation\verdict\views.py:21
 msgid ""
-"Represents additional sentences related to the process. They may include "
-"`material damages`, \n"
+"Represents additional sentences related to the process. They may include `material damages`, \n"
 "        `moral damages` among others.\n"
 "                "
 msgstr ""
+"Representa sentenças adicionais relacionadas ao processo. Podem incluir `danos materiais`, \n"
+"        “Danos morais”, entre outros."
 
-#: .\calculation\views.py:20
+#: .\calculation\views.py:18
 msgid ""
-"Represents all the calculation information. It gathers all the information "
-"relevant to the process.\n"
-"     It gathers the information of `extract`, `appropriations`, "
-"`assumptions`, claims, `comparative`, `sentences`, \n"
-"    `editais` and the `status of the calculation`. \n"
+"Represents all the calculation information. It gathers all the information relevant to the process.\n"
+"     It gathers the information of `extract`, `assumptions`, claims, `comparative`, `sentences`,\n"
+"    `editais` and the `status of the calculation`.\n"
 "    "
 msgstr ""
+"Representa todas as informações de cálculo. Ele reúne todas as informações relevantes para o processo.\n"
+"     Reúne as informações de `extrato`, `premissas`, pleito, `comparativo`, `sentenças`,\n"
+"    `editais` e `estado do cálculo`."
 
-#: .\calculation\views.py:58
-msgid "Calculation - Incident"
-msgstr ""
-
-#: .\calculation\views.py:71
+#: .\calculation\views.py:67
 msgid ""
-"Represents the `incident number` related to the process. Within a process "
-"there can be several \n"
-"        `numbers of incidents`, and when doing the calculation, it is "
-"necessary to pass which number is related.\n"
+"Represents the `incident number` related to the process. Within a process there can be several\n"
+"        `numbers of incidents`, and when doing the calculation, it is necessary to pass which number is related.\n"
 "            "
 msgstr ""
+"Representa o `número do incidente` relacionado ao processo. Dentro de um processo pode haver vários\n"
+"        `número de incidentes` e, ao efetuar o cálculo, é necessário indicar qual o número que está relacionado."
 
-#: .\calculation\views.py:74
+#: .\calculation\views.py:70
 msgid ""
 "Create Incident object from request data and return Incident detail.\n"
 "            Returns:\n"
@@ -864,922 +854,985 @@ msgid ""
 "                serializers.ValidationError: If the input data is invalid.\n"
 "                "
 msgstr ""
+"Crie o objeto Incident a partir dos dados da solicitação e retorne os detalhes do Incident.\n"
+"            Devoluções:\n"
+"                JsonResponse: Uma resposta JSON contendo os Fundos criados\n"
+"                 detalhe do objeto.\n"
+"\n"
+"            Eleva:\n"
+"                serializers.ValidationError: Se os dados de entrada forem inválidos."
 
-#: .\calculation\views.py:91
+#: .\calculation\views.py:87
 msgid ""
-"This method handles GET requests for the view. It retrieves a specific "
-"Calculation using the \n"
-"    given id from the query parameters and serializes the result into JSON "
-"format before returning it as\n"
-"                 an HTTP response. \n"
+"This method handles GET requests for the view. It retrieves a specific Calculation using the\n"
+"    given id from the query parameters and serializes the result into JSON format before returning it as\n"
+"                 an HTTP response.\n"
 "\n"
 "                    Returns:\n"
-"                        JsonResponse: An HTTP response containing the "
-"serialized Calculation data retrieved.\n"
+"                        JsonResponse: An HTTP response containing the serialized Calculation data retrieved.\n"
 "                    "
 msgstr ""
-
-#: .\calculation\views.py:229
-msgid "Calculation - Change Step"
-msgstr ""
+"Este método lida com solicitações GET para a visualização. Ele recupera um cálculo específico usando o\n"
+"    dado id a partir dos parâmetros de consulta e serializa o resultado no formato JSON antes de retorná-lo como\n"
+"                 uma resposta HTTP.\n"
+"\n"
+"                    Retorna:\n"
+"                        JsonResponse: Uma resposta HTTP contendo os dados de cálculo serializados recuperados."
 
 #: .\core\abstract\apps.py:9
 msgid "Abstract User"
-msgstr ""
+msgstr "Usuário Abstrato"
 
 #: .\core\abstract\models.py:18
 msgid "Creation date"
-msgstr ""
+msgstr "Data de criação"
 
 #: .\core\abstract\models.py:20
 msgid "Creation username"
-msgstr ""
+msgstr "Nome de usuário de criação"
 
 #: .\core\abstract\models.py:21
 msgid "Update username"
-msgstr ""
+msgstr "Atualizar nome de usuário"
 
 #: .\core\abstract\models.py:84
 msgid "Field changed"
-msgstr ""
+msgstr "Campo alterado"
 
 #: .\core\abstract\models.py:85
 msgid "Current value"
-msgstr ""
+msgstr "Valor atual"
 
 #: .\core\abstract\models.py:86
 msgid "Previous value "
-msgstr ""
+msgstr "Valor anterior"
 
 #: .\core\abstract\models.py:95
 msgid ""
 "Field alterado: {} | Valor anterior: {} | Valor atual: {} | User: {} | Hora "
 "de criação: {}"
 msgstr ""
+"Campo alterado: {} | Valor anterior: {} | Valor actual: {} | Utilizador: {} "
+"| Hora de criação: {}"
 
 #: .\core\abstract\schemas.py:39
 msgid "The archive_json field must be in json format"
+msgstr "O campo archive_json deve estar no formato json"
+
+#: .\core\abstract\views.py:145
+msgid "Field in invalid format. It must be in the format{}"
+msgstr "Campo em formato inválido. "
+
+#: .\core\drfmsal\views.py:26
+msgid ""
+"Sign Status shows details of the user who made the request, such as `authorized`, `authenticated`,\n"
+"         `profile` and others.\n"
+"        "
 msgstr ""
+"Sign Status mostra detalhes do usuário que fez a solicitação, como `autorizado`, `autenticado`,\n"
+"         “perfil” e outros."
 
 #: .\core\dttuser\admin.py:26
 msgid "Personal info"
-msgstr ""
+msgstr "Informações pessoais"
 
 #: .\core\dttuser\admin.py:27
 msgid "Permissions"
-msgstr ""
+msgstr "Permissões"
 
 #: .\core\dttuser\admin.py:30
 msgid "Important dates"
+msgstr "Datas importantes"
+
+#: .\core\dttuser\api\views.py:16
+msgid ""
+"The `User` class represents a user on the system, has common properties such as `username` \n"
+"            `email`, `full_name`.\n"
+"            "
 msgstr ""
+"A classe `User` representa um utilizador no sistema, tem propriedades comuns como `username` \n"
+"            `email`, `full_name`."
+
+#: .\core\dttuser\api\views.py:19
+msgid ""
+"Get the list of all users active. Can filter a user by `username`, `email`, `first_name` or \n"
+"        `last_name`.\n"
+"        "
+msgstr ""
+"Obtenha a lista de todos os utilizadores ativos. Pode filtrar um utilizador por `username`, `email`, `first_name` ou \n"
+"        `last_name`."
+
+#: .\core\dttuser\api\views.py:30 .\core\dttuser\views.py:63
+msgid "Username"
+msgstr "Nome de usuário"
+
+#: .\core\dttuser\api\views.py:38
+msgid "Email"
+msgstr "E-mail"
+
+#: .\core\dttuser\api\views.py:46
+msgid "First Name"
+msgstr "Nome"
+
+#: .\core\dttuser\api\views.py:54
+msgid "Lastname"
+msgstr "Sobrenome"
+
+#: .\core\dttuser\api\views.py:62 .\core\dttuser\views.py:71
+msgid "Authorized Users (True/False)"
+msgstr "Usuários Autorizados (Verdadeiro/Falso)"
 
 #: .\core\dttuser\apps.py:9
 msgid "DTTUser"
-msgstr ""
+msgstr "DTTUser"
 
 #: .\core\dttuser\models.py:16
 msgid "Partner"
-msgstr ""
+msgstr "Sócio"
 
 #: .\core\dttuser\models.py:17
 msgid "Manager"
-msgstr ""
+msgstr "Gerente"
 
 #: .\core\dttuser\models.py:18
 msgid "Director"
-msgstr ""
+msgstr "Diretor"
 
 #: .\core\dttuser\models.py:19
 msgid "Analyst"
-msgstr ""
+msgstr "Analista"
 
 #: .\core\dttuser\models.py:20
 msgid "Senior advisor"
-msgstr ""
+msgstr "Conselheiro Sênior"
 
 #: .\core\dttuser\models.py:24
 msgid "Active"
-msgstr ""
+msgstr "Ativo"
 
 #: .\core\dttuser\models.py:25
 msgid "Inactive"
-msgstr ""
+msgstr "Inativo"
 
 #: .\core\dttuser\models.py:26
 msgid "Pending"
-msgstr ""
+msgstr "Pendente"
 
 #: .\core\dttuser\models.py:27
 msgid "Rejected"
-msgstr ""
+msgstr "Rejeitado"
 
 #: .\core\dttuser\models.py:28
 msgid "Vacation"
-msgstr ""
+msgstr "Férias"
 
 #: .\core\dttuser\models.py:62
 msgid "name"
-msgstr ""
+msgstr "nome"
 
 #: .\core\dttuser\models.py:65
 msgid "permissions"
-msgstr ""
+msgstr "permissões"
 
 #: .\core\dttuser\models.py:85 .\projects\project_user\models.py:16
 msgid "groups"
-msgstr ""
+msgstr "grupos"
 
 #: .\core\dttuser\models.py:88 .\projects\project_user\models.py:19
 msgid ""
 "The groups this user belongs to. A user will get all permissions granted to "
 "each of their groups."
 msgstr ""
+"Os grupos a que este utilizador pertence. Um utilizador receberá todas as "
+"permissões concedidas a cada um dos seus grupos."
 
 #: .\core\dttuser\models.py:96
 msgid "subgroups"
-msgstr ""
+msgstr "subgrupos"
 
 #: .\core\dttuser\models.py:99
 msgid ""
 "The subgroups this user belongs to. A user will get all permissions granted "
 "to each of their subgroups."
 msgstr ""
+"Os subgrupos aos quais este utilizador pertence. Um utilizador receberá "
+"todas as permissões concedidas a cada um dos seus subgrupos."
 
 #: .\core\dttuser\models.py:107 .\projects\project_user\models.py:25
 msgid "user permissions"
-msgstr ""
+msgstr "permissões de usuário"
 
 #: .\core\dttuser\models.py:109 .\projects\project_user\models.py:27
 msgid "Specific permissions for this user."
-msgstr ""
+msgstr "Permissões específicas para este usuário."
 
 #: .\core\dttuser\models.py:210
 msgid "username"
-msgstr ""
+msgstr "nome de usuário"
 
 #: .\core\dttuser\models.py:213
 msgid "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
-msgstr ""
+msgstr "Obrigatório. "
 
 #: .\core\dttuser\models.py:215
 msgid "A user with that username already exists."
-msgstr ""
+msgstr "Já existe um usuário com esse nome de usuário."
 
 #: .\core\dttuser\models.py:218
 msgid "role"
-msgstr ""
+msgstr "Cargo"
 
 #: .\core\dttuser\models.py:220
 msgid "first name"
-msgstr ""
+msgstr "primeiro nome"
 
 #: .\core\dttuser\models.py:221
 msgid "last name"
-msgstr ""
+msgstr "sobrenome"
 
 #: .\core\dttuser\models.py:222
 msgid "email address"
-msgstr ""
+msgstr "endereço de e-mail"
 
 #: .\core\dttuser\models.py:223
 msgid "user picture"
-msgstr ""
+msgstr "imagem do usuário"
 
 #: .\core\dttuser\models.py:225
 msgid "staff status"
-msgstr ""
+msgstr "status da equipe"
 
 #: .\core\dttuser\models.py:227
 msgid "Designates whether the user can log into this admin site."
-msgstr ""
+msgstr "Designa se o usuário pode fazer login neste site de administração."
 
 #: .\core\dttuser\models.py:230
 msgid "active"
-msgstr ""
+msgstr "ativo"
 
 #: .\core\dttuser\models.py:233
 msgid ""
 "Designates whether this user should be treated as active. Unselect this "
 "instead of deleting accounts."
 msgstr ""
+"Designa se este usuário deve ser tratado como ativo. Desmarque isto ao invés"
+" de excluir contas."
 
 #: .\core\dttuser\models.py:237
 msgid "date joined"
-msgstr ""
+msgstr "data de ingresso"
 
 #: .\core\dttuser\models.py:298
 msgid "Updating the value of id isn't allowed"
-msgstr ""
+msgstr "Atualizar o valor do id não é permitido"
 
-#: .\core\dttuser\schemas.py:116
+#: .\core\dttuser\schemas.py:114
 msgid "Subgroup not found"
-msgstr ""
+msgstr "Subgrupo não encontrado"
 
-#: .\core\dttuser\schemas.py:191
+#: .\core\dttuser\schemas.py:189
 msgid "Passwords do not match"
-msgstr ""
+msgstr "As senhas não coincidem"
 
-#: .\core\dttuser\views.py:26 .\core\dttuser\views.py:236
+#: .\core\dttuser\views.py:26
 msgid ""
-"The `User` class represents a user on the system, has common properties such "
-"as `username` \n"
-"        `email`, `password`, as well as additional information such as "
-"`role` , `status` , `first_name`, `last_name` \n"
-"        `userpicture ` and `is_active` (if the user is active) He can also "
-"be a staff member and have access to the \n"
-"        admin site, as controlled by the `is_staff` field, some permission "
-"fields that can be used to control access \n"
+"The `User` class represents a user on the system, has common properties such as `username` \n"
+"        `email` as well as additional information such as `role`, `status`, `first_name`, `last_name` \n"
+"        `userpicture` and `is_active` (if the user is active) He can also be a staff member and have access to the \n"
+"        admin site, as controlled by the `is_staff` field, some permission fields that can be used to control access \n"
 "        to resources in the system.\n"
-"        The status(`Active`, `Inactive`, `Pending`, `Rejected`, `Vacation`) "
-"controls whether the user is active or \n"
+"        The status(`Active`, `Inactive`, `Pending`, `Rejected`, `Vacation`) controls whether the user is active or \n"
 "        inactive.\n"
 "        "
-msgstr ""
+msgstr "A classe `User` representa um usuário no sistema, possui propriedades comuns como `username` \n"
+" `email`, bem como informações adicionais, como `role`, `status`, `first_name`, `last_name` \n"
+" `userpicture` e `is_active` (se o usuário estiver ativo) Ele também pode ser membro da equipe e ter acesso ao \n"
+" site admin, controlado pelo campo `is_staff`, alguns campos de permissão que podem ser usados para controlar o acesso \n"
+" para recursos no sistema.\n"
+" O status(`Ativo`, `Inativo`, `Pendente`, `Rejeitado`, `Férias`) controla se o usuário está ativo ou \n"
+" inativo.\n"
+" "
 
-#: .\core\dttuser\views.py:48 .\core\dttuser\views.py:83
-#: .\core\dttuser\views.py:104 .\core\dttuser\views.py:142
-msgid "Users"
-msgstr ""
-
-#: .\core\dttuser\views.py:56 .\rates\views.py:120 .\recovering\views.py:32
+#: .\core\dttuser\views.py:55 .\rates\views.py:118 .\recovering\views.py:31
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
-#: .\core\dttuser\views.py:64
-msgid "Username"
-msgstr ""
-
-#: .\core\dttuser\views.py:72
-msgid "Authorized Users (True/False)"
-msgstr ""
-
-#: .\core\dttuser\views.py:123 .\core\dttuser\views.py:159
+#: .\core\dttuser\views.py:123 .\core\dttuser\views.py:160
 msgid "Email {}, not found"
-msgstr ""
+msgstr "E-mail {}, não encontrado"
 
 #: .\core\dttuser\views.py:151
 msgid "DTT sending email not configured"
-msgstr ""
-
-#: .\core\dttuser\views.py:161
-msgid "Release of Use - {}"
-msgstr ""
+msgstr "DTT e-mail não configurado"
 
 #: .\core\dttuser\views.py:162
+msgid "Release of Use - {}"
+msgstr "Liberação de Uso - {}"
+
+#: .\core\dttuser\views.py:163
 msgid ""
 "This email is automatically sent by the system to request the release of "
 "user {} to system. To release access, please enter the administration panel "
 "and register it at system."
 msgstr ""
+"Este e-mail é enviado automaticamente pelo sistema para solicitar a "
+"liberação do usuário {} para o sistema. Para liberar o acesso, entre no "
+"painel de administração e registre-o no sistema."
 
-#: .\core\dttuser\views.py:180
+#: .\core\dttuser\views.py:181
 msgid ""
-"The `Group` class represents a group of users on the system. Contains common "
-"properties for \n"
-"        managing user permissions and relationships with the group. It "
-"contains a `name` property to identify the group \n"
-"        and also a  `permissions` field to define the permissions assigned "
-"to the group. Users can be added to a group,\n"
-"             which allows access to users belonging to a specific group. The "
-"available groups are: `Financial Manager`,\n"
-"              `Calculation Manager`, `Legal Manager`, `Financial "
-"Consultant`, `Calculation Consultant` and \n"
+"The `Group` class represents a group of users on the system. Contains common properties for \n"
+"        managing user permissions and relationships with the group. It contains a `name` property to identify the group \n"
+"        and also a  `permissions` field to define the permissions assigned to the group. Users can be added to a group,\n"
+"             which allows access to users belonging to a specific group. The available groups are: `Financial Manager`,\n"
+"              `Calculation Manager`, `Legal Manager`, `Financial Consultant`, `Calculation Consultant` and \n"
 "              `Legal Consultant`.\n"
 "            "
 msgstr ""
+"A classe `Group` representa um grupo de usuários no sistema. Contém propriedades comuns para \n"
+" gerenciando permissões de usuários e relacionamentos com o grupo. Contém uma propriedade `name` para identificar o grupo \n"
+" e também um campo `permissions` para definir as permissões atribuídas ao grupo. Os usuários podem ser adicionados a um grupo,\n"
+" que permite acesso a usuários pertencentes a um grupo específico. Os grupos disponíveis são: `Gestor Financeiro`,\n"
+" `Gerente de Cálculo`, `Gerente Jurídico`, `Consultor Financeiro`, `Consultor de Cálculo` e \n"
+" `Consultor Jurídico`.\n"
+" "
 
-#: .\core\dttuser\views.py:187
+#: .\core\dttuser\views.py:188
 msgid ""
 "The Group contains a name and a list of permissions. Groups define what \n"
 "        permissions the user has and what he can do within the system.\n"
 "        Returns a list of groups.\n"
 "        "
 msgstr ""
-
-#: .\core\dttuser\views.py:199
-msgid "Groups"
-msgstr ""
+"O Grupo contém um nome e uma lista de permissões. Os grupos definem quais \n"
+"        permissões o usuário tem e o que ele pode fazer dentro do sistema.\n"
+"        Retorna uma lista de grupos."
 
 #: .\core\dttuser\views.py:212
 msgid ""
-"The `Subgroup` class represents a group of users on the system. Contains "
-"common properties for \n"
-"        managing user permissions and relationships with the group. It "
-"contains a `name` property to identify the group \n"
-"        and also a  `permissions` field to define the permissions assigned "
-"to the group. Users can be added to a group,\n"
-"             which allows access to users belonging to a specific group. The "
-"available groups are: `Financial Manager`,\n"
-"              `Calculation Manager`, `Legal Manager`, `Financial "
-"Consultant`, `Calculation Consultant` and \n"
+"The `Subgroup` class represents a group of users on the system. Contains common properties for \n"
+"        managing user permissions and relationships with the group. It contains a `name` property to identify the group \n"
+"        and also a  `permissions` field to define the permissions assigned to the group. Users can be added to a group,\n"
+"             which allows access to users belonging to a specific group. The available groups are: `Financial Manager`,\n"
+"              `Calculation Manager`, `Legal Manager`, `Financial Consultant`, `Calculation Consultant` and \n"
 "              `Legal Consultant`.\n"
 "            "
 msgstr ""
+"A classe `SubGrupo` representa um grupo de usuários no sistema. Contém propriedades comuns para \n"
+" gerenciando permissões de usuários e relacionamentos com o grupo. Contém uma propriedade `name` para identificar o grupo \n"
+" e também um campo `permissions` para definir as permissões atribuídas ao grupo. Os usuários podem ser adicionados a um grupo,\n"
+" que permite acesso a usuários pertencentes a um grupo específico. Os grupos disponíveis são: `Gestor Financeiro`,\n"
+" `Gerente de Cálculo`, `Gerente Jurídico`, `Consultor Financeiro`, `Consultor de Cálculo` e \n"
+" `Consultor Jurídico`.\n"
+" "
 
 #: .\core\dttuser\views.py:219
 msgid ""
 "The Subgroup contains a name and a list of permissions. Groups define what \n"
-"            permissions the user has and what he can do within the system."
-"Returns a list of groups.\n"
+"            permissions the user has and what he can do within the system.Returns a list of groups.\n"
 "            "
 msgstr ""
+"O Subgrupo contém um nome e uma lista de permissões. Os grupos definem quais \n"
+"            permissões o usuário tem e o que ele pode fazer dentro do sistema. Retorna uma lista de grupos."
 
-#: .\core\dttuser\views.py:229
-msgid "Subgroups"
-msgstr ""
-
-#: .\core\dttuser\views.py:244
+#: .\core\dttuser\views.py:235
 msgid ""
-"Get the list of all users. Include user fields like name, userpicture, "
-"permissions list, etc.\n"
-"        Can filter a user by username, name, or if it is active.\n"
+"The `User` class represents a user on the system, has common properties such as `username` \n"
+"        `email`, `password`, as well as additional information such as `role` , `status` , `first_name`, `last_name` \n"
+"        `userpicture ` and `is_active` (if the user is active) He can also be a staff member and have access to the \n"
+"        admin site, as controlled by the `is_staff` field, some permission fields that can be used to control access \n"
+"        to resources in the system.\n"
+"        The status(`Active`, `Inactive`, `Pending`, `Rejected`, `Vacation`) controls whether the user is active or \n"
+"        inactive.\n"
+"        "
+msgstr "A classe `User` representa um usuário no sistema, possui propriedades comuns como `username` \n"
+" `email`, bem como informações adicionais, como `role`, `status`, `first_name`, `last_name` \n"
+" `userpicture` e `is_active` (se o usuário estiver ativo) Ele também pode ser membro da equipe e ter acesso ao \n"
+" site admin, controlado pelo campo `is_staff`, alguns campos de permissão que podem ser usados para controlar o acesso \n"
+" para recursos no sistema.\n"
+" O status(`Ativo`, `Inativo`, `Pendente`, `Rejeitado`, `Férias`) controla se o usuário está ativo ou \n"
+" inativo.\n"
+" "
+
+#: .\core\dttuser\views.py:243
+msgid ""
+"Get the list of all users. Include user fields like  `name`, `userpicture`, `permissions list`, etc.\n"
+"        Can filter a user by `username`, `email`, `first_name`, `last_name` or `is_active`.\n"
 "        "
 msgstr ""
+"Obtenha a lista de todos os utilizadores. Inclua campos de utilizador como  `name`, `userpicture`, `permissions list`, etc.\n"
+"        Pode filtrar um utilizador por `username`, `email`, `first_name`, `last_name` ou `is_active`."
 
 #: .\core\entity\apps.py:9
 msgid "Entity"
-msgstr ""
+msgstr "Entidade"
 
 #: .\core\entity\schemas.py:93
 msgid "Invalid CPF/CNPJ"
-msgstr ""
+msgstr "CPF/CNPJ inválido"
 
 #: .\core\permission\apps.py:9
 msgid "Permission"
-msgstr ""
+msgstr "Permissão"
 
 #: .\core\permission\views.py:80
 msgid "Can Request failed Calculation"
-msgstr ""
+msgstr "Pode Solicitar Falha no Cálculo"
 
 #: .\core\permission\views.py:83
 msgid "Can Reviewer Calculation"
-msgstr ""
+msgstr "Cálculo do Revisor de Can"
 
 #: .\core\permission\views.py:86
 msgid "Can Approve Requested Calculation"
-msgstr ""
+msgstr "Pode Aprovar o Cálculo Solicitado"
 
 #: .\core\permission\views.py:87
 msgid "Can Approve Calculated Calculation"
-msgstr ""
+msgstr "Pode Aprovar Cálculo Calculado"
 
 #: .\core\permission\views.py:90
 msgid "Can Special Approve Requested Calculation"
-msgstr ""
+msgstr "Pode Aprovar o Cálculo Solicitado de forma Especial"
 
 #: .\core\permission\views.py:91
 msgid "Can Special Approve Calculated Calculation"
-msgstr ""
+msgstr "Pode Aprovar Cálculo Calculado de forma Especial"
 
 #: .\core\permission\views.py:337
 msgid "Unable to change status from {} to {}"
-msgstr ""
+msgstr "Não foi possível alterar o status de {} para {}"
 
 #: .\core\permission\views.py:353
 msgid "You do not have permission. Contact admin"
-msgstr ""
+msgstr "Você não tem permissão. Contate o adminstrador"
 
 #: .\core\permission\views.py:364
 msgid "Need to add \"perms: list\" attribute to use CheckPermissions class"
 msgstr ""
+"É necessário adicionar o atributo \"perms: list\" para usar a classe "
+"CheckPermissions"
 
-#: .\creditors\apps.py:9 .\creditors\views.py:31 .\creditors\views.py:52
+#: .\creditors\apps.py:9
 msgid "Creditor"
-msgstr ""
+msgstr "Credor"
 
 #: .\creditors\classes\models.py:7
 msgid "Classe I - Working"
-msgstr ""
+msgstr "Classe I - Trabalhista"
 
 #: .\creditors\classes\models.py:8
 msgid "Classe II - Real Guarantee"
-msgstr ""
+msgstr "Classe II - Garantia Real"
 
 #: .\creditors\classes\models.py:9
 msgid "Classe III - Unsecured"
-msgstr ""
+msgstr "Classe III - Quirografário"
 
 #: .\creditors\classes\models.py:10
 msgid "Classe IV - ME/EPP"
-msgstr ""
+msgstr "Classe IV - ME/EPP"
 
-#: .\creditors\classes\models.py:15 .\creditors\classes\views.py:24
+#: .\creditors\classes\models.py:15 .\creditors\classes\views.py:23
 msgid "Class"
-msgstr ""
-
-#: .\creditors\classes\views.py:16
-msgid "Creditors - Classes"
-msgstr ""
+msgstr "Classe"
 
 #: .\creditors\notice\apps.py:9
 msgid "Notice"
-msgstr ""
+msgstr "Edital"
 
-#: .\creditors\notice\views.py:19 .\creditors\notice\views.py:48
-#: .\creditors\notice\views.py:90 .\creditors\notice\views.py:119
-msgid "Creditors - Notice"
-msgstr ""
-
-#: .\creditors\notice\views.py:24
+#: .\creditors\notice\views.py:23
 msgid ""
-"NoticeAJ gathers information about the creditor's process. It contains data "
-"relevant to the \n"
-"        process, such as what was requested by the creditor, how much was "
-"calculated due, the dates and amounts."
+"NoticeAJ gathers information about the creditor's process. It contains data relevant to the \n"
+"        process, such as what was requested by the creditor, how much was calculated due, the dates and amounts."
 msgstr ""
+"NoticeAJ reúne informações sobre o processo do credor. Contém dados relevantes para o \n"
+"        processo, como o que foi solicitado pelo credor, quanto foi apurado devido, as datas e valores."
 
-#: .\creditors\notice\views.py:26 .\creditors\notice\views.py:55
-msgid "Get the entire list of notices, containing the classes and values"
-msgstr ""
-
-#: .\creditors\notice\views.py:53
+#: .\creditors\notice\views.py:25 .\creditors\notice\views.py:54
 msgid ""
-"NoticeAJ gathers information about the creditor's process. It contains data "
-"relevant to the \n"
-"            process, such as what was requested by the creditor, how much "
-"was calculated due, the dates and amounts"
-msgstr ""
+"Get the entire list of notices, containing the classes and values.\n"
+"        "
+msgstr "Obtenha toda a lista de avisos, contendo as classes e valores."
 
-#: .\creditors\notice\views.py:95
+#: .\creditors\notice\views.py:52
 msgid ""
-"NoticeRecovering gathers information about the creditor's process. It "
-"contains data relevant to the \n"
-"            process, such as what was requested by the creditor, how much "
-"was calculated due, the dates and amounts"
+"NoticeAJ gathers information about the creditor's process. It contains data relevant to the \n"
+"            process, such as what was requested by the creditor, how much was calculated due, the dates and amounts"
 msgstr ""
+"NoticeAJ reúne informações sobre o processo do credor. Contém dados relevantes para o \n"
+"            processo, como o que foi solicitado pelo credor, quanto foi apurado devido, as datas e valores"
 
-#: .\creditors\notice\views.py:124
+#: .\creditors\notice\views.py:94
 msgid ""
-"NoticeAJ gathers information about the creditor's process. It contains data "
-"relevant to the \n"
-"                process, such as what was requested by the creditor, how "
-"much was calculated due, the dates and \n"
-"                amounts"
+"NoticeRecovering gathers information about the creditor's process. It contains data relevant to the \n"
+"            process, such as what was requested by the creditor, how much was calculated due, the dates and amounts"
 msgstr ""
+"NoticeRecovering reúne informações sobre o processo do credor. Contém dados relevantes para o \n"
+"            processo, como o que foi solicitado pelo credor, quanto foi apurado devido, as datas e valores"
+
+#: .\creditors\notice\views.py:122
+msgid ""
+"NoticeAJ gathers information about the creditor's process. It contains data relevant to the \n"
+"                process, such as what was requested by the creditor, how much was calculated due, the dates and \n"
+"                amounts.\n"
+"                "
+msgstr ""
+"NoticeAJ reúne informações sobre o processo do credor. Contém dados relevantes para o \n"
+"                processo, como o que foi solicitado pelo credor, quanto foi apurado devido, as datas e \n"
+"                valores."
 
 #: .\creditors\schemas.py:52
 msgid "Creditor already registered in this recovering"
-msgstr ""
+msgstr "Credor já cadastrado nesta recuperação"
 
-#: .\projects\apps.py:9 .\projects\views.py:28
+#: .\projects\apps.py:9
 msgid "Project"
-msgstr ""
+msgstr "Projeto"
 
 #: .\projects\court\apps.py:9
 msgid "Court"
-msgstr ""
+msgstr "Tribunal"
 
 #: .\projects\court\schemas.py:18
 msgid "Court already registered"
-msgstr ""
+msgstr "Tribunal já registrado"
 
-#: .\projects\court\views.py:16
-msgid "Project - Court"
-msgstr ""
-
-#: .\projects\court\views.py:19
+#: .\projects\court\views.py:18
 msgid ""
-"The `Court` represents a court (jurisdictional body) of Brazilian justice in "
-"the project. \n"
-"        It contains properties such as `description` (name of the court) It "
-"is used as a reference model to establish \n"
-"        the relationship between the `Project` class and the court that has "
-"jurisdiction over the case."
+"The `Court` represents a court (jurisdictional body) of Brazilian justice in the project. \n"
+"        It contains properties such as `description` (name of the court) It is used as a reference model to establish \n"
+"        the relationship between the `Project` class and the court that has jurisdiction over the case."
 msgstr ""
+"O `Tribunal` representa um tribunal (órgão jurisdicional) da justiça brasileira no projeto. \n"
+"        Ele contém propriedades como `descrição` (nome do tribunal) É usado como um modelo de referência para estabelecer \n"
+"        a relação entre a classe `Projeto` e o tribunal que tem jurisdição sobre o caso."
+
+#: .\projects\court\views.py:21
+msgid "Get the list of all courts, being able to filter by name."
+msgstr "Obter a lista de todos os tribunais, podendo filtrar por nome."
 
 #: .\projects\court\views.py:22
-msgid "Get the list of all courts, being able to filter by name."
-msgstr ""
-
-#: .\projects\court\views.py:23
 msgid ""
-"Create a new court, if it does not exist in the base, if it exists, an "
-"exception will be generated.\n"
+"Create a new court, if it does not exist in the base, if it exists, an exception will be generated.\n"
 "        Returns court details if successful."
 msgstr ""
+"Criar um novo tribunal, se não existir na base, se existir, será gerada uma exceção.\n"
+"        Retorna detalhes do tribunal se for bem-sucedido."
 
-#: .\projects\court\views.py:33
+#: .\projects\court\views.py:32
 msgid "Court's name"
-msgstr ""
+msgstr "Nome do tribunal"
 
-#: .\projects\engagement\models.py:27 .\projects\engagement\views.py:26
+#: .\projects\engagement\models.py:27 .\projects\engagement\views.py:25
 msgid "Engagement number"
-msgstr ""
+msgstr "Número de noivado"
 
 #: .\projects\engagement\schemas.py:48
 msgid "The field engagement must be in list format"
-msgstr ""
+msgstr "O engagement de campo deve estar em formato de lista"
 
 #: .\projects\engagement\schemas.py:51
 msgid "Need to add at least one engagement"
-msgstr ""
+msgstr "Precisa adicionar pelo menos um engagement"
 
 #: .\projects\engagement\schemas.py:57
 msgid "Engagement number {} is already registered"
-msgstr ""
+msgstr "Número de engagement {} já está registrado"
 
-#: .\projects\engagement\views.py:18
-msgid "Project - Engagement"
-msgstr ""
-
-#: .\projects\engagement\views.py:32
+#: .\projects\engagement\views.py:31
 msgid ""
-"The engagement is the unique control number, which references the client/"
-"project in the DTT"
+"The engagement is the unique control number, which references the client/project in the DTT.\n"
+"        "
 msgstr ""
+"O engagement é o número de controle exclusivo, que faz referência ao "
+"cliente/projeto na TDT."
 
 #: .\projects\engagement\views.py:33
-msgid "Get the list of all engagements, being able to filter by number"
-msgstr ""
+msgid "Get the list of all engagements, being able to filter by number."
+msgstr "Obter a lista de todos os engagements, podendo filtrar por número."
 
 #: .\projects\judge\apps.py:9
 msgid "Judge"
-msgstr ""
+msgstr "Juiz"
 
 #: .\projects\judge\schemas.py:18
 msgid "Judge already registered"
-msgstr ""
+msgstr "Juiz já registrado"
 
-#: .\projects\judge\views.py:16
-msgid "Project - Judge"
-msgstr ""
-
-#: .\projects\judge\views.py:19
+#: .\projects\judge\views.py:18
 msgid ""
-"The `Judge` represents a judge (jurisdictional body) of Brazilian justice in "
-"the project. \n"
-"            It contains properties such as `description` (name of the judge) "
-"It is used as a reference model to \n"
-"            establish the relationship between the `Project` class and the "
-"judge that has jurisdiction over the case.\n"
+"The `Judge` represents a judge (jurisdictional body) of Brazilian justice in the project. \n"
+"            It contains properties such as `description` (name of the judge) It is used as a reference model to \n"
+"            establish the relationship between the `Project` class and the judge that has jurisdiction over the case.\n"
 "            "
 msgstr ""
+"O `Juiz` representa um juiz (órgão jurisdicional) da justiça brasileira no projeto. \n"
+"            Ele contém propriedades como `description` (nome do juiz) É usado como um modelo de referência para \n"
+"            estabelecer a relação entre a classe `Projeto` e o juiz que tem jurisdição sobre o caso."
+
+#: .\projects\judge\views.py:23
+msgid "Get the list of all judges, being able to filter by name."
+msgstr "Obter a lista de todos os juízes, podendo filtrar por nome."
 
 #: .\projects\judge\views.py:24
-msgid "Get the list of all judges, being able to filter by name."
-msgstr ""
-
-#: .\projects\judge\views.py:25
 msgid ""
-"Create a new judge, if it does not exist in the base, if it exists, an "
-"exception will be generated.\n"
+"Create a new judge, if it does not exist in the base, if it exists, an exception will be generated.\n"
 "            Returns judge details if successful."
 msgstr ""
+"Criar um novo juiz, caso não exista na base, caso exista, será gerada uma exceção.\n"
+"            Retorna detalhes do juiz se for bem-sucedido."
 
-#: .\projects\judge\views.py:35
+#: .\projects\judge\views.py:34
 msgid "Judge's name"
-msgstr ""
+msgstr "Nome do Juiz"
 
 #: .\projects\lawyer\apps.py:9
 msgid "Lawyer"
-msgstr ""
+msgstr "Advogado"
 
 #: .\projects\lawyer\schemas.py:18
 msgid "Lawyer already registered"
-msgstr ""
+msgstr "Advogado já registrado"
 
-#: .\projects\lawyer\views.py:16
-msgid "Project - Lawyer"
-msgstr ""
-
-#: .\projects\lawyer\views.py:19
+#: .\projects\lawyer\views.py:18
 msgid ""
-"The `Lawyer` represents a lawyer (jurisdictional body) of Brazilian justice "
-"in the project. \n"
-"                It contains properties such as `description` (name of the "
-"lawyer) It is used as a reference model to \n"
-"                establish the relationship between the `Project` class and "
-"the lawyer that has jurisdiction over the \n"
+"The `Lawyer` represents a lawyer (jurisdictional body) of Brazilian justice in the project. \n"
+"                It contains properties such as `description` (name of the lawyer) It is used as a reference model to \n"
+"                establish the relationship between the `Project` class and the lawyer that has jurisdiction over the \n"
 "                case.\n"
 "                "
 msgstr ""
+"O `Advogado` representa um advogado (órgão jurisdicional) da justiça brasileira no projeto. \n"
+"                Ele contém propriedades como `descrição` (nome do advogado) É usado como um modelo de referência para \n"
+"                estabelecer a relação entre a classe `Projeto` e o advogado que tem jurisdição sobre o \n"
+"                caso."
 
-#: .\projects\lawyer\views.py:24
+#: .\projects\lawyer\views.py:23
 msgid ""
 "Get the list of all lawyers, being able to filter by name.\n"
 "        "
-msgstr ""
+msgstr "Obtenha a lista de todos os advogados, podendo filtrar pelo nome."
 
-#: .\projects\lawyer\views.py:26
+#: .\projects\lawyer\views.py:25
 msgid ""
-"Create a new lawyer, if it does not exist in the base, if it exists, an "
-"exception will be generated.\n"
+"Create a new lawyer, if it does not exist in the base, if it exists, an exception will be generated.\n"
 "                Returns lawyer details if successful.\n"
 "                "
 msgstr ""
+"Criar um novo advogado, caso não exista na base, caso exista, será gerada uma exceção.\n"
+"                Retorna detalhes do advogado se for bem-sucedido."
 
-#: .\projects\lawyer\views.py:37
+#: .\projects\lawyer\views.py:36
 msgid "Lawyer's name"
-msgstr ""
+msgstr "Nome do advogado"
 
 #: .\projects\models.py:13
 msgid "In preparation"
-msgstr ""
+msgstr "Em preparação"
 
 #: .\projects\models.py:15
 msgid "In progress"
-msgstr ""
+msgstr "Em andamento"
 
 #: .\projects\models.py:16 .\recovering\models.py:16
 msgid "Canceled"
-msgstr ""
+msgstr "Cancelado"
 
-#: .\projects\models.py:34 .\projects\views.py:54
+#: .\projects\models.py:34 .\projects\views.py:53
 msgid "Process number"
-msgstr ""
+msgstr "Número do processo"
 
 #: .\projects\models.py:42
 msgid "Competence"
-msgstr ""
+msgstr "Competência"
 
 #: .\projects\project_user\apps.py:9
 msgid "Project User"
-msgstr ""
+msgstr "Usuário do Projeto"
 
-#: .\projects\project_user\views.py:22
-msgid "Project - ProjectUser"
-msgstr ""
-
-#: .\projects\project_user\views.py:24
+#: .\projects\project_user\views.py:23
 msgid ""
-"The Project User defines the roles that he can have within a project, being "
-"able to be executor, \n"
-"        reviewer, approver or special approver"
+"The Project User defines the roles that he can have within a project, being able to be executor, \n"
+"        reviewer, approver or special approver.\n"
+"        "
 msgstr ""
+"O Project User define as funções que ele pode ter dentro de um projeto, podendo ser executor, \n"
+"        revisor, aprovador ou aprovador especial."
 
 #: .\projects\region\apps.py:9
 msgid "Region"
-msgstr ""
+msgstr "Região"
 
-#: .\projects\region\views.py:16
-msgid "Project - Region"
-msgstr ""
-
-#: .\projects\region\views.py:19
+#: .\projects\region\views.py:18
 msgid ""
-"The `Region` represents a region (jurisdictional body) of Brazilian justice "
-"in the project. \n"
-"                    It contains properties such as `description` (name of "
-"the region) It is used as a reference model to \n"
-"                    establish the relationship between the `Project` class "
-"and the region that has jurisdiction over the \n"
+"The `Region` represents a region (jurisdictional body) of Brazilian justice in the project. \n"
+"                    It contains properties such as `description` (name of the region) It is used as a reference model to \n"
+"                    establish the relationship between the `Project` class and the region that has jurisdiction over the \n"
 "                    case.\n"
 "                    "
 msgstr ""
+"A `Região` representa uma região (órgão jurisdicional) da justiça brasileira no projeto. \n"
+"                    Ele contém propriedades como `description` (nome da região) É usado como um modelo de referência para \n"
+"                    estabelecer a relação entre a classe `Projeto` e a região que tem jurisdição sobre o \n"
+"                    caso."
 
-#: .\projects\region\views.py:24
+#: .\projects\region\views.py:23
 msgid ""
 "Get the list of all regions, being able to filter by name.\n"
 "        "
-msgstr ""
+msgstr "Obtenha a lista de todas as regiões, podendo filtrar por nome."
 
-#: .\projects\region\views.py:26
+#: .\projects\region\views.py:25
 msgid ""
-"Create a new region, if it does not exist in the base, if it exists, an "
-"exception will be \n"
+"Create a new region, if it does not exist in the base, if it exists, an exception will be \n"
 "        generated.\n"
 "            Returns region details if successful.\n"
 "            "
 msgstr ""
+"Criar uma nova região, se ela não existir na base, se existir, uma exceção será \n"
+"        gerado.\n"
+"            Retorna detalhes da região se for bem-sucedido."
 
-#: .\projects\region\views.py:38
+#: .\projects\region\views.py:37
 msgid "Region's name"
-msgstr ""
+msgstr "Nome da região"
 
 #: .\projects\schemas.py:103 .\projects\schemas.py:113
 #: .\projects\schemas.py:123
 msgid "Must select at least one user"
-msgstr ""
+msgstr "Deve selecionar pelo menos um usuário"
 
 #: .\projects\schemas.py:106
 msgid "The executors field must be in list format"
-msgstr ""
+msgstr "O campo executores deve estar em formato de lista"
 
 #: .\projects\schemas.py:116
 msgid "The approvers field must be in list format"
-msgstr ""
+msgstr "O campo de aprovadores deve estar em formato de lista"
 
 #: .\projects\schemas.py:126
 msgid "The reviewers field must be in list format"
-msgstr ""
+msgstr "O campo de revisores deve estar em formato de lista"
 
-#: .\projects\views.py:31
+#: .\projects\views.py:30
 msgid ""
-"The `Project` class represents a large project/engagement in a legal or "
-"administrative process. It \n"
-"        contains properties like `project_start` and `project_end` to "
-"specify the start and end date of the project, \n"
-"        as well as a `status` field with choices specified by the "
-"`STATUS_CHOICES`\n"
+"The `Project` class represents a large project/engagement in a legal or administrative process. It \n"
+"        contains properties like `project_start` and `project_end` to specify the start and end date of the project, \n"
+"        as well as a `status` field with choices specified by the `STATUS_CHOICES`\n"
 "        "
 msgstr ""
+"A classe `Projeto` representa um grande projeto/envolvimento em um processo legal ou administrativo. Ele \n"
+"        contém propriedades como `project_start` e `project_end` para especificar a data de início e término do projeto, \n"
+"        bem como um campo `status` com opções especificadas pelo `STATUS_CHOICES`"
 
-#: .\projects\views.py:36
+#: .\projects\views.py:35
 msgid ""
 "Get the list of projects, with some information about it, \n"
-"        being able to filter by process_number, status, description and "
-"engagement number"
+"        being able to filter by process_number, status, description and engagement number"
 msgstr ""
+"Obter a lista de projetos, com algumas informações sobre o mesmo, \n"
+"        ser capaz de filtrar por process_number, status, descrição e número de engagement"
 
 #: .\rates\apps.py:9 .\rates\models.py:222
 msgid "Rates"
-msgstr ""
+msgstr "Taxas"
 
 #: .\rates\models.py:17
 msgid "Rate Name"
-msgstr ""
+msgstr "Nome da Taxa"
 
 #: .\rates\models.py:18
 msgid "Is the Rate per day? day or month"
-msgstr ""
+msgstr "A Taxa é por dia? "
 
 #: .\rates\models.py:56
 msgid "Rate date"
-msgstr ""
+msgstr "Data da taxa"
 
 #: .\rates\models.py:57
 msgid "Rate value"
-msgstr ""
+msgstr "Valor da taxa"
 
 #: .\rates\models.py:60
 msgid "rate: {} | date: {} | value: {}"
-msgstr ""
+msgstr "taxa: {} | data: {} | valor: {}"
 
 #: .\rates\models.py:89
 msgid "Valor"
-msgstr ""
+msgstr "Valor"
 
 #: .\rates\models.py:144
 msgid "Rate file"
-msgstr ""
+msgstr "Taxa de arquivo"
 
 #: .\rates\models.py:147
 msgid "rate: {} | file: {}"
-msgstr ""
+msgstr "taxa: {} | arquivo:{}"
 
 #: .\rates\models.py:152
 msgid "Invalid file type"
-msgstr ""
+msgstr "Tipo de arquivo inválido"
 
 #: .\rates\models.py:190
 msgid "The reference year must be an integer."
-msgstr ""
+msgstr "O ano de referência deve ser um número inteiro."
 
 #: .\rates\models.py:192
 msgid "The reference year must be from 1984 onwards."
-msgstr ""
+msgstr "O ano de referência deve ser de 1984 em diante."
 
 #: .\rates\models.py:196
 msgid "Reference year"
-msgstr ""
+msgstr "Ano de referência"
 
 #: .\rates\models.py:198
 msgid "From"
-msgstr ""
+msgstr "De"
 
 #: .\rates\models.py:199
 msgid "To"
-msgstr ""
+msgstr "Para"
 
 #: .\rates\models.py:201
 msgid "Deduction"
-msgstr ""
+msgstr "Dedução"
 
 #: .\rates\models.py:240
 msgid "End Point"
-msgstr ""
+msgstr "End Point"
 
 #: .\rates\models.py:241
 msgid "Is Multiple?"
-msgstr ""
+msgstr "É Múltiplo?"
 
 #: .\rates\models.py:270
 msgid "Field name"
-msgstr ""
+msgstr "Nome do campo"
 
 #: .\rates\models.py:271
 msgid "Field key"
-msgstr ""
+msgstr "Chave de campo"
 
 #: .\rates\models.py:272
 msgid "Field type"
-msgstr ""
+msgstr "Tipo de campo"
 
 #: .\rates\models.py:273
 msgid "Order"
-msgstr ""
+msgstr "Ordem"
 
 #: .\rates\models.py:274
 msgid "Is editable?"
-msgstr ""
+msgstr "É editável?"
 
 #: .\rates\models.py:275
 msgid "Required?"
-msgstr ""
+msgstr "Requerido?"
 
 #: .\rates\schemas.py:75
 msgid "Rate already registered"
-msgstr ""
+msgstr "Taxa já cadastrada"
 
-#: .\rates\views.py:17 .\rates\views.py:30 .\rates\views.py:57
-msgid "Rate"
-msgstr ""
-
-#: .\rates\views.py:20
+#: .\rates\views.py:19
 msgid ""
-"Represents the indices that can be applied to rates to calculate debt updates"
+"Represents the indices that can be applied to rates to calculate debt updates.\n"
+"        "
 msgstr ""
+"Representa os índices que podem ser aplicados às taxas para calcular as "
+"atualizações da dívida."
 
 #: .\rates\views.py:21
 msgid "Returns the rate and its accumulated values, period and date"
-msgstr ""
+msgstr "Retorna a taxa e seus valores acumulados, período e data"
 
-#: .\rates\views.py:49
-msgid "RateFile"
-msgstr ""
+#: .\rates\views.py:30 .\rates\views.py:56
+msgid "Rate"
+msgstr "Taxa"
 
-#: .\rates\views.py:71
+#: .\rates\views.py:70
 msgid "Required field index"
-msgstr ""
+msgstr "Índice de campo obrigatório"
 
-#: .\rates\views.py:74
+#: .\rates\views.py:73
 msgid "Required field file"
-msgstr ""
+msgstr "Arquivo de campo obrigatório"
 
-#: .\rates\views.py:92
+#: .\rates\views.py:91
 msgid ""
 "The file {} does not contain the correct fields. Required at least the "
 "column mes and indice, "
 msgstr ""
+"O ficheiro {} não contém os campos corretos. Necessário, pelo menos, a coluna"
+" mes e índice,"
 
-#: .\rates\views.py:97
+#: .\rates\views.py:96
 msgid "The file {} is empty"
-msgstr ""
+msgstr "O arquivo {} está vazio"
 
-#: .\rates\views.py:112 .\rates\views.py:137
-msgid "Rate Template"
-msgstr ""
-
-#: .\rates\views.py:126
+#: .\rates\views.py:124
 msgid ""
 "Example of how templates should look for each selected rate type\n"
 "            Returns a list of templates with their id and name"
 msgstr ""
+"Exemplo de como os modelos devem procurar cada tipo de taxa selecionado\n"
+"            Devolve uma lista de modelos com o respetivo ID e nome"
 
-#: .\rates\views.py:142
+#: .\rates\views.py:139
 msgid ""
 "Example of how templates should look for each selected rate type\n"
-"        Returns a detail of template with their id, name, tables and fields "
-"in tables"
+"        Returns a detail of template with their id, name, tables and fields in tables"
 msgstr ""
+"Exemplo de como os modelos devem procurar cada tipo de taxa selecionado\n"
+"        Retorna um detalhe do modelo com o seu id, nome, tabelas e campos nas tabelas"
 
-#: .\recovering\apps.py:8 .\recovering\views.py:24
+#: .\recovering\apps.py:8
 msgid "Recovering"
-msgstr ""
+msgstr "Recuperanda"
 
 #: .\recovering\archive\apps.py:10
 msgid "Arquivo"
-msgstr ""
+msgstr "Arquivo"
 
 #: .\recovering\archive_recovering\apps.py:10
-msgid "Arquivo Recuperanda"
-msgstr ""
+msgid "Archive Recovering"
+msgstr "Arquivo da Recuperanda"
 
 #: .\recovering\models.py:13
 msgid "Under Analysis"
-msgstr ""
+msgstr "Em Análise"
 
 #: .\recovering\models.py:21
 msgid "Support Status"
-msgstr ""
+msgstr "Status de Suporte"
 
 #: .\recovering\schemas.py:58
 msgid "Recovering already registered"
-msgstr ""
+msgstr "Recuperanda já registrada"
 
-#: .\recovering\views.py:40
+#: .\recovering\views.py:39
 msgid "CPF/CNPJ"
-msgstr ""
+msgstr "CPF/CNPJ"
 
-#: .\recovering\views.py:46
+#: .\recovering\views.py:45
 msgid ""
-"The `Recovering` class is responsible for representing the credit recovery "
-"of an entity in a \n"
-"           specific project/engagement. It has a relationship with the "
-"`Project` model and with the `Entity` model. In \n"
-"           addition, it has a recovery status, which can be \"Under review"
-"\", \"Completed\", \"In progress\" or \"Cancelled\".\n"
+"The `Recovering` class is responsible for representing the credit recovery of an entity in a \n"
+"           specific project/engagement. It has a relationship with the `Project` model and with the `Entity` model. In \n"
+"           addition, it has a recovery status, which can be \"Under review\", \"Completed\", \"In progress\" or \"Cancelled\".\n"
 "           "
 msgstr ""
+"A classe `Recuperação` é responsável por representar a recuperação de crédito de uma entidade em um \n"
+"           projeto/engagement específico. Tem uma relação com o modelo `Projeto` e com o modelo `Entidade`. Além \n"
+"           disso, tem um status de recuperação, que pode ser \"Em revisão\", \"Concluído\", \"Em andamento\" ou \"Cancelado\"."
 
-#: .\recovering\views.py:50
+#: .\recovering\views.py:49
 msgid ""
-"Returns a list of recoverings, containing the details of the recovering, the "
-"creditors"
+"Returns a list of recoverings, containing the details of the recovering, the"
+" creditors"
 msgstr ""
+"Retorna uma lista de recuperandas, contendo os detalhes da recuperação, os "
+"credores"
 
 #: .\utils.py:25
-#, python-brace-format
-msgid "O valor {value} não corresponde a nenhuma escolha válida"
-msgstr ""
+msgid "The value {} does not match any valid choice"
+msgstr "O valor {} não corresponde a nenhuma escolha válida"
