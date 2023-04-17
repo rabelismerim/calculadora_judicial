@@ -16,6 +16,7 @@ from calculation.tests import CalculationValues
 from core.abstract.tests import AbstractTest, AttrDict, generate_name
 from creditors.tests import CreditorValues
 from projects.create_project import get_data_project, cpf_generator
+from rates.models import Rate
 from utils import _
 
 
@@ -99,7 +100,16 @@ class StatementTest(AbstractTest):
         fund = {
             "description": generate_name(),
             "name": generate_name(),
-            'calculation_id': str(self.calculation.id)
+            'calculation_id': str(self.calculation.id),
+            "classes": {
+                "classe": "1"
+            },
+            "coins": {
+                "coin": "B",
+                "value": 500
+            },
+            "archive_json": {},
+            "rate_id": str(Rate.objects.first().id),
         }
 
         response = self.post('calculation/funds', fund)
