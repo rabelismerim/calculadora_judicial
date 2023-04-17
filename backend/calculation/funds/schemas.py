@@ -20,6 +20,7 @@ from calculation.funds.models import Funds, MonetaryCorrection, StatementFunds, 
 from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
 
+from creditors.classes.schemas import AbstractClassesFundsSchema
 from utils import _
 
 
@@ -103,7 +104,7 @@ class TotalValuesFundsSchema(AbstractDescriptionSchema):
         exclude = ('fund',)
 
 
-class FundsSchema(AbstractDescriptionSchema):
+class FundsSchema(AbstractClassesFundsSchema):
     """
     A schema for serializing and deserializing Funds instances.
 
@@ -114,7 +115,6 @@ class FundsSchema(AbstractDescriptionSchema):
     deserializing StatementIRRF instances.
     """
     calculation_id = serializers.UUIDField()
-
     # statement_funds = StatementFundsSchema(
     #     many=True, source='statementfunds_set', exclude=('fund_id', 'status'), write_only=True, required=False)
     #

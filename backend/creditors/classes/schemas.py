@@ -3,6 +3,8 @@ from creditors.classes.models import Classes
 from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
 
+from rates.schemas import RateSchema
+
 
 class ClassesSchema(AbstractDescriptionSchema):
     classe_display = serializers.CharField(source='get_classe_display', read_only=True)
@@ -27,6 +29,14 @@ class AbstractClassesSchema(AbstractDescriptionSchema):
     #     if self.model.objects.filter(creditor_id=creditor_id).exists():
     #         raise serializers.ValidationError([f'{self.model.__name__} já cadastrado para esse credor'])
     #     return creditor_id
+
+
+class AbstractClassesFundsSchema(AbstractDescriptionSchema):
+    classes = ClassesSchema(many=False, read_only=False)
+    coins = CoinsSchema(many=False, read_only=False)
+    archive_json = serializers.JSONField(allow_null=True, required=False)
+    rate_id = serializers.UUIDField(allow_null=True, required=False, write_only=True)
+    rate = RateSchema(exclude=('rate_value', 'is_per_day', 'rate_values'), read_only=True)
 
 
 class AbstractClassesUpdateSchema(AbstractDescriptionSchema):

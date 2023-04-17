@@ -86,6 +86,7 @@ class AbstractTest(TransactionTestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.keep_db = '--keepdb' in sys.argv
+
     @staticmethod
     def execute_before_and_after(func):
         stdout = OutputWrapper(sys.stdout)
@@ -117,10 +118,20 @@ class AbstractTest(TransactionTestCase):
 
         return wrapper
 
+    def __has_post(self):
+        if hasattr(self, 'http_method_names'):
+            return 'post' in self.http_method_names
+        return True
+
+    def __has_get(self):
+        if hasattr(self, 'http_method_names'):
+            return 'get' in self.http_method_names
+        return True
+
     @execute_before_and_after
     def test_api_z_post(self):
         """Assert post objects detail"""
-        if hasattr(self, 'path') and hasattr(self, 'parameters'):
+        if hasattr(self, 'path') and hasattr(self, 'parameters') and self.__has_post():
             response = self.post(self.path, self.parameters)
             if response.status_code == 404:
                 self.print('\n\n')
@@ -132,7 +143,7 @@ class AbstractTest(TransactionTestCase):
     @execute_before_and_after
     def test_api_get(self):
         """Assert get objects list detail"""
-        if hasattr(self, 'path'):
+        if hasattr(self, 'path') and self.__has_get():
             response = self.get(self.path)
             if response.status_code == 404:
                 self.print('\n\n')

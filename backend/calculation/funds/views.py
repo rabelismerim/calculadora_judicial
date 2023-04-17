@@ -6,6 +6,8 @@ The FundsApi class uses the Funds model and FundsSchema for working with data.
 """
 
 from django.http import JsonResponse
+
+from base.coins.models import Coins
 from calculation.funds.schemas import FundsSchema, StatementFundsSchema, StatementFundsUpdateSchema
 from calculation.funds.models import Funds, StatementFunds
 from core.abstract.views import AbstractViewApi
@@ -175,6 +177,8 @@ class CreateFunds:
             Funds: A Funds object detail.
         """
         new_funds = self.funds
+        coins = new_funds.get('coins')
+        new_funds['coins'] = Coins.objects.create(**coins)
         fund = Funds.objects.create(**new_funds)
         return fund
 

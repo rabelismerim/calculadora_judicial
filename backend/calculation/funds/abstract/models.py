@@ -16,8 +16,11 @@ from calculation.models import Calculation
 from core.abstract.models import AbstractModel
 from dateutil.relativedelta import relativedelta
 
+from rates.models import Rate
+from base.models import AbstractCredit
 
-class AbstractFunds(AbstractModel):
+
+class AbstractFunds(AbstractCredit):
     """
     This class represents an abstract model for funds. It inherits from AbstractModel
     and has the attributes 'name' and 'calculation', which represent the name of the
@@ -26,12 +29,22 @@ class AbstractFunds(AbstractModel):
     """
     name = models.CharField(_('Fund name'), max_length=50)
     calculation = models.ForeignKey(Calculation, on_delete=models.PROTECT)
+    rate = models.ForeignKey(Rate, on_delete=models.PROTECT, null=True)
 
     class Meta:
         abstract = True
 
     def __str__(self):
         return self.name
+
+    def get_rate(self):
+        """
+        Get the index that will be used in the calculation. If there is no unique index, the default index defined
+        in the creditor is taken.
+        """
+        if self.rate:
+            return self.rate
+        return self.calculation.get_rate()
 
 
 CHOICES_STATUS_FUND = (('S', _('Requested')), ('C', _('Concluded')), ('E', _('In Progress')),
@@ -137,7 +150,7 @@ class AbstractStatement(AbstractStatus):
         statement.set_in_progress()
         data_base = statement.get_data_base()
         date_rj = calculation.get_date_rj()
-        rate = calculation.get_rate()
+        rate = statement.fund.get_rate()
 
         if not date_rj:
             statement.set_error_rj()

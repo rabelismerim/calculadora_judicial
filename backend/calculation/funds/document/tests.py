@@ -15,6 +15,7 @@ Attributes:
 from calculation.funds.models import Funds
 from calculation.models import Calculation
 from core.abstract.tests import AbstractTest, generate_name
+from rates.models import Rate
 
 
 class FundsDocumentTest(AbstractTest):
@@ -32,6 +33,15 @@ class FundsDocumentTest(AbstractTest):
                      "historical_value": 1500,
                      "number": generate_name()
                  },
+                 "classes": {
+                     "classe": "1"
+                 },
+                 "coins": {
+                     "coin": "B",
+                     "value": 500
+                 },
+                 "archive_json": {},
+                 "rate_id": str(Rate.objects.first().id),
                  "name": generate_name()
              },
              {'corrected_value': 1520.5231791763986, 'index_data_base': 2.748073182623919,
@@ -48,6 +58,15 @@ class FundsDocumentTest(AbstractTest):
                      "historical_value": 500,
                      "number": generate_name()
                  },
+                 "classes": {
+                     "classe": "1"
+                 },
+                 "coins": {
+                     "coin": "B",
+                     "value": 500
+                 },
+                 "archive_json": {},
+                 "rate_id": str(Rate.objects.first().id),
                  "name": generate_name()
              }, {'corrected_value': 658.6255085039053,
                  'index_data_base': 2.114762192020358,
@@ -61,6 +80,7 @@ class FundsDocumentTest(AbstractTest):
 
         for statement, true_monetary_correction, arrears_charges in statements:
             response = self.post('calculation/funds/documents', statement)
+            self.assertEqual(response.status_code, 201)
             new_statement = response.content['fund_document']
             fund = new_statement['fund']
             monetary_correction = new_statement['fund']['statement']['monetary_correction']
@@ -89,6 +109,15 @@ class FundsDocumentTest(AbstractTest):
                 "historical_value": value,
                 "number": number
             },
+            "classes": {
+                "classe": "1"
+            },
+            "coins": {
+                "coin": "B",
+                "value": 500
+            },
+            "archive_json": {},
+            "rate_id": str(Rate.objects.first().id),
             "name": generate_name()
         }
 

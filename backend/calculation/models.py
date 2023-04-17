@@ -6,9 +6,9 @@ to add specific fields as needed.
 """
 
 from django.db import models
+from django.db.models import Sum, F
 from django.utils.translation import gettext_lazy as _
 
-from base.models import AbstractCredit
 from calculation.comparative.signals import new_calc
 from core.abstract.models import AbstractModel
 from creditors.models import Creditor
@@ -26,7 +26,7 @@ class Incident(AbstractModel):
     number = models.CharField(_('Incident number'), max_length=100)
 
 
-class Calculation(AbstractCredit):
+class Calculation(AbstractModel):
     """Attributes:
     creditor (models.ForeignKey): The creditor associated with the calculation.
     incident (models.ForeignKey): The incident associated with the calculation.
@@ -96,3 +96,30 @@ class Calculation(AbstractCredit):
         check_choice(char, CHOICES_STEP)
         self.step = char
         self.save()
+
+    def get_classes(self):
+        """Groups the Funds, Fund Document and FundIRRF by class and adds the values"""
+        classes = list(self.funds_set.all().filter(classes__classe__isnull=False).values(
+            classe=F('classes__classe')).distinct().order_by('classes__classe') \
+                       .annotate(total_value=Sum('coins__value')))
+
+        classes.extend(
+            list(self.funddocument_set.all().filter(classes__classe__isnull=False).values(classe=F('classes__classe'))
+                 .distinct().order_by('classes__classe').annotate(total_value=Sum('coins__value'))))
+
+        classes.extend(
+            list(self.fundirrf_set.all().filter(classes__classe__isnull=False).values(classe=F('classes__classe'))
+                 .distinct().order_by('classes__classe').annotate(total_value=Sum('coins__value'))))
+
+        class_totals = {}
+        for class_dict in classes:
+            class_name = class_dict['classe']
+            class_total = class_dict['total_value']
+            if class_name not in class_totals:
+                class_totals[class_name] = class_total
+            else:
+                class_totals[class_name] += class_total
+
+        result = [{'classe': class_name, 'total_value': total} for class_name, total in class_totals.items()]
+
+        return result

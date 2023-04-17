@@ -17,6 +17,7 @@ from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
 
 from calculation.funds.irrf.models import StatementIRRF, TotalValuesIRRF, FundIRRF
+from creditors.classes.schemas import AbstractClassesFundsSchema
 from utils import _
 
 
@@ -78,7 +79,7 @@ class TotalValuesIRRFSchema(AbstractDescriptionSchema):
         return super(TotalValuesIRRFSchema, self).validate(data)
 
 
-class FundIRRFSchema(AbstractDescriptionSchema):
+class FundIRRFSchema(AbstractClassesFundsSchema):
     """
     A schema for serializing and deserializing FundIRRF instances.
 
@@ -94,7 +95,7 @@ class FundIRRFSchema(AbstractDescriptionSchema):
 
     class Meta:
         model = FundIRRF
-        exclude = ('calculation',)
+        exclude = ('calculation', )
 
     def validate(self, data):
         """

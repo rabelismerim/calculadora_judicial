@@ -15,16 +15,18 @@ Attributes:
 Usage example:
 serializer = CalculationSchema()
 """
+from django.db.models import Sum, F
 
 from base.schemas import AbstractDescriptionSchema
 from calculation.comparative.schemas import ComparativeSchema
 from calculation.criterion.schemas import CriterionSchema
+from calculation.funds.irrf.schemas import FundIRRFSchema
 from calculation.funds.schemas import FundsSchema
 from calculation.statement.schemas import StatementSchema
 from calculation.verdict.schemas import VerdictSchema
 from rest_framework import serializers
 from calculation.models import Calculation, Incident, CHOICES_STEP
-from creditors.classes.schemas import AbstractClassesSchema
+from creditors.classes.models import CLASSE_CHOICES
 from creditors.schemas import CreditorSchema
 
 
@@ -50,7 +52,36 @@ class IncidentSchema(AbstractDescriptionSchema):
         return number
 
 
-class CalculationSchema(AbstractClassesSchema):
+class ClassesSerializer(serializers.Serializer):
+    """
+   The ClassesSerializer class is used to serialize instances of the Classes model. It includes the following fields:
+
+   classe: A CharField that represents the class related to the objects of the related Calculation instance.
+           It is serialized as a string that matches the value of the 'classe' field.
+   classe_display: A SerializerMethodField that represents the display version of the class related to the objects
+    of the related Calculation instance.
+                   It is read-only and automatically serialized as the "display" version of the class.
+   """
+    classe = serializers.CharField()
+    classe_display = serializers.SerializerMethodField('get_classe_display')
+    total_value = serializers.FloatField()
+
+    @staticmethod
+    def get_classe_display(obj):
+        """
+        Return the display value of the 'classe' field in Classes model.
+
+        Parameters:
+        obj: The Calculation model instance containing the foreign key to Classes model.
+
+        Returns:
+        The display value of the 'classe' field specified in the Classes model.
+        """
+        display_dict = dict(CLASSE_CHOICES)
+        return display_dict[obj['classe']]
+
+
+class CalculationSchema(AbstractDescriptionSchema):
     """
     The CalculationSchema class is a serializer for the Calculation model fields. It inherits from the
      AbstractModelSchema class. It includes the following fields:
@@ -74,15 +105,17 @@ class CalculationSchema(AbstractClassesSchema):
 
     funds = FundsSchema(source='funds_set', many=True,
                         required=False, exclude=('calculation_id',), read_only=True)
+    fund_irrf = FundIRRFSchema(source='fundirrf_set', many=True,
+                        required=False, exclude=('calculation_id',), read_only=True)
+    fund_document = FundIRRFSchema(source='fund_document_set', many=True,
+                        required=False, exclude=('calculation_id',), read_only=True)
 
     statement = StatementSchema(read_only=True, exclude=('calculation_id',))
 
     comparative = ComparativeSchema(read_only=True, exclude=('statement_id',))
 
-    step_display = serializers.CharField(
-        source='get_step_display', read_only=True)
-
-    archive_json = serializers.JSONField(allow_null=True, required=False)
+    step_display = serializers.CharField(source='get_step_display', read_only=True)
+    classes = ClassesSerializer(source='get_classes', read_only=True, many=True)
 
     class Meta:
         model = Calculation

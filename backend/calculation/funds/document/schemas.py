@@ -18,6 +18,7 @@ from rest_framework import serializers
 
 from calculation.funds.document.models import StatementDocument, MonetaryCorrectionDocument, TotalValuesDocument, \
     FundDocument
+from creditors.classes.schemas import AbstractClassesFundsSchema
 from utils import _
 
 
@@ -43,8 +44,7 @@ class StatementDocumentSchema(AbstractDescriptionSchema):
     Attributes:
         fund_id (serializers.UUIDField): The UUID of the related fund.
     """
-    monetary_correction = MonetaryCorrectionDocumentSchema(
-        read_only=True, source='monetarycorrectiondocument')
+    monetary_correction = MonetaryCorrectionDocumentSchema(read_only=True, source='monetarycorrectiondocument')
 
     fund_id = serializers.UUIDField()
     status_display = serializers.CharField(source='get_status_display', read_only=True)
@@ -124,7 +124,7 @@ class TotalValuesDocumentSchema(AbstractDescriptionSchema):
         exclude = ('fund',)
 
 
-class FundDocumentSchema(AbstractDescriptionSchema):
+class FundDocumentSchema(AbstractClassesFundsSchema):
     """
     A schema for serializing and deserializing Funds instances.
 
@@ -180,12 +180,13 @@ class FundDocumentUpdateSchema(AbstractDescriptionSchema):
     """
     calculation_id = serializers.UUIDField(read_only=True)
     fund = TotalValuesDocumentSchema(source='totalvaluesdocument', read_only=True, exclude=('fund_id',))
-    statement = StatementDocumentUpdateSchema(source='statementdocument', exclude=('fund_id', 'status'), write_only=True, required=False)
+    statement = StatementDocumentUpdateSchema(source='statementdocument', exclude=('fund_id', 'status'),
+                                              write_only=True, required=False)
     name = serializers.CharField(required=False)
 
     class Meta:
         model = FundDocument
-        exclude = ('calculation',)
+        exclude = ('calculation', 'rate')
 
     def validate(self, data):
         """
