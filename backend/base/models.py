@@ -50,6 +50,14 @@ class AbstractDateCreditor(AbstractModel):
     def __str__(self):
         return _('Admission: {} | Resignation: {}').format(self.admission, self.dismissal)
 
+    def is_citation(self) -> bool:
+        """See if the occurrence is of type citation"""
+        return self.occurrence == 'C'
+
+    def is_filing(self) -> bool:
+        """See if the occurrence is of type filing"""
+        return self.occurrence == 'A'
+
 
 class AbstractDateRecovering(AbstractModel):
     date_rj_request = models.DateField(_("RJ order date"), blank=True, null=True)

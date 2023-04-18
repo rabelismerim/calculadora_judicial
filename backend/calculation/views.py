@@ -5,6 +5,7 @@ from calculation.comparative.models import Comparative
 from calculation.criterion.models import Criterion, CriterionClaimCredor
 from calculation.funds.views import CreateFunds
 from calculation.models import Calculation, Incident
+from calculation.premise.views import PremiseCreator
 from calculation.schemas import CalculationSchema, IncidentSchema, ChangeStepSerializer
 from calculation.verdict.models import TypeCalculation, Verdict
 from core.abstract.views import AbstractViewApi
@@ -193,6 +194,8 @@ class CalculationApi(AbstractCalculationApi):
                 comparative.calculation = calculation
                 comparative.save()
                 comparative.checks()
+
+            PremiseCreator(calculation).create_premises()
         return JsonResponse({'calculation': self.serializer_class(calculation, many=False).data},
                             status=status.HTTP_201_CREATED)
 

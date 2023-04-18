@@ -4,6 +4,7 @@ Inherits from AbstractModel, which provides common fields such as id, created_at
 and updated_at. Does not add any additional fields, so should be subclassed
 to add specific fields as needed.
 """
+import datetime
 
 from django.db import models
 from django.db.models import Sum, F
@@ -120,6 +121,48 @@ class Calculation(AbstractModel):
             else:
                 class_totals[class_name] += class_total
 
-        result = [{'classe': class_name, 'total_value': total} for class_name, total in class_totals.items()]
+        return [{'classe': class_name, 'total_value': total} for class_name, total in class_totals.items()]
 
-        return result
+    def get_date_rj_filing(self) -> datetime.date or None:  # B19
+        """
+        Excel B19
+
+        =IF('Ficha de Análise'!$F$66='citação';'Ficha de Análise'!D64;'Ficha de Análise'!D63)
+        Returns the 'date_rj_filing' value from criteria if occurrence is 'C',
+        otherwise returns the 'date_citation' value from criteria
+
+        If either date_rj_filing or date_citation does not exist, sets an error value and returns None
+        """
+        if self.is_citation():
+            date_citation = self.criterion.date_citation
+        else:
+            date_citation = self.criterion.date_rj_filing
+        return date_citation
+
+    def get_date_rj_request(self) -> datetime.date or None:  # B18
+        """
+            Excel B18
+
+            Returns 'date_rj_request' from statement criteria
+            If date_rj_request does not exist, sets an error value and returns None
+        """
+        return self.criterion.date_rj_request
+
+    def is_citation(self) -> bool:
+        """See if the occurrence in criterion is of type citation"""
+        return self.criterion.is_citation()
+
+    def is_filing(self) -> bool:
+        """See if the occurrence in criterion is of type filing"""
+        return self.criterion.is_filing()
+
+    def get_statement(self):
+        """
+        Gets the statement attribute of the object if it exists.
+
+        Returns:
+            - The statement attribute of the object, if it exists.
+            - None, otherwise.
+        """
+        if hasattr(self, 'statement'):
+            return self.statement

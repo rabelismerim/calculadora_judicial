@@ -18,6 +18,11 @@ class Rate(AbstractModel):  # Indices
     is_per_day = models.BooleanField(_('Is the Rate per day? day or month'), default=True)
 
     def is_ipca_e_selic(self):
+        """
+        Excel D65
+
+        See if the rate is IPCA-E/SELIC reference the analysis sheet worksheet.
+        """
         return self.index == "IPCA-E/SELIC"
 
     def __str__(self):

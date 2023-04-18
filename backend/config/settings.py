@@ -86,6 +86,8 @@ INSTALLED_APPS = [
     "drf_standardized_errors",  # Alter output erros in REST API
     'drf_api_logger',
     'drf_yasg',
+    # 'vinaigrette',
+    'modeltranslation',
 
     # Base
     'base',
@@ -122,6 +124,7 @@ INSTALLED_APPS = [
     'calculation.criterion',
     'calculation.verdict',
     'calculation.funds',  # Verbas
+    'calculation.premise',  # Premissas(Observações) do cálculo
     'calculation.statement',  # Extrato contábil
     'calculation.statement_pf',  # Extrato contábil PF
     'calculation.statement_pj',  # Extrato contábil PJ
@@ -315,6 +318,16 @@ USE_TZ = True
 LOCALE_PATHS = [
     BASE_DIR / 'locale'
 ]
+
+gettext = lambda s: s
+LANGUAGES = (
+    ('pt-br', gettext('Português')),
+    ('en', gettext('English')),
+)
+
+MODELTRANSLATION_DEFAULT_LANGUAGE = 'pt-br'
+
+MODELTRANSLATION_LANGUAGES = ('en', 'pt-br')
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.template.context_processors.i18n',

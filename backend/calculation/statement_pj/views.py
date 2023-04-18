@@ -54,7 +54,7 @@ class StatementPJApi(AbstractViewApi):
 
     @doc("""This method handles GET requests for the view. It retrieves a specific statement PJ object using the given 
             calculation_id from the query parameters and serializes the result into JSON format before returning it as
-             an  HTTP response. 
+             an HTTP response. 
 
                 Returns:
                     JsonResponse: An HTTP response containing the serialized statement PJ data retrieved.

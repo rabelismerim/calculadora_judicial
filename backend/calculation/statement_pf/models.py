@@ -113,10 +113,7 @@ class StatementPF(AbstractStatus):
 
         If either date_rj_filing or date_citation does not exist, sets an error value and returns None
         """
-        if self.statement.calculation.criterion.occurrence == 'C':
-            date_citation = self.statement.calculation.criterion.date_citation
-        else:
-            date_citation = self.statement.calculation.criterion.date_rj_filing
+        date_citation = self.statement.calculation.get_date_rj_filing()
         if not date_citation:
             self.set_error_citation()
         return date_citation
@@ -128,7 +125,7 @@ class StatementPF(AbstractStatus):
             Returns 'date_rj_request' from statement criteria
             If date_rj_request does not exist, sets an error value and returns None
         """
-        date_rj_request = self.statement.calculation.criterion.date_rj_request
+        date_rj_request = self.statement.calculation.get_date_rj_request()
         if not date_rj_request:
             self.set_error_rj()
         return date_rj_request
@@ -220,7 +217,7 @@ class StatementPF(AbstractStatus):
         """
         Returns the rate from the criteria
         """
-        return self.statement.calculation.criterion.rate
+        return self.statement.calculation.get_rate()
 
     @property
     def total_conclusion(self) -> float or None:

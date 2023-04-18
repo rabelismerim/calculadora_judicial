@@ -12,7 +12,9 @@ Attributes:
       `fields` lists the names of all fields that should be included in the serialized
       representation.
 """
+from uuid import UUID
 
+from calculation.premise.schemas import PremiseSchema
 from calculation.statement.models import Lawyer, Statement, TotalLawyer
 from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
@@ -82,7 +84,50 @@ class StatementSchema(AbstractDescriptionSchema):
     lawyer = TotalLawyerSchema(read_only=True, source='totallawyer')
     calculation_id = serializers.UUIDField(read_only=True)
     conclusion_display = serializers.CharField(source='get_conclusion_display')
+    premises = PremiseSchema(many=True, read_only=True)
 
     class Meta:
         model = Statement
         exclude = ('calculation',)
+
+
+class UuidListSerializer(serializers.ListSerializer):
+    """
+    A custom serializer that validates a list of UUIDs.
+    """
+    child = serializers.UUIDField()
+
+
+class UuidListField(serializers.ListField):
+    """
+    A serializer field that expects a list of UUIDs.
+    """
+    child = serializers.UUIDField()
+    list_serializer_class = UuidListSerializer
+
+
+class StatementUpdateSchema(AbstractDescriptionSchema):
+    """
+    Serializes the fields of the Statement model for use in the API.
+
+    This module defines a Django REST Framework serializer that inherits from a custom
+    AbstractDescriptionSchema class. The serializer converts instances of the Statement
+    model to and from JSON format, and validates incoming data based on the model's fields.
+
+    Attributes:
+    - statement_pf: A nested serializer that converts instances of the StatementPF
+    model to and from JSON format.
+    - statement_pj: A nested serializer that converts instances of the StatementPJ
+    model to and from JSON format.
+    - calculation_id: A read-only UUIDField that represents the calculation object
+    associated with the statement.
+    - conclusion_display: A CharField that represents the conclusion of the statement.
+
+    Usage example:
+    serializer = StatementSchema()
+    """
+    premises = UuidListField()
+
+    class Meta:
+        model = Statement
+        fields = ('premises',)
