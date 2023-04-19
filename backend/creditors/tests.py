@@ -50,8 +50,8 @@ class CreditorValues:
                     "classe": "1"
                 },
             },
-            "admission": "2023-02-15T15:33:53.690Z",
-            "dismissal": "2023-02-15T15:33:53.690Z",
+            "admission": "2012-02-15",
+            "dismissal": "2012-02-15",
             "default_interest": 1,
             "fine": 1,
             "advocative_hours": 1,
