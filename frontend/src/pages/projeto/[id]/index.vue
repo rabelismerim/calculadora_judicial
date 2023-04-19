@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const attrs = useAttrs() as any
+const router = useRouter()
 
 let loading = $ref(false)
 const filterBy = $ref('')
@@ -168,6 +169,11 @@ onMounted(() => {
         label="Exportar Cálculos Válidos"
         icon="i-carbon-document-export"
         disabled
+        outlined
+      />
+      <Btn
+        label="Credores"
+        @click="router.push({ path: `/projeto/${attrs.id}/credores` })"
       />
     </Header>
 
@@ -185,13 +191,7 @@ onMounted(() => {
         :subtitle="formatLegalNumber(recovering.entity.legalNumber)"
       >
         <template #header-right>
-          <div class="flex-1 flex gap-2 justify-between items-center pl-8 pr-4">
-            <Btn
-              label="Novo Credor"
-              icon="i-carbon-add-filled"
-              transparent
-              class="uppercase text-sm"
-            />
+          <div class="flex-1 flex gap-2 justify-end items-center pl-8 pr-4">
             <div class="font-bold flex no-wrap items-center gap-2">
               Total: R$ 0
               <Hint value="Total dos Cálculos Aprovados." />

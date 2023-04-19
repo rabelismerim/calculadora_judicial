@@ -11,7 +11,7 @@ const biggestValue = computed(() => [...props.values]?.sort(({ count: a }, { cou
 </script>
 
 <template>
-  <div class="bg--base flex flex-col items-stretch gap-3 py-4 px-6 border-1 border-black/12 rounded-.5">
+  <div class="bg--base flex flex-col items-stretch gap-3 pt-4 pl-6 border-1 border-black/12 rounded-.5">
     <div v-if="title" class="flex no-wrap gap-3 items-start font-bold text-xl">
       {{ title }}
       <Hint :value="hint" class="mt-1.25" />
@@ -25,7 +25,7 @@ const biggestValue = computed(() => [...props.values]?.sort(({ count: a }, { cou
       </div>
       <div
         v-else
-        class="max-h-40 overflow-y-auto"
+        class="max-h-42 overflow-y-auto pr-6 pb-4"
       >
         <div
           v-for="{ label, count } in values"
