@@ -116,6 +116,8 @@ class FundsDocumentTest(AbstractTest):
                 "coin": "B",
                 "value": 500
             },
+            'fine': 200,
+            'has_custom_fine': True,
             "archive_json": {},
             "rate_id": str(Rate.objects.first().id),
             "name": generate_name()

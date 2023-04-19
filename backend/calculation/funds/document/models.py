@@ -17,6 +17,9 @@ from calculation.funds.models import AbstractFunds, AbstractStatement, AbstractM
 
 
 class FundDocument(AbstractFunds):
+    # Pode haver multas por atraso de pagamento. Nesse caso a nota fiscal estabelece um valor personalizado
+    fine = models.FloatField(_('Fine'), default=0)
+    has_custom_fine = models.BooleanField(_('Has custom fine invoices'), default=False)
 
     def get_total_funds(self):
         """
@@ -26,6 +29,16 @@ class FundDocument(AbstractFunds):
         if hasattr(self, 'totalvaluesdocument'):
             return self.totalvaluesdocument
         return TotalValuesDocument.objects.get_or_create(fund=self)[0]
+
+    def get_fine(self) -> float:
+        """
+        This method returns the fine amount for the current FundDocument object. If the has_custom_fine flag is set to
+        True, it returns the custom fine value specified in the invoice. If not, it calculates the fine amount using
+        the calculation object associated with the current fund and returns it.
+        """
+        if self.has_custom_fine:
+            return self.fine
+        return self.calculation.get_fine()
 
     def gen_total(self):
         """
@@ -165,7 +178,7 @@ class StatementDocument(AbstractStatement):
         Returns:
             float: The fine rate to be charged.
         """
-        fine = self.fund.calculation.get_fine()
+        fine = self.fund.get_fine()
         corrected_value = self.get_corrected_value()
         default_interest = self.default_interest
         if corrected_value * default_interest * fine == 0:
@@ -277,6 +290,7 @@ class TotalValuesDocument(AbstractTotalValuesFunds):
             self.total_fine = statement.get_fine()
             self.total_due = statement.get_total_due()
             self.save()
+
 
 
 @receiver(gen_statement_documents, sender=StatementDocument)

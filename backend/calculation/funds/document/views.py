@@ -90,6 +90,8 @@ class FundDocumentApi(AbstractFundDocumentApi):
 
     @doc("""
         Create Document Fund object from request data and return Document Fund detail.
+        The 'has_custom_fine' field controls whether the fine entered in the document will be used, or the standard 
+        fine defined in the calculation
 
         Returns:
             JsonResponse: A JSON response containing the created Funds object detail.
