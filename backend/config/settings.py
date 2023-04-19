@@ -66,7 +66,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',
     'https://brfojwanderley:5173',
     'https://brdcvmdev07/djud',
-    'https://brsphearndt/djud',
+    'https://brsphearndt:8080/djud',
     'https://uat.fadigitallab.deloitte.com.br/djud'
 ]
 # Application definition
@@ -129,6 +129,7 @@ INSTALLED_APPS = [
     'calculation.funds.document',  # Verbas documento
     'calculation.funds.integrations',  # Verbas Integratórias
     'calculation.funds.irrf',  # Verbas IRRF
+    'calculation.sheets_template', # Templates Planilhas Excel
 
     # Rate - Índice
     'rates',
@@ -386,6 +387,8 @@ if DEBUG:
     LOGOUT_URL = "/djud/logout/"
 
 RATE_FILE_TYPES = ['pdf', 'vnd.ms-excel', 'xlsx', 'xls']
+
+TEMPLATE_FILE_TYPES = ['vnd.ms-excel', 'xlsx', 'xls']
 
 GROUP_NAME_EXECUTOR = 'Executor'
 GROUP_NAME_APPROVER = 'Aprovador'
