@@ -35,7 +35,6 @@ declare module '@vue/runtime-core' {
     PeopleTable: typeof import('./components/team/PeopleTable.vue')['default']
     ProgressList: typeof import('./components/graph/ProgressList.vue')['default']
     ProjectDetailCell: typeof import('./components/project/ProjectDetailCell.vue')['default']
-    QField: typeof import('quasar')['QField']
     ReloadBtn: typeof import('./components/common/ReloadBtn.vue')['default']
     RequestModal: typeof import('./components/team/RequestModal.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
