@@ -5,6 +5,7 @@ from calculation.comparative.models import Comparative
 from calculation.criterion.models import Criterion, CriterionClaimCredor
 from calculation.funds.views import CreateFunds
 from calculation.models import Calculation, Incident
+from calculation.premise.views import PremiseCreator
 from calculation.schemas import CalculationSchema, IncidentSchema, ChangeStepSerializer
 from calculation.verdict.models import TypeCalculation, Verdict
 from core.abstract.views import AbstractViewApi
@@ -139,9 +140,9 @@ class CalculationApi(AbstractCalculationApi):
             new_calculation = serializer.validated_data
             new_verdicts = new_calculation.pop('verdict', None)
             new_funds = new_calculation.pop('funds', None)
-            coins = new_calculation.get('coins')
 
-            new_calculation['coins'] = Coins.objects.create(**coins)
+            # coins = new_calculation.get('coins')
+            # new_calculation['coins'] = Coins.objects.create(**coins)
 
             calculation = self.model.objects.create(**new_calculation)
             creditor = calculation.creditor
@@ -189,11 +190,12 @@ class CalculationApi(AbstractCalculationApi):
 
             # TODO: change creation Comparative to Generate Calculation finish
             if Comparative.objects.filter(calculation=calculation).exists() is False:
-                # comparative = Comparative.objects.create(calculation=calculation)
                 comparative = Comparative()
                 comparative.calculation = calculation
                 comparative.save()
                 comparative.checks()
+
+            PremiseCreator(calculation).create_premises()
         return JsonResponse({'calculation': self.serializer_class(calculation, many=False).data},
                             status=status.HTTP_201_CREATED)
 

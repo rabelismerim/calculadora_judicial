@@ -15,6 +15,7 @@ Attributes:
 from calculation.funds.models import Funds
 from calculation.models import Calculation
 from core.abstract.tests import AbstractTest, generate_name
+from rates.models import Rate
 
 
 class FundsTest(AbstractTest):
@@ -25,6 +26,15 @@ class FundsTest(AbstractTest):
     parameters = {
         "description": generate_name(),
         "name": name,
+        "classes": {
+            "classe": "1"
+        },
+        "coins": {
+            "coin": "B",
+            "value": 500
+        },
+        "archive_json": {},
+        "rate_id": str(Rate.objects.first().id),
         'calculation_id': str(calculation.id)
     }
     fund_id = str(Funds.objects.first().id)
@@ -78,7 +88,7 @@ class FundsTest(AbstractTest):
         ]
 
         for statement, true_monetary_correction in statements:
-            response = self.post('calculation/funds/funds', statement)
+            response = self.post('calculation/funds/labor', statement)
             new_statement = response.content['statement_funds']
             monetary_correction = new_statement['monetary_correction']
             self.assertEqual(monetary_correction['corrected_value'], true_monetary_correction['corrected_value'])

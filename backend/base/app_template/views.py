@@ -12,7 +12,7 @@ from core.abstract.views import AbstractViewApi
 
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission
-
+from utils import _
 
 class {{app_name | title}}Api(AbstractViewApi):
     """Define the {{app_name | title}}Api view class for handling HTTP methods related to {{app_name | title}}.
@@ -42,13 +42,25 @@ class {{app_name | title}}Api(AbstractViewApi):
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = {{app_name | title}}
 
+    docs = {
+        'init': _("""Represents the entire {{app_name | title}}.
+                """),
+        'get': _("""This method handles GET requests for the view. It retrieves a specific {{app_name | title}} object using the given
+            calculation_id from the query parameters and serializes the result into JSON format before returning it as
+             an HTTP response.
+
+                Returns:
+                    JsonResponse: An HTTP response containing the serialized {{app_name | title}} data retrieved.
+                """)
+    }
+
     query_params = [
         {
             "name": "{{app_name}}",
             "field": "{{app_name}}__icontains",
             "in": "query",
             "required": False,
-            "description": "{{app_name}}",
+            "description": _("{{app_name}}"),
             "schema": {"type": "string"}
         }
     ]

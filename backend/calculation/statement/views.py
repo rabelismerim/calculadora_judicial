@@ -5,8 +5,9 @@ The API responds with JSON data and utilizes the rest_framework.schemas.openapi.
 The StatementApi class uses the Statement model and StatementSchema for working with data.
 """
 from django.http import JsonResponse
+from rest_framework.generics import get_object_or_404
 
-from calculation.statement.schemas import StatementSchema
+from calculation.statement.schemas import StatementSchema, StatementUpdateSchema
 from calculation.statement.models import Statement
 from core.abstract.views import AbstractViewApi
 
@@ -38,7 +39,7 @@ class StatementApi(AbstractViewApi):
         GET /api/v1/statement/?statement=statement_name
         ```
     """
-    http_method_names = ['get']
+    http_method_names = ['get', 'put']
     serializer_class = StatementSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Statement
@@ -49,6 +50,12 @@ class StatementApi(AbstractViewApi):
     }
     query_params = []
 
+    layout_serializers = {
+        'default': StatementSchema,
+        'get': StatementSchema,
+        'put': StatementUpdateSchema,
+    }
+
     @doc("""This method handles GET requests for the view. It retrieves a specific statement object using the given 
         calculation_id from the query parameters and serializes the result into JSON format before returning it as an 
         HTTP response. 
@@ -58,7 +65,23 @@ class StatementApi(AbstractViewApi):
             """)
     def get(self, request, *args, **kwargs):
         calculation_id = kwargs.get('calculation_id')
-        statement = self.model.objects.filter(
-            calculation_id=calculation_id).first()
-        statement_data = self.serializer_class(statement, many=False).data
-        return JsonResponse({'statement': statement_data})
+        statement = self.model.objects.filter(calculation_id=calculation_id).first()
+        return JsonResponse({'statement': self.serializer_class(statement, many=False).data})
+
+    @doc("""This method updates information regarding the statement. Editing of premises is enabled, receiving the list 
+            of ids that will be related
+            Return
+                JsonResponse: An HTTP response containing the serialized statement data retrieved.
+            """)
+    def put(self, request, *args, **kwargs):
+        calculation_id = kwargs.get('calculation_id')
+        statement = get_object_or_404(Statement, calculation_id=calculation_id)
+        serializer = self.get_serializer_class()
+        serializer = serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        up_statement = serializer.validated_data
+        premise_ids = up_statement['premises']
+        statement.premises.clear()
+        statement.premises.add(*premise_ids)
+        statement.save()
+        return JsonResponse({'statement': self.serializer_class(statement, many=False).data})

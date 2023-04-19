@@ -3,7 +3,7 @@ This module defines a test class for testing the Irrf API endpoints.
 
 The IrrfTest class inherits from the AbstractTest class and includes two methods for testing
 the HTTP POST and GET methods for managing Irrf objects. The tests use the Django test client to
-send HTTP requests and assert the responses. 
+send HTTP requests and assert the responses.
 
 Methods:
 - test_api_a_post_irrfs: Sends a POST request to create a new Irrf object and asserts a successful response status code
@@ -12,31 +12,27 @@ Methods:
 Attributes:
 - None
 """
-from core.abstract.tests import AbstractTest
+from calculation.models import Calculation
+from core.abstract.tests import AbstractTest, generate_name
+from rates.models import Rate
 
 
-# class IrrfTest(AbstractTest):
-#     """irrf related tests"""
+class IrrfTest(AbstractTest):
+    """irrf related tests"""
+    http_method_names = ['post', ]
 
-#     def test_api_a_post_irrfs(self):
-#         """Assert post irrfs detail"""
-#         self.print_start('Create irrfs')
-#         irrf = {
-#             "description": "irrf"
-#         }
-#         response = self.client.post(
-#             '/djud/api/v1/projects/irrf', irrf)
-#         self.assertEqual(response.status_code, 201)
-#         self.print_success('Created irrf')
-
-#     def test_api_b_get_irrfs(self):
-#         """Assert get irrfs detail"""
-#         self.print_start('List irrfs')
-#         response = self.client.get('/djud/api/v1/projects/irrf')
-#         self.assertEqual(response.status_code, 200)
-#         self.print_success('Listed irrfs')
-#         irrfs = response.json()['irrfs']
-#         irrf = irrfs[0]
-#         self.assertGreaterEqual(len(irrfs), 1)
-#         self.print_success('Listed irrfs >= 1')
-#         self.set_project('irrf_id', irrf['id'])
+    path = 'calculation/funds/irrf'
+    parameters = {
+        "classes": {
+            "classe": "1"
+        },
+        "coins": {
+            "coin": "B",
+            "value": 200
+        },
+        "archive_json": {},
+        "rate_id": str(Rate.objects.first().id),
+        "calculation_id": str(Calculation.objects.first().id),
+        "name": generate_name(),
+        "months_period": 1
+    }

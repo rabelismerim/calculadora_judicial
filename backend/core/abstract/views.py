@@ -1,13 +1,10 @@
 import datetime
 from abc import ABC
-
-import uritemplate
 from django.http import JsonResponse
-from django.utils.encoding import smart_str, force_str
+from django.utils.encoding import smart_str
 from rest_framework import generics, serializers, status
 from rest_framework.filters import BaseFilterBackend
 from rest_framework.generics import get_object_or_404
-from rest_framework.schemas.utils import get_pk_description
 from rest_framework.utils import formatting
 from rest_framework.schemas.openapi import AutoSchema
 

@@ -8,6 +8,7 @@ The FundDocumentApi class uses the Funds model and FundDocumentSchema for workin
 from django.http import JsonResponse
 from rest_framework.generics import get_object_or_404
 
+from base.coins.models import Coins
 from calculation.funds.document.models import FundDocument, StatementDocument
 from calculation.funds.document.schemas import FundDocumentSchema, FundDocumentUpdateSchema
 from core.abstract.views import AbstractViewApi
@@ -101,6 +102,8 @@ class FundDocumentApi(AbstractFundDocumentApi):
         serializer.is_valid(raise_exception=True)
         new_funds = serializer.validated_data
         statement_document = new_funds.pop('statement_document')
+        coins = new_funds.get('coins')
+        new_funds['coins'] = Coins.objects.create(**coins)
         fund = self.model.objects.create(**new_funds)
         statement_document['fund'] = fund
         StatementDocument.objects.create(**statement_document)

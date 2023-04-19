@@ -6,6 +6,7 @@ Api's classes use the Irrf model and schema Irrf to work with data.
 """
 from django.http import JsonResponse
 
+from base.coins.models import Coins
 from calculation.funds.irrf.models import StatementIRRF, FundIRRF
 from calculation.funds.irrf.schemas import StatementIRRFSchema, StatementIRRFUpdateSchema, FundIRRFSchema
 from core.abstract.views import AbstractViewApi
@@ -100,6 +101,8 @@ class FundIRRFApi(AbstractFundIRRFApi):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_funds = serializer.validated_data
+        coins = new_funds.get('coins')
+        new_funds['coins'] = Coins.objects.create(**coins)
         fund = self.model.objects.create(**new_funds)
         return JsonResponse({'fund': self.serializer_class(fund, many=False).data}, status=status.HTTP_201_CREATED)
 
