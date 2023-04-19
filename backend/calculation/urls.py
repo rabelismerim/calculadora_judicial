@@ -13,9 +13,5 @@ urlpatterns = [
     path(f'funds/', include("calculation.funds.urls")),
     path(f'comparative/', include("calculation.comparative.urls")),
     path(f'statement/', include("calculation.statement.urls")),
-<<<<<<< HEAD
     path(f'export/', include("calculation.sheets_template.urls")),
-=======
-    path(f'premise/', include("calculation.premise.urls")),
->>>>>>> 1fb7b4a9e6260270ef23e19c358ec15001ff4723
 ]
