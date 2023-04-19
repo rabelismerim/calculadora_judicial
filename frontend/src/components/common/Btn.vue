@@ -59,7 +59,7 @@ const onMouseMove = (event: MouseEvent) => {
     }"
     tabindex="0"
     @keyup.space="emit('press')"
-    @click="emit('click')"
+    @click="emit('click', $event)"
     @mouseenter="shine.show = true"
     @mouseleave="shine.show = false"
     @mousemove="onMouseMove"

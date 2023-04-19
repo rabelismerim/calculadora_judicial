@@ -1,5 +1,5 @@
 const userFallback = {
-  isActive: null,
+  authorized: null,
   name: '',
   fullName: '',
   picture: '',
@@ -32,7 +32,7 @@ const logout = () => {
   store.value = { ...userFallback }
 }
 const user = computed(() => store.value)
-const isActive = computed(() => store.value.isActive)
+const isActive = computed(() => store.value.authorized)
 const hasPermissions = (permissions: string[] = []) => permissions
   .every(permission => store.value.permissions.includes(permission))
 const hasProject = (id: string) => store.value.projects.includes(id)

@@ -4,18 +4,18 @@ const route = useRoute()
 const getColor = (path: string) => route.path === path ? 'secondary' : 'white'
 const { hasPermissions } = $user
 
-let accessRequestsCount = $ref(0)
-onMounted(async () => {
-  try {
-    if (hasPermissions(['view_user'])) {
-      const users = await usersService.getUsers()
-      accessRequestsCount = users.filter(({ status }: any) => status.toLowerCase() === 'p').length
-    }
-  }
-  catch (error) {
-    printError('ERROR ON LOAD DEFAULT LAYOUT OPTIONS:', error)
-  }
-})
+const accessRequestsCount = $ref(0)
+// onMounted(async () => {
+//   try {
+//     if (hasPermissions(['view_user'])) {
+//       const users = await usersService.getUsers()
+//       accessRequestsCount = users.filter(({ status }: any) => status.toLowerCase() === 'p').length
+//     }
+//   }
+//   catch (error) {
+//     printError('ERROR ON LOAD DEFAULT LAYOUT OPTIONS:', error)
+//   }
+// })
 
 interface Link {
   label: string

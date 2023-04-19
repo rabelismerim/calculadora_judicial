@@ -6,7 +6,7 @@ const props = withDefaults(defineProps<{
   label?: string
   rules?: ValidationRule<any>[]
   options: any[]
-  toAdd: Function
+  toAdd?: Function
   errorMessages?: any
   errorKey?: string
 }>(), {
@@ -15,6 +15,7 @@ const props = withDefaults(defineProps<{
   options: () => ([]),
   errorMessages: () => ({}),
   errorKey: '',
+  toAdd: () => {},
 })
 const emit = defineEmits(['update:modelValue', 'update:options'])
 
