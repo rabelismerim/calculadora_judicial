@@ -29,7 +29,7 @@ class CalculationValues:
         "appeal_credit": True,
         "appeal_deposit": True,
         "has_advocative_hours": True,
-        "credit_authorization_date": "2023-04-10",
+        "date_credit_auth": "2023-04-10",
         "has_edital": True,
         "recurral_deposit": 100,
         "archive_json": {'teste': 'teste'}

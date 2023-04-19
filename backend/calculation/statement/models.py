@@ -37,7 +37,18 @@ class Statement(AbstractModel):
         if hasattr(self, 'statementpf'):
             return self.statementpf
 
-    def get_total_lawyer(self):
+    def get_statement_pj(self):
+        """
+        Gets the statementpj attribute of the object if it exists.
+
+        Returns:
+            - The statementpj attribute of the object, if it exists.
+            - None, otherwise.
+        """
+        if hasattr(self, 'statementpj'):
+            return self.statementpj
+
+    def get_total_lawyer(self) -> float:
         """
         Gets the value of the totallawyer attribute of the object if it exists.
 
@@ -49,7 +60,7 @@ class Statement(AbstractModel):
             return self.totallawyer.value
         return 0
 
-    def get_recurral_deposit(self):
+    def get_recurral_deposit(self) -> float:
         """
         Calls the get_recurral_deposit method of the object's statementpf attribute if it exists.
 
@@ -62,7 +73,7 @@ class Statement(AbstractModel):
             return statement_pf.get_recurral_deposit()
         return 0
 
-    def get_default_interest(self):
+    def get_default_interest(self) -> float:
         statement_pf = self.get_statement_pf()
         if statement_pf:
             return statement_pf.get_default_interest()

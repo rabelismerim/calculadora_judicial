@@ -195,7 +195,7 @@ class CalculationApi(AbstractCalculationApi):
                 comparative.save()
                 comparative.checks()
 
-            PremiseCreator(calculation).create_premises()
+            PremiseCreator(calculation)
         return JsonResponse({'calculation': self.serializer_class(calculation, many=False).data},
                             status=status.HTTP_201_CREATED)
 

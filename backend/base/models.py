@@ -33,8 +33,10 @@ CHOICES_OCCURRENCE = (
 
 class AbstractDateCreditor(AbstractModel):
     # TODO: Verificar se admissão e demissão podem ser alterados, se não possível, migrar campos para tabela Creditor
-    admission = models.DateTimeField(_("Admission date"), blank=True, null=True)
-    dismissal = models.DateTimeField(_("Resignation date"), blank=True, null=True)
+    admission = models.DateField(_("Admission date"), blank=True, null=True)
+    dismissal = models.DateField(_("Resignation date"), blank=True, null=True)
+    from datetime import date
+    dismissal_teste = models.DateField(_("Resignation date"), blank=True, null=True, default=date.today)
 
     # TODO: Verificar se esses valores são para cada credor ou cada recuperanda
     rate = models.ForeignKey(Rate, on_delete=models.PROTECT)

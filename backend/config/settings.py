@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import datetime
 from pathlib import Path
 import os
 import sys
@@ -404,3 +404,9 @@ GROUP_NAME_EXECUTOR = 'Executor'
 GROUP_NAME_APPROVER = 'Aprovador'
 GROUP_NAME_SPECIAL_APPROVE = 'Aprovador Especial'
 GROUP_NAME_REVIEWER = 'Revisor'
+
+INDEX_VARIATION_END = os.getenv('INDEX_VARIATION_END', '2017-09-01')
+INDEX_VARIATION_END = datetime.datetime.strptime(INDEX_VARIATION_END, '%Y-%m-%d').date()
+
+INDEX_VARIATION_RJ = os.getenv('INDEX_VARIATION_RJ', '2022-06-01')
+INDEX_VARIATION_RJ = datetime.datetime.strptime(INDEX_VARIATION_RJ, '%Y-%m-%d').date()
