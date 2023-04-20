@@ -17,19 +17,4 @@ from django.contrib import admin
 
 from calculation.sheets_template.models import SheetsTemplate
 
-def load_files(modeladmin, request, queryset):
-    for obj in queryset:
-        rows = obj.get_excel_to_json()
-
-        if len(rows) == 0:
-            continue
-
-        cont = 0
-        if len(rows) > 0:
-            messages.success(
-                request, f'Carregado template do arquivo {obj.filename}')
-        else:
-            messages.warning(
-                request, f'Nenhum indice carregado do arquivo {obj.filename}')
-
 admin.site.register(SheetsTemplate)
