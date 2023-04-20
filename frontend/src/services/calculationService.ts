@@ -1,12 +1,43 @@
-const mapCalculation = (calculation: any) => {
+// CALCULO
+interface Calculation {
+  classe: string
+  coin: string
+  value: number
 
 }
+const getCalculation = (creditorId: string) => api
+  .get(`/v1/calculation/creditor/${creditorId}/`)
+  .then(({ calculation }: any) => calculation)
 
+const newCalculation = async (calculation: Calculation) => {
+  const { description, calculation, calculationId, value } = calculation
+  const results = []
+  try {
+    for (const id of calculationId) {
+      const result = await api
+        .post('/v1/calculation/',
+          ({
+            type_calculation: {
+              description,
+              calculation,
+            },
+            calculationId: id,
+            value,
+          }))
+        .then((result: any) => result.verdict)
+      results.push(result)
+    }
+    return results
+  }
+  catch (error) {
+    printError('ERROR ON NEW CREDITOR', error)
+  }
+}
 // CALCULO - CRITERION
 
-const getCriterion = () => api
+const getCriterion = (calculationId: string) => api
 
-  .get(`/v1/calculation/criterion/${calculation_id}/`)
+  .get(`/v1/calculation/criterion/${calculationId}/`)
   .then(({ criterion }: any) => criterion)
 
 // CALCULO - VERDICT
@@ -50,18 +81,18 @@ const newVerdict = async (verdict: Verdict) => {
 
 // CALCULATION - FUNDS - VERBAS
 
-interface FundsV {
+interface Funds {
   calculationId: string
   name: string
 }
 
-const getFundsV = () => api
+const getFunds = (id: string) => api
 
-  .get('/v1/calculation/funds/')
-  .then(({ fundsV }: any) => fundsV)
+  .get(`/v1/calculation/funds/${id}`)
+  .then(({ funds }: any) => funds)
 
-const newFundsV = async (fundsv: FundsV) => {
-  const { calculationId, name } = fundsv
+const newFunds = async (funds: Funds) => {
+  const { calculationId, name } = funds
   const results = []
   try {
     for (const id of calculationId) {
@@ -71,7 +102,7 @@ const newFundsV = async (fundsv: FundsV) => {
             calculationId: id,
             name,
           }))
-        .then((result: any) => result.fundsv)
+        .then((result: any) => result.funds)
       results.push(result)
     }
     return results
@@ -79,6 +110,11 @@ const newFundsV = async (fundsv: FundsV) => {
   catch (error) {
     printError('ERROR ON NEW CREDITOR', error)
   }
+}
+
+const updateFunds = async (id: string) => {
+  api.put(`/v1/calculation/funds/funds/${id}`)
+    .then(({ funds }: any) => funds)
 }
 
 // CALCULATION - STATEMENST FUNDS - EXTRAT. VERBAS
@@ -270,16 +306,16 @@ interface Comparative {
   fundName: string
   taxableAmounts: number
 }
+interface NewComparative extends Comparative {
 
+}
 const getComparative = () => api
-
   .get('/v1/calculation/comparative')
   .then(({ comparative }: any) => comparative)
 
-const updateComparative = async (calculation_id: string) => {
-  api.put(`/v1/calculation/comparative/${calculation_id}`)
-    .then(({ comparative }: any) => comparative)
-}
+const updateComparative = async (calculationId: string, body: any) => api
+  .put(`/v1/calculation/comparative/${calculationId}`, body)
+  .then(({ comparative }: any) => comparative)
 
 // CALCULATION - Statement IRRF - Extrato de verbas IRRF
 
@@ -329,11 +365,13 @@ const getStatementEXT = () => api
   .then(({ statementext }: any) => statementext)
 
 export default {
+  getCalculation,
   getCriterion,
   getVerdict,
   newVerdict,
-  getFundsV,
-  newFundsV,
+  getFunds,
+  newFunds,
+  updateFunds,
   getStatementsF,
   newStatementsF,
   updateStatementsF,

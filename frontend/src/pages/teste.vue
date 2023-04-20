@@ -2,14 +2,15 @@
 const newAnalysis = {
   classe: '1',
   coin: 'B',
-  recoveringsId: ['2b218f7d-f132-458a-8ab7-80a0c1c6c7a2'],
+  // recoveringsId: ['2b218f7d-f132-458a-8ab7-80a0c1c6c7a2'],
   value: 1000,
+  creditorId: '',
 }
-let analysis = $ref([''])
+let notice = $ref([''])
 
 const createAnalysis = async () => {
   try {
-    const result = await creditorsService.newAnalysis(newAnalysis)
+    const result = await creditorsService.newNotice('')
     console.warn('print result', result)
   }
   catch (error) {
@@ -18,8 +19,8 @@ const createAnalysis = async () => {
 }
 const loadAnalysis = async () => {
   try {
-    const result = await creditorsService.getAnalysis()
-    analysis = result
+    const result = await creditorsService.getNotice()
+    notice = result
   }
   catch (error) {
     printError('ERROR ON LOAD CREDITORS:', error)
@@ -39,7 +40,7 @@ const loadAnalysis = async () => {
       @click="loadAnalysis"
     />
     <div>
-      <pre>{{ analysis }}</pre>
+      <pre>{{ notice }}</pre>
     </div>
   </div>
 </template>
