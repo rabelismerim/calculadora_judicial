@@ -249,7 +249,6 @@ class AbstractTotalValuesFunds(AbstractModel):
         fund (Funds): The fund to which the values apply.
     """
 
-    # TODO: somar todas as StatementFunds or StatementFundsIntegrations. Calcular no evento signals.post.save
     total_historical = models.FloatField(_('Total historical value'), default=0)
     total_corrected = models.FloatField(_('Total corrected amount'), default=0)
 

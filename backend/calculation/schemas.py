@@ -20,6 +20,7 @@ from django.db.models import Sum, F
 from base.schemas import AbstractDescriptionSchema
 from calculation.comparative.schemas import ComparativeSchema
 from calculation.criterion.schemas import CriterionSchema
+from calculation.funds.document.schemas import FundDocumentSchema
 from calculation.funds.irrf.schemas import FundIRRFSchema
 from calculation.funds.schemas import FundsSchema
 from calculation.statement.schemas import StatementSchema
@@ -106,9 +107,9 @@ class CalculationSchema(AbstractDescriptionSchema):
     funds = FundsSchema(source='funds_set', many=True,
                         required=False, exclude=('calculation_id',), read_only=True)
     fund_irrf = FundIRRFSchema(source='fundirrf_set', many=True,
-                        required=False, exclude=('calculation_id',), read_only=True)
-    fund_document = FundIRRFSchema(source='fund_document_set', many=True,
-                        required=False, exclude=('calculation_id',), read_only=True)
+                               required=False, exclude=('calculation_id',), read_only=True)
+    fund_document = FundDocumentSchema(source='fund_document_set', many=True,
+                                       required=False, exclude=('calculation_id',), read_only=True)
 
     statement = StatementSchema(read_only=True, exclude=('calculation_id',))
 

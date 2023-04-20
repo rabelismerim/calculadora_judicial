@@ -138,6 +138,13 @@ class TotalValuesIRRF(AbstractStatus):
     def get_irrf_per_month(self):
         return self.irrf_per_month
 
+    @property
+    def total_corrected(self) -> float:
+        return -1 * self.irrf_per_period
+
+    def get_description(self):
+        return self.fund.name
+
     def get_aliquot(self):
         return self.aliquot
 
@@ -179,6 +186,7 @@ class TotalValuesIRRF(AbstractStatus):
         self.__set_installment_deducted(irrf.deduction)
 
         self.__calc_irrf_per_month()
+
         self.__calc_irrf_per_period()
         self.set_calculation_done()
         self.save()

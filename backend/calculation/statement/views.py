@@ -65,7 +65,7 @@ class StatementApi(AbstractViewApi):
             """)
     def get(self, request, *args, **kwargs):
         calculation_id = kwargs.get('calculation_id')
-        statement = self.model.objects.filter(calculation_id=calculation_id).first()
+        statement = get_object_or_404(self.model, calculation_id=calculation_id)
         return JsonResponse({'statement': self.serializer_class(statement, many=False).data})
 
     @doc("""This method updates information regarding the statement. Editing of premises is enabled, receiving the list 

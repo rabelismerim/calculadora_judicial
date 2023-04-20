@@ -18,27 +18,26 @@ serializer = StatementPJSchema()
 
 from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
-from calculation.funds.schemas import FundsSchema
 
-from calculation.statement_pj.models import StatementPJ, FundsDescriptionPJ
+from calculation.funds.document.schemas import TotalValuesDocumentSchema
+from calculation.statement_pj.models import StatementPJ, FundsDocumentDescriptionPJ
 
 
 class FundsDescriptionPJSchema(AbstractDescriptionSchema):
     """
-    A schema class for serializing and deserializing data from the FundsDescriptionPJ model.
+    A schema class for serializing and deserializing data from the FundsDocumentDescriptionPJ model.
 
     statement_pj_id: A read-only UUID field representing the ID of the statement.
     funds: A FundsSchema object representing the funds associated with this description, excluding some fields.
-    Meta: A class defining the metadata for the FundsDescriptionPJSchema. The model is set to FundsDescriptionPJ,
+    Meta: A class defining the metadata for the FundsDescriptionPJSchema. The model is set to FundsDocumentDescriptionPJ,
     and the statement_pj field is excluded from the schema.
     """
     statement_pj_id = serializers.UUIDField(read_only=True)
-    funds = FundsSchema(exclude=('fund_id', 'values_funds',
-                        'values_funds_integrations', 'values_irrf', 'calculation_id'), read_only=True)
+    document = TotalValuesDocumentSchema(exclude=('fund_id',), read_only=True)
 
     class Meta:
-        model = FundsDescriptionPJ
-        exclude = ('statement_pj', )
+        model = FundsDocumentDescriptionPJ
+        exclude = ('statement_pj',)
 
 
 class StatementPJSchema(AbstractDescriptionSchema):
@@ -46,15 +45,12 @@ class StatementPJSchema(AbstractDescriptionSchema):
     A schema class for serializing and deserializing data from the StatementPJ model.
 
     statement_id: A read-only UUID field representing the ID of the statement.
-    verbas: A list of FundsDescriptionPJSchema objects representing the fund descriptions associated with this statement,
-    excluding the statement_pj_id field.
-    Meta: A class defining the metadata for the StatementPJSchema. The model is set to StatementPJ, and the statement field
-    is excluded from the schema.
+    verbas: A list of FundsDescriptionPJSchema objects representing the fund descriptions associated with this
+    statement, excluding the statement_pj_id field.
     """
     statement_id = serializers.UUIDField(read_only=True)
-    verbas = FundsDescriptionPJSchema(source='fundsdescriptionpj_set',
-                                      many=True, exclude=('statement_pj_id', ), read_only=True)
+    funds = FundsDescriptionPJSchema(source='get_documents', many=True, read_only=True)
 
     class Meta:
         model = StatementPJ
-        exclude = ('statement', )
+        exclude = ('statement',)

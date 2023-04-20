@@ -11,7 +11,7 @@ from django.db import models
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-from calculation.comparative.signals import gen_statement_documents
+from calculation.comparative.signals import gen_statement_documents, gen_statement_total_documents
 from calculation.funds.models import AbstractFunds, AbstractStatement, AbstractMonetaryCorrection, \
     AbstractTotalValuesFunds
 
@@ -263,7 +263,7 @@ class TotalValuesDocument(AbstractTotalValuesFunds):
         fund (Funds): The fund to which the values apply.
 
     Methods:
-        get_calculated_statement(): Returns the calculated statement of the fund.
+        __get_calculated_statement(): Returns the calculated statement of the fund.
         set_total(): Calculates and sets the total corrected and historical values of the fund based on the calculated
          statement.
     """
@@ -272,7 +272,7 @@ class TotalValuesDocument(AbstractTotalValuesFunds):
     total_fine = models.FloatField(_('Total multa'), default=0)
     total_due = models.FloatField(_('Total devido'), default=0)
 
-    def get_calculated_statement(self):
+    def __get_calculated_statement(self):
         """Returns the calculated statement of the fund."""
         if hasattr(self.fund, 'statementdocument') and self.fund.statementdocument.status == 'C':
             return self.fund.statementdocument
@@ -282,7 +282,7 @@ class TotalValuesDocument(AbstractTotalValuesFunds):
         Calculates and sets the total corrected, default_interest, fine and historical values of the fund based on
         the calculated statement.
         """
-        statement = self.get_calculated_statement()
+        statement = self.__get_calculated_statement()
         if statement:
             self.total_historical = statement.get_total_value()
             self.total_corrected = statement.get_corrected_value()
@@ -291,10 +291,13 @@ class TotalValuesDocument(AbstractTotalValuesFunds):
             self.total_due = statement.get_total_due()
             self.save()
 
+    def save(self, *args, **kwargs):
+        super(TotalValuesDocument, self).save()
+        gen_statement_total_documents.send(sender=self.__class__, instance=self)
 
 
 @receiver(gen_statement_documents, sender=StatementDocument)
-def save_rate_documents(sender, instance, **kwargs) -> None:
+def save_statement_documents(sender, instance, **kwargs) -> None:
     """
     This method is a receiver for post_save signal and is triggered when a StatementDocument object is saved. It
     calculates the monetary correction for the instance and generates the total document of the related fund. It

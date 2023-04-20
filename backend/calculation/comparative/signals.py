@@ -6,6 +6,7 @@ gen_total_funds = django.dispatch.Signal()  # signal to generate total statement
 gen_statement_funds = django.dispatch.Signal()  # signal to generate statement funds calculation
 gen_statement_integrations = django.dispatch.Signal()  # signal to generate statement integrations calculation
 gen_statement_documents = django.dispatch.Signal()  # signal to generate statement documents calculation
+gen_statement_total_documents = django.dispatch.Signal()  # signal to generate statement documents total calculation
 gen_statement_irrf = django.dispatch.Signal()  # signal to generate statement irrf calculation
 gen_total_statement_funds = django.dispatch.Signal()  # signal to generate the total calculation of the funds
 gen_total_statement_integrations = django.dispatch.Signal()  # signal to generate the total calculation of the

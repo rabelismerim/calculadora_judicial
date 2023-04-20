@@ -135,9 +135,7 @@ class FundDocumentSchema(AbstractClassesFundsSchema):
     deserializing StatementIRRF instances.
     """
     calculation_id = serializers.UUIDField()
-
     fund = TotalValuesDocumentSchema(source='totalvaluesdocument', read_only=True, exclude=('fund_id',))
-
     statement = StatementDocumentSchema(source='statementdocument', exclude=('fund_id', 'status'), write_only=True)
 
     class Meta:

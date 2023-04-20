@@ -13,6 +13,7 @@ from django.utils.translation import gettext_lazy as _
 from calculation.comparative.signals import new_calc
 from calculation.funds.abstract.models import AbstractStatus
 from calculation.funds.integrations.models import TotalValuesFundsIntegrations
+from calculation.funds.irrf.models import TotalValuesIRRF
 from calculation.funds.models import TotalValuesFunds
 from calculation.models import Calculation
 from calculation.statement.models import Statement
@@ -101,6 +102,7 @@ class StatementPF(AbstractStatus):
         Calculates and returns the total value by summing the
         'total' field of all 'FundsDescription' objects
         """
+        # TODO ver com stackholders se o valor de IRRF, INSS entra nesse primeiro total
         return sum(fd.total for fd in self.fundsdescription_set.all())
 
     def _get_date_rj_filing(self) -> datetime.date or None:  # B19
@@ -222,6 +224,7 @@ class StatementPF(AbstractStatus):
     @property
     def total_conclusion(self) -> float or None:
         """
+        Excel Statement C35
         =IF(N7="Sim";C40;IF($B$19<$B$18;IFERROR(C38;C36);IF($B$19>=$B$18;IFERROR($C$40;$C$35))))
 
         Calculates and returns the total conclusion
@@ -245,6 +248,7 @@ class StatementPF(AbstractStatus):
         appeal_deposit = self._get_appeal_deposit()
         date_rj_filing = self._get_date_rj_filing()
         date_rj_request = self._get_date_rj_request()
+
         default_interest_due = self.get_default_interest_due()
         if not date_rj_filing or not date_rj_request:
             return None
@@ -260,6 +264,7 @@ class StatementPF(AbstractStatus):
                 result = default_interest_due
             else:
                 result = self._get_total()
+
         return result
 
     def _has_tax(self) -> bool:
@@ -559,10 +564,14 @@ class FundsDescription(AbstractModel):
     statement_pf = models.ForeignKey(StatementPF, on_delete=models.PROTECT)
     rate = models.ForeignKey(TotalValuesFunds, on_delete=models.PROTECT, null=True, blank=True)
     rate_integrations = models.ForeignKey(TotalValuesFundsIntegrations, on_delete=models.PROTECT, null=True, blank=True)
+    rate_irrf = models.ForeignKey(TotalValuesIRRF, on_delete=models.PROTECT, null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        if self.rate and self.rate_integrations:
-            raise AttributeError(_('Saving rate and rate_integrations at the same time is not allowed.'))
+        has_rates = [self.rate is None, self.rate_integrations is None, self.rate_irrf is None]
+        if has_rates.count(False) == 0:
+            raise AttributeError(_('Need at least one rate or rate_integrations or rate_irrf.'))
+        elif has_rates.count(False) > 1:
+            raise AttributeError(_('Not allowed to save more than one rate or rate_integrations or rate_irrf.'))
         super().save(*args, **kwargs)
 
     def _get_rate(self):
@@ -578,6 +587,8 @@ class FundsDescription(AbstractModel):
             return self.rate
         elif self.rate_integrations:
             return self.rate_integrations
+        elif self.rate_irrf:
+            return self.rate_irrf
         raise AttributeError(_('Need to have a budget tied up'))
 
     @property
