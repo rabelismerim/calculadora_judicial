@@ -49,7 +49,7 @@ class StatementPJSchema(AbstractDescriptionSchema):
     statement, excluding the statement_pj_id field.
     """
     statement_id = serializers.UUIDField(read_only=True)
-    funds = FundsDescriptionPJSchema(source='get_documents', many=True, read_only=True)
+    documents = FundsDescriptionPJSchema(source='get_documents', many=True, read_only=True)
 
     class Meta:
         model = StatementPJ

@@ -75,6 +75,8 @@ class StatementPF(AbstractStatus):
     total = models.FloatField(_('Amount'), default=0)
     statement = models.OneToOneField(Statement, on_delete=models.PROTECT)
 
+    def get_agreements(self):
+        return
     def get_recurral_deposit(self) -> float:
         """
         Get the amount of the recurral deposit.

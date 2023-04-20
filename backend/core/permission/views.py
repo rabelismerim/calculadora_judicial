@@ -1,4 +1,5 @@
 from django.contrib.contenttypes.models import ContentType
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.permissions import BasePermission
 from django.apps import apps as default_apps
@@ -364,6 +365,40 @@ class CheckPermissions(BasePermission):
             raise AttributeError(_('Need to add "perms: list" attribute to use CheckPermissions class'))
         perms = view.perms
         return request.user.has_permission(perms)
+
+
+class CheckFundsPjPfPermissions(BasePermission):
+    """
+    Permission check for allowing a user to change steps in a process.
+
+    Methods:
+        - has_permission(self, request, view): Checks if the requesting user has permission to change the process step.
+    """
+    message = _('It is not possible to register this fund')
+
+    def has_permission(self, request, view):
+        """
+        This method checks if the user has permission to change the step of a Calculation object. Receives request
+        and view objects as parameters. It gets the calculation_id from the view, checks if the user has the
+        necessary permission codename, and returns a boolean indicating if the user has permission or not. If the
+        user doesn't have permission, it raises a ValidationError with a message indicating the current and next
+        steps that cannot be changed.
+        """
+        if hasattr(view, 'physical_person') is False:
+            raise AttributeError(
+                _('Need to add "physical_person: bool" attribute to use CheckFundsPjPfPermissions class'))
+        calculation_id = view.request.data.get('calculation_id')
+        calculation = get_object_or_404(Calculation, id=calculation_id)
+
+        physical_person = calculation.creditor.physical_person
+        if physical_person != view.physical_person:
+            return True
+
+        if physical_person:
+            self.message = _('It is not possible to register a fund of the legal entity type for individuals')
+        else:
+            self.message = _('It is not possible to register a fund of the individuals type for legal entity')
+        return False
 
 
 def check_query_permission(perms):

@@ -21,6 +21,7 @@ from rest_framework import serializers
 
 from calculation.statement_pf.models import DefaultInterest, DefaultInterestDue, FundsDescription, \
     StatementPF, TaxDays, AbstractValue
+from calculation.statement_pj.schemas import FundsDescriptionPJSchema
 
 
 class AbstractValueSchema(AbstractDescriptionSchema):
@@ -173,6 +174,8 @@ class StatementPFSchema(AbstractDescriptionSchema):
     funds_description = FundsDescriptionSchema(source='fundsdescription_set', exclude=('statement_pf_id',), many=True)
     description_display = serializers.CharField(source='get_description_display')
     status_display = serializers.CharField(source='get_status_display')
+
+    agreements = FundsDescriptionPJSchema(source='get_agreements', many=True, read_only=True)
 
     class Meta:
         model = StatementPF

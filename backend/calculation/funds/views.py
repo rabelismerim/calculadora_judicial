@@ -13,7 +13,7 @@ from calculation.funds.models import Funds, StatementFunds
 from core.abstract.views import AbstractViewApi
 
 from rest_framework import permissions, status
-from core.permission.views import CheckHasPermission
+from core.permission.views import CheckHasPermission, CheckFundsPjPfPermissions
 from utils import _, doc
 
 docs = {
@@ -55,9 +55,9 @@ class AbstractFundsApi(AbstractViewApi):
         ```
     """
     serializer_class = FundsSchema
-    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CheckFundsPjPfPermissions]
     model = Funds
-
+    physical_person = True
     query_params = []
 
 

@@ -37,8 +37,10 @@ class StatementPJ(AbstractModel):
     amount_due = models.FloatField(_('Total due'), default=0)
 
     def get_documents(self):
-        print('called\n\n')
-        return self.fundsdocumentdescriptionpj_set.all()
+        return self.fundsdocumentdescriptionpj_set.filter(document__fund__calculation__creditor__physical_person=False)
+
+    def get_agreements(self):
+        return self.fundsdocumentdescriptionpj_set.filter(document__fund__calculation__creditor__physical_person=True)
 
     def set_total(self):
         self.value = 0
@@ -68,7 +70,6 @@ class FundsDocumentDescriptionPJ(AbstractModel):
     """
     document = models.OneToOneField(TotalValuesDocument, on_delete=models.PROTECT)
     statement_pj = models.ForeignKey(StatementPJ, on_delete=models.PROTECT)
-
 
 
 @receiver(gen_statement_total_documents, sender=TotalValuesDocument)

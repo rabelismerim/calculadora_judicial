@@ -1,5 +1,6 @@
 import json
 import os.path
+import random
 import re
 import sys
 import webbrowser
@@ -199,7 +200,22 @@ class AbstractTest(TransactionTestCase):
     def __format_url(self, path: str) -> str:
         return f'{self.base_url}{path}/'.replace('//', '/')
 
+    def __create_payload(self, path, obj, method):
+        if DEBUG is False:
+            return
+        payload = {
+            'url': self.__format_url(path),
+            'data': obj,
+        }
+
+        if os.path.exists('payload') is False:
+            os.mkdir('payload')
+        with open(f'payload/payload_{method}_{path.replace("/", "_")}_{random.randint(1, 1000)}.json', mode='w',
+                  encoding='utf-8') as f:
+            f.write(json.dumps(payload))
+
     def post(self, path, obj):
+        self.__create_payload(path, obj, 'post')
         response = self.client.post(self.__format_url(path), json.dumps(obj), content_type="application/json")
         data = {'status_code': response.status_code, 'content': response.content}
         dat = AttrDict(data)
@@ -232,6 +248,8 @@ class AbstractTest(TransactionTestCase):
             key = keys[0]
             values = data['content'][key]
             self._write_html(values, key)
+
+        self.__create_payload(path, data, 'get')
         return AttrDict(data)
 
     def print_dict(self, obj, index=4, key='Exibir', range_=0):
