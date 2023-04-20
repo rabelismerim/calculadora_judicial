@@ -92,3 +92,22 @@ class EntitySchema(AbstractDescriptionSchema):
             if not self.__validate_cnpj(legal_number):
                 raise serializers.ValidationError([_('Invalid CPF/CNPJ')])
         return legal_number
+
+
+class EntityCheckSchema(EntitySchema):
+    """
+    Serializes EntitySchema model fields for use in the API.
+
+    This module defines a Django REST Framework serializer that inherits from a
+    AbstractDescriptionSchema class. The serializer converts EntitySchema instances
+    model to and from JSON format and validates the received data against the fields in the model. In this model it
+    is used to validate the cpf/cnpj field
+
+    Example of use:
+    serializer = EntitySchema()
+    """
+    legal_number = serializers.CharField(validators=[])
+
+    class Meta:
+        model = Entity
+        fields = ('legal_number',)

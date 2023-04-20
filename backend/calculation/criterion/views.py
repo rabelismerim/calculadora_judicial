@@ -44,13 +44,13 @@ class CriterionApi(AbstractViewApi):
         """)
     }
 
-    @doc("""This method handles GET requests for the view. It retrieves a specific criterion object using the given 
+    @doc(_("""This method handles GET requests for the view. It retrieves a specific criterion object using the given 
         calculation_id from the query parameters and serializes the result into JSON format before returning it as an 
         HTTP response. 
 
             Returns:
                 JsonResponse: An HTTP response containing the serialized comparative data retrieved.
-            """)
+            """))
     def get(self, request, *args, **kwargs):
         calculation_id = kwargs.get('calculation_id')
         criterion = self.model.objects.filter(calculation_id=calculation_id).first()

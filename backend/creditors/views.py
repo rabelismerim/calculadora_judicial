@@ -1,13 +1,13 @@
 from django.db import transaction
-
 from base.claim.models import ClaimCreditor, ClaimLawyer
 from base.coins.models import Coins
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
-from rest_framework import status
+from rest_framework import status, serializers
 
 from rest_framework import permissions
 from core.entity.models import Entity
+from core.entity.schemas import EntityCheckSchema
 from core.permission.views import CheckHasPermission
 from creditors.notice.models import Notice, NoticeRecovering
 from creditors.schemas import CreditorCreateSchema, CreditorSchema, CreditorUpdateSchema
@@ -16,10 +16,10 @@ from utils import get_user_model, _, doc
 
 User = get_user_model()
 docs = {
-    'init': """The `Creditor` class represents a creditor of an entity in the context of a credit recovery process. 
+    'init': _("""The `Creditor` class represents a creditor of an entity in the context of a credit recovery process. 
     It stores relationship with the `Entity` model and with the `Recovering` model. In addition, it has a description 
     of the creditor stored in the `description` field.
-    """
+    """)
 }
 
 
@@ -28,7 +28,7 @@ class AbstractCreditorApi(AbstractViewApi):
     serializer_class = CreditorSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Creditor
-    docs = docs
+    docs = docs.copy()
     query_params = [
         {
             "name": "description",
@@ -49,13 +49,13 @@ class CreditorDetailApi(AbstractCreditorApi):
     http_method_names = ['get', ]
     init_docs = docs.copy()
     docs_get = {
-        'get': """Retrieve a creditor by their given ID,
+        'get': _("""Retrieve a creditor by their given ID,
         serializes it and returns a JSON response with the serialized data.
 
         Returns
         -------
         JsonResponse
-            A response with a JSON object containing a serialized creditor data object."""
+            A response with a JSON object containing a serialized creditor data object.""")
     }
     init_docs.update(docs_get)
     docs = init_docs
@@ -65,10 +65,10 @@ class CreditorCreateApi(AbstractCreditorApi):
     """HTTP methods for CreditorCreate options"""
     http_method_names = ['get']
     serializer_class = CreditorCreateSchema
-    docs = docs
+    docs = docs.copy()
     query_params = []
 
-    @doc("""Options for creating creditors or calculations""")
+    @doc(_("""Options for creating creditors or calculations"""))
     def get(self, request, *args, **kwargs):
         data = {}
         for key, field in self.serializer_class(many=False).fields.items():
@@ -89,18 +89,17 @@ class CreditorListApi(AbstractCreditorApi):
         with the serialized data.
     """
     http_method_names = ['get']
-    docs = docs
+    docs = docs.copy()
     operation_id_base = 'CreditorList'
 
-    @doc("""
-        Retrieves a queryset of creditors related to a given project ID,
+    @doc(_("""Retrieves a queryset of creditors related to a given project ID,
         serializes it and returns a JSON response with the serialized data.
 
         Returns
         -------
         JsonResponse
             A response with a JSON object containing a list of serialized creditor data.
-        """)
+        """))
     def get(self, request, *args, **kwargs):
         project_id = kwargs.get('project_id')
         creditors = self.serializer_class(self.model.objects.filter(
@@ -111,12 +110,11 @@ class CreditorListApi(AbstractCreditorApi):
 class CreditorApi(AbstractCreditorApi):
     """ AbstractCreditorApi's HTTP methods for creating new creditor with required fields."""
     http_method_names = ['post']
-    docs = docs
+    docs = docs.copy()
 
-    @doc("""
-        Create creditor by receiving a dictionary object with required fields.
+    @doc(_("""Create creditor by receiving a dictionary object with required fields.
         Creditor detail will be returned upon successful completion of operation
-        """)
+        """))
     def post(self, request, *args, **kwargs):
         with transaction.atomic():
             serializer = self.serializer_class(data=request.data)
@@ -165,8 +163,41 @@ class CreditorApi(AbstractCreditorApi):
                             status=status.HTTP_201_CREATED)
 
 
+class CreditorCheckApi(AbstractViewApi):
+    """AbstractCreditorApi's HTTP methods for creating new creditor with required fields."""
+    http_method_names = ['post']
+    docs = docs.copy()
+    model = Entity
+    serializer_class = EntityCheckSchema
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    tags = [_('Creditor')]
+    operation_id_base = 'CreditorCheckLN'
+
+    @doc(_("""Check the creditor to see if he exists in that recovering, based on his legal_number
+        
+        Returns
+            an HTTP 200 if it does not exist, an exception is generated when it exists
+        """))
+    def post(self, request, *args, **kwargs):
+        recovering_id = kwargs.get('recovering_id')
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        legal_number = serializer.validated_data.get('legal_number')
+        if Creditor.objects.filter(entity__legal_number=legal_number, recovering_id=recovering_id).exists():
+            raise serializers.ValidationError([_('Legal number already registered')])
+        return JsonResponse({'message': 'Legal number unregistered'})
+
+
 class CreditorUpdateApi(AbstractCreditorApi):
     """HTTP methods for update creditor"""
     http_method_names = ['put']
     serializer_class = CreditorUpdateSchema
-    docs = docs
+    docs = docs.copy()
+    docs['put'] = _("""Method to change creditor information instance.
+
+            Receives and validates JSON data with the fields `description`, `admission`, `dismissal`, 
+            `default_interest`, `fine` or `advocative_hours`.
+            
+            Finds the Calculation instance based on the URL parameter id.
+            Returns a JSON response with the updated Creditor object.
+            """)

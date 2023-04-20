@@ -70,7 +70,7 @@ class StatementIntegrationsApi(AbstractStatementIntegrationsApi):
         GET /api/v1/calculation/funds/statement_funds/
         ```
     """
-    docs = docs
+    docs = docs.copy()
     docs['post'] = _("""Create Statement Integration object from request data and return Statement Integration detail.
         Returns:
             JsonResponse: A JSON response containing the created Funds
@@ -109,7 +109,7 @@ class StatementIntegrationsDetailApi(AbstractStatementIntegrationsApi):
     serializer_class = StatementIntegrationsUpdateSchema
     http_method_names = ['get', 'put']
     exclude = ('fund_id',)
-    docs = docs
+    docs = docs.copy()
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific statement integration 
     object using the given id from the query parameters and serializes the result into JSON format before returning it
      as an HTTP response. 

@@ -52,13 +52,13 @@ class StatementPJApi(AbstractViewApi):
 
     query_params = []
 
-    @doc("""This method handles GET requests for the view. It retrieves a specific statement PJ object using the given 
+    @doc(_("""This method handles GET requests for the view. It retrieves a specific statement PJ object using the given 
             calculation_id from the query parameters and serializes the result into JSON format before returning it as
              an HTTP response. 
 
                 Returns:
                     JsonResponse: An HTTP response containing the serialized statement PJ data retrieved.
-                """)
+                """))
     def get(self, request, *args, **kwargs):
         calculation_id = kwargs.get('calculation_id')
         statement = self.model.objects.filter(

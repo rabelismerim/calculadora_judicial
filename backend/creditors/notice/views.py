@@ -26,9 +26,9 @@ class NoticeApi(AbstractViewApi):
         """),
     }
 
-    @doc("""Create a new NoticeAJ, if it does not exist in the base, if it exists, an exception will be 
+    @doc(_("""Create a new NoticeAJ, if it does not exist in the base, if it exists, an exception will be 
         generated.
-            Returns NoticeAJ details if successful""")
+            Returns NoticeAJ details if successful"""))
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -55,12 +55,11 @@ class NoticeUpdateApi(AbstractViewApi):
         """),
     }
 
-    @doc("""
-        Method to update existing NoticeAJ for a creditor.
+    @doc(_("""Method to update existing NoticeAJ for a creditor.
         It validates the serializer data, gets the 'creditor' and 'classes' objects from the input data,
         updates the claim using the model instance and returns a JsonResponse with the serialized 'creditor'
         object.
-        """)
+        """))
     def put(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -95,9 +94,9 @@ class NoticeRecoveringApi(AbstractViewApi):
             process, such as what was requested by the creditor, how much was calculated due, the dates and amounts""")
     }
 
-    @doc("""Create a new NoticeRecovering, if it does not exist in the base, if it exists, an exception will be 
+    @doc(_("""Create a new NoticeRecovering, if it does not exist in the base, if it exists, an exception will be 
             generated.
-                Returns NoticeRecovering details if successful""")
+                Returns NoticeRecovering details if successful"""))
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -125,12 +124,11 @@ class NoticeRecoveringUpdateApi(AbstractViewApi):
                 """),
     }
 
-    @doc("""
-            Method to update existing NoticeRecovering for a creditor.
+    @doc(_("""    Method to update existing NoticeRecovering for a creditor.
             It validates the serializer data, gets the 'creditor' and 'classes' objects from the input data,
             updates the claim using the model instance and returns a JsonResponse with the serialized 'creditor'
             object.
-            """)
+            """))
     def put(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)

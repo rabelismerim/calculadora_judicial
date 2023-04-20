@@ -27,13 +27,12 @@ class ClaimCreditorApi(AbstractViewApi):
     model = ClaimCreditor
     query_params = []
     http_method_names = ['post']
-    docs = docs
+    docs = docs.copy()
 
-    @doc("""
-        Method to create a new claim for a creditor.
+    @doc(_("""Method to create a new claim for a creditor.
         It validates the serializer data, gets the 'creditor' and 'classes' objects from the input data,
         creates the claim using the model instance and returns a JsonResponse with the serialized 'creditor' object.
-        """)
+        """))
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -60,12 +59,11 @@ class ClaimCreditorUpdateApi(AbstractViewApi):
     query_params = []
     http_method_names = ['put']
 
-    @doc("""
-        Method to update existing claim for a creditor.
+    @doc(_("""Method to update existing claim for a creditor.
         It validates the serializer data, gets the 'creditor' and 'classes' objects from the input data,
         updates the claim using the model instance and returns a JsonResponse with the serialized 'creditor'
         object.
-        """)
+        """))
     def put(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -96,14 +94,13 @@ class ClaimLawyerApi(AbstractViewApi):
     model = ClaimLawyer
     query_params = []
     http_method_names = ['post']
-    docs = docs
+    docs = docs.copy()
 
-    @doc("""
-        Method to create a new claim lawyer for a creditor or update an existing.
+    @doc(_("""Method to create a new claim lawyer for a creditor or update an existing.
         It validates the serializer data, gets the 'creditor' objects from the input data,
         updates or creates the claim using the model instance and returns a JsonResponse with the serialized 'creditor'
         object.
-        """)
+        """))
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)

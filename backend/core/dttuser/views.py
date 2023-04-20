@@ -39,7 +39,7 @@ class AbstractUserDttApi(AbstractViewApi):
     user details given a filtering criteria. The serializer is used to access the model object, and then the data is
     returned in a JSON format. """
     serializer_class = UserDttSchema
-    docs = docs
+    docs = docs.copy()
     if IS_LOCALHOST:
         permission_classes = [permissions.AllowAny]
     else:
@@ -79,12 +79,11 @@ class UserDttDetailApi(AbstractUserDttApi):
     query_params and schema. """
     http_method_names = ['get']
     query_params = []
-    docs = docs
+    docs = docs.copy()
 
-    @doc("""
-        This method returns a JSON response that contains the user details as per authenticated user. 
+    @doc(_("""This method returns a JSON response that contains the user details as per authenticated user. 
         The serializer is used to access the model object, and then the data is returned in a JSON format.
-        """)
+        """))
     def get(self, request, *args, **kwargs):
         serializer = self.get_serializer_class()
         user = serializer(self.model.objects.filter(
@@ -100,15 +99,15 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
     permission_classes = [permissions.IsAuthenticated, CheckPermissions]
     query_params = []
     perms = ['can_authorize_users']
-    docs = docs
+    docs = docs.copy()
 
-    @doc("""Handles HTTP POST request to authorize or unauthorize user access.
+    @doc(_("""Handles HTTP POST request to authorize or unauthorize user access.
 
         - Validates request data.
         - Alter status by choice.
         - Filters user by email and validates if it exists.
         - Adds specified permission groups and subgroups to the user.
-        """)
+        """))
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -139,12 +138,11 @@ class UserSendMailDttApi(AbstractUserDttApi):
     http_method_names = ['post']
     serializer_class = UserMailDttSchema
     query_params = []
-    docs = docs
+    docs = docs.copy()
 
-    @doc("""
-        Used to validate and send email when asked to create a new user.
+    @doc(_("""Used to validate and send email when asked to create a new user.
         The serializer is used to access the model object, and then the data is returned in a JSON format.
-        """)
+        """))
     def post(self, request, *args, **kwargs):
         if not DTT_EMAIL:
             raise serializers.ValidationError(
@@ -246,10 +244,9 @@ class UserDttApi(AbstractUserDttApi):
     }
     operation_id_base = 'UserDetail'
 
-    @doc("""
-        Only LocalHost. Create a new user by receiving data in the form of dictionaries and 
+    @doc(_("""Only LocalHost. Create a new user by receiving data in the form of dictionaries and 
         returning the specific user details.
-        """)
+        """))
     def post(self, request, *args, **kwargs):
         if IS_LOCALHOST is False:
             raise PermissionDenied()

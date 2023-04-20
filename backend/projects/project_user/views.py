@@ -25,7 +25,7 @@ class ProjectUserApi(AbstractViewApi):
         """)
     }
 
-    @doc("""Get projects from user authenticated, return ProjectUser detail""")
+    @doc(_("""Get projects from user authenticated, return ProjectUser detail"""))
     def get(self, request, *args, **kwargs):
         serializer = self.get_serializer_class()
         projects_user = serializer(ProjectEngagement.objects.filter(
@@ -37,7 +37,7 @@ class ProjectUserApi(AbstractViewApi):
                 projects_user_data.append(project[0].id)
         return JsonResponse({'project_user': projects_user_data}, status=status.HTTP_200_OK)
 
-    @doc("""Create ProjectUser receiving a dict, return ProjectUser detail""")
+    @doc(_("""Create ProjectUser receiving a dict, return ProjectUser detail"""))
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)

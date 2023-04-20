@@ -32,7 +32,7 @@ class RateApi(AbstractViewApi):
         }
     ]
 
-    @doc("""Saves an index according to its name and values""")
+    @doc(_("""Saves an index according to its name and values"""))
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -58,9 +58,8 @@ class RateFileApi(AbstractViewApi):
         }
     ]
 
-    @doc("""
-        Updating or creating rates through an excel file. Saves an rate using an excel file. This file must contain 
-        the columns mes and indice. Optionally according to the rate have the fields acumulado and periodo""")
+    @doc(_("""Updating or creating rates through an excel file. Saves an rate using an excel file. This file must contain 
+        the columns mes and indice. Optionally according to the rate have the fields acumulado and periodo"""))
     def post(self, request, *args, **kwargs):
         data = request.data
         file = request.FILES.get('file')

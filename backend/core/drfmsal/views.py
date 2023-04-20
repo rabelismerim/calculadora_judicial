@@ -31,10 +31,9 @@ class SignStatusApi(AbstractViewApi):
     permission_classes = [AllowAny]
     authentication_classes = [SessionAuthentication]
 
-    @doc("""
-        This method returns a JSON response that contains the user details as per authenticated user. 
+    @doc(_("""This method returns a JSON response that contains the user details as per authenticated user. 
         The serializer is used to access the model object, and then the data is returned in a JSON format.
-        """)
+        """))
     def get(self, request, *args, **kwargs):
         if ENABLE_SSO and ms_identity_web.id_data:
             user_view = User.objects.filter(

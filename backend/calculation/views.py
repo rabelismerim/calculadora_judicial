@@ -42,7 +42,7 @@ class AbstractCalculationApi(AbstractViewApi):
             "schema": {"type": "string"}
         }
     ]
-    docs = docs
+    docs = docs.copy()
 
 
 class IncidentApi(AbstractViewApi):
@@ -100,13 +100,13 @@ class CalculationListApi(AbstractCalculationApi):
     docs = docs.copy()
     operation_id_base = 'CreditorListCalculation'
 
-    @doc("""This method handles GET requests for the view. It retrieves a list of objects Calculation using the given
+    @doc(_("""This method handles GET requests for the view. It retrieves a list of objects Calculation using the given
                 creditor_id from the query parameters and serializes the result into JSON format before returning it as
                  anHTTP response.
 
                     Returns:
                         JsonResponse: An HTTP response containing the serialized Calculation data retrieved.
-                    """)
+                    """))
     def get(self, request, *args, **kwargs):
         creditor_id = kwargs.get('creditor_id')
         statement = self.model.objects.filter(creditor_id=creditor_id)
@@ -119,8 +119,7 @@ class CalculationApi(AbstractCalculationApi):
     http_method_names = ['post']
     docs = docs.copy()
 
-    @doc("""
-        Creates a new instance of the Calculation model, receiving a dictionary as an argument and returning details
+    @doc(_("""Creates a new instance of the Calculation model, receiving a dictionary as an argument and returning details
          of the newly created instance.
         Before creation of the Calculation instance, it will create related Criterion and Verdict instances based on
         the input data.
@@ -132,7 +131,7 @@ class CalculationApi(AbstractCalculationApi):
 
         Returns
         A JsonResponse containing the serialized Calculation instance.
-        """)
+        """))
     def post(self, request, *args, **kwargs):  # Generate calculation
         with transaction.atomic():
             serializer = self.serializer_class(data=request.data)
@@ -228,15 +227,14 @@ class ChangeStepApi(AbstractViewApi):
     model = Calculation
     docs = docs.copy()
 
-    @doc("""
-        PUT method to change the step of the Calculation instance.
+    @doc(_("""PUT method to change the step of the Calculation instance.
 
         Receives and validates JSON data with the next_step string.
         Finds the Calculation instance based on the URL parameter id.
         Returns a JSON response with the updated Calculation object.
 
         Possible statuses are `Requested`, `Calculated`, `Revised`, `Approved`, `Failed`, `Specially Approved`,
-        """)
+        """))
     def put(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)

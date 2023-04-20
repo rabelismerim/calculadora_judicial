@@ -84,10 +84,9 @@ class FundsApi(AbstractFundsApi):
         ```
     """
     http_method_names = ['post']
-    docs = docs_fund
+    docs = docs_fund.copy()
 
-    @doc("""
-        Create Funds object from request data and return Funds detail.
+    @doc(_("""Create Funds object from request data and return Funds detail.
         Args:
             request (HttpRequest): HTTP request object containing the POST data.
 
@@ -97,7 +96,7 @@ class FundsApi(AbstractFundsApi):
         Raises:
             serializers.ValidationError: If the input data is invalid.
             rest_framework.exceptions.PermissionDenied: If the user does not have permission to perform the action.
-        """)
+        """))
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -130,7 +129,7 @@ class FundsDetailApi(AbstractFundsApi):
         ```
     """
     http_method_names = ['get', ]
-    docs = docs_fund
+    docs = docs_fund.copy()
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific fund 
         object using the given id from the query parameters and serializes the result into JSON format before returning it
          as an HTTP response. 
@@ -236,7 +235,7 @@ class StatementFundsApi(AbstractStatementFundsApi):
         ```
     """
     http_method_names = ['post']
-    docs = docs
+    docs = docs.copy()
     docs['post'] = _("""Create Statement Fund object from request data and return Statement Fund detail.
             Returns:
                 JsonResponse: A JSON response containing the created Funds
@@ -272,7 +271,7 @@ class StatementFundsDetailApi(AbstractStatementFundsApi):
     """
     serializer_class = StatementFundsUpdateSchema
     http_method_names = ['get', 'put']
-    docs = docs
+    docs = docs.copy()
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific statement fund object 
     using the given id from the query parameters and serializes the result into JSON format before returning it as an 
     HTTP response. 

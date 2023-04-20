@@ -67,7 +67,7 @@ class PremiseApi(AbstractViewApi):
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Premise
 
-    docs = docs
+    docs = docs.copy()
 
     query_params = [
         {

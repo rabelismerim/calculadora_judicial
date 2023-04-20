@@ -1,5 +1,7 @@
 import datetime
 from abc import ABC
+
+from django.apps import apps
 from django.http import JsonResponse
 from django.utils.encoding import smart_str
 from rest_framework import generics, serializers, status
@@ -30,9 +32,14 @@ class CustomSchema(AutoSchema):
         if hasattr(view, 'tags') and isinstance(view.tags, list):
             return list(map(str, view.tags))
         if view.model:
-            app = view.model._meta.app_config.name.split('.')[0].capitalize()
-            app_label = view.model._meta.app_label.capitalize()
-            if app == app_label:
+            app_label = str(view.model._meta.app_config.verbose_name.split('.')[0].capitalize())
+            app = view.model._meta.app_config.name.split('.')[0]
+            try:
+                label = apps.get_app_config(app)
+                app = str(label.verbose_name)
+            except LookupError:
+                pass
+            if app.lower() in app_label.lower():
                 return ['{}'.format(app)]
             return ['{} - {}'.format(app, app_label)]
         return super(CustomSchema, self).get_tags(path, method)
@@ -61,7 +68,7 @@ class CustomSchema(AutoSchema):
             docstring = self._get_description_section(view, getattr(view, 'action', method.lower()),
                                                       view.get_view_description())
 
-        return formatting.dedent(smart_str(init + '\r\n' + str(docstring)))
+        return formatting.dedent(smart_str(init + '\n\n' + str(docstring)))
 
     def _get_init_description(self) -> str:
         view = self.view

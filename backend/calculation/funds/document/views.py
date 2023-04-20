@@ -86,10 +86,9 @@ class FundDocumentApi(AbstractFundDocumentApi):
         ```
     """
     http_method_names = ['post']
-    docs = docs
+    docs = docs.copy()
 
-    @doc("""
-        Create Document Fund object from request data and return Document Fund detail.
+    @doc(_("""Create Document Fund object from request data and return Document Fund detail.
         The 'has_custom_fine' field controls whether the fine entered in the document will be used, or the standard 
         fine defined in the calculation
 
@@ -98,7 +97,7 @@ class FundDocumentApi(AbstractFundDocumentApi):
 
         Raises:
             serializers.ValidationError: If the input data is invalid.
-        """)
+        """))
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -136,7 +135,7 @@ class FundDocumentDetailApi(AbstractFundDocumentApi):
         GET /api/v1/calculation/funds/?funds=funds_name
         ```
     """
-    docs = docs
+    docs = docs.copy()
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific document fund object 
     using the given  id from the query parameters and serializes the result into JSON format before returning it as an 
         HTTP response. 
@@ -152,12 +151,12 @@ class FundDocumentDetailApi(AbstractFundDocumentApi):
         'put': FundDocumentUpdateSchema,
     }
 
-    @doc("""This method handles PUT requests for the view. It updates a specific document fund object using the given id 
+    @doc(_("""This method handles PUT requests for the view. It updates a specific document fund object using the given id 
     from the query parameters and the serialized input data from the request body. 
     
         Returns:
             JsonResponse: An HTTP response containing the serialized document fund data updated.
-            """)
+            """))
     def put(self, request, *args, **kwargs):
         id_ = kwargs.get('id')
         serializer = self.get_serializer_class()

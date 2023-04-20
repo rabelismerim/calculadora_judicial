@@ -33,7 +33,7 @@ class EngagementApi(AbstractViewApi):
         'get': _("""Get the list of all engagements, being able to filter by number."""),
     }
 
-    @doc("""Create Engagement receiving a dict, return Engagement detail""")
+    @doc(_("""Create Engagement receiving a dict, return Engagement detail"""))
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)

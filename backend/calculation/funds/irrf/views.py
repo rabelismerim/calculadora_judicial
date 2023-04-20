@@ -83,11 +83,10 @@ class FundIRRFApi(AbstractFundIRRFApi):
         GET /api/v1/calculation/funds/?funds=funds_name
         ```
     """
-    docs = docs_fund
+    docs = docs_fund.copy()
     http_method_names = ['post']
 
-    @doc("""
-        Create FundIRRF object from request data and return FundIRRF detail.
+    @doc(_("""Create FundIRRF object from request data and return FundIRRF detail.
         Args:
             request (HttpRequest): HTTP request object containing the POST data.
 
@@ -96,7 +95,7 @@ class FundIRRFApi(AbstractFundIRRFApi):
 
         Raises:
             serializers.ValidationError: If the input data is invalid.
-        """)
+        """))
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -131,7 +130,7 @@ class FundIRRFDetailApi(AbstractFundIRRFApi):
         ```
     """
     http_method_names = ['get', ]
-    docs = docs_fund
+    docs = docs_fund.copy()
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific fund IRRF 
         object using the given id from the query parameters and serializes the result into JSON format before returning
          it as an HTTP response. 
@@ -192,7 +191,7 @@ class StatementIRRFApi(AbstractStatementIRRFApi):
         ```
     """
     http_method_names = ['post']
-    docs = docs
+    docs = docs.copy()
     docs['post'] = _("""Create Statement IRRF object from request data and return Statement IRRF detail.
         Returns:
             JsonResponse: A JSON response containing the created Funds
@@ -229,7 +228,7 @@ class StatementIRRFDetailApi(AbstractStatementIRRFApi):
     serializer_class = StatementIRRFUpdateSchema
     http_method_names = ['get', 'put']
     exclude = ('fund_id',)
-    docs = docs
+    docs = docs.copy()
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific statement IRRF 
         object using the given id from the query parameters and serializes the result into JSON format before returning
          it as an HTTP response. 

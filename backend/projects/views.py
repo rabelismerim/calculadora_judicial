@@ -93,7 +93,7 @@ class ProjectApi(AbstractProjectApi):
         'post': ProjectSchema,
     }
 
-    @doc("""Create Project receiving a dict, return project detail""")
+    @doc(_("""Create Project receiving a dict, return project detail"""))
     def post(self, request, *args, **kwargs):
 
         with transaction.atomic():
