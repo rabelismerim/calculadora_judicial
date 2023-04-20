@@ -17,6 +17,7 @@ from calculation.funds.irrf.models import TotalValuesIRRF
 from calculation.funds.models import TotalValuesFunds
 from calculation.models import Calculation
 from calculation.statement.models import Statement
+from calculation.statement_pj.models import FundsDocumentDescriptionPJ
 from core.abstract.models import AbstractModel
 from utils import days360
 
@@ -76,7 +77,9 @@ class StatementPF(AbstractStatus):
     statement = models.OneToOneField(Statement, on_delete=models.PROTECT)
 
     def get_agreements(self):
-        return
+        return list(FundsDocumentDescriptionPJ.objects.filter(document__fund__calculation__creditor__physical_person=True,
+                                                         document__fund__calculation=self.statement.calculation))
+
     def get_recurral_deposit(self) -> float:
         """
         Get the amount of the recurral deposit.

@@ -200,7 +200,7 @@ class AbstractTest(TransactionTestCase):
     def __format_url(self, path: str) -> str:
         return f'{self.base_url}{path}/'.replace('//', '/')
 
-    def __create_payload(self, path, obj, method):
+    def __create_payload(self, path, obj, method, code):
         if DEBUG is False:
             return
         payload = {
@@ -210,12 +210,11 @@ class AbstractTest(TransactionTestCase):
 
         if os.path.exists('payload') is False:
             os.mkdir('payload')
-        with open(f'payload/payload_{method}_{path.replace("/", "_")}_{random.randint(1, 1000)}.json', mode='w',
+        with open(f'payload/payload_{method}_{code}_{path.replace("/", "_")}_{random.randint(1, 1000)}.json', mode='w',
                   encoding='utf-8') as f:
             f.write(json.dumps(payload))
 
     def post(self, path, obj):
-        self.__create_payload(path, obj, 'post')
         response = self.client.post(self.__format_url(path), json.dumps(obj), content_type="application/json")
         data = {'status_code': response.status_code, 'content': response.content}
         dat = AttrDict(data)
@@ -232,6 +231,12 @@ class AbstractTest(TransactionTestCase):
             key = keys[0]
             values = [dict(data['content'][key])]
             self._write_html(values, key)
+
+        dt = {
+            'sent': obj,
+            'received': data['content'],
+        }
+        self.__create_payload(path, dt, 'post', response.status_code)
         return AttrDict(data)
 
     def get(self, path):
@@ -249,7 +254,7 @@ class AbstractTest(TransactionTestCase):
             values = data['content'][key]
             self._write_html(values, key)
 
-        self.__create_payload(path, data, 'get')
+        self.__create_payload(path, data['content'], 'get', response.status_code)
         return AttrDict(data)
 
     def print_dict(self, obj, index=4, key='Exibir', range_=0):

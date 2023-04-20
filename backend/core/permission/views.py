@@ -7,6 +7,9 @@ from django.conf import settings
 from django.contrib.auth.models import Permission, Group
 from django.utils.translation import gettext_lazy as _
 
+from calculation.funds.document.models import FundDocument
+from calculation.funds.irrf.models import FundIRRF
+from calculation.funds.models import Funds
 from calculation.models import Calculation, CHOICES_STEP
 from calculation.schemas import ChangeStepSerializer
 from config.settings import GROUP_NAME_APPROVER, GROUP_NAME_REVIEWER, GROUP_NAME_EXECUTOR, GROUP_NAME_SPECIAL_APPROVE, \
@@ -368,22 +371,9 @@ class CheckPermissions(BasePermission):
 
 
 class CheckFundsPjPfPermissions(BasePermission):
-    """
-    Permission check for allowing a user to change steps in a process.
-
-    Methods:
-        - has_permission(self, request, view): Checks if the requesting user has permission to change the process step.
-    """
     message = _('It is not possible to register this fund')
 
     def has_permission(self, request, view):
-        """
-        This method checks if the user has permission to change the step of a Calculation object. Receives request
-        and view objects as parameters. It gets the calculation_id from the view, checks if the user has the
-        necessary permission codename, and returns a boolean indicating if the user has permission or not. If the
-        user doesn't have permission, it raises a ValidationError with a message indicating the current and next
-        steps that cannot be changed.
-        """
         if hasattr(view, 'physical_person') is False:
             raise AttributeError(
                 _('Need to add "physical_person: bool" attribute to use CheckFundsPjPfPermissions class'))
@@ -399,6 +389,26 @@ class CheckFundsPjPfPermissions(BasePermission):
         else:
             self.message = _('It is not possible to register a fund of the individuals type for legal entity')
         return False
+
+
+class CheckHasFundRegisteredPermissions(BasePermission):
+    message = _('it is not possible to register an agreement when there is already an fund or fund IRRF registered')
+
+    def has_permission(self, request, view):
+        calculation_id = view.request.data.get('calculation_id')
+        funds = Funds.objects.filter(calculation_id=calculation_id).exists()
+        fund_irrf = FundIRRF.objects.filter(calculation_id=calculation_id).exists()
+        if funds or fund_irrf:
+            return False
+        return True
+
+
+class CheckHasAgreementRegisteredPermissions(BasePermission):
+    message = _('it is not possible to register an fund when there is already an agreement registered')
+
+    def has_permission(self, request, view):
+        calculation_id = view.request.data.get('calculation_id')
+        return not FundDocument.objects.filter(calculation_id=calculation_id).exists()
 
 
 def check_query_permission(perms):

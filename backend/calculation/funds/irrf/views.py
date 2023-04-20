@@ -12,7 +12,7 @@ from calculation.funds.irrf.schemas import StatementIRRFSchema, StatementIRRFUpd
 from core.abstract.views import AbstractViewApi
 
 from rest_framework import permissions, status
-from core.permission.views import CheckHasPermission, CheckFundsPjPfPermissions
+from core.permission.views import CheckHasPermission, CheckFundsPjPfPermissions, CheckHasAgreementRegisteredPermissions
 from utils import _, doc
 
 docs = {
@@ -55,7 +55,8 @@ class AbstractFundIRRFApi(AbstractViewApi):
         ```
     """
     serializer_class = FundIRRFSchema
-    permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CheckFundsPjPfPermissions]
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CheckFundsPjPfPermissions,
+                          CheckHasAgreementRegisteredPermissions]
     physical_person = True
     model = FundIRRF
     query_params = []

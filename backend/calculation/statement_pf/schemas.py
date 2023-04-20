@@ -167,16 +167,34 @@ class StatementPFSchema(AbstractDescriptionSchema):
     serializer = StatementPFSchema()
     """
 
-    statement_id = serializers.UUIDField()
-    tax_days = TaxDaysSchema(source='taxdays', exclude=('statement_pf_id',))
-    default_interest = DefaultInterestSchema(source='defaultinterest', exclude=('statement_pf_id',))
-    default_interest_due = DefaultInterestDueSchema(source='defaultinterestdue', exclude=('statement_pf_id',))
-    funds_description = FundsDescriptionSchema(source='fundsdescription_set', exclude=('statement_pf_id',), many=True)
-    description_display = serializers.CharField(source='get_description_display')
-    status_display = serializers.CharField(source='get_status_display')
-
+    # statement_id = serializers.UUIDField()
+    # tax_days = TaxDaysSchema(source='taxdays', exclude=('statement_pf_id',))
+    # default_interest = DefaultInterestSchema(source='defaultinterest', exclude=('statement_pf_id',))
+    # default_interest_due = DefaultInterestDueSchema(source='defaultinterestdue', exclude=('statement_pf_id',))
+    # funds_description = FundsDescriptionSchema(source='fundsdescription_set', exclude=('statement_pf_id',), many=True)
+    # description_display = serializers.CharField(source='get_description_display')
+    # status_display = serializers.CharField(source='get_status_display')
     agreements = FundsDescriptionPJSchema(source='get_agreements', many=True, read_only=True)
+
+    fund = serializers.SerializerMethodField()
+
+    def get_funds(self, obj):
+        tax_days = TaxDaysSchema(source='taxdays', exclude=('statement_pf_id',))
+        default_interest = DefaultInterestSchema(source='defaultinterest', exclude=('statement_pf_id',))
+        default_interest_due = DefaultInterestDueSchema(source='defaultinterestdue', exclude=('statement_pf_id',))
+        funds_description = FundsDescriptionSchema(source='fundsdescription_set', exclude=('statement_pf_id',),
+                                                   many=True)
+
+        return {
+            "statement_id": obj.statement_id,
+            "tax_days": tax_days.to_representation(obj.taxdays),
+            "default_interest": default_interest.to_representation(obj.defaultinterest),
+            "default_interest_due": default_interest_due.to_representation(obj.defaultinterestdue),
+            "funds_description": funds_description.to_representation(obj.fundsdescription_set.all()),
+            "description_display": obj.get_description_display(),
+            "status_display": obj.get_status_display(),
+        }
 
     class Meta:
         model = StatementPF
-        exclude = ('statement',)
+        fields = ('fund', 'agreements')

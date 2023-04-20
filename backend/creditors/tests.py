@@ -83,3 +83,9 @@ class CreditorTest(AbstractTest):
         project = Project.objects.first()
         response = self.get(f'creditors/project/{project.id}')
         self.assertEqual(response.status_code, 200)
+
+    def test_api_z_post(self):
+        """Assert get lawyers detail"""
+        super().test_api_z_post()
+        response = self.post(self.path, self.parameters)  # creditor already registered
+        self.assertEqual(response.status_code, 400)

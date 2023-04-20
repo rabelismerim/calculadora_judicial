@@ -14,7 +14,7 @@ from calculation.funds.document.schemas import FundDocumentSchema, FundDocumentU
 from core.abstract.views import AbstractViewApi
 
 from rest_framework import permissions, status
-from core.permission.views import CheckHasPermission, CheckFundsPjPfPermissions
+from core.permission.views import CheckHasPermission, CheckFundsPjPfPermissions, CheckHasFundRegisteredPermissions
 from utils import _, doc
 
 docs = {
@@ -48,8 +48,7 @@ class AbstractFundDocumentApi(AbstractViewApi):
         ```
     """
     serializer_class = FundDocumentSchema
-    permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CheckFundsPjPfPermissions]
-    physical_person = False
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CheckHasFundRegisteredPermissions]
     model = FundDocument
     query_params = [
         {

@@ -33,8 +33,21 @@ class RecoveringTest(AbstractTest):
     path = 'recovering'
 
     def test_api_get(self):
-        """Assert get lawyers detail"""
+        """Assert get recovering detail"""
         response = super().test_api_get()
-        lawyers = response.content['recoverings']
-        self.assertGreaterEqual(len(lawyers), 1)
-        return lawyers
+        recovering = response.content['recoverings']
+        self.assertGreaterEqual(len(recovering), 1)
+        return recovering
+
+    def test_api_z_post(self):
+        """Assert get recovering detail"""
+        super().test_api_z_post()
+        response = self.post(self.path, self.parameters)  # recovering already registered
+        self.assertEqual(response.status_code, 400)
+
+    def test_api_post(self):
+        """Assert post invalid legal number"""
+        parameters = self.parameters
+        parameters['entity']['legal_number'] = 'invalid legal number'
+        response = self.post(self.path, parameters)  # invalid legal number
+        self.assertEqual(response.status_code, 400)

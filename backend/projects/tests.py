@@ -12,6 +12,9 @@ class ProjectTest(AbstractTest):
         response = self.post('projects', project)
         self.assertEqual(response.status_code, 201)
 
+        response = self.post('projects', project)  # Engagement already registered
+        self.assertEqual(response.status_code, 400)
+
     @AbstractTest.execute_before_and_after
     def test_api_b_get_projects(self):
         """Assert get projects detail"""
