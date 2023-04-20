@@ -19,14 +19,14 @@ router.beforeEach(async (to, from, next) => {
   const authenticated = to.meta?.authenticated
   const { permissions: userPermissions } = JSON.parse(sessionStorage.getItem('deloitte-user') || '{}')
   const hasAllPermissions = permissions.every((permission: string) => userPermissions.includes(permission))
-  if (!permissions && !authenticated || hasAllPermissions) {
+  if ((!permissions && !authenticated) || hasAllPermissions) {
     next()
     return
   }
 
   throwError({
     message: 'Você não tem permissão de ver essa página!',
-    id: 'UNAUTHORIZED'
+    id: 'UNAUTHORIZED',
   })
   next('/')
 })

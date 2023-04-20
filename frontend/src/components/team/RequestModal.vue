@@ -7,21 +7,36 @@ const props = withDefaults(defineProps<{
 })
 const emit = defineEmits(['update:model-value'])
 
+const form = ref(null as any)
+
 let loading = $ref(false)
 let editingUser: any = $ref({})
-const tab = $ref('pending')
+let tab = $ref('pending')
 const pendingUsers = computed(() => props.users.filter(({ status }) => status.toLowerCase() === 'p'))
 const rejectedUsers = computed(() => props.users.filter(({ status }) => status.toLowerCase() === 'r'))
 
+let permissionOptions: any[] = $ref([])
+const subareaOptions: any[] = [
+  { description: 'Sócio', id: 'S' },
+  { description: 'Gerente', id: 'G' },
+  { description: 'Diretor', id: 'D' },
+  { description: 'Analista', id: 'A' },
+  { description: 'Consultor Sênior', id: 'C' },
+]
+
 const editUser = (user: any) => {
-  if (user.email)
-    editingUser = clone(user)
+  const { id, picture, fullName, email, groups, role } = user
+  if (email)
+    editingUser = { id, picture, fullName, email, role, group: groups[0] }
 }
 const onAuthorize = async () => {
-  const { email, groups } = editingUser
+  const isValid = await form.value.validate()
+  if (!isValid)
+    return
+  const { email, group, role } = editingUser
   loading = true
   try {
-    const result = await usersService.setPermission({ email, groups, isActive: true })
+    const result = await usersService.setPermission({ email, groups: [group], role, isActive: true })
     console.warn(result)
   }
   catch (error) {
@@ -47,6 +62,19 @@ const onReject = async (user: any) => {
     loading = false
   }
 }
+const clear = () => {
+  emit('update:model-value', false)
+  tab = 'pending'
+  editingUser = {}
+}
+onMounted(async () => {
+  try {
+    permissionOptions = await usersService.getGroups()
+  }
+  catch (error) {
+    printError('ERROR ON LOADING GROUPS:', error)
+  }
+})
 </script>
 
 <template>
@@ -57,21 +85,42 @@ const onReject = async (user: any) => {
     :close-disabled="loading"
     :loading="loading"
     class="request-modal"
-    @close="emit('update:model-value', false)"
+    @close="clear"
   >
     <div v-if="editingUser?.email">
-      <pre>{{ editingUser }}</pre>
-      <div class="flex justify-end gap-3 p-4 border-t-1 border-black/12">
-        <Btn
-          label="Voltar"
-          outlined
-          @click="editingUser = {}"
-        />
-        <Btn
-          label="Cadastrar"
-          @click="onAuthorize"
-        />
-      </div>
+      <QForm
+        ref="form"
+        @submit="onAuthorize"
+      >
+        <div class="max-h-100 overflow-y-auto px-6 pt-4">
+          <div class="flex mb-6">
+            <UserCell :model-value="editingUser" />
+          </div>
+          <InputSelect
+            v-model="editingUser.group"
+            label="Permissão"
+            :rules="[(value: any) => !!value || 'Este campo é obrigatório!']"
+            :options="permissionOptions"
+          />
+          <InputSelect
+            v-model="editingUser.role"
+            label="Cargo"
+            :rules="[(value: any) => !!value || 'Este campo é obrigatório!']"
+            :options="subareaOptions"
+          />
+        </div>
+        <div class="flex justify-end gap-3 p-4 border-t-1 border-black/12">
+          <Btn
+            label="Voltar"
+            outlined
+            tag="div"
+            @click="editingUser = {}"
+          />
+          <Btn
+            label="Cadastrar"
+          />
+        </div>
+      </QForm>
     </div>
     <div v-else>
       <QTabs
