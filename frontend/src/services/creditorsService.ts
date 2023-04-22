@@ -3,6 +3,18 @@ interface Creditor {
   name: string
   legalNumber: string
   recoveringsId: string[]
+  rateId: string[]
+  classe: string
+  coin: string
+  value: string
+  admission: Date
+  dismissal: Date
+  defaultInterest: number
+  fine: number
+  advocativeHours: number
+  occurrence: string
+  physicalPerson: boolean
+  description: string
 }
 interface Detail extends Creditor {
   description: string
@@ -23,7 +35,7 @@ const getOptions = () => api
   .then(({ options }: any) => options)
 
 const newCreditor = async (creditor: Creditor) => {
-  const { recoveringsId, name, legalNumber } = creditor
+  const { recoveringsId, name, legalNumber, rateId, classe, coin, value, admission, dismissal, defaultInterest, fine, advocativeHours, occurrence, physicalPerson, description } = creditor
   const results = []
   try {
     for (const id of recoveringsId) {
@@ -34,8 +46,24 @@ const newCreditor = async (creditor: Creditor) => {
               name,
               legalNumber,
             },
-            recoveringId: id,
-            rateId: 'eca8d781-548f-4893-ba00-41893e605936',
+            recoveringsId: id,
+            rateId,
+
+            classes: {
+              classe,
+            },
+            coins: {
+              coin,
+              value,
+            },
+            admission,
+            dismissal,
+            defaultInterest,
+            fine,
+            advocativeHours,
+            occurrence,
+            physicalPerson,
+            description,
           }))
         .then((result: any) => result.creditor)
       results.push(result)

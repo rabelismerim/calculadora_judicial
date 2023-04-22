@@ -1,30 +1,56 @@
 // CALCULO
 interface Calculation {
-  classe: string
-  coin: string
-  value: number
-
+  classe: string[]
+  coin: string[]
+  value: number[]
+  creditorId: string[]
+  incidentId: string
+  description: string
+  calculationD: string
+  appealCredit: boolean
+  appealDeposit: boolean
+  hasAdvocateHours: boolean
+  creditAutorizationDate: string
+  hasEdital: boolean
+  recurralDeposit: number
 }
-const getCalculation = (creditorId: string) => api
-  .get(`/v1/calculation/creditor/${creditorId}/`)
+const getCalculation = (id: string) => api
+  .get(`/v1/calculation/${id}/`)
   .then(({ calculation }: any) => calculation)
 
 const newCalculation = async (calculation: Calculation) => {
-  const { description, calculation, calculationId, value } = calculation
+  const { classe, coin, value, creditorId, incidentId, description, calculationD, appealCredit, appealDeposit, hasAdvocateHours, creditAutorizationDate, hasEdital, recurralDeposit } = calculation
   const results = []
   try {
-    for (const id of calculationId) {
+    for (const id of creditorId) {
       const result = await api
         .post('/v1/calculation/',
           ({
-            type_calculation: {
-              description,
-              calculation,
+            classes: {
+              classe,
             },
-            calculationId: id,
-            value,
+            coins: {
+              coin,
+              value,
+            },
+            creditorId: id,
+            incidentId,
+            verdict: {
+              type_calculation: {
+                description,
+                calculationD,
+              },
+              description,
+              value,
+            },
+            appealCredit,
+            appealDeposit,
+            hasAdvocateHours,
+            creditAutorizationDate,
+            hasEdital,
+            recurralDeposit,
           }))
-        .then((result: any) => result.verdict)
+        .then((result: any) => result.calculation)
       results.push(result)
     }
     return results
@@ -33,6 +59,33 @@ const newCalculation = async (calculation: Calculation) => {
     printError('ERROR ON NEW CREDITOR', error)
   }
 }
+
+interface Incident {
+  number: string
+}
+const getIncident = (creditorId: string) => api
+  .get(`/v1/calculation/creditor/${creditorId}/`)
+  .then(({ incident }: any) => incident)
+
+const newIncident = async (incident: Incident) => {
+  const { number } = incident
+  const results = []
+  try {
+    const result = await api
+      .post('/v1/calculation/incident',
+        ({
+          number,
+        }))
+      .then((result: any) => result.incident)
+    results.push(result)
+
+    return results
+  }
+  catch (error) {
+    printError('ERROR ON NEW CREDITOR', error)
+  }
+}
+
 // CALCULO - CRITERION
 
 const getCriterion = (calculationId: string) => api
@@ -49,9 +102,9 @@ interface Verdict {
   value: number
 }
 
-const getVerdict = () => api
+const getVerdict = (calculationId: string) => api
 
-  .get('/v1/calculation/verdict/')
+  .get(`/v1/calculation/verdict/${calculationId}`)
   .then(({ verdict }: any) => verdict)
 
 const newVerdict = async (verdict: Verdict) => {
@@ -79,7 +132,7 @@ const newVerdict = async (verdict: Verdict) => {
   }
 }
 
-// CALCULATION - FUNDS - VERBAS
+// CALCULATION - FUNDS
 
 interface Funds {
   calculationId: string
@@ -111,29 +164,20 @@ const newFunds = async (funds: Funds) => {
     printError('ERROR ON NEW CREDITOR', error)
   }
 }
-
-const updateFunds = async (id: string) => {
-  api.put(`/v1/calculation/funds/funds/${id}`)
-    .then(({ funds }: any) => funds)
-}
-
-// CALCULATION - STATEMENST FUNDS - EXTRAT. VERBAS
-
-interface StatementsF {
+interface FundsFunds {
   fundId: string
-  dataBase: Date
-  historicalValue: number
+  dataBase: string
+  historicalVue: number
   dsrReflexes: number
   summary: boolean
 }
 
-const getStatementsF = () => api
+const getFundsFunds = (id: string) => api
+  .get(`/v1/calculation/funds/funds/${id}/`)
+  .then(({ fundsfunds }: any) => fundsfunds)
 
-  .get('/v1/calculation/funds/funds/')
-  .then(({ statementsf }: any) => statementsf)
-
-const newStatementsF = async (statementsf: StatementsF) => {
-  const { fundId, dataBase, historicalValue, dsrReflexes, summary } = statementsf
+const newFundsFunds = async (fundsfunds: FundsFunds) => {
+  const { fundId, dataBase, historicalVue, dsrReflexes, summary } = fundsfunds
   const results = []
   try {
     for (const id of fundId) {
@@ -142,11 +186,11 @@ const newStatementsF = async (statementsf: StatementsF) => {
           ({
             fundId: id,
             dataBase,
-            historicalValue,
+            historicalVue,
             dsrReflexes,
             summary,
           }))
-        .then((result: any) => result.statementsf)
+        .then((result: any) => result.fundsfunds)
       results.push(result)
     }
     return results
@@ -156,14 +200,14 @@ const newStatementsF = async (statementsf: StatementsF) => {
   }
 }
 
-const updateStatementsF = async () => {
-  api.put('/v1/calculation/funds/funds/')
-    .then(({ statementsf }: any) => statementsf)
+const updateFundsFunds = async (id: string, body: any) => {
+  api.put(`/v1/calculation/funds/funds/${id}`, body)
+    .then(({ funds }: any) => funds)
 }
 
-// CALCULATION - STATEMENST INTEGRATIONS - EXTRAT. VERBAS
+// CALCULATION - INTEGRATIONS
 
-interface StatementsI {
+interface Integrations {
   fundId: string
   dataBase: Date
   historicalValue: number
@@ -171,13 +215,13 @@ interface StatementsI {
   summary: boolean
 }
 
-const getStatementsI = (id: string) => api
+const getIntegrations = (id: string) => api
 
   .get(`/v1/calculation/funds/integrations/${id}/`)
-  .then(({ statementsi }: any) => statementsi)
+  .then(({ integrations }: any) => integrations)
 
-const newStatementsI = async (statementsi: StatementsI) => {
-  const { fundId, dataBase, historicalValue, description, summary } = statementsi
+const newIntegrations = async (integrations: Integrations) => {
+  const { fundId, dataBase, historicalValue, description, summary } = integrations
   const results = []
   try {
     for (const id of fundId) {
@@ -200,14 +244,14 @@ const newStatementsI = async (statementsi: StatementsI) => {
   }
 }
 
-const updateStatementsI = async (id: string) => {
-  api.put(`/v1/calculation/funds/integrations/${id}/`)
-    .then(({ statementsi }: any) => statementsi)
+const updateIntegrations = async (id: string, body: any) => {
+  api.put(`/v1/calculation/funds/integrations/${id}/`, body)
+    .then(({ integrations }: any) => integrations)
 }
 
-// CALCULATION - FUND DOCUMENT - VERBAS DOCS
+// CALCULATION - DOCUMENT
 
-interface FundDoc {
+interface Document {
   calculationId: string
   dataBase: Date
   historicalValue: number
@@ -215,13 +259,12 @@ interface FundDoc {
   name: string
 }
 
-const getFundDoc = () => api
+const getDocument = (id: string) => api
+  .get(`/v1/calculation/funds/documents/${id}`)
+  .then(({ document }: any) => document)
 
-  .get('/v1/calculation/funds/documents/')
-  .then(({ funddoc }: any) => funddoc)
-
-const newFundDoc = async (funddoc: FundDoc) => {
-  const { calculationId, dataBase, historicalValue, number, name } = funddoc
+const newDocument = async (document: Document) => {
+  const { calculationId, dataBase, historicalValue, number, name } = document
   const results = []
   try {
     for (const id of calculationId) {
@@ -236,7 +279,7 @@ const newFundDoc = async (funddoc: FundDoc) => {
             },
             name,
           }))
-        .then((result: any) => result.funddoc)
+        .then((result: any) => result.document)
       results.push(result)
     }
     return results
@@ -246,39 +289,25 @@ const newFundDoc = async (funddoc: FundDoc) => {
   }
 }
 
-// CALCULATION - STATEMENT FUND DOCUMENTS - EXTRAT. VERBAS DOC
-
-interface StatementFDocs {
-  dataBase: Date
-  historicalValue: number
-  number: string
+const updateDocuments = async (id: string, body: any) => {
+  api.put(`/v1/calculation/funds/documents/${id}/`, body)
+    .then(({ documents }: any) => documents)
 }
 
-const getStatementFDocs = (id: string) => api
+// CALCULATION - IRRF
 
-  .get(`/v1/calculation/funds/documents/funds/${id}`)
-  .then(({ statementdoc }: any) => statementdoc)
-
-const updateStatementFDocs = async (id: string) => {
-  api.put(`/v1/calculation/funds/documents/funds/${id}`)
-    .then(({ statementdoc }: any) => statementdoc)
-}
-
-// CALCULATION - Fund IRRF - VERBAS IRRF
-
-interface FundIRRF {
+interface IRRF {
   calculationId: string
   name: string
   monthsPeriod: number
 }
 
-const getFundIRRF = () => api
+const getIRRF = (id: string) => api
+  .get(`/v1/calculation/funds/irrf/${id}/`)
+  .then(({ irrf }: any) => irrf)
 
-  .get('/v1/calculation/funds/irrf/')
-  .then(({ fundIRRF }: any) => fundIRRF)
-
-const newFundIRRF = async (fundIRRF: FundIRRF) => {
-  const { calculationId, name, monthsPeriod } = fundIRRF
+const newIRRF = async (irrf: IRRF) => {
+  const { calculationId, name, monthsPeriod } = irrf
   const results = []
   try {
     for (const id of calculationId) {
@@ -299,50 +328,29 @@ const newFundIRRF = async (fundIRRF: FundIRRF) => {
   }
 }
 
-// CALCULATION - Comparative
-
-interface Comparative {
-  fundId: string
-  fundName: string
-  taxableAmounts: number
-}
-interface NewComparative extends Comparative {
-
-}
-const getComparative = () => api
-  .get('/v1/calculation/comparative')
-  .then(({ comparative }: any) => comparative)
-
-const updateComparative = async (calculationId: string, body: any) => api
-  .put(`/v1/calculation/comparative/${calculationId}`, body)
-  .then(({ comparative }: any) => comparative)
-
-// CALCULATION - Statement IRRF - Extrato de verbas IRRF
-
-interface StatementsIRRF {
+interface FundsIRRF {
   fundId: string
   fundName: string
   taxableAmounts: number
 }
 
-const getStatementsIRRF = (id: string) => api
+const getFundsIRRF = (id: string) => api
+  .get(`/v1/calculation/funds/irrf/funds/${id}/`)
+  .then(({ fundsirrf }: any) => fundsirrf)
 
-  .get(`/v1/calculation/funds/irrf/funds/${id}`)
-  .then(({ statementsirrf }: any) => statementsirrf)
-
-const newStatementsIRRF = async (statementsirrf: StatementsIRRF) => {
-  const { fundId, fundName, taxableAmounts } = statementsirrf
+const newFundsIRRF = async (fundsirrf: FundsIRRF) => {
+  const { fundId, fundName, taxableAmounts } = fundsirrf
   const results = []
   try {
     for (const id of fundId) {
       const result = await api
-        .post('/v1/calculation/funds/irrf/funds/',
+        .post('/v1/calculation/funds/irrf/',
           ({
             fundId: id,
             fundName,
             taxableAmounts,
           }))
-        .then((result: any) => result.statementsirrf)
+        .then((result: any) => result.fundsirrf)
       results.push(result)
     }
     return results
@@ -352,42 +360,67 @@ const newStatementsIRRF = async (statementsirrf: StatementsIRRF) => {
   }
 }
 
-const updateStatementsIRRF = async (id: string) => {
-  api.put(`/v1/calculation/funds/irrf/funds/${id}`)
-    .then(({ statementsirrf }: any) => statementsirrf)
+const updateFundsIRRF = async (id: string, body: any) => {
+  api.put(`/v1/calculation/funds/irrf/funds/${id}/`, body)
+    .then(({ fundsirrf }: any) => fundsirrf)
 }
 
-// CALCULATION - Statement - Extrato contábil
+// CALCULATION - Comparative
 
-const getStatementEXT = () => api
+interface Comparative {
+  fundId: string
+  fundName: string
+  taxableAmounts: number
+}
 
-  .get('/v1/calculation/statement')
-  .then(({ statementext }: any) => statementext)
+const getComparative = (calculationId: string) => api
+  .get(`/v1/calculation/comparative/${calculationId}/`)
+  .then(({ comparative }: any) => comparative)
+
+const updateComparative = async (calculationId: string, body: any) => api
+  .put(`/v1/calculation/comparative/${calculationId}`, body)
+  .then(({ comparative }: any) => comparative)
+
+// CALCULATION - Statement
+
+const getStatement = (calculationId: string) => api
+
+  .get(`/v1/calculation/statement/${calculationId}/`)
+  .then(({ statement }: any) => statement)
+
+// CALCULATION - Sheets Template
+
+const getSheetsTemplate = (calculationId: string, exportType: string) => api
+
+  .get(`/v1/calculation/export/${calculationId}/${exportType}`)
+  .then(({ sheetstemplate }: any) => sheetstemplate)
 
 export default {
   getCalculation,
+  newCalculation,
+  getIncident,
+  newIncident,
   getCriterion,
   getVerdict,
   newVerdict,
   getFunds,
   newFunds,
-  updateFunds,
-  getStatementsF,
-  newStatementsF,
-  updateStatementsF,
-  getStatementsI,
-  newStatementsI,
-  updateStatementsI,
-  getFundDoc,
-  newFundDoc,
-  getStatementFDocs,
-  updateStatementFDocs,
-  getFundIRRF,
-  newFundIRRF,
-  getStatementsIRRF,
-  newStatementsIRRF,
-  updateStatementsIRRF,
+  getFundsFunds,
+  newFundsFunds,
+  updateFundsFunds,
+  getIntegrations,
+  newIntegrations,
+  updateIntegrations,
+  getDocument,
+  newDocument,
+  updateDocuments,
+  getIRRF,
+  newIRRF,
+  getFundsIRRF,
+  newFundsIRRF,
+  updateFundsIRRF,
   getComparative,
   updateComparative,
-  getStatementEXT,
+  getStatement,
+  getSheetsTemplate,
 }
