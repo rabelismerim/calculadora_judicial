@@ -4,13 +4,13 @@ const newAnalysis = {
   coin: 'B',
   // recoveringsId: ['2b218f7d-f132-458a-8ab7-80a0c1c6c7a2'],
   value: 1000,
-  creditorId: '',
+  creditorId: 'c7c5ab63-88e7-4129-b284-f7ba0297b16d',
 }
 let notice = $ref([''])
 
 const createAnalysis = async () => {
   try {
-    const result = await creditorsService.newNotice('')
+    const result = await creditorsService.getCreditors('c7c5ab63-88e7-4129-b284-f7ba0297b16d')
     console.warn('print result', result)
   }
   catch (error) {
@@ -32,11 +32,11 @@ const loadAnalysis = async () => {
   <div class="p-6 grid gap-4 justify-start">
     <h1>Teste</h1>
     <Btn
-      label="Criar Ficha de Analise"
+      label="Criar Credor"
       @click="createAnalysis"
     />
     <Btn
-      label="Carregar Ficha de Analise"
+      label="Carregar Credor"
       @click="loadAnalysis"
     />
     <div>
