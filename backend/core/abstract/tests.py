@@ -1,6 +1,5 @@
 import json
 import os.path
-import random
 import re
 import sys
 import webbrowser
@@ -9,7 +8,7 @@ from django.core.management import color_style
 from django.core.management.base import OutputWrapper
 from django.test import TestCase, TransactionTestCase
 from config.settings import DEBUG
-from utils import get_user_model
+from utils import get_user_model, secret_number
 from faker import Faker
 
 
@@ -219,7 +218,7 @@ class AbstractTest(TransactionTestCase):
 
         if os.path.exists('payload') is False:
             os.mkdir('payload')
-        with open(f'payload/payload_{method}_{code}_{path.replace("/", "_")}_{random.randint(1, 1000)}.json', mode='w',
+        with open(f'payload/payload_{method}_{code}_{path.replace("/", "_")}_{secret_number(1, 1000)}.json', mode='w',
                   encoding='utf-8') as f:
             f.write(json.dumps(payload))
 

@@ -1,10 +1,11 @@
-import random
 from calculation.models import Calculation
 from core.abstract.tests import AbstractTest
+from utils import secret_number
+
 
 str_rd = ''
 while len(str_rd) <= 10:
-    str_rd += '%c' % random.randint(97, 122)
+    str_rd += '%c' % secret_number(97, 122)
 
 
 class VerdictTest(AbstractTest):

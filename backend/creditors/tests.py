@@ -5,6 +5,7 @@ from projects.create_project import cpf_generator
 from projects.models import Project
 from rates.models import Rate
 from recovering.models import Recovering
+from utils import secret_number
 
 
 class CreditorValues:
@@ -27,7 +28,7 @@ class CreditorValues:
                 },
                 "coins": {
                     "coin": "B",
-                    "value": random.randint(1, 2000)
+                    "value": secret_number(1, 2000)
                 },
                 "archive_json": {}
             }],
@@ -37,14 +38,14 @@ class CreditorValues:
                 },
                 "coins": {
                     "coin": "B",
-                    "value": random.randint(1, 2000)
+                    "value": secret_number(1, 2000)
                 },
                 "archive_json": {}
             }],
             "claim_lawyer": {
                 "coins": {
                     "coin": "B",
-                    "value": random.randint(1, 2000)
+                    "value": secret_number(1, 2000)
                 },
                 "archive_json": {},
                 "classes": {

@@ -140,7 +140,7 @@ class AbstractViewApi(generics.GenericAPIView):
                 instance = self.__get_type_by_instance(type_instance)
                 try:
                     value = instance['parser'](value)
-                except:
+                except (ValueError, KeyError):
                     pass
                 if isinstance(value, instance['type']):
                     query[field] = value

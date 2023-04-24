@@ -1,4 +1,6 @@
 import json
+from json import JSONDecodeError
+
 from rest_framework import serializers, renderers
 
 from utils import _
@@ -32,7 +34,7 @@ class AbstractModelSchema(serializers.Serializer):
         if archive_json:
             try:
                 file_json = json.loads(archive_json)
-            except:
+            except JSONDecodeError:
                 file_json = archive_json
 
             if isinstance(file_json, dict) is False:

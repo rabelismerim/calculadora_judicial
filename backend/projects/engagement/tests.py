@@ -1,8 +1,7 @@
-import random
 from core.abstract.tests import AbstractTest
 from projects.models import Project
 from projects.project_user.models import ProjectUser
-
+from utils import secret_number
 
 class EngagementTest(AbstractTest):
     """Engagement related tests"""
@@ -10,7 +9,7 @@ class EngagementTest(AbstractTest):
     user = ProjectUser.objects.first()
     parameters = {
         "numbers": [
-            f"{random.randint(50000, 100000)}"
+            f"{secret_number(50000, 100000)}"
         ],
         "users": [
             {

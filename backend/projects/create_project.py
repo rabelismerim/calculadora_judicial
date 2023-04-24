@@ -1,4 +1,5 @@
 import random
+import secrets
 
 from projects.judge.models import Judge
 from projects.court.models import Court
@@ -10,14 +11,16 @@ User = get_user_model()
 
 
 def cpf_generator():
-    cpf = [random.randint(0, 9) for x in range(9)]
+    cpf = [secrets.randbelow(10) for _ in range(9)]
 
-    for _ in range(2):
-        val = sum([(len(cpf) + 1 - i) * v for i, v in enumerate(cpf)]) % 11
+    val1 = sum([(len(cpf) + 1 - i) * v for i, v in enumerate(cpf)]) % 11
+    cpf.append(11 - val1 if val1 > 1 else 0)
 
-        cpf.append(11 - val if val > 1 else 0)
+    val2 = sum([(len(cpf) + 1 - i) * v for i, v in enumerate(cpf)]) % 11
+    last_digit = 11 - val2 if val2 > 1 else 0
+    cpf.append(last_digit if last_digit < 10 else 0)
 
-    return '%s%s%s.%s%s%s.%s%s%s-%s%s' % tuple(cpf)
+    return '{}{}{}.{}{}{}.{}{}{}-{}{}'.format(*cpf)
 
 
 def get_data_project(user_id: str = None):
@@ -79,3 +82,29 @@ def get_data_project(user_id: str = None):
     }
 
     return data
+
+
+def __validate_cpf(cpf):
+    """
+    This method is used to validate the cpf variable, which is the Brazilian version of
+    a personal identification number. It checks if the variable is present and has the correct
+    length (11 characters). It also performs numerical calculations with the numbers in the
+    variable to check that the information is valid.
+    """
+    if (not cpf) or (len(cpf) != 11):
+        return False
+    int_cpf = [int(x) for x in cpf]
+    new = int_cpf[:9]
+    while len(new) < 11:
+        r = sum([(len(new) + 1 - i) * v for i, v in enumerate(new)]) % 11
+        if r > 1:
+            f = 11 - r
+        else:
+            f = 0
+        new.append(f)
+        if new == int_cpf:
+            return True
+    return False
+
+
+print(__validate_cpf(cpf_generator()))

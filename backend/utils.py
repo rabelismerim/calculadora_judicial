@@ -1,5 +1,6 @@
 """Commom methods"""
 import datetime
+import secrets
 
 from django.contrib.auth import get_user_model as md
 from django.utils.translation import gettext_lazy
@@ -8,6 +9,12 @@ from django.utils.translation import gettext_lazy
 def get_user_model():
     """Get user Model"""
     return md()
+
+
+def secret_number(min_value: int, max_value: int):
+    min_ = min(min_value, max_value)
+    max_ = max(min_value, max_value)
+    return secrets.randbelow(max_ - min_) + 1
 
 
 def check_choice(value: str, choices: tuple):

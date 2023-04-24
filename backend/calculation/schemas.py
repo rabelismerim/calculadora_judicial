@@ -149,7 +149,7 @@ class ChangeStepSerializer(serializers.Serializer):
             for field_name in allowed:
                 try:
                     self.fields.pop(field_name)
-                except:
+                except KeyError:
                     pass
 
     def validate(self, data):

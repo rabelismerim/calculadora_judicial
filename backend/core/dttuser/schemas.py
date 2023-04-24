@@ -76,7 +76,7 @@ class GroupSchema(serializers.ModelSerializer):
             for field_name in allowed:
                 try:
                     self.fields.pop(field_name)
-                except:
+                except KeyError:
                     pass
 
 
@@ -218,7 +218,7 @@ class UserDttSchema(serializers.ModelSerializer):
             for field_name in allowed:
                 try:
                     self.fields.pop(field_name)
-                except:
+                except KeyError:
                     pass
 
 

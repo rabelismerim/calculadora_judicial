@@ -52,7 +52,7 @@ class ComparativeCalculationAdmin(admin.ModelAdmin):
     A ModelAdmin class containing the definition of fields displayed in the 
     admin interface for the ComparativeCalculation instance.
     """
-    readonly_fields = ('dtt', )
+    readonly_fields = ('dtt',)
 
 
 readonly_fields = [
@@ -200,13 +200,9 @@ def get_verbas(comparatives, funds):
         try:
             domain = Site.objects.get_current().domain
             url = F'{domain}/admin/funds/{funds}/{comparative.total_funds.id}/change/'
-            href_certificate = format_html(
-                '<a href="{0}" target="_blank">{1}</a>',
-                url,
-                comparative.total_funds.fund
-            )
+            href_certificate = format_html('<a href="{0}" target="_blank">{1}</a>', url, comparative.total_funds.fund)
             list_href.append(href_certificate)
-        except Exception as e:
+        except AttributeError:
             pass
     return format_html("<br>".join(list_href))
 
