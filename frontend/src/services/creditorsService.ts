@@ -1,14 +1,18 @@
 // CREDORES
+interface Claim {
+  classe: string
+  coin: string
+  value: number
+}
 interface Creditor {
+  id?: string
   name: string
   legalNumber: string
   recoveringsId: string[]
-  rateId: string[]
-  classe: string
-  coin: string
-  value: string
-  admission: Date
-  dismissal: Date
+  rateId: string
+  claimCreditor: Claim[]
+  admission: string
+  dismissal: string
   defaultInterest: number
   fine: number
   advocativeHours: number
@@ -16,9 +20,7 @@ interface Creditor {
   physicalPerson: boolean
   description: string
 }
-interface Detail extends Creditor {
-  description: string
-}
+interface Detail extends Creditor {}
 interface Options extends Creditor {
   legend: string
 }
@@ -26,46 +28,37 @@ const getCreditors = (id: string) => api
   .get(`/v1/creditors/project/${id}/`)
   .then(({ creditors }: any) => creditors)
 
-const getDetail = (id: string) => api
+const getCreditor = (id: string) => api
   .get(`/v1/creditors/detail/${id}/`)
-  .then(({ detail }: any) => detail)
+  .then(({ creditor }: any) => creditor)
 
 const getOptions = () => api
   .get('/v1/creditors/options/')
   .then(({ options }: any) => options)
 
-const newCreditor = async (creditor: Creditor) => {
-  const { recoveringsId, name, legalNumber, rateId, classe, coin, value, admission, dismissal, defaultInterest, fine, advocativeHours, occurrence, physicalPerson, description } = creditor
+const setCreditor = async (creditor: Creditor) => {
+  const { id, recoveringsId, name, legalNumber, claimCreditor } = creditor
+  const method = id ? 'put' : 'post'
   const results = []
+  if (!recoveringsId)
+    return
   try {
     for (const id of recoveringsId) {
-      const result = await api
-        .post('/v1/creditors/',
-          ({
-            entity: {
-              name,
-              legalNumber,
-            },
-            recoveringsId: id,
-            rateId,
-
-            classes: {
-              classe,
-            },
-            coins: {
-              coin,
-              value,
-            },
-            admission,
-            dismissal,
-            defaultInterest,
-            fine,
-            advocativeHours,
-            occurrence,
-            physicalPerson,
-            description,
-          }))
-        .then((result: any) => result.creditor)
+      const result = await api[method]('/v1/creditors/',
+        ({
+          ...creditor,
+          entity: {
+            name,
+            legalNumber,
+          },
+          recoveringId: id,
+          claimCreditor: claimCreditor.map(({ coin, classe, value }: Claim) => ({
+            classes: { classe },
+            coins: { coin, value },
+          })),
+        }))
+      // .then((result: any) => result.creditor)
+      console.log(result)
       results.push(result)
     }
     return results
@@ -75,188 +68,89 @@ const newCreditor = async (creditor: Creditor) => {
   }
 }
 
-const updateCreditors = async (id: string, body: any) => api
-  .put(`/v1/creditors/${id}`, body)
-  .then(({ creditors }: any) => creditors)
-
-// // FICHA DE ANALISE - EDITAL DA AJ
-
-// interface Notice {
-//   classe: string[]
-//   coin: string[]
-//   recoveringsId: string[]
-//   value: number
-// }
-// interface Recovering extends Notice {
-//   creditorId: string[]
-// }
-
-// const getNotice = () => api
-//   .get('/v1/creditors/notice/aj/')
-//   .then(({ analysis }: any) => analysis)
-// const newNotice = async (notice: Notice) => {
-//   const { classe, coin, recoveringsId, value } = notice
-//   const results = []
-//   try {
-//     for (const id of recoveringsId) {
-//       const result = await api
-//         .post('/v1/creditors/notice/aj/',
-//           ({
-//             classes: {
-//               classe,
-//             },
-
-//             coins: {
-//               coin,
-//               value,
-//             },
-//             recoveringsId: id,
-//           }))
-//         .then((result: any) => result.notice)
-//       results.push(result)
-//     }
-//     return results
-//   }
-//   catch (error) {
-//     printError('ERROR ON NEW ANALYSIS', error)
-//   }
-// }
-
-// FICHA DE ANALISE - EDITAL DA AJ
-
 interface Notice {
-  classe: string[]
-  coin: string[]
+  id?: string
+  classe: string
+  coin: string
   value: number
-  creditorId: string[]
-  // recoveringsId: string[]
+  creditorId: string
 }
 interface Recovering extends Notice {}
 
 const getNotice = () => api
   .get('/v1/creditors/notice/aj/')
   .then(({ notice }: any) => notice)
-const newNotice = async (notice: Notice) => {
-  const { classe, coin, creditorId, value } = notice
+
+const setNotice = async (notice: Notice) => {
+  const { id, classe, coin, creditorId, value } = notice
+  const method = id ? 'put' : 'post'
   const results = []
   try {
     for (const id of creditorId) {
-      const result = await api
-        .post('/v1/creditors/notice/aj/',
-          ({
-            classes: {
-              classe,
-            },
+      const result = await api[method]('/v1/creditors/notice/aj/',
+        ({
+          ...notice,
+          classes: {
+            classe,
+          },
 
-            coins: {
-              coin,
-              value,
-            },
-            creditorId: id,
-          }))
-        .then((result: any) => result.notice)
+          coins: {
+            coin,
+            value,
+          },
+          creditorId: id,
+        }))
+      console.log(result)
       results.push(result)
     }
     return results
   }
   catch (error) {
-    printError('ERROR ON NEW ANALYSIS', error)
+    printError('ERROR ON NEW NOTICE', error)
   }
 }
-const updateNotice = async (id: string, body: any) => api
-  .put(`/v1/creditors/notice/aj/${id}/`, body)
-  .then(({ notice }: any) => notice)
 
 const getRecoverings = () => api
   .get('/v1/creditors/notice/recovering/')
   .then(({ recoverings }: any) => recoverings)
 
-const newRecovering = async (recovering: Recovering) => {
-  const { classe, coin, creditorId, value } = recovering
+const setRecovering = async (recovering: Recovering) => {
+  const { id, classe, coin, creditorId, value } = recovering
+  const method = id ? 'put' : 'post'
   const results = []
   try {
     for (const id of creditorId) {
-      const result = await api
-        .post('/v1/creditors/notice/recovering/',
-          ({
-            classes: {
-              classe,
-            },
+      const result = await api[method]('/v1/creditors/notice/recovering/',
+        ({
+          ...recovering,
+          classes: {
+            classe,
+          },
 
-            coins: {
-              coin,
-              value,
-            },
-            creditorId: id,
-          }))
+          coins: {
+            coin,
+            value,
+          },
+          creditorId: id,
+        }))
         .then((result: any) => result.recovering)
+      console.log(result)
       results.push(result)
     }
     return results
   }
   catch (error) {
-    printError('ERROR ON NEW ANALYSIS', error)
+    printError('ERROR ON NEW RECOVERING', error)
   }
 }
 
-const updateRecovering = async (id: string, body: any) => api
-  .put(`/v1/creditors/notice/recovering/${id}`, body)
-  .then(({ recovering }: any) => recovering)
-
-// // FICHA DE ANALISE - PLEITO DO CREDOR
-
-// interface CreditorClaim {
-//   classe: string[]
-//   coin: string[]
-//   creditorId: string[]
-//   value: number
-// }
-
-// const newCreditorClaim = async (claim: CreditorClaim) => {
-//   const { classe, coin, creditorId, value } = claim
-//   const results = []
-//   try {
-//     for (const id of creditorId) {
-//       const result = await api
-//         .post('/v1/creditors/claim/claim-creditor/',
-//           ({
-//             classes: {
-//               classe,
-//             },
-
-//             coins: {
-//               coin,
-//               value,
-//             },
-//             creditorId: id,
-//           }))
-//         .then((result: any) => result.claim)
-//       results.push(result)
-//     }
-//     return results
-//   }
-//   catch (error) {
-//     printError('ERROR ON NEW CREDITOR CLAIM', error)
-//   }
-// }
-
-// const updateCreditorClaim = async () => {
-//   api.put('/v1/creditors/notice/aj/')
-//     .then(({ analysis }: any) => analysis)
-// }
-
 export default {
   getCreditors,
-  getDetail,
+  getCreditor,
   getOptions,
-  newCreditor,
-  updateCreditors,
+  setCreditor,
   getNotice,
-  newNotice,
-  updateNotice,
-  // newCreditorClaim,
-  // updateCreditorClaim,
+  setNotice,
   getRecoverings,
-  newRecovering,
-  updateRecovering,
+  setRecovering,
 }

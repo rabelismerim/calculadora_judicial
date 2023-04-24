@@ -1,29 +1,28 @@
 <script setup lang="ts">
-const newAnalysis = {
+const newNotice = {
   classe: '1',
   coin: 'B',
-  // recoveringsId: ['2b218f7d-f132-458a-8ab7-80a0c1c6c7a2'],
-  value: 1000,
-  creditorId: 'c7c5ab63-88e7-4129-b284-f7ba0297b16d',
+  value: 50.0,
+  creditorId: '92dd53a6-0db0-4e75-83a3-8f239e03af39',
 }
 let notice = $ref([''])
 
-const createAnalysis = async () => {
+const setNotice = async () => {
   try {
-    const result = await creditorsService.getCreditors('c7c5ab63-88e7-4129-b284-f7ba0297b16d')
+    const result = await creditorsService.setNotice(newNotice)
     console.warn('print result', result)
   }
   catch (error) {
-    printError('ERROR ON NEW CREDITOR:', error)
+    printError('ERROR ON NEW NOTICE:', error)
   }
 }
-const loadAnalysis = async () => {
+const loadNotice = async () => {
   try {
     const result = await creditorsService.getNotice()
     notice = result
   }
   catch (error) {
-    printError('ERROR ON LOAD CREDITORS:', error)
+    printError('ERROR ON LOAD NOTICES:', error)
   }
 }
 </script>
@@ -32,12 +31,12 @@ const loadAnalysis = async () => {
   <div class="p-6 grid gap-4 justify-start">
     <h1>Teste</h1>
     <Btn
-      label="Criar Credor"
-      @click="createAnalysis"
+      label="Criar/Atualizar Notice"
+      @click="setNotice"
     />
     <Btn
-      label="Carregar Credor"
-      @click="loadAnalysis"
+      label="Carregar Notice"
+      @click="loadNotice"
     />
     <div>
       <pre>{{ notice }}</pre>
