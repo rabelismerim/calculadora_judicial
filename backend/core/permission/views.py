@@ -381,7 +381,7 @@ class CheckFundsPjPfPermissions(BasePermission):
         calculation = get_object_or_404(Calculation, id=calculation_id)
 
         physical_person = calculation.creditor.physical_person
-        if physical_person != view.physical_person:
+        if physical_person == view.physical_person:
             return True
 
         if physical_person:

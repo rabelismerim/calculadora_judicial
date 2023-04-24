@@ -30,6 +30,7 @@ class AbstractFunds(AbstractCredit):
     name = models.CharField(_('Fund name'), max_length=50)
     calculation = models.ForeignKey(Calculation, on_delete=models.PROTECT)
     rate = models.ForeignKey(Rate, on_delete=models.PROTECT, null=True)
+    is_extraconcursal = models.BooleanField(_('Is extraconcursal'), default=False)
 
     class Meta:
         abstract = True

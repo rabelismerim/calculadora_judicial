@@ -80,8 +80,7 @@ def save_statement_total_documents(sender, instance, **kwargs) -> None:
     takes the sender and instance as arguments
     """
     print('Signal gerar fund extrato verbas documentos\n')
-    statement, created = Statement.objects.get_or_create(calculation=instance.fund.calculation.id)
+    statement, created = Statement.objects.get_or_create(calculation=instance.fund.calculation)
     statement_pj, created = StatementPJ.objects.get_or_create(statement=statement)
     fund, created = FundsDocumentDescriptionPJ.objects.get_or_create(document=instance, statement_pj=statement_pj)
     fund.statement_pj.set_total()
-    print(instance.fund.calculation.id, 'instance.fund.calculation.id\n\n')

@@ -7,7 +7,6 @@ to add specific fields as needed.
 
 from django.db import models
 from calculation.models import Calculation
-from calculation.premise.models import Premise
 from core.abstract.models import AbstractModel
 from utils import _
 
@@ -24,7 +23,6 @@ class Statement(AbstractModel):
     """
     calculation = models.OneToOneField(Calculation, on_delete=models.PROTECT)
     conclusion = models.CharField(_('Conclusion legend'), max_length=1, choices=CHOICES_CONCLUSION, default='I')
-    premises = models.ManyToManyField(Premise, blank=True)
 
     def get_statement_pf(self):
         """

@@ -174,8 +174,7 @@ class CalculationApi(AbstractCalculationApi):
                     new_claim = Claim.objects.create(
                         classes=claim_creditor.classes, coins=claim_creditor.coins,
                         archive_json=claim_creditor.archive_json)
-                    CriterionClaimCredor.objects.create(
-                        claim_creditor=new_claim, criterion=criterion)
+                    CriterionClaimCredor.objects.create(claim_creditor=new_claim, criterion=criterion)
             if new_verdicts:
                 for new_verdict in new_verdicts:
                     new_verdict['calculation'] = calculation

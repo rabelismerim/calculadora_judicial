@@ -48,7 +48,6 @@ class AbstractFundDocumentApi(AbstractViewApi):
         ```
     """
     serializer_class = FundDocumentSchema
-    permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CheckHasFundRegisteredPermissions]
     model = FundDocument
     query_params = [
         {
@@ -87,6 +86,7 @@ class FundDocumentApi(AbstractFundDocumentApi):
     """
     http_method_names = ['post']
     docs = docs.copy()
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CheckHasFundRegisteredPermissions]
 
     @doc(_("""Create Document Fund object from request data and return Document Fund detail.
         The 'has_custom_fine' field controls whether the fine entered in the document will be used, or the standard 
@@ -136,6 +136,7 @@ class FundDocumentDetailApi(AbstractFundDocumentApi):
         ```
     """
     docs = docs.copy()
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific document fund object 
     using the given  id from the query parameters and serializes the result into JSON format before returning it as an 
         HTTP response. 

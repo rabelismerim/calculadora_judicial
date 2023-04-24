@@ -21,7 +21,7 @@ from rates.models import Rate
 class FundsTest(AbstractTest):
     """funds related tests"""
 
-    calculation = Calculation.objects.first()
+    calculation = Calculation.objects.filter(creditor__physical_person=True, funddocument__isnull=True).first()
     name = generate_name()
     parameters = {
         "description": generate_name(),
@@ -37,12 +37,13 @@ class FundsTest(AbstractTest):
         "rate_id": str(Rate.objects.first().id),
         'calculation_id': str(calculation.id)
     }
-    fund_id = str(Funds.objects.first().id)
+    fund_id = str(Funds.objects.filter(calculation__creditor__physical_person=True,
+                                       calculation__funddocument__isnull=True).first().id)
     path = 'calculation/funds'
 
     def test_api_get(self):
         """Assert get lawyers detail"""
-        self.path = f'{self.path}/{self.fund_id}'
+        self.path = f'{self.path}/{self.fund_id}/'
         response = super().test_api_get()
         self.assertEqual(response.status_code, 200)
         self.assertIn('fund', response.content)
@@ -95,3 +96,44 @@ class FundsTest(AbstractTest):
             self.assertEqual(monetary_correction['index_data_base'], true_monetary_correction['index_data_base'])
             self.assertEqual(monetary_correction['index_recovering'], true_monetary_correction['index_recovering'])
         return statements
+
+    def test_api_post_invalid_fund_to_creditor(self):
+        """Assert post forbidden funds.
+        It is not possible to register a fund of the individuals type for legal entity.
+        """
+        params = self.parameters.copy()
+        params['calculation_id'] = Calculation.objects.filter(creditor__physical_person=False,
+                                                              funddocument__isnull=True).first().id
+        response = self.post(self.path, params)
+        self.assertEqual(response.status_code, 403)
+
+    def test_api_post_invalid_fund_document_to_creditor(self):
+        """Assert post forbidden fund document.
+        it is not possible to register an agreement when there is already an fund or fund IRRF registered.
+        """
+        value = 1500
+        data_base = "2014-01-02"
+        number = generate_name()
+        statement = {
+            "calculation_id": str(self.calculation.id),
+            "statement": {
+                "data_base": data_base,
+                "historical_value": value,
+                "number": number
+            },
+            "classes": {
+                "classe": "1"
+            },
+            "coins": {
+                "coin": "B",
+                "value": 500
+            },
+            'fine': 200,
+            'has_custom_fine': True,
+            "archive_json": {},
+            "rate_id": str(Rate.objects.first().id),
+            "name": generate_name()
+        }
+
+        response = self.post('calculation/funds/documents', statement)
+        self.assertEqual(response.status_code, 403)

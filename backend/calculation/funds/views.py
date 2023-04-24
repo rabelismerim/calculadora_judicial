@@ -8,6 +8,7 @@ The FundsApi class uses the Funds model and FundsSchema for working with data.
 from django.http import JsonResponse
 
 from base.coins.models import Coins
+from calculation.funds.irrf.models import FundIRRF
 from calculation.funds.schemas import FundsSchema, StatementFundsSchema, StatementFundsUpdateSchema
 from calculation.funds.models import Funds, StatementFunds
 from core.abstract.views import AbstractViewApi
@@ -129,7 +130,8 @@ class FundsDetailApi(AbstractFundsApi):
         GET /api/v1/calculation/funds/?funds=funds_name
         ```
     """
-    http_method_names = ['get', ]
+    http_method_names = ['get']
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     docs = docs_fund.copy()
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific fund 
         object using the given id from the query parameters and serializes the result into JSON format before returning it

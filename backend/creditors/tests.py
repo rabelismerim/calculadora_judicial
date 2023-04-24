@@ -18,6 +18,7 @@ class CreditorValues:
                 "name": generate_name(),
                 "legal_number": cpf_generator()
             },
+            "physical_person": True,
             "recovering_id": str(_recovering.id),
             "rate_id": str(_rate.id),
             "notice_aj": [{
@@ -73,6 +74,11 @@ class CreditorTest(AbstractTest):
 
     def setUp(self):
         set_up = super().setUp()
+        self.parameters = CreditorValues().get_creditor()
+        self.parameters['physical_person'] = False
+        self.parameters['entity']['name'] = generate_name()
+        self.parameters['entity']['legal_number'] = cpf_generator()
+
         self.parameters = CreditorValues().get_creditor()
         self.parameters['entity']['name'] = generate_name()
         self.parameters['entity']['legal_number'] = cpf_generator()

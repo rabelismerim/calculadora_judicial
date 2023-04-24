@@ -37,6 +37,7 @@ def create_templates():
             {'label': 'Total devido', 'key': 'total_due', 'type': 'F', 'order': 12, 'is_editable': False,
              'required': False},
         ])
+
     fields_verbas.append({'label': 'Súmula 381', 'key': 'summary', 'type': 'B', 'order': 3, 'is_editable': True,
                           'required': True})
     fields_verbas_integrations = copy.deepcopy(fields_verbas)
@@ -58,7 +59,10 @@ def create_templates():
     templates = [{'name': f'Documentos', 'description': f'Documento',
                   'end_point': '/djud/api/v1/calculation/funds/ducuments/',
                   'many': False,
-                  'fields': fields_verbas_document}]
+                  'fields': fields_verbas_document}, {'name': f'Acordos', 'description': f'Acordo',
+                                                      'end_point': '/djud/api/v1/calculation/funds/ducuments/',
+                                                      'many': False,
+                                                      'fields': fields_verbas_document}]
     verbas = ['TST', 'TST.IPCA-E', 'IPCA-E', 'SELIC', 'IGP-M', 'INPC', 'IPCA', 'IGP-DI', 'IPC-FIPE', 'TJSP']
 
     for verba in verbas:

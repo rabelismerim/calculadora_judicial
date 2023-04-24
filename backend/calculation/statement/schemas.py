@@ -12,9 +12,6 @@ Attributes:
       `fields` lists the names of all fields that should be included in the serialized
       representation.
 """
-from uuid import UUID
-
-from calculation.premise.schemas import PremiseSchema
 from calculation.statement.models import Lawyer, Statement, TotalLawyer
 from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
@@ -84,7 +81,6 @@ class StatementSchema(AbstractDescriptionSchema):
     lawyer = TotalLawyerSchema(read_only=True, source='totallawyer')
     calculation_id = serializers.UUIDField(read_only=True)
     conclusion_display = serializers.CharField(source='get_conclusion_display')
-    premises = PremiseSchema(many=True, read_only=True)
 
     class Meta:
         model = Statement

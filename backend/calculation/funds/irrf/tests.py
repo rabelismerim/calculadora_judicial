@@ -32,7 +32,7 @@ class IrrfTest(AbstractTest):
         },
         "archive_json": {},
         "rate_id": str(Rate.objects.first().id),
-        "calculation_id": str(Calculation.objects.first().id),
+        "calculation_id": str(Calculation.objects.filter(creditor__physical_person=True, funddocument__isnull=True).first().id),
         "name": generate_name(),
         "months_period": 1
     }

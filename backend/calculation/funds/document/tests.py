@@ -24,7 +24,8 @@ class FundsDocumentTest(AbstractTest):
     @AbstractTest.execute_before_and_after
     def test_api_post_statement_funds_integrations(self):
         """Assert post statements detail"""
-        calculation = Calculation.objects.first()
+        calculation = Calculation.objects.filter(creditor__physical_person=False, funds__isnull=True,
+                                                 fundirrf__isnull=True).first()
         statements = [
             ({
                  "calculation_id": str(calculation.id),
@@ -98,7 +99,8 @@ class FundsDocumentTest(AbstractTest):
     @AbstractTest.execute_before_and_after
     def test_api_a_post_statement_funds_documents(self):
         """Assert get lawyers detail"""
-        calculation = Calculation.objects.first()
+        calculation = Calculation.objects.filter(creditor__physical_person=True, funds__isnull=True,
+                                                 fundirrf__isnull=True).first()
         value = 1500
         data_base = "2014-01-02"
         number = generate_name()
@@ -124,6 +126,7 @@ class FundsDocumentTest(AbstractTest):
         }
 
         response = self.post('calculation/funds/documents', statement)
+        self.assertEqual(201, response.status_code)
         new_statement = response.content['fund_document']
         return new_statement
 

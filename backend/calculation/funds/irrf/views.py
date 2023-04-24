@@ -55,8 +55,6 @@ class AbstractFundIRRFApi(AbstractViewApi):
         ```
     """
     serializer_class = FundIRRFSchema
-    permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CheckFundsPjPfPermissions,
-                          CheckHasAgreementRegisteredPermissions]
     physical_person = True
     model = FundIRRF
     query_params = []
@@ -87,6 +85,8 @@ class FundIRRFApi(AbstractFundIRRFApi):
     """
     docs = docs_fund.copy()
     http_method_names = ['post']
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CheckFundsPjPfPermissions,
+                          CheckHasAgreementRegisteredPermissions]
 
     @doc(_("""Create FundIRRF object from request data and return FundIRRF detail.
         Args:
@@ -131,7 +131,8 @@ class FundIRRFDetailApi(AbstractFundIRRFApi):
         GET /api/v1/calculation/funds/?funds=funds_name
         ```
     """
-    http_method_names = ['get', ]
+    http_method_names = ['get']
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     docs = docs_fund.copy()
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific fund IRRF 
         object using the given id from the query parameters and serializes the result into JSON format before returning

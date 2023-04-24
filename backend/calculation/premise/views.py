@@ -433,7 +433,6 @@ class PremiseCreator:
 
     def __save_premises(self):
         """Save the premises created in the calculation object"""
-        statement = self.__calculation.get_statement()
-        if self.__premise_ids and statement:
-            statement.premises.add(*self.__premise_ids)
-            statement.save()
+        if self.__premise_ids:
+            self.__calculation.premises.add(*self.__premise_ids)
+            self.__calculation.save()

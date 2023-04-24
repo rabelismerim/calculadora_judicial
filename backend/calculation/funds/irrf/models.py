@@ -78,7 +78,7 @@ class StatementIRRF(AbstractModel):
             send_signal_post_save (bool): Set to True to send a post-save signal. Default is True.
         """
         super(StatementIRRF, self).save(*args, **kwargs)
-        if send_signal_post_save:
+        if send_signal_post_save and self.fund.is_extraconcursal is False:
             gen_statement_irrf.send(sender=self.__class__, instance=self)
 
 

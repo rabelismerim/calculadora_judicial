@@ -23,6 +23,7 @@ from calculation.criterion.schemas import CriterionSchema
 from calculation.funds.document.schemas import FundDocumentSchema
 from calculation.funds.irrf.schemas import FundIRRFSchema
 from calculation.funds.schemas import FundsSchema
+from calculation.premise.schemas import PremiseSchema
 from calculation.statement.schemas import StatementSchema
 from calculation.verdict.schemas import VerdictSchema
 from rest_framework import serializers
@@ -117,6 +118,7 @@ class CalculationSchema(AbstractDescriptionSchema):
 
     step_display = serializers.CharField(source='get_step_display', read_only=True)
     classes = ClassesSerializer(source='get_classes', read_only=True, many=True)
+    premises = PremiseSchema(many=True, read_only=True)
 
     class Meta:
         model = Calculation

@@ -30,41 +30,58 @@ class StatementTest(AbstractTest):
         self._set_calculation()
         self._set_funds()
 
-    def _assert_calc(self, statement_result):
+    def _assert_calc(self, statement_expected, premises_expected):
         """
         Makes a request to get the calculation with the current statement and compares it to the provided statement
         result
         """
-
         response = self.get(f'calculation/{self.calculation.id}/')
         self.assertEqual(response.status_code, 200)
         calc = AttrDict(response.content['calculation'])
-        comparative = self._compare_statements(calc.statement, statement_result)
+
+        self.__compare_statement(calc.statement, statement_expected)
+        self.__compare_premises(calc.premises, premises_expected)
+
+    def __compare_premises(self, premises, premises_expected: list):
+        """Compares the premises that were generated in the calculation with the premises that were expected."""
+        premises_errors = []
+        for premise in premises:
+            if not premise['description'] in premises_expected:
+                premises_errors.append(
+                    {'field_error': 'description', 'expected': premises_expected, 'received': premise['description']})
+        self.assertEqual(len(premises), len(premises_expected))
+        total = len(premises_errors)
+        if total > 0:
+            self.print(premises_errors)
+        if self.keep_db:
+            self.assertEqual(0, len(premises_errors))
+
+    def __compare_statement(self, statement, statement_expected):
+        """Compare the statement that was generated in the calculation with the statement that was expected."""
+        comparative = self.__compare_objs(statement, statement_expected)
         total = len(comparative)
         if total > 0:
             self.print(comparative)
         if self.keep_db:
             self.assertEqual(0, len(comparative))
 
-    def _compare_statements(self, statement, statement_result, errors=None):
-        """Recursively compares a statement object to a provided statement result object and returns any errors"""
-
+    def __compare_objs(self, obj, obj_expected, errors=None):
+        """Recursively compares a obj object to a provided obj result and returns any errors"""
         if errors is None:
             errors = []
-        for key, value in statement_result.items():
+        for key, value in obj_expected.items():
             if isinstance(value, dict):
-                errors = self._compare_statements(statement.get(key, {}), value, errors)
+                errors = self.__compare_objs(obj.get(key, {}), value, errors)
             elif isinstance(value, list):
-                for i, (i_stmt, i_stmt_result) in enumerate(zip(statement.get(key, []), value)):
-                    errors = self._compare_statements(i_stmt, i_stmt_result, errors)
+                for i, (i_stmt, i_stmt_result) in enumerate(zip(obj.get(key, []), value)):
+                    errors = self.__compare_objs(i_stmt, i_stmt_result, errors)
             else:
-                if statement.get(key) != value:
-                    errors.append({'field_error': key, 'value': value, 'expected': statement.get(key)})
+                if obj.get(key) != value:
+                    errors.append({'field_error': key, 'expected': value, 'received': obj.get(key)})
         return errors
 
     def _set_project(self, date_request, date_filling, date_citation):
         """Creates a new project with the specified dates"""
-
         data_project = get_data_project()
         data_project["date_rj_request"] = date_request
         data_project["date_rj_filing"] = date_filling
@@ -75,8 +92,8 @@ class StatementTest(AbstractTest):
 
     def _set_creditor(self, rate):
         """Creates a new creditor with the specified rate for the project"""
-
         creditor = CreditorValues().get_creditor(rate)
+        creditor['physical_person'] = True
         creditor['entity']['name'] = generate_name()
         creditor['entity']['legal_number'] = cpf_generator()
         creditor['recovering_id'] = self.project['recoverings'][0]['id']
@@ -86,7 +103,6 @@ class StatementTest(AbstractTest):
 
     def _set_calculation(self):
         """Creates a new calculation object for the creditor"""
-
         calculation = CalculationValues.calculation
         calculation['creditor_id'] = self.creditor['id']
 
@@ -96,7 +112,6 @@ class StatementTest(AbstractTest):
 
     def _set_funds(self):
         """Creates a new fund object associated with the calculation"""
-
         fund = {
             "description": generate_name(),
             "name": generate_name(),
@@ -118,7 +133,6 @@ class StatementTest(AbstractTest):
 
     def test_a_funds(self):
         """Runs a series of tests using a fund and a set of statements with expected results"""
-
         date_request = "2015-06-09"
         date_filling = "2010-10-14"
         date_citation = "2010-10-14"
@@ -160,39 +174,50 @@ class StatementTest(AbstractTest):
                  'index_recovering': 2.7856726481684837}),
 
         ]
-        statement_result = {
+        statement_expected = {
             "statement_pf": {
-                "tax_days": {
-                    "description_display": _("Delayed days"),
-                    "value": 1675,
-                    "description": "D"
+                "fund": {
+                    "tax_days": {
+                        "description_display": _("Delayed days"),
+                        "value": 1675,
+                        "description": "D"
+                    },
+                    "default_interest": {
+                        "value": 2011.2315165497669
+                    },
+                    "default_interest_due": {
+                        "description_display": _("Total after default interest"),
+                        "value": 5613.437217832931,
+                        "description": "T"
+                    },
+                    "funds_description": [
+                        {
+                            "total": 3602.205701283164,
+                        }
+                    ],
+                    "description_display": _("Updated total"),
+                    "status_display": _("Concluded"),
+                    "status": "C",
+                    "description": "A",
+                    "total": 3602.205701283164
                 },
-                "default_interest": {
-                    "value": 2011.2315165497669
-                },
-                "default_interest_due": {
-                    "description_display": _("Total after default interest"),
-                    "value": 5613.437217832931,
-                    "description": "T"
-                },
-                "funds_description": [
-                    {
-                        "total": 3602.205701283164,
-                    }
-                ],
-                "description_display": _("Updated total"),
-                "status_display": _("Concluded"),
-                "status": "C",
-                "description": "A",
-                "total": 3602.205701283164
             },
             "statement_pj": None,
             "lawyer": None,
             "conclusion_display": _("Impugnment"),
             "conclusion": "I"
         }
+        premises_expected = [
+            _("The value of the lawyer's fees is extra-bankruptcy, since its arbitration occurred after the request "
+              "for judicial recovery."),
+            _('Fill out the appeal deposit withdrawal page.'),
+            _('The Trustee considered attorney fees of 1.0% on the claim in favor of Patron Alexis Wu.'),
+            _("There was arrears interest of 1.0% per month, from the filing date of the Labor Complaint to the date "
+              "of RJ's request."),
+            _('Fill in the approved calculation date.'),
+        ]
         self._assert_statements(statements)
-        self._assert_calc(statement_result)
+        self._assert_calc(statement_expected, premises_expected)
         return statements
 
     def _assert_statements(self, statements):
@@ -200,7 +225,6 @@ class StatementTest(AbstractTest):
         Sends a set of statement objects, checks the response statement, and compares monetary correction values to
         expected results.
         """
-
         for statement, true_monetary_correction in statements:
             response = self.post('calculation/funds/labor', statement)
             new_statement = response.content['statement_funds']

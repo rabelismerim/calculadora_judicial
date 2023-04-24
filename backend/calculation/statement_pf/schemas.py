@@ -178,7 +178,7 @@ class StatementPFSchema(AbstractDescriptionSchema):
 
     fund = serializers.SerializerMethodField()
 
-    def get_funds(self, obj):
+    def get_fund(self, obj):
         tax_days = TaxDaysSchema(source='taxdays', exclude=('statement_pf_id',))
         default_interest = DefaultInterestSchema(source='defaultinterest', exclude=('statement_pf_id',))
         default_interest_due = DefaultInterestDueSchema(source='defaultinterestdue', exclude=('statement_pf_id',))
@@ -193,6 +193,9 @@ class StatementPFSchema(AbstractDescriptionSchema):
             "funds_description": funds_description.to_representation(obj.fundsdescription_set.all()),
             "description_display": obj.get_description_display(),
             "status_display": obj.get_status_display(),
+            "status": obj.status,
+            "description": obj.description,
+            "total": obj.total,
         }
 
     class Meta:

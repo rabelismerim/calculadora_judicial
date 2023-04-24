@@ -11,6 +11,7 @@ from django.db.models import Sum, F, BooleanField
 from django.utils.translation import gettext_lazy as _
 
 from calculation.comparative.signals import new_calc
+from calculation.premise.models import Premise
 from core.abstract.models import AbstractModel
 from creditors.models import Creditor
 from rates.models import Rate
@@ -79,6 +80,7 @@ class Calculation(AbstractModel):
     # TODO: definir como @property?
     # True If edital AJ else False
     has_edital = models.BooleanField(_('Edital art. 7º § 2 - 11.101/2005'), default=False)
+    premises = models.ManyToManyField(Premise, blank=True)
 
     def _get_number(self) -> str:
         """Returns the number of calculations for the creditor."""
