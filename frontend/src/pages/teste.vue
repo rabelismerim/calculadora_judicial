@@ -1,28 +1,26 @@
 <script setup lang="ts">
-const newNotice = {
-  classe: '1',
-  coin: 'B',
-  value: 50.0,
-  creditorId: '92dd53a6-0db0-4e75-83a3-8f239e03af39',
+const newIncident = {
+  creditorId: '33f72514-bd81-4f5c-9ec1-c787a7464b6e',
+  description: ['Teste'],
 }
-let notice = $ref([''])
+let incident = $ref([''])
 
-const setNotice = async () => {
+const newIncidente = async () => {
   try {
-    const result = await creditorsService.setNotice(newNotice)
+    const result = await calculationService.newIncident(newIncident)
     console.warn('print result', result)
   }
   catch (error) {
-    printError('ERROR ON NEW NOTICE:', error)
+    printError('ERROR ON NEW CALCULATION:', error)
   }
 }
-const loadNotice = async () => {
+const loadIncidente = async () => {
   try {
-    const result = await creditorsService.getNotice()
-    notice = result
+    const result = await calculationService.getIncident('33f72514-bd81-4f5c-9ec1-c787a7464b6e')
+    incident = result
   }
   catch (error) {
-    printError('ERROR ON LOAD NOTICES:', error)
+    printError('ERROR ON LOAD CALCULATION:', error)
   }
 }
 </script>
@@ -31,15 +29,15 @@ const loadNotice = async () => {
   <div class="p-6 grid gap-4 justify-start">
     <h1>Teste</h1>
     <Btn
-      label="Criar/Atualizar Notice"
-      @click="setNotice"
+      label="Criar Calculo"
+      @click="newIncidente"
     />
     <Btn
-      label="Carregar Notice"
-      @click="loadNotice"
+      label="Carregar Calculo"
+      @click="loadIncidente"
     />
     <div>
-      <pre>{{ notice }}</pre>
+      <pre>{{ incident }}</pre>
     </div>
   </div>
 </template>
