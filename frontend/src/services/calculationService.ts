@@ -72,7 +72,7 @@ const newIncident = async (incident: Incident) => {
   const results = []
   try {
     const result = await api
-      .post('/v1/calculation/incident',
+      .post('/v1/calculation/incident/',
         ({
           number,
         }))
@@ -103,7 +103,7 @@ interface Verdict {
 
 const getVerdict = (calculationId: string) => api
 
-  .get(`/v1/calculation/verdict/${calculationId}`)
+  .get(`/v1/calculation/verdict/${calculationId}/`)
   .then(({ verdict }: any) => verdict)
 
 const newVerdict = async (verdict: Verdict) => {
