@@ -68,6 +68,7 @@ steps:
 - task: CopyFiles@2
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)/backend'
-    Contents: '*.*'
+    Contents: '**'
     TargetFolder: 'D:\DJUD\Teste'
     OverWrite: true
+    flattenFolders: true
