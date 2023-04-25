@@ -65,3 +65,9 @@ steps:
     python manage.py collectstatic
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)/backend'
+    Contents: '*.*'
+    TargetFolder: 'D:\DJUD\Teste'
+    OverWrite: true
