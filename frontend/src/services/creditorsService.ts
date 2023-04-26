@@ -1,48 +1,156 @@
 // CREDORES
+interface Claim {
+  classe: string
+  coin: string
+  value: number
+}
 interface Creditor {
+  id?: string
   name: string
   legalNumber: string
   recoveringsId: string[]
+  rateId: string
+  claimCreditor: Claim[]
+  admission: string
+  dismissal: string
+  defaultInterest: number
+  fine: number
+  advocativeHours: number
+  occurrence: string
+  physicalPerson: boolean
+  description: string
+}
+interface Detail extends Creditor {}
+interface Options extends Creditor {
+  legend: string
 }
 const getCreditors = (id: string) => api
   .get(`/v1/creditors/project/${id}/`)
   .then(({ creditors }: any) => creditors)
-const createCreditor = async (creditor: Creditor) => {
-  const { recoveringsId, name, legalNumber } = creditor
+
+const getCreditor = (id: string) => api
+  .get(`/v1/creditors/detail/${id}/`)
+  .then(({ creditor }: any) => creditor)
+
+const getOptions = () => api
+  .get('/v1/creditors/options/')
+  .then(({ options }: any) => options)
+
+const setCreditor = async (creditor: Creditor) => {
+  const { id, recoveringsId, name, legalNumber, claimCreditor } = creditor
+  const method = id ? 'put' : 'post'
   const results = []
+  if (!recoveringsId)
+    return
   try {
     for (const id of recoveringsId) {
-      const result = await api
-        .post('/v1/creditors/',
-          ({
-            entity: {
-              name,
-              legalNumber,
-            },
-            recoveringId: id,
-            rateId: 'eca8d781-548f-4893-ba00-41893e605936',
-          }))
-        .then((result: any) => result.creditor)
+      const result = await api[method]('/v1/creditors/',
+        ({
+          ...creditor,
+          entity: {
+            name,
+            legalNumber,
+          },
+          recoveringId: id,
+          claimCreditor: claimCreditor.map(({ coin, classe, value }: Claim) => ({
+            classes: { classe },
+            coins: { coin, value },
+          })),
+        }))
+      // .then((result: any) => result.creditor)
+      console.log(result)
       results.push(result)
     }
     return results
   }
   catch (error) {
-    printError('ERROR ON NEW CREDITOR', error)
+    printError('ERROR ON NEW CREDITORS', error)
   }
 }
 
-// FICHA DE ANALISE - EDITAL DA AJ
-const getAnalysis = () => api
+interface Notice {
+  id?: string
+  classe: string
+  coin: string
+  value: number
+  creditorId: string
+}
+interface Recovering extends Notice {}
+
+const getNotice = () => api
   .get('/v1/creditors/notice/aj/')
-  .then(({ analysis }: any) => analysis)
-const newAnalysis = (name: string) => api
-  .post('/v1/creditors/', { name })
-  .then(({ analysis }: any) => analysis)
+  .then(({ notice }: any) => notice)
+
+const setNotice = async (notice: Notice) => {
+  const { id, classe, coin, creditorId, value } = notice
+  const method = id ? 'put' : 'post'
+  const results = []
+  try {
+    for (const id of creditorId) {
+      const result = await api[method]('/v1/creditors/notice/aj/',
+        ({
+          ...notice,
+          classes: {
+            classe,
+          },
+
+          coins: {
+            coin,
+            value,
+          },
+          creditorId: id,
+        }))
+      console.log(result)
+      results.push(result)
+    }
+    return results
+  }
+  catch (error) {
+    printError('ERROR ON NEW NOTICE', error)
+  }
+}
+
+const getRecoverings = () => api
+  .get('/v1/creditors/notice/recovering/')
+  .then(({ recoverings }: any) => recoverings)
+
+const setRecovering = async (recovering: Recovering) => {
+  const { id, classe, coin, creditorId, value } = recovering
+  const method = id ? 'put' : 'post'
+  const results = []
+  try {
+    for (const id of creditorId) {
+      const result = await api[method]('/v1/creditors/notice/recovering/',
+        ({
+          ...recovering,
+          classes: {
+            classe,
+          },
+
+          coins: {
+            coin,
+            value,
+          },
+          creditorId: id,
+        }))
+        .then((result: any) => result.recovering)
+      console.log(result)
+      results.push(result)
+    }
+    return results
+  }
+  catch (error) {
+    printError('ERROR ON NEW RECOVERING', error)
+  }
+}
 
 export default {
   getCreditors,
-  createCreditor,
-  getAnalysis,
-  newAnalysis,
+  getCreditor,
+  getOptions,
+  setCreditor,
+  getNotice,
+  setNotice,
+  getRecoverings,
+  setRecovering,
 }

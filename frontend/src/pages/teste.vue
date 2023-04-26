@@ -1,27 +1,26 @@
 <script setup lang="ts">
-const newCreditor = {
-  name: 'Empresa Teste 4',
-  legalNumber: '52.824.237/0001-90',
-  recoveringsId: ['f84f063f-e944-4dfc-85e5-7ac04de04fdb', '2313d4a1-ee03-4e94-b86e-fd39b955c632', '2b218f7d-f132-458a-8ab7-80a0c1c6c7a2'],
+const newIncident = {
+  creditorId: '33f72514-bd81-4f5c-9ec1-c787a7464b6e',
+  description: ['Teste'],
 }
-let creditors = $ref([''])
+let incident = $ref([''])
 
-const createCreditor = async () => {
+const newIncidente = async () => {
   try {
-    const result = await creditorsService.createCreditor(newCreditor)
+    const result = await calculationService.newIncident(newIncident)
     console.warn('print result', result)
   }
   catch (error) {
-    printError('ERROR ON NEW CREDITOR:', error)
+    printError('ERROR ON NEW CALCULATION:', error)
   }
 }
-const loadCreditors = async () => {
+const loadIncidente = async () => {
   try {
-    const result = await creditorsService.getCreditors('227b3c32-7e7b-42f4-a10f-289c15aa1701')
-    creditors = result
+    const result = await calculationService.getIncident('33f72514-bd81-4f5c-9ec1-c787a7464b6e')
+    incident = result
   }
   catch (error) {
-    printError('ERROR ON LOAD CREDITORS:', error)
+    printError('ERROR ON LOAD CALCULATION:', error)
   }
 }
 </script>
@@ -30,15 +29,15 @@ const loadCreditors = async () => {
   <div class="p-6 grid gap-4 justify-start">
     <h1>Teste</h1>
     <Btn
-      label="Cadastrar Credor"
-      @click="createCreditor"
+      label="Criar Calculo"
+      @click="newIncidente"
     />
     <Btn
-      label="Carregar Credores"
-      @click="loadCreditors"
+      label="Carregar Calculo"
+      @click="loadIncidente"
     />
     <div>
-      <pre>{{ creditors }}</pre>
+      <pre>{{ incident }}</pre>
     </div>
   </div>
 </template>
