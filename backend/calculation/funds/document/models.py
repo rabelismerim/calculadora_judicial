@@ -11,9 +11,11 @@ from django.db import models
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
+from base.views import ExtractFormula
 from calculation.comparative.signals import gen_statement_documents, gen_statement_total_documents
 from calculation.funds.models import AbstractFunds, AbstractStatement, AbstractMonetaryCorrection, \
     AbstractTotalValuesFunds
+from rates.models import Rate
 
 
 class FundDocument(AbstractFunds):
@@ -306,3 +308,14 @@ def save_statement_documents(sender, instance, **kwargs) -> None:
     print('Signal gerar linha extrato verbas documentos\n')
     instance.calcule_monetary_correction()
     instance.fund.gen_total()
+
+    statement_methods = ['get_total_value', 'get_dsr_reflexes', 'get_monetary_correction',
+                         'calcule_monetary_correction', 'get_monetary_correction', 'get_corrected_value',
+                         'get_default_interest', 'get_total_due', 'get_fine', '__days360', 'has_tax',
+                         'get_rate_by_date',
+                         '_get_index_monetary_correction', 'get_corrected_value', 'get_data_base', 'get_total_value',
+                         'get_historical_value', 'get_rate', 'save_total_funds', 'monetarycorrection', 'set_total',
+                         '_calc_corrected_value', 'has_monetary_correction', '_calc_corrected_value', 'corrected_value']
+
+    ExtractFormula(instance, instance.fund.calculation, statement_methods).get_methods(
+        [StatementDocument, MonetaryCorrectionDocument, Rate, TotalValuesDocument, save_statement_documents])

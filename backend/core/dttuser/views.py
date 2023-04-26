@@ -196,6 +196,9 @@ class GroupApi(AbstractViewApi):
     model = Group
     http_method_names = ['get']
 
+    def get_exclude_queryset(self):
+        return {'name': "Security"}
+
 
 class SubgroupApi(AbstractViewApi):
     """
@@ -224,6 +227,9 @@ class SubgroupApi(AbstractViewApi):
         permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Subgroup
     http_method_names = ['get']
+
+    def get_exclude_queryset(self):
+        return {'name': "Security"}
 
 
 class UserDttApi(AbstractUserDttApi):

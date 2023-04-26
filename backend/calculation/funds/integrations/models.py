@@ -8,9 +8,12 @@ to add specific fields as needed.
 from django.db import models
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
+
+from base.views import ExtractFormula
 from calculation.comparative.signals import gen_statement_integrations
 from calculation.funds.abstract.models import AbstractStatement, AbstractMonetaryCorrection, \
     AbstractTotalValuesFunds
+from rates.models import Rate
 
 
 class StatementIntegrations(AbstractStatement):
@@ -75,8 +78,7 @@ class StatementIntegrations(AbstractStatement):
         """
         super(StatementIntegrations, self).save(*args, **kwargs)
         if send_signal_post_save:
-            gen_statement_integrations.send(
-                sender=self.__class__, instance=self)
+            gen_statement_integrations.send(sender=self.__class__, instance=self)
 
 
 class MonetaryCorrectionIntegrations(AbstractMonetaryCorrection):
@@ -137,8 +139,20 @@ def save_rate_integrations(sender, instance, **kwargs) -> None:
     """
     This method is a receiver for post_save signal and is triggered when a StatementIntegrations object is saved. It
     calculates the monetary correction for the instance and generates the total integrations of the related fund. It
-    takes the sender and instance as arguments
+    takes the sender and instance as arguments.
+
+    Triggers the creation of the formulas used at the end of the calculation
     """
     print('Signal gerar linha extrato verbas integratorias\n')
     instance.calcule_monetary_correction()
     instance.fund.gen_total_integrations()
+
+    statement_methods = ['get_total_value', 'get_dsr_reflexes', 'get_monetary_correction',
+                         'calcule_monetary_correction', 'get_rate_by_date',
+                         '_get_index_monetary_correction', 'get_corrected_value', 'get_data_base', 'get_total_value',
+                         'get_historical_value', 'get_rate', 'save_total_funds', 'monetarycorrection', 'set_total',
+                         '_calc_corrected_value', 'has_monetary_correction', '_calc_corrected_value', 'corrected_value']
+
+    ExtractFormula(instance, instance.fund.calculation, statement_methods).get_methods(
+        [StatementIntegrations, MonetaryCorrectionIntegrations, Rate, TotalValuesFundsIntegrations,
+         save_rate_integrations])

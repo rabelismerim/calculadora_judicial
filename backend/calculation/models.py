@@ -82,6 +82,9 @@ class Calculation(AbstractModel):
     has_edital = models.BooleanField(_('Edital art. 7º § 2 - 11.101/2005'), default=False)
     premises = models.ManyToManyField(Premise, blank=True)
 
+    def __str__(self):
+        return f'{self.number} || {self.get_step_display()}'
+
     def _get_number(self) -> str:
         """Returns the number of calculations for the creditor."""
         return f'{self._get_count_process_calculation() + 1} - {self.creditor.get_count_calculations() + 1}'

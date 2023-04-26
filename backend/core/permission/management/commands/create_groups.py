@@ -14,6 +14,12 @@ authorize_users = {
     'codename': 'can_authorize_users',
     'name': 'Can authorize Users'
 }
+view_code = {
+    'content_type': 'security',
+    'codename': 'can_view_code',
+    'name': 'Can view Code log detail'
+}
+
 groups = [
     {'name': 'Gestor Financeiro',
      'models': [
@@ -150,7 +156,14 @@ groups = [
          {'name': 'dttuser',
           'actions': ['view'],
           }
+
      ],
+     'custom_perms': []
+     },
+    {'name': 'Security',
+     'models': [{'name': 'security',
+                 'actions': ['view'],
+                 }],
      'custom_perms': []
      }
 ]
@@ -207,6 +220,10 @@ class Command(BaseCommand):
                 codename = custom_perm.get('codename')
                 name = custom_perm.get('name')
                 content_type = ContentType.objects.filter(app_label__icontains=content).first()
+                if not content_type:
+                    print(f'Content type to app detail: {name}, codename: {codename}, content: {content} not found')
+                    continue
+
                 permission, created = Permission.objects.get_or_create(content_type=content_type, codename=codename,
                                                                        name=name)
                 perms.append(permission.id)

@@ -9,10 +9,11 @@ from django.db.models import FloatField, PositiveIntegerField
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
+from base.views import ExtractFormula
 from calculation.comparative.signals import gen_statement_irrf
 from calculation.funds.abstract.models import AbstractFunds, AbstractStatus
 from core.abstract.models import AbstractModel
-from rates.models import get_aliquot_by_tax
+from rates.models import get_aliquot_by_tax, Rate
 
 
 class FundIRRF(AbstractFunds):
@@ -193,7 +194,7 @@ class TotalValuesIRRF(AbstractStatus):
 
 
 @receiver(gen_statement_irrf, sender=StatementIRRF)
-def save_rate(sender, instance, **kwargs) -> None:
+def save_statement_irrf(sender, instance, **kwargs) -> None:
     """
     This method is a receiver for post_save signal and is triggered when a StatementFunds object is saved. It
     calculates the monetary correction for the instance and generates the total statements of the related fund. It
@@ -202,3 +203,15 @@ def save_rate(sender, instance, **kwargs) -> None:
     print('Signal gerar linha extrato verbas irrf\n')
 
     instance.fund.gen_total()
+
+    statement_methods = ['get_total_value', 'get_dsr_reflexes', 'get_monetary_correction', 'get_rate_by_date',
+                         'calcule_monetary_correction', 'get_months_period', '__set_taxable_portion', '__set_aliquot',
+                         '__set_taxable_amount', '__set_installment_deducted', '__set_irrf_per_month',
+                         '__set_irrf_per_period', 'total_corrected', '__calc_irrf_per_month', '__calc_irrf_per_period',
+                         '__calc_taxable_amount', 'get_aliquot', 'get_installment_deducted',
+                         '_get_index_monetary_correction', 'get_corrected_value', 'get_data_base', 'get_total_value',
+                         'get_historical_value', 'get_rate', 'save_total_funds', 'monetarycorrection', 'set_total',
+                         '_calc_corrected_value', 'has_monetary_correction', '_calc_corrected_value', 'corrected_value']
+
+    ExtractFormula(instance, instance.fund.calculation, statement_methods).get_methods(
+        [StatementIRRF, FundIRRF, TotalValuesIRRF, Rate, save_statement_irrf])

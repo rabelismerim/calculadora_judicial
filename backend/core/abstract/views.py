@@ -129,6 +129,7 @@ class AbstractViewApi(generics.GenericAPIView):
     def get_query(self, id_=None, **kwargs):
         """Validate parameters received in query params, returning query values"""
         query = self.get_queryset()
+        query_exclude = self.get_exclude_queryset()
         exclude = self.__get_exclude_values()
 
         for valid_params in self.query_params:
@@ -149,9 +150,11 @@ class AbstractViewApi(generics.GenericAPIView):
                         {name: _('Field in invalid format. It must be in the format{}').format(instance["legend"])})
         serializer = self.get_serializer_class()
         if id_:
-            return serializer(self.model.objects.filter(id=id_, **query, **kwargs).first(), many=False,
+            return serializer(self.model.objects.exclude(**query_exclude).filter(id=id_, **query, **kwargs).first(),
+                              many=False,
                               exclude=exclude).data
-        return serializer(self.model.objects.filter(**query, **kwargs).distinct(), many=True, exclude=exclude).data
+        return serializer(self.model.objects.exclude(**query_exclude).filter(**query, **kwargs).distinct(), many=True,
+                          exclude=exclude).data
 
     def get(self, request, *args, **kwargs):
         """Abstract method for default get model. Overide method in class for custom operation"""
@@ -202,4 +205,7 @@ class AbstractViewApi(generics.GenericAPIView):
         return []
 
     def get_queryset(self):
+        return {}
+
+    def get_exclude_queryset(self):
         return {}

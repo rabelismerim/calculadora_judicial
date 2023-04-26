@@ -10,6 +10,7 @@ from django.db.models import signals
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
+from base.views import ExtractFormula
 from calculation.comparative.signals import new_calc
 from calculation.funds.abstract.models import AbstractStatus
 from calculation.funds.integrations.models import TotalValuesFundsIntegrations
@@ -19,6 +20,7 @@ from calculation.models import Calculation
 from calculation.statement.models import Statement
 from calculation.statement_pj.models import FundsDocumentDescriptionPJ
 from core.abstract.models import AbstractModel
+from rates.models import Rate
 from utils import days360
 
 CHOICES_TOTAL_PF = (('A', _('Updated total')), ('D', _('Total due')))
@@ -77,8 +79,9 @@ class StatementPF(AbstractStatus):
     statement = models.OneToOneField(Statement, on_delete=models.PROTECT)
 
     def get_agreements(self):
-        return list(FundsDocumentDescriptionPJ.objects.filter(document__fund__calculation__creditor__physical_person=True,
-                                                         document__fund__calculation=self.statement.calculation))
+        return list(
+            FundsDocumentDescriptionPJ.objects.filter(document__fund__calculation__creditor__physical_person=True,
+                                                      document__fund__calculation=self.statement.calculation))
 
     def get_recurral_deposit(self) -> float:
         """
@@ -670,6 +673,7 @@ def new_total_funds_rate(sender, instance, **kwargs) -> None:
     filters = {'statement_pf_id': statement_pf.id}
     FundsDescription.objects.get_or_create(defaults=defaults, **filters)
     statement_pf.calcule_total()
+    extract_formula(instance)
 
 
 @receiver(signals.post_save, sender=TotalValuesFundsIntegrations)
@@ -692,3 +696,21 @@ def new_total_funds_rate_integrations(sender, instance, **kwargs) -> None:
     filters = {'statement_pf_id': statement_pf.id}
     FundsDescription.objects.get_or_create(defaults=defaults, **filters)
     statement_pf.calcule_total()
+    extract_formula(instance)
+
+
+def extract_formula(instance):
+    """Triggers the creation of the formulas used at the end of the calculation."""
+    statement_methods = ['get_recurral_deposit', 'get_default_interest', 'get_default_interest_due',
+                         '_get_calculate_total_value', '_get_date_rj_filing', '_get_date_rj_request', '_set_total',
+                         '_get_total', 'total_due', '_get_creditor_default_interest', '_calcule_set_description',
+                         'calcule_total', '_get_taxdays_value', '_get_defaultinterest_value', '_get_rate',
+                         'total_conclusion', '_has_tax', '_get_appeal_deposit', '_calcule_get_description',
+                         '_calcule_get_tax_days_description', '_calcule_get_tax_days_value', '_calcule_set_tax_days',
+                         '_delete_tax_days', '_delete_default_interest_due', '_calcule_has_default_interest',
+                         '_calcule_default_interest', '_delete_default_interest', '_calcule_set_default_interest',
+                         '_calcule_default_interest_due_value', '_calcule_get_default_interest_due_description',
+                         '_calcule_set_default_interest_due', 'save', 'total', 'description'
+                         ]
+    ExtractFormula(instance, instance.fund.calculation, statement_methods).get_methods(
+        [StatementPF, FundsDescription, Rate, new_total_funds_rate_integrations, new_total_funds_rate])

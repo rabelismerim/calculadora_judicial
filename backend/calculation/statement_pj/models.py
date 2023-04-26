@@ -8,15 +8,15 @@ to add specific fields as needed.
 from django.db import models
 from django.dispatch import receiver
 
+from base.views import ExtractFormula
 from calculation.comparative.signals import gen_statement_total_documents
 from calculation.funds.document.models import TotalValuesDocument
-from calculation.funds.models import Funds
 from calculation.statement.models import Statement
 from core.abstract.models import AbstractModel
 from utils import _
 
 
-# TODO: Tabela estatica. Calcular no evento signals.post.save ou em Procedure
+# TODO alterar PJ para englobar documentos quando PJ, acordos PF
 class StatementPJ(AbstractModel):
     """
     A class representing a statement for a legal entity (PJ).
@@ -37,12 +37,11 @@ class StatementPJ(AbstractModel):
     amount_due = models.FloatField(_('Total due'), default=0)
 
     def get_documents(self):
+        """Get all legal entity documents."""
         return self.fundsdocumentdescriptionpj_set.filter(document__fund__calculation__creditor__physical_person=False)
 
-    def get_agreements(self):
-        return self.fundsdocumentdescriptionpj_set.filter(document__fund__calculation__creditor__physical_person=True)
-
     def set_total(self):
+        """Calculate the amounts, interest, fine and days by adding all the documents of the legal entity."""
         self.value = 0
         self.corrected_value = 0
         self.interest = 0
@@ -59,13 +58,12 @@ class StatementPJ(AbstractModel):
         self.save()
 
 
-# TODO: Tabela estatica. Criar no evento signals.post.save ou em Procedure
 class FundsDocumentDescriptionPJ(AbstractModel):
     """
     A class representing a description of funds associated with a statement for a legal entity (PJ).
 
     Attributes:
-        funds (Funds): The funds associated with this object.
+        document (TotalValuesDocument): The funds associated with this object.
         statement_pj (StatementPJ): The statement associated with this object.
     """
     document = models.OneToOneField(TotalValuesDocument, on_delete=models.PROTECT)
@@ -84,3 +82,7 @@ def save_statement_total_documents(sender, instance, **kwargs) -> None:
     statement_pj, created = StatementPJ.objects.get_or_create(statement=statement)
     fund, created = FundsDocumentDescriptionPJ.objects.get_or_create(document=instance, statement_pj=statement_pj)
     fund.statement_pj.set_total()
+
+    statement_methods = ['set_total', 'get_documents']
+    ExtractFormula(instance, instance.fund.calculation, statement_methods).get_methods(
+        [StatementPJ, save_statement_total_documents])

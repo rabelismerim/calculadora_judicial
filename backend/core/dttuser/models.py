@@ -149,16 +149,13 @@ class PermissionsMixin(models.Model):
         assumed to have permission in general. If an object is provided, check
         permissions for that object.
         """
-        sensitive_permissions = ['projetos',
-                                 'credores']  # Only managers have permissions
+        sensitive_permissions = ['view_formula']  # Only managers have permissions
         is_sensitive = perm.split('.')[0] in sensitive_permissions
 
         # Active superusers have all permissions, except in sensitive permissions.
-        if self.is_active and self.is_superuser:
-            if is_sensitive:
-                # TODO: verificar nome do grupo de gerente
-                return self.groups.filter(name='gerente').exists()
-            return True
+        if self.is_active and self.is_superuser and perm in sensitive_permissions is False:
+            if is_sensitive is False:
+                return True
 
         # Otherwise we need to check the backends.
         return _user_has_perm(self, perm, obj)
@@ -176,12 +173,18 @@ class PermissionsMixin(models.Model):
         has_perm = False
 
         for perm in perms:
+            sensitive_permissions = ['view_formula']  # Only managers have permissions
+            is_sensitive = perm.split('.')[0] in sensitive_permissions
+            # Active superusers have all permissions, except in sensitive permissions.
+            if self.is_active and self.is_superuser and is_sensitive is False:
+                if is_sensitive is False:
+                    return True
+
+        for perm in perms:
             has_perm = any([self.groups.filter(permissions__codename=perm).exists(),
                             self.user_permissions.filter(codename=perm).exists()])
             if has_perm is False:
                 break
-        if self.is_active and self.is_superuser:
-            return True
         return has_perm
 
     def has_perms(self, perm_list, obj=None):

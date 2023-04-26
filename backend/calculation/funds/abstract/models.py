@@ -222,7 +222,7 @@ class AbstractMonetaryCorrection(AbstractModel):
         return self.statement
 
     @staticmethod
-    def _calc_corrected_value(index_recovering, index_data_base, total_value) -> float:
+    def _calc_corrected_value(index_recovering: float, index_data_base: float, total_value: float) -> float:
         return index_recovering / index_data_base * total_value
 
     @property

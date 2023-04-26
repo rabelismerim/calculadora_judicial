@@ -119,6 +119,10 @@ INSTALLED_APPS = [
     'core.permission',
     'core.entity',
 
+    # Security
+    'security',
+    'security.formula',  # Salvar formulas utilizadas no momento do cálculo
+
     # Calculation
     'calculation',
     'calculation.criterion',
@@ -132,7 +136,7 @@ INSTALLED_APPS = [
     'calculation.funds.document',  # Verbas documento
     'calculation.funds.integrations',  # Verbas Integratórias
     'calculation.funds.irrf',  # Verbas IRRF
-    'calculation.sheets_template', # Templates Planilhas Excel
+    'calculation.sheets_template',  # Templates Planilhas Excel
 
     # Rate - Índice
     'rates',
@@ -413,3 +417,5 @@ INDEX_VARIATION_END = datetime.datetime.strptime(INDEX_VARIATION_END, '%Y-%m-%d'
 
 INDEX_VARIATION_RJ = os.getenv('INDEX_VARIATION_RJ', '2022-06-01')
 INDEX_VARIATION_RJ = datetime.datetime.strptime(INDEX_VARIATION_RJ, '%Y-%m-%d').date()
+
+FERNET_KEY = os.getenv('FERNET_KEY').encode()  # Key to encrypt or decrypt text
