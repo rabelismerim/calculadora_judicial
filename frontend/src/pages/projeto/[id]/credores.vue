@@ -137,43 +137,13 @@ onMounted(() => {
               animated
               header-nav
               flat
-              class="vertical"
+              class="vertical border--primary border-1 mb-4 mr-3"
             >
-              <QStep
-                :name="1"
-                title="Pleito Credor"
-                icon="o_settings"
-              >
-                teste...
-              </QStep>
-              <QStep
-                :name="2"
-                title="Pleito Advocatício"
-                icon="o_settings"
-              >
-                teste...
-              </QStep>
-              <QStep
-                :name="3"
-                title="Edital AJ"
-                icon="o_settings"
-              >
-                teste...
-              </QStep>
-              <QStep
-                :name="4"
-                title="Edital Recuperanda"
-                icon="o_settings"
-              >
-                teste...
-              </QStep>
-              <QStep
-                :name="5"
-                title="Critérios"
-                icon="o_settings"
-              >
-                teste...
-              </QStep>
+              <CreditorClaim :name="1" title="Pleito Credor" icon="o_attach_money" />
+              <LawyerClaim :name="2" title="Pleito Advocatício" icon="o_attach_money" />
+              <AJNotice :name="3" title="Edital AJ" icon="o_request_page" />
+              <RecoveringNotice :name="4" title="Edital Recuperanda" icon="o_request_page" />
+              <Criteria :name="5" title="Critérios" icon="o_checklist_rtl" />
             </QStepper>
           </Accordion>
         </div>
