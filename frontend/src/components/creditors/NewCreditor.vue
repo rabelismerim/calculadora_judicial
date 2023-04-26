@@ -11,7 +11,7 @@ const props = withDefaults(defineProps<{
 }>(), {
   modelValue: false,
 })
-const emit = defineEmits(['update:modelValue', 'update:creditor'])
+const emit = defineEmits(['update:modelValue', 'update:creditor', 'success'])
 
 let loading = $ref(false)
 const form = ref(null) as any
@@ -49,6 +49,7 @@ const onSubmit = async () => {
       notify({ message: `Credor ${newCreditor.value.name} foi criado com sucesso!` })
       clear()
       emit('update:modelValue', false)
+      emit('success')
     }
   }
   catch (error) {
