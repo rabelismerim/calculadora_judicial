@@ -272,7 +272,7 @@ class TotalValuesDocument(AbstractTotalValuesFunds):
     fund = models.OneToOneField(FundDocument, on_delete=models.PROTECT)
     total_default_interest = models.FloatField(_('Total juros'), default=0)
     total_fine = models.FloatField(_('Total multa'), default=0)
-    total_due = models.FloatField(_('Total devido'), default=0)
+    total_due = models.FloatField(_('Total due'), default=0)
 
     def __get_calculated_statement(self):
         """Returns the calculated statement of the fund."""

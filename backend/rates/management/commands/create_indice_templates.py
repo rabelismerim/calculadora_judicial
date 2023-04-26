@@ -58,39 +58,48 @@ def create_templates():
 
     templates = [{'name': f'Documentos', 'description': f'Documento',
                   'end_point': '/djud/api/v1/calculation/funds/ducuments/',
+                  'end_point_main': '/djud/api/v1/calculation/funds/ducuments/',
                   'many': False,
                   'fields': fields_verbas_document}, {'name': f'Acordos', 'description': f'Acordo',
                                                       'end_point': '/djud/api/v1/calculation/funds/ducuments/',
+                                                      'end_point_main': '/djud/api/v1/calculation/funds/ducuments/',
                                                       'many': False,
                                                       'fields': fields_verbas_document}]
     verbas = ['TST', 'TST.IPCA-E', 'IPCA-E', 'SELIC', 'IGP-M', 'INPC', 'IPCA', 'IGP-DI', 'IPC-FIPE', 'TJSP']
 
     for verba in verbas:
         template = [
-            {'name': f'{verba}', 'description': f'{verba}', 'end_point': '/djud/api/v1/calculation/funds/funds/',
+            {'name': f'{verba}', 'description': f'{verba}',
+             'end_point': '/djud/api/v1/calculation/funds/labor/',
+             'end_point_main': '/djud/api/v1/calculation/funds/',
              'many': True,
              'fields': fields_verbas},
             {'name': f'{verba}', 'description': f'Integrações sobre {verba}',
              'end_point': '/djud/api/v1/calculation/funds/integrations/',
+             'end_point_main': '/djud/api/v1/calculation/funds/',
              'many': True,
              'fields': fields_verbas_integrations},
 
             {'name': f'{verba} + Reflexos', 'description': f'{verba} + Reflexos',
-             'end_point': '/djud/api/v1/calculation/funds/funds/',
+             'end_point': '/djud/api/v1/calculation/funds/labor/',
+             'end_point_main': '/djud/api/v1/calculation/funds/',
              'many': True,
              'fields': fields_verbas_reflexos},
             {'name': f'{verba} + Reflexos', 'description': f'Integrações sobre {verba}',
              'end_point': '/djud/api/v1/calculation/funds/integrations/',
+             'end_point_main': '/djud/api/v1/calculation/funds/',
              'many': True,
              'fields': fields_verbas_integrations},
 
             {'name': f'{verba} rescisórias', 'description': f'Verbas rescisórias {verba}',
-             'end_point': '/djud/api/v1/calculation/funds/funds/',
+             'end_point': '/djud/api/v1/calculation/funds/labor/',
+             'end_point_main': '/djud/api/v1/calculation/funds/',
              'many': True,
              'fields': fields_verbas},
 
             {'name': f'IRRF - {verba}', 'description': f'Base de cálculo',
-             'end_point': '/djud/api/v1/calculation/funds/irrf/',
+             'end_point': '/djud/api/v1/calculation/funds/irrf/funds/',
+             'end_point_main': '/djud/api/v1/calculation/funds/irrf/',
              'many': True,
              'fields': fields_verbas_irrf},
 
@@ -100,7 +109,8 @@ def create_templates():
     for template in templates:
         fields = template.pop('fields')
         name = template.pop('name')
-        new_template, created = Template.objects.get_or_create(name=name)
+        end_point = template.pop('end_point_main')
+        new_template, created = Template.objects.get_or_create(name=name, end_point=end_point)
         new_template_rate, created = TemplateRate.objects.get_or_create(template=new_template, **template)
         for field in fields:
             TemplateField.objects.get_or_create(rate=new_template_rate, **field)

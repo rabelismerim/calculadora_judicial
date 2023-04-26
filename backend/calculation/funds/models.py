@@ -189,7 +189,7 @@ class TotalValuesFunds(AbstractTotalValuesFunds):
         set_total(): Calculates and sets the total corrected and historical values of the fund based on the calculated
          statement.
     """
-    total_dsr_reflexes = models.FloatField(_('Total valor reflexos DSR'), default=0)
+    total_dsr_reflexes = models.FloatField(_('Total value DSR reflexes'), default=0)
     total_accurate = models.FloatField(_('Total accurate'), default=0)
     fund = models.OneToOneField(Funds, on_delete=models.PROTECT)
 

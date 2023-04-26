@@ -231,6 +231,7 @@ class Template(AbstractModel):
         name (str): The template name.
     """
     name = models.CharField(_('Rates'), max_length=150)
+    end_point = models.CharField(_('End Point'), max_length=150, null=True)
 
     def __str__(self):
         return self.name
