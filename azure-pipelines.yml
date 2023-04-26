@@ -47,10 +47,8 @@ steps:
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
 - script: |
     npm install --force
-    npm run build:prod
   workingDirectory: $(Build.SourcesDirectory)/frontend
   displayName: 'Install node prerequisites'
-
 - script: |
     mkdir ./log
     python -m pip install --upgrade pip setuptools wheel
@@ -64,3 +62,14 @@ steps:
     python manage.py collectstatic
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
+- task: DeleteFiles@1
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)/backend/venv'
+    Contents: '**'
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)/backend'
+    Contents: '**'
+    TargetFolder: 'D:\DJUD'
+    OverWrite: true
+    flattenFolders: true
