@@ -200,17 +200,19 @@ onMounted(() => {
         </template>
         <div v-if="recovering.creditors.length > 0">
           <Accordion
-            v-for="creditor in recovering.creditors"
+            v-for="(creditor, index) in recovering.creditors"
             :key="creditor.id"
-            :title="recovering.entity.name"
-            :subtitle="formatLegalNumber(recovering.entity.legalNumber)"
+            :title="creditor.entity.name"
+            :subtitle="formatLegalNumber(creditor.entity.legalNumber)"
+            class="pl-6 border-x-0 border-b-0 rounded-0"
+            :class="{ 'border-t-0': index === 0 }"
           >
             <template #header-right>
               <div class="flex-1 flex items-center pl-8">
                 <Btn
-                  label="Novo Credor"
+                  label="Novo Cálculo"
                   icon="i-carbon-add-filled"
-                  outlined
+                  transparent
                   disabled
                 />
               </div>

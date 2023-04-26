@@ -18,7 +18,7 @@ const filteredCreditors = computed(() => {
       const { recoveringId } = creditor
       const recovering = project?.recoverings.find(({ id }: any) => recoveringId === id)
       if (recovering)
-        creditor.recovering = recovering
+        creditor.recovering = { ...recovering, step: 1 }
       return creditor
     })
   const filtered = (!filterBy)
@@ -130,7 +130,51 @@ onMounted(() => {
             <template #header-right>
               <div class="flex-1 flex items-center pl-8" />
             </template>
-            {{ recovering }}
+            <QStepper
+              ref="stepper"
+              v-model="recovering.step"
+              color="primary"
+              animated
+              header-nav
+              flat
+              class="vertical"
+            >
+              <QStep
+                :name="1"
+                title="Pleito Credor"
+                icon="o_settings"
+              >
+                teste...
+              </QStep>
+              <QStep
+                :name="2"
+                title="Pleito Advocatício"
+                icon="o_settings"
+              >
+                teste...
+              </QStep>
+              <QStep
+                :name="3"
+                title="Edital AJ"
+                icon="o_settings"
+              >
+                teste...
+              </QStep>
+              <QStep
+                :name="4"
+                title="Edital Recuperanda"
+                icon="o_settings"
+              >
+                teste...
+              </QStep>
+              <QStep
+                :name="5"
+                title="Critérios"
+                icon="o_settings"
+              >
+                teste...
+              </QStep>
+            </QStepper>
           </Accordion>
         </div>
         <div v-else class="p-6 text-center">
@@ -147,6 +191,7 @@ onMounted(() => {
         v-model="showModal"
         v-model:creditor="editingCreditor"
         :options="project?.recoverings || []"
+        @success="loadCreditors"
       />
     </template>
   </Page>
