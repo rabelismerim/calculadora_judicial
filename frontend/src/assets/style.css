@@ -126,6 +126,30 @@ div {
 .q-field__bottom {
   padding: 4px 12px 0;
 }
+.q-stepper.vertical {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+}
+.q-stepper.vertical .q-stepper__header {
+  min-width: 200px;
+  flex-direction: column;
+  border-bottom: none;
+  border-right: 1px solid rgba(0, 0, 0, 0.12);
+}
+.q-stepper.vertical .q-stepper__tab {
+  justify-content: start;
+}
+.q-stepper.vertical .q-stepper__tab--active > .q-focus-helper {
+  background: currentColor;
+  opacity: 0.15;
+}
+.q-stepper.vertical .q-stepper__dot::before, 
+.q-stepper.vertical .q-stepper__label::after {
+  content: none;
+}
+.q-stepper.vertical {
+  border: 1px solid hsl(var(--primary));
+}
 
 @media (prefers-color-scheme: light) {
   :root {
