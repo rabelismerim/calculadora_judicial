@@ -7,7 +7,7 @@ to add specific fields as needed.
 
 import datetime
 
-from django.db import models
+from django.db import models, transaction
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
@@ -103,8 +103,8 @@ class StatementDocument(AbstractStatement):
             end_date = end_date.replace(day=1)
             end_date = end_date + datetime.timedelta(days=1)
         return (end_date.year - start_date.year) * 360 + \
-               (end_date.month - start_date.month) * 30 + \
-               (end_date.day - start_date.day)
+            (end_date.month - start_date.month) * 30 + \
+            (end_date.day - start_date.day)
 
     @property
     def days(self) -> int:
@@ -196,12 +196,27 @@ class StatementDocument(AbstractStatement):
         if self.has_monetary_correction():
             return self.monetarycorrectiondocument
 
+    def create_monetary_correction(self, data: dict):
+        """Create or update the MonetaryCorrection object"""
+        MonetaryCorrectionDocument.objects.update_or_create(defaults=data, **{'statement': self})
+
     def calcule_monetary_correction(self):
-        """Retrieves the corrected value of the statement if the monetary correction exists."""
-        data = self._get_index_monetary_correction()
+        """
+        Calculate the monetary correction and create the MonetaryCorrection object. If there is an error in the
+        calculation, the MonetaryCorrection is excluded.
+        """
+        data: dict or None = self._get_index_monetary_correction()
         if data:
-            MonetaryCorrectionDocument.objects.update_or_create(defaults=data, **{'statement': self})
+            self.create_monetary_correction(data)
             self.set_calculation_done()
+        else:
+            self.delete_monetary_correction()
+
+    def delete_monetary_correction(self):
+        """Delete the MonetaryCorrection object if exists"""
+        monetary = self.get_monetary_correction()
+        if monetary:
+            monetary.delete()
 
     def get_corrected_value(self) -> float:
         """Returns corrected value if the monetary correction exists for the statement, else 0"""
@@ -230,6 +245,25 @@ class StatementDocument(AbstractStatement):
         super(StatementDocument, self).save(*args, **kwargs)
         if send_signal_post_save and self.fund.is_extraconcursal is False:
             gen_statement_documents.send(sender=self.__class__, instance=self)
+
+    def delete(self, *args, **kwargs):
+        """
+        Deletes the StatementDocument object, FundDocument, MonetaryCorrection, FundsDocumentDescriptionPJ and
+        generates a new calculation of TotalValuesDocument and StatementPJ
+        """
+        self.set_calculation_in_delete()
+        fund = self.fund  # FundDocument
+        total = fund.get_total_funds()  # TotalValuesDocument
+        self.delete_monetary_correction()  # MonetaryCorrection
+        super(StatementDocument, self).delete(*args, **kwargs)
+
+        description_doc = total.get_description_doc()  # FundsDocumentDescriptionPJ
+        if description_doc:
+            statement_pj = description_doc.statement_pj  # StatementPJ
+            description_doc.delete()
+            statement_pj.set_total()
+        total.delete()
+        fund.delete()
 
 
 class MonetaryCorrectionDocument(AbstractMonetaryCorrection):
@@ -279,19 +313,30 @@ class TotalValuesDocument(AbstractTotalValuesFunds):
         if hasattr(self.fund, 'statementdocument') and self.fund.statementdocument.status == 'C':
             return self.fund.statementdocument
 
+    def get_description_doc(self):
+        """Returns the calculated FundsDocumentDescriptionPJ of the total obj."""
+        if hasattr(self, 'fundsdocumentdescriptionpj'):
+            return self.fundsdocumentdescriptionpj
+
     def set_total(self):
         """
         Calculates and sets the total corrected, default_interest, fine and historical values of the fund based on
         the calculated statement.
         """
         statement = self.__get_calculated_statement()
-        if statement:
+        if statement and statement.id:
             self.total_historical = statement.get_total_value()
             self.total_corrected = statement.get_corrected_value()
             self.total_default_interest = statement.get_default_interest()
             self.total_fine = statement.get_fine()
             self.total_due = statement.get_total_due()
-            self.save()
+        else:
+            self.total_historical = 0
+            self.total_corrected = 0
+            self.total_default_interest = 0
+            self.total_fine = 0
+            self.total_due = 0
+        self.save()
 
     def save(self, *args, **kwargs):
         super(TotalValuesDocument, self).save()

@@ -57,12 +57,27 @@ class StatementIntegrations(AbstractStatement):
         if self.has_monetary_correction():
             return self.monetarycorrectionintegrations
 
+    def create_monetary_correction(self, data: dict):
+        """Create or update the MonetaryCorrection object"""
+        MonetaryCorrectionIntegrations.objects.update_or_create(defaults=data, **{'statement': self})
+
     def calcule_monetary_correction(self):
-        """Retrieves the corrected value of the statement if the monetary correction exists, or else returns 0."""
-        data = self._get_index_monetary_correction()
+        """
+        Calculate the monetary correction and create the MonetaryCorrection object. If there is an error in the
+        calculation, the MonetaryCorrection is excluded.
+        """
+        data: dict or None = self._get_index_monetary_correction()
         if data:
-            MonetaryCorrectionIntegrations.objects.update_or_create(defaults=data, **{'statement': self})
+            self.create_monetary_correction(data)
             self.set_calculation_done()
+        else:
+            self.delete_monetary_correction()
+
+    def delete_monetary_correction(self):
+        """Delete the MonetaryCorrection object if exists"""
+        monetary = self.get_monetary_correction()
+        if monetary:
+            monetary.delete()
 
     def get_corrected_value(self) -> float:
         """Returns corrected value if the monetary correction exists for the statement, else 0"""
@@ -79,6 +94,16 @@ class StatementIntegrations(AbstractStatement):
         super(StatementIntegrations, self).save(*args, **kwargs)
         if send_signal_post_save:
             gen_statement_integrations.send(sender=self.__class__, instance=self)
+
+    def delete(self, *args, **kwargs):
+        """
+        Deletes the StatementIntegrations object, MonetaryCorrection and generates a new calculation of
+        TotalValuesFundsIntegrations
+        """
+        fund = self.fund
+        self.delete_monetary_correction()
+        super(StatementIntegrations, self).delete(*args, **kwargs)
+        fund.gen_total_integrations()
 
 
 class MonetaryCorrectionIntegrations(AbstractMonetaryCorrection):

@@ -5,6 +5,7 @@ Api's responds with JSON data and uses rest_framework.schemas.openapi.AutoSchema
 Api's classes use the Irrf model and schema Irrf to work with data.
 """
 from django.http import JsonResponse
+from rest_framework.generics import get_object_or_404
 
 from base.coins.models import Coins
 from calculation.funds.irrf.models import StatementIRRF, FundIRRF
@@ -229,7 +230,7 @@ class StatementIRRFDetailApi(AbstractStatementIRRFApi):
         ```
     """
     serializer_class = StatementIRRFUpdateSchema
-    http_method_names = ['get', 'put']
+    http_method_names = ['get', 'put', 'delete']
     exclude = ('fund_id',)
     docs = docs.copy()
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific statement IRRF 
@@ -245,3 +246,14 @@ class StatementIRRFDetailApi(AbstractStatementIRRFApi):
             Returns:
                 JsonResponse: An HTTP response containing the serialized statement IRRF data updated.
                 """)
+
+    @doc(_("""Delete a specific statement IRRF according to the ID passed by the url
+
+                    Returns:
+                        JsonResponse: A JSON response containing the ok message.
+                    """))
+    def delete(self, request, *args, **kwargs):
+        statement_id = kwargs.get('id')
+        statement = get_object_or_404(StatementIRRF, id=statement_id)
+        statement.delete()
+        return JsonResponse({'data': _('Statement fund deleted')}, status=status.HTTP_200_OK)

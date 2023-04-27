@@ -6,6 +6,7 @@ The FundsApi class uses the Funds model and FundsSchema for working with data.
 """
 
 from django.http import JsonResponse
+from rest_framework.generics import get_object_or_404
 
 from base.coins.models import Coins
 from calculation.funds.irrf.models import FundIRRF
@@ -273,7 +274,7 @@ class StatementFundsDetailApi(AbstractStatementFundsApi):
         ```
     """
     serializer_class = StatementFundsUpdateSchema
-    http_method_names = ['get', 'put']
+    http_method_names = ['get', 'put', 'delete']
     docs = docs.copy()
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific statement fund object 
     using the given id from the query parameters and serializes the result into JSON format before returning it as an 
@@ -288,3 +289,14 @@ class StatementFundsDetailApi(AbstractStatementFundsApi):
             Returns:
                 JsonResponse: An HTTP response containing the serialized statement fund data updated.
                 """)
+
+    @doc(_("""Delete a specific statement fund according to the ID passed by the url
+
+            Returns:
+                JsonResponse: A JSON response containing the ok message.
+            """))
+    def delete(self, request, *args, **kwargs):
+        statement_id = kwargs.get('id')
+        statement = get_object_or_404(StatementFunds, id=statement_id)
+        statement.delete()
+        return JsonResponse({'data': _('Statement fund deleted')}, status=status.HTTP_200_OK)

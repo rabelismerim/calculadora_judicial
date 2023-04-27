@@ -4,7 +4,7 @@ It extends the AbstractViewApi class and includes a CheckHasPermission permissio
 The API responds with JSON data and utilizes the rest_framework.schemas.openapi.AutoSchema for generating API documentation.
 The FundDocumentApi class uses the Funds model and FundDocumentSchema for working with data.
 """
-
+from django.db import transaction
 from django.http import JsonResponse
 from rest_framework.generics import get_object_or_404
 
@@ -144,7 +144,7 @@ class FundDocumentDetailApi(AbstractFundDocumentApi):
             Returns:
                 JsonResponse: An HTTP response containing the serialized document fund data retrieved.
             """)
-    http_method_names = ['get', 'put']
+    http_method_names = ['get', 'put', 'delete']
 
     layout_serializers = {
         'default': FundDocumentSchema,
@@ -173,3 +173,14 @@ class FundDocumentDetailApi(AbstractFundDocumentApi):
             statement.dict_update(**statement_document)
         document.dict_update(**data_obj)
         return JsonResponse({'fund_document': self.serializer_class(document, many=False).data})
+
+    @doc(_("""Delete a specific statement document according to the ID passed by the url
+
+                        Returns:
+                            JsonResponse: A JSON response containing the ok message.
+                        """))
+    def delete(self, request, *args, **kwargs):
+        fund_id = kwargs.get('id')
+        statement = get_object_or_404(StatementDocument, fund_id=fund_id)
+        statement.delete()
+        return JsonResponse({'data': _('Statement fund deleted')}, status=status.HTTP_200_OK)

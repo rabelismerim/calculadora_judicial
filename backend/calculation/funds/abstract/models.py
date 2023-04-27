@@ -54,6 +54,7 @@ CHOICES_STATUS_FUND = (('S', _('Requested')), ('C', _('Concluded')), ('E', _('In
                        ('P', _('Calculation failed - invalid parameters')),
                        ('R', _('Calculation failed - no date RJ')),
                        ('D', _('Calculation failed - no date Citation')),
+                       ('B', _('Calculation failed - in exclusion')),
                        )
 
 
@@ -88,6 +89,10 @@ class AbstractStatus(AbstractModel):
     def set_calculation_done(self):
         """Sets the status of the calculation to 'C'. Calculation success done"""
         self._set_status('C')
+
+    def set_calculation_in_delete(self):
+        """Sets the status of the calculation to 'B'. Calculation in exclusion"""
+        self._set_status('B')
 
     @staticmethod
     def _check_status_choice(value: str):

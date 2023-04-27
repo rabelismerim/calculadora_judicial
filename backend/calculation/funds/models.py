@@ -9,7 +9,7 @@ StatementFunds class extends AbstractStatement to represent a statement related 
 StatementIntegrations extends AbstractStatement and includes a description field.
 """
 from django.db import models
-from django.db.models import FloatField
+from django.db.models import FloatField, signals
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
@@ -130,12 +130,23 @@ class StatementFunds(AbstractStatement):
     def save(self, send_signal_post_save=True, *args, **kwargs):
         """
         Save the StatementFunds object and send a post-save signal.
+        The signal is issued to calculate the monetary correction and sum the total in TotalFunds
         Args:
             send_signal_post_save (bool): Set to True to send a post-save signal. Default is True.
+
         """
         super(StatementFunds, self).save(*args, **kwargs)
         if send_signal_post_save and self.fund.is_extraconcursal is False:
             gen_statement_funds.send(sender=self.__class__, instance=self)
+
+    def delete(self, *args, **kwargs):
+        """
+        Deletes the StatementFunds object, MonetaryCorrection and generates a new calculation of TotalValuesFunds
+        """
+        fund = self.fund
+        self.delete_monetary_correction()
+        super(StatementFunds, self).delete(*args, **kwargs)
+        fund.gen_total_statements()
 
     def has_monetary_correction(self) -> bool:
         """Returns True if the monetary correction exists for the statement."""
@@ -146,12 +157,27 @@ class StatementFunds(AbstractStatement):
         if self.has_monetary_correction():
             return self.monetarycorrection
 
+    def delete_monetary_correction(self):
+        """Delete the MonetaryCorrection object if exists"""
+        monetary = self.get_monetary_correction()
+        if monetary:
+            monetary.delete()
+
+    def create_monetary_correction(self, data: dict):
+        """Create or update the MonetaryCorrection object"""
+        MonetaryCorrection.objects.update_or_create(defaults=data, **{'statement': self})
+
     def calcule_monetary_correction(self):
-        """Retrieves the corrected value of the statement if the monetary correction exists, or else returns 0."""
-        data = self._get_index_monetary_correction()
+        """
+        Calculate the monetary correction and create the MonetaryCorrection object. If there is an error in the
+        calculation, the MonetaryCorrection is excluded.
+        """
+        data: dict or None = self._get_index_monetary_correction()
         if data:
-            MonetaryCorrection.objects.update_or_create(defaults=data, **{'statement': self})
+            self.create_monetary_correction(data)
             self.set_calculation_done()
+        else:
+            self.delete_monetary_correction()
 
     def get_corrected_value(self) -> float:
         """Returns corrected value if the monetary correction exists for the statement, else 0"""
@@ -210,6 +236,7 @@ class TotalValuesFunds(AbstractTotalValuesFunds):
         total_accurate = 0
 
         for statement in statements:
+            print(statement.id, 'statement id\n')
             total_corrected_value += statement.get_corrected_value()
             total_historical_value += statement.get_historical_value()
             total_dsr_reflexes += statement.get_dsr_reflexes()

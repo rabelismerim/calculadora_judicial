@@ -82,6 +82,13 @@ class StatementIRRF(AbstractModel):
         if send_signal_post_save and self.fund.is_extraconcursal is False:
             gen_statement_irrf.send(sender=self.__class__, instance=self)
 
+    def delete(self, *args, **kwargs):
+        """
+        Deletes the StatementIRRF object and generates a new calculation of TotalValuesIRRF
+        """
+        fund = self.fund
+        super(StatementIRRF, self).delete(*args, **kwargs)
+        fund.gen_total()
 
 class TotalValuesIRRF(AbstractStatus):
     """

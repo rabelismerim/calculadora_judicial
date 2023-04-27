@@ -20,6 +20,7 @@ from django.contrib import admin
 from calculation.funds.admin import AbstractStatementFundsAdmin
 from calculation.funds.document.models import StatementDocument, TotalValuesDocument, MonetaryCorrectionDocument, \
     FundDocument
+from utils import _
 
 readonly_fields = ['corrected_value', 'index_data_base', 'index_recovering']
 
@@ -30,6 +31,10 @@ class StatementDocumentsAdmin(AbstractStatementFundsAdmin):
     admin interface for the Comparative instance.
     """
     readonly_fields = readonly_fields + ['days', 'has_tax', 'default_interest', 'fine']
+    list_display = ['type']
+
+    def type(self, obj):
+        return _('Agreement') if obj.fund.calculation.creditor.physical_person else _('Document')
 
 
 admin.site.register(FundDocument)

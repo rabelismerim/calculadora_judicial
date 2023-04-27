@@ -40,7 +40,7 @@ class StatementPJ(AbstractModel):
         """Get all legal entity documents."""
         return self.fundsdocumentdescriptionpj_set.filter(document__fund__calculation__creditor__physical_person=False)
 
-    def set_total(self):
+    def set_total(self, commit=True):
         """Calculate the amounts, interest, fine and days by adding all the documents of the legal entity."""
         self.value = 0
         self.corrected_value = 0
@@ -55,7 +55,12 @@ class StatementPJ(AbstractModel):
             self.interest += document.total_default_interest
             self.fine += document.total_fine
             self.amount_due += document.total_due
-        self.save()
+        if commit:
+            self.save()
+
+    def save(self, *args, **kwargs):
+        self.set_total(commit=False)
+        super(StatementPJ, self).save(*args, **kwargs)
 
 
 class FundsDocumentDescriptionPJ(AbstractModel):
