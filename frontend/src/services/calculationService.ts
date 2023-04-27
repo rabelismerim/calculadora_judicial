@@ -96,6 +96,7 @@ const getCriterion = (calculationId: string) => api
 
 interface Verdict {
   description: string
+  descriptionC: string
   calculation: string
   calculationId: string
   value: number
@@ -107,7 +108,7 @@ const getVerdict = (calculationId: string) => api
   .then(({ verdict }: any) => verdict)
 
 const newVerdict = async (verdict: Verdict) => {
-  const { description, calculation, calculationId, value } = verdict
+  const { description, descriptionC, calculation, calculationId, value } = verdict
   const results = []
   try {
     for (const id of calculationId) {
@@ -120,6 +121,7 @@ const newVerdict = async (verdict: Verdict) => {
             },
             calculationId: id,
             value,
+            descriptionC,
           }))
         .then((result: any) => result.verdict)
       results.push(result)
@@ -154,7 +156,7 @@ const newFunds = async (funds: Funds) => {
             calculationId: id,
             name,
           }))
-        .then((result: any) => result.funds)
+        // .then((result: any) => result.funds)
       results.push(result)
     }
     return results
