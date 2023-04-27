@@ -17,7 +17,7 @@ serializer = CalculationSchema()
 """
 from django.db.models import Sum, F
 
-from base.schemas import AbstractDescriptionSchema
+from base.schemas import AbstractDescriptionSchema, UpdateUserSerializer
 from calculation.comment.schemas import StepCommentSchema, CommentSchema
 from calculation.comparative.schemas import ComparativeSchema
 from calculation.criterion.schemas import CriterionSchema
@@ -85,11 +85,11 @@ class ClassesSerializer(serializers.Serializer):
 
 
 class HistoricalSchema(AbstractDescriptionSchema):
-    step = StepCommentSchema(source='stepcomment_set', many=True, required=False, read_only=True)  # TODO get source
-
+    step = StepCommentSchema(source='stepcomment_set', many=True, required=False, read_only=True)
+    historical = UpdateUserSerializer(source='get_historical', many=True, read_only=True)
     class Meta:
         model = Calculation
-        fields = ('step',)
+        fields = ('step', 'historical')
 
 
 class CalculationSchema(AbstractDescriptionSchema):

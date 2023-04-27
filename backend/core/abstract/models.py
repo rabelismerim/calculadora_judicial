@@ -1,9 +1,11 @@
+import re
 import uuid
 
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from crum import get_current_request
+from django.db.models import Q
 from django.db.models.signals import pre_save
 from django.forms import model_to_dict
 from utils import get_user_model, _
@@ -70,9 +72,9 @@ class AbstractModel(models.Model):
         self.save()
         return self
 
-    @property
-    def updates(self):
-        return list(UpdateUser.objects.filter(object_id=self.id).order_by('-created_at'))
+    def get_historical(self):
+        return list(UpdateUser.objects.filter(object_id=self.id).exclude(
+            Q(field_changed='update_user') | Q(current_value__regex=r'^[\w-]{36}$')).order_by('-created_at'))
 
 
 class UpdateUser(models.Model):
@@ -82,6 +84,7 @@ class UpdateUser(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     object_id = models.UUIDField()  # uuid AbstractModel
     field_changed = models.CharField(_('Field changed'), max_length=100, null=True)
+    field_changed_display = models.CharField(_('Field changed display'), max_length=100, null=True)
     current_value = models.CharField(_('Current value'), max_length=400, null=True)
     previous_value = models.CharField(_('Previous value '), max_length=400, null=True)
     create_user = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
@@ -89,18 +92,17 @@ class UpdateUser(models.Model):
     content_object = GenericForeignKey()
 
     class Meta:
-        ordering = ('created_at',)
+        ordering = ('-created_at',)
 
     def __str__(self):
-        return _('Field alterado: {} | Valor anterior: {} | Valor atual: {} | User: {} | Hora de criação: {}').format(
-            self.field_changed, self.previous_value, self.current_value, self.create_user, self.created_at)
+        return str(self.field_changed)
 
 
 def get_user(sender, **kwargs):
     """Get User on request"""
     instance = kwargs.get('instance')
     requests_ = get_current_request()
-    username = requests_.user.username if requests_ else 'anonymus'
+    username = requests_.user.username if requests_ else 'anonymous'
     username = username.strip()
     if not username:
         username = None
@@ -108,9 +110,16 @@ def get_user(sender, **kwargs):
     instance.create_user_id = user_id
     if hasattr(instance, 'changed_fields') and hasattr(instance, 'id'):
         for field, values in instance.changed_fields:
-            UpdateUser.objects.create(field_changed=field, previous_value=values[0], current_value=values[1],
-                                      create_user_id=user_id, object_id=instance.id,
-                                      content_object=instance)
+            previous_value = values[0]
+            current_value = values[1]
+            new_field = instance._meta.get_field(field)
+            if hasattr(new_field, 'choices') and getattr(instance, f'get_{field}_display', None):
+                choices = dict(new_field.choices)
+                previous_value = choices.get(previous_value, previous_value)
+                current_value = choices.get(current_value, current_value)
+            UpdateUser.objects.create(field_changed=field, field_changed_display=new_field.verbose_name,
+                                      previous_value=previous_value, current_value=current_value,
+                                      create_user_id=user_id, object_id=instance.id, content_object=instance)
 
     if hasattr(instance, 'create_user'):
         if instance.create_user is None:

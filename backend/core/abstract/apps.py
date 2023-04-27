@@ -29,10 +29,10 @@ class AbstractConfig(AppConfig):
 
                         admin.site.register(model, AbstractModelAdmin)
                     else:
-                        admin_get.list_display = ['__str__', 'id', 'created_at', 'updated_at'] + list(
-                            admin_get.list_display)
-                        admin_get.readonly_fields = ['created_at', 'updated_at', 'id', 'create_user',
-                                                     'update_user'] + list(admin_get.readonly_fields)
+                        admin_get.list_display = list(set(['__str__', 'id', 'created_at', 'updated_at'] + list(
+                            admin_get.list_display)))
+                        admin_get.readonly_fields = list(set(['created_at', 'updated_at', 'id', 'create_user',
+                                                     'update_user'] + list(admin_get.readonly_fields)))
                         admin_get.search_fields = get_fields(model)
 
 

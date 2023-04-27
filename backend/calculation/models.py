@@ -62,7 +62,7 @@ class Calculation(AbstractModel):
     #  automaticamente
     appeal_credit = models.BooleanField(_('Fully competitive credit?'), default=False)
     # Statement Q5 - Data do calculo homologado
-    date_approved_calculation = models.DateField(_('Date of credit qualification certificate'), null=True)
+    date_approved_calculation = models.DateField(_('Approved calculation date'), null=True)
 
     # Statement N7 - Levantamento de depósito recursal?
     appeal_deposit = models.BooleanField(_('Recursal deposit withdrawal?'), default=False)
@@ -72,8 +72,9 @@ class Calculation(AbstractModel):
 
     # Statement N9 - Data da certidão de habilitação de crédito
     date_credit_auth = models.DateField(_('Date of credit qualification certificate'), null=True)
-    # Statement Q9 - Página que mostra o levantamento de depósito recursal
-    num_pag_fls_credit_auth_date = models.CharField(_('Calculation number'), max_length=10, null=True, blank=True)
+    # Statement Q9 - Página da certidão de habilitação de crédito
+    num_pag_fls_credit_auth_date = models.CharField(_('Credit qualification certificate page'), max_length=10,
+                                                    null=True, blank=True)
     # Statement N10 - Há honorários advocatícios?
     has_advocative_hours = models.BooleanField(_('Are there fees in the approved calculation?'), default=False)
 
@@ -297,3 +298,5 @@ class Calculation(AbstractModel):
         if statement:
             return True if statement.get_statement_pj() else False
         return False
+
+    # def get_

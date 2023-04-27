@@ -1,13 +1,18 @@
+from django.contrib.admin.options import get_content_type_for_model
+from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from base.claim.models import Claim
 from calculation.comment.models import Comment, StepComment
 from calculation.comparative.models import Comparative
 from calculation.criterion.models import Criterion, CriterionClaimCredor
+from calculation.funds.models import Funds, MonetaryCorrection
 from calculation.funds.views import CreateFunds
 from calculation.models import Calculation, Incident
 from calculation.premise.views import PremiseCreator
 from calculation.schemas import CalculationSchema, IncidentSchema, ChangeStepSerializer
+from calculation.statement.models import Statement
 from calculation.verdict.models import TypeCalculation, Verdict
+from core.abstract.models import UpdateUser
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from rest_framework import status
@@ -220,7 +225,8 @@ class ChangeStepApi(AbstractViewApi):
     http_method_names = ['put']
 
     serializer_class = ChangeStepSerializer
-    permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CanChangeStep]
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    # permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CanChangeStep]
     query_params = []
     model = Calculation
     docs = docs.copy()
@@ -235,6 +241,16 @@ class ChangeStepApi(AbstractViewApi):
         Possible statuses are `Requested`, `Calculated`, `Revised`, `Approved`, `Failed`, `Specially Approved`,
         """))
     def put(self, request, *args, **kwargs):
+        calculation_id = kwargs.get('id', None)
+        calculation = self.model.objects.filter(id=calculation_id).first()
+        update_users = UpdateUser.objects.filter(
+            # content_type=ContentType.objects.get_for_model(calculation),
+            object_id__in=[calculation.id],
+        )
+
+        print(update_users, 'update_users\n')
+        return JsonResponse({'update_users': 'update_users'})
+
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_calculation = serializer.validated_data

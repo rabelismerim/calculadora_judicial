@@ -236,7 +236,6 @@ class TotalValuesFunds(AbstractTotalValuesFunds):
         total_accurate = 0
 
         for statement in statements:
-            print(statement.id, 'statement id\n')
             total_corrected_value += statement.get_corrected_value()
             total_historical_value += statement.get_historical_value()
             total_dsr_reflexes += statement.get_dsr_reflexes()
