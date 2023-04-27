@@ -271,6 +271,7 @@ const setFundsIRRF = async (fundsirrf: FundsIRRF) => {
 // CALCULATION - Comparative
 
 interface Comparative {
+  calculationId: string
   fundId: string
   fundName: string
   taxableAmounts: number
@@ -280,9 +281,28 @@ const getComparative = (calculationId: string) => api
   .get(`/v1/calculation/comparative/${calculationId}/`)
   .then(({ comparative }: any) => comparative)
 
-const updateComparative = async (calculationId: string, body: any) => api
-  .put(`/v1/calculation/comparative/${calculationId}`, body)
-  .then(({ comparative }: any) => comparative)
+const updateComparative = async (comparative: Comparative) => {
+  const { calculationId, fundId, fundName, taxableAmounts } = comparative
+  const results = []
+  try {
+    for (const id of fundId) {
+      const result = await api
+        .post(`/v1/calculation/comparative/${calculationId}/`,
+          ({
+            calculationId: id,
+            fundId,
+            fundName,
+            taxableAmounts,
+          }))
+        .then((result: any) => result.comparative)
+      results.push(result)
+    }
+    return results
+  }
+  catch (error) {
+    printError('ERROR ON NEW CALCULATION', error)
+  }
+}
 
 // CALCULATION - Statement
 
