@@ -18,6 +18,7 @@ serializer = CalculationSchema()
 from django.db.models import Sum, F
 
 from base.schemas import AbstractDescriptionSchema
+from calculation.comment.schemas import StepCommentSchema, CommentSchema
 from calculation.comparative.schemas import ComparativeSchema
 from calculation.criterion.schemas import CriterionSchema
 from calculation.funds.document.schemas import FundDocumentSchema
@@ -83,6 +84,14 @@ class ClassesSerializer(serializers.Serializer):
         return display_dict[obj['classe']]
 
 
+class HistoricalSchema(AbstractDescriptionSchema):
+    step = StepCommentSchema(source='stepcomment_set', many=True, required=False, read_only=True)  # TODO get source
+
+    class Meta:
+        model = Calculation
+        fields = ('step',)
+
+
 class CalculationSchema(AbstractDescriptionSchema):
     """
     The CalculationSchema class is a serializer for the Calculation model fields. It inherits from the
@@ -119,6 +128,10 @@ class CalculationSchema(AbstractDescriptionSchema):
     step_display = serializers.CharField(source='get_step_display', read_only=True)
     classes = ClassesSerializer(source='get_classes', read_only=True, many=True)
     premises = PremiseSchema(many=True, read_only=True)
+    historical = serializers.SerializerMethodField(read_only=True)
+
+    def get_historical(self, obj):
+        return HistoricalSchema(obj).data
 
     class Meta:
         model = Calculation
@@ -130,6 +143,14 @@ class CalculationSchema(AbstractDescriptionSchema):
         data['funds'] = data.pop('funds_set', None)
         return super(CalculationSchema, self).validate(data)
 
+    def to_representation(self, instance):
+        """
+        Override to_representation() method to pass the `self` instance
+        to the historical field.
+        """
+        self.fields['historical'].context.update({'self': instance})
+        return super().to_representation(instance)
+
 
 class ChangeStepSerializer(serializers.Serializer):
     """
@@ -139,6 +160,7 @@ class ChangeStepSerializer(serializers.Serializer):
     serializer = ChangeStepSerializer
     """
     next_step = serializers.ChoiceField(source='step', choices=CHOICES_STEP)
+    comments = CommentSchema(many=True, write_only=True, required=False, exclude=('create_user', 'update_user',))
 
     def __init__(self, *args, **kwargs):
         fields = kwargs.pop('exclude', None)

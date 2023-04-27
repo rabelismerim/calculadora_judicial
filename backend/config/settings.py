@@ -47,8 +47,8 @@ ENABLE_SSO = str(os.getenv('ENABLE_SSO', 'true')).lower() == 'true'
 BRANCH_DEV = str(os.getenv('ENV', 'hml')) == 'branch'
 BRANCH_LOCAL = str(os.getenv('ENV', 'hml')) == 'dev'
 
-IS_LOCALHOST = str(os.getenv('IS_LOCALHOST', 'false')
-                   ).lower() == 'true' and BRANCH_DEV
+IS_LOCALHOST = str(os.getenv('IS_LOCALHOST', 'false')).lower() == 'true' and BRANCH_DEV
+ENABLE_DRF = str(os.getenv('ENABLE_DRF', 'true')).lower() == 'true'
 
 IS_HML = any([BRANCH_LOCAL, BRANCH_DEV]) is False
 
@@ -126,6 +126,7 @@ INSTALLED_APPS = [
     # Calculation
     'calculation',
     'calculation.criterion',
+    'calculation.comment',  # Comentários ao longo de cada passo do calculo
     'calculation.verdict',
     'calculation.funds',  # Verbas
     'calculation.premise',  # Premissas(Observações) do cálculo
@@ -384,8 +385,11 @@ REST_FRAMEWORK = {
         "core.drfmsal.renderer.APIRendererInterceptor",
         "rest_framework.renderers.BrowsableAPIRenderer"
     ),
-    "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler"
 }
+
+if ENABLE_DRF:
+    REST_FRAMEWORK['EXCEPTION_HANDLER'] = "drf_standardized_errors.handler.exception_handler"
+
 DRF_STANDARDIZED_ERRORS = {"ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True}
 # Setting auth user
 AUTH_USER_MODEL = 'dttuser.User'

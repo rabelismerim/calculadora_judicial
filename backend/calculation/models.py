@@ -7,7 +7,7 @@ to add specific fields as needed.
 import datetime
 
 from django.db import models
-from django.db.models import Sum, F, BooleanField
+from django.db.models import Sum, F
 from django.utils.translation import gettext_lazy as _
 
 from calculation.comparative.signals import new_calc

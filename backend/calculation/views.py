@@ -1,6 +1,6 @@
 from django.db import transaction
 from base.claim.models import Claim
-from base.coins.models import Coins
+from calculation.comment.models import Comment, StepComment
 from calculation.comparative.models import Comparative
 from calculation.criterion.models import Criterion, CriterionClaimCredor
 from calculation.funds.views import CreateFunds
@@ -220,8 +220,7 @@ class ChangeStepApi(AbstractViewApi):
     http_method_names = ['put']
 
     serializer_class = ChangeStepSerializer
-    permission_classes = [permissions.IsAuthenticated,
-                          CheckHasPermission, CanChangeStep]
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CanChangeStep]
     query_params = []
     model = Calculation
     docs = docs.copy()
@@ -230,6 +229,7 @@ class ChangeStepApi(AbstractViewApi):
 
         Receives and validates JSON data with the next_step string.
         Finds the Calculation instance based on the URL parameter id.
+        Optional field `comments`, a list of objects containing the text field
         Returns a JSON response with the updated Calculation object.
 
         Possible statuses are `Requested`, `Calculated`, `Revised`, `Approved`, `Failed`, `Specially Approved`,
@@ -238,7 +238,13 @@ class ChangeStepApi(AbstractViewApi):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_calculation = serializer.validated_data
+        comments = new_calculation.pop('comments', [])
         calculation_id = kwargs.get('id', None)
         calculation = self.model.objects.filter(id=calculation_id).first()
         calculation.set_step_by_char(new_calculation['next_step'])
+        calc_comment = StepComment.objects.create(calculation=calculation, step=calculation.step)
+        for comment in comments:
+            new_comment = Comment.objects.create(**comment)
+            calc_comment.comments.add(new_comment.id)
+        calc_comment.save()
         return JsonResponse({'calculation': CalculationSchema(calculation, many=False).data}, status=status.HTTP_200_OK)
