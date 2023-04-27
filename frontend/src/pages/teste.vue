@@ -1,26 +1,27 @@
 <script setup lang="ts">
-const newFunds = {
-  name: 'Teste Funds',
-  calculationId: '761baf0d-940a-4233-8506-06fc540f3914',
+const newIRRF = {
+  fundId: 'c70162d2-c56e-49bd-9953-e3762f9091f3',
+  fundName: 'Lisa Washington',
+  taxableAmounts: 200,
 }
 let funds = $ref([''])
 
 const newVerdicts = async () => {
   try {
-    const result = await calculationService.newFunds(newFunds)
+    const result = await calculationService.setFundsIRRF(newIRRF)
     console.warn('print result', result)
   }
   catch (error) {
-    printError('ERROR ON NEW CALCULATION:', error)
+    printError('ERROR ON NEW INTEGRATION:', error)
   }
 }
 const loadFunds = async () => {
   try {
-    const result = await calculationService.getFunds('')
+    const result = await calculationService.getFundsIRRF('c70162d2-c56e-49bd-9953-e3762f9091f3')
     funds = result
   }
   catch (error) {
-    printError('ERROR ON LOAD CALCULATION:', error)
+    printError('ERROR ON LOAD INTEGRATION:', error)
   }
 }
 </script>
