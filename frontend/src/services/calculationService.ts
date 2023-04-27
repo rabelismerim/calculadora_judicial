@@ -1,12 +1,7 @@
 // CALCULO
 interface Calculation {
-  // classe: string[]
-  // coin: string[]
-  // value: number[]
   creditorId: string
   incidentId: string
-  // description: string[]
-  // calculationD: string[]
   appealCredit: boolean
   appealDeposit: boolean
   hasAdvocateHours: boolean
@@ -26,23 +21,8 @@ const newCalculation = async (calculation: Calculation) => {
       const result = await api
         .post('/v1/calculation/',
           ({
-          //   classes: {
-          //     classe,
-          //   },
-          //   coins: {
-          //     coin,
-          //     value,
-          //   },
             creditorId: id,
             incidentId,
-            // verdict: {
-            //   type_calculation: {
-            //     description,
-            //     calculationD,
-            //   },
-            //   description,
-            //   value,
-            // },
             appealCredit,
             appealDeposit,
             hasAdvocateHours,
@@ -56,7 +36,7 @@ const newCalculation = async (calculation: Calculation) => {
     return results
   }
   catch (error) {
-    printError('ERROR ON NEW CREDITOR', error)
+    printError('ERROR ON NEW CALCULATION', error)
   }
 }
 
@@ -76,12 +56,11 @@ const newIncident = async (incident: Incident) => {
         ({
           number,
         }))
-      // .then((result: any) => result.incident)
     results.push(result)
     return results
   }
   catch (error) {
-    printError('ERROR ON NEW CREDITOR', error)
+    printError('ERROR ON NEW INCIDENT', error)
   }
 }
 
@@ -129,7 +108,7 @@ const newVerdict = async (verdict: Verdict) => {
     return results
   }
   catch (error) {
-    printError('ERROR ON NEW CREDITOR', error)
+    printError('ERROR ON NEW VERDICT', error)
   }
 }
 
@@ -156,13 +135,12 @@ const newFunds = async (funds: Funds) => {
             calculationId: id,
             name,
           }))
-        // .then((result: any) => result.funds)
       results.push(result)
     }
     return results
   }
   catch (error) {
-    printError('ERROR ON NEW CREDITOR', error)
+    printError('ERROR ON NEW FUNDS', error)
   }
 }
 interface FundsFunds {
@@ -199,7 +177,7 @@ const setFundsFunds = async (fundsfunds: FundsFunds) => {
     return results
   }
   catch (error) {
-    printError('ERROR ON NEW CREDITOR', error)
+    printError('ERROR ON NEW FUNDSFUNDS', error)
   }
 }
 
@@ -240,7 +218,7 @@ const setIntegrations = async (integrations: Integrations) => {
     return results
   }
   catch (error) {
-    printError('ERROR ON NEW CREDITOR', error)
+    printError('ERROR ON NEW INTEGRATIONS', error)
   }
 }
 
@@ -282,44 +260,11 @@ const setDocument = async (document: Document) => {
     return results
   }
   catch (error) {
-    printError('ERROR ON NEW CREDITOR', error)
+    printError('ERROR ON NEW DOCUMENTS', error)
   }
 }
 
 // CALCULATION - IRRF
-
-interface IRRF {
-  id?: string
-  calculationId: string
-  name: string
-  monthsPeriod: number
-}
-
-const getIRRF = (id: string) => api
-  .get(`/v1/calculation/funds/irrf/${id}/`)
-  .then(({ irrf }: any) => irrf)
-
-const newIRRF = async (irrf: IRRF) => {
-  const { calculationId, name, monthsPeriod } = irrf
-  const results = []
-  try {
-    for (const id of calculationId) {
-      const result = await api
-        .post('/v1/calculation/funds/irrf/',
-          ({
-            calculationId: id,
-            name,
-            monthsPeriod,
-          }))
-        .then((result: any) => result.fundIRRF)
-      results.push(result)
-    }
-    return results
-  }
-  catch (error) {
-    printError('ERROR ON NEW CREDITOR', error)
-  }
-}
 
 interface FundsIRRF {
   id?: string
@@ -351,7 +296,7 @@ const setFundsIRRF = async (fundsirrf: FundsIRRF) => {
     return results
   }
   catch (error) {
-    printError('ERROR ON NEW CREDITOR', error)
+    printError('ERROR ON NEW IRRF FUNDS', error)
   }
 }
 
@@ -401,8 +346,6 @@ export default {
   setIntegrations,
   getDocument,
   setDocument,
-  getIRRF,
-  newIRRF,
   getFundsIRRF,
   setFundsIRRF,
   getComparative,
