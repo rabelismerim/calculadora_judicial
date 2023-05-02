@@ -9,8 +9,8 @@ from core.permission.views import CheckHasPermission
 from utils import _, doc
 
 import openpyxl as xl
-from os.path import exists,remove
-
+from os.path import exists
+from os import remove
 class SheetTemplateViewApi(AbstractViewApi):
     """HTTP methods for verdict"""
     http_method_names = ['get']
@@ -67,6 +67,8 @@ class SheetTemplateViewApi(AbstractViewApi):
 
             with open(new_name,'rb') as archive_excel:
                 excel_file = archive_excel.readline()
+
+            remove(new_name)
 
             return JsonResponse({'excel': {excel_file}})
 
