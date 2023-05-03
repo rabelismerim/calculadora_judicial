@@ -4,16 +4,36 @@ const props = withDefaults(defineProps<{
   name: number
 }>(), {
 })
-const isEditing = $ref(false)
+let isLoading = $ref(false)
+let isEditing = $ref(false)
+const onSubmit = async () => {
+  isLoading = true
+  try {
+    // const result = await creditorsService.setRecovering({})
+    await delay(2)
+    console.warn('teste...')
+    isEditing = false
+  }
+  catch (error) {
+    printError('ERROR ON SUBMIT RECOVERING NOTICE:', error)
+  }
+  finally {
+    isLoading = false
+  }
+}
 </script>
 
 <template>
-  <AnalisysSheet :name="name" title="Ficha de Análise" :subtitle="title">
-    <template #side>
-      <Btn :label="isEditing ? 'Salvar' : 'Editar'" @click="isEditing = !isEditing" />
-    </template>
+  <AnalisysSheet
+    v-model:editing="isEditing"
+    v-model:loading="isLoading"
+    :name="name"
+    title="Ficha de Análise"
+    :subtitle="title"
+    @submit="onSubmit"
+  >
     <div class="grid">
-      {{ isEditing }}
+      isEditing: {{ isEditing }}, isLoading: {{ isLoading }}
     </div>
   </AnalisysSheet>
 </template>

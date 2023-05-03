@@ -44,7 +44,7 @@ const onSubmit = async () => {
     return
   loading = true
   try {
-    const result: any = await creditorsService.createCreditor(newCreditor.value)
+    const result: any = await creditorsService.setCreditor(newCreditor.value)
     if (result.filter((item: any) => !!item).length > 0) {
       notify({ message: `Credor ${newCreditor.value.name} foi criado com sucesso!` })
       clear()
