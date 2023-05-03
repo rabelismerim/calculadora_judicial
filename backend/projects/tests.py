@@ -5,6 +5,9 @@ from projects.create_project import get_data_project
 class ProjectTest(AbstractTest):
     """Project related tests"""
 
+    http_method_names = ['get']
+
+    path = 'projects'
     @AbstractTest.execute_before_and_after
     def test_api_a_post_projects(self):
         """Assert post projects detail"""

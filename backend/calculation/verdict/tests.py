@@ -1,7 +1,6 @@
-from calculation.models import Calculation
 from core.abstract.tests import AbstractTest
 from utils import secret_number
-
+from calculation.models import Calculation
 
 str_rd = ''
 while len(str_rd) <= 10:
@@ -23,6 +22,7 @@ class VerdictTest(AbstractTest):
     }
 
     path = 'calculation/verdict'
+    path_get = f'calculation/verdict/{Calculation.objects.first().id}'
 
     def test_api_get(self):
         """Assert get lawyers detail"""

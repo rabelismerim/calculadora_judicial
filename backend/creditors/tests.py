@@ -71,6 +71,7 @@ class CreditorTest(AbstractTest):
     """Creditor related tests"""
 
     path = 'creditors'
+    path_get = f'creditors/project/{Project.objects.first().id}'
     parameters = CreditorValues().get_creditor()
 
     def setUp(self):

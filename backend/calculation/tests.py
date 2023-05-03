@@ -43,10 +43,11 @@ class CalculationTest(AbstractTest):
     incident = Incident.objects.first()
     parameters = CalculationValues.calculation
     path = 'calculation'
+    path_get = f'{path}/{Calculation.objects.first().id}'
 
     def test_api_get(self):
         """Assert get lawyers detail"""
-        self.path = f'{self.path}/{Calculation.objects.first().id}'
+        self.path = self.path_get
         response = super().test_api_get()
         self.assertEqual(response.status_code, 200)
         self.assertIn('calculation', response.content)

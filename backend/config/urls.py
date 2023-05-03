@@ -66,8 +66,13 @@ urlpatterns = [
 
     # CORE
     path(BASE_URL, include("core.dttuser.api.urls")),
+
+    # TODO: desativar urls sem versão de api
     path(BASE_URL_AUTH, include("core.drfmsal.urls")),
     path(BASE_URL_AUTH, include("core.dttuser.urls")),
+
+    path(BASE_URL, include("core.drfmsal.urls")),
+    path(BASE_URL, include("core.dttuser.urls")),
 
     # Django
     path('djud/admin/', admin.site.urls),

@@ -40,7 +40,7 @@ class FundsTest(AbstractTest):
     fund_id = str(Funds.objects.filter(calculation__creditor__physical_person=True,
                                        calculation__funddocument__isnull=True).first().id)
     path = 'calculation/funds'
-
+    path_get = f'{path}/{fund_id}/'
     def test_api_get(self):
         """Assert get lawyers detail"""
         self.path = f'{self.path}/{self.fund_id}/'

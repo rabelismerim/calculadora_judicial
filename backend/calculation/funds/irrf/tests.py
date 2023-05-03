@@ -12,6 +12,7 @@ Methods:
 Attributes:
 - None
 """
+from calculation.funds.irrf.models import FundIRRF
 from calculation.models import Calculation
 from core.abstract.tests import AbstractTest, generate_name
 from rates.models import Rate
@@ -19,9 +20,10 @@ from rates.models import Rate
 
 class IrrfTest(AbstractTest):
     """irrf related tests"""
-    http_method_names = ['post', ]
+    http_method_names = ['post', 'get']
 
     path = 'calculation/funds/irrf'
+    path_get = f'calculation/funds/irrf/{FundIRRF.objects.first().id}'
     parameters = {
         "classes": {
             "classe": "1"
@@ -32,7 +34,8 @@ class IrrfTest(AbstractTest):
         },
         "archive_json": {},
         "rate_id": str(Rate.objects.first().id),
-        "calculation_id": str(Calculation.objects.filter(creditor__physical_person=True, funddocument__isnull=True).first().id),
+        "calculation_id": str(
+            Calculation.objects.filter(creditor__physical_person=True, funddocument__isnull=True).first().id),
         "name": generate_name(),
         "months_period": 1
     }

@@ -87,6 +87,7 @@ class ClassesSerializer(serializers.Serializer):
 class HistoricalSchema(AbstractDescriptionSchema):
     step = StepCommentSchema(source='stepcomment_set', many=True, required=False, read_only=True)
     historical = UpdateUserSerializer(source='get_historical', many=True, read_only=True)
+
     class Meta:
         model = Calculation
         fields = ('step', 'historical')
@@ -143,13 +144,38 @@ class CalculationSchema(AbstractDescriptionSchema):
         data['funds'] = data.pop('funds_set', None)
         return super(CalculationSchema, self).validate(data)
 
+    def extract_historical_lists(self, data):
+        # Inicializa uma lista para conter os valores históricos
+        historical_values = []
+
+        data_copy = data.copy()
+
+        # Percorre as chaves do objeto serializado
+        for key in data_copy.keys():
+            value = data[key]
+
+            # Se o valor for uma lista e a chave for "historical", adiciona o conteúdo à lista de valores históricos
+            if isinstance(value, list) and key == "historical":
+                value = data.pop(key)
+                historical_values.extend(value)
+
+
+            # Se o valor for um dicionário, chama recursivamente esta função para verificar se ele contém uma chave "historical"
+            elif isinstance(value, dict):
+                historical_values.extend(self.extract_historical_lists(value))
+
+                if key == "historical":
+                    data.pop(key)
+
+        # Retorna a lista completa de valores históricos encontrados em todo o objeto
+        return historical_values
+
     def to_representation(self, instance):
-        """
-        Override to_representation() method to pass the `self` instance
-        to the historical field.
-        """
         self.fields['historical'].context.update({'self': instance})
-        return super().to_representation(instance)
+        data = super().to_representation(instance)
+        # historical_lists = self.extract_historical_lists(data)
+        # data['historical_data'] = historical_lists
+        return data
 
 
 class ChangeStepSerializer(serializers.Serializer):

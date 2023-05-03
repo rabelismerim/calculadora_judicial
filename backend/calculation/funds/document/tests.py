@@ -12,6 +12,7 @@ asserts a successful response status code and the presence of at least one Docum
 Attributes:
 - None
 """
+from calculation.funds.document.models import FundDocument
 from calculation.funds.models import Funds
 from calculation.models import Calculation
 from core.abstract.tests import AbstractTest, generate_name
@@ -20,6 +21,8 @@ from rates.models import Rate
 
 class FundsDocumentTest(AbstractTest):
     """Funds Document related tests"""
+
+    path = f'calculation/funds/documents/{FundDocument.objects.first().id}'
 
     @AbstractTest.execute_before_and_after
     def test_api_post_statement_funds_integrations(self):

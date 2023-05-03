@@ -6,7 +6,7 @@ class LawyerTest(AbstractTest):
     parameters = {
         "description": generate_name()
     }
-    path = 'projects/lawyer/'
+    path = 'projects/lawyer'
 
     def test_api_get(self):
         """Assert get lawyers detail"""

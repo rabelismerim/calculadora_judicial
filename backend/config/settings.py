@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import datetime
+import re
 from pathlib import Path
 import os
 import sys
@@ -263,15 +264,41 @@ DRFMSAL_IDENTITY_WEB = IdentityWebPython()
 #    ENABLE_SSO=False
 
 if BRANCH_DEV or 'test' in sys.argv:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-            'TEST': {
+    my_string = sys.argv[0].replace('\\', '').replace('/', '')
+
+    if  my_string.endswith('locustmain.py'):
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': ':memory:',
                 'MIRROR': 'default',
             },
         }
-    }
+
+        print(sys.argv, 'args\n\n')
+
+        # cria uma cópia do banco de dados atual para testes do locust
+        import shutil
+        import tempfile
+        import os
+
+        tmpdir = os.path.join(tempfile.gettempdir(), 'juca')
+        tmp_db = os.path.join(tmpdir, 'tmp.sqlite3')
+        if os.path.exists(tmpdir) is False:
+            os.mkdir(tmpdir)
+        if os.path.exists(tmp_db) is False:
+            shutil.copy2(BASE_DIR / 'db.sqlite3', tmp_db)
+        DATABASES['default']['NAME'] = tmp_db
+    else:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+                'TEST': {
+                    'MIRROR': 'default',
+                },
+            }
+        }
 else:
     DATABASES = {
         'default': {
@@ -419,6 +446,7 @@ GROUP_NAME_REVIEWER = 'Revisor'
 INDEX_VARIATION_END = os.getenv('INDEX_VARIATION_END', '2017-09-01')
 INDEX_VARIATION_END = datetime.datetime.strptime(INDEX_VARIATION_END, '%Y-%m-%d').date()
 
+TOKEN_TEST = os.getenv('TOKEN_TEST')  # Token para a execução de teste em ambientes controlados
 INDEX_VARIATION_RJ = os.getenv('INDEX_VARIATION_RJ', '2022-06-01')
 INDEX_VARIATION_RJ = datetime.datetime.strptime(INDEX_VARIATION_RJ, '%Y-%m-%d').date()
 

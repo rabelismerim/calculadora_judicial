@@ -12,8 +12,9 @@ asserts a successful response status code and the presence of at least one State
 Attributes:
 - None
 """
+from calculation.models import Calculation
 from calculation.tests import CalculationValues
-from core.abstract.tests import AbstractTest, AttrDict, generate_name
+from core.abstract.tests import AbstractTest, generate_name
 from creditors.tests import CreditorValues
 from projects.create_project import get_data_project, cpf_generator
 from rates.models import Rate
@@ -22,6 +23,8 @@ from utils import _
 
 class StatementTest(AbstractTest):
     """Represents tests related to statement calculations and correction"""
+
+    path = f'calculation/statement/{Calculation.objects.first().id}/'
 
     def _new_project(self, date_request, date_filling, date_citation, rate):
         """Creates a new project with specified dates and interest rate"""
@@ -37,7 +40,7 @@ class StatementTest(AbstractTest):
         """
         response = self.get(f'calculation/{self.calculation.id}/')
         self.assertEqual(response.status_code, 200)
-        calc = AttrDict(response.content['calculation'])
+        calc = self.AttrDict(response.content['calculation'])
 
         self.__compare_statement(calc.statement, statement_expected)
         self.__compare_premises(calc.premises, premises_expected)
@@ -88,7 +91,7 @@ class StatementTest(AbstractTest):
         data_project["date_citation"] = date_citation
         response = self.post('projects', data_project)
         self.assertEqual(response.status_code, 201)
-        self.project = AttrDict(response.content['project'])
+        self.project = self.AttrDict(response.content['project'])
 
     def _set_creditor(self, rate):
         """Creates a new creditor with the specified rate for the project"""
@@ -99,7 +102,7 @@ class StatementTest(AbstractTest):
         creditor['recovering_id'] = self.project['recoverings'][0]['id']
         response = self.post('creditors', creditor)
         self.assertEqual(response.status_code, 201)
-        self.creditor = AttrDict(response.content['creditor'])
+        self.creditor = self.AttrDict(response.content['creditor'])
 
     def _set_calculation(self):
         """Creates a new calculation object for the creditor"""
@@ -108,7 +111,7 @@ class StatementTest(AbstractTest):
 
         response = self.post('calculation', calculation)
         self.assertEqual(response.status_code, 201)
-        self.calculation = AttrDict(response.content['calculation'])
+        self.calculation = self.AttrDict(response.content['calculation'])
 
     def _set_funds(self):
         """Creates a new fund object associated with the calculation"""
@@ -129,7 +132,7 @@ class StatementTest(AbstractTest):
 
         response = self.post('calculation/funds', fund)
         self.assertEqual(response.status_code, 201)
-        self.fund = AttrDict(response.content['funds'])
+        self.fund = self.AttrDict(response.content['funds'])
 
     def test_a_funds(self):
         """Runs a series of tests using a fund and a set of statements with expected results"""

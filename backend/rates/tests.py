@@ -1,9 +1,11 @@
 from core.abstract.tests import AbstractTest
-from rates.models import get_aliquot_by_tax
+from rates.models import get_aliquot_by_tax, Template
 
 
 class RatesTest(AbstractTest):
     """Rates related tests"""
+
+    path = 'rates'
 
     @AbstractTest.execute_before_and_after
     def test_api_get(self):
@@ -18,3 +20,15 @@ class RatesTest(AbstractTest):
         for value, deduction, aliquot in values:
             self.assertEqual(get_aliquot_by_tax(value).deduction, deduction)
             self.assertEqual(get_aliquot_by_tax(value).aliquot, aliquot)
+
+
+class RateTemplateTest(AbstractTest):
+    """Rates related tests"""
+
+    path = 'rates/templates'
+
+
+class RateTemplateDetailTest(AbstractTest):
+    """Rates related tests"""
+
+    path = f'rates/templates/{Template.objects.first().id}'

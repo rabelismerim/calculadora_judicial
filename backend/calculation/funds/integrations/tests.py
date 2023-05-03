@@ -13,12 +13,14 @@ object in the response data
 Attributes:
 - None
 """
+from calculation.funds.integrations.models import StatementIntegrations
 from calculation.funds.models import Funds
 from core.abstract.tests import AbstractTest
 
 
 class FundsIntegrationsTest(AbstractTest):
     """funds related tests"""
+    path = f'calculation/funds/labor/integrations/{StatementIntegrations.objects.first().id}'
 
     @AbstractTest.execute_before_and_after
     def test_api_post_statement_funds_integrations(self):
