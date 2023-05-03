@@ -21,6 +21,7 @@ declare module '@vue/runtime-core' {
     GraphLine: typeof import('./components/graph/GraphLine.vue')['default']
     Header: typeof import('./components/common/Header.vue')['default']
     Hint: typeof import('./components/common/Hint.vue')['default']
+    IconHint: typeof import('./components/common/IconHint.vue')['default']
     Img: typeof import('./components/common/Img.vue')['default']
     InputDate: typeof import('./components/inputs/InputDate.vue')['default']
     InputLegal: typeof import('./components/inputs/InputLegal.vue')['default']
