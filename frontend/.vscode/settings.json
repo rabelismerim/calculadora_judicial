@@ -6,5 +6,10 @@
   },
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
-  "editor.detectIndentation": false
+  "editor.detectIndentation": false,
+  "vite.port": 5173,
+  "vite.devCommand": "pnpm run dev",
+  "vite.https": true,
+  "vite.notifyOnStarted": false,
+  "vite.vitepressAutoRouting": true,
 }
