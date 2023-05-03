@@ -147,6 +147,10 @@ div {
   content: none;
 }
 
+.q-field__control::before {
+  background-color: #fff;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
