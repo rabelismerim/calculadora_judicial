@@ -32,8 +32,8 @@ const onSubmit = async () => {
     :subtitle="title"
     @submit="onSubmit"
   >
-    <div class="grid">
-      isEditing: {{ isEditing }}, isLoading: {{ isLoading }}
+    <div class="pt-6">
+      Em desenvolvimento...
     </div>
   </AnalisysSheet>
 </template>
