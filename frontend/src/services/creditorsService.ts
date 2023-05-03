@@ -58,7 +58,6 @@ const setCreditor = async (creditor: Creditor) => {
           })),
         }))
       // .then((result: any) => result.creditor)
-      console.log(result)
       results.push(result)
     }
     return results
@@ -77,11 +76,11 @@ interface Notice {
 }
 interface Recovering extends Notice {}
 
-const getNotice = () => api
+const getNoticeAJ = () => api
   .get('/v1/creditors/notice/aj/')
-  .then(({ notice }: any) => notice)
+  .then((result: any) => result?.notices)
 
-const setNotice = async (notice: Notice) => {
+const setNoticeAJ = async (notice: Notice) => {
   const { id, classe, coin, creditorId, value } = notice
   const method = id ? 'put' : 'post'
   const results = []
@@ -100,7 +99,6 @@ const setNotice = async (notice: Notice) => {
           },
           creditorId: id,
         }))
-      console.log(result)
       results.push(result)
     }
     return results
@@ -110,11 +108,11 @@ const setNotice = async (notice: Notice) => {
   }
 }
 
-const getRecoverings = () => api
+const getNoticeRecovering = () => api
   .get('/v1/creditors/notice/recovering/')
-  .then(({ recoverings }: any) => recoverings)
+  .then((result: any) => result?.noticeRecoverings)
 
-const setRecovering = async (recovering: Recovering) => {
+const setNoticeRecovering = async (recovering: Recovering) => {
   const { id, classe, coin, creditorId, value } = recovering
   const method = id ? 'put' : 'post'
   const results = []
@@ -134,7 +132,6 @@ const setRecovering = async (recovering: Recovering) => {
           creditorId: id,
         }))
         .then((result: any) => result.recovering)
-      console.log(result)
       results.push(result)
     }
     return results
@@ -149,8 +146,8 @@ export default {
   getCreditor,
   getOptions,
   setCreditor,
-  getNotice,
-  setNotice,
-  getRecoverings,
-  setRecovering,
+  getNoticeAJ,
+  setNoticeAJ,
+  getNoticeRecovering,
+  setNoticeRecovering,
 }

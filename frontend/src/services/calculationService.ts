@@ -2,12 +2,12 @@
 interface Calculation {
   creditorId: string
   incidentId: string
-  appealCredit: boolean
-  appealDeposit: boolean
-  hasAdvocateHours: boolean
-  creditAutorizationDate: string
-  hasEdital: boolean
-  recurralDeposit: number
+  appealCredit?: boolean
+  appealDeposit?: boolean
+  hasAdvocateHours?: boolean
+  creditAutorizationDate?: string
+  hasEdital?: boolean
+  recurralDeposit?: number
 }
 const getCalculation = (id: string) => api
   .get(`/v1/calculation/${id}/`)
@@ -40,8 +40,8 @@ const newCalculation = async (calculation: Calculation) => {
   }
 }
 
-interface Incident extends Calculation {
-  number: string[]
+interface Incident {
+  number: string
 }
 const getIncident = (creditorId: string) => api
   .get(`/v1/calculation/creditor/${creditorId}/`)
