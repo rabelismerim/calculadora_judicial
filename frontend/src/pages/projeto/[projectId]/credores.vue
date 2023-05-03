@@ -1,6 +1,11 @@
 <script setup lang='ts'>
 const attrs = useAttrs() as any
 
+interface Creditor {
+  recoverings: any[]
+  [key: string]: any
+}
+
 let showModal = $ref(false)
 
 let loading = $ref(false)
@@ -12,7 +17,7 @@ let editingCreditor = $ref({
   recoveringsId: [],
 } as any)
 const filterBy = $ref('')
-const filteredCreditors = computed(() => {
+const filteredCreditors = computed((): Creditor[] => {
   const mapCreditors = creditors
     .map((creditor: any) => {
       const { recoveringId } = creditor
@@ -46,8 +51,8 @@ const creditorsCount = computed(() => filteredCreditors.value.length)
 const loadCreditors = async () => {
   loading = true
   try {
-    project = await projectService.getProject(attrs.id)
-    creditors = await creditorsService.getCreditors(attrs.id)
+    project = await projectService.getProject(attrs.projectId)
+    creditors = await creditorsService.getCreditors(attrs.projectId)
   }
   catch (error) {
     printError('ERROR ON LOAD CREDITORS:', error)
@@ -76,7 +81,7 @@ onMounted(() => {
     :loading="loading"
     :links="[
       { label: 'Projetos', url: '/projetos' },
-      { label: project.description, url: `/projeto/${attrs.id}` },
+      { label: project.description, url: `/projeto/${attrs.projectId}` },
       { label: 'Credores' },
     ]"
   >

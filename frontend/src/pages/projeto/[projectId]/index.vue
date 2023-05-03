@@ -39,10 +39,10 @@ const filteredRecoverings = computed(() => {
 const loadProject = async () => {
   loading = true
   try {
-    project = await projectService.getProject(attrs.id)
+    project = await projectService.getProject(attrs.projectId)
   }
   catch (error) {
-    printError(`ERROR ON LOAD PROJECT ${attrs.id}:`, error)
+    printError(`ERROR ON LOAD PROJECT ${attrs.projectId}:`, error)
   }
   finally {
     loading = false
@@ -188,7 +188,7 @@ onMounted(() => {
       />
       <Btn
         label="Credores"
-        @click="router.push({ path: `/projeto/${attrs.id}/credores` })"
+        @click="router.push({ path: `/projeto/${attrs.projectId}/credores` })"
       />
     </Header>
 

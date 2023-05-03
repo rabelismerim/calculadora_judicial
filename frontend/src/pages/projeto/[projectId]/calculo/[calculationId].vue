@@ -8,7 +8,7 @@ const attrs = useAttrs() as any
       Cálculo
     </div>
     <div>
-      {{ attrs.id }}
+      {{ attrs }}
     </div>
   </div>
 </template>
