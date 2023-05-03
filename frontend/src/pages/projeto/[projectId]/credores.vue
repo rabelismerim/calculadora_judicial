@@ -11,6 +11,8 @@ let showModal = $ref(false)
 let loading = $ref(false)
 let project = $ref({} as any)
 let creditors = $ref([] as any[])
+let AJNotices = $ref([])
+let recoveringNotices = $ref([])
 let editingCreditor = $ref({
   name: '',
   legalNumber: '',
@@ -20,10 +22,16 @@ const filterBy = $ref('')
 const filteredCreditors = computed((): Creditor[] => {
   const mapCreditors = creditors
     .map((creditor: any) => {
-      const { recoveringId } = creditor
+      const { id, recoveringId } = creditor
       const recovering = project?.recoverings.find(({ id }: any) => recoveringId === id)
       if (recovering)
         creditor.recovering = { ...recovering, step: 1 }
+      const noticeAJ = AJNotices.find(({ creditorId }: any) => creditorId === id)
+      if (noticeAJ?.[0])
+        creditor.noticeAJ = noticeAJ[0]
+      const noticeRecovering = recoveringNotices.find(({ creditorId }: any) => creditorId === id)
+      if (noticeRecovering?.[0])
+        creditor.noticeRecovering = noticeRecovering[0]
       return creditor
     })
   const filtered = (!filterBy)
@@ -71,7 +79,17 @@ const editCreditor = (creditor: any) => {
   }
   showModal = true
 }
+const loadOptions = async () => {
+  try {
+    AJNotices = await creditorsService.getNoticeAJ()
+    recoveringNotices = await creditorsService.getNoticeRecovering()
+  }
+  catch (error) {
+    printError('ERROR ON LOAD CREDITORS OPTIONS:', error)
+  }
+}
 onMounted(() => {
+  loadOptions()
   loadCreditors()
 })
 </script>
@@ -113,6 +131,13 @@ onMounted(() => {
         :title="creditor.entity.name"
         :subtitle="formatLegalNumber(creditor.entity.legalNumber)"
       >
+        <template #header-left>
+          <IconHint
+            icon="i-carbon-identification"
+            hint="Este ícone indica que este\nitem é um Credor!"
+            class="self-center"
+          />
+        </template>
         <template #header-right>
           <div class="flex-1 flex gap-2 justify-end items-center pl-8 pr-4">
             <Btn
@@ -132,6 +157,14 @@ onMounted(() => {
             class="pl-6 border-x-0 border-b-0 rounded-0"
             :class="{ 'border-t-0': index === 0 }"
           >
+            <template #header-left>
+              <IconHint
+                icon="i-carbon-enterprise"
+                hint="Este ícone indica que este\nitem é uma Recuperanda!"
+                dark
+                class="self-center"
+              />
+            </template>
             <template #header-right>
               <div class="flex-1 flex items-center pl-8" />
             </template>
@@ -144,10 +177,10 @@ onMounted(() => {
               flat
               class="vertical border--primary border-1 mb-4 mr-3"
             >
-              <CreditorClaim :name="1" title="Pleito Credor" icon="o_attach_money" />
-              <LawyerClaim :name="2" title="Pleito Advocatício" icon="o_attach_money" />
-              <AJNotice :name="3" title="Edital AJ" icon="o_request_page" />
-              <RecoveringNotice :name="4" title="Edital Recuperanda" icon="o_request_page" />
+              <CreditorClaim v-model="creditor.claimCreditor" :name="1" title="Pleito Credor" icon="o_attach_money" />
+              <LawyerClaim v-model="creditor.claimLawyer" :name="2" title="Pleito Advocatício" icon="o_attach_money" />
+              <AJNotice v-model="creditor.noticeAJ" :name="3" title="Edital AJ" icon="o_request_page" />
+              <RecoveringNotice v-model="creditor.noticeRecovering" :name="4" title="Edital Recuperanda" icon="o_request_page" />
               <Criteria :name="5" title="Critérios" icon="o_checklist_rtl" />
             </QStepper>
           </Accordion>

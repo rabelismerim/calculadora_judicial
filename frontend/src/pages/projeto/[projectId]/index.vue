@@ -205,6 +205,14 @@ onMounted(() => {
         :title="recovering.entity.name"
         :subtitle="formatLegalNumber(recovering.entity.legalNumber)"
       >
+        <template #header-left>
+          <IconHint
+            icon="i-carbon-enterprise"
+            hint="Este ícone indica que este\nitem é uma Recuperanda!"
+            dark
+            class="self-center"
+          />
+        </template>
         <template #header-right>
           <div class="flex-1 flex gap-2 justify-end items-center pl-8 pr-4">
             <div class="font-bold flex no-wrap items-center gap-2">
@@ -222,6 +230,13 @@ onMounted(() => {
             class="pl-6 border-x-0 border-b-0 rounded-0"
             :class="{ 'border-t-0': index === 0 }"
           >
+            <template #header-left>
+              <IconHint
+                icon="i-carbon-identification"
+                hint="Este ícone indica que este\nitem é um Credor!"
+                class="self-center"
+              />
+            </template>
             <template #header-right>
               <div class="flex-1 flex items-center pl-8">
                 <Btn
