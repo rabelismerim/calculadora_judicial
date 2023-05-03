@@ -2,10 +2,25 @@
 const attrs = useAttrs() as any
 const router = useRouter()
 
+interface Project {
+  recoverings: {
+    id: string
+    entity: any
+    creditors: any[]
+  }[]
+  engagement: {
+    numbers: any[]
+  }
+  participants: {
+    user: any
+  }[]
+  [key: string]: any
+}
+
 let loading = $ref(false)
 const filterBy = $ref('')
 const showParticipants = $ref(false)
-let project: any = $ref({})
+let project = $ref({} as Project)
 
 const tab = $ref('all')
 const tabFilters = [
