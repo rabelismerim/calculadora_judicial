@@ -1,26 +1,27 @@
 <script setup lang="ts">
-const newIncident = {
-  creditorId: '33f72514-bd81-4f5c-9ec1-c787a7464b6e',
-  description: ['Teste'],
+const newIRRF = {
+  fundId: 'c70162d2-c56e-49bd-9953-e3762f9091f3',
+  fundName: 'Lisa Washington',
+  taxableAmounts: 200,
 }
-let incident = $ref([''])
+let funds = $ref([''])
 
-const newIncidente = async () => {
+const newVerdicts = async () => {
   try {
-    const result = await calculationService.newIncident(newIncident)
+    const result = await calculationService.setFundsIRRF(newIRRF)
     console.warn('print result', result)
   }
   catch (error) {
-    printError('ERROR ON NEW CALCULATION:', error)
+    printError('ERROR ON NEW INTEGRATION:', error)
   }
 }
-const loadIncidente = async () => {
+const loadFunds = async () => {
   try {
-    const result = await calculationService.getIncident('33f72514-bd81-4f5c-9ec1-c787a7464b6e')
-    incident = result
+    const result = await calculationService.getFundsIRRF('c70162d2-c56e-49bd-9953-e3762f9091f3')
+    funds = result
   }
   catch (error) {
-    printError('ERROR ON LOAD CALCULATION:', error)
+    printError('ERROR ON LOAD INTEGRATION:', error)
   }
 }
 </script>
@@ -29,15 +30,15 @@ const loadIncidente = async () => {
   <div class="p-6 grid gap-4 justify-start">
     <h1>Teste</h1>
     <Btn
-      label="Criar Calculo"
-      @click="newIncidente"
+      label="Criar Funds"
+      @click="newVerdicts"
     />
     <Btn
-      label="Carregar Calculo"
-      @click="loadIncidente"
+      label="Carregar Funds"
+      @click="loadFunds"
     />
     <div>
-      <pre>{{ incident }}</pre>
+      <pre>{{ funds }}</pre>
     </div>
   </div>
 </template>
