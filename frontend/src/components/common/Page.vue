@@ -39,7 +39,10 @@ const isOpen = $ref(false)
         >
           <div class="relative pr-9 h-full max-h-[calc(100vh-96px)] overflow-x-hidden overflow-y-auto scroll-left">
             <div class="p-8 pr-0">
-              <h2 class="font-bold text-2xl bg--base sticky top-0 py-4">
+              <div v-if="$slots.menuheader">
+                <slot name="menuheader" />
+              </div>
+              <h2 v-else class="font-bold text-2xl bg--base sticky top-0 py-4">
                 {{ menuLabel }}
               </h2>
               <slot name="menu" />
