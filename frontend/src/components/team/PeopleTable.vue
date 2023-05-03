@@ -158,7 +158,7 @@ const columns = [
         <div class="flex justify-end gap-1 no-wrap">
           <div class="flex justify-end gap-1  max-h-7.5 overflow-hidden">
             <div
-              v-for="project in props.value"
+              v-for="project in props.value as any[]"
               :key="project.id"
               class="rounded-full px-3 py-1 border-1 border--black/10 bg-gray/10 whitespace-nowrap"
               :class="canGoTo(project) ? 'cursor-pointer hover:bg--primary/20 hover:border--primary/50' : 'cursor-not-allowed'"
