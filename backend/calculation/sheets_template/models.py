@@ -22,7 +22,7 @@ class SheetsTemplate(AbstractModel):
 
     """
     name = models.CharField(_('Sheet Name file'), max_length=50)
-    file = models.FileField(_('Sheet Template file'), upload_to=f'djud/templates/')
+    file = models.FileField(_('Sheet Template file'), upload_to=f'upload/djud/templates/')
     value = models.TextField(_('Json File Value'), null=True)
 
     def __str__(self):

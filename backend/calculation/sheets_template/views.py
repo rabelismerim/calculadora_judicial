@@ -11,6 +11,7 @@ from utils import _, doc
 import openpyxl as xl
 from os.path import exists
 from os import remove
+
 class SheetTemplateViewApi(AbstractViewApi):
     """HTTP methods for verdict"""
     http_method_names = ['get']
@@ -33,15 +34,17 @@ class SheetTemplateViewApi(AbstractViewApi):
                     """))
 
     #This function changing the new output file name as report
-    def new_archive(filename):
+    def new_archive(self, filename):
         sequence = 0
+        new_name = filename.split('/')[-1]
+        dir = '/'.join(filename.split('/')[:-1])
         while True:
-            new_name = str(sequence) + '_' + filename
-            if exists(new_name):
+            new_name = str(sequence) + '_' + new_name
+            if exists(dir + '/' + new_name):
                 sequence+=1
             else:
                 break
-        return new_name
+        return dir + '/' + new_name
 
     #This function have an interpretor in xls database, juca_value and juca_list, 
     #searching value or lists in request calls
@@ -49,16 +52,16 @@ class SheetTemplateViewApi(AbstractViewApi):
 
         try:
             calculation_id = kwargs.get('calculation_id')
-            export_filter = kwargs.get('type_export')
-            SheetsTemplate = SheetsTemplate.objects.filter(name=export_filter)
+            export_type = kwargs.get('export_type')
+            Template = SheetsTemplate.objects.filter(name=export_type)
 
-            archive = xl.load_workbook(SheetsTemplate.file, read_only=false)
-            new_name = new_archive(SheetsTemplate.file)
+            archive = xl.load_workbook(Template[0].file.name, read_only=False)
+            new_name = self.new_archive(Template[0].file.name)
 
             for sheet in archive:
                 for col in sheet.iter_rows():
                     for cell in col:
-                        if str(cell.value.find('JUCA='))>=0:
+                        if cell.value.find('JUCA=')>=0:
                             cell.value=eval(str(cell_value)[5:])
                         else:
                             pass
@@ -70,7 +73,7 @@ class SheetTemplateViewApi(AbstractViewApi):
 
             remove(new_name)
 
-            return JsonResponse({'excel': {excel_file}})
+            return JsonResponse({'excel': [ str(excel_file) ]})
 
         except BaseException as e:
-            return JsonResponse({'errors': e.message})
+            return JsonResponse({'errors': dict(e)})
