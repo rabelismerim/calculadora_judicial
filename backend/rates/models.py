@@ -266,12 +266,11 @@ TYPE_CHOICES = (
 )
 
 
-class TemplateField(AbstractModel):
+class AbstractTemplateField(AbstractModel):
     """
     This class represents the fields for a template.
 
     Attributes:
-        rate (Template): The template the field belongs to.
         label (str): The name of the field.
         key (str): A unique key used to identify the field.
         type (str): The type of data stored in the field.
@@ -285,6 +284,43 @@ class TemplateField(AbstractModel):
     order = models.PositiveIntegerField(_('Order'))
     is_editable = models.BooleanField(_('Is editable?'))
     required = models.BooleanField(_('Required?'))
+
+    def __str__(self):
+        return self.label
+
+
+class TemplateMainField(AbstractTemplateField):
+    """
+    This class represents the fields for a template in table
+
+    Attributes:
+        template (Template): The template the field belongs to.
+        label (str): The name of the field.
+        key (str): A unique key used to identify the field.
+        type (str): The type of data stored in the field.
+        order (str): The order in which the field is displayed.
+        is_editable (bool): Whether the field is editable.
+        required (bool): Whether the field is required.
+    """
+    template = models.ForeignKey(Template, on_delete=models.PROTECT, null=True)
+
+    def __str__(self):
+        return f'{self.label} | {self.template.name}'
+
+
+class TemplateField(AbstractTemplateField):
+    """
+    This class represents the fields for a template main.
+
+    Attributes:
+        rate (Template): The template the field belongs to.
+        label (str): The name of the field.
+        key (str): A unique key used to identify the field.
+        type (str): The type of data stored in the field.
+        order (str): The order in which the field is displayed.
+        is_editable (bool): Whether the field is editable.
+        required (bool): Whether the field is required.
+    """
     rate = models.ForeignKey(TemplateRate, on_delete=models.PROTECT, null=True)
 
     def __str__(self):

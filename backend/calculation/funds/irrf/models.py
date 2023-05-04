@@ -48,7 +48,7 @@ class FundIRRF(AbstractFunds):
         total_funds.set_total()
 
     def get_statements_values(self) -> list:
-        return list(self.statementirrf_set.all().values_list('taxable_amounts', flat=True))
+        return list(self.statementirrf_set.filter(is_extraconcursal=False).values_list('taxable_amounts', flat=True))
 
     def __delete_total_funds(self):
         if hasattr(self, 'totalvaluesirrf'):
@@ -88,7 +88,8 @@ class StatementIRRF(AbstractModel):
     fund = models.ForeignKey(FundIRRF, on_delete=models.PROTECT)
     fund_name = models.CharField(_('Fund'), max_length=150)
     taxable_amounts = models.FloatField(_('Taxable amounts'))
-
+    is_extraconcursal = models.BooleanField(_('Is extraconcursal'), default=False)
+    
     def __str__(self):
         return f'{self.fund_name} | {self.fund} | {self.taxable_amounts}'
 
@@ -99,7 +100,7 @@ class StatementIRRF(AbstractModel):
             send_signal_post_save (bool): Set to True to send a post-save signal. Default is True.
         """
         super(StatementIRRF, self).save(*args, **kwargs)
-        if send_signal_post_save and self.fund.is_extraconcursal is False:
+        if send_signal_post_save and self.is_extraconcursal is False:
             gen_statement_irrf.send(sender=self.__class__, instance=self)
 
     def delete(self, delete_total=True, *args, **kwargs):

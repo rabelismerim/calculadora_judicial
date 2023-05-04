@@ -12,7 +12,6 @@ Attributes:
       `fields` lists the names of all fields that should be included in the serialized
       representation.
 """
-
 from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
 
@@ -124,6 +123,24 @@ class TotalValuesDocumentSchema(AbstractDescriptionSchema):
         exclude = ('fund',)
 
 
+class StatementDocumentSchema(AbstractDescriptionSchema):
+    """
+    A schema for serializing and deserializing StatementDocuments instances.
+
+    Attributes:
+        fund_id (serializers.UUIDField): The UUID of the related fund.
+    """
+    monetary_correction = MonetaryCorrectionDocumentSchema(read_only=True, source='monetarycorrectiondocument')
+
+    fund_id = serializers.UUIDField()
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+
+    class Meta:
+        model = StatementDocument
+        exclude = ('fund',)
+        read_only_fields = ('status', 'status_display')
+
+
 class FundDocumentSchema(AbstractClassesFundsSchema):
     """
     A schema for serializing and deserializing Funds instances.
@@ -135,8 +152,24 @@ class FundDocumentSchema(AbstractClassesFundsSchema):
     deserializing StatementIRRF instances.
     """
     calculation_id = serializers.UUIDField()
-    fund = TotalValuesDocumentSchema(source='totalvaluesdocument', read_only=True, exclude=('fund_id',))
-    statement = StatementDocumentSchema(source='statementdocument', exclude=('fund_id', 'status'), write_only=True)
+    total = TotalValuesDocumentSchema(source='totalvaluesdocument', read_only=True, exclude=('fund_id','statement'))
+    statement = StatementDocumentSchema(source='statementdocument', exclude=('fund_id', 'status'), read_only=True)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        statement_serializer = StatementDocumentSchema(exclude=('fund_id', 'status'))
+        statement_fields = statement_serializer.get_fields()
+        self.write_only_fields = {}
+        extra_kwargs = {}
+        for field_name, field in statement_fields.items():
+            in_exclude = field_name in ['fund_id', 'status']
+            if not in_exclude and field.read_only is False:
+                field.write_only = True
+                extra_kwargs[field_name] = {'write_only': True}
+                self.write_only_fields[field_name] = field
+
+        StatementDocumentSchema.Meta.extra_kwargs = extra_kwargs
+        self.fields.update(self.write_only_fields)
 
     class Meta:
         model = FundDocument
@@ -161,8 +194,9 @@ class FundDocumentSchema(AbstractClassesFundsSchema):
 
         if FundDocument.objects.filter(calculation_id=calculation_id, name=name).exists():
             raise serializers.ValidationError([_('Document Fund already registered')])
-
-        data['statement_document'] = data.pop('statementdocument')
+        data['statement_document'] = {}
+        for field_name in self.write_only_fields.keys():
+            data['statement_document'][field_name] = data.pop(field_name)
         return super(FundDocumentSchema, self).validate(data)
 
 

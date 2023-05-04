@@ -2,11 +2,37 @@ import copy
 
 from django.core.management.base import BaseCommand
 
-from rates.models import Template, TemplateField, TemplateRate
+from rates.models import Template, TemplateField, TemplateRate, TemplateMainField
 
 
 def create_templates():
     """Create templates to rates"""
+    fund_labor = [{'label': 'Nome da verba', 'key': 'name', 'type': 'C', 'order': 0, 'is_editable': True,
+                  'required': True}]
+    fund_document = [{'label': 'Nome da verba', 'key': 'name', 'type': 'C', 'order': 0, 'is_editable': True,
+                  'required': True},
+                     {'label': 'Número do documento', 'key': 'number', 'type': 'C', 'order': 1,
+                      'is_editable': True,
+                      'required': True},
+                     {'label': 'Multa', 'key': 'fine', 'type': 'F', 'order': 2, 'is_editable': True,
+                      'required': True},
+                     {'label': 'Há multa adicional?', 'key': 'has_custom_fine', 'type': 'B', 'order': 3, 'is_editable': True,
+                      'required': True},
+                     {'label': 'Data base', 'key': 'data_base', 'type': 'D', 'order': 4, 'is_editable': True,
+                      'required': True},
+                     {'label': 'Valor histórico', 'key': 'historical_value', 'type': 'F', 'order': 5,
+                      'is_editable': True,
+                      'required': True},
+                     {'label': 'É extraconcursal', 'key': 'is_extraconcursal', 'type': 'B', 'order': 6,
+                      'is_editable': True,
+                      'required': True},
+                     ]
+    fund_irrf = [{'label': 'Nome da verba', 'key': 'name', 'type': 'C', 'order': 0, 'is_editable': True,
+                  'required': True},
+                     {'label': 'Meses no período', 'key': 'months_period', 'type': 'F', 'order': 1,
+                      'is_editable': True,
+                      'required': True}
+                     ]
 
     fields_verbas = [{'label': 'Data base', 'key': 'data_base', 'type': 'D', 'order': 2, 'is_editable': True,
                       'required': True},
@@ -57,10 +83,12 @@ def create_templates():
     ]
 
     templates = [{'name': f'Documentos', 'description': f'Documento',
+                  'fund_main': fund_document,
                   'end_point': '/djud/api/v1/calculation/funds/ducuments/',
                   'end_point_main': '/djud/api/v1/calculation/funds/ducuments/',
                   'many': False,
                   'fields': fields_verbas_document}, {'name': f'Acordos', 'description': f'Acordo',
+                                                      'fund_main': fund_document,
                                                       'end_point': '/djud/api/v1/calculation/funds/ducuments/',
                                                       'end_point_main': '/djud/api/v1/calculation/funds/ducuments/',
                                                       'many': False,
@@ -71,34 +99,40 @@ def create_templates():
         template = [
             {'name': f'{verba}', 'description': f'{verba}',
              'end_point': '/djud/api/v1/calculation/funds/labor/',
+             'fund_main': fund_labor,
              'end_point_main': '/djud/api/v1/calculation/funds/',
              'many': True,
              'fields': fields_verbas},
             {'name': f'{verba}', 'description': f'Integrações sobre {verba}',
              'end_point': '/djud/api/v1/calculation/funds/integrations/',
+             'fund_main': fund_labor,
              'end_point_main': '/djud/api/v1/calculation/funds/',
              'many': True,
              'fields': fields_verbas_integrations},
 
             {'name': f'{verba} + Reflexos', 'description': f'{verba} + Reflexos',
              'end_point': '/djud/api/v1/calculation/funds/labor/',
+             'fund_main': fund_labor,
              'end_point_main': '/djud/api/v1/calculation/funds/',
              'many': True,
              'fields': fields_verbas_reflexos},
             {'name': f'{verba} + Reflexos', 'description': f'Integrações sobre {verba}',
              'end_point': '/djud/api/v1/calculation/funds/integrations/',
+             'fund_main': fund_labor,
              'end_point_main': '/djud/api/v1/calculation/funds/',
              'many': True,
              'fields': fields_verbas_integrations},
 
             {'name': f'{verba} rescisórias', 'description': f'Verbas rescisórias {verba}',
              'end_point': '/djud/api/v1/calculation/funds/labor/',
+             'fund_main': fund_labor,
              'end_point_main': '/djud/api/v1/calculation/funds/',
              'many': True,
              'fields': fields_verbas},
 
             {'name': f'IRRF - {verba}', 'description': f'Base de cálculo',
              'end_point': '/djud/api/v1/calculation/funds/irrf/funds/',
+             'fund_main': fund_irrf,
              'end_point_main': '/djud/api/v1/calculation/funds/irrf/',
              'many': True,
              'fields': fields_verbas_irrf},
@@ -110,7 +144,10 @@ def create_templates():
         fields = template.pop('fields')
         name = template.pop('name')
         end_point = template.pop('end_point_main')
+        fund_main = template.pop('fund_main')
         new_template, created = Template.objects.get_or_create(name=name, end_point=end_point)
+        for fund in fund_main:
+            TemplateMainField.objects.get_or_create(template=new_template, **fund)
         new_template_rate, created = TemplateRate.objects.get_or_create(template=new_template, **template)
         for field in fields:
             TemplateField.objects.get_or_create(rate=new_template_rate, **field)

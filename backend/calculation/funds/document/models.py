@@ -243,7 +243,7 @@ class StatementDocument(AbstractStatement):
             send_signal_post_save (bool): Set to True to send a post-save signal. Default is True.
         """
         super(StatementDocument, self).save(*args, **kwargs)
-        if send_signal_post_save and self.fund.is_extraconcursal is False:
+        if send_signal_post_save and self.is_extraconcursal is False:
             gen_statement_documents.send(sender=self.__class__, instance=self)
 
     def delete(self, *args, **kwargs):
@@ -310,7 +310,8 @@ class TotalValuesDocument(AbstractTotalValuesFunds):
 
     def __get_calculated_statement(self):
         """Returns the calculated statement of the fund."""
-        if hasattr(self.fund, 'statementdocument') and self.fund.statementdocument.status == 'C':
+        if hasattr(self.fund,
+                   'statementdocument') and self.fund.statementdocument.status == 'C' and self.fund.statementdocument.is_extraconcursal == False:
             return self.fund.statementdocument
 
     def get_description_doc(self):

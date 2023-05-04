@@ -3,7 +3,7 @@ from creditors.classes.models import Classes
 from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
 
-from rates.schemas import RateSchema
+from rates.schemas import RateSchema, TemplateSchema
 
 
 class ClassesSchema(AbstractDescriptionSchema):
@@ -37,6 +37,8 @@ class AbstractClassesFundsSchema(AbstractDescriptionSchema):
     archive_json = serializers.JSONField(allow_null=True, required=False)
     rate_id = serializers.UUIDField(allow_null=True, required=False, write_only=True)
     rate = RateSchema(exclude=('rate_value', 'is_per_day', 'rate_values'), read_only=True)
+    template_id = serializers.UUIDField(required=True, write_only=True)
+    template = TemplateSchema(read_only=True)
 
 
 class AbstractClassesUpdateSchema(AbstractDescriptionSchema):

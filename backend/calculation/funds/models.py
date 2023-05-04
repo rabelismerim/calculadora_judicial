@@ -167,7 +167,7 @@ class StatementFunds(AbstractStatement):
 
         """
         super(StatementFunds, self).save(*args, **kwargs)
-        if send_signal_post_save and self.fund.is_extraconcursal is False:
+        if send_signal_post_save and self.is_extraconcursal is False:
             gen_statement_funds.send(sender=self.__class__, instance=self)
 
     def delete(self, delete_total=True, *args, **kwargs):
@@ -253,7 +253,7 @@ class TotalValuesFunds(AbstractTotalValuesFunds):
 
     def get_calculated_statement(self):
         """Returns the calculated statement of the fund."""
-        return self.fund.statementfunds_set.filter(status='C')
+        return self.fund.statementfunds_set.filter(status='C', is_extraconcursal=False)
 
     def set_total(self):
         """
@@ -261,6 +261,7 @@ class TotalValuesFunds(AbstractTotalValuesFunds):
         statement.
         """
         statements = self.get_calculated_statement()
+
 
         total_corrected_value = 0
         total_historical_value = 0

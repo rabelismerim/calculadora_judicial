@@ -16,7 +16,7 @@ from calculation.models import Calculation
 from core.abstract.models import AbstractModel
 from dateutil.relativedelta import relativedelta
 
-from rates.models import Rate
+from rates.models import Rate, Template
 from base.models import AbstractCredit
 
 
@@ -30,7 +30,7 @@ class AbstractFunds(AbstractCredit):
     name = models.CharField(_('Fund name'), max_length=50)
     calculation = models.ForeignKey(Calculation, on_delete=models.PROTECT)
     rate = models.ForeignKey(Rate, on_delete=models.PROTECT, null=True)
-    is_extraconcursal = models.BooleanField(_('Is extraconcursal'), default=False)
+    template = models.ForeignKey(Template, on_delete=models.PROTECT, null=True)
 
     class Meta:
         abstract = True
@@ -146,6 +146,7 @@ class AbstractStatement(AbstractStatus):
     # Sendo necessário adicionar um mês na hora de calcular o valor
     # TODO: Verificar automaticamente se é ou não verba para aplicar a sumula
     fund = models.ForeignKey('funds.Funds', on_delete=models.PROTECT)
+    is_extraconcursal = models.BooleanField(_('Is extraconcursal'), default=False)
 
     def _get_index_monetary_correction(self) -> dict or None:
         """Retrieves the monetary correction from a financial statement. It gets the calculation, data and rate

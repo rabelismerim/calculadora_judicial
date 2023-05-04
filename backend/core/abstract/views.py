@@ -5,7 +5,7 @@ from abc import ABC
 from django.apps import apps
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.template.response import ContentNotRenderedError
 from django.utils.encoding import smart_str
 from rest_framework import generics, serializers, status
@@ -156,9 +156,10 @@ class AbstractViewApi(generics.GenericAPIView):
                         {name: _('Field in invalid format. It must be in the format{}').format(instance["legend"])})
         serializer = self.get_serializer_class()
         if id_:
-            return serializer(self.model.objects.exclude(**query_exclude).filter(id=id_, **query, **kwargs).first(),
-                              many=False,
-                              exclude=exclude).data
+            obj = self.model.objects.exclude(**query_exclude).filter(id=id_, **query, **kwargs).first()
+            if not obj:
+                raise Http404
+            return serializer(obj, many=False, exclude=exclude).data
         return serializer(self.model.objects.exclude(**query_exclude).filter(**query, **kwargs).distinct(), many=True,
                           exclude=exclude).data
 

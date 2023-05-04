@@ -139,7 +139,7 @@ class TotalValuesFundsIntegrations(AbstractTotalValuesFunds):
 
     def get_calculated_statement(self):
         """Returns the calculated statement of the fund."""
-        return self.fund.statementintegrations_set.filter(status='C')
+        return self.fund.statementintegrations_set.filter(status='C', is_extraconcursal=False)
 
     def set_total(self):
         """
