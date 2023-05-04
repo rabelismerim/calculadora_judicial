@@ -1,8 +1,12 @@
 import datetime
+import json
 from abc import ABC
 
 from django.apps import apps
+from django.core.cache import cache
+from django.core.cache.utils import make_template_fragment_key
 from django.http import JsonResponse
+from django.template.response import ContentNotRenderedError
 from django.utils.encoding import smart_str
 from rest_framework import generics, serializers, status
 from rest_framework.filters import BaseFilterBackend
@@ -11,6 +15,7 @@ from rest_framework.utils import formatting
 from rest_framework.schemas.openapi import AutoSchema
 
 from core.drfmsal.schemas import CustomDictField
+from security.views import Security
 from utils import _
 
 
@@ -88,6 +93,7 @@ class AbstractViewApi(generics.GenericAPIView):
     query_params = []
     model = None
     schema = CustomSchema()
+    cache_timeout = 60 * 60
 
     def get_serializer_class(self):
         if hasattr(self, 'layout_serializers'):
@@ -155,6 +161,64 @@ class AbstractViewApi(generics.GenericAPIView):
                               exclude=exclude).data
         return serializer(self.model.objects.exclude(**query_exclude).filter(**query, **kwargs).distinct(), many=True,
                           exclude=exclude).data
+
+    def get_cache_key(self, request):
+        view_name = self.model._meta.verbose_name.lower()
+        cache_version = 'v1'
+        url = request.build_absolute_uri()
+
+        # Use make_template_fragment_key para incluir as variáveis de URL relevantes na cache_key.
+        cache_key = make_template_fragment_key(view_name, [url])
+
+        # Adicione o cache_version ao início da cache_key para que você possa invalidar o cache facilmente quando ocorrer uma mudança na estrutura da resposta.
+        cache_key = f'{cache_version}:{cache_key}'
+
+        return cache_key
+
+    def get_cache_keys_for_url(self, url):
+        """
+        Obtém uma lista de todas as chaves do cache correspondentes à URL especificada.
+        """
+        keys =  cache.iter_keys('*')  # Obtém todas as chaves de cache.
+        view_name = self.model._meta.verbose_name.lower()
+        url_keys = []
+        for key in keys:
+            # Verifica se a chave está relacionada à URL especificada.
+            if key.startswith('v1:'):  # Verifique primeiro o prefixo do cache version.
+                fragment_name, fragment_data = key.split(':', 1)[1].split(';', 1)
+                if fragment_name == make_template_fragment_key(view_name, [url]).split(':', 1)[1]:
+                    url_keys.append(key)
+
+        return url_keys
+    # def dispatch(self, request, *args, **kwargs):
+    #     fernet = Security()
+    #     cache_key = self.get_cache_key(request)
+    #     print(cache_key, 'key')
+    #     print(request.method, 'method\n')
+    #     url_keys = self.get_cache_keys_for_url(request.build_absolute_uri())
+    #     print(url_keys, 'keys\n')
+    #     if request.method == 'GET':
+    #         cached_data = cache.get(cache_key)
+    #         print(cached_data, 'cached\n')
+    #         if cached_data is not None:
+    #             return JsonResponse(json.loads(fernet.decrypt(cached_data)), safe=False)
+    #
+    #     response = super().dispatch(request, *args, **kwargs)
+    #     if response.status_code in [200, 201] and request.method == 'GET':
+    #         try:
+    #             cache.set(cache_key, fernet.encrypt(response.content.decode()), timeout=self.cache_timeout)
+    #         except ContentNotRenderedError:
+    #             pass
+    #
+    #     if request.method == 'POST':
+    #         # Obtém todas as chaves do cache correspondentes à URL especificada.
+    #         url = request.build_absolute_uri()
+    #         url_keys = self.get_cache_keys_for_url(url)
+    #         print(url_keys, 'keys\n')
+    #         # Exclui todas as chaves do cache correspondentes a essa URL.
+    #         for key in url_keys:
+    #             cache.delete(key)
+    #     return response
 
     def get(self, request, *args, **kwargs):
         """Abstract method for default get model. Overide method in class for custom operation"""

@@ -68,16 +68,14 @@ class RateSchema(AbstractDescriptionSchema):
         date = rate_value.get('date')
         value = rate_value.get('value')
 
-        rate = Rate.objects.filter(
-            index=index_name, ratevalues__date=date).first()
+        rate = Rate.objects.filter(index=index_name, ratevalues__date=date).first()
 
         if rate:
             raise serializers.ValidationError([_('Rate already registered')])
 
         new_rate, created = Rate.objects.get_or_create(index=index_name)
 
-        new_rate_values = RateValues.objects.create(
-            rate=new_rate, date=date, value=value)
+        new_rate_values = RateValues.objects.create(rate=new_rate, date=date, value=value)
 
         if accumulated is not None:
             Accumulated.objects.create(rate=new_rate_values, value=accumulated)
@@ -85,6 +83,14 @@ class RateSchema(AbstractDescriptionSchema):
             Period.objects.create(rate=new_rate_values, value=period)
 
         return super(RateSchema, self).validate(new_rate)
+
+
+class RateListSchema(AbstractDescriptionSchema):
+    """Serializer Rate list fields"""
+
+    class Meta:
+        model = Rate
+        fields = ('index', 'is_per_day', 'id')
 
 
 class RateFileSchema(AbstractDescriptionSchema):

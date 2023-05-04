@@ -269,3 +269,16 @@ class AbstractTotalValuesFunds(AbstractModel):
 
     def get_calculation(self):
         return self.fund.calculation
+
+
+    def delete(self, *args, **kwargs):
+        """
+        Deletes the Funds object, TotalValuesFunds and TotalValuesFundsIntegrations
+        """
+        if hasattr(self, 'fundsdescription'):
+            description = self.fundsdescription
+            statement_pf = description.statement_pf
+            description.delete()
+            statement_pf.calcule_total()
+
+        super(AbstractTotalValuesFunds, self).delete(*args, **kwargs)

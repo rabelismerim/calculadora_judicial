@@ -266,7 +266,7 @@ DRFMSAL_IDENTITY_WEB = IdentityWebPython()
 if BRANCH_DEV or 'test' in sys.argv:
     my_string = sys.argv[0].replace('\\', '').replace('/', '')
 
-    if  my_string.endswith('locustmain.py'):
+    if my_string.endswith('locustmain.py'):
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.sqlite3',
@@ -315,6 +315,15 @@ else:
             'PORT': str(os.getenv('DB_PORT')),
         }
     }
+
+# Caches
+# https://docs.djangoproject.com/en/4.2/topics/cache/
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "django_juca_cache_table",
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

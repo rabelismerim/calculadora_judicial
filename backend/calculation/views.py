@@ -58,7 +58,7 @@ class IncidentApi(AbstractViewApi):
     serializer_class = IncidentSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Incident
-    http_method_names = ['post']
+    http_method_names = ['post', 'get']
     query_params = [
         {
             "name": "number",

@@ -4,13 +4,12 @@ from django.http import JsonResponse
 from rest_framework import permissions, serializers, status
 from core.permission.views import CheckHasPermission
 from rates.models import Rate, RateFile, Template
-from rates.schemas import RateFileSchema, RateSchema, TemplateSchema, TemplateListSchema
+from rates.schemas import RateFileSchema, RateSchema, TemplateSchema, TemplateListSchema, RateListSchema
 from utils import _, doc
 
 
-class RateApi(AbstractViewApi):
+class AbstractRateApi(AbstractViewApi):
     """HTTP methods for Rate"""
-    http_method_names = ['post', 'get']
     serializer_class = RateSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Rate
@@ -19,6 +18,17 @@ class RateApi(AbstractViewApi):
         'init': _("""Represents the indices that can be applied to rates to calculate debt updates.
         """),
         'get': _("""Returns the rate and its accumulated values, period and date""")
+    }
+
+
+class RateApi(AbstractRateApi):
+    """HTTP methods for Rate"""
+    http_method_names = ['post', 'get']
+
+    layout_serializers = {
+        'default': RateSchema,
+        'get': RateListSchema,
+        'post': RateSchema,
     }
 
     query_params = [
@@ -38,6 +48,11 @@ class RateApi(AbstractViewApi):
         serializer.is_valid(raise_exception=True)
         new_rate = serializer.validated_data
         return JsonResponse({'rate': self.serializer_class(new_rate, many=False).data}, status=status.HTTP_201_CREATED)
+
+
+class RateDetailApi(AbstractRateApi):
+    """HTTP methods for Rate detail"""
+    http_method_names = ['get']
 
 
 class RateFileApi(AbstractViewApi):

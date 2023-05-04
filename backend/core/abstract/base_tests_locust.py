@@ -69,32 +69,34 @@ class BaseTestsLocust(BaseTests, SequentialTaskSet):
     def _get_headers(self) -> dict:
         return {'Authorization': f'Token {self.__token}', 'Content-type': 'application/json'}
 
-    @task(1)
+    @task(5)
     def load_test_get(self):
         """
         Task to be executed during the load test. Makes a GET request to the API endpoint, using the token defined in
         TOKEN_TEST environment variable.
         """
         path = self.get_path()
+        print(path, 'path')
         if path:
             self.counter += 1
-            self.client.get(path, headers=self._get_headers())
+            resp = self.client.get(path, headers=self._get_headers())
+            print(resp, 'resp')
         if self.__max_execution and self.counter >= self.__max_execution:
             self.stop('get')
 
-    @task(1)
-    def load_test_post(self):
-        """
-        Task to be executed during the load test. Makes a GET request to the API endpoint, using the token defined in
-        TOKEN_TEST environment variable.
-        """
-        path = self.get_path_post()
-        parameters = self.get_parameters()
-        if path and parameters:
-            self.counter += 1
-            self.client.post(path, json.dumps(parameters), headers=self._get_headers())
-        if (self.__max_execution and self.counter >= self.__max_execution) or parameters is None:
-            self.stop('post')
+    # @task(1)
+    # def load_test_post(self):
+    #     """
+    #     Task to be executed during the load test. Makes a GET request to the API endpoint, using the token defined in
+    #     TOKEN_TEST environment variable.
+    #     """
+    #     path = self.get_path_post()
+    #     parameters = self.get_parameters()
+    #     if path and parameters:
+    #         self.counter += 1
+    #         self.client.post(path, json.dumps(parameters), headers=self._get_headers())
+    #     if (self.__max_execution and self.counter >= self.__max_execution) or parameters is None:
+    #         self.stop('post')
 
     def stop(self, task_name):
 

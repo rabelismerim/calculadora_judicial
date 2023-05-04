@@ -79,6 +79,19 @@ class Funds(AbstractFunds):
         total_funds = self.get_total_integrations()
         total_funds.set_total()
 
+    def __delete_total_funds(self):
+        if hasattr(self, 'totalvaluesfunds'):
+            self.totalvaluesfunds.delete()
+        if hasattr(self, 'totalvaluesfundsintegrations'):
+            self.totalvaluesfundsintegrations.delete()
+
+    def delete(self, *args, **kwargs):
+        """
+        Deletes the Funds object, TotalValuesFunds and TotalValuesFundsIntegrations
+        """
+        self.__delete_total_funds()
+        super(Funds, self).delete(*args, **kwargs)
+
 
 class StatementFunds(AbstractStatement):
     """

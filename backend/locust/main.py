@@ -35,6 +35,8 @@ import locust
 from locust import SequentialTaskSet
 from locust.exception import StopUser
 
+from rates.tests import RatesTest
+
 
 def _get_classes(filepath):
     """
@@ -115,7 +117,8 @@ class UnlimitedRequests(HttpUser):
     executed. wait_time (function): A function that returns the time to wait between each request. max_execution (
     int): A int indicating a maximum number of requests to be sent.
     """
-    tasks: list = get_classes()
+    # tasks: list = get_classes()
+    tasks: list = [RatesTest]
     wait_time: float = between(1, 5)
     max_execution: None or int = None
     http_method_names = ['get', 'post']

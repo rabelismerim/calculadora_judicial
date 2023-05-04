@@ -62,7 +62,7 @@ class PermissionsName:
     A class that provides permission codes for different user types.
 
     Attributes:
-        _layout_change: a string format for change permission codes
+        _layout_perm: a string format for change permission codes
         _layout_request: a string format for request permission codes
         executor: a list of tuples containing executor permission codes
         reviewer: a list of tuples containing reviewer permission codes
@@ -79,20 +79,25 @@ class PermissionsName:
             Returns:
                 True if the permission code exists, False otherwise
     """
-    _layout_change = 'can_change_{}_to_{}'
+    _layout_perm = 'can_change_{}_to_{}'
     executor = [
-        (_layout_change.format('r', 's'), _('Can Request failed Calculation'), 'calculation')
+        (_layout_perm.format('r', 's'), _('Can Request failed Calculation'), 'calculation')
     ]
     reviewer = [
-        (_layout_change.format('a', 'e'), _('Can Reviewer Calculation'), 'calculation')
+        (_layout_perm.format('c', 'e'), _('Can Reviewer Calculation to Approve'), 'calculation'),
+        (_layout_perm.format('c', 'b'), _('Can Reviewer Calculation to Approve special'), 'calculation'),
+        (_layout_perm.format('c', 's'), _('Can Reviewer Calculation to Calculate'), 'calculation'),
+        (_layout_perm.format('c', 'r'), _('Can Reviewer Calculation to Failed'), 'calculation'),
     ]
     approve = [
-        (_layout_change.format('s', 'a'), _('Can Approve Requested Calculation'), 'calculation'),
-        (_layout_change.format('c', 'a'), _('Can Approve Calculated Calculation'), 'calculation')
+        (_layout_perm.format('e', 'a'), _('Can Approve Revised Calculation'), 'calculation'),
+        (_layout_perm.format('e', 'c'), _('Can Disapprove Revised Calculation to Review'), 'calculation'),
+        (_layout_perm.format('e', 'r'), _('Can Disapprove Revised Calculation to Failed'), 'calculation')
     ]
     special_approve = [
-        (_layout_change.format('s', 'b'), _('Can Special Approve Requested Calculation'), 'calculation'),
-        (_layout_change.format('c', 'b'), _('Can Special Approve Calculated Calculation'), 'calculation')
+        (_layout_perm.format('b', 'a'), _('Can Approve Special Calculation'), 'calculation'),
+        (_layout_perm.format('b', 'c'), _('Can Disapprove Special Calculation to Review'), 'calculation'),
+        (_layout_perm.format('b', 'r'), _('Can Disapprove Special Calculation to Failed'), 'calculation')
     ]
 
     @staticmethod

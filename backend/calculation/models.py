@@ -18,8 +18,8 @@ from rates.models import Rate
 from utils import check_choice
 
 CHOICES_STEP = (
-    ('S', _('Requested')), ('C', _('Calculated')), ('E', _('Revised')), ('A', _('Approved')), ('R', _('Failed')),
-    ('B', _('Specially Approved')))
+    ('S', _('To Calculate')), ('C', _('To Review')), ('E', _('To Approve')), ('B', _('To Approve Special')),
+    ('A', _('Approved')), ('R', _('Failed')))
 
 
 class Incident(AbstractModel):
