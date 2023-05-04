@@ -95,7 +95,7 @@ class StatementIntegrations(AbstractStatement):
         if send_signal_post_save:
             gen_statement_integrations.send(sender=self.__class__, instance=self)
 
-    def delete(self, *args, **kwargs):
+    def delete(self, delete_total=True, *args, **kwargs):
         """
         Deletes the StatementIntegrations object, MonetaryCorrection and generates a new calculation of
         TotalValuesFundsIntegrations
@@ -103,7 +103,9 @@ class StatementIntegrations(AbstractStatement):
         fund = self.fund
         self.delete_monetary_correction()
         super(StatementIntegrations, self).delete(*args, **kwargs)
-        fund.gen_total_integrations()
+
+        if delete_total:
+            fund.gen_total_integrations()
 
 
 class MonetaryCorrectionIntegrations(AbstractMonetaryCorrection):

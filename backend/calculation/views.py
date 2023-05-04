@@ -241,16 +241,6 @@ class ChangeStepApi(AbstractViewApi):
         Possible statuses are `Requested`, `Calculated`, `Revised`, `Approved`, `Failed`, `Specially Approved`,
         """))
     def put(self, request, *args, **kwargs):
-        calculation_id = kwargs.get('id', None)
-        calculation = self.model.objects.filter(id=calculation_id).first()
-        update_users = UpdateUser.objects.filter(
-            # content_type=ContentType.objects.get_for_model(calculation),
-            object_id__in=[calculation.id],
-        )
-
-        print(update_users, 'update_users\n')
-        return JsonResponse({'update_users': 'update_users'})
-
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_calculation = serializer.validated_data

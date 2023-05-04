@@ -13,7 +13,7 @@ from calculation.funds.models import Funds
 from calculation.models import Calculation, CHOICES_STEP
 from calculation.schemas import ChangeStepSerializer
 from config.settings import GROUP_NAME_APPROVER, GROUP_NAME_REVIEWER, GROUP_NAME_EXECUTOR, GROUP_NAME_SPECIAL_APPROVE, \
-    IS_LOCALHOST
+    IS_LOCALHOST, SWAGGER_URL
 from projects.project_user.models import ProjectUser
 
 
@@ -379,6 +379,8 @@ class CheckFundsPjPfPermissions(BasePermission):
     message = _('It is not possible to register this fund')
 
     def has_permission(self, request, view):
+        if request.path == SWAGGER_URL:
+            return True
         if hasattr(view, 'physical_person') is False:
             raise AttributeError(
                 _('Need to add "physical_person: bool" attribute to use CheckFundsPjPfPermissions class'))
@@ -400,6 +402,8 @@ class CheckHasFundRegisteredPermissions(BasePermission):
     message = _('it is not possible to register an agreement when there is already an fund or fund IRRF registered')
 
     def has_permission(self, request, view):
+        if request.path == SWAGGER_URL:
+            return True
         calculation_id = view.request.data.get('calculation_id')
         funds = Funds.objects.filter(calculation_id=calculation_id).exists()
         fund_irrf = FundIRRF.objects.filter(calculation_id=calculation_id).exists()
@@ -412,6 +416,8 @@ class CheckHasAgreementRegisteredPermissions(BasePermission):
     message = _('it is not possible to register an fund when there is already an agreement registered')
 
     def has_permission(self, request, view):
+        if request.path == SWAGGER_URL:
+            return True
         calculation_id = view.request.data.get('calculation_id')
         return not FundDocument.objects.filter(calculation_id=calculation_id).exists()
 

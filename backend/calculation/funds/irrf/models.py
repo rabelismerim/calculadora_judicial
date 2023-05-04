@@ -50,6 +50,26 @@ class FundIRRF(AbstractFunds):
     def get_statements_values(self) -> list:
         return list(self.statementirrf_set.all().values_list('taxable_amounts', flat=True))
 
+    def __delete_total_funds(self):
+        if hasattr(self, 'totalvaluesirrf'):
+            self.totalvaluesirrf.delete()
+
+    def get_all_statement_irrf(self) -> list:
+        """
+        This method returns the TotalValuesFundsIntegrations object associated with the current fund object. If the
+        object does not exist, it creates one and returns it.
+        """
+        return self.statementirrf_set.all()
+
+    def delete(self, *args, **kwargs):
+        """
+        Deletes the Funds object, TotalValuesFunds and TotalValuesFundsIntegrations
+        """
+        for fund in self.get_all_statement_irrf():
+            fund.delete(delete_total=False)
+        self.__delete_total_funds()
+        super(FundIRRF, self).delete(*args, **kwargs)
+
 
 class StatementIRRF(AbstractModel):
     """
@@ -82,13 +102,15 @@ class StatementIRRF(AbstractModel):
         if send_signal_post_save and self.fund.is_extraconcursal is False:
             gen_statement_irrf.send(sender=self.__class__, instance=self)
 
-    def delete(self, *args, **kwargs):
+    def delete(self, delete_total=True, *args, **kwargs):
         """
         Deletes the StatementIRRF object and generates a new calculation of TotalValuesIRRF
         """
         fund = self.fund
         super(StatementIRRF, self).delete(*args, **kwargs)
-        fund.gen_total()
+        if delete_total:
+            fund.gen_total()
+
 
 class TotalValuesIRRF(AbstractStatus):
     """
@@ -198,6 +220,22 @@ class TotalValuesIRRF(AbstractStatus):
         self.__calc_irrf_per_period()
         self.set_calculation_done()
         self.save()
+
+    def delete(self, *args, **kwargs):
+        """
+        Deletes the Funds object, TotalValuesFunds and TotalValuesFundsIntegrations
+        """
+        statement_pfs = []
+        statement_pfs_ids = []
+        for description in self.fundsdescription_set.all():
+            statement_pf = description.statement_pf
+            description.delete()
+            if not statement_pf.id in statement_pfs_ids:
+                statement_pfs.append(statement_pf)
+                statement_pfs_ids.append(statement_pf.id)
+        for statement in statement_pfs:
+            statement.calcule_total()
+        super(TotalValuesIRRF, self).delete(*args, **kwargs)
 
 
 @receiver(gen_statement_irrf, sender=StatementIRRF)

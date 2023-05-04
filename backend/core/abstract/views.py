@@ -224,8 +224,7 @@ class AbstractViewApi(generics.GenericAPIView):
         """Abstract method for default get model. Overide method in class for custom operation"""
         id_ = kwargs.get('id')
         query = self.get_query(id_=id_)
-        model_name = self.model._meta.verbose_name_plural.lower(
-        ) if not id_ else self.model._meta.verbose_name.lower()
+        model_name = self.model._meta.verbose_name_plural.lower() if not id_ else self.__get_model_name()
         return JsonResponse({model_name.replace(' ', '_'): query})
 
     def post(self, request, *args, **kwargs):
@@ -234,8 +233,7 @@ class AbstractViewApi(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         new_obj = serializer.validated_data
         obj = self.model.objects.create(**new_obj)
-        obj_name = self.model._meta.verbose_name_plural.lower().replace(' ', '_')
-        return JsonResponse({obj_name: self.serializer_class(obj, many=False).data}, status=status.HTTP_201_CREATED)
+        return JsonResponse({self.__get_model_name(): self.serializer_class(obj, many=False).data}, status=status.HTTP_201_CREATED)
 
     def put(self, request, *args, **kwargs):
         """
@@ -260,8 +258,15 @@ class AbstractViewApi(generics.GenericAPIView):
         data_obj = dict(serializer.validated_data)
         obj = get_object_or_404(self.model, id=id_)
         obj.dict_update(**data_obj)
-        model_name = self.model._meta.verbose_name.lower().replace(' ', '_')
-        return JsonResponse({model_name: self.serializer_class(obj, many=False).data})
+        return JsonResponse({self.__get_model_name(): self.serializer_class(obj, many=False).data})
+
+    def __get_model_name(self):
+       return self.model._meta.verbose_name.lower().replace(' ', '_')
+    def delete(self, request, *args, **kwargs):
+        obj_id = kwargs.get('id')
+        obj = get_object_or_404(self.model, id=obj_id)
+        obj.delete()
+        return JsonResponse({'data': _(f'{self.__get_model_name().upper()} deleted')}, status=status.HTTP_200_OK)
 
     def __get_exclude_values(self) -> list or tuple:
         if hasattr(self, 'exclude') and (isinstance(self.exclude, list) or isinstance(self.exclude, tuple)):

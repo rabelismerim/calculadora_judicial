@@ -63,6 +63,20 @@ class Funds(AbstractFunds):
             return self.totalvaluesfundsintegrations
         return TotalValuesFundsIntegrations.objects.get_or_create(fund=self)[0]
 
+    def get_all_statement_funds(self) -> list:
+        """
+        This method returns the TotalValuesFundsIntegrations object associated with the current fund object. If the
+        object does not exist, it creates one and returns it.
+        """
+        return self.statementfunds_set.all()
+
+    def get_all_statement_funds_integrations(self) -> list:
+        """
+        This method returns the TotalValuesFundsIntegrations object associated with the current fund object. If the
+        object does not exist, it creates one and returns it.
+        """
+        return self.statementintegrations_set.all()
+
     def gen_total_statements(self):
         """
         This method generates the total statements for the current fund by calling the set_total() method of the
@@ -89,6 +103,10 @@ class Funds(AbstractFunds):
         """
         Deletes the Funds object, TotalValuesFunds and TotalValuesFundsIntegrations
         """
+        for fund in self.get_all_statement_funds():
+            fund.delete(delete_total=False)
+        for fund in self.get_all_statement_funds_integrations():
+            fund.delete(delete_total=False)
         self.__delete_total_funds()
         super(Funds, self).delete(*args, **kwargs)
 
@@ -152,14 +170,15 @@ class StatementFunds(AbstractStatement):
         if send_signal_post_save and self.fund.is_extraconcursal is False:
             gen_statement_funds.send(sender=self.__class__, instance=self)
 
-    def delete(self, *args, **kwargs):
+    def delete(self, delete_total=True, *args, **kwargs):
         """
         Deletes the StatementFunds object, MonetaryCorrection and generates a new calculation of TotalValuesFunds
         """
         fund = self.fund
         self.delete_monetary_correction()
         super(StatementFunds, self).delete(*args, **kwargs)
-        fund.gen_total_statements()
+        if delete_total:
+            fund.gen_total_statements()
 
     def has_monetary_correction(self) -> bool:
         """Returns True if the monetary correction exists for the statement."""

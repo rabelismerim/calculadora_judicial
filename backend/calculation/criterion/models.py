@@ -15,7 +15,7 @@ class Criterion(AbstractDateCreditor, AbstractDateRecovering):
     """
 
     calculation = models.OneToOneField(Calculation, on_delete=models.PROTECT)
-    claim_lawyer = models.ForeignKey(Claim, on_delete=models.PROTECT)  # Pegar informações do credor
+    claim_lawyer = models.ForeignKey(Claim, on_delete=models.PROTECT, null=True, blank=True)  # Pegar informações do credor
 
 
 def get_claims_creditor(self):

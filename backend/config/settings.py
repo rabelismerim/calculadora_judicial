@@ -443,6 +443,7 @@ if DEBUG:
     LOGIN_REDIRECT_URL = f"/{BASE_URL}docs/swagger/"
     LOGOUT_URL = "/djud/logout/"
 
+SWAGGER_URL = f'/{BASE_URL}docs/redoc/'
 RATE_FILE_TYPES = ['pdf', 'vnd.ms-excel', 'xlsx', 'xls']
 
 TEMPLATE_FILE_TYPES = ['vnd.ms-excel', 'xlsx', 'xls']

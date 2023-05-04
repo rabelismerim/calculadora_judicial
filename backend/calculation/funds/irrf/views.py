@@ -132,7 +132,7 @@ class FundIRRFDetailApi(AbstractFundIRRFApi):
         GET /api/v1/calculation/funds/?funds=funds_name
         ```
     """
-    http_method_names = ['get']
+    http_method_names = ['get', 'delete']
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     docs = docs_fund.copy()
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific fund IRRF 

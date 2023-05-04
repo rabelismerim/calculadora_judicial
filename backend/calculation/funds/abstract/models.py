@@ -270,15 +270,21 @@ class AbstractTotalValuesFunds(AbstractModel):
     def get_calculation(self):
         return self.fund.calculation
 
-
     def delete(self, *args, **kwargs):
         """
         Deletes the Funds object, TotalValuesFunds and TotalValuesFundsIntegrations
         """
-        if hasattr(self, 'fundsdescription'):
-            description = self.fundsdescription
-            statement_pf = description.statement_pf
-            description.delete()
-            statement_pf.calcule_total()
+        statement_pfs = []
+        statement_pfs_ids = []
 
+        if hasattr(self, 'fundsdescription_set'):
+            for description in self.fundsdescription_set.all():
+                statement_pf = description.statement_pf
+                description.delete()
+                if not statement_pf.id in statement_pfs_ids:
+                    statement_pfs.append(statement_pf)
+                    statement_pfs_ids.append(statement_pf.id)
+
+            for statement in statement_pfs:
+                statement.calcule_total()
         super(AbstractTotalValuesFunds, self).delete(*args, **kwargs)

@@ -209,7 +209,8 @@ class PremiseCreator:
         is_ipca_e_selic: bool = rate.is_ipca_e_selic()
         appeal_credit: bool = self.__calculation.get_appeal_credit()
         date_approved_calculation: datetime.date or None = self.__calculation.get_date_approved_calculation()
-
+        if not date_rj_request:
+            return
         if is_ipca_e_selic:
             comment = {
                 'description': "O crédito foi atualizado pelo índice IPCA-E desde a data base das verbas até a data "

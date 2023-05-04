@@ -131,7 +131,7 @@ class FundsDetailApi(AbstractFundsApi):
         GET /api/v1/calculation/funds/?funds=funds_name
         ```
     """
-    http_method_names = ['get']
+    http_method_names = ['get', 'delete']
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     docs = docs_fund.copy()
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific fund 
@@ -290,13 +290,13 @@ class StatementFundsDetailApi(AbstractStatementFundsApi):
                 JsonResponse: An HTTP response containing the serialized statement fund data updated.
                 """)
 
-    @doc(_("""Delete a specific statement fund according to the ID passed by the url
+    docs['delete'] = _("""Delete a specific statement fund according to the ID passed by the url
 
             Returns:
                 JsonResponse: A JSON response containing the ok message.
-            """))
-    def delete(self, request, *args, **kwargs):
-        statement_id = kwargs.get('id')
-        statement = get_object_or_404(StatementFunds, id=statement_id)
-        statement.delete()
-        return JsonResponse({'data': _('Statement fund deleted')}, status=status.HTTP_200_OK)
+            """)
+    # def delete(self, request, *args, **kwargs):
+    #     statement_id = kwargs.get('id')
+    #     statement = get_object_or_404(StatementFunds, id=statement_id)
+    #     statement.delete()
+    #     return JsonResponse({'data': _('Statement fund deleted')}, status=status.HTTP_200_OK)
