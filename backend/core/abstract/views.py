@@ -1,7 +1,12 @@
 import datetime
+import inspect
 import json
+import os
+import sys
 from abc import ABC
+from importlib.util import spec_from_file_location, module_from_spec
 
+from dill import load_module
 from django.apps import apps
 from django.core import cache as ca
 from django.core.cache import cache
@@ -15,6 +20,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.utils import formatting
 from rest_framework.schemas.openapi import AutoSchema
 
+from base.schemas import AbstractDescriptionSchema
 from core.drfmsal.schemas import CustomDictField
 from security.views import Security
 from utils import _
@@ -207,9 +213,9 @@ class AbstractViewApi(generics.GenericAPIView):
                           exclude=exclude).data
 
     def get_cache_key(self, request):
-        app_label = self.model._meta.verbose_name.lower()
+        app_label = self.model._meta.verbose_name.lower().replace(' ', '_')
         url = request.build_absolute_uri()
-        app_name = get_app_label_from_model(self.model)
+        app_name = get_app_label_from_model(self.model).replace(' ', '_')
 
         # Use make_template_fragment_key para incluir as variáveis de URL relevantes na cache_key.
         cache_key = make_template_fragment_key(app_label, [url])
@@ -226,29 +232,58 @@ class AbstractViewApi(generics.GenericAPIView):
         keys_list = self.__get_keys()
         if key not in keys_list:
             keys_list.append(key)
-            cache.set("keys", keys_list)
-        print(keys_list, 'key list\n')
+            cache.set(f"{self.cache_version}:keys", keys_list)
         cache.set(key, value, timeout)
 
-    def get_cache_keys(self):
+    def __delete_key(self, key):
+        keys_list = self.__get_keys()
+        if key in keys_list:
+            keys_list.remove(key)
+            cache.delete(key)
+            cache.set(f"{self.cache_version}:keys", keys_list)
+
+    def get_cache_keys_from_app(self, model):
         """
         Obtém uma lista de todas as chaves do cache correspondentes à URL especificada.
         """
         keys = self.__get_keys()
-        app_name = get_app_label_from_model(self.model)
+        app_name = get_app_label_from_model(model)
         url_keys = []
         for key in keys:
             if key.startswith(f'{self.cache_version}:{app_name}'):
                 url_keys.append(key)
-
         return url_keys
 
+    def get_cache_keys_from_labels(self, app_labels: list):
+        """
+        Obtém uma lista de todas as chaves do cache correspondentes à URL especificada.
+        """
+        keys = self.__get_keys()
+        url_keys = []
+        for key in keys:
+            key_label = key.split(':')
+            if key_label[2] in app_labels:
+                url_keys.append(key)
+        return url_keys
+
+    def delete_cache_from_app(self, model):
+        url_keys = self.get_cache_keys_from_app(model)
+        for key in url_keys:
+            print(key, 'key\n\n')
+            self.__delete_key(key)
+
+    def delete_cache_from_labels(self):
+        labels = ['project', 'creditor', 'calculation']
+        url_keys = self.get_cache_keys_from_labels(labels)
+        for key in url_keys:
+            self.__delete_key(key)
+
     # def dispatch(self, request, *args, **kwargs):
+    #     # TODO fazer referencia da key para um elm, para nao precisar apagar todos os apps relacionados
     #     if not self.model:
     #         return super().dispatch(request, *args, **kwargs)
     #     fernet = Security()
     #     cache_key = self.get_cache_key(request)
-    #     print(cache_key, ' çh\n)')
     #     if request.method == 'GET':
     #         cached_data = cache.get(cache_key)
     #         print(bool(cached_data), 'data\n')
@@ -262,12 +297,12 @@ class AbstractViewApi(generics.GenericAPIView):
     #         except ContentNotRenderedError:
     #             pass
     #
-    #     if request.method == 'POST':
-    #         url_keys = self.get_cache_keys()
-    #         print(url_keys, 'keys to delete\n')
-    #         # Exclui todas as chaves do cache correspondentes ao app
-    #         for key in url_keys:
-    #             cache.delete(key)
+    #     if request.method != 'GET':
+    #         self.delete_cache_from_app(self.model)
+    #         related_serializers = find_related_serializers(self.get_serializer_class())
+    #         for serializer_cls in related_serializers:
+    #             model_class = serializer_cls.Meta.model
+    #             self.delete_cache_from_app(model_class)
     #     return response
 
     def get(self, request, *args, **kwargs):
@@ -330,3 +365,50 @@ class AbstractViewApi(generics.GenericAPIView):
 
     def get_exclude_queryset(self):
         return {}
+
+
+model_serializer_subclasses = []
+for app in apps.get_app_configs():
+    schema_path = os.path.join(app.path, "schemas.py")
+    if os.path.exists(schema_path):
+        spec = spec_from_file_location(f"{app.name}.schemas", schema_path)
+        module = module_from_spec(spec)
+        spec.loader.exec_module(module)
+        members = inspect.getmembers(module)
+        for member_name, member in members:
+            if inspect.isclass(member) and (
+                    issubclass(member, serializers.ModelSerializer) or issubclass(member,
+                                                                                  AbstractDescriptionSchema)):
+                model_serializer_subclasses.append(member)
+
+
+def find_related_serializers(schema, checked_serializers=None):
+    related_serializer_schemas = []
+    if checked_serializers is None:
+        checked_serializers = set()
+    checked_serializers.add(schema)
+
+    def append_srl(srl):
+        if not srl in related_serializer_schemas:
+            related_serializer_schemas.append(srl)
+
+    for serializer_cls in model_serializer_subclasses:
+        try:
+            for field_name, field in serializer_cls().get_fields().items():
+                if str(field.__class__.__name__).endswith('Schema'):
+                    if field.__class__.__name__ == schema.__name__:
+                        append_srl(serializer_cls)
+                elif isinstance(field, serializers.ListSerializer):
+                    if field.child.__class__.__name__ == schema.__name__:
+                        append_srl(serializer_cls)
+                elif isinstance(field, serializers.Serializer):
+                    if field.__class__ == schema.__name__:
+                        append_srl(serializer_cls)
+        except ValueError:
+            pass
+
+    for serializer_cls in related_serializer_schemas:
+        if serializer_cls not in checked_serializers:
+            related_serializer_schemas.extend(
+                find_related_serializers(serializer_cls, checked_serializers))
+    return related_serializer_schemas

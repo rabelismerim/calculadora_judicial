@@ -117,8 +117,7 @@ class UnlimitedRequests(HttpUser):
     executed. wait_time (function): A function that returns the time to wait between each request. max_execution (
     int): A int indicating a maximum number of requests to be sent.
     """
-    # tasks: list = get_classes()
-    tasks: list = [RatesTest]
+    tasks: list = get_classes()
     wait_time: float = between(1, 5)
     max_execution: None or int = None
     http_method_names = ['get', 'post']
@@ -134,8 +133,8 @@ class MaxRequests(HttpUser):
     int): A int indicating a maximum number of requests to be sent.
     """
     tasks: list = [RequestsTask]
-    wait_time: float = between(1, 5)
-    max_execution: None or int = 1
+    wait_time: float = between(0.1, 0.5)
+    max_execution: None or int = 5
     http_method_names = ['get', 'post']
 
 

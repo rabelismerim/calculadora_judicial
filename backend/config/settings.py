@@ -275,8 +275,6 @@ if BRANCH_DEV or 'test' in sys.argv:
             },
         }
 
-        print(sys.argv, 'args\n\n')
-
         # cria uma cópia do banco de dados atual para testes do locust
         import shutil
         import tempfile

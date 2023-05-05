@@ -75,15 +75,19 @@ class BaseTestsLocust(BaseTests, SequentialTaskSet):
         Task to be executed during the load test. Makes a GET request to the API endpoint, using the token defined in
         TOKEN_TEST environment variable.
         """
+        # try:
         path = self.get_path()
         print(path, 'path')
         if path:
             self.counter += 1
             resp = self.client.get(path, headers=self._get_headers())
             print(resp, 'resp')
+        print(self.__max_execution, 'self.__max_execution ')
+        print(self.counter, 'self.counter\n\n')
         if self.__max_execution and self.counter >= self.__max_execution:
             self.stop('get')
-
+        # except BaseException as e:
+        #     print(e, 'err')
     # @task(1)
     # def load_test_post(self):
     #     """
@@ -102,10 +106,12 @@ class BaseTestsLocust(BaseTests, SequentialTaskSet):
 
         if not self.__max_execution:
             return
-        if self.counter_stop == len(self.__http_method_names):
-            self.interrupt()
+        raise InterruptTaskSet()
 
-        if task_name in ["get", 'post']:
-            raise InterruptTaskSet()
-
-        self.counter_stop += 1
+        # if self.counter_stop == len(self.__http_method_names):
+        #     self.interrupt()
+        #
+        # if task_name in ["get", 'post']:
+        #     raise InterruptTaskSet()
+        #
+        # self.counter_stop += 1
