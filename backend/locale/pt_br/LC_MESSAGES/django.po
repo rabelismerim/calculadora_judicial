@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-27 20:25-0300\n"
+"POT-Creation-Date: 2023-05-05 12:33-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -221,21 +221,21 @@ msgstr "Cálculo"
 #: .\backend\calculation\comment\apps.py:22
 #: .\backend\calculation\comment\models.py:22
 msgid "Comment"
-msgstr ""
+msgstr "Premissa"
 
 #: .\backend\calculation\comment\apps.py:23
 msgid "Comments"
-msgstr ""
+msgstr "Premissas"
 
 #: .\backend\calculation\comment\models.py:35
 msgid "Step"
-msgstr ""
+msgstr "Step"
 
 #: .\backend\calculation\comment\views.py:46
 msgid ""
 "Represents the entire Comment.\n"
 "                "
-msgstr ""
+msgstr "Representa toda a Premissa"
 
 #: .\backend\calculation\comment\views.py:48
 #, fuzzy
@@ -274,7 +274,7 @@ msgstr ""
 
 #: .\backend\calculation\comment\views.py:63
 msgid "comment"
-msgstr ""
+msgstr "premissa"
 
 #: .\backend\calculation\comparative\apps.py:21
 msgid "Comparative"
@@ -438,17 +438,12 @@ msgstr ""
 msgid "Fund name"
 msgstr "Nome da Verba"
 
-#: .\backend\calculation\funds\abstract\models.py:33
-msgid "Is extraconcursal"
-msgstr "É extraconcursal"
-
 #: .\backend\calculation\funds\abstract\models.py:51
-#: .\backend\calculation\models.py:21
 msgid "Requested"
 msgstr "Solicitado"
 
 #: .\backend\calculation\funds\abstract\models.py:51
-#: .\backend\calculation\statement\tests.py:199 .\backend\projects\models.py:14
+#: .\backend\calculation\statement\tests.py:208 .\backend\projects\models.py:14
 #: .\backend\recovering\models.py:14
 msgid "Concluded"
 msgstr "Concluído"
@@ -500,28 +495,33 @@ msgstr "Data base"
 msgid "Historical value"
 msgstr "Valor histórico"
 
-#: .\backend\calculation\funds\abstract\models.py:217
+#: .\backend\calculation\funds\abstract\models.py:149
+#: .\backend\calculation\funds\irrf\models.py:91
+msgid "Is extraconcursal"
+msgstr "É extraconcursal"
+
+#: .\backend\calculation\funds\abstract\models.py:218
 msgid "Index on Base Date"
 msgstr "Índice na Data Base"
 
-#: .\backend\calculation\funds\abstract\models.py:218
+#: .\backend\calculation\funds\abstract\models.py:219
 msgid "Index in recovery"
 msgstr "Índice na recuperação"
 
-#: .\backend\calculation\funds\abstract\models.py:226
+#: .\backend\calculation\funds\abstract\models.py:227
 msgid "OneToOneField relationship required for Statement"
 msgstr "Relação OneToOneField necessária para Extrato"
 
-#: .\backend\calculation\funds\abstract\models.py:258
+#: .\backend\calculation\funds\abstract\models.py:259
 msgid "Total historical value"
 msgstr "Valor histórico total"
 
-#: .\backend\calculation\funds\abstract\models.py:259
+#: .\backend\calculation\funds\abstract\models.py:260
 msgid "Total corrected amount"
 msgstr "Valor total corrigido"
 
 #: .\backend\calculation\funds\apps.py:22
-#: .\backend\calculation\funds\irrf\models.py:69
+#: .\backend\calculation\funds\irrf\models.py:89
 msgid "Fund"
 msgstr "Verba"
 
@@ -565,7 +565,7 @@ msgstr "multa total"
 msgid "Total due"
 msgstr "Total devido"
 
-#: .\backend\calculation\funds\document\schemas.py:163
+#: .\backend\calculation\funds\document\schemas.py:196
 msgid "Document Fund already registered"
 msgstr "Verba de documento já registrada"
 
@@ -665,7 +665,6 @@ msgstr ""
 #: .\backend\calculation\funds\document\views.py:186
 #: .\backend\calculation\funds\integrations\views.py:139
 #: .\backend\calculation\funds\irrf\views.py:259
-#: .\backend\calculation\funds\views.py:302
 msgid "Statement fund deleted"
 msgstr ""
 
@@ -774,6 +773,13 @@ msgid ""
 "message.\n"
 "                "
 msgstr ""
+"Excluir uma integração específica de acordo com o ID passado pela "
+"url\n"
+"\n"
+" Retorna:\n"
+" JsonResponse: Uma resposta JSON contendo o ok "
+"mensagem.\n"
+" "
 
 #: .\backend\calculation\funds\irrf\apps.py:23
 msgid "Funds - IRRF"
@@ -783,31 +789,31 @@ msgstr "Verbas - IRRF"
 msgid "Months period"
 msgstr "Período de meses"
 
-#: .\backend\calculation\funds\irrf\models.py:70
+#: .\backend\calculation\funds\irrf\models.py:90
 msgid "Taxable amounts"
 msgstr "Valores tributáveis"
 
-#: .\backend\calculation\funds\irrf\models.py:106
+#: .\backend\calculation\funds\irrf\models.py:129
 msgid "Taxable amount"
 msgstr "Valor tributável"
 
-#: .\backend\calculation\funds\irrf\models.py:107
+#: .\backend\calculation\funds\irrf\models.py:130
 msgid "Taxable portion"
 msgstr "Parcela Tributável"
 
-#: .\backend\calculation\funds\irrf\models.py:108 .\backend\rates\models.py:211
+#: .\backend\calculation\funds\irrf\models.py:131 .\backend\rates\models.py:211
 msgid "Aliquot"
 msgstr "Alíquota"
 
-#: .\backend\calculation\funds\irrf\models.py:109
+#: .\backend\calculation\funds\irrf\models.py:132
 msgid "Installment deducted"
 msgstr "Parcela deduzida"
 
-#: .\backend\calculation\funds\irrf\models.py:110
+#: .\backend\calculation\funds\irrf\models.py:133
 msgid "IRRF per month"
 msgstr "IRRF por mês"
 
-#: .\backend\calculation\funds\irrf\models.py:111
+#: .\backend\calculation\funds\irrf\models.py:134
 msgid "IRRF per period"
 msgstr "IRRF por período"
 
@@ -997,19 +1003,19 @@ msgstr ""
 "                JsonResponse: Uma resposta HTTP contendo os dados IRRF de "
 "instrução serializados atualizados."
 
-#: .\backend\calculation\funds\models.py:110
+#: .\backend\calculation\funds\models.py:141
 msgid "DSR Reflexes"
 msgstr "Reflexos DSR"
 
-#: .\backend\calculation\funds\models.py:111
+#: .\backend\calculation\funds\models.py:142
 msgid "Apply Precedent 381?"
 msgstr "Aplicar a sumúla 381?"
 
-#: .\backend\calculation\funds\models.py:218
+#: .\backend\calculation\funds\models.py:250
 msgid "Total value DSR reflexes"
 msgstr "Total valor reflexos DSR"
 
-#: .\backend\calculation\funds\models.py:219
+#: .\backend\calculation\funds\models.py:251
 msgid "Total accurate"
 msgstr "Total apurado"
 
@@ -1191,24 +1197,34 @@ msgstr ""
 "de instrução serializados atualizados."
 
 #: .\backend\calculation\models.py:21
-msgid "Calculated"
-msgstr "Calculado"
+#, fuzzy
+#| msgid "Calculated"
+msgid "To Calculate"
+msgstr "à Calcular"
 
 #: .\backend\calculation\models.py:21
-msgid "Revised"
-msgstr "Revisado"
+#, fuzzy
+#| msgid "Revised"
+msgid "To Review"
+msgstr "à Revisar"
 
 #: .\backend\calculation\models.py:21
+#, fuzzy
+#| msgid "Approved"
+msgid "To Approve"
+msgstr "à Aprovar"
+
+#: .\backend\calculation\models.py:21
+msgid "To Approve Special"
+msgstr "à Aprovar Especialmente"
+
+#: .\backend\calculation\models.py:22
 msgid "Approved"
 msgstr "Aprovado"
 
-#: .\backend\calculation\models.py:21
+#: .\backend\calculation\models.py:22
 msgid "Failed"
 msgstr "Falha"
-
-#: .\backend\calculation\models.py:22
-msgid "Specially Approved"
-msgstr "Aprovado Especialmente"
 
 #: .\backend\calculation\models.py:37 .\backend\calculation\views.py:46
 #: .\backend\calculation\views.py:68
@@ -1359,7 +1375,7 @@ msgstr "sheet: {} | arquivo: {}"
 msgid "Invalid file type"
 msgstr "Tipo de arquivo inválido"
 
-#: .\backend\calculation\sheets_template\views.py:21
+#: .\backend\calculation\sheets_template\views.py:24
 msgid ""
 "Represents templates to publishing external sheets models to frontend.`, \n"
 "                "
@@ -1367,7 +1383,7 @@ msgstr ""
 "Representa modelos para publicação de modelos de sheets externas no frontend."
 "`,"
 
-#: .\backend\calculation\sheets_template\views.py:25
+#: .\backend\calculation\sheets_template\views.py:28
 msgid ""
 "This method handles GET requests for the view. It retrieves a list of "
 "objects sheets file using the given \n"
@@ -1396,7 +1412,7 @@ msgid "Statement"
 msgstr "Extrato"
 
 #: .\backend\calculation\statement\models.py:13
-#: .\backend\calculation\statement\tests.py:207
+#: .\backend\calculation\statement\tests.py:216
 msgid "Impugnment"
 msgstr "Impugnação"
 
@@ -1417,23 +1433,23 @@ msgstr "Total"
 msgid "Lawyer name"
 msgstr "Nome do advogado"
 
-#: .\backend\calculation\statement\tests.py:181
+#: .\backend\calculation\statement\tests.py:190
 #: .\backend\calculation\statement_pf\models.py:27
 msgid "Delayed days"
 msgstr "Dias atrasados"
 
-#: .\backend\calculation\statement\tests.py:189
+#: .\backend\calculation\statement\tests.py:198
 #: .\backend\calculation\statement_pf\models.py:28
 msgid "Total after default interest"
 msgstr "Total após juros de mora"
 
-#: .\backend\calculation\statement\tests.py:198
+#: .\backend\calculation\statement\tests.py:207
 #: .\backend\calculation\statement_pf\models.py:26
 #: .\backend\calculation\statement_pj\models.py:33
 msgid "Updated total"
 msgstr "Total atualizado"
 
-#: .\backend\calculation\statement\tests.py:211
+#: .\backend\calculation\statement\tests.py:220
 msgid ""
 "The value of the lawyer's fees is extra-bankruptcy, since its arbitration "
 "occurred after the request for judicial recovery."
@@ -1441,11 +1457,11 @@ msgstr ""
 "O valor dos honorários advocatícios é extraconcursal, desde sua "
 "arbitragemocorreu após o pedido de recuperação judicial."
 
-#: .\backend\calculation\statement\tests.py:213
+#: .\backend\calculation\statement\tests.py:222
 msgid "Fill out the appeal deposit withdrawal page."
 msgstr "Preencha a página de levantamento de depósito recursal."
 
-#: .\backend\calculation\statement\tests.py:214
+#: .\backend\calculation\statement\tests.py:223
 #, fuzzy, python-format
 #| msgid ""
 #| "The Trustee considered attorney fees of 1.0% on the claim in favor of "
@@ -1457,7 +1473,7 @@ msgstr ""
 "O Agente Fiduciário considerou honorários advocatícios de 1,0% sobre a ação "
 "em favor do PatronoAlexis Wu."
 
-#: .\backend\calculation\statement\tests.py:215
+#: .\backend\calculation\statement\tests.py:224
 msgid ""
 "There was arrears interest of 1.0% per month, from the filing date of the "
 "Labor Complaint to the date of RJ's request."
@@ -1465,7 +1481,7 @@ msgstr ""
 "Houve incidência de juros moratórios de 1.0% ao mês, desde a data de "
 "ajuizamento da Reclamação Trabalhista até a data do pedido de RJ."
 
-#: .\backend\calculation\statement\tests.py:217
+#: .\backend\calculation\statement\tests.py:226
 msgid "Fill in the approved calculation date."
 msgstr "Existem taxas no cálculo aprovado?"
 
@@ -1854,17 +1870,23 @@ msgstr ""
 "        Os status possíveis são `Solicitado`, `Calculado`, `Revisado`, "
 "`Aprovado`, `Reprovado`, `Especialmente Aprovado`,"
 
-#: .\backend\config\settings.py:330
+#: .\backend\config\settings.py:366
 msgid "Português"
 msgstr ""
 
-#: .\backend\config\settings.py:331
+#: .\backend\config\settings.py:367
 msgid "English"
 msgstr "Inglês"
 
 #: .\backend\core\abstract\apps.py:11
 msgid "Abstract User"
 msgstr "Usuário Abstrato"
+
+#: .\backend\core\abstract\base_tests_locust.py:55
+#, fuzzy
+#| msgid "Need to inform the class"
+msgid "Need to register a token to perform the tests"
+msgstr "Precisa informar a classe"
 
 #: .\backend\core\abstract\models.py:20
 msgid "Creation date"
@@ -1900,9 +1922,13 @@ msgstr "Valor anterior"
 msgid "The archive_json field must be in json format"
 msgstr "O campo archive_json deve estar no formato json"
 
-#: .\backend\core\abstract\views.py:150
+#: .\backend\core\abstract\views.py:199
 msgid "Field in invalid format. It must be in the format{}"
 msgstr "Campo em formato inválido. "
+
+#: .\backend\core\abstract\views.py:321
+msgid "{self.__get_model_name().capitalize()} deleted"
+msgstr ""
 
 #: .\backend\core\drfmsal\views.py:26
 msgid ""
@@ -2168,7 +2194,7 @@ msgstr ""
 " inativo.\n"
 " "
 
-#: .\backend\core\dttuser\views.py:55 .\backend\rates\views.py:117
+#: .\backend\core\dttuser\views.py:55 .\backend\rates\views.py:132
 #: .\backend\recovering\views.py:40
 msgid "Name"
 msgstr "Nome"
@@ -2342,6 +2368,11 @@ msgid ""
 "or `is_active`.\n"
 "        "
 msgstr ""
+"Obtenha a lista de todos os usuários. Inclua campos de usuário como `nome`, `imagem do usuário`, "
+"`lista de permissões`, etc.\n"
+" Pode filtrar um usuário por `username`, `email`, `first_name`, `last_name` "
+"ou `is_active`.\n"
+" "
 
 #: .\backend\core\dttuser\views.py:253
 msgid ""
@@ -2368,48 +2399,90 @@ msgid "Permission"
 msgstr "Permissão"
 
 #: .\backend\core\permission\views.py:84
-msgid "Can Request failed Calculation"
-msgstr "Pode Solicitar Falha no Cálculo"
+#, fuzzy
+#| msgid "Can Reviewer Calculation"
+msgid "Can Change failed Calculation to calculate"
+msgstr "Pode alterar Cálculo com falha para à Calcular"
 
 #: .\backend\core\permission\views.py:87
-msgid "Can Reviewer Calculation"
-msgstr "Pode revisar Cálculo"
+#, fuzzy
+#| msgid "Can Reviewer Calculation"
+msgid "Can Reviewer Calculation to Approve"
+msgstr "Pode Revisar Cálculo para à aprovação"
+
+#: .\backend\core\permission\views.py:88
+#, fuzzy
+#| msgid "Can Reviewer Calculation"
+msgid "Can Reviewer Calculation to Approve special"
+msgstr "Pode revisar Cálculo para à Aprovação Especial"
+
+#: .\backend\core\permission\views.py:89
+#, fuzzy
+#| msgid "Can Reviewer Calculation"
+msgid "Can Reviewer Calculation to Calculate"
+msgstr "Pode Revisar Cálculo para à Calcular"
 
 #: .\backend\core\permission\views.py:90
-msgid "Can Approve Requested Calculation"
-msgstr "Pode Aprovar o Cálculo Solicitado"
+#, fuzzy
+#| msgid "Can Reviewer Calculation"
+msgid "Can Reviewer Calculation to Failed"
+msgstr "Pode Revisar Cálculo para à Falha"
 
-#: .\backend\core\permission\views.py:91
-msgid "Can Approve Calculated Calculation"
-msgstr "Pode Aprovar Cálculo Calculado"
+#: .\backend\core\permission\views.py:93
+#, fuzzy
+#| msgid "Can Approve Requested Calculation"
+msgid "Can Approve Revised Calculation"
+msgstr "Pode Aprovar o Cálculo Revisado"
 
 #: .\backend\core\permission\views.py:94
-msgid "Can Special Approve Requested Calculation"
-msgstr "Pode Aprovar o Cálculo Solicitado de forma Especial"
+#, fuzzy
+#| msgid "Can Approve Requested Calculation"
+msgid "Can Disapprove Revised Calculation to Review"
+msgstr "Pode Reprovar o Cálculo Revisado para à Revisar"
 
 #: .\backend\core\permission\views.py:95
-msgid "Can Special Approve Calculated Calculation"
-msgstr "Pode Aprovar Cálculo Calculado de forma Especial"
+#, fuzzy
+#| msgid "Can Approve Requested Calculation"
+msgid "Can Disapprove Revised Calculation to Failed"
+msgstr "Pode Reprovar o Cálculo Revisado para à Falha"
 
-#: .\backend\core\permission\views.py:341
+#: .\backend\core\permission\views.py:98
+#, fuzzy
+#| msgid "Can Approve Calculated Calculation"
+msgid "Can Approve Special Calculation"
+msgstr "Pode Aprovar Especialmente o Cálculo"
+
+#: .\backend\core\permission\views.py:99
+#, fuzzy
+#| msgid "Can Approve Calculated Calculation"
+msgid "Can Disapprove Special Calculation to Review"
+msgstr "Pode Reprovar Aprovação Especial para à Revisar"
+
+#: .\backend\core\permission\views.py:100
+#, fuzzy
+#| msgid "Can Approve Calculated Calculation"
+msgid "Can Disapprove Special Calculation to Failed"
+msgstr "Pode Reprovar Aprovação Especial para à Falha"
+
+#: .\backend\core\permission\views.py:346
 msgid "Unable to change status from {} to {}"
 msgstr "Não é possível alterar o status de {} para {}"
 
-#: .\backend\core\permission\views.py:357
+#: .\backend\core\permission\views.py:362
 msgid "You do not have permission. Contact admin"
 msgstr "Você não tem permissão. "
 
-#: .\backend\core\permission\views.py:368
+#: .\backend\core\permission\views.py:373
 msgid "Need to add \"perms: list\" attribute to use CheckPermissions class"
 msgstr ""
 "É necessário adicionar o atributo \"perms: list\" para usar a classe "
 "CheckPermissions"
 
-#: .\backend\core\permission\views.py:374
+#: .\backend\core\permission\views.py:379
 msgid "It is not possible to register this fund"
 msgstr "Não é possível cadastrar este fundo"
 
-#: .\backend\core\permission\views.py:379
+#: .\backend\core\permission\views.py:386
 msgid ""
 "Need to add \"physical_person: bool\" attribute to use "
 "CheckFundsPjPfPermissions class"
@@ -2417,21 +2490,21 @@ msgstr ""
 "É necessário adicionar o atributo \"perms: list\" para usar a classe "
 "CheckPermissions"
 
-#: .\backend\core\permission\views.py:388
+#: .\backend\core\permission\views.py:395
 msgid ""
 "It is not possible to register a fund of the legal entity type for "
 "individuals"
 msgstr ""
 "Não é possível cadastrar fundo do tipo pessoa jurídica parapessoa fisica"
 
-#: .\backend\core\permission\views.py:390
+#: .\backend\core\permission\views.py:397
 msgid ""
 "It is not possible to register a fund of the individuals type for legal "
 "entity"
 msgstr ""
 "Não é possível cadastrar fundo do tipo pessoa fisica parapessoa jurídica"
 
-#: .\backend\core\permission\views.py:395
+#: .\backend\core\permission\views.py:402
 msgid ""
 "it is not possible to register an agreement when there is already an fund or "
 "fund IRRF registered"
@@ -2439,7 +2512,7 @@ msgstr ""
 "não é possível registrar acordo trabalhista quando já existe uma verba ou "
 "verba IRRF cadastrada"
 
-#: .\backend\core\permission\views.py:407
+#: .\backend\core\permission\views.py:416
 msgid ""
 "it is not possible to register an fund when there is already an agreement "
 "registered"
@@ -3076,35 +3149,35 @@ msgstr "End Point"
 msgid "Is Multiple?"
 msgstr "É Múltiplo?"
 
-#: .\backend\rates\models.py:282
+#: .\backend\rates\models.py:281
 msgid "Field name"
 msgstr "Nome do campo"
 
-#: .\backend\rates\models.py:283
+#: .\backend\rates\models.py:282
 msgid "Field key"
 msgstr "Chave de campo"
 
-#: .\backend\rates\models.py:284
+#: .\backend\rates\models.py:283
 msgid "Field type"
 msgstr "Tipo de campo"
 
-#: .\backend\rates\models.py:285
+#: .\backend\rates\models.py:284
 msgid "Order"
 msgstr "Ordem"
 
-#: .\backend\rates\models.py:286
+#: .\backend\rates\models.py:285
 msgid "Is editable?"
 msgstr "É editável?"
 
-#: .\backend\rates\models.py:287
+#: .\backend\rates\models.py:286
 msgid "Required?"
 msgstr "Requerido?"
 
-#: .\backend\rates\schemas.py:75
+#: .\backend\rates\schemas.py:74
 msgid "Rate already registered"
 msgstr "Taxa já cadastrada"
 
-#: .\backend\rates\views.py:19
+#: .\backend\rates\views.py:18
 msgid ""
 "Represents the indices that can be applied to rates to calculate debt "
 "updates.\n"
@@ -3113,19 +3186,19 @@ msgstr ""
 "Representa os índices que podem ser aplicados às taxas para calcular as "
 "atualizações da dívida."
 
-#: .\backend\rates\views.py:21
+#: .\backend\rates\views.py:20
 msgid "Returns the rate and its accumulated values, period and date"
 msgstr "Retorna a taxa e seus valores acumulados, período e data"
 
-#: .\backend\rates\views.py:30 .\backend\rates\views.py:56
+#: .\backend\rates\views.py:40 .\backend\rates\views.py:71
 msgid "Rate"
 msgstr "Taxa"
 
-#: .\backend\rates\views.py:35
+#: .\backend\rates\views.py:45
 msgid "Saves an index according to its name and values"
 msgstr "Salva um índice de acordo com seu nome e valores"
 
-#: .\backend\rates\views.py:61
+#: .\backend\rates\views.py:76
 msgid ""
 "Updating or creating rates through an excel file. Saves an rate using an "
 "excel file. This file must contain \n"
@@ -3137,15 +3210,15 @@ msgstr ""
 "        as colunas mes e indice. Opcionalmente de acordo com a taxa ter os "
 "campos acumulado e periodo"
 
-#: .\backend\rates\views.py:69
+#: .\backend\rates\views.py:84
 msgid "Required field index"
 msgstr "campo index obrigatório"
 
-#: .\backend\rates\views.py:72
+#: .\backend\rates\views.py:87
 msgid "Required field file"
 msgstr "Campo file obrigatório"
 
-#: .\backend\rates\views.py:90
+#: .\backend\rates\views.py:105
 msgid ""
 "The file {} does not contain the correct fields. Required at least the "
 "column mes and indice, "
@@ -3153,11 +3226,11 @@ msgstr ""
 "O ficheiro {} não contém os campos corretos. Necessário, pelo menos, a "
 "coluna mes e índice,"
 
-#: .\backend\rates\views.py:95
+#: .\backend\rates\views.py:110
 msgid "The file {} is empty"
 msgstr "O arquivo {} está vazio"
 
-#: .\backend\rates\views.py:123
+#: .\backend\rates\views.py:138
 msgid ""
 "Example of how templates should look for each selected rate type\n"
 "            Returns a list of templates with their id and name"
@@ -3165,7 +3238,7 @@ msgstr ""
 "Exemplo de como os modelos devem procurar cada tipo de taxa selecionado\n"
 "            Devolve uma lista de modelos com o respetivo ID e nome"
 
-#: .\backend\rates\views.py:138
+#: .\backend\rates\views.py:153
 msgid ""
 "Example of how templates should look for each selected rate type\n"
 "        Returns a detail of template with their id, name, tables and fields "
@@ -3270,6 +3343,18 @@ msgstr ""
 #: .\backend\utils.py:32
 msgid "The value {} does not match any valid choice"
 msgstr "O valor {} não corresponde a nenhuma escolha válida"
+
+#~ msgid "Can Request failed Calculation"
+#~ msgstr "Pode Solicitar Falha no Cálculo"
+
+#~ msgid "Specially Approved"
+#~ msgstr "Aprovado Especialmente"
+
+#~ msgid "Can Special Approve Requested Calculation"
+#~ msgstr "Pode Aprovar o Cálculo Solicitado de forma Especial"
+
+#~ msgid "Can Special Approve Calculated Calculation"
+#~ msgstr "Pode Aprovar Cálculo Calculado de forma Especial"
 
 #~ msgid ""
 #~ "Field alterado: {} | Valor anterior: {} | Valor atual: {} | User: {} | "

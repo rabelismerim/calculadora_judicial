@@ -81,7 +81,7 @@ class PermissionsName:
     """
     _layout_perm = 'can_change_{}_to_{}'
     executor = [
-        (_layout_perm.format('r', 's'), _('Can Request failed Calculation'), 'calculation')
+        (_layout_perm.format('r', 's'), _('Can Change failed Calculation to calculate'), 'calculation')
     ]
     reviewer = [
         (_layout_perm.format('c', 'e'), _('Can Reviewer Calculation to Approve'), 'calculation'),
