@@ -112,12 +112,12 @@ class BaseTestsDjango(BaseTests, TransactionTestCase):
     #     """Get user"""
     #     return self.__user
     #
-    # def get_user_django(self):
-    #     """Get user django"""
-    #     user = User.objects.get(username='user1')
-    #     self.client.force_login(user)
-    #     return user
-    #
+    def get_user_django(self):
+        """Get user django"""
+        user = User.objects.get(username='user1')
+        self.client.force_login(user)
+        return user
+
     # def set_user(self, value):
     #     """Update field in user, return user"""
     #     self.__user = value

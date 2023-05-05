@@ -32,7 +32,8 @@ class FundsIntegrationsTest(AbstractTest):
                  'description': 'Descrição da verba 1',
                  "data_base": "2007-11-12",
                  "historical_value": 559,
-                 "summary": True
+                 "summary": True,
+                 "is_extraconcursal": False,
              }, {'corrected_value': 594.1471867188641, 'index_data_base': 2.6208842608944427,
                  'index_recovering': 2.7856726481684837}),
             ({
@@ -40,7 +41,8 @@ class FundsIntegrationsTest(AbstractTest):
                  'description': 'Descrição da verba 2',
                  "data_base": "2009-05-02",
                  "historical_value": 22800,
-                 "summary": False
+                 "summary": False,
+                 "is_extraconcursal": False,
              }, {'corrected_value': 23735.170848147078,
                  'index_data_base': 2.675916545306843,
                  'index_recovering': 2.7856726481684837}),
@@ -48,7 +50,7 @@ class FundsIntegrationsTest(AbstractTest):
 
         for statement, true_monetary_correction in statements:
             response = self.post('calculation/funds/labor/integrations', statement)
-            new_statement = response.content['statement_funds_integrations']
+            new_statement = response.content['statement_fund_integration']
             monetary_correction = new_statement['monetary_correction']
             self.assertEqual(monetary_correction['corrected_value'], true_monetary_correction['corrected_value'])
             self.assertEqual(monetary_correction['index_data_base'], true_monetary_correction['index_data_base'])

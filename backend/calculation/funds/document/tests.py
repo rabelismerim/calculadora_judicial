@@ -16,7 +16,7 @@ from calculation.funds.document.models import FundDocument
 from calculation.funds.models import Funds
 from calculation.models import Calculation
 from core.abstract.tests import AbstractTest, generate_name
-from rates.models import Rate
+from rates.models import Rate, Template
 
 
 class FundsDocumentTest(AbstractTest):
@@ -32,11 +32,11 @@ class FundsDocumentTest(AbstractTest):
         statements = [
             ({
                  "calculation_id": str(calculation.id),
-                 "statement": {
-                     "data_base": "2014-01-02",
-                     "historical_value": 1500,
-                     "number": generate_name()
-                 },
+                 # "statement": {
+                 #     "data_base": "2014-01-02",
+                 #     "historical_value": 1500,
+                 #     "number": generate_name()
+                 # },
                  "classes": {
                      "classe": "1"
                  },
@@ -46,7 +46,12 @@ class FundsDocumentTest(AbstractTest):
                  },
                  "archive_json": {},
                  "rate_id": str(Rate.objects.first().id),
-                 "name": generate_name()
+                 "template_id": str(Template.objects.first().id),
+                 "data_base": "2014-01-02",
+                 "historical_value": 1500,
+                 "number": generate_name(),
+                 "name": generate_name(),
+                 "is_extraconcursal": False,
              },
              {'corrected_value': 1520.5231791763986, 'index_data_base': 2.748073182623919,
               'index_recovering': 2.7856726481684837},
@@ -57,11 +62,11 @@ class FundsDocumentTest(AbstractTest):
               }),
             ({
                  "calculation_id": str(calculation.id),
-                 "statement": {
-                     "data_base": "1999-06-09",
-                     "historical_value": 500,
-                     "number": generate_name()
-                 },
+                 # "statement": {
+                 #     "data_base": "1999-06-09",
+                 #     "historical_value": 500,
+                 #     "number": generate_name()
+                 # },
                  "classes": {
                      "classe": "1"
                  },
@@ -71,7 +76,12 @@ class FundsDocumentTest(AbstractTest):
                  },
                  "archive_json": {},
                  "rate_id": str(Rate.objects.first().id),
-                 "name": generate_name()
+                 "template_id": str(Template.objects.first().id),
+                 "data_base": "1999-06-09",
+                 "historical_value": 500,
+                 "number": generate_name(),
+                 "name": generate_name(),
+                 "is_extraconcursal": False,
              }, {'corrected_value': 658.6255085039053,
                  'index_data_base': 2.114762192020358,
                  'index_recovering': 2.7856726481684837},
@@ -86,8 +96,8 @@ class FundsDocumentTest(AbstractTest):
             response = self.post('calculation/funds/documents', statement)
             self.assertEqual(response.status_code, 201)
             new_statement = response.content['fund_document']
-            fund = new_statement['fund']
-            monetary_correction = new_statement['fund']['statement']['monetary_correction']
+            fund = new_statement['total']
+            monetary_correction = new_statement['statement']['monetary_correction']
             self.assertEqual(fund['total_historical'], arrears_charges['total_historical'])
             self.assertEqual(fund['total_default_interest'], arrears_charges['total_default_interest'])
             self.assertEqual(fund['total_fine'], arrears_charges['total_fine'])
@@ -109,11 +119,11 @@ class FundsDocumentTest(AbstractTest):
         number = generate_name()
         statement = {
             "calculation_id": str(calculation.id),
-            "statement": {
-                "data_base": data_base,
-                "historical_value": value,
-                "number": number
-            },
+            # "statement": {
+            #     "data_base": data_base,
+            #     "historical_value": value,
+            #     "number": number
+            # },
             "classes": {
                 "classe": "1"
             },
@@ -125,7 +135,12 @@ class FundsDocumentTest(AbstractTest):
             'has_custom_fine': True,
             "archive_json": {},
             "rate_id": str(Rate.objects.first().id),
-            "name": generate_name()
+            "template_id": str(Template.objects.first().id),
+            "name": generate_name(),
+            "is_extraconcursal": False,
+            "data_base": data_base,
+            "historical_value": value,
+            "number": number
         }
 
         response = self.post('calculation/funds/documents', statement)
@@ -144,13 +159,14 @@ class FundsDocumentTest(AbstractTest):
         statement_funds = {
             "fund_id": str(fund.id),
             "data_base": data_base,
+            "is_extraconcursal": False,
             "historical_value": value,
             "dsr_reflexes": dsr_reflexes,
             "summary": True
         }
 
         response = self.post('calculation/funds/labor', statement_funds)
-        new_statement = response.content['statement_funds']
+        new_statement = response.content['statement_fund']
         return new_statement
 
     @AbstractTest.execute_before_and_after
@@ -165,10 +181,11 @@ class FundsDocumentTest(AbstractTest):
             "fund_id": str(fund.id),
             'description': description,
             "data_base": data_base,
+            "is_extraconcursal": False,
             "historical_value": value,
             "summary": True
         }
 
         response = self.post('calculation/funds/labor/integrations', statement)
-        new_statement = response.content['statement_funds_integrations']
+        new_statement = response.content['statement_fund_integration']
         return new_statement

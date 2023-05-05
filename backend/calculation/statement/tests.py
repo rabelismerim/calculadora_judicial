@@ -17,7 +17,7 @@ from calculation.tests import CalculationValues
 from core.abstract.tests import AbstractTest, generate_name
 from creditors.tests import CreditorValues
 from projects.create_project import get_data_project, cpf_generator
-from rates.models import Rate
+from rates.models import Rate, Template
 from utils import _
 
 
@@ -128,6 +128,8 @@ class StatementTest(AbstractTest):
             },
             "archive_json": {},
             "rate_id": str(Rate.objects.first().id),
+            "template_id": str(Template.objects.first().id),
+            "is_extraconcursal": False,
         }
 
         response = self.post('calculation/funds', fund)
@@ -149,7 +151,8 @@ class StatementTest(AbstractTest):
                  "data_base": "2020-03-23",
                  "historical_value": 200,
                  "dsr_reflexes": 100,
-                 "summary": True
+                 "summary": True,
+                "is_extraconcursal": False,
              }, {'corrected_value': 288.6442100028066, 'index_data_base': 2.8952660940000126,
                  'index_recovering': 2.7856726481684837}),
             ({
@@ -157,7 +160,8 @@ class StatementTest(AbstractTest):
                  "data_base": "2011-10-10",
                  "historical_value": 555.94,
                  "dsr_reflexes": 188.94,
-                 "summary": True
+                 "summary": True,
+                "is_extraconcursal": False,
              }, {'corrected_value': 759.773709479113,
                  'index_data_base': 2.7310656005592993,
                  'index_recovering': 2.7856726481684837}),
@@ -165,14 +169,16 @@ class StatementTest(AbstractTest):
                  "fund_id": str(fund.id),
                  "data_base": "2011-10-10",
                  "historical_value": 200,
-                 "summary": False
+                 "summary": False,
+                 "is_extraconcursal": False,
              }, {'corrected_value': 204.1335457658509, 'index_data_base': 2.729264940475544,
                  'index_recovering': 2.7856726481684837}),
             ({
                  "fund_id": str(fund.id),
                  "data_base": "2011-08-10",
                  "historical_value": 2300,
-                 "summary": True
+                 "summary": True,
+                "is_extraconcursal": False,
              }, {'corrected_value': 2349.6542360353938, 'index_data_base': 2.726804221883394,
                  'index_recovering': 2.7856726481684837}),
 
@@ -230,7 +236,7 @@ class StatementTest(AbstractTest):
         """
         for statement, true_monetary_correction in statements:
             response = self.post('calculation/funds/labor', statement)
-            new_statement = response.content['statement_funds']
+            new_statement = response.content['statement_fund']
             monetary_correction = new_statement['monetary_correction']
             self.assertEqual(monetary_correction['corrected_value'], true_monetary_correction['corrected_value'])
             self.assertEqual(monetary_correction['index_data_base'], true_monetary_correction['index_data_base'])

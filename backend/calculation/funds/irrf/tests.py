@@ -15,7 +15,7 @@ Attributes:
 from calculation.funds.irrf.models import FundIRRF
 from calculation.models import Calculation
 from core.abstract.tests import AbstractTest, generate_name
-from rates.models import Rate
+from rates.models import Rate, Template
 
 
 class IrrfTest(AbstractTest):
@@ -34,8 +34,9 @@ class IrrfTest(AbstractTest):
         },
         "archive_json": {},
         "rate_id": str(Rate.objects.first().id),
+        "template_id": str(Template.objects.first().id),
         "calculation_id": str(
             Calculation.objects.filter(creditor__physical_person=True, funddocument__isnull=True).first().id),
         "name": generate_name(),
-        "months_period": 1
+        "months_period": 1,
     }
