@@ -3,6 +3,7 @@ import json
 from abc import ABC
 
 from django.apps import apps
+from django.core import cache as ca
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
 from django.http import JsonResponse, Http404
@@ -19,37 +20,71 @@ from security.views import Security
 from utils import _
 
 
+def get_app_label_from_model(model) -> str:
+    """Extracts app label from a Django model and returns it."""
+    app = model._meta.app_config.name.split('.')[0]
+    try:
+        return str(apps.get_app_config(app).verbose_name)
+    except LookupError:
+        pass
+    return app
+
+
 class CustomSchema(AutoSchema):
+    """
+    A custom schema for generating OpenAPI 3.0.0 spec for DRF views.
+
+    Extends AutoSchema to add custom functionality for generating tags and descriptions in the OpenAPI schema.
+    """
 
     def get_operation_id_base(self, path, method, action):
+        """
+        Override get_operation_id_base method of base class.
+
+        Returns the operation id base for a view as defined in the view
+        class attribute `operation_id_base`.
+        """
         view = self.view
         if hasattr(view, 'operation_id_base') and isinstance(view.operation_id_base, str):
             return view.operation_id_base
         return super(CustomSchema, self).get_operation_id_base(path, method, action)
 
     def get_operation(self, path, method):
+        """
+        Override get_operation method of base class.
+
+        Returns the operation (HTTP method) on a path for a view method.
+        Modifies the operation to include parameter descriptions.
+        """
         op = super(CustomSchema, self).get_operation(path, method)
         op['parameters'] = list(map(lambda x: {**x, 'description': str(x['description'])}, op['parameters']))
         return op
 
     def get_tags(self, path, method):
+        """
+        Override get_tags method of base class.
+
+        Returns the tags for an endpoint based on the view class attributes
+        `tags` or `model`.
+        """
         view = self.view
         if hasattr(view, 'tags') and isinstance(view.tags, list):
             return list(map(str, view.tags))
         if view.model:
             app_label = str(view.model._meta.app_config.verbose_name.split('.')[0].capitalize())
-            app = view.model._meta.app_config.name.split('.')[0]
-            try:
-                label = apps.get_app_config(app)
-                app = str(label.verbose_name)
-            except LookupError:
-                pass
+            app = get_app_label_from_model(view.model)
             if app.lower() in app_label.lower():
                 return ['{}'.format(app)]
             return ['{} - {}'.format(app, app_label)]
         return super(CustomSchema, self).get_tags(path, method)
 
     def map_field(self, field):
+        """
+        Override map_field method of base class.
+
+        Maps a Django Rest Framework field to a dictionary representation
+        as required by OpenAPI 3.0.0 spec.
+        """
         if isinstance(field, CustomDictField):
             return {
                 'type': 'any',
@@ -57,6 +92,12 @@ class CustomSchema(AutoSchema):
         return super(CustomSchema, self).map_field(field)
 
     def get_description(self, path, method):
+        """
+        Override get_description method of base class.
+
+        Returns the description for an endpoint as defined in the view method's
+        docstring or in the view class attribute `docs`.
+        """
         view = self.view
         init = self._get_init_description()
         method_name = getattr(view, 'action', method.lower())
@@ -76,6 +117,7 @@ class CustomSchema(AutoSchema):
         return formatting.dedent(smart_str(init + '\n\n' + str(docstring)))
 
     def _get_init_description(self) -> str:
+        """Helper method for getting initial description for an endpoint."""
         view = self.view
         if hasattr(view, 'docs') and isinstance(view.docs, dict) and view.docs.get('init'):
             return view.docs.get('init')
@@ -93,7 +135,8 @@ class AbstractViewApi(generics.GenericAPIView):
     query_params = []
     model = None
     schema = CustomSchema()
-    cache_timeout = 60 * 60
+    cache_timeout = 60 * 60 * 24
+    cache_version = 'v1'
 
     def get_serializer_class(self):
         if hasattr(self, 'layout_serializers'):
@@ -164,59 +207,65 @@ class AbstractViewApi(generics.GenericAPIView):
                           exclude=exclude).data
 
     def get_cache_key(self, request):
-        view_name = self.model._meta.verbose_name.lower()
-        cache_version = 'v1'
+        app_label = self.model._meta.verbose_name.lower()
         url = request.build_absolute_uri()
+        app_name = get_app_label_from_model(self.model)
 
         # Use make_template_fragment_key para incluir as variáveis de URL relevantes na cache_key.
-        cache_key = make_template_fragment_key(view_name, [url])
+        cache_key = make_template_fragment_key(app_label, [url])
 
         # Adicione o cache_version ao início da cache_key para que você possa invalidar o cache facilmente quando ocorrer uma mudança na estrutura da resposta.
-        cache_key = f'{cache_version}:{cache_key}'
+        cache_key = f'{self.cache_version}:{app_name}:{app_label}:{cache_key}'
 
         return cache_key
 
-    def get_cache_keys_for_url(self, url):
+    def __get_keys(self):
+        return cache.get(f"{self.cache_version}:keys", [])
+
+    def __set_key(self, key, value, timeout: float = 60 * 60 * 24):
+        keys_list = self.__get_keys()
+        if key not in keys_list:
+            keys_list.append(key)
+            cache.set("keys", keys_list)
+        print(keys_list, 'key list\n')
+        cache.set(key, value, timeout)
+
+    def get_cache_keys(self):
         """
         Obtém uma lista de todas as chaves do cache correspondentes à URL especificada.
         """
-        keys =  cache.iter_keys('*')  # Obtém todas as chaves de cache.
-        view_name = self.model._meta.verbose_name.lower()
+        keys = self.__get_keys()
+        app_name = get_app_label_from_model(self.model)
         url_keys = []
         for key in keys:
-            # Verifica se a chave está relacionada à URL especificada.
-            if key.startswith('v1:'):  # Verifique primeiro o prefixo do cache version.
-                fragment_name, fragment_data = key.split(':', 1)[1].split(';', 1)
-                if fragment_name == make_template_fragment_key(view_name, [url]).split(':', 1)[1]:
-                    url_keys.append(key)
+            if key.startswith(f'{self.cache_version}:{app_name}'):
+                url_keys.append(key)
 
         return url_keys
+
     # def dispatch(self, request, *args, **kwargs):
+    #     if not self.model:
+    #         return super().dispatch(request, *args, **kwargs)
     #     fernet = Security()
     #     cache_key = self.get_cache_key(request)
-    #     print(cache_key, 'key')
-    #     print(request.method, 'method\n')
-    #     url_keys = self.get_cache_keys_for_url(request.build_absolute_uri())
-    #     print(url_keys, 'keys\n')
+    #     print(cache_key, ' çh\n)')
     #     if request.method == 'GET':
     #         cached_data = cache.get(cache_key)
-    #         print(cached_data, 'cached\n')
+    #         print(bool(cached_data), 'data\n')
     #         if cached_data is not None:
     #             return JsonResponse(json.loads(fernet.decrypt(cached_data)), safe=False)
     #
     #     response = super().dispatch(request, *args, **kwargs)
     #     if response.status_code in [200, 201] and request.method == 'GET':
     #         try:
-    #             cache.set(cache_key, fernet.encrypt(response.content.decode()), timeout=self.cache_timeout)
+    #             self.__set_key(cache_key, fernet.encrypt(response.content.decode()))
     #         except ContentNotRenderedError:
     #             pass
     #
     #     if request.method == 'POST':
-    #         # Obtém todas as chaves do cache correspondentes à URL especificada.
-    #         url = request.build_absolute_uri()
-    #         url_keys = self.get_cache_keys_for_url(url)
-    #         print(url_keys, 'keys\n')
-    #         # Exclui todas as chaves do cache correspondentes a essa URL.
+    #         url_keys = self.get_cache_keys()
+    #         print(url_keys, 'keys to delete\n')
+    #         # Exclui todas as chaves do cache correspondentes ao app
     #         for key in url_keys:
     #             cache.delete(key)
     #     return response
@@ -234,7 +283,8 @@ class AbstractViewApi(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         new_obj = serializer.validated_data
         obj = self.model.objects.create(**new_obj)
-        return JsonResponse({self.__get_model_name(): self.serializer_class(obj, many=False).data}, status=status.HTTP_201_CREATED)
+        return JsonResponse({self.__get_model_name(): self.serializer_class(obj, many=False).data},
+                            status=status.HTTP_201_CREATED)
 
     def put(self, request, *args, **kwargs):
         """
@@ -262,7 +312,8 @@ class AbstractViewApi(generics.GenericAPIView):
         return JsonResponse({self.__get_model_name(): self.serializer_class(obj, many=False).data})
 
     def __get_model_name(self):
-       return self.model._meta.verbose_name.lower().replace(' ', '_')
+        return self.model._meta.verbose_name.lower().replace(' ', '_')
+
     def delete(self, request, *args, **kwargs):
         obj_id = kwargs.get('id')
         obj = get_object_or_404(self.model, id=obj_id)
