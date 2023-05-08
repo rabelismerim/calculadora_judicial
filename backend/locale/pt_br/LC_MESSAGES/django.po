@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-05 12:33-0300\n"
+"POT-Creation-Date: 2023-05-08 15:00-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -773,12 +773,10 @@ msgid ""
 "message.\n"
 "                "
 msgstr ""
-"Excluir uma integração específica de acordo com o ID passado pela "
-"url\n"
+"Excluir uma integração específica de acordo com o ID passado pela url\n"
 "\n"
 " Retorna:\n"
-" JsonResponse: Uma resposta JSON contendo o ok "
-"mensagem.\n"
+" JsonResponse: Uma resposta JSON contendo o ok mensagem.\n"
 " "
 
 #: .\backend\calculation\funds\irrf\apps.py:23
@@ -1870,11 +1868,11 @@ msgstr ""
 "        Os status possíveis são `Solicitado`, `Calculado`, `Revisado`, "
 "`Aprovado`, `Reprovado`, `Especialmente Aprovado`,"
 
-#: .\backend\config\settings.py:366
+#: .\backend\config\settings.py:364
 msgid "Português"
 msgstr ""
 
-#: .\backend\config\settings.py:367
+#: .\backend\config\settings.py:365
 msgid "English"
 msgstr "Inglês"
 
@@ -1922,15 +1920,29 @@ msgstr "Valor anterior"
 msgid "The archive_json field must be in json format"
 msgstr "O campo archive_json deve estar no formato json"
 
-#: .\backend\core\abstract\views.py:199
+#: .\backend\core\abstract\views.py:206
 msgid "Field in invalid format. It must be in the format{}"
 msgstr "Campo em formato inválido. "
 
-#: .\backend\core\abstract\views.py:321
+#: .\backend\core\abstract\views.py:375
 msgid "{self.__get_model_name().capitalize()} deleted"
 msgstr ""
 
-#: .\backend\core\drfmsal\views.py:26
+#: .\backend\core\drfmsal\views.py:27
+msgid ""
+"This view forces the platform to clear caches so that any get methods are "
+"reloaded. The platform \n"
+"        has cache control in case there is any change, but if this control "
+"fails, this view can be used )"
+msgstr "Essa view forca a plataforma a limpar os caches para que todos os métodos GET sejam recarregado. A plataforma "
+"tem o controle de cache caso haja qualquer alteracão, mas caso falhe esse controle, pode ser usada essa view"
+
+
+#: .\backend\core\drfmsal\views.py:34
+msgid "This method returns a Default response"
+msgstr "Esse método retorna a resposnse Default"
+
+#: .\backend\core\drfmsal\views.py:46
 msgid ""
 "Sign Status shows details of the user who made the request, such as "
 "`authorized`, `authenticated`,\n"
@@ -1941,7 +1953,7 @@ msgstr ""
 "`autorizado`, `autenticado`,\n"
 "         “perfil” e outros."
 
-#: .\backend\core\drfmsal\views.py:34 .\backend\core\dttuser\views.py:84
+#: .\backend\core\drfmsal\views.py:55 .\backend\core\dttuser\views.py:84
 msgid ""
 "This method returns a JSON response that contains the user details as per "
 "authenticated user. \n"
@@ -2368,8 +2380,8 @@ msgid ""
 "or `is_active`.\n"
 "        "
 msgstr ""
-"Obtenha a lista de todos os usuários. Inclua campos de usuário como `nome`, `imagem do usuário`, "
-"`lista de permissões`, etc.\n"
+"Obtenha a lista de todos os usuários. Inclua campos de usuário como `nome`, "
+"`imagem do usuário`, `lista de permissões`, etc.\n"
 " Pode filtrar um usuário por `username`, `email`, `first_name`, `last_name` "
 "ou `is_active`.\n"
 " "
