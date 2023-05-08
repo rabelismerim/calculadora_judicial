@@ -2,6 +2,7 @@ from django.conf import settings
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.decorators.http import require_GET
+from rest_framework import permissions
 
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import AllowAny
@@ -17,6 +18,25 @@ from utils import doc, _
 ms_identity_web = settings.DRFMSAL_IDENTITY_WEB
 
 
+class ClearCacheApi(AbstractViewApi):
+    """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like
+    query_params and schema. """
+    http_method_names = ['get']
+    query_params = []
+    docs = {
+        'init': _("""This view forces the platform to clear caches so that any get methods are reloaded. The platform 
+        has cache control in case there is any change, but if this control fails, this view can be used )""")
+    }
+    serializer_class = SignStatusSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    allow_cache = False
+    operation_id_base = 'Get Clear Cache'
+    @doc(_("""This method returns a Default response"""))
+    def get(self, request, *args, **kwargs):
+        self.delete_cache_from_user()
+        return Response()
+
+
 class SignStatusApi(AbstractViewApi):
     """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like
     query_params and schema. """
@@ -30,7 +50,8 @@ class SignStatusApi(AbstractViewApi):
     serializer_class = SignStatusSerializer
     permission_classes = [AllowAny]
     authentication_classes = [SessionAuthentication]
-
+    allow_cache = False
+    operation_id_base = 'Get Sign Status'
     @doc(_("""This method returns a JSON response that contains the user details as per authenticated user. 
         The serializer is used to access the model object, and then the data is returned in a JSON format.
         """))

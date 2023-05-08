@@ -143,6 +143,7 @@ class AbstractViewApi(generics.GenericAPIView):
     schema = CustomSchema()
     cache_timeout = 60 * 60 * 24
     cache_version = 'v1'
+    allow_cache: bool = True
 
     def get_serializer_class(self):
         if hasattr(self, 'layout_serializers'):
@@ -213,22 +214,20 @@ class AbstractViewApi(generics.GenericAPIView):
                           exclude=exclude).data
 
     def get_cache_key(self, request):
+        """Generates a unique cache key for the current request and model."""
         app_label = self.model._meta.verbose_name.lower().replace(' ', '_')
         url = request.build_absolute_uri()
         app_name = get_app_label_from_model(self.model).replace(' ', '_')
-
-        # Use make_template_fragment_key para incluir as variáveis de URL relevantes na cache_key.
         cache_key = make_template_fragment_key(app_label, [url])
-
-        # Adicione o cache_version ao início da cache_key para que você possa invalidar o cache facilmente quando ocorrer uma mudança na estrutura da resposta.
-        cache_key = f'{self.cache_version}:{app_name}:{app_label}:{cache_key}'
-
-        return cache_key
+        user_key = request.user.id
+        return f'{self.cache_version}:{app_name}:{app_label}:{cache_key}:{user_key}'
 
     def __get_keys(self):
+        """Helper method to get a list of all existing cache keys."""
         return cache.get(f"{self.cache_version}:keys", [])
 
     def __set_key(self, key, value, timeout: float = 60 * 60 * 24):
+        """Helper method to set a new cache key with a given value and timeout."""
         keys_list = self.__get_keys()
         if key not in keys_list:
             keys_list.append(key)
@@ -236,6 +235,7 @@ class AbstractViewApi(generics.GenericAPIView):
         cache.set(key, value, timeout)
 
     def __delete_key(self, key):
+        """Helper method to delete a cache key and remove it from the list of existing keys."""
         keys_list = self.__get_keys()
         if key in keys_list:
             keys_list.remove(key)
@@ -243,9 +243,7 @@ class AbstractViewApi(generics.GenericAPIView):
             cache.set(f"{self.cache_version}:keys", keys_list)
 
     def get_cache_keys_from_app(self, model):
-        """
-        Obtém uma lista de todas as chaves do cache correspondentes à URL especificada.
-        """
+        """Returns a list of cache keys for a given app name (model label)."""
         keys = self.__get_keys()
         app_name = get_app_label_from_model(model)
         url_keys = []
@@ -254,10 +252,18 @@ class AbstractViewApi(generics.GenericAPIView):
                 url_keys.append(key)
         return url_keys
 
+    def get_cache_keys_from_user(self):
+        """Returns a list of cache keys for a given user request."""
+        keys = self.__get_keys()
+        url_keys = []
+        for key in keys:
+            key_label = key.split(':')
+            if str(self.request.user.id) in key_label[-1]:
+                url_keys.append(key)
+        return url_keys
+
     def get_cache_keys_from_labels(self, app_labels: list):
-        """
-        Obtém uma lista de todas as chaves do cache correspondentes à URL especificada.
-        """
+        """Returns a list of cache keys for all apps in a given list of app labels."""
         keys = self.__get_keys()
         url_keys = []
         for key in keys:
@@ -267,53 +273,64 @@ class AbstractViewApi(generics.GenericAPIView):
         return url_keys
 
     def delete_cache_from_app(self, model):
+        """Deletes all cache keys associated with a given app/model"""
         url_keys = self.get_cache_keys_from_app(model)
         for key in url_keys:
-            print(key, 'key\n\n')
+            self.__delete_key(key)
+
+    def delete_cache_from_user(self):
+        """Deletes all cache keys associated with a given request user"""
+        url_keys = self.get_cache_keys_from_user()
+        for key in url_keys:
             self.__delete_key(key)
 
     def delete_cache_from_labels(self):
+        """Deletes all cache keys associated with a list of app labels."""
         labels = ['project', 'creditor', 'calculation']
         url_keys = self.get_cache_keys_from_labels(labels)
         for key in url_keys:
             self.__delete_key(key)
 
-    # def dispatch(self, request, *args, **kwargs):
-    #     # TODO fazer referencia da key para um elm, para nao precisar apagar todos os apps relacionados
-    #     if not self.model:
-    #         return super().dispatch(request, *args, **kwargs)
-    #     fernet = Security()
-    #     cache_key = self.get_cache_key(request)
-    #     if request.method == 'GET':
-    #         cached_data = cache.get(cache_key)
-    #         print(bool(cached_data), 'data\n')
-    #         if cached_data is not None:
-    #             return JsonResponse(json.loads(fernet.decrypt(cached_data)), safe=False)
-    #
-    #     response = super().dispatch(request, *args, **kwargs)
-    #     if response.status_code in [200, 201] and request.method == 'GET':
-    #         try:
-    #             self.__set_key(cache_key, fernet.encrypt(response.content.decode()))
-    #         except ContentNotRenderedError:
-    #             pass
-    #
-    #     if request.method != 'GET':
-    #         self.delete_cache_from_app(self.model)
-    #         related_serializers = find_related_serializers(self.get_serializer_class())
-    #         for serializer_cls in related_serializers:
-    #             model_class = serializer_cls.Meta.model
-    #             self.delete_cache_from_app(model_class)
-    #     return response
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Overrides the default dispatch method to handle caching. If a GET request has a cached response,
+        it returns the cached response. When a model instance is created, updated, or deleted, it deletes all cached
+        responses for related models and app instances.
+        """
+        # TODO fazer referencia da key para um elm, para nao precisar apagar todos os apps relacionados
+        if not self.model or not self.allow_cache:
+            return super().dispatch(request, *args, **kwargs)
+        fernet = Security()
+        cache_key = self.get_cache_key(request)
+        if request.method == 'GET':
+            cached_data = cache.get(cache_key)
+            if cached_data is not None:
+                return JsonResponse(json.loads(fernet.decrypt(cached_data)), safe=False)
+
+        response = super().dispatch(request, *args, **kwargs)
+        if response.status_code in [200, 201] and request.method == 'GET':
+            try:
+                self.__set_key(cache_key, fernet.encrypt(response.content.decode()))
+            except ContentNotRenderedError:
+                pass
+
+        if request.method != 'GET':
+            self.delete_cache_from_app(self.model)
+            related_serializers = find_related_serializers(self.get_serializer_class())
+            for serializer_cls in related_serializers:
+                model_class = serializer_cls.Meta.model
+                self.delete_cache_from_app(model_class)
+        return response
 
     def get(self, request, *args, **kwargs):
-        """Abstract method for default get model. Overide method in class for custom operation"""
+        """Abstract method for default method GET. Override method in class for custom operation"""
         id_ = kwargs.get('id')
         query = self.get_query(id_=id_)
         model_name = self.model._meta.verbose_name_plural.lower() if not id_ else self.__get_model_name()
         return JsonResponse({model_name.replace(' ', '_'): query})
 
     def post(self, request, *args, **kwargs):
-        """Abstract method for default post model. Overide method in class for custom operation"""
+        """Abstract method for default method POST. Override method in class for custom operation"""
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_obj = serializer.validated_data
@@ -347,9 +364,11 @@ class AbstractViewApi(generics.GenericAPIView):
         return JsonResponse({self.__get_model_name(): self.serializer_class(obj, many=False).data})
 
     def __get_model_name(self):
+        """Helper method to get app_label."""
         return self.model._meta.verbose_name.lower().replace(' ', '_')
 
     def delete(self, request, *args, **kwargs):
+        """Abstract method for default method DELETE. Override method in class for custom operation"""
         obj_id = kwargs.get('id')
         obj = get_object_or_404(self.model, id=obj_id)
         obj.delete()
@@ -361,12 +380,15 @@ class AbstractViewApi(generics.GenericAPIView):
         return []
 
     def get_queryset(self):
+        """Helper method for getting filter queryset."""
         return {}
 
     def get_exclude_queryset(self):
+        """Helper method for getting filter queryset to remove."""
         return {}
 
 
+# Get all Schemas
 model_serializer_subclasses = []
 for app in apps.get_app_configs():
     schema_path = os.path.join(app.path, "schemas.py")
@@ -383,6 +405,15 @@ for app in apps.get_app_configs():
 
 
 def find_related_serializers(schema, checked_serializers=None):
+    """
+    Find all model serializer subclasses and their related serializers by schema.
+
+    model_serializer_subclasses - list of model serializer subclasses found in schemas.py files in each app's
+    directory. find_related_serializers - recursively finds related serializers for a given schema by searching the
+    fields of each model serializer subclass. @param schema: The schema class to search for related serializers by.
+    @return: A list of model serializer classes that are related to the given schema class.
+    """
+
     related_serializer_schemas = []
     if checked_serializers is None:
         checked_serializers = set()
