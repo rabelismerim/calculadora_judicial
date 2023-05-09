@@ -15,7 +15,7 @@ from projects.project_user.models import ProjectUser
 from projects.project_user.schemas import ProjectUserProjectSchema
 from projects.region.models import Region
 from projects.region.schemas import RegionSchema
-from recovering.schemas import RecoveringSchema
+from recovering.schemas import RecoveringSchema, RecoveringV2Schema
 from utils import get_user_model, _
 
 User = get_user_model()
@@ -31,7 +31,7 @@ class UserSerializer(serializers.Serializer):
     id = serializers.IntegerField()
 
 
-class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):
+class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):  # V1
     """
     Serializes the fields of the ProjectSchema model for use in the API.
 
@@ -63,6 +63,117 @@ class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):
     #     many=True, read_only=True, exclude=('project', ))
     recoverings = RecoveringSchema(source='recovering_set',
                                    many=True, read_only=False, exclude=('project_id', 'project'))
+
+    legal_manager = UserDttSchema(many=False, read_only=True)
+    legal_manager_id = serializers.IntegerField(write_only=True)
+
+    calculation_manager = UserDttSchema(many=False, read_only=True)
+    calculation_manager_id = serializers.IntegerField(write_only=True)
+
+    financial_manager = UserDttSchema(many=False, read_only=True)
+    financial_manager_id = serializers.IntegerField(write_only=True)
+
+    legal_partner = UserDttSchema(many=False, read_only=True)
+    legal_partner_id = serializers.IntegerField(write_only=True)
+
+    financial_partner = UserDttSchema(many=False, read_only=True)
+    financial_partner_id = serializers.IntegerField(write_only=True)
+
+    # user_names = serializers.ListField(read_only=True)
+    executors = serializers.ListField(write_only=True, child=UserSerializer())
+    approvers = serializers.ListField(write_only=True, child=UserSerializer())
+    reviewers = serializers.ListField(write_only=True, child=UserSerializer())
+
+    project_users = ProjectUserProjectSchema(
+        read_only=True, many=True, source='engagement.users')
+
+    status_display = serializers.CharField(
+        source='get_status_display', read_only=True)
+
+    num_recovering = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Project
+        fields = '__all__'
+
+    @staticmethod
+    def validate_executors(executors):
+        """Validate executors with a list format"""
+        if not executors:
+            raise serializers.ValidationError([_('Must select at least one user')])
+
+        if isinstance(executors, list) is False:
+            raise serializers.ValidationError([_('The executors field must be in list format')])
+        return executors
+
+    @staticmethod
+    def validate_approvers(approvers):
+        """Validate approvers with a list format"""
+        if not approvers:
+            raise serializers.ValidationError([_('Must select at least one user')])
+
+        if isinstance(approvers, list) is False:
+            raise serializers.ValidationError([_('The approvers field must be in list format')])
+        return approvers
+
+    @staticmethod
+    def validate_reviewers(reviewers):
+        """Validate reviewers with a list format"""
+        if not reviewers:
+            raise serializers.ValidationError([_('Must select at least one user')])
+
+        if isinstance(reviewers, list) is False:
+            raise serializers.ValidationError([_('The reviewers field must be in list format')])
+        return reviewers
+
+    def validate(self, data):
+        """
+        Validate the project schema by extracting the necessary data from Project object.
+        :param data: Project object.
+        :returns: Updated Project object with extracted data.
+        """
+        data = dict(data)
+        engagement_data = data.pop('engagement').pop('engagement')
+        executors = data.pop('executors', [])
+        executors = [x['id'] for x in executors]
+        approvers = data.pop('approvers', [])
+        approvers = [x['id'] for x in approvers]
+        reviewers = data.pop('reviewers', [])
+        reviewers = [x['id'] for x in reviewers]
+        data['engagement'] = engagement_data
+        data['executors'] = executors
+        data['approvers'] = approvers
+        data['reviewers'] = reviewers
+        return super(ProjectSchema, self).validate(data)
+
+
+class ProjectV2Schema(serializers.ModelSerializer, AbstractModelSchema):  # V2
+    """
+    Serializes the fields of the ProjectSchema model for use in the API.
+
+    This class defines a Django REST Framework serializer that inherits from a custom
+    AbstractDescriptionSchema class. The serializer converts instances of the Project
+    model to and from JSON format, and validates incoming data based on the model's fields.
+
+    Usage example:
+    serializer = ProjectSchema()
+    """
+
+    judge = JudgeSchema(many=False, read_only=True)
+    judge_id = serializers.UUIDField(write_only=True)
+
+    lawyer = LawyerSchema(many=False, read_only=True)
+    lawyer_id = serializers.UUIDField(write_only=True)
+
+    region = RegionSchema(many=False, read_only=True)
+    region_id = serializers.UUIDField(write_only=True)
+
+    court = CourtSchema(many=False, read_only=True)
+    court_id = serializers.UUIDField(write_only=True)
+
+    engagement = ProjectEngagementSchema(
+        many=False, exclude=('project_id', 'users', 'user_names'))
+    recoverings = RecoveringV2Schema(source='recovering_set', many=True, read_only=False, fields=('id', 'entity'))
 
     legal_manager = UserDttSchema(many=False, read_only=True)
     legal_manager_id = serializers.IntegerField(write_only=True)

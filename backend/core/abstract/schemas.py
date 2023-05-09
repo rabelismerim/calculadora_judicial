@@ -20,6 +20,7 @@ class AbstractModelSchema(serializers.Serializer):
 
     def __init__(self, *args, **kwargs):
         fields = kwargs.pop('exclude', None)
+        include_fields = kwargs.pop('fields', None)
         super().__init__(*args, **kwargs)
         if fields is not None:
             allowed = set(fields)
@@ -29,6 +30,10 @@ class AbstractModelSchema(serializers.Serializer):
                     self.fields.pop(field_name)
                 except:
                     pass
+
+        if include_fields is not None:
+            allowed = set(include_fields) & set(self.fields.keys())
+            self.fields = {field_name: self.fields[field_name] for field_name in allowed}
 
     def validate_archive_json(self, archive_json):
         if archive_json:

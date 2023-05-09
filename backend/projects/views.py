@@ -11,7 +11,7 @@ from core.entity.models import Entity
 from core.permission.views import CheckHasPermission, check_query_permission
 from projects.models import Project
 from projects.project_user.models import ProjectUser
-from projects.schemas import ProjectSchema, ProjectListSchema
+from projects.schemas import ProjectSchema, ProjectListSchema, ProjectV2Schema
 from projects.engagement.models import Engagement, ProjectEngagement
 from recovering.models import Recovering
 from utils import get_user_model, _, doc
@@ -77,10 +77,17 @@ class AbstractProjectApi(AbstractViewApi):
         return {'engagement__users__user': self.request.user}
 
 
-class ProjectDetailApi(AbstractProjectApi):
+class ProjectDetailApi(AbstractProjectApi):  # V1
     """HTTP methods for Project Detail"""
     serializer_class = ProjectSchema
     http_method_names = ['get']
+
+
+class ProjectDetailV2Api(AbstractProjectApi):  # V2
+    """HTTP methods for Project Detail"""
+    serializer_class = ProjectV2Schema
+    http_method_names = ['get']
+    allowed_versions = ['v1', 'v2']
 
 
 class ProjectApi(AbstractProjectApi):

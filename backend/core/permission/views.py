@@ -13,7 +13,7 @@ from calculation.funds.models import Funds
 from calculation.models import Calculation, CHOICES_STEP
 from calculation.schemas import ChangeStepSerializer
 from config.settings import GROUP_NAME_APPROVER, GROUP_NAME_REVIEWER, GROUP_NAME_EXECUTOR, GROUP_NAME_SPECIAL_APPROVE, \
-    IS_LOCALHOST, SWAGGER_URL
+    IS_LOCALHOST, SWAGGER_URL, BASE_URL
 from projects.project_user.models import ProjectUser
 
 
@@ -420,6 +420,29 @@ class CheckHasAgreementRegisteredPermissions(BasePermission):
             return True
         calculation_id = view.request.data.get('calculation_id')
         return not FundDocument.objects.filter(calculation_id=calculation_id).exists()
+
+
+class CheckAPIVersion(BasePermission):
+    """
+    Permission class that checks if the requested API version is supported.
+    The version must be included in the URL, e.g. /api/v1/customers/.
+    """
+
+    def has_permission(self, request, view):
+        """
+        Check if the requested API version is supported.
+        """
+        # Obter a versão da API a partir da URL
+        version = request.path.split('djud/api/')[1].split('/')[0]
+
+        if request.path == SWAGGER_URL:
+            return BASE_URL.split('djud/api/')[1].split('/')[0] in view.allowed_versions
+        if version not in view.allowed_versions:
+            # Versão API não suportada
+            return False
+
+        # A versão é suportada
+        return True
 
 
 def check_query_permission(perms):
