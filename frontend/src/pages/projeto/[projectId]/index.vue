@@ -48,9 +48,118 @@ const loadProject = async () => {
     loading = false
   }
 }
+
+const calculationForm: any = ref(null)
+let showCreateNewCalculation = $ref(false)
+let newCalculation: any = $ref({})
+const openNewCalculation = (creditor: any) => {
+  const { id } = creditor
+  newCalculation.creditorId = id
+  showCreateNewCalculation = true
+}
+const createNewCalculation = async () => {
+  loading = true
+  try {
+    const { creditorId } = newCalculation
+    const { id } = await calculationService.newCalculation(newCalculation)
+    router.push({ path: `/projeto/${project.id}/credor/${creditorId}/calculo/${id}` })
+  }
+  catch (error) {
+    printError('ERROR ON CREATE NEW CALCULATION:', error)
+  }
+  finally {
+    loading = false
+  }
+}
+const closeNewCalculation = () => {
+  showCreateNewCalculation = false
+  calculationForm.value.reset()
+  newCalculation = {}
+}
+const loadCalculations = async (creditor: any) => {
+  const { id } = creditor
+  loading = true
+  try {
+    creditor.calculations = await calculationService.getCalculations(id)
+  }
+  catch (error) {
+    printError('ERROR ON LOAD CALCULATIONS OF CREDITOR:', error)
+  }
+  finally {
+    loading = false
+  }
+}
+
+let incidents: any[] = $ref([])
+const addIncident = async (incidentNumber: string) => {
+  try {
+    const result: any = await calculationService.newIncident(incidentNumber)
+    const { id, number } = result
+    return { id, number, description: number }
+  }
+  catch (error) {
+    printError('ERROR ON LOAD INCIDENSTS:', error)
+  }
+}
+const loadIncidents = async () => {
+  try {
+    incidents = await calculationService.getIncidents()
+  }
+  catch (error) {
+    printError('ERROR ON LOAD INCIDENSTS:', error)
+  }
+}
+
 onMounted(() => {
+  loadIncidents()
   loadProject()
 })
+
+interface TableColumn {
+  name: string
+  label: string
+  field: string
+  required?: boolean
+  align?: 'left' | 'right' | 'center'
+  sortable?: boolean
+  style?: string
+  format?: (val: any, row: any) => any
+}
+const calculationColumns: TableColumn[] = [
+  {
+    name: 'id',
+    field: 'number',
+    label: 'Id',
+    required: true,
+    align: 'left',
+    style: 'width: 100px',
+    sortable: true,
+  },
+  {
+    name: 'incident',
+    field: 'incident',
+    format: ({ number }: any) => number || '-',
+    label: 'N° Incidente',
+    align: 'left',
+    style: 'width: 100px',
+    sortable: true,
+  },
+  {
+    name: 'created',
+    field: 'createdAt',
+    format: (date: string) => formatDateFromBackend(date),
+    label: 'Data de Criação',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'status',
+    field: 'stepDisplay',
+    label: 'Status',
+    align: 'left',
+    sortable: true,
+  },
+]
 </script>
 
 <template>
@@ -60,68 +169,7 @@ onMounted(() => {
     :links="[{ label: 'Projetos', url: '/projetos' }, { label: project.description }]"
   >
     <template #menu>
-      <ProjectDetailCell label="Engagement">
-        <div v-for="engagement in project?.engagement?.numbers" :key="engagement">
-          {{ engagement }}
-        </div>
-      </ProjectDetailCell>
-
-      <ProjectDetailCell label="Sócio Jurídico">
-        {{ project?.legalPartner?.fullName || '-' }}
-      </ProjectDetailCell>
-
-      <ProjectDetailCell label="Sócio Financeiro">
-        {{ project?.financialPartner?.fullName || '-' }}
-      </ProjectDetailCell>
-
-      <ProjectDetailCell label="Gerente Jurídico">
-        {{ project?.legalManager?.fullName || '-' }}
-      </ProjectDetailCell>
-
-      <ProjectDetailCell label="Gerente Financeiro">
-        {{ project?.financialManager?.fullName || '-' }}
-      </ProjectDetailCell>
-
-      <ProjectDetailCell label="Gerente de Cálculo">
-        {{ project?.calculationManager?.fullName || '-' }}
-      </ProjectDetailCell>
-
-      <ProjectDetailCell label="Recuperandas">
-        <div
-          v-for="recovering in project?.recoverings"
-          :key="recovering.id"
-          class="mb-2"
-        >
-          <div class="font-bold">
-            {{ recovering.entity.name }}
-          </div>
-          <div>{{ formatLegalNumber(recovering.entity.legalNumber) }}</div>
-        </div>
-      </ProjectDetailCell>
-
-      <ProjectDetailCell label="Data de Pedido de Recuperação">
-        {{ formatDateFromBackend(project?.projectStart) || '-' }}
-      </ProjectDetailCell>
-
-      <ProjectDetailCell label="Número do Processo Principal">
-        {{ project?.processNumber || '-' }}
-      </ProjectDetailCell>
-
-      <ProjectDetailCell label="Juiz">
-        {{ toProperName(project?.judge?.description || '') || '-' }}
-      </ProjectDetailCell>
-
-      <ProjectDetailCell label="Advogado">
-        {{ toProperName(project?.lawyer?.description || '') || '-' }}
-      </ProjectDetailCell>
-
-      <ProjectDetailCell label="Comarca">
-        {{ project?.region?.description || '-' }}
-      </ProjectDetailCell>
-
-      <ProjectDetailCell label="Vara">
-        {{ project?.court?.description || '-' }}
-      </ProjectDetailCell>
+      <ProjectDescription :project="project" />
     </template>
 
     <Header :title="`Projeto ${project.description || ''}`">
@@ -229,6 +277,7 @@ onMounted(() => {
             :subtitle="formatLegalNumber(creditor.entity.legalNumber)"
             class="pl-6 border-x-0 border-b-0 rounded-0"
             :class="{ 'border-t-0': index === 0 }"
+            @open="loadCalculations(creditor)"
           >
             <template #header-left>
               <IconHint
@@ -243,11 +292,15 @@ onMounted(() => {
                   label="Novo Cálculo"
                   icon="i-carbon-add-filled"
                   transparent
-                  disabled
+                  @click.stop="openNewCalculation(creditor)"
                 />
               </div>
             </template>
-            {{ recovering.creditors }}
+            <QTable
+              :rows="creditor.calculations || []"
+              :columns="calculationColumns"
+              flat
+            />
           </Accordion>
         </div>
         <div v-else class="p-6 text-center">
@@ -282,6 +335,37 @@ onMounted(() => {
             </div>
           </div>
         </div>
+      </Modal>
+      <Modal
+        v-model="showCreateNewCalculation"
+        title="Criar um Novo Cálculo"
+        hint="Para criar um cálculo é preciso escolher um incidente."
+        modal-class="max-w-120"
+        @close="closeNewCalculation"
+      >
+        <QForm
+          ref="calculationForm"
+          @submit="createNewCalculation"
+        >
+          <div class="px-4">
+            <InputSelect
+              v-model="newCalculation.incidentId"
+              v-model:options="incidents"
+              label="Número de Incidente"
+              :to-add="addIncident"
+              :rules="[(value: any) => !!value || 'É um campo obrigatório']"
+              :disable="loading"
+            />
+          </div>
+          <div class="flex justify-end p4 border-t-1 border-black/12">
+            <Btn
+              label="Criar Cálculo"
+              type="submit"
+              loading-label="Criando Novo Cálculo..."
+              :loading="loading"
+            />
+          </div>
+        </QForm>
       </Modal>
     </template>
   </Page>

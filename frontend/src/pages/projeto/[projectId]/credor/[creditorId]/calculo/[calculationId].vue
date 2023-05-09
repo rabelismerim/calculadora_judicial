@@ -1,6 +1,8 @@
 <script setup lang='ts'>
 const attrs = useAttrs() as any
 
+let loading = $ref(false)
+
 const tab = $ref('cred')
 const tabFilters = [
   { label: '1. Crédito', value: 'cred' },
@@ -12,6 +14,14 @@ let project = $ref({} as any)
 const loadProject = async () => {
   if (attrs.projectId)
     project = await projectService.getProject(attrs.projectId)
+}
+let creditor = $ref({} as any)
+const loadCreditor = async () => {
+  creditor = await creditorsService.getCreditor(attrs.creditorId)
+}
+let calculation = $ref({} as any)
+const loadCalculation = async () => {
+  calculation = await calculationService.getCalculation(attrs.calculationId)
 }
 
 const credits = $ref([
@@ -79,8 +89,19 @@ const classesAmount = computed(() => [...new Set(credits.map(({ classType }: any
 const totalValue = computed(() => credits
   .flatMap(({ calculations }: any) => calculations.map(({ updatedValue }: any) => updatedValue))
   .reduce((acc, curr) => acc + curr, 0))
-onMounted(() => {
-  loadProject()
+onMounted(async () => {
+  loading = true
+  try {
+    loadProject()
+    loadCreditor()
+    loadCalculation()
+  }
+  catch (error) {
+    printError('ERROR ON LOADING CALCULATION:', error)
+  }
+  finally {
+    loading = false
+  }
 })
 </script>
 
@@ -90,11 +111,12 @@ onMounted(() => {
     :links="[
       { label: 'Projetos', url: '/projetos' },
       { label: project.description, url: `/projeto/${attrs.projectId}` },
-      { label: `Cálculo #${attrs.calculationId}` }]"
+      { label: `Cálculo #${calculation?.number}` }]"
   >
     <template #menuheader>
       <BtnToggle
         v-model="menu"
+        class="bg--base"
         :items="[
           { label: 'Projeto', value: 'project' },
           { label: 'Recup.', value: 'recovering' },
@@ -105,68 +127,7 @@ onMounted(() => {
     <template #menu>
       <QTabPanels v-model="menu" animated>
         <QTabPanel name="project">
-          <ProjectDetailCell label="Engagement">
-            <div v-for="(engagement, index) in project?.engagement?.numbers" :key="index">
-              {{ engagement }}
-            </div>
-          </ProjectDetailCell>
-
-          <ProjectDetailCell label="Sócio Jurídico">
-            {{ project?.legalPartner?.fullName || '-' }}
-          </ProjectDetailCell>
-
-          <ProjectDetailCell label="Sócio Financeiro">
-            {{ project?.financialPartner?.fullName || '-' }}
-          </ProjectDetailCell>
-
-          <ProjectDetailCell label="Gerente Jurídico">
-            {{ project?.legalManager?.fullName || '-' }}
-          </ProjectDetailCell>
-
-          <ProjectDetailCell label="Gerente Financeiro">
-            {{ project?.financialManager?.fullName || '-' }}
-          </ProjectDetailCell>
-
-          <ProjectDetailCell label="Gerente de Cálculo">
-            {{ project?.calculationManager?.fullName || '-' }}
-          </ProjectDetailCell>
-
-          <ProjectDetailCell label="Recuperandas">
-            <div
-              v-for="recovering in project?.recoverings as any[]"
-              :key="recovering.id"
-              class="mb-2"
-            >
-              <div class="font-bold">
-                {{ recovering.entity.name }}
-              </div>
-              <div>{{ formatLegalNumber(recovering.entity.legalNumber) }}</div>
-            </div>
-          </ProjectDetailCell>
-
-          <ProjectDetailCell label="Data de Pedido de Recuperação">
-            {{ formatDateFromBackend(project?.projectStart) || '-' }}
-          </ProjectDetailCell>
-
-          <ProjectDetailCell label="Número do Processo Principal">
-            {{ project?.processNumber || '-' }}
-          </ProjectDetailCell>
-
-          <ProjectDetailCell label="Juiz">
-            {{ toProperName(project?.judge?.description || '') || '-' }}
-          </ProjectDetailCell>
-
-          <ProjectDetailCell label="Advogado">
-            {{ toProperName(project?.lawyer?.description || '') || '-' }}
-          </ProjectDetailCell>
-
-          <ProjectDetailCell label="Comarca">
-            {{ project?.region?.description || '-' }}
-          </ProjectDetailCell>
-
-          <ProjectDetailCell label="Vara">
-            {{ project?.court?.description || '-' }}
-          </ProjectDetailCell>
+          <ProjectDescription :project="project" />
         </QTabPanel>
         <QTabPanel name="recovering">
           Recuperanda...
@@ -176,7 +137,9 @@ onMounted(() => {
         </QTabPanel>
       </QTabPanels>
     </template>
-    <Header :title="`Cálculo #${attrs.calculationId}`">
+    <Header
+      :title="`Cálculo #${calculation?.number || ''} - ${calculation?.creditor?.entity?.name || ''}`"
+    >
       <template #side>
         <ReloadBtn
           hint="Recarregar a Lista de Créditos"
