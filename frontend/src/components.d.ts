@@ -40,6 +40,7 @@ declare module '@vue/runtime-core' {
     Page: typeof import('./components/common/Page.vue')['default']
     PeopleTable: typeof import('./components/team/PeopleTable.vue')['default']
     ProgressList: typeof import('./components/graph/ProgressList.vue')['default']
+    ProjectDescription: typeof import('./components/project/ProjectDescription.vue')['default']
     ProjectDetailCell: typeof import('./components/project/ProjectDetailCell.vue')['default']
     QField: typeof import('quasar')['QField']
     RecoveringNotice: typeof import('./components/creditors/RecoveringNotice.vue')['default']
