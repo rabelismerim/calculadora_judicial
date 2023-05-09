@@ -6,6 +6,8 @@ const props = withDefaults(defineProps<{
   title: '',
   subtitle: '',
 })
+const emit = defineEmits(['open', 'close'])
+
 const details = ref(null) as any
 const summary = ref(null) as any
 const content = ref(null) as any
@@ -28,11 +30,15 @@ const onToggle = () => {
     duration,
     easing: 'ease-in-out',
   })
-  if (start < end)
+  if (start < end) {
     isOpen = true
+    emit('open')
+  }
   animation.onfinish = () => {
-    if (start > end)
+    if (start > end) {
       isOpen = false
+      emit('close')
+    }
     wrapper.style.removeProperty('overflow')
   }
 }

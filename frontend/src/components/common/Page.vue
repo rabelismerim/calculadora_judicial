@@ -39,7 +39,7 @@ const isOpen = $ref(false)
         >
           <div class="relative pr-9 h-full max-h-[calc(100vh-96px)] overflow-x-hidden overflow-y-auto scroll-left">
             <div class="p-8 pr-0">
-              <div v-if="$slots.menuheader">
+              <div v-if="$slots.menuheader" class="sticky top-8 z-1">
                 <slot name="menuheader" />
               </div>
               <h2 v-else class="font-bold text-2xl bg--base sticky top-0 py-4">
@@ -47,15 +47,15 @@ const isOpen = $ref(false)
               </h2>
               <slot name="menu" />
             </div>
-            <div
-              class="absolute right-0 top-0 bottom-0 p-1 flex cursor-pointer"
-              @click="isOpen = !isOpen"
-            >
-              <div class="hover:bg--secondary/15 pt-7 flex-1 flex flex-col items-center gap-4 rounded-2 tween">
-                <div class="i-carbon-chevron-right text-lg tween-800" :class="{ 'rotate-180': isOpen }" />
-                <div class="text-vertical whitespace-nowrap font-bold text-lg tween-800" :class="{ 'opacity-0': isOpen }">
-                  {{ menuLabel }}
-                </div>
+          </div>
+          <div
+            class="absolute right-0 top-0 bottom-0 p-1 flex cursor-pointer"
+            @click="isOpen = !isOpen"
+          >
+            <div class="hover:bg--secondary/15 pt-7 flex-1 flex flex-col items-center gap-4 rounded-2 tween">
+              <div class="i-carbon-chevron-right text-lg tween-800" :class="{ 'rotate-180': isOpen }" />
+              <div class="text-vertical whitespace-nowrap font-bold text-lg tween-800" :class="{ 'opacity-0': isOpen }">
+                {{ menuLabel }}
               </div>
             </div>
           </div>
