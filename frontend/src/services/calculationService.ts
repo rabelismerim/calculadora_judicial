@@ -1,73 +1,27 @@
 // CALCULO
-interface Calculation {
-  creditorId: string
-  incidentId: string
-  appealCredit?: boolean
-  appealDeposit?: boolean
-  hasAdvocateHours?: boolean
-  creditAutorizationDate?: string
-  hasEdital?: boolean
-  recurralDeposit?: number
-}
 const getCalculation = (id: string) => api
   .get(`/v1/calculation/${id}/`)
   .then(({ calculation }: any) => calculation)
-
-const newCalculation = async (calculation: Calculation) => {
-  const { creditorId, incidentId, appealCredit, appealDeposit, hasAdvocateHours, creditAutorizationDate, hasEdital, recurralDeposit } = calculation
-  const results = []
-  try {
-    for (const id of creditorId) {
-      const result = await api
-        .post('/v1/calculation/',
-          ({
-            creditorId: id,
-            incidentId,
-            appealCredit,
-            appealDeposit,
-            hasAdvocateHours,
-            creditAutorizationDate,
-            hasEdital,
-            recurralDeposit,
-          }))
-        .then((result: any) => result.calculation)
-      results.push(result)
-    }
-    return results
-  }
-  catch (error) {
-    printError('ERROR ON NEW CALCULATION', error)
-  }
-}
-
-interface Incident {
-  number: string
-}
-const getIncident = (creditorId: string) => api
+const getCalculations = (creditorId: string) => api
   .get(`/v1/calculation/creditor/${creditorId}/`)
-  .then(({ incident }: any) => incident)
+  .then(({ calculations }: any) => calculations)
 
-const newIncident = async (incident: Incident) => {
-  const { number } = incident
-  const results = []
-  try {
-    const result = await api
-      .post('/v1/calculation/incident/',
-        ({
-          number,
-        }))
-    results.push(result)
-    return results
-  }
-  catch (error) {
-    printError('ERROR ON NEW INCIDENT', error)
-  }
-}
+const newCalculation = async (calculation: any) => api
+  .post('/v1/calculation/', calculation)
+  .then((result: any) => result?.calculation)
+
+const getIncidents = () => api
+  .get('/v1/calculation/incident/')
+  .then(({ incidents }: any) => incidents.map(({ id, number, historical }: any) =>
+    ({ id, number, historical, description: number })))
+
+const newIncident = async (number: string) => api
+  .post('/v1/calculation/incident/', { number })
+  .then(({ incident }: any) => incident)
 
 // CALCULO - CRITERION
 
 const getCriterion = (calculationId: string) => api
-
   .get(`/v1/calculation/criterion/${calculationId}/`)
   .then(({ criterion }: any) => criterion)
 
@@ -319,10 +273,11 @@ const getSheetsTemplate = (calculationId: string, exportType: string) => api
   .then(({ sheetstemplate }: any) => sheetstemplate)
 
 export default {
-  getCalculation,
   newCalculation,
-  getIncident,
+  getCalculation,
+  getCalculations,
   newIncident,
+  getIncidents,
   getCriterion,
   getVerdict,
   newVerdict,

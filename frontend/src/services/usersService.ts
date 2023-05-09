@@ -39,8 +39,8 @@ const getUsers = () => api
 
 const getGroups = () => api
   .get('/groups/')
-  .then(({ groups }: any) => groups
-    .map(({ name: description, id }: any) => ({ id, description })))
+  .then((result: any) => result?.groups
+    ?.map(({ name: description, id }: any) => ({ id, description })))
 
 const requestAccess = (email: string) => api
   .post('/user/sendmail/', { email })
