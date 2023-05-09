@@ -34,7 +34,7 @@ const newCreditor = computed({
 const clear = async () => {
   newCreditor.value = clone(nullCreditor)
   await delay(0.1)
-  form.value.resetValidation ()
+  form.value.reset()
 }
 const onSubmit = async () => {
   if (newCreditor.value.id)

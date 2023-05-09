@@ -43,7 +43,7 @@ let newProject = $ref(clone(nullProject))
 const clear = async () => {
   newProject = clone(nullProject)
   await delay(0.5)
-  form.value.resetValidation ()
+  form.value.resetValidation()
   setStep(1)
   clearAll()
   clearErrors()
@@ -221,7 +221,7 @@ onMounted(async () => {
           class="relative overflow-y-auto max-h-[calc(100vh-326px)] min-h-87 overflow-x-hidden"
         >
           <div
-            v-for="(recovering, index) in newProject.recoverings"
+            v-for="(recovering, index) in newProject.recoverings as any[]"
             :key="index"
             class="grid items-stretch grid-cols-[1fr_1fr_42px] gap-x-4"
             data-step="2"

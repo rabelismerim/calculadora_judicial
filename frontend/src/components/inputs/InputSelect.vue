@@ -58,10 +58,11 @@ const addNewItem = async () => {
 
 const onFilter = (val: any, update: Function) => {
   update(() => {
-    const needle = val.toLowerCase()
+    const needle = val?.toLowerCase()
     inputValue = needle
     filteredOptions = props.options
-      .filter(v => v.description.toLowerCase().includes(needle))
+      .filter(v => !!v)
+      .filter(v => v?.description?.toLowerCase()?.includes(needle))
   })
 }
 </script>
