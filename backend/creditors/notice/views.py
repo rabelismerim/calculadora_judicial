@@ -43,7 +43,7 @@ class NoticeUpdateApi(AbstractViewApi):
     """HTTP methods for Notice"""
     http_method_names = ['put']
     serializer_class = NoticeUpdateSchema
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated]
     model = Notice
 
     query_params = []
@@ -84,7 +84,7 @@ class NoticeRecoveringApi(AbstractViewApi):
     """HTTP methods for Notice"""
     http_method_names = ['post', 'get']
     serializer_class = NoticeRecoveringSchema
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated]
     model = NoticeRecovering
 
     query_params = []
@@ -112,7 +112,7 @@ class NoticeRecoveringUpdateApi(AbstractViewApi):
     """HTTP methods for Notice"""
     http_method_names = ['put']
     serializer_class = NoticeRecoveringUpdateSchema
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated]
     model = NoticeRecovering
 
     query_params = []
