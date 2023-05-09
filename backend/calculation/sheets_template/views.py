@@ -69,7 +69,7 @@ class SheetTemplateViewApi(AbstractViewApi):
             archive.save(new_name)
 
             with open(new_name,'rb') as archive_excel:
-                excel_file = archive_excel.readlines()
+                excel_file = archive_excel.read()
 
             remove(new_name)
 
