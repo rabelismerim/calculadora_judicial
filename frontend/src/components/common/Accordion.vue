@@ -2,6 +2,7 @@
 const props = withDefaults(defineProps<{
   title?: string
   subtitle?: string
+  summaryClass?: string
 }>(), {
   title: '',
   subtitle: '',
@@ -54,7 +55,7 @@ const onToggle = () => {
     <summary
       ref="summary"
       class="relative flex gap-4 cursor-pointer px-4 py-3 list-none box-border rounded-.5"
-      :class="{ 'border-b-1 border-black/12': isOpen }"
+      :class="{ 'border-b-1 border-black/12': isOpen, [summaryClass || '']: summaryClass }"
       @click.prevent="onToggle"
     >
       <div class="flex items-center">
@@ -63,11 +64,11 @@ const onToggle = () => {
         </div>
       </div>
       <slot name="header-left" />
-      <div class="flex flex-col justify-center">
-        <div v-if="title" class="font-bold text-xl">
+      <div class="flex flex-col w-50 whitespace-nowrap">
+        <div v-if="title" class="font-bold text-xl overflow-hidden text-ellipsis w-full">
           {{ title }}
         </div>
-        <div v-if="subtitle">
+        <div v-if="subtitle" class="overflow-hidden text-ellipsis w-full">
           {{ subtitle }}
         </div>
       </div>
