@@ -19,6 +19,7 @@ let creditor = $ref({} as any)
 const loadCreditor = async () => {
   creditor = await creditorsService.getCreditor(attrs.creditorId)
 }
+const recovering = computed(() => project?.recoverings?.find(({ id }: any) => id === creditor?.recoveringId))
 let calculation = $ref({} as any)
 const loadCalculation = async () => {
   calculation = await calculationService.getCalculation(attrs.calculationId)
@@ -116,11 +117,10 @@ onMounted(async () => {
     <template #menuheader>
       <BtnToggle
         v-model="menu"
-        class="bg--base"
+        class="bg--base w-[fit-content]"
         :items="[
           { label: 'Projeto', value: 'project' },
-          { label: 'Recup.', value: 'recovering' },
-          { label: 'Credor', value: 'creditor' },
+          { label: 'Ficha Técnica', value: 'analysis' },
         ]"
       />
     </template>
@@ -129,11 +129,19 @@ onMounted(async () => {
         <QTabPanel name="project">
           <ProjectDescription :project="project" />
         </QTabPanel>
-        <QTabPanel name="recovering">
-          Recuperanda...
-        </QTabPanel>
-        <QTabPanel name="creditor">
-          Credor...
+        <QTabPanel name="analysis">
+          <ProjectDetailCell label="Recuperanda">
+            {{ recovering?.entity?.name || '-' }}
+          </ProjectDetailCell>
+          <ProjectDetailCell label="CNPJ">
+            {{ formatLegalNumber(recovering?.entity?.legalNumber) || '-' }}
+          </ProjectDetailCell>
+          <ProjectDetailCell label="Credor">
+            {{ creditor?.entity?.name || '-' }}
+          </ProjectDetailCell>
+          <ProjectDetailCell :label="creditor?.entity?.legalNumber.length === 11 ? 'CPF' : 'CNPJ'">
+            {{ formatLegalNumber(creditor?.entity?.legalNumber) || '-' }}
+          </ProjectDetailCell>
         </QTabPanel>
       </QTabPanels>
     </template>
