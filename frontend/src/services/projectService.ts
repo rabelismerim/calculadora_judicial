@@ -36,13 +36,13 @@ const mapProject = (project: any) => {
 }
 const getUserProjects = () => api
   .get('/v1/projects/project_user/')
-  .then(({ projectUser }: any) => [...new Set(projectUser)])
+  .then((result: any) => [...new Set(result?.projectUser)])
 const getProjects = () => api
   .get('/v1/projects/')
   .then((res: any) => res?.projects?.map(mapProject))
 const getProject = (id: string) => api
   .get(`/v1/projects/${id}/`)
-  .then(({ project }: any) => project)
+  .then((result: any) => result?.project)
   .then(mapProject)
   .then((project: any) => {
     const { projectUsers = [] } = project

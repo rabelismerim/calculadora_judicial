@@ -1,10 +1,10 @@
 // CALCULO
 const getCalculation = (id: string) => api
   .get(`/v1/calculation/${id}/`)
-  .then(({ calculation }: any) => calculation)
+  .then((result: any) => result?.calculation)
 const getCalculations = (creditorId: string) => api
   .get(`/v1/calculation/creditor/${creditorId}/`)
-  .then(({ calculations }: any) => calculations)
+  .then((result: any) => result?.calculations)
 
 const newCalculation = async (calculation: any) => api
   .post('/v1/calculation/', calculation)
@@ -12,7 +12,7 @@ const newCalculation = async (calculation: any) => api
 
 const getIncidents = () => api
   .get('/v1/calculation/incident/')
-  .then(({ incidents }: any) => incidents.map(({ id, number, historical }: any) =>
+  .then((result: any) => result?.incidents?.map(({ id, number, historical }: any) =>
     ({ id, number, historical, description: number })))
 
 const newIncident = async (number: string) => api

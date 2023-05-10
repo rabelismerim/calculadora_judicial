@@ -1,6 +1,6 @@
 const getPermissions = () => api
   .get('/user/detail/')
-  .then(({ user }: any) => user)
+  .then((result: any) => result?.user || {})
   .then((user: any = {}) => {
     const {
       userpicture: picture,
