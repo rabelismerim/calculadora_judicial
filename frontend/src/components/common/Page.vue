@@ -28,17 +28,17 @@ const isOpen = $ref(false)
       <div
         class="relative flex-1 grid tween-800"
         :class="{
-          'lg:-translate-x-284px lg:w-[calc(100vw+284px)]': !isOpen && $slots.menu,
-          'lg:grid-cols-[320px_1fr]': $slots.menu,
+          'lg:-translate-x-320px lg:w-[calc(100vw+320px)]': !isOpen && $slots.menu,
+          'lg:grid-cols-[356px_1fr]': $slots.menu,
         }"
       >
         <div
           v-if="$slots.menu"
-          class="fixed z-10 inset-block-0 pt-14 pb-10 left-0 max-w-80  lg:py-0 lg:relative bg--base pb-0 border-r-1 border-black/12 tween-800"
-          :class="{ '-translate-x-284px lg:translate-0': !isOpen }"
+          class="fixed z-10 inset-block-0 pt-14 pb-10 lg:py-0 left-0 max-w-356px lg:relative bg--base pb-0 border-r-1 border-black/12 tween-800"
+          :class="{ '-translate-x-314px lg:translate-0': !isOpen }"
         >
           <div class="relative pr-9 h-full max-h-[calc(100vh-96px)] overflow-x-hidden overflow-y-auto scroll-left">
-            <div class="p-8 pr-0">
+            <div class="py-8 pl-6 pr-0">
               <div v-if="$slots.menuheader" class="sticky top-8 z-1">
                 <slot name="menuheader" />
               </div>
@@ -49,7 +49,7 @@ const isOpen = $ref(false)
             </div>
           </div>
           <div
-            class="absolute right-0 top-0 bottom-0 p-1 flex cursor-pointer"
+            class="absolute right-0 top-0 bottom-0 px-1 pt-15 pb-11 lg:py-1 flex cursor-pointer"
             @click="isOpen = !isOpen"
           >
             <div class="hover:bg--secondary/15 pt-7 flex-1 flex flex-col items-center gap-4 rounded-2 tween">
