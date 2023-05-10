@@ -57,12 +57,14 @@ const openNewCalculation = (creditor: any) => {
   newCalculation.creditorId = id
   showCreateNewCalculation = true
 }
+const openCalculation = (creditorId: string, calculationId: string) =>
+  router.push({ path: `/projeto/${project.id}/credor/${creditorId}/calculo/${calculationId}` })
 const createNewCalculation = async () => {
   loading = true
   try {
     const { creditorId } = newCalculation
     const { id } = await calculationService.newCalculation(newCalculation)
-    router.push({ path: `/projeto/${project.id}/credor/${creditorId}/calculo/${id}` })
+    openCalculation(creditorId, id)
   }
   catch (error) {
     printError('ERROR ON CREATE NEW CALCULATION:', error)
@@ -114,52 +116,6 @@ onMounted(() => {
   loadIncidents()
   loadProject()
 })
-
-interface TableColumn {
-  name: string
-  label: string
-  field: string
-  required?: boolean
-  align?: 'left' | 'right' | 'center'
-  sortable?: boolean
-  style?: string
-  format?: (val: any, row: any) => any
-}
-const calculationColumns: TableColumn[] = [
-  {
-    name: 'id',
-    field: 'number',
-    label: 'Id',
-    required: true,
-    align: 'left',
-    style: 'width: 100px',
-    sortable: true,
-  },
-  {
-    name: 'incident',
-    field: 'incident',
-    format: ({ number }: any) => number || '-',
-    label: 'N° Incidente',
-    align: 'left',
-    style: 'width: 100px',
-    sortable: true,
-  },
-  {
-    name: 'created',
-    field: 'createdAt',
-    format: (date: string) => formatDateFromBackend(date),
-    label: 'Data de Criação',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'status',
-    field: 'stepDisplay',
-    label: 'Status',
-    align: 'left',
-    sortable: true,
-  },
-]
 </script>
 
 <template>
@@ -252,6 +208,7 @@ const calculationColumns: TableColumn[] = [
         :key="recovering.id"
         :title="recovering.entity.name"
         :subtitle="formatLegalNumber(recovering.entity.legalNumber)"
+        class="w-[min(calc(100vw_-_106px),100%)_!important]"
       >
         <template #header-left>
           <IconHint
@@ -262,7 +219,7 @@ const calculationColumns: TableColumn[] = [
           />
         </template>
         <template #header-right>
-          <div class="flex-1 flex gap-2 justify-end items-center pl-8 pr-4">
+          <div class="flex-1 flex gap-2 justify-end items-center pl-4 pr-4">
             <div class="font-bold flex no-wrap items-center gap-2">
               Total: R$ 0
               <Hint value="Total dos Cálculos Aprovados." />
@@ -275,7 +232,8 @@ const calculationColumns: TableColumn[] = [
             :key="creditor.id"
             :title="creditor.entity.name"
             :subtitle="formatLegalNumber(creditor.entity.legalNumber)"
-            class="pl-6 border-x-0 border-b-0 rounded-0"
+            class="border-x-0 border-b-0 rounded-0"
+            summary-class="pl-8"
             :class="{ 'border-t-0': index === 0 }"
             @open="loadCalculations(creditor)"
           >
@@ -287,7 +245,7 @@ const calculationColumns: TableColumn[] = [
               />
             </template>
             <template #header-right>
-              <div class="flex-1 flex items-center pl-8">
+              <div class="flex-1 flex items-center">
                 <Btn
                   label="Novo Cálculo"
                   icon="i-carbon-add-filled"
@@ -296,10 +254,9 @@ const calculationColumns: TableColumn[] = [
                 />
               </div>
             </template>
-            <QTable
-              :rows="creditor.calculations || []"
-              :columns="calculationColumns"
-              flat
+            <CalculationTable
+              v-model="creditor.calculations"
+              @row-click="(row) => openCalculation(creditor.id, row.id)"
             />
           </Accordion>
         </div>
@@ -375,3 +332,10 @@ const calculationColumns: TableColumn[] = [
 meta:
   authentication: true
 </route>
+
+<style>
+.calculation-table thead {
+  background-color: #3331;
+  font-weight: 600;
+}
+</style>
