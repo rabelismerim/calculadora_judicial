@@ -26,15 +26,15 @@ interface Options extends Creditor {
 }
 const getCreditors = (id: string) => api
   .get(`/v1/creditors/project/${id}/`)
-  .then(({ creditors }: any) => creditors)
+  .then((result: any) => result?.creditors)
 
 const getCreditor = (id: string) => api
   .get(`/v1/creditors/detail/${id}/`)
-  .then(({ creditor }: any) => creditor)
+  .then((result: any) => result?.creditor)
 
 const getOptions = () => api
   .get('/v1/creditors/options/')
-  .then(({ options }: any) => options)
+  .then((result: any) => result?.options)
 
 const setCreditor = async (creditor: Creditor) => {
   const { id, recoveringsId, name, legalNumber, claimCreditor } = creditor
