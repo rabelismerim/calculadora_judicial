@@ -31,10 +31,10 @@ const emit = defineEmits(['click', 'press'])
     class="group relative overflow-hidden text-[1.05rem] min-h-10 font-semibold px-4 py-2 flex gap-[.5em] no-wrap items-center tween cursor-pointer"
     :class="{
       'text--color border-1 border--color rounded-.5': outlined,
-      'hover:bg--base/10 text--color rounded-.5': transparent,
+      'hover:bg--color/10 text--color rounded-.5': transparent,
       'bg--color text-white border-1 border-black/12 rounded-.5': !transparent && !outlined,
       'h-full rounded-0 min-w-fit': grow,
-      'active:scale-110': !grow && !disabled,
+      'active:scale-110': !grow && !disabled && !transparent,
     }"
     :style="{
       'justify-content': align,
