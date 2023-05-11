@@ -103,6 +103,7 @@ declare global {
   const provide: typeof import('vue')['provide']
   const range: typeof import('@jrnwn/utils')['range']
   const rangeBetween: typeof import('./composables/utils')['rangeBetween']
+  const ratesService: typeof import('./services/ratesService')['default']
   const reactify: typeof import('@vueuse/core')['reactify']
   const reactifyObject: typeof import('@vueuse/core')['reactifyObject']
   const reactive: typeof import('vue')['reactive']
@@ -440,6 +441,7 @@ declare module 'vue' {
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
     readonly range: UnwrapRef<typeof import('@jrnwn/utils')['range']>
     readonly rangeBetween: UnwrapRef<typeof import('./composables/utils')['rangeBetween']>
+    readonly ratesService: UnwrapRef<typeof import('./services/ratesService')['default']>
     readonly reactify: UnwrapRef<typeof import('@vueuse/core')['reactify']>
     readonly reactifyObject: UnwrapRef<typeof import('@vueuse/core')['reactifyObject']>
     readonly reactive: UnwrapRef<typeof import('vue')['reactive']>
