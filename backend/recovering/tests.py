@@ -51,3 +51,6 @@ class RecoveringTest(AbstractTest):
         parameters['entity']['legal_number'] = 'invalid legal number'
         response = self.post(self.path, parameters)  # invalid legal number
         self.assertEqual(response.status_code, 400)
+
+    base_url = '/djud/api/v2/'
+    base_path = 'v2/'

@@ -1,5 +1,5 @@
 from django.db.models import F
-from base.schemas import AbstractChoicesSerializer
+from base.schemas import AbstractChoicesSerializer, AbstractDescriptionSchema
 from core.abstract.schemas import AbstractModelSchema
 from core.dttuser.schemas import UserDttSchema
 from projects.court.models import Court
@@ -82,14 +82,11 @@ class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):  # V1
     # user_names = serializers.ListField(read_only=True)
     executors = serializers.ListField(write_only=True, child=UserSerializer())
     approvers = serializers.ListField(write_only=True, child=UserSerializer())
+    special_approvers = serializers.ListField(write_only=True, child=UserSerializer(), required=False)
     reviewers = serializers.ListField(write_only=True, child=UserSerializer())
 
-    project_users = ProjectUserProjectSchema(
-        read_only=True, many=True, source='engagement.users')
-
-    status_display = serializers.CharField(
-        source='get_status_display', read_only=True)
-
+    project_users = ProjectUserProjectSchema(read_only=True, many=True, source='engagement.users')
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
     num_recovering = serializers.IntegerField(read_only=True)
 
     class Meta:
@@ -138,11 +135,14 @@ class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):  # V1
         executors = [x['id'] for x in executors]
         approvers = data.pop('approvers', [])
         approvers = [x['id'] for x in approvers]
+        special_approvers = data.pop('special_approvers', [])
+        special_approvers = [x['id'] for x in special_approvers]
         reviewers = data.pop('reviewers', [])
         reviewers = [x['id'] for x in reviewers]
         data['engagement'] = engagement_data
         data['executors'] = executors
         data['approvers'] = approvers
+        data['special_approvers'] = special_approvers
         data['reviewers'] = reviewers
         return super(ProjectSchema, self).validate(data)
 
@@ -171,8 +171,7 @@ class ProjectV2Schema(serializers.ModelSerializer, AbstractModelSchema):  # V2
     court = CourtSchema(many=False, read_only=True)
     court_id = serializers.UUIDField(write_only=True)
 
-    engagement = ProjectEngagementSchema(
-        many=False, exclude=('project_id', 'users', 'user_names'))
+    engagement = ProjectEngagementSchema(many=False, exclude=('project_id', 'users', 'user_names'))
     recoverings = RecoveringV2Schema(source='recovering_set', many=True, read_only=False, fields=('id', 'entity'))
 
     legal_manager = UserDttSchema(many=False, read_only=True)
@@ -193,14 +192,11 @@ class ProjectV2Schema(serializers.ModelSerializer, AbstractModelSchema):  # V2
     # user_names = serializers.ListField(read_only=True)
     executors = serializers.ListField(write_only=True, child=UserSerializer())
     approvers = serializers.ListField(write_only=True, child=UserSerializer())
+    special_approvers = serializers.ListField(write_only=True, child=UserSerializer(), required=False)
     reviewers = serializers.ListField(write_only=True, child=UserSerializer())
 
-    project_users = ProjectUserProjectSchema(
-        read_only=True, many=True, source='engagement.users')
-
-    status_display = serializers.CharField(
-        source='get_status_display', read_only=True)
-
+    project_users = ProjectUserProjectSchema(read_only=True, many=True, source='engagement.users')
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
     num_recovering = serializers.IntegerField(read_only=True)
 
     class Meta:
@@ -249,13 +245,16 @@ class ProjectV2Schema(serializers.ModelSerializer, AbstractModelSchema):  # V2
         executors = [x['id'] for x in executors]
         approvers = data.pop('approvers', [])
         approvers = [x['id'] for x in approvers]
+        special_approvers = data.pop('special_approvers', [])
+        special_approvers = [x['id'] for x in special_approvers]
         reviewers = data.pop('reviewers', [])
         reviewers = [x['id'] for x in reviewers]
         data['engagement'] = engagement_data
         data['executors'] = executors
         data['approvers'] = approvers
+        data['special_approvers'] = special_approvers
         data['reviewers'] = reviewers
-        return super(ProjectSchema, self).validate(data)
+        return super(ProjectV2Schema, self).validate(data)
 
 
 class ProjectListSchema(ProjectSchema):
@@ -278,6 +277,46 @@ class ProjectListSchema(ProjectSchema):
         fields = ("id", 'description', 'status', 'status_display', 'created_at', 'project_users',
                   'engagement', 'num_recovering', 'is_adm', 'process_number', 'legal_manager',
                   'calculation_manager', 'financial_manager', 'legal_partner', 'financial_partner')
+
+
+class ProjectEditSchema(AbstractDescriptionSchema):
+    """
+    Serializes the fields of the Project model for use in the API.
+
+    This class defines a Django REST Framework serializer that inherits from a custom
+    AbstractDescriptionSchema class. The serializer converts instances of the Project
+    model to and from JSON format, and validates incoming data based on the model's fields.
+
+    Usage example:
+    serializer = ProjectSchema()
+    """
+    description = serializers.CharField(required=False)
+    process_number = serializers.CharField(required=False)
+
+    judge_id = serializers.UUIDField(required=False)
+    lawyer_id = serializers.UUIDField(required=False)
+    region_id = serializers.UUIDField(required=False)
+    court_id = serializers.UUIDField(required=False)
+    legal_manager_id = serializers.IntegerField(required=False)
+    calculation_manager_id = serializers.IntegerField(required=False)
+    financial_manager_id = serializers.IntegerField(required=False)
+    legal_partner_id = serializers.IntegerField(required=False)
+    financial_partner_id = serializers.IntegerField(required=False)
+
+    class Meta:
+        model = Project
+
+        fields = ('project_start', 'project_end', 'process_number', 'competence', 'date_rj_request', 'date_rj_filing',
+                  'date_citation', 'description', 'judge_id', 'lawyer_id', 'region_id', 'court_id', 'legal_manager_id',
+                  'calculation_manager_id', 'financial_manager_id', 'legal_partner_id', 'financial_partner_id')
+
+    def validate(self, data):
+        """
+        Validate the project schema by extracting the necessary data from Project object.
+        :param data: Project object.
+        :returns: Updated Project object with extracted data.
+        """
+        return super(ProjectEditSchema, self).validate(data)
 
 
 exclude = ('create_user', 'created_at',

@@ -93,7 +93,7 @@ class HistoricalSchema(AbstractDescriptionSchema):
         fields = ('step', 'historical')
 
 
-class CalculationSchema(AbstractDescriptionSchema):
+class CalculationSchema(AbstractDescriptionSchema):  # V1
     """
     The CalculationSchema class is a serializer for the Calculation model fields. It inherits from the
      AbstractModelSchema class. It includes the following fields:
@@ -125,6 +125,89 @@ class CalculationSchema(AbstractDescriptionSchema):
     statement = StatementSchema(read_only=True, exclude=('calculation_id',))
 
     comparative = ComparativeSchema(read_only=True, exclude=('statement_id',))
+
+    step_display = serializers.CharField(source='get_step_display', read_only=True)
+    classes = ClassesSerializer(source='get_classes', read_only=True, many=True)
+    premises = PremiseSchema(many=True, read_only=True)
+    historical = serializers.SerializerMethodField(read_only=True)
+
+    def get_historical(self, obj):
+        return HistoricalSchema(obj).data
+
+    class Meta:
+        model = Calculation
+        fields = '__all__'
+        read_only_fields = ('step', 'number')
+
+    def validate(self, data):
+        data['verdict'] = data.pop('verdict_set', None)
+        data['funds'] = data.pop('funds_set', None)
+        return super(CalculationSchema, self).validate(data)
+
+    def extract_historical_lists(self, data):
+        # Inicializa uma lista para conter os valores históricos
+        historical_values = []
+
+        data_copy = data.copy()
+
+        # Percorre as chaves do objeto serializado
+        for key in data_copy.keys():
+            value = data[key]
+
+            # Se o valor for uma lista e a chave for "historical", adiciona o conteúdo à lista de valores históricos
+            if isinstance(value, list) and key == "historical":
+                value = data.pop(key)
+                historical_values.extend(value)
+
+
+            # Se o valor for um dicionário, chama recursivamente esta função para verificar se ele contém uma chave "historical"
+            elif isinstance(value, dict):
+                historical_values.extend(self.extract_historical_lists(value))
+
+                if key == "historical":
+                    data.pop(key)
+
+        # Retorna a lista completa de valores históricos encontrados em todo o objeto
+        return historical_values
+
+    def to_representation(self, instance):
+        self.fields['historical'].context.update({'self': instance})
+        data = super().to_representation(instance)
+        # historical_lists = self.extract_historical_lists(data)
+        # data['historical_data'] = historical_lists
+        return data
+
+
+class CalculationV2Schema(AbstractDescriptionSchema):  # V2
+    """
+    The CalculationSchema class is a serializer for the Calculation model fields. It inherits from the
+     AbstractModelSchema class. It includes the following fields:
+
+    creditor: a CreditorSchema instance that is read-only and not serialized.
+    creditor_id: a UUIDField instance that is write-only and serialized.
+    verdict: a VerdictSchema instance that represents a collection of verdicts related to the calculation.
+    criterion: a CriterionSchema instance that is read-only and not serialized.
+    funds: a FundsSchema instance that represents a collection of funds related to the calculation.
+    statement: a StatementSchema instance that is read-only and not serialized.
+    The Meta class is used to specify the Calculation model and all fields are serialized.
+    The validate method is overridden to handle the verdict_set and funds_set fields and returns the validated data.
+    """
+
+    incident = IncidentSchema(many=False, read_only=True)
+    incident_id = serializers.UUIDField(write_only=True)
+    creditor_id = serializers.UUIDField(write_only=True)
+
+    # verdict = VerdictSchema(source='verdict_set', many=True, required=False, exclude=('calculation_id',))
+    # criterion = CriterionSchema(many=False, read_only=True)
+    # creditor = CreditorSchema(many=False, read_only=True)
+    # funds = FundsSchema(source='funds_set', many=True,
+    #                     required=False, exclude=('calculation_id',), read_only=True)
+    # fund_irrf = FundIRRFSchema(source='fundirrf_set', many=True,
+    #                            required=False, exclude=('calculation_id',), read_only=True)
+    # fund_document = FundDocumentSchema(source='fund_document_set', many=True,
+    #                                    required=False, exclude=('calculation_id',), read_only=True)
+    # statement = StatementSchema(read_only=True, exclude=('calculation_id',))
+    # comparative = ComparativeSchema(read_only=True, exclude=('statement_id',))
 
     step_display = serializers.CharField(source='get_step_display', read_only=True)
     classes = ClassesSerializer(source='get_classes', read_only=True, many=True)

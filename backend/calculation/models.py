@@ -6,14 +6,18 @@ to add specific fields as needed.
 """
 import datetime
 
+from django.contrib.auth.models import Group
 from django.db import models
 from django.db.models import Sum, F
 from django.utils.translation import gettext_lazy as _
+from rest_framework import serializers
 
 from calculation.comparative.signals import new_calc
 from calculation.premise.models import Premise
+from config.settings import GROUP_NAME_EXECUTOR, GROUP_NAME_REVIEWER, GROUP_NAME_APPROVER, GROUP_NAME_SPECIAL_APPROVE
 from core.abstract.models import AbstractModel
 from creditors.models import Creditor
+from projects.project_user.models import ProjectUser
 from rates.models import Rate
 from utils import check_choice
 
@@ -82,6 +86,13 @@ class Calculation(AbstractModel):
     # True If edital AJ else False
     has_edital = models.BooleanField(_('Edital art. 7º § 2 - 11.101/2005'), default=False)
     premises = models.ManyToManyField(Premise, blank=True)
+    is_adm = models.BooleanField(default=True)  # É administrativa ou judicial
+
+    approver = models.ForeignKey(ProjectUser, on_delete=models.PROTECT, null=True, related_name='approver', blank=True)
+    special_approver = models.ForeignKey(ProjectUser, on_delete=models.PROTECT, null=True,
+                                         related_name='special_approver', blank=True)
+    executor = models.ForeignKey(ProjectUser, on_delete=models.PROTECT, null=True, related_name='executor', blank=True)
+    reviewer = models.ForeignKey(ProjectUser, on_delete=models.PROTECT, null=True, related_name='reviewer', blank=True)
 
     def __str__(self):
         return f'{self.number} || {self.get_step_display()}'
@@ -204,10 +215,51 @@ class Calculation(AbstractModel):
         """
         return self.creditor.recovering.project.lawyer.description
 
-    def set_step_by_char(self, char: str):
-        """Set value of current step"""
-        check_choice(char, CHOICES_STEP)
-        self.step = char
+    def get_project_user(self, user, codename):
+        """
+        Returns a ProjectUser object that represents the given user assigned to a group with a specific permission codename.
+
+        :param user: User instance for which a ProjectUser object will be retrieved.
+        :param codename: The codename of the permission that the group must have.
+        :return: A ProjectUser object representing the user if it exists, None otherwise.
+        """
+        return ProjectUser.objects.filter(user=user, groups__permissions__codename=codename,
+                                          projectengagement__project__recovering__creditor__calculation__id=
+                                          self.id).values('id', group_name=F('groups__name')).first()
+
+    def set_step_by_char(self, next_step: str, user=None):
+        """
+        Sets the current step of the project engagement to a new value represented by a character.
+
+        :param next_step: The character representing the new step of the project engagement. Must be one of CHOICES_STEP.
+        :param user: User instance of the user executing the change. If given, the function checks if this user has the
+        appropriate permission to execute the step change.
+        :raises: ValidationError if the user doesn't have the appropriate permission or is already assigned to another
+        role in the project.
+        """
+        check_choice(next_step, CHOICES_STEP)
+        if user:
+            codename = f'can_change_{self.step.lower()}_to_{next_step.lower()}'
+            user_executed = self.get_project_user(user, codename)
+            if user_executed:
+                group_name = user_executed['group_name']
+                user_groups = {
+                    GROUP_NAME_EXECUTOR: 'executor_id',
+                    GROUP_NAME_APPROVER: 'approver_id',
+                    GROUP_NAME_SPECIAL_APPROVE: 'special_approver_id',
+                    GROUP_NAME_REVIEWER: 'reviewer_id'
+                }
+                if group_name in user_groups:
+                    selected_group = user_groups.pop(group_name)
+                    for group in user_groups.values():
+                        group_attribute = getattr(self, group)
+                        if group_attribute == user_executed['id']:
+                            raise serializers.ValidationError(
+                                _('The user is already in the role of {}, not being able to have two or more roles in '
+                                  'the same project').format(
+                                    group.replace('_id', '').replace('_', ' ').title()))
+                    setattr(self, selected_group, user_executed['id'])
+        self.step = next_step
         self.save()
 
     def get_classes(self) -> list:
@@ -299,4 +351,27 @@ class Calculation(AbstractModel):
             return True if statement.get_statement_pj() else False
         return False
 
-    # def get_
+
+class StepAction:
+    class Option:
+        def __init__(self, name, lst):
+            self.name = name
+            self.lst = lst
+
+    def __init__(self, current_step, next_step):
+        self.current_step = current_step
+        self.next_step = next_step
+        options = [
+            self.Option(GROUP_NAME_EXECUTOR, [('r', 's'), ('s', 'c')]),
+            self.Option(GROUP_NAME_REVIEWER, [('c', 'e'), ('c', 'b'), ('c', 's'), ('c', 'r')]),
+            self.Option(GROUP_NAME_APPROVER, [('e', 'a'), ('e', 'c'), ('e', 'r')]),
+            self.Option(GROUP_NAME_SPECIAL_APPROVE, [('b', 'a'), ('b', 'c'), ('b', 'r')])
+        ]
+
+        self.options = {o.name: o.lst for o in options}
+
+    def compare_options(self):
+        for name, lst in self.options.items():
+            if (self.current_step.lower(), self.next_step.lower()) in lst:
+                return name
+        return None

@@ -1,7 +1,7 @@
 from django.contrib.auth.models import Group
 from django.db import transaction
 
-from config.settings import GROUP_NAME_APPROVER, GROUP_NAME_EXECUTOR, GROUP_NAME_REVIEWER
+from config.settings import GROUP_NAME_APPROVER, GROUP_NAME_EXECUTOR, GROUP_NAME_REVIEWER, GROUP_NAME_SPECIAL_APPROVE
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from rest_framework import status
@@ -11,7 +11,7 @@ from core.entity.models import Entity
 from core.permission.views import CheckHasPermission, check_query_permission
 from projects.models import Project
 from projects.project_user.models import ProjectUser
-from projects.schemas import ProjectSchema, ProjectListSchema, ProjectV2Schema
+from projects.schemas import ProjectSchema, ProjectListSchema, ProjectV2Schema, ProjectEditSchema
 from projects.engagement.models import Engagement, ProjectEngagement
 from recovering.models import Recovering
 from utils import get_user_model, _, doc
@@ -80,14 +80,26 @@ class AbstractProjectApi(AbstractViewApi):
 class ProjectDetailApi(AbstractProjectApi):  # V1
     """HTTP methods for Project Detail"""
     serializer_class = ProjectSchema
-    http_method_names = ['get']
+    http_method_names = ['get', 'put']
+    layout_serializers = {
+        'default': ProjectSchema,
+        'get': ProjectSchema,
+        'put': ProjectEditSchema,
+    }
+    query_params = []
 
 
 class ProjectDetailV2Api(AbstractProjectApi):  # V2
     """HTTP methods for Project Detail"""
     serializer_class = ProjectV2Schema
-    http_method_names = ['get']
+    http_method_names = ['get', 'put']
     allowed_versions = ['v1', 'v2']
+    layout_serializers = {
+        'default': ProjectV2Schema,
+        'get': ProjectV2Schema,
+        'put': ProjectEditSchema,
+    }
+    query_params = []
 
 
 class ProjectApi(AbstractProjectApi):
@@ -112,33 +124,34 @@ class ProjectApi(AbstractProjectApi):
             engagements = new_project.pop('engagement')
             executors = new_project.pop('executors', [])
             approvers = new_project.pop('approvers', [])
+            special_approvers = new_project.pop('special_approvers', [])
             reviewers = new_project.pop('reviewers', [])
 
             users = []
 
-            group_executor, created = Group.objects.get_or_create(
-                name=GROUP_NAME_EXECUTOR)
-            group_approver, created = Group.objects.get_or_create(
-                name=GROUP_NAME_APPROVER)
-            group_reviewer, created = Group.objects.get_or_create(
-                name=GROUP_NAME_REVIEWER)
+            group_executor, created = Group.objects.get_or_create(name=GROUP_NAME_EXECUTOR)
+            group_approver, created = Group.objects.get_or_create(name=GROUP_NAME_APPROVER)
+            group_special, created = Group.objects.get_or_create(name=GROUP_NAME_SPECIAL_APPROVE)
+            group_reviewer, created = Group.objects.get_or_create(name=GROUP_NAME_REVIEWER)
 
             for user_django_id in executors:
-                project_user = ProjectUser.objects.create(
-                    user_id=user_django_id)
+                project_user = ProjectUser.objects.create(user_id=user_django_id)
                 project_user.groups.add(group_executor.id)
                 project_user.save()
                 users.append(project_user.id)
             for user_django_id in approvers:
-                project_user = ProjectUser.objects.create(
-                    user_id=user_django_id)
+                project_user = ProjectUser.objects.create(user_id=user_django_id)
                 project_user.groups.add(group_approver.id)
                 project_user.save()
                 users.append(project_user.id)
             for user_django_id in reviewers:
-                project_user = ProjectUser.objects.create(
-                    user_id=user_django_id)
+                project_user = ProjectUser.objects.create(user_id=user_django_id)
                 project_user.groups.add(group_reviewer.id)
+                project_user.save()
+                users.append(project_user.id)
+            for user_django_id in special_approvers:
+                project_user = ProjectUser.objects.create(user_id=user_django_id)
+                project_user.groups.add(group_special.id)
                 project_user.save()
                 users.append(project_user.id)
 
@@ -147,12 +160,10 @@ class ProjectApi(AbstractProjectApi):
             project_engagement.save()
 
             new_project['engagement_id'] = project_engagement.id
-            project = self.model.objects.create(
-                **new_project)  # Create Project
+            project = self.model.objects.create(**new_project)  # Create Project
 
             for number in engagements:  # Create Engagement Project number
-                Engagement.objects.create(
-                    **{'number': number, 'project_id': project_engagement.id})
+                Engagement.objects.create(**{'number': number, 'project_id': project_engagement.id})
 
             for recovering in recoverings:
                 entity = recovering.pop('entity')

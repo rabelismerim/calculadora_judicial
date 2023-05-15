@@ -149,16 +149,16 @@ class AbstractViewApi(generics.GenericAPIView):
     allow_cache: bool = True
     allowed_versions = ['v1']
 
-    def get_permissions(self):
-        """
-        Instantiates, append CheckAPIVersion and returns the list of permissions that this view requires.
-        """
-        permissions = super().get_permissions()
-
-        # Adicione suas permissões personalizadas aqui
-        permissions.append(CheckAPIVersion())
-
-        return permissions
+    # def get_permissions(self):
+    #     """
+    #     Instantiates, append CheckAPIVersion and returns the list of permissions that this view requires.
+    #     """
+    #     permissions = super().get_permissions()
+    #
+    #     # Adicione suas permissões personalizadas aqui
+    #     permissions.append(CheckAPIVersion())
+    #
+    #     return permissions
 
     def get_serializer_class(self):
         if hasattr(self, 'layout_serializers'):
@@ -367,11 +367,11 @@ class AbstractViewApi(generics.GenericAPIView):
         """
         id_ = kwargs.get('id')
         exclude = self.__get_exclude_values()
+        serializer = self.get_serializer_class()
         try:
-            serializer = self.serializer_class(
-                data=request.data, exclude=exclude)
+            serializer = serializer(data=request.data, exclude=exclude)
         except ValueError:
-            serializer = self.serializer_class(data=request.data)
+            serializer = serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data_obj = dict(serializer.validated_data)
         obj = get_object_or_404(self.model, id=id_)

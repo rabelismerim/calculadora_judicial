@@ -23,3 +23,7 @@ class ProjectTest(AbstractTest):
         """Assert get projects detail"""
         response = self.get('projects')
         self.assertEqual(response.status_code, 200)
+
+
+    base_url = '/djud/api/v2/'
+    base_path = 'v2/'

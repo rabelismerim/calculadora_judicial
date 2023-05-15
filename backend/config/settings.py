@@ -33,12 +33,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
-# # SECURITY WARNING: don't run with debug turned on in production!
-# if (str(os.getenv('ENV')) == 'branch') or (str(os.getenv('ENV')) == 'dev') or (str(os.getenv('ENV')) == 'hml'):
-#     DEBUG = str(os.getenv('debug')) == "True"
-# else:
-#     DEBUG = str(os.getenv('ENV')) == "True"
-
 PASSWD_DEV = str(os.getenv('PASSWD_DEV', 'fake_passwd'))
 DTT_EMAIL = os.getenv('DTT_EMAIL')
 

@@ -47,12 +47,12 @@ def days360(start_date, end_date) -> int:
 
 
 def _(text):
-    return gettext_lazy(text)
+    return gettext_lazy(text.strip('\ufeff'))
 
 
 def doc(docstring):
     def decorate(fn):
-        fn.__doc__ = _(docstring)
+        fn.__doc__ = _(docstring.lstrip())
         return fn
 
     return decorate

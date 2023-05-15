@@ -65,18 +65,18 @@ class ComparativeDetailApi(AbstractViewApi):
         return JsonResponse({'comparative': comparative_data})
 
     @doc(_("""This method handles PUT requests for the view. It expects input data that conform to the serializer used by 
-        the view class. It updates the approved_calculation or date object of a specific comparative object using the 
-        given calculation_id from the query parameters and serializes the updated object in JSON format before 
-        returning it as an HTTP response. 
+    the view class. It updates the approved_calculation or date object of a specific comparative object using the 
+    given calculation_id from the query parameters and serializes the updated object in JSON format before 
+    returning it as an HTTP response. 
 
-        Parameters:
-            request: The HTTP request object.
-            args: Any additional positional arguments passed to the method.
-            kwargs: Any additional keyword arguments passed to the method, with calculation_id identifying the 
-            comparative object to update.
-        Returns:
-            JsonResponse: An HTTP response containing the updated and serialized comparative object data.
-            """))
+    Parameters:
+        request: The HTTP request object.
+        args: Any additional positional arguments passed to the method.
+        kwargs: Any additional keyword arguments passed to the method, with calculation_id identifying the 
+        comparative object to update.
+    Returns:
+        JsonResponse: An HTTP response containing the updated and serialized comparative object data.
+    """))
     def put(self, request, *args, **kwargs):
         calculation_id = kwargs.get('calculation_id')
         serializer = self.serializer_class(data=request.data)

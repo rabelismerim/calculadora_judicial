@@ -43,7 +43,7 @@ def frontend_index(request):
 
 
 urlpatterns = [
-    # path('__debug__/', include('debug_toolbar.urls')),
+    path('__debug__/', include('debug_toolbar.urls')),
     # API Authentication
     path('djud/api-auth/', include("rest_framework.urls")),
 
@@ -52,7 +52,8 @@ urlpatterns = [
     path(f'{BASE_URL_NEXT}projects/', include(("projects.urls.next", 'v2'), namespace='teste2')),
 
     # # Recovering
-    path(f'{BASE_URL}recovering/', include("recovering.urls")),
+    path(f'{BASE_URL}recovering/', include("recovering.urls.current")),
+    path(f'{BASE_URL_NEXT}recovering/', include("recovering.urls.next")),
 
     # Creditors
     path(f'{BASE_URL}creditors/', include("creditors.urls")),
@@ -61,7 +62,8 @@ urlpatterns = [
     path(f'{BASE_URL}claim/', include("base.urls")),
 
     # Calculation
-    path(f'{BASE_URL}calculation/', include("calculation.urls")),
+    path(f'{BASE_URL}calculation/', include("calculation.urls.current")),
+    path(f'{BASE_URL_NEXT}calculation/', include("calculation.urls.next")),
 
     # Rates
     path(f'{BASE_URL}rates/', include("rates.urls")),

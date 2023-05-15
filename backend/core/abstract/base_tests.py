@@ -22,6 +22,7 @@ class BaseTests:
         generate_name(): Generates a fake name using Faker library.
     """
     faker = Faker()
+    base_path = 'v1/'
 
     @staticmethod
     def execute_before_and_after(func):
@@ -75,7 +76,7 @@ class BaseTests:
         if path and self.has_get():
             if str(path).endswith('/') is False:
                 path = str(path) + '/'
-        return path
+        return f'{self.base_path}{path}'
 
     def get_path_post(self):
         """Returns the path for the test to be executed, adding a trailing slash if it's missing."""
