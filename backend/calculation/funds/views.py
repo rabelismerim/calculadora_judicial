@@ -108,6 +108,51 @@ class FundsApi(AbstractFundsApi):
         return JsonResponse({'funds': self.serializer_class(fund, many=False).data}, status=status.HTTP_201_CREATED)
 
 
+class FundsCalculationApi(AbstractViewApi):
+    """Define the FundsApi view class for handling HTTP methods related to Funds.
+
+    This view class extends the AbstractViewApi class, which provides a basic implementation
+    for common API actions. The FundsApi supports HTTP POST and GET methods, and uses the FundsSchema
+    serializer for input/output validation. The view requires authenticated users with appropriate
+    permissions to access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission
+    permission classes.
+
+    Attributes:
+        http_method_names (list): A list of HTTP methods supported by this view.
+        serializer_class (class): The serializer class for input/output validation.
+        permission_classes (list): A list of permission classes for user authentication and authorization.
+        model (class): The model class associated with this view.
+        query_params (list): A list of dictionaries, each specifying a query parameter for the API.
+
+    Examples:
+        To retrieve funds with a matching description:
+        ```
+        GET /api/v1/calculation/funds/?funds=funds_name
+        ```
+    """
+    http_method_names = ['get']
+    serializer_class = FundsSchema
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    model = Funds
+    query_params = []
+
+    docs = docs_fund.copy()
+    operation_id_base = 'Get calc funds'
+    @doc(_("""This method handles GET requests for the view. It retrieves a list of funds object using the given 
+            calculation_id from the query parameters and serializes the result into JSON format before returning it as an 
+            HTTP response. 
+
+                Returns:
+                    JsonResponse: An HTTP response containing the serialized comparative data retrieved.
+                """))
+    def get(self, request, *args, **kwargs):
+        calculation_id = kwargs.get('calculation_id')
+        print(calculation_id, 'get calc id\n')
+        funds = self.model.objects.filter(calculation_id=calculation_id)
+        funds_data = self.serializer_class(funds, many=True).data
+        return JsonResponse({'funds': funds_data})
+
+
 class FundsDetailApi(AbstractFundsApi):
     """Define the FundsApi view class for handling HTTP methods related to Funds.
 
@@ -133,6 +178,7 @@ class FundsDetailApi(AbstractFundsApi):
     """
     http_method_names = ['get', 'delete']
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    operation_id_base = 'Get Calc fund'
     docs = docs_fund.copy()
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific fund 
         object using the given id from the query parameters and serializes the result into JSON format before returning it

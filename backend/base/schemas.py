@@ -34,7 +34,8 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 class AbstractDescriptionSchema(serializers.ModelSerializer, AbstractModelSchema):
     """This class uses serializers.ModelSerializer and AbstractModelSchema to serialize the project fields of the
      AbstractDescription model."""
-    historical = UpdateUserSerializer(source='get_historical', many=True, read_only=True)
+    # TODO V2 ter um get para filtrar pelo id do objeto
+    # historical = UpdateUserSerializer(source='get_historical', many=True, read_only=True)
 
     class Meta:
         model = AbstractDescription

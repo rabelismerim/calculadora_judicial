@@ -29,7 +29,7 @@ def create_templates():
                      ]
     fund_irrf = [{'label': 'Nome da verba', 'key': 'name', 'type': 'C', 'order': 0, 'is_editable': True,
                   'required': True},
-                     {'label': 'Meses no período', 'key': 'months_period', 'type': 'F', 'order': 1,
+                     {'label': 'Meses no período', 'key': 'months_period', 'type': 'I', 'order': 1,
                       'is_editable': True,
                       'required': True}
                      ]
@@ -84,13 +84,13 @@ def create_templates():
 
     templates = [{'name': f'Documentos', 'description': f'Documento',
                   'fund_main': fund_document,
-                  'end_point': '/juca/api/v1/calculation/funds/ducuments/',
-                  'end_point_main': '/juca/api/v1/calculation/funds/ducuments/',
+                  'end_point': '/djud/api/v1/calculation/funds/documents/',
+                  'end_point_main': '/djud/api/v1/calculation/funds/documents/',
                   'many': False,
                   'fields': fields_verbas_document}, {'name': f'Acordos', 'description': f'Acordo',
                                                       'fund_main': fund_document,
-                                                      'end_point': '/juca/api/v1/calculation/funds/ducuments/',
-                                                      'end_point_main': '/juca/api/v1/calculation/funds/ducuments/',
+                                                      'end_point': '/djud/api/v1/calculation/funds/documents/',
+                                                      'end_point_main': '/djud/api/v1/calculation/funds/documents/',
                                                       'many': False,
                                                       'fields': fields_verbas_document}]
     verbas = ['TST', 'TST.IPCA-E', 'IPCA-E', 'SELIC', 'IGP-M', 'INPC', 'IPCA', 'IGP-DI', 'IPC-FIPE', 'TJSP']

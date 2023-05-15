@@ -56,5 +56,8 @@ class Project(AbstractDescription, AbstractDateRecovering):
     def num_recovering(self) -> number:
         return self.recovering_set.all().count()
 
+    def get_project_users(self):
+        return self.engagement.users.all()
+
     def __str__(self):
         return f"{self.description}"

@@ -52,3 +52,6 @@ class CalculationTest(AbstractTest):
         self.assertEqual(response.status_code, 200)
         self.assertIn('calculation', response.content)
         return response.content['calculation']
+
+    base_url = '/djud/api/v2/'
+    base_path = 'v2/'

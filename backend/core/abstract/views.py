@@ -21,7 +21,9 @@ from rest_framework.utils import formatting
 from rest_framework.schemas.openapi import AutoSchema
 
 from base.schemas import AbstractDescriptionSchema
+from config.settings import ENABLE_CACHE
 from core.drfmsal.schemas import CustomDictField
+from core.permission.views import CheckAPIVersion
 from security.views import Security
 from utils import _
 
@@ -138,12 +140,25 @@ class SimpleFilterBackend(BaseFilterBackend, ABC):
 class AbstractViewApi(generics.GenericAPIView):
     """HTTP methods for Api VIew"""
     filter_backends = (SimpleFilterBackend,)
+    permission_classes = [CheckAPIVersion]
     query_params = []
     model = None
     schema = CustomSchema()
     cache_timeout = 60 * 60 * 24
     cache_version = 'v1'
     allow_cache: bool = True
+    allowed_versions = ['v1']
+
+    # def get_permissions(self):
+    #     """
+    #     Instantiates, append CheckAPIVersion and returns the list of permissions that this view requires.
+    #     """
+    #     permissions = super().get_permissions()
+    #
+    #     # Adicione suas permissões personalizadas aqui
+    #     permissions.append(CheckAPIVersion())
+    #
+    #     return permissions
 
     def get_serializer_class(self):
         if hasattr(self, 'layout_serializers'):
@@ -298,7 +313,7 @@ class AbstractViewApi(generics.GenericAPIView):
         responses for related models and app instances.
         """
         # TODO fazer referencia da key para um elm, para nao precisar apagar todos os apps relacionados
-        if not self.model or not self.allow_cache:
+        if not self.model or not self.allow_cache or not ENABLE_CACHE:
             return super().dispatch(request, *args, **kwargs)
         fernet = Security()
         cache_key = self.get_cache_key(request)
@@ -352,11 +367,11 @@ class AbstractViewApi(generics.GenericAPIView):
         """
         id_ = kwargs.get('id')
         exclude = self.__get_exclude_values()
+        serializer = self.get_serializer_class()
         try:
-            serializer = self.serializer_class(
-                data=request.data, exclude=exclude)
+            serializer = serializer(data=request.data, exclude=exclude)
         except ValueError:
-            serializer = self.serializer_class(data=request.data)
+            serializer = serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data_obj = dict(serializer.validated_data)
         obj = get_object_or_404(self.model, id=id_)

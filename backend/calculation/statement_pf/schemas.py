@@ -179,17 +179,23 @@ class StatementPFSchema(AbstractDescriptionSchema):
     fund = serializers.SerializerMethodField()
 
     def get_fund(self, obj):
-        tax_days = TaxDaysSchema(source='taxdays', exclude=('statement_pf_id',))
+        tax_days = TaxDaysSchema(source='taxdays', exclude=('statement_pf_id',), allow_null=True)
         default_interest = DefaultInterestSchema(source='defaultinterest', exclude=('statement_pf_id',))
         default_interest_due = DefaultInterestDueSchema(source='defaultinterestdue', exclude=('statement_pf_id',))
         funds_description = FundsDescriptionSchema(source='fundsdescription_set', exclude=('statement_pf_id',),
                                                    many=True)
 
+        obj_tax_days = tax_days.to_representation(obj.taxdays) if hasattr(obj, 'taxdays') else None
+        obj_defaultinterest = default_interest.to_representation(obj.defaultinterest) if hasattr(obj,
+                                                                                                     'defaultinterest') else None
+        obj_defaultinterestdue = default_interest_due.to_representation(obj.defaultinterestdue) if hasattr(obj,
+                                                                                                       'defaultinterestdue') else None
+
         return {
             "statement_id": obj.statement_id,
-            "tax_days": tax_days.to_representation(obj.taxdays),
-            "default_interest": default_interest.to_representation(obj.defaultinterest),
-            "default_interest_due": default_interest_due.to_representation(obj.defaultinterestdue),
+            "tax_days": obj_tax_days,
+            "default_interest": obj_defaultinterest,
+            "default_interest_due": obj_defaultinterestdue,
             "funds_description": funds_description.to_representation(obj.fundsdescription_set.all()),
             "description_display": obj.get_description_display(),
             "status_display": obj.get_status_display(),

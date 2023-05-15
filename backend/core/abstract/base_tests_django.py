@@ -51,6 +51,9 @@ class BaseTestsDjango(BaseTests, TransactionTestCase):
     style = color_style()
     base_url = '/juca/api/v1/'
 
+    def get_base_url(self):
+        return self.base_url
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.keep_db = '--keepdb' in sys.argv
@@ -137,7 +140,7 @@ class BaseTestsDjango(BaseTests, TransactionTestCase):
 
     def __format_url(self, path: str) -> str:
         """Formats and returns the URL for the API endpoint at `path`."""
-        return f'{self.base_url}{path}/'.replace('//', '/')
+        return f'{self.get_base_url()}{path}/'.replace('//', '/')
 
     def __create_payload(self, path, obj, method, code):
         """Creates a payload file for API testing (used for debugging)"""

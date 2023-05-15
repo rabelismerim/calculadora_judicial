@@ -9,7 +9,7 @@ from calculation.funds.models import Funds, MonetaryCorrection
 from calculation.funds.views import CreateFunds
 from calculation.models import Calculation, Incident
 from calculation.premise.views import PremiseCreator
-from calculation.schemas import CalculationSchema, IncidentSchema, ChangeStepSerializer
+from calculation.schemas import CalculationSchema, IncidentSchema, ChangeStepSerializer, CalculationV2Schema
 from calculation.statement.models import Statement
 from calculation.verdict.models import TypeCalculation, Verdict
 from core.abstract.models import UpdateUser
@@ -18,6 +18,7 @@ from django.http import JsonResponse
 from rest_framework import status
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission, CanChangeStep
+from projects.project_user.models import ProjectUser
 from utils import _, doc
 
 docs = {
@@ -84,11 +85,28 @@ class IncidentApi(AbstractViewApi):
     }
 
 
-class CalculationDetailApi(AbstractCalculationApi):
+class CalculationDetailApi(AbstractCalculationApi):  # V1
     """A class for handling detail HTTP requests for a Calculation object
     HTTP methods for retrieving particular Calculation detail"""
     http_method_names = ['get']
     docs = docs.copy()
+    query_params = []
+    docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific Calculation using the
+    given id from the query parameters and serializes the result into JSON format before returning it as
+                 an HTTP response.
+
+                    Returns:
+                        JsonResponse: An HTTP response containing the serialized Calculation data retrieved.
+                    """)
+
+
+class CalculationDetailV2Api(AbstractCalculationApi):  # V2
+    """A class for handling detail HTTP requests for a Calculation object
+    HTTP methods for retrieving particular Calculation detail"""
+    http_method_names = ['get']
+    docs = docs.copy()
+    serializer_class = CalculationV2Schema
+    allowed_versions = ['v1', 'v2']
     query_params = []
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific Calculation using the
     given id from the query parameters and serializes the result into JSON format before returning it as
@@ -225,8 +243,8 @@ class ChangeStepApi(AbstractViewApi):
     http_method_names = ['put']
 
     serializer_class = ChangeStepSerializer
-    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
-    # permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CanChangeStep]
+    # permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CanChangeStep]
     query_params = []
     model = Calculation
     docs = docs.copy()
@@ -238,7 +256,7 @@ class ChangeStepApi(AbstractViewApi):
         Optional field `comments`, a list of objects containing the text field
         Returns a JSON response with the updated Calculation object.
 
-        Possible statuses are `Requested`, `Calculated`, `Revised`, `Approved`, `Failed`, `Specially Approved`,
+        Possible status are `Requested`, `Calculated`, `Revised`, `Approved`, `Failed`, `Specially Approved`,
         """))
     def put(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
@@ -247,7 +265,12 @@ class ChangeStepApi(AbstractViewApi):
         comments = new_calculation.pop('comments', [])
         calculation_id = kwargs.get('id', None)
         calculation = self.model.objects.filter(id=calculation_id).first()
-        calculation.set_step_by_char(new_calculation['next_step'])
+        # get project user related calculation
+        # project_users = ProjectUser.objects.filter(projectengagement__engagement__project__project=calculation.creditor.recovering.project)
+        project_users = calculation.creditor.recovering.project.get_project_users()
+        for x in project_users:
+            gp = x.groups.all().values('name')
+        calculation.set_step_by_char(new_calculation['next_step'], user=request.user)
         calc_comment = StepComment.objects.create(calculation=calculation, step=calculation.step)
         for comment in comments:
             new_comment = Comment.objects.create(**comment)

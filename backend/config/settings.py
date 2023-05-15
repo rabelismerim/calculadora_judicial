@@ -33,12 +33,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
-# # SECURITY WARNING: don't run with debug turned on in production!
-# if (str(os.getenv('ENV')) == 'branch') or (str(os.getenv('ENV')) == 'dev') or (str(os.getenv('ENV')) == 'hml'):
-#     DEBUG = str(os.getenv('debug')) == "True"
-# else:
-#     DEBUG = str(os.getenv('ENV')) == "True"
-
 PASSWD_DEV = str(os.getenv('PASSWD_DEV', 'fake_passwd'))
 DTT_EMAIL = os.getenv('DTT_EMAIL')
 
@@ -85,10 +79,11 @@ INSTALLED_APPS = [
     'import_export',
     'rest_framework',
     "drf_standardized_errors",  # Alter output erros in REST API
-    'drf_api_logger',
-    'drf_yasg',
+    'drf_api_logger',  # Custom logger info
+    'drf_yasg',  # Swagger schema
     # 'vinaigrette',
-    'modeltranslation',
+    'modeltranslation',  # Custom field translation
+    # 'debug_toolbar', # Debug query, views in realtime on navigation
 
     # Base
     'base',
@@ -145,6 +140,19 @@ INSTALLED_APPS = [
 
 ]
 
+# Start config debug toolbar
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]
+if DEBUG:
+    import socket  # only if you haven't already imported this
+
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
+
+# End config debug toolbar
 SITE_ID = 1
 
 AUTH_USER_MODEL = 'dttuser.User'
@@ -160,6 +168,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'crum.CurrentRequestUserMiddleware',  # Get current request in Models
     'drf_api_logger.middleware.api_logger_middleware.APILoggerMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -434,7 +443,8 @@ if ENABLE_DRF:
 DRF_STANDARDIZED_ERRORS = {"ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True}
 # Setting auth user
 AUTH_USER_MODEL = 'dttuser.User'
-BASE_URL = 'juca/api/v1/'
+BASE_URL = 'juca/api/v1/'  # Current version
+BASE_URL_NEXT = 'juca/api/v2/'  # Next version
 BASE_URL_AUTH = 'juca/api/'
 
 if DEBUG:
@@ -458,6 +468,7 @@ GROUP_NAME_APPROVER = 'Aprovador'
 GROUP_NAME_SPECIAL_APPROVE = 'Aprovador Especial'
 GROUP_NAME_REVIEWER = 'Revisor'
 
+ENABLE_CACHE = str(os.getenv('ENABLE_CACHE', 'false')).lower() == 'true'
 INDEX_VARIATION_END = os.getenv('INDEX_VARIATION_END', '2017-09-01')
 INDEX_VARIATION_END = datetime.datetime.strptime(INDEX_VARIATION_END, '%Y-%m-%d').date()
 

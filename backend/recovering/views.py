@@ -11,7 +11,7 @@ from core.permission.views import CheckHasPermission
 from recovering.archive.models import Archive
 from recovering.archive_recovering.models import ArchiveRecovering
 from recovering.models import Recovering
-from recovering.schemas import RecoveringSchema
+from recovering.schemas import RecoveringSchema, RecoveringV2Schema
 from utils import _, doc
 
 docs = {
@@ -23,11 +23,58 @@ docs = {
 }
 
 
-class RecoveringApi(AbstractViewApi):
+class RecoveringApi(AbstractViewApi): # V1
     """HTTP methods for recovering"""
 
     http_method_names = ['post', 'get']
     serializer_class = RecoveringSchema
+    model = Recovering
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+
+    query_params = [
+        {
+            "name": "name",
+            "field": "entity__name__icontains",
+            "in": "query",
+            "required": False,
+            "description": _("Name"),
+            "schema": {"type": "string"}
+        },
+        {
+            "name": "cpf_cnpj",
+            "field": "entity__legal_number__icontains",
+            "in": "query",
+            "required": False,
+            "description": _("CPF/CNPJ"),
+            "schema": {"type": "string"}
+        }
+    ]
+
+    docs = docs.copy()
+
+    @doc(_("""Create recovering receiving a dict, return recovering detail"""))
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        recovering = serializer.validated_data
+        entity = recovering.pop('entity')
+        new_archive_recovering = recovering.pop('archives', None)
+        recovering['entity'] = Entity.objects.create(**entity)
+        new_recovering = self.model.objects.create(**recovering)
+        if new_archive_recovering:
+            for new_ in new_archive_recovering:
+                archive = new_.pop('archive')
+                new_archive = Archive.objects.create(**archive)
+                ArchiveRecovering.objects.create(
+                    recovering=new_recovering, archive=new_archive)
+        return JsonResponse({'recovering': self.serializer_class(new_recovering, many=False).data},
+                            status=status.HTTP_201_CREATED)
+
+class RecoveringV2Api(AbstractViewApi): # V1
+    """HTTP methods for recovering"""
+
+    http_method_names = ['post', 'get']
+    serializer_class = RecoveringV2Schema
     model = Recovering
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
 

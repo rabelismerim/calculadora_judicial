@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import include, path, re_path, reverse
 from django.shortcuts import render, redirect
-from config.settings import ENABLE_SSO, IS_LOCALHOST
+from config.settings import ENABLE_SSO, IS_LOCALHOST, BASE_URL_NEXT
 from django.conf import settings
 from django.views.generic import TemplateView
 from rest_framework import permissions
@@ -43,14 +43,17 @@ def frontend_index(request):
 
 
 urlpatterns = [
+    path('__debug__/', include('debug_toolbar.urls')),
     # API Authentication
     path('juca/api-auth/', include("rest_framework.urls")),
 
     # # Projects
-    path(f'{BASE_URL}projects/', include("projects.urls")),
+    path(f'{BASE_URL}projects/', include(("projects.urls.current", 'v1'), namespace='teste')),
+    path(f'{BASE_URL_NEXT}projects/', include(("projects.urls.next", 'v2'), namespace='teste2')),
 
     # # Recovering
-    path(f'{BASE_URL}recovering/', include("recovering.urls")),
+    path(f'{BASE_URL}recovering/', include("recovering.urls.current")),
+    path(f'{BASE_URL_NEXT}recovering/', include("recovering.urls.next")),
 
     # Creditors
     path(f'{BASE_URL}creditors/', include("creditors.urls")),
@@ -59,7 +62,8 @@ urlpatterns = [
     path(f'{BASE_URL}claim/', include("base.urls")),
 
     # Calculation
-    path(f'{BASE_URL}calculation/', include("calculation.urls")),
+    path(f'{BASE_URL}calculation/', include("calculation.urls.current")),
+    path(f'{BASE_URL_NEXT}calculation/', include("calculation.urls.next")),
 
     # Rates
     path(f'{BASE_URL}rates/', include("rates.urls")),
