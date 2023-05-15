@@ -47,7 +47,7 @@ def days360(start_date, end_date) -> int:
 
 
 def _(text):
-    return gettext_lazy(text.strip('\ufeff'))
+    return gettext_lazy(text.lstrip())
 
 
 def doc(docstring):

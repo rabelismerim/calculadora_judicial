@@ -115,12 +115,13 @@ class CalculationSchema(AbstractDescriptionSchema):  # V1
     verdict = VerdictSchema(source='verdict_set', many=True, required=False, exclude=('calculation_id',))
     criterion = CriterionSchema(many=False, read_only=True)
 
-    funds = FundsSchema(source='funds_set', many=True,
-                        required=False, exclude=('calculation_id',), read_only=True)
-    fund_irrf = FundIRRFSchema(source='fundirrf_set', many=True,
-                               required=False, exclude=('calculation_id',), read_only=True)
-    fund_document = FundDocumentSchema(source='fund_document_set', many=True,
-                                       required=False, exclude=('calculation_id',), read_only=True)
+    # funds = FundsSchema(source='funds_set', many=True,
+    #                     required=False, exclude=('calculation_id',), read_only=True)
+    # fund_irrf = FundIRRFSchema(source='fundirrf_set', many=True,
+    #                            required=False, exclude=('calculation_id',), read_only=True)
+    # fund_document = FundDocumentSchema(source='fund_document_set', many=True,
+    #                                    required=False, exclude=('calculation_id',), read_only=True)
+    all_funds = serializers.SerializerMethodField()
 
     statement = StatementSchema(read_only=True, exclude=('calculation_id',))
 
@@ -130,6 +131,25 @@ class CalculationSchema(AbstractDescriptionSchema):  # V1
     classes = ClassesSerializer(source='get_classes', read_only=True, many=True)
     premises = PremiseSchema(many=True, read_only=True)
     historical = serializers.SerializerMethodField(read_only=True)
+
+    def get_all_funds(self, obj):
+        """
+        Serializes all funds, IRRF calculations, and fund documents associated with the given `obj` instance using the Django Rest Framework serializers.
+
+        Args:
+            obj: An instance of the model associated with this serializer.
+
+        Returns:
+            A list of dictionaries representing the serialized data. Each dictionary contains a `'data'` key, which contains the serialized data, and a `'type'` key, which indicates the type of data ('fund', 'irrf', or 'document').
+        """
+        return [
+            {'data': FundsSchema(many=True, exclude=('calculation_id',), read_only=True).to_representation(
+                obj.funds_set.all()), 'type': 'fund'},
+            {'data': FundIRRFSchema(many=True, exclude=('calculation_id',), read_only=True).to_representation(
+                obj.fundirrf_set.all()), 'type': 'irrf'},
+            {'data': FundDocumentSchema(many=True, exclude=('calculation_id',), read_only=True).to_representation(
+                obj.funddocument_set.all()), 'type': 'document'}
+        ]
 
     def get_historical(self, obj):
         return HistoricalSchema(obj).data
@@ -173,8 +193,6 @@ class CalculationSchema(AbstractDescriptionSchema):  # V1
     def to_representation(self, instance):
         self.fields['historical'].context.update({'self': instance})
         data = super().to_representation(instance)
-        # historical_lists = self.extract_historical_lists(data)
-        # data['historical_data'] = historical_lists
         return data
 
 
@@ -256,8 +274,6 @@ class CalculationV2Schema(AbstractDescriptionSchema):  # V2
     def to_representation(self, instance):
         self.fields['historical'].context.update({'self': instance})
         data = super().to_representation(instance)
-        # historical_lists = self.extract_historical_lists(data)
-        # data['historical_data'] = historical_lists
         return data
 
 
