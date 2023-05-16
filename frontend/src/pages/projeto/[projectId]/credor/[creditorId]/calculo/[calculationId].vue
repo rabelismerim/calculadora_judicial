@@ -33,8 +33,9 @@ const loadRates = async () => {
 }
 
 let calculation = $ref({} as any)
-const loadCalculation = async () => {
-  loading = true
+const loadCalculation = async (showLoading = false) => {
+  if (showLoading)
+    loading = true
   const result = await calculationService.getCalculation(attrs.calculationId)
   const { funds = [], fundsIrrf = [], premisses = [] } = result
   result.credits = [...funds, ...fundsIrrf, ...premisses]
@@ -60,7 +61,8 @@ const loadCalculation = async () => {
       return credit
     })
   calculation = result
-  loading = false
+  if (showLoading)
+    loading = false
 }
 
 const values = $ref([])
@@ -142,12 +144,12 @@ const totalValue = computed(() => calculation?.funds
 onMounted(async () => {
   loading = true
   try {
-    loadProject()
-    loadCreditor()
-    loadCalculation()
-    loadTemplates()
-    loadOptions()
-    loadRates()
+    await loadProject()
+    await loadCreditor()
+    await loadCalculation()
+    await loadTemplates()
+    await loadOptions()
+    await loadRates()
   }
   catch (error) {
     printError('ERROR ON LOADING CALCULATION:', error)
@@ -165,7 +167,7 @@ onMounted(async () => {
     :links="[
       { label: 'Projetos', url: '/projetos' },
       { label: project.description, url: `/projeto/${attrs.projectId}` },
-      { label: `Cálculo #${calculation?.number}` }]"
+      { label: `Cálculo #${calculation?.number || ''}` }]"
   >
     <template #menuheader>
       <BtnToggle
@@ -218,7 +220,7 @@ onMounted(async () => {
       <template #side>
         <ReloadBtn
           hint="Recarregar a Lista de Créditos"
-          @click="loadCalculation"
+          @click="loadCalculation(true)"
         />
       </template>
       <Btn label="Novo Crédito" icon="i-carbon-add-filled" @click="showNewCredit = true" />
@@ -288,37 +290,10 @@ onMounted(async () => {
           >
             <div class="text-lg font-bold mb-2 flex justify-between items-center">
               <div>{{ table.description }}</div>
-              <Btn
-                label="Adicionar Linhas"
-                icon="i-carbon-add-filled"
-                type="button"
-                transparent
-              >
-                <q-menu anchor="bottom right" self="top right">
-                  <div class="flex flex-col p-2 gap-2">
-                    <div class="flex gap-2 no-wrap">
-                      <button class="p-2 color--primary hover:bg--primary/12 rounded" @click="(table.linesToAdd) > 1 && table.linesToAdd--">
-                        <div class="i-carbon-subtract" />
-                      </button>
-                      <input
-                        v-model="table.linesToAdd"
-                        type="number"
-                        step="1"
-                        min="1"
-                        class="max-w-26 px-2 text-center focus:outline--primary"
-                        @input="(+$event.target.value < 1) && (table.linesToAdd = 1)"
-                        @keypress="(['-', '.'].includes($event.key)) && $event.preventDefault()"
-                      >
-                      <button class="p-2 color--primary hover:bg--primary/12 rounded" @click="table.linesToAdd++">
-                        <div class="i-carbon-add" />
-                      </button>
-                    </div>
-                    <button v-close-popup class="px-4 py-2 rounded text-center color--primary bg--primary/12 hover:bg--primary hover:color-white" @click="addValues(index, table.linesToAdd)">
-                      Adicionar Linhas
-                    </button>
-                  </div>
-                </q-menu>
-              </Btn>
+              <AddLines
+                v-model="table.linesToAdd"
+                @add-lines="addValues(index, table.linesToAdd)"
+              />
             </div>
             <QTable
               :rows="values[index]"
@@ -337,7 +312,7 @@ onMounted(async () => {
                         {{ props.row[column.field] }}
                       </div>
                       <QInput
-                        v-else-if="column.type === 'text'"
+                        v-else-if="column.type === 'textet'"
                         v-model="props.row[column.field]"
                         :rules="isRequired(column)"
                         class="flex-1"
@@ -345,13 +320,14 @@ onMounted(async () => {
                         dense
                       />
                       <QInput
-                        v-else-if="column.type === 'number'"
+                        v-else-if="column.type === 'float' || column.type === 'integer'"
                         v-model="props.row[column.field]"
                         :rules="isRequired(column)"
                         class="flex-1"
                         type="number"
                         outlined
                         dense
+                        @update:model-value="(value: number) => column.type === 'integer' && (props.row[column.field] = Math.round(value))"
                       />
                       <InputDate
                         v-else-if="column.type === 'date'"
@@ -471,6 +447,7 @@ onMounted(async () => {
                 :step="field.type === 'float' ? 'any' : 1"
                 outlined
                 dense
+                @update:model-value="(value: number | string | null) => (field.type === 'integer') && (newCredit[field.key] = Math.round(value as number))"
               />
               <QToggle
                 v-else-if="field.type === 'boolean'"
