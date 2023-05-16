@@ -36,10 +36,10 @@ const mapProject = (project: any) => {
 }
 const getUserProjects = () => api
   .get('/v1/projects/project_user/')
-  .then((result: any) => [...new Set(result?.projectUser)])
+  .then((result: any) => [...new Set(result?.projectUser || [])])
 const getProjects = () => api
   .get('/v1/projects/')
-  .then((res: any) => res?.projects?.map(mapProject))
+  .then((result: any) => result?.projects?.map(mapProject) || [])
 const getProject = (id: string) => api
   .get(`/v1/projects/${id}/`)
   .then((result: any) => result?.project)
@@ -89,11 +89,11 @@ const newProject = (project: any) => {
 // JUDGES
 const getJudges = () => api
   .get('/v1/projects/judge/')
-  .then(({ judges }: any) => judges)
+  .then((result: any) => result?.judges || [])
   .then(data => data.map(({ description, id }: any) => ({ description, id })))
 const newJudge = (description: string) => api
   .post('/v1/projects/judge/', { description })
-  .then(({ judges }: any) => judges)
+  .then((result: any) => result?.judges || [])
   .then(({ description, id }) => ({ description, id }))
 
 // LAWYERS
