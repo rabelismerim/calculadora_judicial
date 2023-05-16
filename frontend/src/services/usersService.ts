@@ -47,6 +47,7 @@ const requestAccess = (email: string) => api
 
 const setPermission = ({ email, groups, role, status }: any) => api
   .post('user/authorize/', { email, groups, role, status })
+  .then((result: any) => result?.user)
 
 export default {
   getMyProfile,

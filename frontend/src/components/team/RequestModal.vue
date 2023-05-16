@@ -5,7 +5,7 @@ const props = withDefaults(defineProps<{
 }>(), {
   users: () => ([]),
 })
-const emit = defineEmits(['update:model-value'])
+const emit = defineEmits(['update:model-value', 'done'])
 
 const form = ref(null as any)
 
@@ -29,6 +29,11 @@ const editUser = (user: any) => {
   if (email)
     editingUser = { id, picture, fullName, email, role, group: groups[0] }
 }
+const clear = () => {
+  emit('update:model-value', false)
+  tab = 'pending'
+  editingUser = {}
+}
 const onAuthorize = async () => {
   const isValid = await form.value.validate()
   if (!isValid)
@@ -37,7 +42,9 @@ const onAuthorize = async () => {
   loading = true
   try {
     const result = await usersService.setPermission({ email, groups: [group], role, status: 'A' })
-    console.warn(result)
+    const { status } = result
+    if (status)
+      clear()
   }
   catch (error) {
     printError('ERROR ON ACCEPTING THE USER REQUEST:', error)
@@ -53,7 +60,9 @@ const onReject = async (user: any) => {
   await delay(3)
   try {
     const result = await usersService.setPermission({ email: user.email, status: 'R' })
-    console.warn(result)
+    const { status } = result
+    if (status)
+      clear()
   }
   catch (error) {
     printError('ERROR ON REJECTING THE USER REQUEST:', error)
@@ -61,11 +70,6 @@ const onReject = async (user: any) => {
   finally {
     loading = false
   }
-}
-const clear = () => {
-  emit('update:model-value', false)
-  tab = 'pending'
-  editingUser = {}
 }
 onMounted(async () => {
   try {
