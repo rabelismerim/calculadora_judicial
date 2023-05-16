@@ -8,6 +8,7 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Accordion: typeof import('./components/common/Accordion.vue')['default']
+    AddLines: typeof import('./components/common/AddLines.vue')['default']
     AJNotice: typeof import('./components/creditors/AJNotice.vue')['default']
     AnalisysSheet: typeof import('./components/creditors/AnalisysSheet.vue')['default']
     Breadcrumbs: typeof import('./components/common/Breadcrumbs.vue')['default']
@@ -60,6 +61,7 @@ declare module '@vue/runtime-core' {
     TeamProjectsModal: typeof import('./components/team/TeamProjectsModal.vue')['default']
     TeamProjectsTable: typeof import('./components/team/TeamProjectsTable.vue')['default']
     TimeoutBar: typeof import('./components/common/TimeoutBar.vue')['default']
+    UpdateProject: typeof import('./components/project/UpdateProject.vue')['default']
     UserCell: typeof import('./components/common/UserCell.vue')['default']
     UserPicture: typeof import('./components/common/UserPicture.vue')['default']
     UserTag: typeof import('./components/common/UserTag.vue')['default']
