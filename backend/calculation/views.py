@@ -144,19 +144,14 @@ class CalculationAllFundsDetailApi(AbstractCalculationApi):
     docs = docs.copy()
     serializer_class = CalculationAllFundsSchema
     operation_id_base = 'CalculationAllFunds'
-    #
-    # @doc(_("""This method handles GET requests for the view. It retrieves a list of funds Calculation using the given
-    #             id from the query parameters and serializes the result into JSON format before returning it as
-    #              anHTTP response.
-    #
-    #                 Returns:
-    #                     JsonResponse: An HTTP response containing the serialized Calculation data retrieved.
-    #                 """))
-    # def get(self, request, *args, **kwargs):
-    #     creditor_id = kwargs.get('creditor_id')
-    #     statement = self.model.objects.filter(creditor_id=creditor_id)
-    #     statement_data = self.serializer_class(statement, many=True).data
-    #     return JsonResponse({'calculations': statement_data})
+
+    docs['get'] = _("""This method handles GET requests for the view. It retrieves a list of all funds Calculation 
+    using the given id from the query parameters and serializes the result into JSON format before returning it as 
+    an HTTP response.
+
+    Returns:
+        JsonResponse: An HTTP response containing the serialized Calculation data retrieved.
+    """)
 
 
 class CalculationApi(AbstractCalculationApi):
