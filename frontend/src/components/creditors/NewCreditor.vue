@@ -114,7 +114,7 @@ const onSubmit = async () => {
         />
         <Btn
           label="Cadastrar"
-          tag="div"
+          type="button"
           :loading="loading"
           loading-label="Criando Projeto..."
           :disabled="!!newCreditor.id"

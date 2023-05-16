@@ -76,7 +76,7 @@ const onReset = () => {
           <div class="i-carbon-trash-can bg-white" />
         </div>
       </div>
-      <Btn label="Adicionar novo Crédito" icon="i-carbon-add" :disabled="!isEditing" tag="div" @click="addNewCredit" />
+      <Btn label="Adicionar novo Crédito" icon="i-carbon-add" :disabled="!isEditing" type="button" @click="addNewCredit" />
     </div>
   </AnalisysSheet>
 </template>
