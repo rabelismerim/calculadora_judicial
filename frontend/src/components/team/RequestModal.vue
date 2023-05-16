@@ -36,7 +36,7 @@ const onAuthorize = async () => {
   const { email, group, role } = editingUser
   loading = true
   try {
-    const result = await usersService.setPermission({ email, groups: [group], role: 'A' })
+    const result = await usersService.setPermission({ email, groups: [group], role, status: 'A' })
     console.warn(result)
   }
   catch (error) {
@@ -52,7 +52,7 @@ const onReject = async (user: any) => {
   loading = true
   await delay(3)
   try {
-    const result = await usersService.setPermission({ email: user.email, role: 'R' })
+    const result = await usersService.setPermission({ email: user.email, status: 'R' })
     console.warn(result)
   }
   catch (error) {
