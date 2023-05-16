@@ -9,7 +9,8 @@ from calculation.funds.models import Funds, MonetaryCorrection
 from calculation.funds.views import CreateFunds
 from calculation.models import Calculation, Incident
 from calculation.premise.views import PremiseCreator
-from calculation.schemas import CalculationSchema, IncidentSchema, ChangeStepSerializer, CalculationV2Schema
+from calculation.schemas import CalculationSchema, IncidentSchema, ChangeStepSerializer, CalculationV2Schema, \
+    CalculationAllFundsSchema
 from calculation.statement.models import Statement
 from calculation.verdict.models import TypeCalculation, Verdict
 from core.abstract.models import UpdateUser
@@ -135,6 +136,27 @@ class CalculationListApi(AbstractCalculationApi):
         statement = self.model.objects.filter(creditor_id=creditor_id)
         statement_data = self.serializer_class(statement, many=True).data
         return JsonResponse({'calculations': statement_data})
+
+
+class CalculationAllFundsDetailApi(AbstractCalculationApi):
+    """HTTP methods for Calculation"""
+    http_method_names = ['get']
+    docs = docs.copy()
+    serializer_class = CalculationAllFundsSchema
+    operation_id_base = 'CalculationAllFunds'
+    #
+    # @doc(_("""This method handles GET requests for the view. It retrieves a list of funds Calculation using the given
+    #             id from the query parameters and serializes the result into JSON format before returning it as
+    #              anHTTP response.
+    #
+    #                 Returns:
+    #                     JsonResponse: An HTTP response containing the serialized Calculation data retrieved.
+    #                 """))
+    # def get(self, request, *args, **kwargs):
+    #     creditor_id = kwargs.get('creditor_id')
+    #     statement = self.model.objects.filter(creditor_id=creditor_id)
+    #     statement_data = self.serializer_class(statement, many=True).data
+    #     return JsonResponse({'calculations': statement_data})
 
 
 class CalculationApi(AbstractCalculationApi):

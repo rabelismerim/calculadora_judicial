@@ -2,13 +2,10 @@ import datetime
 import inspect
 import json
 import os
-import sys
 from abc import ABC
 from importlib.util import spec_from_file_location, module_from_spec
 
-from dill import load_module
 from django.apps import apps
-from django.core import cache as ca
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
 from django.http import JsonResponse, Http404
@@ -26,6 +23,8 @@ from core.drfmsal.schemas import CustomDictField
 from core.permission.views import CheckAPIVersion
 from security.views import Security
 from utils import _
+
+cache.clear()
 
 
 def get_app_label_from_model(model) -> str:

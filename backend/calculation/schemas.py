@@ -93,7 +93,48 @@ class HistoricalSchema(AbstractDescriptionSchema):
         fields = ('step', 'historical')
 
 
-class CalculationSchema(AbstractDescriptionSchema):  # V1
+class CalculationAllFundsSchema(AbstractDescriptionSchema):  # V1
+    """
+    The CalculationAllFundsSchema class is a serializer for the Calculation model fields. It inherits from the
+     AbstractModelSchema class. It includes the following fields:
+
+    creditor: a CreditorSchema instance that is read-only and not serialized.
+    creditor_id: a UUIDField instance that is write-only and serialized.
+    verdict: a VerdictSchema instance that represents a collection of verdicts related to the calculation.
+    criterion: a CriterionSchema instance that is read-only and not serialized.
+    funds: a FundsSchema instance that represents a collection of funds related to the calculation.
+    statement: a StatementSchema instance that is read-only and not serialized.
+    The Meta class is used to specify the Calculation model and all fields are serialized.
+    The validate method is overridden to handle the verdict_set and funds_set fields and returns the validated data.
+    """
+
+    all_funds = serializers.SerializerMethodField()
+
+    def get_all_funds(self, obj):
+        """
+        Serializes all funds, IRRF calculations, and fund documents associated with the given `obj` instance using the Django Rest Framework serializers.
+
+        Args:
+            obj: An instance of the model associated with this serializer.
+
+        Returns:
+            A list of dictionaries representing the serialized data. Each dictionary contains a `'data'` key, which contains the serialized data, and a `'type'` key, which indicates the type of data ('fund', 'irrf', or 'document').
+        """
+        return [
+            {'data': FundsSchema(many=True, exclude=('calculation_id',), read_only=True).to_representation(
+                obj.funds_set.all()), 'type': 'fund'},
+            {'data': FundIRRFSchema(many=True, exclude=('calculation_id',), read_only=True).to_representation(
+                obj.fundirrf_set.all()), 'type': 'irrf'},
+            {'data': FundDocumentSchema(many=True, exclude=('calculation_id',), read_only=True).to_representation(
+                obj.funddocument_set.all()), 'type': 'document'}
+        ]
+
+    class Meta:
+        model = Calculation
+        fields = ('all_funds',)
+
+
+class CalculationSchema(CalculationAllFundsSchema):  # V1
     """
     The CalculationSchema class is a serializer for the Calculation model fields. It inherits from the
      AbstractModelSchema class. It includes the following fields:
@@ -121,7 +162,6 @@ class CalculationSchema(AbstractDescriptionSchema):  # V1
     #                            required=False, exclude=('calculation_id',), read_only=True)
     # fund_document = FundDocumentSchema(source='fund_document_set', many=True,
     #                                    required=False, exclude=('calculation_id',), read_only=True)
-    all_funds = serializers.SerializerMethodField()
 
     statement = StatementSchema(read_only=True, exclude=('calculation_id',))
 
@@ -131,25 +171,6 @@ class CalculationSchema(AbstractDescriptionSchema):  # V1
     classes = ClassesSerializer(source='get_classes', read_only=True, many=True)
     premises = PremiseSchema(many=True, read_only=True)
     historical = serializers.SerializerMethodField(read_only=True)
-
-    def get_all_funds(self, obj):
-        """
-        Serializes all funds, IRRF calculations, and fund documents associated with the given `obj` instance using the Django Rest Framework serializers.
-
-        Args:
-            obj: An instance of the model associated with this serializer.
-
-        Returns:
-            A list of dictionaries representing the serialized data. Each dictionary contains a `'data'` key, which contains the serialized data, and a `'type'` key, which indicates the type of data ('fund', 'irrf', or 'document').
-        """
-        return [
-            {'data': FundsSchema(many=True, exclude=('calculation_id',), read_only=True).to_representation(
-                obj.funds_set.all()), 'type': 'fund'},
-            {'data': FundIRRFSchema(many=True, exclude=('calculation_id',), read_only=True).to_representation(
-                obj.fundirrf_set.all()), 'type': 'irrf'},
-            {'data': FundDocumentSchema(many=True, exclude=('calculation_id',), read_only=True).to_representation(
-                obj.funddocument_set.all()), 'type': 'document'}
-        ]
 
     def get_historical(self, obj):
         return HistoricalSchema(obj).data
