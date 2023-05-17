@@ -88,6 +88,27 @@ class ProjectDetailApi(AbstractProjectApi):  # V1
     }
     query_params = []
 
+    def put(self, request, *args, **kwargs):
+        executors = request.data.pop('executors', [])
+        print(executors, 'executores')
+        users = []
+        project = self.model.objects.filter(id=kwargs.get('id')).first()
+        project_users = project.get_project_users()
+
+        group_executor, created = Group.objects.get_or_create(name=GROUP_NAME_EXECUTOR)
+        old_executors = project_users.filter(groups=group_executor)
+        print(old_executors, 'old executors\n\n')
+        for user_django_id in executors:
+            project_user = ProjectUser.objects.filter(user_id=user_django_id, groups=group_executor,
+                                                      projectengagement__project=project)
+            print(project_user, 'project user\n')
+            # project_user = ProjectUser.objects.create(user_id=user_django_id)
+        #     project_user.groups.add(group_executor.id)
+        #     project_user.save()
+        #     users.append(project_user.id)
+
+        return super().put(request, *args, **kwargs)
+
 
 class ProjectDetailV2Api(AbstractProjectApi):  # V2
     """HTTP methods for Project Detail"""

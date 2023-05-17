@@ -1,7 +1,8 @@
 """Commom methods"""
 import datetime
 import secrets
-
+import logging
+from config import settings
 from django.contrib.auth import get_user_model as md
 from django.utils.translation import gettext_lazy
 
@@ -42,8 +43,8 @@ def days360(start_date, end_date) -> int:
         end_date = end_date.replace(day=1)
         end_date = end_date + datetime.timedelta(days=1)
     return (end_date.year - start_date.year) * 360 + \
-           (end_date.month - start_date.month) * 30 + \
-           (end_date.day - start_date.day)
+        (end_date.month - start_date.month) * 30 + \
+        (end_date.day - start_date.day)
 
 
 def _(text):
@@ -56,3 +57,23 @@ def doc(docstring):
         return fn
 
     return decorate
+
+
+def log_info(*args):
+    fmt = getattr(settings, 'LOG_FORMAT', None)
+    lvl = getattr(settings, 'LOG_LEVEL', logging.DEBUG)
+
+    logger = logging.getLogger(__name__)
+    logger.setLevel(lvl)
+
+    file_handler = logging.FileHandler(settings.LOGGING['handlers']['file_info']['filename'], encoding='utf-8')
+    file_handler.setLevel(logging.INFO)
+    file_handler.setFormatter(logging.Formatter(fmt))
+    logger.addHandler(file_handler)
+
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.DEBUG)
+    console_handler.setFormatter(logging.Formatter(fmt))
+    logger.addHandler(console_handler)
+    for arg in args:
+        logger.info(arg)

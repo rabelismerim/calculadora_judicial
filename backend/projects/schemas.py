@@ -31,7 +31,64 @@ class UserSerializer(serializers.Serializer):
     id = serializers.IntegerField()
 
 
-class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):  # V1
+class ProjectRolesSchema(serializers.ModelSerializer, AbstractModelSchema):  # V1
+    """
+    Serializes the fields of the ProjectSchema model for use in the API.
+
+    This class defines a Django REST Framework serializer that inherits from a custom
+    AbstractDescriptionSchema class. The serializer converts instances of the Project
+    model to and from JSON format, and validates incoming data based on the model's fields.
+
+    Usage example:
+    serializer = ProjectSchema()
+    """
+
+    executors = serializers.ListField(write_only=True, child=UserSerializer())
+    approvers = serializers.ListField(write_only=True, child=UserSerializer())
+    special_approvers = serializers.ListField(write_only=True, child=UserSerializer(), required=False)
+    reviewers = serializers.ListField(write_only=True, child=UserSerializer())
+    check_list_empty = True
+
+    @staticmethod
+    def __get_ids(list_roles):
+        return [x['id'] for x in list_roles]
+
+    def validate_executors(self, executors):
+        """Validate executors with a list format"""
+        if not executors and self.check_list_empty:
+            raise serializers.ValidationError([_('Must select at least one user')])
+
+        if isinstance(executors, list) is False:
+            raise serializers.ValidationError([_('The executors field must be in list format')])
+
+        return self.__get_ids(executors)
+
+    def validate_approvers(self, approvers):
+        """Validate approvers with a list format"""
+        if not approvers and self.check_list_empty:
+            raise serializers.ValidationError([_('Must select at least one user')])
+
+        if isinstance(approvers, list) is False:
+            raise serializers.ValidationError([_('The approvers field must be in list format')])
+        return self.__get_ids(approvers)
+
+    def validate_reviewers(self, reviewers):
+        """Validate reviewers with a list format"""
+        if not reviewers and self.check_list_empty:
+            raise serializers.ValidationError([_('Must select at least one user')])
+
+        if isinstance(reviewers, list) is False:
+            raise serializers.ValidationError([_('The reviewers field must be in list format')])
+        return self.__get_ids(reviewers)
+
+    def validate_special_approvers(self, special_approvers):
+        """Validate special_approvers with a list format"""
+        if isinstance(special_approvers, list) is False:
+            raise serializers.ValidationError([_('The special_approvers field must be in list format')])
+        return self.__get_ids(special_approvers)
+
+
+class ProjectSchema(ProjectRolesSchema):  # V1
     """
     Serializes the fields of the ProjectSchema model for use in the API.
 
@@ -79,12 +136,6 @@ class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):  # V1
     financial_partner = UserDttSchema(many=False, read_only=True)
     financial_partner_id = serializers.IntegerField(write_only=True)
 
-    # user_names = serializers.ListField(read_only=True)
-    executors = serializers.ListField(write_only=True, child=UserSerializer())
-    approvers = serializers.ListField(write_only=True, child=UserSerializer())
-    special_approvers = serializers.ListField(write_only=True, child=UserSerializer(), required=False)
-    reviewers = serializers.ListField(write_only=True, child=UserSerializer())
-
     project_users = ProjectUserProjectSchema(read_only=True, many=True, source='engagement.users')
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     num_recovering = serializers.IntegerField(read_only=True)
@@ -92,36 +143,6 @@ class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):  # V1
     class Meta:
         model = Project
         fields = '__all__'
-
-    @staticmethod
-    def validate_executors(executors):
-        """Validate executors with a list format"""
-        if not executors:
-            raise serializers.ValidationError([_('Must select at least one user')])
-
-        if isinstance(executors, list) is False:
-            raise serializers.ValidationError([_('The executors field must be in list format')])
-        return executors
-
-    @staticmethod
-    def validate_approvers(approvers):
-        """Validate approvers with a list format"""
-        if not approvers:
-            raise serializers.ValidationError([_('Must select at least one user')])
-
-        if isinstance(approvers, list) is False:
-            raise serializers.ValidationError([_('The approvers field must be in list format')])
-        return approvers
-
-    @staticmethod
-    def validate_reviewers(reviewers):
-        """Validate reviewers with a list format"""
-        if not reviewers:
-            raise serializers.ValidationError([_('Must select at least one user')])
-
-        if isinstance(reviewers, list) is False:
-            raise serializers.ValidationError([_('The reviewers field must be in list format')])
-        return reviewers
 
     def validate(self, data):
         """
@@ -131,23 +152,11 @@ class ProjectSchema(serializers.ModelSerializer, AbstractModelSchema):  # V1
         """
         data = dict(data)
         engagement_data = data.pop('engagement').pop('engagement')
-        executors = data.pop('executors', [])
-        executors = [x['id'] for x in executors]
-        approvers = data.pop('approvers', [])
-        approvers = [x['id'] for x in approvers]
-        special_approvers = data.pop('special_approvers', [])
-        special_approvers = [x['id'] for x in special_approvers]
-        reviewers = data.pop('reviewers', [])
-        reviewers = [x['id'] for x in reviewers]
         data['engagement'] = engagement_data
-        data['executors'] = executors
-        data['approvers'] = approvers
-        data['special_approvers'] = special_approvers
-        data['reviewers'] = reviewers
         return super(ProjectSchema, self).validate(data)
 
 
-class ProjectV2Schema(serializers.ModelSerializer, AbstractModelSchema):  # V2
+class ProjectV2Schema(ProjectRolesSchema):  # V2
     """
     Serializes the fields of the ProjectSchema model for use in the API.
 
@@ -189,12 +198,6 @@ class ProjectV2Schema(serializers.ModelSerializer, AbstractModelSchema):  # V2
     financial_partner = UserDttSchema(many=False, read_only=True)
     financial_partner_id = serializers.IntegerField(write_only=True)
 
-    # user_names = serializers.ListField(read_only=True)
-    executors = serializers.ListField(write_only=True, child=UserSerializer())
-    approvers = serializers.ListField(write_only=True, child=UserSerializer())
-    special_approvers = serializers.ListField(write_only=True, child=UserSerializer(), required=False)
-    reviewers = serializers.ListField(write_only=True, child=UserSerializer())
-
     project_users = ProjectUserProjectSchema(read_only=True, many=True, source='engagement.users')
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     num_recovering = serializers.IntegerField(read_only=True)
@@ -202,37 +205,6 @@ class ProjectV2Schema(serializers.ModelSerializer, AbstractModelSchema):  # V2
     class Meta:
         model = Project
         fields = '__all__'
-
-    @staticmethod
-    def validate_executors(executors):
-        """Validate executors with a list format"""
-        if not executors:
-            raise serializers.ValidationError([_('Must select at least one user')])
-
-        if isinstance(executors, list) is False:
-            raise serializers.ValidationError([_('The executors field must be in list format')])
-        return executors
-
-    @staticmethod
-    def validate_approvers(approvers):
-        """Validate approvers with a list format"""
-        if not approvers:
-            raise serializers.ValidationError([_('Must select at least one user')])
-
-        if isinstance(approvers, list) is False:
-            raise serializers.ValidationError([_('The approvers field must be in list format')])
-        return approvers
-
-    @staticmethod
-    def validate_reviewers(reviewers):
-        """Validate reviewers with a list format"""
-        if not reviewers:
-            raise serializers.ValidationError([_('Must select at least one user')])
-
-        if isinstance(reviewers, list) is False:
-            raise serializers.ValidationError([_('The reviewers field must be in list format')])
-        return reviewers
-
     def validate(self, data):
         """
         Validate the project schema by extracting the necessary data from Project object.
@@ -241,19 +213,7 @@ class ProjectV2Schema(serializers.ModelSerializer, AbstractModelSchema):  # V2
         """
         data = dict(data)
         engagement_data = data.pop('engagement').pop('engagement')
-        executors = data.pop('executors', [])
-        executors = [x['id'] for x in executors]
-        approvers = data.pop('approvers', [])
-        approvers = [x['id'] for x in approvers]
-        special_approvers = data.pop('special_approvers', [])
-        special_approvers = [x['id'] for x in special_approvers]
-        reviewers = data.pop('reviewers', [])
-        reviewers = [x['id'] for x in reviewers]
         data['engagement'] = engagement_data
-        data['executors'] = executors
-        data['approvers'] = approvers
-        data['special_approvers'] = special_approvers
-        data['reviewers'] = reviewers
         return super(ProjectV2Schema, self).validate(data)
 
 
@@ -279,7 +239,7 @@ class ProjectListSchema(ProjectSchema):
                   'calculation_manager', 'financial_manager', 'legal_partner', 'financial_partner')
 
 
-class ProjectEditSchema(AbstractDescriptionSchema):
+class ProjectEditSchema(ProjectRolesSchema):
     """
     Serializes the fields of the Project model for use in the API.
 
@@ -290,9 +250,6 @@ class ProjectEditSchema(AbstractDescriptionSchema):
     Usage example:
     serializer = ProjectSchema()
     """
-    description = serializers.CharField(required=False)
-    process_number = serializers.CharField(required=False)
-
     judge_id = serializers.UUIDField(required=False)
     lawyer_id = serializers.UUIDField(required=False)
     region_id = serializers.UUIDField(required=False)
@@ -308,16 +265,12 @@ class ProjectEditSchema(AbstractDescriptionSchema):
 
         fields = ('project_start', 'project_end', 'process_number', 'competence', 'date_rj_request', 'date_rj_filing',
                   'date_citation', 'description', 'judge_id', 'lawyer_id', 'region_id', 'court_id', 'legal_manager_id',
-                  'calculation_manager_id', 'financial_manager_id', 'legal_partner_id', 'financial_partner_id')
+                  'calculation_manager_id', 'financial_manager_id', 'legal_partner_id', 'financial_partner_id', 'executors')
 
-    def validate(self, data):
-        """
-        Validate the project schema by extracting the necessary data from Project object.
-        :param data: Project object.
-        :returns: Updated Project object with extracted data.
-        """
-        return super(ProjectEditSchema, self).validate(data)
-
+    def __init__(self, *args, **kwargs):
+        super(ProjectEditSchema, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.required = False
 
 exclude = ('create_user', 'created_at',
            'update_user', 'updated_at')
