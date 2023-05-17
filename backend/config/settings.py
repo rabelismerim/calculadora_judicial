@@ -211,6 +211,12 @@ if IS_HML:
                 'filename': str(BASE_DIR / 'log' / 'juca.log'),
                 'encoding': 'utf-8'
             },
+            'file_info': {
+                'level': 'INFO',
+                'class': 'logging.FileHandler',
+                'filename': str(BASE_DIR / 'log' / 'juca_info.log'),
+                'encoding': 'utf-8'
+            },
             'console': {
                 'level': 'DEBUG',
                 'class': 'logging.StreamHandler',
