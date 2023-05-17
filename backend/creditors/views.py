@@ -8,7 +8,7 @@ from rest_framework import status, serializers
 from rest_framework import permissions
 from core.entity.models import Entity
 from core.entity.schemas import EntityCheckSchema
-from core.permission.views import CheckHasPermission
+from core.permission.views import CheckHasPermission, check_query_permission
 from creditors.notice.models import Notice, NoticeRecovering
 from creditors.schemas import CreditorCreateSchema, CreditorSchema, CreditorUpdateSchema
 from creditors.models import Creditor
@@ -39,7 +39,9 @@ class AbstractCreditorApi(AbstractViewApi):
             "schema": {"type": "string"}
         }
     ]
+    perms = ['can_view_all_projects']
 
+    @check_query_permission(perms)
     def get_queryset(self):
         return {'recovering__project__engagement__users__user': self.request.user}
 

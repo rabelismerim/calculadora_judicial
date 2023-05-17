@@ -198,7 +198,6 @@ TEMPLATES = [
 DEFAULT_AUTHENTICATION_CLASSES = [
     "rest_framework.authentication.SessionAuthentication",
 ]
-
 # Logging file
 # https://docs.djangoproject.com/en/3.2/topics/logging/
 if IS_HML:
@@ -210,6 +209,7 @@ if IS_HML:
                 'level': 'WARNING',
                 'class': 'logging.FileHandler',
                 'filename': str(BASE_DIR / 'log' / 'juca.log'),
+                'encoding': 'utf-8'
             },
             'console': {
                 'level': 'DEBUG',
@@ -218,7 +218,7 @@ if IS_HML:
         },
         'loggers': {
             'django': {
-                'handlers': ['file'],
+                'handlers': ['file', 'file_info'],
                 'level': 'WARNING',
                 'propagate': True,
             },
@@ -228,7 +228,12 @@ if IS_HML:
                 'propagate': True,
             },
         },
+        'root': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
     }
+
 
 # Enable Cors to dev mode or local mode
 else:

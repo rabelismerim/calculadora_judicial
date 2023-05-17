@@ -50,6 +50,8 @@ class AbstractFunds(AbstractCredit):
 
 CHOICES_STATUS_FUND = (('S', _('Requested')), ('C', _('Concluded')), ('E', _('In Progress')),
                        ('F', _('Calculation failed - rate not found')),
+                       ('G', _('Calculation failed - rate RJ not found')),
+                       ('H', _('Calculation failed - rate data base not found')),
                        ('A', _('Calculation failed - aliquot not found')),
                        ('P', _('Calculation failed - invalid parameters')),
                        ('R', _('Calculation failed - no date RJ')),
@@ -80,6 +82,14 @@ class AbstractStatus(AbstractModel):
     def set_error_indice(self):
         """Sets the status of the calculation to 'F'. Not found rate index"""
         self._set_status('F')
+
+    def set_error_indice_rj(self):
+        """Sets the status of the calculation to 'G'. Not found rate index RJ"""
+        self._set_status('G')
+
+    def set_error_indice_data_base(self):
+        """Sets the status of the calculation to 'H'. Not found rate index data base"""
+        self._set_status('H')
 
     def set_error_parameters(self):
         """Sets the status of the calculation to 'P'. Calculation invalid parameters"""
@@ -166,8 +176,11 @@ class AbstractStatement(AbstractStatus):
         rate_data_base = rate.get_rate_by_date(data_base)
         rate_date_rj = rate.get_rate_by_date(date_rj)
 
-        if not rate_date_rj or not rate_data_base:
-            statement.set_error_indice()
+        if not rate_date_rj:
+            statement.set_error_indice_rj()
+            return None
+        if not rate_data_base:
+            statement.set_error_indice_data_base()
             return None
 
         data = {

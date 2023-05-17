@@ -178,11 +178,12 @@ class CalculationSchema(CalculationAllFundsSchema):  # V1
     class Meta:
         model = Calculation
         fields = '__all__'
-        read_only_fields = ('step', 'number')
+        read_only_fields = ('step', 'number', 'approver', 'special_approver', 'executor', 'reviewer')
 
     def validate(self, data):
         data['verdict'] = data.pop('verdict_set', None)
         data['funds'] = data.pop('funds_set', None)
+        data['is_adm'] = data.pop('is_adm', True)
         return super(CalculationSchema, self).validate(data)
 
     def extract_historical_lists(self, data):
@@ -259,11 +260,12 @@ class CalculationV2Schema(AbstractDescriptionSchema):  # V2
     class Meta:
         model = Calculation
         fields = '__all__'
-        read_only_fields = ('step', 'number')
+        read_only_fields = ('step', 'number', 'approver', 'special_approver', 'executor', 'reviewer')
 
     def validate(self, data):
         data['verdict'] = data.pop('verdict_set', None)
         data['funds'] = data.pop('funds_set', None)
+        data['is_adm'] = data.pop('is_adm', True)
         return super(CalculationSchema, self).validate(data)
 
     def extract_historical_lists(self, data):
