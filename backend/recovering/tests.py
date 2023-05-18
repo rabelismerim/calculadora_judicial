@@ -1,50 +1,56 @@
-import json
 from core.abstract.tests import AbstractTest
+from projects.create_project import cpf_generator
 from projects.models import Project
 
 
 class RecoveringTest(AbstractTest):
     """Recovering related tests"""
 
-    def test_api_E_post_recoverings(self):
-        """Assert post recoverings detail"""
-        self.print_start('Create recovering')
-        project = Project.objects.first()
-        recovering = {
-            "entity": {
-                "name": "string",
-                        "legal_number": "149.291.410-01"
-            },
-            "archives": [
-                {
-                    "archive": {
-                        "archive_json": {},
-                        "description": "string"
-                    }
+    project = Project.objects.first()
+    parameters = {
+        "entity": {
+            "name": "string",
+            "legal_number": cpf_generator()
+        },
+        "archives": [
+            {
+                "archive": {
+                    "archive_json": {},
+                    "description": "string"
                 }
-            ],
-            "date_rj_request": "2023-02-14",
-            "date_rj_filing": "2023-02-14",
-            "date_citation": "2023-02-14",
-            "process_number": "string",
-            "status": "E",
-            "competence": "string",
-            "status_support": "E",
-            "project_id": str(project.id)
-        }
+            }
+        ],
+        "date_rj_request": "2023-02-14",
+        "date_rj_filing": "2023-02-14",
+        "date_citation": "2023-02-14",
+        "process_number": "string",
+        "status": "E",
+        "competence": "string",
+        "status_support": "E",
+        "project_id": str(project.id)
+    }
 
-        response = self.client.post(
-            '/djud/api/v1/recovering/', json.dumps(recovering), content_type="application/json")
-        self.assertEqual(response.status_code, 201)
-        self.print_success('Created recovering')
+    path = 'recovering'
 
-    def test_api_F_get_recoverings(self):
-        """Assert get recoverings detail"""
-        self.print_start('List recoverings')
-        response = self.client.get('/djud/api/v1/recovering/')
-        self.assertEqual(response.status_code, 200)
-        self.print_success('Listed recoverings')
-        recoverings = response.json()['recoverings']
-        recovering = recoverings[0]
-        self.assertGreaterEqual(len(recoverings), 1)
-        self.print_success('Listed recoverings >= 1')
+    def test_api_get(self):
+        """Assert get recovering detail"""
+        response = super().test_api_get()
+        recovering = response.content['recoverings']
+        self.assertGreaterEqual(len(recovering), 1)
+        return recovering
+
+    def test_api_z_post(self):
+        """Assert get recovering detail"""
+        super().test_api_z_post()
+        response = self.post(self.path, self.parameters)  # recovering already registered
+        self.assertEqual(response.status_code, 400)
+
+    def test_api_post(self):
+        """Assert post invalid legal number"""
+        parameters = self.parameters
+        parameters['entity']['legal_number'] = 'invalid legal number'
+        response = self.post(self.path, parameters)  # invalid legal number
+        self.assertEqual(response.status_code, 400)
+
+    base_url = '/juca/api/v2/'
+    base_path = 'v2/'

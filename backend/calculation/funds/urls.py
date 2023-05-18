@@ -13,10 +13,16 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('funds/', include('funds.another_app.urls'))
 """
-from django.urls import path
-from .views import FundsApi
-
+from django.urls import path, include
+from .views import FundsApi, FundsDetailApi, StatementFundsApi, StatementFundsDetailApi, FundsCalculationApi
 
 urlpatterns = [
     path('', FundsApi.as_view(), name="funds-list-create"),
+    path('calculation/<uuid:calculation_id>/', FundsCalculationApi.as_view(), name="fund-calc-list"),
+    path('<uuid:id>/', FundsDetailApi.as_view(), name="fund-detail"),
+    path('labor/', StatementFundsApi.as_view(), name="statement-funds-list-create"),
+    path('labor/<uuid:id>/', StatementFundsDetailApi.as_view(), name="statement-funds-detail"),
+    path(f'labor/integrations/', include("calculation.funds.integrations.urls")),
+    path(f'documents/', include("calculation.funds.document.urls")),
+    path(f'irrf/', include("calculation.funds.irrf.urls")),
 ]

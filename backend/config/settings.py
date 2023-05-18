@@ -9,12 +9,16 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import datetime
+import re
 from pathlib import Path
 import os
+import sys
 from dotenv import load_dotenv
 from core.drfmsal import IdentityWebPython
 import urllib3
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 
 urllib3.disable_warnings()
 
@@ -23,20 +27,14 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
-# # SECURITY WARNING: don't run with debug turned on in production!
-# if (str(os.getenv('ENV')) == 'branch') or (str(os.getenv('ENV')) == 'dev') or (str(os.getenv('ENV')) == 'hml'):
-#     DEBUG = str(os.getenv('debug')) == "True"
-# else:
-#     DEBUG = str(os.getenv('ENV')) == "True"
-
 PASSWD_DEV = str(os.getenv('PASSWD_DEV', 'fake_passwd'))
+DTT_EMAIL = os.getenv('DTT_EMAIL')
 
 DEBUG = str(os.getenv('DEBUG', 'false')).lower() == 'true'
 ENABLE_SSO = str(os.getenv('ENABLE_SSO', 'true')).lower() == 'true'
@@ -44,8 +42,8 @@ ENABLE_SSO = str(os.getenv('ENABLE_SSO', 'true')).lower() == 'true'
 BRANCH_DEV = str(os.getenv('ENV', 'hml')) == 'branch'
 BRANCH_LOCAL = str(os.getenv('ENV', 'hml')) == 'dev'
 
-IS_LOCALHOST = str(os.getenv('IS_LOCALHOST', 'false')
-                   ).lower() == 'true' and BRANCH_DEV
+IS_LOCALHOST = str(os.getenv('IS_LOCALHOST', 'false')).lower() == 'true' and BRANCH_DEV
+ENABLE_DRF = str(os.getenv('ENABLE_DRF', 'true')).lower() == 'true'
 
 IS_HML = any([BRANCH_LOCAL, BRANCH_DEV]) is False
 
@@ -59,7 +57,13 @@ ALLOWED_HOSTS = [
     'brspwaoliveira'
 ]
 
-
+CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1:8000',
+    'https://brfojwanderley:5173',
+    'https://brdcvmdev07/juca',
+    'https://brsphearndt:8080/juca',
+    'https://uat.fadigitallab.deloitte.com.br/juca'
+]
 # Application definition
 
 INSTALLED_APPS = [
@@ -74,6 +78,12 @@ INSTALLED_APPS = [
     'django_extensions',  # TEMP
     'import_export',
     'rest_framework',
+    "drf_standardized_errors",  # Alter output erros in REST API
+    'drf_api_logger',  # Custom logger info
+    'drf_yasg',  # Swagger schema
+    # 'vinaigrette',
+    'modeltranslation',  # Custom field translation
+    # 'debug_toolbar', # Debug query, views in realtime on navigation
 
     # Base
     'base',
@@ -82,7 +92,6 @@ INSTALLED_APPS = [
 
     # Creditors
     'creditors',
-    'creditors.budgets',
     'creditors.classes',
     'creditors.notice',
 
@@ -106,21 +115,44 @@ INSTALLED_APPS = [
     'core.permission',
     'core.entity',
 
+    # Security
+    'security',
+    'security.formula',  # Salvar formulas utilizadas no momento do cálculo
+
     # Calculation
     'calculation',
     'calculation.criterion',
+    'calculation.comment',  # Comentários ao longo de cada passo do calculo
     'calculation.verdict',
     'calculation.funds',  # Verbas
+    'calculation.premise',  # Premissas(Observações) do cálculo
     'calculation.statement',  # Extrato contábil
     'calculation.statement_pf',  # Extrato contábil PF
     'calculation.statement_pj',  # Extrato contábil PJ
     'calculation.comparative',  # Comparativo
+    'calculation.funds.document',  # Verbas documento
+    'calculation.funds.integrations',  # Verbas Integratórias
+    'calculation.funds.irrf',  # Verbas IRRF
+    'calculation.sheets_template',  # Templates Planilhas Excel
 
-    # Rate - Indice
+    # Rate - Índice
     'rates',
 
 ]
 
+# Start config debug toolbar
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]
+if DEBUG:
+    import socket  # only if you haven't already imported this
+
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
+
+# End config debug toolbar
 SITE_ID = 1
 
 AUTH_USER_MODEL = 'dttuser.User'
@@ -128,15 +160,20 @@ AUTH_USER_MODEL = 'dttuser.User'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'crum.CurrentRequestUserMiddleware',  # Get current request in Models
+    'drf_api_logger.middleware.api_logger_middleware.APILoggerMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
+
+DRF_API_LOGGER_DATABASE = True
 
 template = 'templates'
 
@@ -144,7 +181,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            'djud/static/src/vue/dist/', os.path.join(BASE_DIR, template)
+            'juca/static/src/vue/dist/', os.path.join(BASE_DIR, template)
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -158,11 +195,9 @@ TEMPLATES = [
     },
 ]
 
-
 DEFAULT_AUTHENTICATION_CLASSES = [
     "rest_framework.authentication.SessionAuthentication",
 ]
-
 # Logging file
 # https://docs.djangoproject.com/en/3.2/topics/logging/
 if IS_HML:
@@ -173,7 +208,14 @@ if IS_HML:
             'file': {
                 'level': 'WARNING',
                 'class': 'logging.FileHandler',
-                'filename': str(BASE_DIR / 'log' / 'djud.log'),
+                'filename': str(BASE_DIR / 'log' / 'juca.log'),
+                'encoding': 'utf-8'
+            },
+            'file_info': {
+                'level': 'INFO',
+                'class': 'logging.FileHandler',
+                'filename': str(BASE_DIR / 'log' / 'juca_info.log'),
+                'encoding': 'utf-8'
             },
             'console': {
                 'level': 'DEBUG',
@@ -182,7 +224,7 @@ if IS_HML:
         },
         'loggers': {
             'django': {
-                'handlers': ['file'],
+                'handlers': ['file', 'file_info'],
                 'level': 'WARNING',
                 'propagate': True,
             },
@@ -192,7 +234,12 @@ if IS_HML:
                 'propagate': True,
             },
         },
+        'root': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
     }
+
 
 # Enable Cors to dev mode or local mode
 else:
@@ -200,7 +247,7 @@ else:
     INSTALLED_APPS.append('corsheaders')
     CORS_ALLOWED_ORIGINS = [
         "http://localhost:8080",
-        "https://brfojwanderley:5173",
+        "https://0.0.0.0:5173",
         'https://localhost:5173'
     ]
     CORS_ALLOW_ALL_ORIGINS = True
@@ -213,7 +260,6 @@ else:
     INSTALLED_APPS.append('rest_framework.authtoken')
     DEFAULT_AUTHENTICATION_CLASSES.append(
         'rest_framework.authentication.TokenAuthentication')
-
 
 # DRFMSAL AUTHENTICATION
 DRFMSAL_CONFIG = {
@@ -234,16 +280,43 @@ DRFMSAL_IDENTITY_WEB = IdentityWebPython()
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 # str(os.getenv('SECRET_KEY'))
-if BRANCH_DEV:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-            'TEST': {
+# if 'test' in sys.argv:
+#    ENABLE_SSO=False
+
+if BRANCH_DEV or 'test' in sys.argv:
+    my_string = sys.argv[0].replace('\\', '').replace('/', '')
+
+    if my_string.endswith('locustmain.py'):
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': ':memory:',
                 'MIRROR': 'default',
             },
         }
-    }
+
+        # cria uma cópia do banco de dados atual para testes do locust
+        import shutil
+        import tempfile
+        import os
+
+        tmpdir = os.path.join(tempfile.gettempdir(), 'juca')
+        tmp_db = os.path.join(tmpdir, 'tmp.sqlite3')
+        if os.path.exists(tmpdir) is False:
+            os.mkdir(tmpdir)
+        if os.path.exists(tmp_db) is False:
+            shutil.copy2(BASE_DIR / 'db.sqlite3', tmp_db)
+        DATABASES['default']['NAME'] = tmp_db
+    else:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+                'TEST': {
+                    'MIRROR': 'default',
+                },
+            }
+        }
 else:
     DATABASES = {
         'default': {
@@ -261,6 +334,21 @@ else:
         }
     }
 
+# Caches
+# https://docs.djangoproject.com/en/4.2/topics/cache/
+if not DEBUG:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+            "LOCATION": "django_juca_cache_table",
+        }
+    }
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -280,13 +368,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
+# LANGUAGE_CODE = 'pt-br'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Sao_Paulo'
 
 USE_I18N = True
 
@@ -294,15 +382,35 @@ USE_L10N = True
 
 USE_TZ = True
 
+LOCALE_PATHS = [
+    BASE_DIR / 'locale'
+]
+
+gettext = lambda s: s
+LANGUAGES = (
+    ('pt-br', gettext('Português')),
+    ('en', gettext('English')),
+)
+
+MODELTRANSLATION_DEFAULT_LANGUAGE = 'pt-br'
+
+MODELTRANSLATION_LANGUAGES = ('en', 'pt-br')
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.template.context_processors.i18n',
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = 'djud/static/'
+if IS_HML:
+    STATIC_URL = 'static/'
+else:
+    STATIC_URL = 'juca/static/'
 # STATIC_URL = '/static/'
 STATIC_ROOT = 'var/static_root/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'djud/static/'),
+    os.path.join(BASE_DIR, 'juca/static/'),
     # os.path.join(BASE_DIR, 'static/'),
 ]
 if DEBUG is False:
@@ -323,34 +431,60 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
+    'DEFAULT_AUTO_SCHEMA_CLASS': 'core.abstract.views.CustomSwaggerAutoSchema',
 
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.ScopedRateThrottle',
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": DEFAULT_AUTHENTICATION_CLASSES,
+    'TEST_REQUEST_RENDERER_CLASSES': [
+        'rest_framework.renderers.MultiPartRenderer',
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.TemplateHTMLRenderer'
+    ],
     "DEFAULT_RENDERER_CLASSES": (
         "core.drfmsal.renderer.APIRendererInterceptor",
         "rest_framework.renderers.BrowsableAPIRenderer"
-    )
+    ),
 }
 
+if ENABLE_DRF:
+    REST_FRAMEWORK['EXCEPTION_HANDLER'] = "drf_standardized_errors.handler.exception_handler"
+
+DRF_STANDARDIZED_ERRORS = {"ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True}
 # Setting auth user
 AUTH_USER_MODEL = 'dttuser.User'
-BASE_URL = 'djud/api/v1/'
-BASE_URL_AUTH = 'djud/api/'
+BASE_URL = 'juca/api/v1/'  # Current version
+BASE_URL_NEXT = 'juca/api/v2/'  # Next version
+BASE_URL_AUTH = 'juca/api/'
 
 if DEBUG:
     import mimetypes
+
     mimetypes.add_type("application/javascript", ".js", True)
 
     # Documentation login Urls
-    LOGIN_URL = "/djud/login/"
+    LOGIN_URL = "/juca/login/"
     LOGOUT_REDIRECT_URL = f"/{BASE_URL}docs/swagger/"
     LOGIN_REDIRECT_URL = f"/{BASE_URL}docs/swagger/"
-    LOGOUT_URL = "/djud/logout/"
+    LOGOUT_URL = "/juca/logout/"
 
+SWAGGER_URL = f'/{BASE_URL}docs/redoc/'
 RATE_FILE_TYPES = ['pdf', 'vnd.ms-excel', 'xlsx', 'xls']
+
+TEMPLATE_FILE_TYPES = ['vnd.ms-excel', 'xlsx', 'xls',  'xlsm']
 
 GROUP_NAME_EXECUTOR = 'Executor'
 GROUP_NAME_APPROVER = 'Aprovador'
+GROUP_NAME_SPECIAL_APPROVE = 'Aprovador Especial'
 GROUP_NAME_REVIEWER = 'Revisor'
+
+ENABLE_CACHE = str(os.getenv('ENABLE_CACHE', 'false')).lower() == 'true'
+INDEX_VARIATION_END = os.getenv('INDEX_VARIATION_END', '2017-09-01')
+INDEX_VARIATION_END = datetime.datetime.strptime(INDEX_VARIATION_END, '%Y-%m-%d').date()
+
+TOKEN_TEST = os.getenv('TOKEN_TEST')  # Token para a execução de teste em ambientes controlados
+INDEX_VARIATION_RJ = os.getenv('INDEX_VARIATION_RJ', '2022-06-01')
+INDEX_VARIATION_RJ = datetime.datetime.strptime(INDEX_VARIATION_RJ, '%Y-%m-%d').date()
+
+FERNET_KEY = os.getenv('FERNET_KEY').encode()  # Key to encrypt or decrypt text

@@ -1,11 +1,12 @@
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from rest_framework import status
-from rest_framework.schemas.openapi import AutoSchema
+
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 from projects.engagement.models import ProjectEngagement, Engagement
 from projects.engagement.schemas import ProjectEngagementSchema
+from utils import _, doc
 
 
 class EngagementApi(AbstractViewApi):
@@ -14,23 +15,26 @@ class EngagementApi(AbstractViewApi):
     serializer_class = ProjectEngagementSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = ProjectEngagement
-    schema = AutoSchema(tags=["Project - Engagement"])
 
     query_params = [
         {
-            "name": "número",
+            "name": "number",
             "field": "engagement__number",
             "in": "query",
             "required": False,
-            "description": "Número do engagement",
+            "description": str(_("Engagement number")),
             "schema": {"type": "string"}
         }
     ]
 
+    docs = {
+        'init': _("""The engagement is the unique control number, which references the client/project in the DTT.
+        """),
+        'get': _("""Get the list of all engagements, being able to filter by number."""),
+    }
+
+    @doc(_("""Create Engagement receiving a dict, return Engagement detail"""))
     def post(self, request, *args, **kwargs):
-        """
-           Create Engagement receiving a dict, return Engagement detail
-        """
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_engagement = serializer.validated_data
@@ -45,4 +49,5 @@ class EngagementApi(AbstractViewApi):
         for number in numbers:
             Engagement.objects.create(
                 **{'number': number, 'project_id': project_engagement.id})  # Create Engagement Project number
-        return JsonResponse({'engagement': self.serializer_class(project_engagement, many=False).data}, status=status.HTTP_201_CREATED)
+        return JsonResponse({'engagement': self.serializer_class(project_engagement, many=False).data},
+                            status=status.HTTP_201_CREATED)

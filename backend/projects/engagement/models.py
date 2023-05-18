@@ -1,6 +1,7 @@
 from django.db import models
 from core.abstract.models import AbstractModel
 from projects.project_user.models import ProjectUser
+from utils import _
 
 
 class ProjectEngagement(AbstractModel):
@@ -23,8 +24,7 @@ class ProjectEngagement(AbstractModel):
 
 
 class Engagement(AbstractModel):
-    number = models.CharField('Numero do engagement',
-                              max_length=100, unique=True)
+    number = models.CharField(_('Engagement number'), max_length=100, unique=True)
     project = models.ForeignKey(ProjectEngagement, on_delete=models.PROTECT)
 
     def __str__(self):

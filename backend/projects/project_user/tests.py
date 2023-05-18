@@ -4,25 +4,17 @@ from core.abstract.tests import AbstractTest
 class ProjectUserTest(AbstractTest):
     """Project User related tests"""
 
-    def test_api_E_post_project_users(self):
-        """Assert post project users detail"""
-        self.print_start('Create Project User')
-        project_user = {
-            "user": self.get_user()['id'],
-        }
-        response = self.client.post(
-            '/djud/api/v1/projects/project_user', project_user)
-        self.assertEqual(response.status_code, 201)
-        self.print_success('Created project user')
+    path = 'projects/project_user'
 
-    def test_api_F_get_project_users(self):
-        """Assert get Project User detail"""
-        self.print_start('List project users')
-        response = self.client.get('/djud/api/v1/projects/project_user')
-        self.assertEqual(response.status_code, 200)
-        self.print_success('Listed project users')
-        project_users = response.json()['project_users']
-        project_user = project_users[0]
-        self.assertGreaterEqual(len(project_users), 1)
-        self.print_success('Listed project users >= 1')
-        self.set_project('users', [{'id': project_user['id']}])
+    def setUp(self, *args, **kwargs):
+        super().setUp()
+        self.parameters = {
+            "user": self.get_user_django().id,
+        }
+    #
+    # def test_api_get(self):
+    #     """Assert get Project User detail"""
+    #     response = super().test_api_get()
+    #     objs = response.content['project_user']
+    #     self.assertGreaterEqual(len(objs), 1)
+    #     return objs

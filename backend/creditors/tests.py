@@ -1,75 +1,99 @@
-import json
-from core.abstract.tests import AbstractTest
-from projects.engagement.models import ProjectEngagement
-from projects.project_user.models import ProjectUser
+import random
+
+from core.abstract.tests import AbstractTest, generate_name
+from projects.create_project import cpf_generator
+from projects.models import Project
 from rates.models import Rate
 from recovering.models import Recovering
+from utils import secret_number
 
 
-class CreditorTest(AbstractTest):
-    """Creditor related tests"""
+class CreditorValues:
 
-    def test_api_E_post_creditors(self):
-        """Assert post creditors detail"""
-        self.print_start('Criar Creditor')
-        recovering = Recovering.objects.first()
-        rate = Rate.objects.first()
+    def __get_creditor_by_rate(self, rate):
+        _recovering = Recovering.objects.first()
+        _rate = Rate.objects.filter(index__icontains=rate).first()
+
         creditor = {
             "entity": {
-                "name": "string",
-                "legal_number": "920.393.410-30"
+                "name": generate_name(),
+                "legal_number": cpf_generator()
             },
-            "recovering_id": str(recovering.id),
-            "rate_id": str(rate.id),
-            "notice": {
+            "physical_person": True,
+            "recovering_id": str(_recovering.id),
+            "rate_id": str(_rate.id),
+            "notice_aj": [{
                 "classes": {
                     "classe": "1"
                 },
                 "coins": {
                     "coin": "B",
-                    "value": 0
+                    "value": secret_number(1, 2000)
                 },
                 "archive_json": {}
-            },
-            "claim_creditor": {
+            }],
+            "claim_creditor": [{
                 "classes": {
                     "classe": "1"
                 },
                 "coins": {
                     "coin": "B",
-                    "value": 0
+                    "value": secret_number(1, 2000)
                 },
                 "archive_json": {}
-            },
+            }],
             "claim_lawyer": {
                 "coins": {
                     "coin": "B",
-                    "value": 0
+                    "value": secret_number(1, 2000)
                 },
                 "archive_json": {},
                 "classes": {
                     "classe": "1"
                 },
             },
-            "admission": "2023-02-15T15:33:53.690Z",
-            "dismissal": "2023-02-15T15:33:53.690Z",
-            "default_interest": 0,
-            "fine": 0,
-            "advocative_hours": 0,
+            "admission": "2012-02-15",
+            "dismissal": "2012-02-15",
+            "default_interest": 1,
+            "fine": 1,
+            "advocative_hours": 1,
+            "occurrence": "A",
             "description": "string"
         }
+        return creditor
 
-        response = self.client.post(
-            '/djud/api/v1/creditors/', json.dumps(creditor), content_type="application/json")
-        # self.print(response.json())
-        self.assertEqual(response.status_code, 201)
-        self.print_success('Created creditor')
-        content = json.loads(response.content)
-        self.set_project('creditor_id', content['creditor']['id'])
+    def get_creditor(self, rate='TST'):
+        creditor = self.__get_creditor_by_rate(rate)
+        return creditor
 
-    def test_api_F_get_creditors(self):
-        """Assert get creditors detail"""
-        self.print_start('Lista de Creditors')
-        response = self.client.get('/djud/api/v1/creditors/')
+
+class CreditorTest(AbstractTest):
+    """Creditor related tests"""
+
+    path = 'creditors'
+    path_get = f'creditors/project/{Project.objects.first().id}'
+    parameters = CreditorValues().get_creditor()
+
+    def setUp(self):
+        set_up = super().setUp()
+        self.parameters = CreditorValues().get_creditor()
+        self.parameters['physical_person'] = False
+        self.parameters['entity']['name'] = generate_name()
+        self.parameters['entity']['legal_number'] = cpf_generator()
+
+        self.parameters = CreditorValues().get_creditor()
+        self.parameters['entity']['name'] = generate_name()
+        self.parameters['entity']['legal_number'] = cpf_generator()
+        return set_up
+
+    def test_api_get(self):
+        """Assert get lawyers detail"""
+        project = Project.objects.first()
+        response = self.get(f'creditors/project/{project.id}')
         self.assertEqual(response.status_code, 200)
-        self.print_success('Listed creditors')
+
+    def test_api_z_post(self):
+        """Assert get lawyers detail"""
+        super().test_api_z_post()
+        response = self.post(self.path, self.parameters)  # creditor already registered
+        self.assertEqual(response.status_code, 400)

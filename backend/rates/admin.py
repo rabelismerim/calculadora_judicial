@@ -12,16 +12,19 @@ Modules:
 - rates.schemas: Schema for validating data from Excel files.
 """
 
-
 from django.contrib import admin, messages
-from django.contrib import admin, messages
-from rates.models import Accumulated, Period, Rate, RateValues, RateFile
+from rates.models import Accumulated, Period, Rate, RateValues, RateFile, IndiceIRRF, Template, TemplateRate, \
+    TemplateField, TemplateMainField
 from rates.schemas import RateSchema
 
 admin.site.register(Accumulated)
 admin.site.register(Period)
 admin.site.register(Rate)
-admin.site.register(RateValues)
+admin.site.register(IndiceIRRF)
+admin.site.register(Template)
+admin.site.register(TemplateRate)
+admin.site.register(TemplateField)
+admin.site.register(TemplateMainField)
 
 
 def load_files(modeladmin, request, queryset):
@@ -30,7 +33,9 @@ def load_files(modeladmin, request, queryset):
 
         if rows == False:
             messages.error(
-                request, f'O arquivo {obj.filename} não contêm os campos corretos. Necessário ao menos a coluna mes e indice, acumulado e periodo são opcionais')
+                request,
+                f'O arquivo {obj.filename} não contêm os campos corretos. Necessário ao menos a coluna mes e indice, '
+                f'acumulado e periodo são opcionais')
             continue
 
         if len(rows) == 0:
@@ -51,8 +56,13 @@ def load_files(modeladmin, request, queryset):
                 request, f'Nenhum indice carregado do arquivo {obj.filename}')
 
 
-class CustomRateFile(admin.ModelAdmin):
+class AdminRateFile(admin.ModelAdmin):
     actions = [load_files]
 
 
-admin.site.register(RateFile, CustomRateFile)
+class AdminRateValues(admin.ModelAdmin):
+    search_fields = ('date',)
+
+
+admin.site.register(RateFile, AdminRateFile)
+admin.site.register(RateValues, AdminRateValues)

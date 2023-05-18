@@ -1,46 +1,152 @@
+const mapProject = (project: any) => {
+  const {
+    createdAt,
+    isAdm,
+    engagement,
+    financialPartner,
+    financialManager,
+    legalPartner,
+    legalManager,
+    calculationManager,
+  } = project
+
+  const responsibles = [
+    { role: 'Sócio Financeiro', user: financialPartner },
+    { role: 'Sócio Jurídico', user: legalPartner },
+    { role: 'Gerente Financeiro', user: financialManager },
+    { role: 'Gerente Jurídico', user: legalManager },
+    { role: 'Gerente de Cálculo', user: calculationManager },
+  ]
+    .filter(({ user }) => user)
+    .map(({ user, role }) => ({
+      role,
+      user: {
+        ...user,
+        picture: user.userpicture,
+      },
+    }))
+
+  return {
+    ...project,
+    createdAt: formatDate(createdAt),
+    fase: isAdm ? 'Administrativa' : 'Judicial',
+    responsible: engagement?.createUser,
+    responsibles,
+  }
+}
+const getUserProjects = () => api
+  .get('/v1/projects/project_user/')
+  .then(({ projectUser }: any) => [...new Set(projectUser)])
 const getProjects = () => api
   .get('/v1/projects/')
-  .then(({ data }) => data.projects.map(({
-    id,
-    description,
-    created_at,
-    engagement,
-    is_adm,
-    status_display,
-  }: any) => ({
-    id,
-    name: description,
-    createdAt: formatDate(created_at),
-    responsible: engagement?.create_user,
-    fase: is_adm ? 'Administrativa' : 'Judicial',
-    status: status_display,
-  })))
+  .then((res: any) => res?.projects?.map(mapProject))
+const getProject = (id: string) => api
+  .get(`/v1/projects/${id}/`)
+  .then(({ project }: any) => project)
+  .then(mapProject)
+  .then((project: any) => {
+    const { projectUsers = [] } = project
 
-const getProjectJudge = () => api
+    project.participants = projectUsers.reduce((acc: any, current: any) => {
+      const { firstName, lastName, username, userpicture, groups } = current
+      const user = {
+        picture: userpicture,
+        fullName: `${firstName} ${lastName}`,
+        email: `${username}@deloitte.com`,
+      }
+      groups.forEach(({ name }: any) => {
+        if (!acc[name])
+          acc[name] = []
+        acc[name].push(user)
+      })
+      return acc
+    }, {})
+
+    return project
+  })
+
+const newProject = (project: any) => {
+  const { start, end, executors, approvers, reviewers, engagements, recoverings } = project
+  const data = {
+    ...project,
+    projectStart: start ? formatDateToBackend(start) : undefined,
+    projectEnd: end ? formatDateToBackend(end) : undefined,
+    engagement: {
+      numbers: engagements,
+    },
+    recoverings: recoverings.map((recovering: any) => ({
+      entity: recovering,
+    })),
+    executors: executors.map((id: string) => ({ id })),
+    approvers: approvers.map((id: string) => ({ id })),
+    reviewers: reviewers.map((id: string) => ({ id })),
+  }
+  return api
+    .post('v1/projects/', data)
+    .then(({ project }: any) => project)
+}
+
+// JUDGES
+const getJudges = () => api
   .get('/v1/projects/judge/')
-  .then(({ data }) => data)
+  .then(({ judges }: any) => judges)
+  .then(data => data.map(({ description, id }: any) => ({ description, id })))
+const newJudge = (description: string) => api
+  .post('/v1/projects/judge/', { description })
+  .then(({ judges }: any) => judges)
+  .then(({ description, id }) => ({ description, id }))
 
-const getProjectLawyer = () => api
+// LAWYERS
+const getLawyers = () => api
   .get('/v1/projects/lawyer/')
-  .then(({ data }) => data)
+  .then(({ lawyers }: any) => lawyers)
+  .then(data => data.map(({ description, id }: any) => ({ description, id })))
+const newLawyer = (description: string) => api
+  .post('/v1/projects/lawyer/', { description })
+  .then(({ lawyers }: any) => lawyers)
+  .then(({ description, id }) => ({ description, id }))
 
-const getProjectRegion = () => api
+// REGIONS
+const getRegions = () => api
   .get('/v1/projects/region/')
-  .then(({ data }) => data)
+  .then(({ regions }: any) => regions)
+  .then(data => data.map(({ description, id }: any) => ({ description, id })))
+const newRegion = (description: string) => api
+  .post('/v1/projects/region/', { description })
+  .then(({ regions }: any) => regions)
+  .then(({ description, id }) => ({ description, id }))
 
-const getProjectEngagement = () => api
+// COURTS
+const getCourts = () => api
+  .get('/v1/projects/court/')
+  .then(({ courts }: any) => courts)
+  .then(data => data.map(({ description, id }: any) => ({ description, id })))
+const newCourt = (description: string) => api
+  .post('/v1/projects/court/', { description })
+  .then(({ courts }: any) => courts)
+  .then(({ description, id }) => ({ description, id }))
+
+// ENGAGEMENTS OF PROJECT
+const getEngagements = () => api
   .get('/v1/projects/engagement/')
-  .then(({ data }) => data)
 
-const getProjectUser = () => api
+// USER OF PROJECT
+const getUsers = () => api
   .get('/v1/projects/project_user/')
-  .then(({ data }) => data)
 
 export default {
+  getEngagements,
+  getJudges,
+  newJudge,
+  getLawyers,
+  newLawyer,
   getProjects,
-  getProjectJudge,
-  getProjectLawyer,
-  getProjectRegion,
-  getProjectEngagement,
-  getProjectUser,
+  getProject,
+  getUserProjects,
+  newProject,
+  getCourts,
+  newCourt,
+  getRegions,
+  newRegion,
+  getUsers,
 }

@@ -1,12 +1,14 @@
+import re
 import uuid
 
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from crum import get_current_request
+from django.db.models import Q
 from django.db.models.signals import pre_save
 from django.forms import model_to_dict
-from utils import get_user_model
+from utils import get_user_model, _
 
 User = get_user_model()
 
@@ -15,13 +17,11 @@ class AbstractModel(models.Model):
     """Abstraction of common fields in all models"""
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    created_at = models.DateTimeField(
-        'Data de criação', auto_now_add=True, editable=False)
+    created_at = models.DateTimeField(_('Creation date'), auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
-    create_user = models.CharField(
-        'Username de criação', max_length=150, null=True)
-    update_user = models.CharField(
-        'Username de atualização', max_length=150, null=True)
+    create_user = models.CharField(_('Creation username'), max_length=150, null=True)
+    update_user = models.CharField(_('Update username'), max_length=150, null=True)
+    objects = models.Manager()
 
     class Meta:
         abstract = True
@@ -70,10 +70,11 @@ class AbstractModel(models.Model):
             except KeyError:
                 pass
         self.save()
+        return self
 
-    @property
-    def updates(self):
-        return list(UpdateUser.objects.filter(object_id=self.id).order_by('-created_at'))
+    def get_historical(self):
+        return list(UpdateUser.objects.filter(object_id=self.id).exclude(
+            Q(field_changed='update_user') | Q(current_value__regex=r'^[\w-]{36}$')).order_by('-created_at'))
 
 
 class UpdateUser(models.Model):
@@ -82,27 +83,26 @@ class UpdateUser(models.Model):
         primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     object_id = models.UUIDField()  # uuid AbstractModel
-    field_changed = models.CharField(
-        'Field alterado', max_length=100, null=True)
-    current_value = models.CharField('Valor atual', max_length=400, null=True)
-    previous_value = models.CharField(
-        'Valor anterior', max_length=400, null=True)
+    field_changed = models.CharField(_('Field changed'), max_length=100, null=True)
+    field_changed_display = models.CharField(_('Field changed display'), max_length=100, null=True)
+    current_value = models.CharField(_('Current value'), max_length=400, null=True)
+    previous_value = models.CharField(_('Previous value '), max_length=400, null=True)
     create_user = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
     content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
     content_object = GenericForeignKey()
 
     class Meta:
-        ordering = ('created_at',)
+        ordering = ('-created_at',)
 
     def __str__(self):
-        return f'Field alterado: {self.field_changed} | Valor anterior: {self.previous_value} | Valor atual: {self.current_value} | User: {self.create_user} | Hora de criação: {self.created_at}'
+        return str(self.field_changed)
 
 
 def get_user(sender, **kwargs):
     """Get User on request"""
     instance = kwargs.get('instance')
     requests_ = get_current_request()
-    username = requests_.user.username if requests_ else 'anonymus'
+    username = requests_.user.username if requests_ else 'anonymous'
     username = username.strip()
     if not username:
         username = None
@@ -110,9 +110,16 @@ def get_user(sender, **kwargs):
     instance.create_user_id = user_id
     if hasattr(instance, 'changed_fields') and hasattr(instance, 'id'):
         for field, values in instance.changed_fields:
-            UpdateUser.objects.create(field_changed=field, previous_value=values[0], current_value=values[1],
-                                      create_user_id=user_id, object_id=instance.id,
-                                      content_object=instance)
+            previous_value = values[0]
+            current_value = values[1]
+            new_field = instance._meta.get_field(field)
+            if hasattr(new_field, 'choices') and getattr(instance, f'get_{field}_display', None):
+                choices = dict(new_field.choices)
+                previous_value = choices.get(previous_value, previous_value)
+                current_value = choices.get(current_value, current_value)
+            UpdateUser.objects.create(field_changed=field, field_changed_display=new_field.verbose_name,
+                                      previous_value=previous_value, current_value=current_value,
+                                      create_user_id=user_id, object_id=instance.id, content_object=instance)
 
     if hasattr(instance, 'create_user'):
         if instance.create_user is None:

@@ -1,17 +1,16 @@
 from base.claim.models import Claim, ClaimCreditor, ClaimLawyer
 from rest_framework import serializers
 
-from creditors.classes.schemas import AbstractClassesSchema
+from creditors.classes.schemas import AbstractClassesSchema, AbstractClassesLawyerSchema, AbstractClassesUpdateSchema, \
+    AbstractClassesLawyerUpdateSchema
 
 
-class ClaimLawyerSchema(AbstractClassesSchema):
+class ClaimLawyerSchema(AbstractClassesLawyerSchema):
     model = ClaimLawyer
-
-    # classes = None
 
     class Meta:
         model = ClaimLawyer
-        exclude = ('creditor', )
+        exclude = ('creditor', 'classes')
 
 
 class ClaimCreditorSchema(AbstractClassesSchema):
@@ -19,7 +18,23 @@ class ClaimCreditorSchema(AbstractClassesSchema):
 
     class Meta:
         model = ClaimCreditor
-        exclude = ('creditor', )
+        exclude = ('creditor',)
+
+
+class ClaimCreditorUpdateSchema(AbstractClassesUpdateSchema):
+    model = ClaimCreditor
+
+    class Meta:
+        model = ClaimCreditor
+        exclude = ('creditor',)
+
+
+class ClaimLawyerUpdateSchema(AbstractClassesLawyerUpdateSchema):
+    model = ClaimCreditor
+
+    class Meta:
+        model = ClaimLawyer
+        exclude = ('creditor', 'classes')
 
 
 class ClaimSchema(AbstractClassesSchema):

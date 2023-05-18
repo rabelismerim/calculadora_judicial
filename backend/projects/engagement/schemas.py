@@ -1,7 +1,7 @@
-from asyncore import write
 from core.abstract.schemas import AbstractModelSchema
 from rest_framework import serializers
 from projects.engagement.models import Engagement, ProjectEngagement
+from utils import _
 
 
 class EngagementSchema(AbstractModelSchema):
@@ -45,19 +45,16 @@ class ProjectEngagementSchema(AbstractModelSchema):
         list_eng_error = []
 
         if isinstance(engagement_data, list) is False:
-            raise serializers.ValidationError(
-                [f'O campo: engagement deve estar no formato de lista'])
+            raise serializers.ValidationError([_('The field engagement must be in list format')])
 
         if not engagement_data:
-            raise serializers.ValidationError(
-                [f'Necessário adicionar ao menos um engagement'])
+            raise serializers.ValidationError([_('Need to add at least one engagement')])
 
         list_engagements_number = list(Engagement.objects.filter(
             number__in=engagement_data).values_list('number', flat=True))
         for engagement_number in engagement_data:
             if engagement_number in list_engagements_number:
-                list_eng_error.append(
-                    f'O engagement de número {engagement_number} já está cadastrado')
+                list_eng_error.append(_('Engagement number {} is already registered').format(engagement_number))
             else:
                 list_eng.append(engagement_number)
 

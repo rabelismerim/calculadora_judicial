@@ -12,3 +12,9 @@ static
 staticfiles
 **/package-lock.json
 project_ids.json
+.idea
+payload
+dir_testes
+db.zip
+db - Copy.sqlite3
+tests_loop.bat

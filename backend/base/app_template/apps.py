@@ -11,11 +11,13 @@ Attributes:
 - name: A string representing the name of the app
 """
 
-
 from django.apps import AppConfig
-from django.utils.translation import gettext_lazy as _
+
+from utils import _
 
 
 class {{app_name | title}}Config(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = '{{app_name}}'
+    verbose_name = _('{{app_name|title}}')
+    verbose_plural_name = _('{{app_name|title}}s')

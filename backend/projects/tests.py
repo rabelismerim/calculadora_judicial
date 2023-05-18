@@ -1,62 +1,29 @@
-import json
 from core.abstract.tests import AbstractTest
+from projects.create_project import get_data_project
 
 
 class ProjectTest(AbstractTest):
     """Project related tests"""
 
-    def api_C_post_projects(self):
-        """Assert post projects detail"""
-        self.print_start('Create Project')
-        project = {
-            "description": "Project test",
-            "project_start": "2023-02-08",
-            "project_end": "2023-02-08",
-            "lawyer_id": '515e8c5d-046a-4888-96a3-623dde36db31',
-            "judge_id": 'b2b791ee-86ed-4de8-b251-8e6e95705474',
-            "region_id": '2431f31b-ada3-4fa3-96ee-4c20ac3f7161',
-            "status": "P",
-            "is_adm": True,
-            "court_id": "10d1bc79-1e65-4a42-aa66-02e6b0f243b4",
-            "manager_id": "1",
-            "partner_id": "1",
-            "engagement":  {
-                "numbers": [
-                    "teste 1"
-                ]
-            },
-            "recoverings": [
-                {
-                    "entity": {
-                        "name": "string",
-                        "legal_number": "958.882.860-01"
-                    },
-                    "archives": [
-                        {
-                            "archive": {
-                                "archive_json": {},
-                                "description": "string"
-                            }
-                        }
-                    ],
-                    "date_rj_request": "2023-02-14",
-                    "date_rj_filing": "2023-02-14",
-                    "date_citation": "2023-02-14",
-                    "process_number": "string",
-                    "status": "E",
-                    "competence": "string",
-                    "status_support": "E"
-                }
-            ],
-            "users": [{'id': '1'}]
-        }
+    http_method_names = ['get']
 
-        response = self.client.post(
-            '/djud/api/v1/projects/', json.dumps(project), content_type="application/json")
+    path = 'projects'
+    @AbstractTest.execute_before_and_after
+    def test_api_a_post_projects(self):
+        """Assert post projects detail"""
+        project = get_data_project(str(self.get_user_django().id))
+        response = self.post('projects', project)
         self.assertEqual(response.status_code, 201)
 
-    def api_D_get_projects(self):
+        response = self.post('projects', project)  # Engagement already registered
+        self.assertEqual(response.status_code, 400)
+
+    @AbstractTest.execute_before_and_after
+    def test_api_b_get_projects(self):
         """Assert get projects detail"""
-        self.print_start('List Project')
-        response = self.client.get('/djud/api/v1/projects/')
+        response = self.get('projects')
         self.assertEqual(response.status_code, 200)
+
+
+    base_url = '/juca/api/v2/'
+    base_path = 'v2/'

@@ -1,5 +1,9 @@
 import json
+from json import JSONDecodeError
+
 from rest_framework import serializers, renderers
+
+from utils import _
 
 
 class AbstractModelSchema(serializers.Serializer):
@@ -16,6 +20,7 @@ class AbstractModelSchema(serializers.Serializer):
 
     def __init__(self, *args, **kwargs):
         fields = kwargs.pop('exclude', None)
+        include_fields = kwargs.pop('fields', None)
         super().__init__(*args, **kwargs)
         if fields is not None:
             allowed = set(fields)
@@ -26,16 +31,19 @@ class AbstractModelSchema(serializers.Serializer):
                 except:
                     pass
 
+        if include_fields is not None:
+            allowed = set(include_fields) & set(self.fields.keys())
+            self.fields = {field_name: self.fields[field_name] for field_name in allowed}
+
     def validate_archive_json(self, archive_json):
         if archive_json:
             try:
                 file_json = json.loads(archive_json)
-            except:
+            except JSONDecodeError:
                 file_json = archive_json
 
             if isinstance(file_json, dict) is False:
-                raise serializers.ValidationError(
-                    ['O campo archive_json é necessário estar no formato json'])
+                raise serializers.ValidationError([_('The archive_json field must be in json format')])
 
         return archive_json
 

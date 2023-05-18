@@ -4,314 +4,231 @@ Defines models for financial statements and funds.
 AbstractModel is inherited for common fields such as id, created_at, and updated_at.
 Funds class is used to represent a financial fund with a name and calculation.
 AbstractStatement class is an abstract model used to represent a financial statement,
-with fields for a data base date, historical value, and a foreign key to Funds.
+with fields for a Data base date, historical value, and a foreign key to Funds.
 StatementFunds class extends AbstractStatement to represent a statement related to funds.
 StatementIntegrations extends AbstractStatement and includes a description field.
 """
-
 from django.db import models
-from calculation.models import Calculation
-from core.abstract.models import AbstractModel
+from django.db.models import FloatField, signals
+from django.dispatch import receiver
+from django.utils.translation import gettext_lazy as _
 
-from django.apps import apps
+from base.views import ExtractFormula
+from calculation.comparative.signals import gen_statement_funds, gen_total_funds
+from calculation.funds.abstract.models import AbstractFunds, AbstractStatement, AbstractMonetaryCorrection, \
+    AbstractTotalValuesFunds
+from calculation.funds.integrations.models import TotalValuesFundsIntegrations
+from rates.models import Rate
 
 
-class Funds(AbstractModel):
+class Funds(AbstractFunds):
     """
-    A model class that represents Funds.
-
-    This class inherits from the AbstractModel class and represents a fund with a name and a foreign key relationship to a Calculation object. The 'name' attribute is a character field with a maximum length of 50, and represents the name of the fund. The 'calculation' attribute is a foreign key relationship to a Calculation object and ensures that the relationship is protected upon deletion.
-
-    Attributes:
-    name (CharField): Represents the name of the fund.
-    calculation (ForeignKey): Represents a foreign key relationship to a Calculation object.
+    This class defines methods for generating total statements and fetching the TotalValuesFunds and
+    TotalValuesFundsIntegrations objects associated with a fund. These objects store the total values and
+    integrations for the fund respectively.
 
     Methods:
-    This class does not define any methods.
-    """
+        get_total_funds(): Returns the TotalValuesFunds object associated with the current fund object. If the
+                           object does not exist, it creates one and returns it.
 
-    name = models.CharField('Nome da verba', max_length=50)
-    calculation = models.ForeignKey(Calculation, on_delete=models.PROTECT)
+        get_total_integrations(): Rerturns the TotalValuesFundsIntegrations object associated with the current
+                                 fund object. If the object does not exist, it creates one and returns it.
+
+        gen_total_statements(): Generates total statements for the current fund by calling the set_total() method
+                                of the TotalValuesFunds object associated with it.
+
+        gen_total_integrations(): Generates total statements for the current fund by calling the set_total() method
+                                  of the TotalValuesFundsIntegrations object associated with it.
+    """
 
     class Meta:
         verbose_name = 'Fund'
         verbose_name_plural = 'Funds'
 
-    def __str__(self):
-        return self.name
+    def get_total_funds(self):
+        """
+        This method returns the TotalValuesFunds object associated with the current fund object. If the object does
+        not exist, it creates one and returns it.
+        """
+        if hasattr(self, 'totalvaluesfunds'):
+            return self.totalvaluesfunds
+        return TotalValuesFunds.objects.get_or_create(fund=self)[0]
 
+    def get_total_integrations(self):
+        """
+        This method returns the TotalValuesFundsIntegrations object associated with the current fund object. If the
+        object does not exist, it creates one and returns it.
+        """
+        if hasattr(self, 'totalvaluesfundsintegrations'):
+            return self.totalvaluesfundsintegrations
+        return TotalValuesFundsIntegrations.objects.get_or_create(fund=self)[0]
 
-class AbstractStatement(AbstractModel):
-    """
-    A model class that represents an abstract financial statement.
+    def get_all_statement_funds(self) -> list:
+        """
+        This method returns the TotalValuesFundsIntegrations object associated with the current fund object. If the
+        object does not exist, it creates one and returns it.
+        """
+        return self.statementfunds_set.all()
 
-    This class inherits from the AbstractModel class and represents an abstract financial statement with a data base date, historical value, and a foreign key relationship to a Funds object. The 'data_base' attribute is a date field that represents the date of the financial statement. The 'historical_value' attribute is a float field that represents the historical value of the statement. The 'funds' attribute is a foreign key relationship to a Funds object and ensures that the relationship is protected upon deletion.
+    def get_all_statement_funds_integrations(self) -> list:
+        """
+        This method returns the TotalValuesFundsIntegrations object associated with the current fund object. If the
+        object does not exist, it creates one and returns it.
+        """
+        return self.statementintegrations_set.all()
 
-    Attributes:
-    data_base (DateField): Represents the date of the financial statement.
-    historical_value (FloatField): Represents the historical value of the statement.
-    funds (ForeignKey): Represents a foreign key relationship to a Funds object.
+    def gen_total_statements(self):
+        """
+        This method generates the total statements for the current fund by calling the set_total() method of the
+        TotalValuesFunds object associated with it.
+        """
+        total_funds = self.get_total_funds()
+        total_funds.set_total()
 
-    Methods:
-    This class does not define any methods.
+    def gen_total_integrations(self):
+        """
+        This method generates the total statements for the current fund by calling the set_total() method of the
+        TotalValuesFundsIntegrations object associated with it.
+        """
+        total_funds = self.get_total_integrations()
+        total_funds.set_total()
 
-    Meta:
-    abstract (bool): A boolean flag that indicates that this is an abstract model and should not be used to create database tables.
-    """
-    data_base = models.DateField('Data base')
-    historical_value = models.FloatField('Valor histórico')
-    fund = models.ForeignKey(Funds, on_delete=models.PROTECT)
+    def __delete_total_funds(self):
+        if hasattr(self, 'totalvaluesfunds'):
+            self.totalvaluesfunds.delete()
+        if hasattr(self, 'totalvaluesfundsintegrations'):
+            self.totalvaluesfundsintegrations.delete()
 
-    class Meta:
-        abstract = True
-
-    def __str__(self):
-        return f'{self.data_base} - {self.historical_value}'
+    def delete(self, *args, **kwargs):
+        """
+        Deletes the Funds object, TotalValuesFunds and TotalValuesFundsIntegrations
+        """
+        for fund in self.get_all_statement_funds():
+            fund.delete(delete_total=False)
+        for fund in self.get_all_statement_funds_integrations():
+            fund.delete(delete_total=False)
+        self.__delete_total_funds()
+        super(Funds, self).delete(*args, **kwargs)
 
 
 class StatementFunds(AbstractStatement):
     """
-    A model class that represents a financial statement for a fund.
+    A model class representing a financial statement for a fund.
 
-    This class inherits from the AbstractStatement class and represents a financial statement for a fund. It has the same attributes as the AbstractStatement class, which include a data base date, historical value, and a foreign key relationship to a Funds object.
+    This class inherits from the AbstractStatement class and extends it to represent a financial statement
+    for a fund. It includes attributes such as a 'database date', historical value, and a foreign key relationship
+    to a 'Funds' object.
+
+    In the Excel sheet, Statement Funds refers to each piece of data that can be inserted in the table of funds
+    database in the budget sheets, including tst, moral damages, etc.
 
     Attributes:
-    This class has the same attributes as the AbstractStatement class.
+        Same as in the AbstractStatement class.
+        dsr_reflexes (FloatField): The dsr reflexes for this statement.
+
 
     Methods:
-    This class does not define any methods.
+        - has_monetary_correction(self) -> bool: Returns True if the monetary correction exists for the statement.
+        - _set_status(self, value: str): Sets the status of the statement with the given value.
+        - calcule_monetary_correction(self): Calculates the monetary correction for the statement if it exists.
+        - get_corrected_value(self) -> float: Retrieves the corrected value of the statement if the monetary correction
+          exists, or else returns 0.
+
+    Note:
+    The 'calcule_monetary_correction()' method uses the '_get_index_monetary_correction()' method, which should be defined
+    in the class that inherits or implements the 'AbstractStatement' class.
     """
-
-
-class StatementIntegrations(AbstractStatement):
-    """
-    A model class that represents a financial statement for an integration.
-
-    This class inherits from the AbstractStatement class and represents a financial statement for an integration. It has the same attributes as the AbstractStatement class, which include a data base date, historical value, and a foreign key relationship to a Funds object. Additionally, it has a 'description' attribute, which is a character field with a maximum length of 150 that represents a description of the integration.
-
-    Attributes:
-    This class has the same attributes as the AbstractStatement class, as well as:
-    description (CharField): Represents a description of the integration.
-
-    Methods:
-    This class does not define any methods.
-    """
-    description = models.CharField('Descrição da verba', max_length=150)
-
-
-class StatementIRRF(AbstractModel):
-    """
-    This class represents a statement of taxable amounts for a given fund, used to calculate the Income Tax Withholding at Source
-    (IRRF - Imposto de Renda Retido na Fonte in Portuguese) in Brazil. It is a subclass of AbstractStatement.
-
-    Attributes:
-    fund (ForeignKey): The foreign key to the Fund model, representing the fund associated with this statement.
-    fund_name (CharField): The name of the fund associated with this statement.
-    taxable_amounts (FloatField): The taxable amounts for this statement, used to calculate the IRFF.
-    """
-    fund = models.ForeignKey(Funds, on_delete=models.PROTECT)
-    fund_name = models.CharField('Verbas', max_length=150)
-    taxable_amounts = models.FloatField('Valores tributáveis')
-
-
-class StatementDocuments(AbstractStatement):
-    """
-    A model class that represents a financial statement for a fund.
-
-    This class inherits from the AbstractStatement class and represents a financial statement for a fund. It has the same attributes as the AbstractStatement class, which include a data base date, historical value, and a foreign key relationship to a Funds object.
-
-    Attributes:
-    This class has the same attributes as the AbstractStatement class.
-
-    Methods:
-    This class does not define any methods.
-    """
-    number = models.CharField('Número do documento', max_length=100)
-    data_base = models.DateField('Data base')
-    historical_value = models.FloatField('Valor histórico')
-    fund = models.OneToOneField(Funds, on_delete=models.PROTECT)
-
-    # class Meta:
-    #     abstract = True
-
-    def __str__(self):
-        return f'{self.data_base} - {self.historical_value}'
-
-
-class AbstractMonetaryCorrection(AbstractModel):
-    """
-    The AbstractMonetaryCorrection class is an abstract base class that defines the common attributes and methods for monetary corrections.
-
-    Attributes:
-
-    index_data_base (float): The index value at the reference date for the correction.
-    index_recovering (float): The index value at the recovery date for the correction.
-    corrected_value (float): The corrected value obtained by applying the correction factors.
-    Methods:
-
-    __str__: Returns a string representation of the object.
-    The class is not meant to be instantiated directly, but to be subclassed by concrete classes that specify the statement to which the correction applies.
-    """
-    index_data_base = models.FloatField('Indice na data base')
-    index_recovering = models.FloatField('Indice na recuperação')
-    corrected_value = models.FloatField('Valor corrigido')
+    dsr_reflexes = models.FloatField(_('DSR Reflexes'), default=0)  # DRS - Descanso semanal remunerado
+    summary = models.BooleanField(_('Apply Precedent 381?'), default=False)
 
     class Meta:
-        abstract = True
+        verbose_name = 'Statement Fund'
+        verbose_name_plural = 'Statement Funds'
 
-    def __str__(self):
-        return f'{self.index_data_base} - {self.index_recovering} - {self.corrected_value}'
+    def get_total_value(self) -> float:
+        """Returns the total value of an asset by summing its historical value and the value of its DSR reflexes.
+
+        Returns:
+            float: The total value of the asset.
+        """
+        # TODO: check if template has option dsr_reflexes checked
+        return self.historical_value + self.dsr_reflexes
+
+    def get_dsr_reflexes(self) -> FloatField:
+        """Returns the `dsr_reflexes` attribute value"""
+        return self.dsr_reflexes
+
+    def save(self, send_signal_post_save=True, *args, **kwargs):
+        """
+        Save the StatementFunds object and send a post-save signal.
+        The signal is issued to calculate the monetary correction and sum the total in TotalFunds
+        Args:
+            send_signal_post_save (bool): Set to True to send a post-save signal. Default is True.
+
+        """
+        super(StatementFunds, self).save(*args, **kwargs)
+        if send_signal_post_save and self.is_extraconcursal is False:
+            gen_statement_funds.send(sender=self.__class__, instance=self)
+
+    def delete(self, delete_total=True, *args, **kwargs):
+        """
+        Deletes the StatementFunds object, MonetaryCorrection and generates a new calculation of TotalValuesFunds
+        """
+        fund = self.fund
+        self.delete_monetary_correction()
+        super(StatementFunds, self).delete(*args, **kwargs)
+        if delete_total:
+            fund.gen_total_statements()
+
+    def has_monetary_correction(self) -> bool:
+        """Returns True if the monetary correction exists for the statement."""
+        return hasattr(self, 'monetarycorrection')
+
+    def get_monetary_correction(self):
+        """Returns the `monetarycorrection` object"""
+        if self.has_monetary_correction():
+            return self.monetarycorrection
+
+    def delete_monetary_correction(self):
+        """Delete the MonetaryCorrection object if exists"""
+        monetary = self.get_monetary_correction()
+        if monetary:
+            monetary.delete()
+
+    def create_monetary_correction(self, data: dict):
+        """Create or update the MonetaryCorrection object"""
+        MonetaryCorrection.objects.update_or_create(defaults=data, **{'statement': self})
+
+    def calcule_monetary_correction(self):
+        """
+        Calculate the monetary correction and create the MonetaryCorrection object. If there is an error in the
+        calculation, the MonetaryCorrection is excluded.
+        """
+        data: dict or None = self._get_index_monetary_correction()
+        if data:
+            self.create_monetary_correction(data)
+            self.set_calculation_done()
+        else:
+            self.delete_monetary_correction()
+
+    def get_corrected_value(self) -> float:
+        """Returns corrected value if the monetary correction exists for the statement, else 0"""
+        if self.has_monetary_correction():
+            return self.monetarycorrection.corrected_value
+        return 0
 
 
 class MonetaryCorrection(AbstractMonetaryCorrection):
     """
     A class that represents a monetary correction for a statement of funds.
 
-    Attributes:
-    statement (StatementFunds): The statement of funds to which the monetary correction applies.
+    In <Excel>, it refers to each piece of data that can be inserted in the table of funds, monetary correction in the
+    rates sheets (tst, moral damages, etc.)
+
+    Attributes:ø
+        statement (StatementFunds): The statement of funds to which the monetary correction applies.
     """
     statement = models.OneToOneField(StatementFunds, on_delete=models.PROTECT)
-
-
-class MonetaryCorrectionIntegrations(AbstractMonetaryCorrection):
-    """
-    A class that represents a monetary correction for a statement of integrations.
-
-    Attributes:
-    statement (StatementIntegrations): The statement of integrations to which the monetary correction applies.
-    """
-    statement = models.OneToOneField(
-        StatementIntegrations, on_delete=models.PROTECT)
-
-
-class MonetaryCorrectionDocuments(AbstractMonetaryCorrection):
-    """
-    A class that represents a monetary correction for a statement of integrations.
-
-    Attributes:
-    statement (StatementIntegrations): The statement of integrations to which the monetary correction applies.
-    """
-    statement = models.OneToOneField(
-        StatementDocuments, on_delete=models.PROTECT)
-
-
-class ArrearsCharges(AbstractModel):  # Encargos moratórios
-    """
-    A class that represents a monetary correction for a statement of integrations.
-
-    Attributes:
-    statement (StatementIntegrations): The statement of integrations to which the monetary correction applies.
-    """
-    statement = models.OneToOneField(
-        StatementDocuments, on_delete=models.PROTECT)
-
-
-class AbstractValue(AbstractModel):
-    """
-    Defines an abstract model for a value associated with a StatementPF object. Inherits from the AbstractModel
-    class, which provides common fields such as id, created_at, and updated_at. Contains a value field
-    for the associated value, as well as a OneToOneField to a StatementPF object. This class is meant to be
-    subclassed to create specific value types associated with a StatementPF object, such as TaxDays,
-    RecurralDeposit, DefaultInterest, DefaultInterestDue, TotalDue, and TotalLawyer. The abstract flag
-    in the Meta class indicates that this model should not be instantiated directly.
-    """
-    value = models.FloatField('Valor')
-    arrears_charges = models.OneToOneField(
-        ArrearsCharges, on_delete=models.PROTECT)
-
-    class Meta:
-        abstract = True
-
-
-class Days(AbstractValue):
-    """
-    Defines an abstract model for a value associated with a ArrearsCharges object. Inherits from the AbstractModel
-    class, which provides common fields such as id, created_at, and updated_at. Contains a value field
-    for the associated value, as well as a OneToOneField to a ArrearsCharges object. Subclass this model to add
-    specific fields as needed and include a field description for the value type.
-    """
-
-
-class Interest(AbstractValue):
-    """
-    Defines an abstract model for a value associated with a ArrearsCharges object. Inherits from the AbstractModel
-    class, which provides common fields such as id, created_at, and updated_at. Contains a value field
-    for the associated value, as well as a OneToOneField to a ArrearsCharges object. Subclass this model to add
-    specific fields as needed and include a field description for the value type.
-    """
-
-
-class Fine(AbstractValue):
-    """
-    Defines an abstract model for a value associated with a ArrearsCharges object. Inherits from the AbstractModel
-    class, which provides common fields such as id, created_at, and updated_at. Contains a value field
-    for the associated value, as well as a OneToOneField to a ArrearsCharges object. Subclass this model to add
-    specific fields as needed and include a field description for the value type.
-    """
-
-
-class AmountDue(AbstractModel):
-    """
-    Defines an abstract model for a value associated with a StatementDocuments object. Inherits from the AbstractModel
-    class, which provides common fields such as id, created_at, and updated_at. Contains a value field
-    for the associated value, as well as a OneToOneField to a StatementDocuments object. Subclass this model to add
-    specific fields as needed and include a field description for the value type.
-    """
-    value = models.FloatField('Valor')
-    statement_document = models.OneToOneField(
-        StatementDocuments, on_delete=models.PROTECT)
-
-
-class TotalValuesIRRF(AbstractModel):
-    """
-    A class that represents the total values of IRRF (Income Tax on Individuals) for a fund.
-
-    Attributes:
-    taxable_amount (float): The taxable amount of the IRRF.
-    months_period (int): The number of months in the period for the IRRF calculation.
-    taxable_portion (float): The taxable portion of the IRRF.
-    aliquot (float): The aliquot of the IRRF.
-    installment_deducted (float): The installment deducted from the IRRF.
-    irrf_per_month (float): The value of the IRRF per month.
-    irrf_per_period (float): The value of the IRRF for the entire period.
-    fund (Funds): The fund to which the IRRF applies.
-    """
-    taxable_amount = models.FloatField('Valor tributável', default=0)
-    months_period = models.PositiveIntegerField('Meses no período')
-    taxable_portion = models.FloatField('Parcela tributável', default=0)
-    aliquot = models.FloatField('Alíquota', default=0)
-    installment_deducted = models.FloatField('Parcela a deduzir', default=0)
-    irrf_per_month = models.FloatField('Valor IRRF por mês', default=0)
-    irrf_per_period = models.FloatField('Valor do IRRF no período', default=0)
-    fund = models.OneToOneField(Funds, on_delete=models.PROTECT)
-
-    # TODO: somar todas as StatementIRRF. Calcular no evento signals.post.save ou em Procedure
-    total = models.FloatField('Total da soma dos valores', default=0)
-
-    def __str__(self):
-        return f'{self.fund} - {self.taxable_amount}'
-
-
-class AbstractTotalValuesFunds(AbstractModel):
-    """
-    A class that represents the total values of a fund, which is an abstract model.
-
-    Attributes:
-    total_historical (float): The historical value of the fund.
-    total_corrected (float): The corrected value of the fund.
-    fund (Funds): The fund to which the values apply.
-    """
-    fund = models.OneToOneField(Funds, on_delete=models.PROTECT)
-
-    # TODO: somar todas as StatementFunds or StatementFundsIntegrations. Calcular no evento signals.post.save ou em Procedure
-    total_historical = models.FloatField('Total valor histórico', default=0)
-    total_corrected = models.FloatField('Total valor corrigido', default=0)
-
-    def __str__(self):
-        return f'{self.fund} - {self.total_historical} - {self.total_corrected}'
-
-    class Meta:
-        abstract = True
 
 
 class TotalValuesFunds(AbstractTotalValuesFunds):
@@ -319,18 +236,86 @@ class TotalValuesFunds(AbstractTotalValuesFunds):
     A class that represents the total values of a fund, which is a concrete implementation of AbstractTotalValuesFunds.
 
     Attributes:
-    total_historical (float): The historical value of the fund.
-    total_corrected (float): The corrected value of the fund.
-    fund (Funds): The fund to which the values apply.
+        total_historical (float): The historical value of the fund.
+        total_corrected (float): The corrected value of the fund.
+        total_dsr_reflexes (float): The drs reflexes value of the fund.
+        total_accurate (float): The total accurate value of the fund.
+        fund (Funds): The fund to which the values apply.
+
+    Methods:
+        get_calculated_statement(): Returns the calculated statement of the fund.
+        set_total(): Calculates and sets the total corrected and historical values of the fund based on the calculated
+         statement.
     """
+    total_dsr_reflexes = models.FloatField(_('Total value DSR reflexes'), default=0)
+    total_accurate = models.FloatField(_('Total accurate'), default=0)
+    fund = models.OneToOneField(Funds, on_delete=models.PROTECT)
+
+    def get_calculated_statement(self):
+        """Returns the calculated statement of the fund."""
+        return self.fund.statementfunds_set.filter(status='C', is_extraconcursal=False)
+
+    def set_total(self):
+        """
+        Calculates and sets the total corrected and historical values of the fund based on the calculated
+        statement.
+        """
+        statements = self.get_calculated_statement()
 
 
-class TotalValuesFundsIntegrations(AbstractTotalValuesFunds):
-    """
-    A class that represents the total values of a fund, which is a concrete implementation of AbstractTotalValuesFunds.
+        total_corrected_value = 0
+        total_historical_value = 0
+        total_dsr_reflexes = 0
+        total_accurate = 0
 
-    Attributes:
-    total_historical (float): The historical value of the fund.
-    total_corrected (float): The corrected value of the fund.
-    fund (Funds): The fund to which the values apply.
+        for statement in statements:
+            total_corrected_value += statement.get_corrected_value()
+            total_historical_value += statement.get_historical_value()
+            total_dsr_reflexes += statement.get_dsr_reflexes()
+            total_accurate += statement.get_total_value()
+
+        self.total_historical = total_historical_value
+        self.total_corrected = total_corrected_value
+        self.total_dsr_reflexes = total_dsr_reflexes
+        self.total_accurate = total_accurate
+        self.save()
+
+    class Meta:
+        verbose_name = 'Total values fund'
+        verbose_name_plural = 'Total values funds'
+
+
+@receiver(gen_statement_funds, sender=StatementFunds)
+def save_statement(sender, instance, **kwargs) -> None:
     """
+    This method is a receiver for post_save signal and is triggered when a StatementFunds object is saved. It
+    calculates the monetary correction for the instance and generates the total statements of the related fund. It
+    takes the sender and instance as arguments.
+
+    Triggers the creation of the formulas used at the end of the calculation
+    """
+    print('Signal gerar linha extrato verbas\n')
+
+    instance.calcule_monetary_correction()
+    instance.fund.gen_total_statements()
+
+    statement_methods = ['get_total_value', 'get_dsr_reflexes', 'get_monetary_correction',
+                         'calcule_monetary_correction', 'get_rate_by_date',
+                         '_get_index_monetary_correction', 'get_corrected_value', 'get_data_base', 'get_total_value',
+                         'get_historical_value', 'get_rate', 'save_total_funds', 'monetarycorrection', 'set_total',
+                         '_calc_corrected_value', 'has_monetary_correction', '_calc_corrected_value', 'corrected_value']
+
+    ExtractFormula(instance, instance.fund.calculation, statement_methods).get_methods(
+        [StatementFunds, MonetaryCorrection, Rate, TotalValuesFunds, save_statement])
+
+
+@receiver(gen_total_funds, sender=Funds)
+def save_total_funds(sender, instance, **kwargs) -> None:
+    """
+    This method is a receiver for post_save signal and is triggered when a StatementFunds object is saved. It
+    calculates the monetary correction for the instance and generates the total statements of the related fund. It
+    takes the sender and instance as arguments
+    """
+    print('Signal somar todas as linhas de extrato verbas\n\n')
+    instance.gen_total_statements()
+    instance.gen_total_integrations()

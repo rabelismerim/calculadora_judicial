@@ -7,7 +7,11 @@ to add specific fields as needed.
 
 from django.db import models
 from core.abstract.models import AbstractModel
-
+from utils import _
 
 class {{app_name | title}}(AbstractModel):
-    pass
+    """
+    A class representing a {{app_name | title}}.
+
+    Attributes:
+    """
