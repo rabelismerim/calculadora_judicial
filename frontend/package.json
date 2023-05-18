@@ -7,8 +7,8 @@
   "scripts": {
     "dev": "vite --mode devremote",
     "dev:local": "vite --mode devlocal",
-    "build:prod": "vue-tsc && vite build --mode production --base=/djud/static/src/vue/dist/ --emptyOutDir",
-    "build:hml": "vue-tsc && vite build --mode homolog --base=/djud/static/src/vue/dist/ --emptyOutDir",
+    "build:prod": "vue-tsc && vite build --mode production --base=/juca/static/src/vue/dist/ --emptyOutDir",
+    "build:hml": "vue-tsc && vite build --mode homolog --base=/juca/static/src/vue/dist/ --emptyOutDir",
     "test": "vitest --ui --mode devremote",
     "preview": "vite preview",
     "lint": "eslint .",

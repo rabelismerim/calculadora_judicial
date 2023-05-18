@@ -18,7 +18,7 @@ const getMyProfile = () => api
   .then((result: any) => result?.profile)
   .then(async (user) => {
     if (!user?.authenticated && import.meta.env.PROD)
-      redirectTo(`${window.location.origin}/djud/api/drfmsal_signin/djud/`)
+      redirectTo(`${window.location.origin}/juca/api/drfmsal_signin/juca/`)
 
     const permissions = await getPermissions()
     const projects = await projectService.getUserProjects()

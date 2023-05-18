@@ -21,7 +21,7 @@ export default defineConfig({
 
   build: {
     // outDir: './dist',
-    outDir: path.resolve(__dirname, '../backend/djud/static/src/vue/dist/'),
+    outDir: path.resolve(__dirname, '../backend/juca/static/src/vue/dist/'),
   },
 
   resolve: {

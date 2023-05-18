@@ -383,7 +383,7 @@ const calculate = async () => {
               <div>Calculados com Sucesso: 0</div>
               <div>Calculados com Error: 0</div>
             </div>
-            <Btn label="Calcular" @click="calculate(index)" />
+            <Btn label="Calcular" @click="calculate()" />
           </div>
         </QForm>
       </Accordion>
