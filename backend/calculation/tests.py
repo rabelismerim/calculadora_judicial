@@ -53,5 +53,5 @@ class CalculationTest(AbstractTest):
         self.assertIn('calculation', response.content)
         return response.content['calculation']
 
-    base_url = '/djud/api/v2/'
+    base_url = '/juca/api/v2/'
     base_path = 'v2/'

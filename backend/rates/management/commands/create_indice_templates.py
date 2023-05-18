@@ -84,13 +84,13 @@ def create_templates():
 
     templates = [{'name': f'Documentos', 'description': f'Documento',
                   'fund_main': fund_document,
-                  'end_point': '/djud/api/v1/calculation/funds/documents/',
-                  'end_point_main': '/djud/api/v1/calculation/funds/documents/',
+                  'end_point': '/juca/api/v1/calculation/funds/documents/',
+                  'end_point_main': '/juca/api/v1/calculation/funds/documents/',
                   'many': False,
                   'fields': fields_verbas_document}, {'name': f'Acordos', 'description': f'Acordo',
                                                       'fund_main': fund_document,
-                                                      'end_point': '/djud/api/v1/calculation/funds/documents/',
-                                                      'end_point_main': '/djud/api/v1/calculation/funds/documents/',
+                                                      'end_point': '/juca/api/v1/calculation/funds/documents/',
+                                                      'end_point_main': '/juca/api/v1/calculation/funds/documents/',
                                                       'many': False,
                                                       'fields': fields_verbas_document}]
     verbas = ['TST', 'TST.IPCA-E', 'IPCA-E', 'SELIC', 'IGP-M', 'INPC', 'IPCA', 'IGP-DI', 'IPC-FIPE', 'TJSP']
