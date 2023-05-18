@@ -1,6 +1,5 @@
 const mapProject = (project: any) => {
   const {
-    createdAt,
     isAdm,
     engagement,
     financialPartner,
@@ -28,7 +27,6 @@ const mapProject = (project: any) => {
 
   return {
     ...project,
-    createdAt: formatDate(createdAt),
     fase: isAdm ? 'Administrativa' : 'Judicial',
     responsible: engagement?.createUser,
     responsibles,
@@ -66,25 +64,28 @@ const getProject = (id: string) => api
   })
 
 const newProject = (project: any) => {
-  const { start, end, executors, approvers, reviewers, engagements, recoverings } = project
+  const { executors, approvers, reviewers, engagements, recoverings } = project
+  const mapId = (id: string) => ({ id })
   const data = {
     ...project,
-    projectStart: start ? formatDateToBackend(start) : undefined,
-    projectEnd: end ? formatDateToBackend(end) : undefined,
     engagement: {
       numbers: engagements,
     },
     recoverings: recoverings.map((recovering: any) => ({
       entity: recovering,
     })),
-    executors: executors.map((id: string) => ({ id })),
-    approvers: approvers.map((id: string) => ({ id })),
-    reviewers: reviewers.map((id: string) => ({ id })),
+    executors: executors.map(mapId),
+    approvers: approvers.map(mapId),
+    reviewers: reviewers.map(mapId),
   }
   return api
-    .post('v1/projects/', data)
-    .then(({ project }: any) => project)
+    .post('/v1/projects/', data)
+    .then((result: any) => result?.project)
 }
+
+const updateProject = (project: any) => api
+  .put(`/v1/projects/${project.id}/`, project)
+  .then((result: any) => result?.project)
 
 // JUDGES
 const getJudges = () => api
@@ -93,7 +94,7 @@ const getJudges = () => api
   .then(data => data.map(({ description, id }: any) => ({ description, id })))
 const newJudge = (description: string) => api
   .post('/v1/projects/judge/', { description })
-  .then((result: any) => result?.judges || [])
+  .then((result: any) => result?.judge || {})
   .then(({ description, id }) => ({ description, id }))
 
 // LAWYERS
@@ -103,7 +104,7 @@ const getLawyers = () => api
   .then(data => data.map(({ description, id }: any) => ({ description, id })))
 const newLawyer = (description: string) => api
   .post('/v1/projects/lawyer/', { description })
-  .then(({ lawyers }: any) => lawyers)
+  .then((result: any) => result?.lawyer || {})
   .then(({ description, id }) => ({ description, id }))
 
 // REGIONS
@@ -113,7 +114,7 @@ const getRegions = () => api
   .then(data => data.map(({ description, id }: any) => ({ description, id })))
 const newRegion = (description: string) => api
   .post('/v1/projects/region/', { description })
-  .then(({ regions }: any) => regions)
+  .then((result: any) => result?.region || {})
   .then(({ description, id }) => ({ description, id }))
 
 // COURTS
@@ -123,7 +124,7 @@ const getCourts = () => api
   .then(data => data.map(({ description, id }: any) => ({ description, id })))
 const newCourt = (description: string) => api
   .post('/v1/projects/court/', { description })
-  .then(({ courts }: any) => courts)
+  .then((result: any) => result?.court || {})
   .then(({ description, id }) => ({ description, id }))
 
 // ENGAGEMENTS OF PROJECT
@@ -144,6 +145,7 @@ export default {
   getProject,
   getUserProjects,
   newProject,
+  updateProject,
   getCourts,
   newCourt,
   getRegions,

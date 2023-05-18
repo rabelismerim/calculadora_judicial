@@ -19,6 +19,7 @@ interface Creditor {
   occurrence: string
   physicalPerson: boolean
   description: string
+  recoverings?: { recoveringId: string; rateId: string }[]
 }
 interface Detail extends Creditor {}
 interface Options extends Creditor {
@@ -36,28 +37,24 @@ const getOptions = () => api
   .get('/v1/creditors/options/')
   .then((result: any) => result?.options)
 
-const setCreditor = async (creditor: Creditor) => {
-  const { id, recoveringsId, name, legalNumber, claimCreditor } = creditor
-  const method = id ? 'put' : 'post'
+const newCreditors = async (creditor: Creditor) => {
+  const { recoverings, name, legalNumber } = creditor
   const results = []
-  if (!recoveringsId)
+  if (!recoverings)
     return
   try {
-    for (const id of recoveringsId) {
-      const result = await api[method]('/v1/creditors/',
+    for (const { recoveringId, rateId } of recoverings) {
+      const result = await api.post('/v1/creditors/',
         ({
           ...creditor,
           entity: {
             name,
             legalNumber,
           },
-          recoveringId: id,
-          claimCreditor: claimCreditor.map(({ coin, classe, value }: Claim) => ({
-            classes: { classe },
-            coins: { coin, value },
-          })),
+          recoveringId,
+          rateId,
         }))
-      // .then((result: any) => result.creditor)
+        .then((result: any) => result?.creditor)
       results.push(result)
     }
     return results
@@ -145,7 +142,7 @@ export default {
   getCreditors,
   getCreditor,
   getOptions,
-  setCreditor,
+  newCreditors,
   getNoticeAJ,
   setNoticeAJ,
   getNoticeRecovering,

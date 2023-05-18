@@ -15,7 +15,7 @@ const getPermissions = () => api
 
 const getMyProfile = () => api
   .get('/drfmsal_signstatus/')
-  .then(({ profile }: any) => profile)
+  .then((result: any) => result?.profile)
   .then(async (user) => {
     if (!user.authenticated && import.meta.env.PROD)
       redirectTo(`${window.location.origin}/djud/api/drfmsal_signin/djud/`)

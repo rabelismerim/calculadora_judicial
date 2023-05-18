@@ -10,7 +10,7 @@ const api = axios.create({
   withCredentials: true,
   xsrfHeaderName: 'X-CSRFToken',
   xsrfCookieName: 'csrftoken',
-  timeout: 25000,
+  timeout: 100000,
   headers,
 })
 
