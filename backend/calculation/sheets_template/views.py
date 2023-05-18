@@ -112,7 +112,7 @@ class SheetTemplateViewApi(AbstractViewApi):
 
             remove(new_name)
 
-            return JsonResponse({'html' : str(list_html), 'excel': str(excel_file.decode('latin-1'))})
+            return JsonResponse({"html" : f"\"{str(list_html)}\"" , "excel": f"\"{str(excel_file.decode('latin-1'))}"})
 
         except BaseException as e:
             return JsonResponse({'errors': dict(e)})
