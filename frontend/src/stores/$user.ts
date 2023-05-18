@@ -26,7 +26,7 @@ const login = async () => {
   }
   catch (error: any) {
     printError('ERROR ON LOGIN:', error)
-    router.push({ path: '/' })
+    router?.push({ path: '/' })
   }
 }
 const logout = () => {
