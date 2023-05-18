@@ -49,7 +49,7 @@ class BaseTestsDjango(BaseTests, TransactionTestCase):
     stdout = OutputWrapper(sys.stdout)
     stderr = OutputWrapper(sys.stderr)
     style = color_style()
-    base_url = '/djud/api/v1/'
+    base_url = '/juca/api/v1/'
 
     def get_base_url(self):
         return self.base_url

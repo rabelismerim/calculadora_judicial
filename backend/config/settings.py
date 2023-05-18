@@ -60,9 +60,9 @@ ALLOWED_HOSTS = [
 CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',
     'https://brfojwanderley:5173',
-    'https://brdcvmdev07/djud',
-    'https://brsphearndt:8080/djud',
-    'https://uat.fadigitallab.deloitte.com.br/djud'
+    'https://brdcvmdev07/juca',
+    'https://brsphearndt:8080/juca',
+    'https://uat.fadigitallab.deloitte.com.br/juca'
 ]
 # Application definition
 
@@ -181,7 +181,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            'djud/static/src/vue/dist/', os.path.join(BASE_DIR, template)
+            'juca/static/src/vue/dist/', os.path.join(BASE_DIR, template)
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -208,13 +208,13 @@ if IS_HML:
             'file': {
                 'level': 'WARNING',
                 'class': 'logging.FileHandler',
-                'filename': str(BASE_DIR / 'log' / 'djud.log'),
+                'filename': str(BASE_DIR / 'log' / 'juca.log'),
                 'encoding': 'utf-8'
             },
             'file_info': {
                 'level': 'INFO',
                 'class': 'logging.FileHandler',
-                'filename': str(BASE_DIR / 'log' / 'djud_info.log'),
+                'filename': str(BASE_DIR / 'log' / 'juca_info.log'),
                 'encoding': 'utf-8'
             },
             'console': {
@@ -336,12 +336,19 @@ else:
 
 # Caches
 # https://docs.djangoproject.com/en/4.2/topics/cache/
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
-        "LOCATION": "django_juca_cache_table",
+if not DEBUG:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+            "LOCATION": "django_juca_cache_table",
+        }
     }
-}
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -399,11 +406,11 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 if IS_HML:
     STATIC_URL = 'static/'
 else:
-    STATIC_URL = 'djud/static/'
+    STATIC_URL = 'juca/static/'
 # STATIC_URL = '/static/'
 STATIC_ROOT = 'var/static_root/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'djud/static/'),
+    os.path.join(BASE_DIR, 'juca/static/'),
     # os.path.join(BASE_DIR, 'static/'),
 ]
 if DEBUG is False:
@@ -447,9 +454,9 @@ if ENABLE_DRF:
 DRF_STANDARDIZED_ERRORS = {"ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True}
 # Setting auth user
 AUTH_USER_MODEL = 'dttuser.User'
-BASE_URL = 'djud/api/v1/'  # Current version
-BASE_URL_NEXT = 'djud/api/v2/'  # Next version
-BASE_URL_AUTH = 'djud/api/'
+BASE_URL = 'juca/api/v1/'  # Current version
+BASE_URL_NEXT = 'juca/api/v2/'  # Next version
+BASE_URL_AUTH = 'juca/api/'
 
 if DEBUG:
     import mimetypes
@@ -457,15 +464,15 @@ if DEBUG:
     mimetypes.add_type("application/javascript", ".js", True)
 
     # Documentation login Urls
-    LOGIN_URL = "/djud/login/"
+    LOGIN_URL = "/juca/login/"
     LOGOUT_REDIRECT_URL = f"/{BASE_URL}docs/swagger/"
     LOGIN_REDIRECT_URL = f"/{BASE_URL}docs/swagger/"
-    LOGOUT_URL = "/djud/logout/"
+    LOGOUT_URL = "/juca/logout/"
 
 SWAGGER_URL = f'/{BASE_URL}docs/redoc/'
 RATE_FILE_TYPES = ['pdf', 'vnd.ms-excel', 'xlsx', 'xls']
 
-TEMPLATE_FILE_TYPES = ['vnd.ms-excel', 'xlsx', 'xls']
+TEMPLATE_FILE_TYPES = ['vnd.ms-excel', 'xlsx', 'xls',  'xlsm']
 
 GROUP_NAME_EXECUTOR = 'Executor'
 GROUP_NAME_APPROVER = 'Aprovador'

@@ -10,6 +10,8 @@ from django.utils.translation import gettext_lazy as _
 from config.settings import TEMPLATE_FILE_TYPES
 from core.abstract.models import AbstractModel
 import pandas as pd
+from rest_framework import serializers
+
 class SheetsTemplate(AbstractModel):
     """
     Class that defines a model for template SheetsFile.
@@ -22,7 +24,7 @@ class SheetsTemplate(AbstractModel):
 
     """
     name = models.CharField(_('Sheet Name file'), max_length=50)
-    file = models.FileField(_('Sheet Template file'), upload_to=f'upload/djud/templates/')
+    file = models.FileField(_('Sheet Template file'), upload_to=f'juca/templates/')
     value = models.TextField(_('Json File Value'), null=True)
 
     def __str__(self):

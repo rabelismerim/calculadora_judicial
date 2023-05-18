@@ -28,7 +28,7 @@
     dados
 > * `python manage.py migrate` para aplicar as migrações feitas no makemigrations
 > * `python manage.py runserver` para inicializar o servidor
-> * Acesse a documentação na url http://127.0.0.1:8000/djud/api/v1/docs/swagger/ (consultar versão atual dá api em
+> * Acesse a documentação na url http://127.0.0.1:8000/juca/api/v1/docs/swagger/ (consultar versão atual dá api em
     config.settings)
 > * Na raiz do projeto crie um arquivo com o nome ".env". Dentro dele coloque o texto "DEBUG=True", "IS_LOCALHOST=True"
     e "ENV='branch' para ativar o modo de desenvolvedor
@@ -40,7 +40,7 @@
 
 ### Criação dos indices e valores
 
-> * Na url http://127.0.0.1:8000/djud/admin/rates/ratefile/ adicionar um rate file. Na lista de ratefile, marque o
+> * Na url http://127.0.0.1:8000/juca/admin/rates/ratefile/ adicionar um rate file. Na lista de ratefile, marque o
     checkbox nos arquivos que deseja adicionar. No select action, selecione Load file e clique em Go. Os arquivos serão
     carregados para o banco de dados;
 > * O arquivo para rate file deve estar no formato xlsx e contêr obrigatoriamente as colunas "mes" e "indice".
