@@ -205,6 +205,7 @@ class ProjectV2Schema(ProjectRolesSchema):  # V2
     class Meta:
         model = Project
         fields = '__all__'
+
     def validate(self, data):
         """
         Validate the project schema by extracting the necessary data from Project object.
@@ -265,12 +266,14 @@ class ProjectEditSchema(ProjectRolesSchema):
 
         fields = ('project_start', 'project_end', 'process_number', 'competence', 'date_rj_request', 'date_rj_filing',
                   'date_citation', 'description', 'judge_id', 'lawyer_id', 'region_id', 'court_id', 'legal_manager_id',
-                  'calculation_manager_id', 'financial_manager_id', 'legal_partner_id', 'financial_partner_id', 'executors')
+                  'calculation_manager_id', 'financial_manager_id', 'legal_partner_id', 'financial_partner_id',
+                  'executors', 'approvers', 'special_approvers', 'reviewers')
 
     def __init__(self, *args, **kwargs):
         super(ProjectEditSchema, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.required = False
+
 
 exclude = ('create_user', 'created_at',
            'update_user', 'updated_at')
