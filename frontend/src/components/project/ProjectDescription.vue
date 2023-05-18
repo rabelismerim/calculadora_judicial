@@ -46,8 +46,24 @@ const props = withDefaults(defineProps<{
     </div>
   </ProjectDetailCell>
 
-  <ProjectDetailCell label="Data de Pedido de Recuperação">
+  <ProjectDetailCell label="Data de Início do Projeto">
     {{ formatDateFromBackend(project?.projectStart) || '-' }}
+  </ProjectDetailCell>
+
+  <ProjectDetailCell label="Data de Encerramento do Projeto">
+    {{ formatDateFromBackend(project?.projectEnd) || '-' }}
+  </ProjectDetailCell>
+
+  <ProjectDetailCell label="Data de Pedido da Recuperação Judicial">
+    {{ formatDateFromBackend(project?.dateRjRequest) || '-' }}
+  </ProjectDetailCell>
+
+  <ProjectDetailCell label="Data de Ajuizamento da Recuperação Judicial">
+    {{ formatDateFromBackend(project?.dateRjFiling) || '-' }}
+  </ProjectDetailCell>
+
+  <ProjectDetailCell label="Data da Citação">
+    {{ formatDateFromBackend(project?.dateCitation) || '-' }}
   </ProjectDetailCell>
 
   <ProjectDetailCell label="Número do Processo Principal">

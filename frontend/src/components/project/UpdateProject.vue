@@ -1,11 +1,12 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
   modelValue: boolean
+  project: any
   title?: string
+  options: any
 }>(), {
-  modelValue: false,
 })
-const emit = defineEmits(['update:modelValue', 'success'])
+const emit = defineEmits(['update:modelValue', 'update:project', 'update:options', 'success'])
 
 let loading = $ref(false)
 const form = ref(null) as any
@@ -19,40 +20,33 @@ const nullRecovering = {
   name: '',
   legalNumber: '',
 }
-const nullProject = {
-  judgeId: '',
-  lawyerId: '',
-  regionId: '',
-  courtId: '',
-  engagements: [],
-  recoverings: [clone(nullRecovering)],
-  description: '',
-  start: null,
-  end: null,
-  legalManagerId: '',
-  legalPartnerId: '',
-  financialManagerId: '',
-  financialPartnerId: '',
-  calculationManagerId: '',
-  executors: [],
-  approvers: [],
-  reviewers: [],
-  processNumber: '',
-}
-let newProject = $ref(clone(nullProject))
+let editingProject = $ref({} as any)
+watchEffect(() => {
+  if (props.modelValue === true) {
+    const newProject = clone(props.project)
+    const { judge, lawyer, region, court, legalPartner, legalManager, financialPartner, financialManager, calculationManager } = newProject
+    editingProject = {
+      ...newProject,
+      judgeId: judge?.id,
+      lawyerId: lawyer?.id,
+      regionId: region?.id,
+      courtId: court?.id,
+      legalPartnerId: legalPartner?.id,
+      legalManagerId: legalManager?.id,
+      financialPartnerId: financialPartner?.id,
+      financialManagerId: financialManager?.id,
+      calculationManagerId: calculationManager?.id,
+    }
+  }
+})
+
 const clear = async () => {
-  newProject = clone(nullProject)
+  editingProject = clone({})
   await delay(0.5)
   form.value.resetValidation()
   setStep(1)
   clearAll()
   clearErrors()
-}
-const addRecovering = () => {
-  newProject.recoverings.push(clone(nullRecovering))
-}
-const removeRecovering = (index: number) => {
-  newProject.recoverings.splice(index, 1)
 }
 const onSubmit = async () => {
   validateAll()
@@ -65,10 +59,11 @@ const onSubmit = async () => {
   }
   try {
     loading = true
-    const { id, description }: any = await projectService.newProject(newProject)
+    const { id, description }: any = await projectService.updateProject(editingProject)
     if (id) {
-      notify({ id, message: `Novo: ${description} criado com sucesso!` })
+      notify({ id, message: `Novo: ${description} atualizado com sucesso!` })
       emit('success')
+      emit('update:modelValue', false)
     }
   }
   catch (error) {
@@ -83,38 +78,21 @@ const onSubmit = async () => {
 }
 
 // Options Helpers list
-let users = $ref([])
-let judges = $ref([])
-const addJudge = async (description: string) => projectService.newJudge(description)
-let lawyers = $ref([])
-const addLawyer = async (description: string) => projectService.newLawyer(description)
-let courts = $ref([])
-const addCourt = async (description: string) => projectService.newCourt(description)
-let regions = $ref([])
-const addRegion = async (description: string) => projectService.newRegion(description)
-onMounted(async () => {
-  loadAll()
-  loading = true
-  try {
-    users = await usersService.getUsers()
-    judges = await projectService.getJudges()
-    lawyers = await projectService.getLawyers()
-    courts = await projectService.getCourts()
-    regions = await projectService.getRegions()
-  }
-  catch (error) {
-    printError('ERROR ON LOAD OPTIONS OF NEWPROJECT:', error)
-  }
-  finally {
-    loading = false
-  }
-})
+const addJudge = async (description: string) => await projectService.newJudge(description)
+const addLawyer = async (description: string) => await projectService.newLawyer(description)
+const addCourt = async (description: string) => await projectService.newCourt(description)
+const addRegion = async (description: string) => await projectService.newRegion(description)
+const updateOption = (key: string, value: any) => {
+  const newOptions = clone(props.options)
+  newOptions[key] = value
+  emit('update:options', newOptions)
+}
 </script>
 
 <template>
   <Modal
     :model-value="modelValue"
-    title="Cadastro de Projeto"
+    :title="`Edição do Projeto ${project.description}`"
     hint="Existe um cadastro prévio para o cadastro de projetos na ferramenta."
     @update:model-value="(value: boolean) => emit('update:modelValue', value)"
     @close="clear"
@@ -139,7 +117,7 @@ onMounted(async () => {
         >
           <div data-step="1" class="grid sm:grid-cols-2 gap-x-4">
             <InputText
-              v-model="newProject.description"
+              v-model="editingProject.description"
               label="Nome do Projeto"
               class="sm:col-span-2"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
@@ -147,7 +125,8 @@ onMounted(async () => {
               error-key="description"
             />
             <InputTags
-              v-model="newProject.engagements"
+              v-if="editingProject.engagements"
+              v-model="editingProject.engagements"
               label="Engagements"
               class="sm:col-span-2"
               :rules="[(value: any) => value.length > 0 || 'É um campo obrigatório']"
@@ -155,7 +134,7 @@ onMounted(async () => {
               error-key="engagement.non_field_errors"
             />
             <InputText
-              v-model="newProject.processNumber"
+              v-model="editingProject.processNumber"
               label="Número de Processo"
               maxlength="25"
               mask="#######-##.####.#.##.####"
@@ -164,8 +143,38 @@ onMounted(async () => {
               error-key="process_number"
             />
             <InputDate
-              v-model="newProject.start"
-              label="Data do Pedido de Recuperação Judicial"
+              v-model="editingProject.dateRjRequest"
+              label="Data de Pedido da Recuperação Judicial"
+              :rules="[
+                (value: any) => value.length === 0 || value.length === 10 || 'Precisa preencher o padrão ##/##/####',
+                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Precisa ser uma data válida!',
+              ]"
+              :error-messages="errorMessages"
+              error-key="date_rj_request"
+            />
+            <InputDate
+              v-model="editingProject.dateRjFiling"
+              label="Data de Ajuizamento da Recuperação Judicial"
+              :rules="[
+                (value: any) => value.length === 0 || value.length === 10 || 'Precisa preencher o padrão ##/##/####',
+                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Precisa ser uma data válida!',
+              ]"
+              :error-messages="errorMessages"
+              error-key="date_rj_filling"
+            />
+            <InputDate
+              v-model="editingProject.dateCitation"
+              label="Data da Citação"
+              :rules="[
+                (value: any) => value.length === 0 || value.length === 10 || 'Precisa preencher o padrão ##/##/####',
+                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Precisa ser uma data válida!',
+              ]"
+              :error-messages="errorMessages"
+              error-key="date_citation"
+            />
+            <InputDate
+              v-model="editingProject.projectStart"
+              label="Data de Início do Projeto"
               :rules="[
                 (value: any) => !!value || 'É um campo obrigatório',
                 (value: any) => value.length === 10 || 'Precisa preencher o padrão ##/##/####',
@@ -174,175 +183,106 @@ onMounted(async () => {
               :error-messages="errorMessages"
               error-key="project_start"
             />
+            <InputDate
+              v-model="editingProject.projectEnd"
+              label="Data de Encerramento do Projeto"
+              :rules="[
+                (value: any) => value.length === 0 || value.length === 10 || 'Precisa preencher o padrão ##/##/####',
+                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Precisa ser uma data válida!',
+              ]"
+              :error-messages="errorMessages"
+              error-key="project_end"
+            />
             <InputSelect
-              v-model="newProject.judgeId"
-              v-model:options="judges"
+              v-model="editingProject.judgeId"
+              :options="options.judges"
               label="Juiz"
               :to-add="addJudge"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="judge_id"
+              @update:options="(value: any) => updateOption('judges', value)"
             />
             <InputSelect
-              v-model="newProject.lawyerId"
-              v-model:options="lawyers"
+              v-model="editingProject.lawyerId"
+              :options="options.lawyers"
               label="Advogado"
               :to-add="addLawyer"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="lawyer_id"
+              @update:options="(value: any) => updateOption('lawyers', value)"
             />
             <InputSelect
-              v-model="newProject.regionId"
-              v-model:options="regions"
+              v-model="editingProject.regionId"
+              :options="options.regions"
               label="Comarca"
               :to-add="addRegion"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="region_id"
+              @update:options="(value: any) => updateOption('regions', value)"
             />
             <InputSelect
-              v-model="newProject.courtId"
-              v-model:options="courts"
+              v-model="editingProject.courtId"
+              :options="options.courts"
               label="Vara"
               :to-add="addCourt"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="court_id"
+              @update:options="(value: any) => updateOption('courts', value)"
             />
           </div>
         </QStep>
 
         <QStep
           :name="2"
-          title="Recuperandas"
-          icon="o_store"
-          :error="hasError.at(2)"
-          class="relative overflow-y-auto max-h-[calc(100vh-326px)] min-h-87 overflow-x-hidden"
-        >
-          <div
-            v-for="(recovering, index) in newProject.recoverings as any[]"
-            :key="index"
-            class="grid items-stretch grid-cols-[1fr_1fr_42px] gap-x-4"
-            data-step="2"
-          >
-            <InputText
-              v-model="recovering.name"
-              label="Recuperanda"
-              :rules="[(value: any) => !!value || 'Este Campo é obrigatório']"
-              :error-messages="errorMessages"
-              :error-key="`recoverings.${index}.entity.name`"
-            />
-            <InputLegal
-              v-model="recovering.legalNumber"
-              :rules="[(value: any) => !!value || 'Este Campo é obrigatório']"
-              :error-messages="errorMessages"
-              :error-key="`recoverings.${index}.entity.legal_number`"
-            />
-            <div
-              class="border-1 border--error hover:border-black/22 rounded color--error hover:bg--error hover:color-white flex justify-center items-center text-lg cursor-pointer mb-5"
-              tabindex="0"
-              @click="removeRecovering(index)"
-              @keyup.space="removeRecovering(index)"
-            >
-              <div class="i-carbon-trash-can" />
-            </div>
-          </div>
-          <div class="sticky bg--base p-2 bottom-0 flex justify-center">
-            <Btn
-              label="Adicionar Nova Recuperanda"
-              icon="i-carbon-add-filled"
-              outlined
-              @click="addRecovering"
-            />
-          </div>
-        </QStep>
-
-        <QStep
-          :name="3"
           title="Responsáveis"
           icon="o_assignment_ind"
-          :error="hasError.at(3)"
+          :error="hasError.at(2)"
           class="overflow-y-auto min-h-87  max-h-[calc(100vh-326px)]"
         >
-          <div data-step="3" class="grid sm:grid-cols-2 gap-x-4">
+          <div data-step="2" class="grid sm:grid-cols-2 gap-x-4">
             <InputUser
-              v-model="newProject.financialPartnerId"
+              v-model="editingProject.financialPartnerId"
               label="Sócio Financeiro"
-              :users="users"
+              :users="options.users"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="financial_partner_id"
             />
             <InputUser
-              v-model="newProject.legalPartnerId"
+              v-model="editingProject.legalPartnerId"
               label="Sócio Jurídico"
-              :users="users"
+              :users="options.users"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="legal_partner_id"
             />
             <InputUser
-              v-model="newProject.financialManagerId"
+              v-model="editingProject.financialManagerId"
               label="Gerente Financeiro"
-              :users="users"
+              :users="options.users"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="financial_manager_id"
             />
             <InputUser
-              v-model="newProject.legalManagerId"
+              v-model="editingProject.legalManagerId"
               label="Gerente Jurídico"
-              :users="users"
+              :users="options.users"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="legal_manager_id"
             />
             <InputUser
-              v-model="newProject.calculationManagerId"
+              v-model="editingProject.calculationManagerId"
               label="Gerente de Cálculo"
-              :users="users"
+              :users="options.users"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="calculation_manager_id"
-            />
-          </div>
-        </QStep>
-
-        <QStep
-          :name="4"
-          title="Times e Papéis"
-          icon="o_people"
-          :error="hasError.at(4)"
-          class="relative overflow-y-auto max-h-[calc(100vh-326px)] min-h-87 pb-0 pt-6 px-6 overflow-x-hidden"
-        >
-          <div
-            class=""
-            data-step="4"
-          >
-            <InputUsers
-              v-model="newProject.executors"
-              :users="users"
-              label="Executores"
-              :rules="[(value: any) => value.length > 0 || 'Este campo é obrigatório!']"
-              :error-messages="errorMessages"
-              error-key="executors"
-            />
-            <InputUsers
-              v-model="newProject.reviewers"
-              :users="users"
-              label="Revisores"
-              :rules="[(value: any) => value.length > 0 || 'Este campo é obrigatório!']"
-              :error-messages="errorMessages"
-              error-key="reviewers"
-            />
-            <InputUsers
-              v-model="newProject.approvers"
-              :users="users"
-              label="Aprovadores"
-              :rules="[(value: any) => value.length > 0 || 'Este campo é obrigatório!']"
-              :error-messages="errorMessages"
-              error-key="approvers"
             />
           </div>
         </QStep>
@@ -365,7 +305,7 @@ onMounted(async () => {
           @press="previousStep"
         />
         <Btn
-          v-if="step < 4"
+          v-if="step < 2"
           label="Próximo"
           outlined
           type="button"
@@ -373,11 +313,11 @@ onMounted(async () => {
           @press="nextStep"
         />
         <Btn
-          v-if="step === 4"
+          v-if="step === 2"
           label="Concluir"
           type="button"
           :loading="loading"
-          loading-label="Criando Projeto..."
+          loading-label="Atualizando Projeto..."
           @click="onSubmit"
         />
       </div>

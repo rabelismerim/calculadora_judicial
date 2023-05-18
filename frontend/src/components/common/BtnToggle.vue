@@ -1,10 +1,10 @@
 <script setup lang='ts'>
 interface Option {
   label: string
-  value: string
+  value: string | boolean | number
 }
 const props = withDefaults(defineProps<{
-  modelValue: string
+  modelValue: string | boolean | number
   items: Option[]
 }>(), {
 
@@ -20,7 +20,7 @@ const emit = defineEmits(['update:model-value'])
       :label="button.label"
       :transparent="modelValue !== button.value"
       :filled="modelValue === button.value"
-      class="rounded-0 border-none"
+      class="rounded-0 border-none flex-1"
       @click="emit('update:model-value', button.value)"
     />
   </div>

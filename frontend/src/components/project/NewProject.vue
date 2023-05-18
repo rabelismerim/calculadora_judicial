@@ -27,8 +27,11 @@ const nullProject = {
   engagements: [],
   recoverings: [clone(nullRecovering)],
   description: '',
-  start: '',
-  end: '',
+  projectStart: null,
+  projectEnd: null,
+  dateRjRequest: null,
+  dateRjFiling: null,
+  dateCitation: null,
   legalManagerId: '',
   legalPartnerId: '',
   financialManagerId: '',
@@ -164,8 +167,38 @@ onMounted(async () => {
               error-key="process_number"
             />
             <InputDate
-              v-model="newProject.start"
-              label="Data do Pedido de Recuperação Judicial"
+              v-model="newProject.dateRjRequest"
+              label="Data de Pedido da Recuperação Judicial"
+              :rules="[
+                (value: any) => value.length === 0 || value.length === 10 || 'Precisa preencher o padrão ##/##/####',
+                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Precisa ser uma data válida!',
+              ]"
+              :error-messages="errorMessages"
+              error-key="date_rj_request"
+            />
+            <InputDate
+              v-model="newProject.dateRjFiling"
+              label="Data de Ajuizamento da Recuperação Judicial"
+              :rules="[
+                (value: any) => value.length === 0 || value.length === 10 || 'Precisa preencher o padrão ##/##/####',
+                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Precisa ser uma data válida!',
+              ]"
+              :error-messages="errorMessages"
+              error-key="date_rj_filling"
+            />
+            <InputDate
+              v-model="newProject.dateCitation"
+              label="Data da Citação"
+              :rules="[
+                (value: any) => value.length === 0 || value.length === 10 || 'Precisa preencher o padrão ##/##/####',
+                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Precisa ser uma data válida!',
+              ]"
+              :error-messages="errorMessages"
+              error-key="date_citation"
+            />
+            <InputDate
+              v-model="newProject.projectStart"
+              label="Data de Início do Projeto"
               :rules="[
                 (value: any) => !!value || 'É um campo obrigatório',
                 (value: any) => value.length === 10 || 'Precisa preencher o padrão ##/##/####',
@@ -173,6 +206,16 @@ onMounted(async () => {
               ]"
               :error-messages="errorMessages"
               error-key="project_start"
+            />
+            <InputDate
+              v-model="newProject.projectEnd"
+              label="Data de Encerramento do Projeto"
+              :rules="[
+                (value: any) => value.length === 0 || value.length === 10 || 'Precisa preencher o padrão ##/##/####',
+                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Precisa ser uma data válida!',
+              ]"
+              :error-messages="errorMessages"
+              error-key="project_end"
             />
             <InputSelect
               v-model="newProject.judgeId"

@@ -11,8 +11,6 @@ const props = withDefaults(defineProps<{
   errorKey?: string
 }>(), {
   rules: () => ([]),
-  add: () => {},
-  options: () => ([]),
   errorMessages: () => ({}),
   errorKey: '',
   toAdd: () => {},
@@ -31,6 +29,7 @@ const onInput = (value: string | number | null) => {
 let loading = $ref(false)
 let inputValue = $ref('')
 let filteredOptions = $ref(props.options)
+watchEffect(() => filteredOptions = props.options)
 
 const addNewItem = async () => {
   if (!inputValue) {
@@ -92,6 +91,7 @@ const onFilter = (val: any, update: Function) => {
   >
     <template #no-option>
       <QBtn
+        v-if="toAdd"
         :label="`Adicionar${label ? ` ${label}` : ''}`"
         class="w-full h-12"
         color="primary"

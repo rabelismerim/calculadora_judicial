@@ -2,12 +2,15 @@
 interface Creditor {
   name: string
   legalNumber: string
-  recoveringsId: string[]
+  recoverings: any[]
 }
 const props = withDefaults(defineProps<{
   modelValue: boolean
   creditor: Creditor
-  options: any[]
+  options: {
+    recoverings: any[]
+    rates: any[]
+  }
 }>(), {
   modelValue: false,
 })
@@ -16,12 +19,33 @@ const emit = defineEmits(['update:modelValue', 'update:creditor', 'success'])
 let loading = $ref(false)
 const form = ref(null) as any
 
-const mapOptions = computed(() => props?.options?.map(({ id: value, entity: { name: label } }) => ({ label, value })))
+const nullRecovering = { recoveringId: null, rateId: null }
+let newRecovering = $ref(clone(nullRecovering))
+
+const freeRecoverings = computed(() => props.options.recoverings
+  .filter(({ id }: any) => !props.creditor?.recoverings
+    ?.map(({ recoveringId }: any) => recoveringId)?.includes(id))
+  .map(({ id: value, entity: { name: label } }) => ({ label, value })))
+const addRecovering = () => {
+  const { recoverings } = props.creditor
+  if (!newRecovering.recoveringId || !newRecovering.rateId) {
+    throwError({ message: 'Você precisa adicionar uma recuperanda e uma taxa!', id: 'NEW_RECOVERING' })
+    return
+  }
+  const newCreditor = {
+    ...props.creditor,
+    recoverings: [...recoverings, clone(newRecovering)],
+  }
+  emit('update:creditor', newCreditor)
+  newRecovering = clone(nullRecovering)
+}
+const rates = computed(() => props.options.rates
+  .map(({ id: value, index: label }) => ({ label, value })))
 
 const nullCreditor: Creditor = {
   name: '',
   legalNumber: ' ',
-  recoveringsId: [],
+  recoverings: [],
 }
 const newCreditor = computed({
   get() {
@@ -44,7 +68,7 @@ const onSubmit = async () => {
     return
   loading = true
   try {
-    const result: any = await creditorsService.setCreditor(newCreditor.value)
+    const result: any = await creditorsService.newCreditors(newCreditor.value)
     if (result.filter((item: any) => !!item).length > 0) {
       notify({ message: `Credor ${newCreditor.value.name} foi criado com sucesso!` })
       clear()
@@ -83,26 +107,63 @@ const onSubmit = async () => {
           :rules="[(value: any) => !!value || 'Este é um campo obrigatório!']"
           grow
         />
-        <QSelect
-          v-model="newCreditor.recoveringsId"
-          label="Recuperandas"
-          outlined
-          multiple
-          emit-value
-          map-options
-          use-chips
-          :options="mapOptions"
-          :rules="[(value: any) => value.length > 0 || 'Este é um campo obrigatório!']"
-          class="sm:col-span-2"
-        >
-          <template #no-option>
-            <QItem>
-              <QItemSection class="text-grey">
-                Não existe Recuperanda Cadastrada
-              </QItemSection>
-            </QItem>
-          </template>
-        </QSelect>
+        <div class="col-span-2">
+          <div class="flex gap-4 mb-4">
+            <QSelect
+              v-model="newRecovering.recoveringId"
+              label="Recuperanda"
+              outlined
+              emit-value
+              map-options
+              :options="freeRecoverings"
+              class="flex-1"
+            >
+              <template #no-option>
+                <QItem>
+                  <QItemSection class="text-grey">
+                    Não existe Recuperanda Cadastrada
+                  </QItemSection>
+                </QItem>
+              </template>
+            </QSelect>
+            <QSelect
+              v-model="newRecovering.rateId"
+              label="Taxa"
+              outlined
+              emit-value
+              map-options
+              :options="rates"
+              class="flex-1"
+            >
+              <template #no-option>
+                <QItem>
+                  <QItemSection class="text-grey">
+                    Não existe Recuperanda Cadastrada
+                  </QItemSection>
+                </QItem>
+              </template>
+            </QSelect>
+            <Btn
+              label="Adicionar"
+              icon="i-carbon-add"
+              type="button"
+              @click="addRecovering"
+            />
+          </div>
+          <div
+            v-for="{ recoveringId, rateId } in newCreditor.recoverings as any[]"
+            :key="recoveringId"
+            class="flex gap-4 py-1 items-center"
+          >
+            <div>
+              {{ options.recoverings.find(({ id }) => id === recoveringId)?.entity?.name }}
+              - {{ options.rates.find(({ id }) => id === rateId)?.index }}
+            </div>
+            <button type="button" class="color--error hover:bg--error/12 rounded p-2">
+              <div class="i-carbon-trash-can" />
+            </button>
+          </div>
+        </div>
       </div>
       <div class="relative flex justify-end gap-2 p-3 border-t-1 ">
         <QLinearProgress

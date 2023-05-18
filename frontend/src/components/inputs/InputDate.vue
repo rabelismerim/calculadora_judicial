@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ValidationRule } from 'quasar'
 const props = withDefaults(defineProps<{
-  modelValue: string
+  modelValue?: string | null
   label?: string
   rules?: ValidationRule<any>[]
   errorMessages?: any
@@ -18,6 +18,8 @@ const hasError = computed(() => input.hasError)
 const { clearError } = useBackendErrors(toRef(props, 'errorMessages'))
 const dateData = computed({
   get: () => {
+    if (!props.modelValue)
+      return {}
     const [year, month, day] = props.modelValue
       ?.slice(0, 10)
       ?.split('-')
@@ -33,6 +35,8 @@ const dateData = computed({
 })
 const formatedDate = computed({
   get: () => {
+    if (!dateData.value)
+      return ''
     const { day, month, year } = dateData.value
     return [day, month, year]
       .filter(e => e)
