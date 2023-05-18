@@ -11,7 +11,6 @@ Attributes:
 - name: A string representing the name of the app
 """
 
-
 from django.apps import AppConfig
 from django.utils.translation import gettext_lazy as _
 
@@ -19,3 +18,4 @@ from django.utils.translation import gettext_lazy as _
 class ComparativeConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'calculation.comparative'
+    verbose_name = _('Comparative')

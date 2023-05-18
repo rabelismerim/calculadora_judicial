@@ -1,28 +1,18 @@
-import json
-from core.abstract.tests import AbstractTest
+from core.abstract.tests import AbstractTest, generate_name
 
 
 class JudgeTest(AbstractTest):
     """judge related tests"""
 
-    def test_api_A_post_judges(self):
-        """Assert post judges detail"""
-        self.print_start('Create lawyers')
-        judge = {
-            "description": "Name Juiz 1"
-        }
-        response = self.client.post('/djud/api/v1/projects/judge', judge)
-        self.assertEqual(response.status_code, 201)
-        self.print_success('Created judge')
+    parameters = {
+        "description": generate_name()
+    }
 
-    def test_api_B_get_judges(self):
-        """Assert get judges detail"""
-        self.print_start('List lawyers')
-        response = self.client.get('/djud/api/v1/projects/judge')
-        self.assertEqual(response.status_code, 200)
-        self.print_success('Listed judges')
-        judges = response.json()['judges']
-        judge = judges[0]
-        self.assertGreaterEqual(len(judges), 1)
-        self.print_success('Listed judges >= 1')
-        self.set_project('judge_id', judge['id'])
+    path = 'projects/judge'
+
+    def test_api_get(self):
+        """Assert get courts detail"""
+        response = super().test_api_get()
+        objs = response.content['judges']
+        self.assertGreaterEqual(len(objs), 1)
+        return objs

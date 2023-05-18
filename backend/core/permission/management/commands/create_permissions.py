@@ -1,8 +1,4 @@
 from django.core.management.base import BaseCommand
-from django.apps import apps as default_apps
-from django.conf import settings
-from django.contrib.auth.models import Permission, Group
-
 from core.permission.views import CreatePermissions
 
 
@@ -16,9 +12,13 @@ class Command(BaseCommand):
         """
         Create or update permissions Groups
         """
-        project_manager_list, created = CreatePermissions().create_project_manager()
-        self.print_start(
-            f'Successfully {"created" if created else "altered"} group\nNumber of permissions: {len(project_manager_list)}')
+        group_names = ['all_groups', 'approve', 'reviewer', 'executor', 'special_approve']
+        for group_name in group_names:
+            project_manager_list, created, id_ = CreatePermissions().create_group_by_name(group_name)
+
+            self.print_start(
+                f'Successfully {"created" if created else "altered"} group {group_name}\nNumber of permissions: '
+                f'{len(project_manager_list)}')
 
     def handle(self, *args, **options):
         self.create_update_permissions()

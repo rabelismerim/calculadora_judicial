@@ -6,14 +6,14 @@ from projects.judge.models import Judge
 from projects.lawyer.models import Lawyer
 from projects.region.models import Region
 from projects.engagement.models import ProjectEngagement
-from utils import get_user_model
+from utils import get_user_model, _
 
 User = get_user_model()
 STATUS_CHOICES = (
-    ('P', 'Em Preparação'),
-    ('C', 'Concluido'),
-    ('A', 'Em Andamento'),
-    ('F', 'Cancelado'),
+    ('E', _('In preparation')),
+    ('C', _('Concluded')),
+    ('A', _('In progress')),
+    ('F', _('Canceled')),
 )
 
 
@@ -31,33 +31,33 @@ class Project(AbstractDescription, AbstractDateRecovering):
 
     project_start = models.DateField(null=True, blank=True)
     project_end = models.DateField(null=True, blank=True)
-    process_number = models.CharField("Número do processo", max_length=15)
+    process_number = models.CharField(_("Process number"), max_length=25)
 
-    status = models.CharField(
-        default="E", max_length=1, choices=STATUS_CHOICES)
-    is_adm = models.BooleanField(default=True)  # É adminstrativa ou judicial
+    status = models.CharField(default="E", max_length=1, choices=STATUS_CHOICES)
+    is_adm = models.BooleanField(default=True)  # É administrativa ou judicial
     judge = models.ForeignKey(Judge, on_delete=models.PROTECT)
     lawyer = models.ForeignKey(Lawyer, on_delete=models.PROTECT)
     region = models.ForeignKey(Region, on_delete=models.PROTECT)
     court = models.ForeignKey(Court, on_delete=models.PROTECT)
-    competence = models.CharField(
-        "Competencia",  max_length=150, null=True)
+    competence = models.CharField(_("Competence"), max_length=150, null=True)
     legal_manager = models.ForeignKey(
-        User, on_delete=models.PROTECT, related_name='legal_manager', null=True)  # Gerente juridico
+        User, on_delete=models.PROTECT, related_name='legal_manager', null=True)  # Gerente jurídico
     calculation_manager = models.ForeignKey(
         User, on_delete=models.PROTECT, related_name='calculation_manager', null=True)  # Gerente de calculos
     financial_manager = models.ForeignKey(
         User, on_delete=models.PROTECT, related_name='financial_manager', null=True)  # Gerente Financeiro
     legal_partner = models.ForeignKey(
-        User, on_delete=models.PROTECT, related_name='legal_partner', null=True)  # Socio juridico
+        User, on_delete=models.PROTECT, related_name='legal_partner', null=True)  # Socio jurídico
     financial_partner = models.ForeignKey(
         User, on_delete=models.PROTECT, related_name='financial_partner', null=True)  # Socio Financeiro
-    engagement = models.OneToOneField(
-        ProjectEngagement, on_delete=models.PROTECT)
+    engagement = models.OneToOneField(ProjectEngagement, on_delete=models.PROTECT)
 
     @property
     def num_recovering(self) -> number:
         return self.recovering_set.all().count()
+
+    def get_project_users(self):
+        return self.engagement.users.all()
 
     def __str__(self):
         return f"{self.description}"

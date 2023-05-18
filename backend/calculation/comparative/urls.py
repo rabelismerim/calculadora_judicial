@@ -14,9 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('comparative/', include('comparative.another_app.urls'))
 """
 from django.urls import path
-from .views import ComparativeApi
-
+from .views import ComparativeDetailApi
 
 urlpatterns = [
-    path('', ComparativeApi.as_view(), name="comparative-list-create"),
+    path('<uuid:calculation_id>/', ComparativeDetailApi.as_view(), name="comparative-detail-create"),
 ]

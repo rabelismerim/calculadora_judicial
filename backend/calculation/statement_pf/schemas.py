@@ -19,7 +19,9 @@ serializer = StatementPFSchema()
 from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
 
-from calculation.statement_pf.models import DefaultInterest, DefaultInterestDue, FundsDescription, RecurralDeposit, StatementPF, TaxDays, AbstractValue, TotalDue
+from calculation.statement_pf.models import DefaultInterest, DefaultInterestDue, FundsDescription, \
+    StatementPF, TaxDays, AbstractValue
+from calculation.statement_pj.schemas import FundsDescriptionPJSchema
 
 
 class AbstractValueSchema(AbstractDescriptionSchema):
@@ -45,7 +47,7 @@ class AbstractValueSchema(AbstractDescriptionSchema):
 
     class Meta:
         model = AbstractValue
-        exclude = ('statement_pf', )
+        exclude = ('statement_pf',)
         read_only_fields = ('statement_pf', 'statement_pf_id')
 
 
@@ -65,34 +67,11 @@ class TaxDaysSchema(AbstractValueSchema):
     Usage example:
     serializer = TaxDaysSchema()
     """
-    field_description_display = serializers.CharField(
-        source='get_field_description_display')
+    description_display = serializers.CharField(source='get_description_display')
 
     class Meta:
         model = TaxDays
-        exclude = ('statement_pf', )
-
-
-class RecurralDepositSchema(AbstractValueSchema):
-    """
-    Serializes the fields of the RecurralDeposit model for use in the API.
-
-    This module defines a Django REST Framework serializer that inherits from a custom
-    `AbstractValueSchema` class. The serializer converts instances of the `RecurralDeposit`
-    model to and from JSON format, and validates incoming data based on the model's fields.
-
-    Attributes:
-        - `Meta`: A nested class that specifies metadata for the serializer. The `model`
-        attribute specifies the model class that the serializer should be based on, and
-        `exclude` lists the fields that should be excluded from the serialized representation.
-
-    Usage example:
-    serializer = RecurralDepositSchema()
-    """
-
-    class Meta:
-        model = RecurralDeposit
-        exclude = ('statement_pf', )
+        exclude = ('statement_pf',)
 
 
 class DefaultInterestSchema(AbstractValueSchema):
@@ -111,9 +90,10 @@ class DefaultInterestSchema(AbstractValueSchema):
     Usage example:
     serializer = DefaultInterestSchema()
     """
+
     class Meta:
         model = DefaultInterest
-        exclude = ('statement_pf', )
+        exclude = ('statement_pf',)
 
 
 class DefaultInterestDueSchema(AbstractValueSchema):
@@ -129,48 +109,18 @@ class DefaultInterestDueSchema(AbstractValueSchema):
         - `Meta`: A nested class that specifies metadata for the serializer. The `model`
           attribute specifies the model class that the serializer should be based on, and
           `exclude` lists the names of all fields that should be excluded from the serialized
-          representation. The `field_description_display` attribute specifies the name of
+          representation. The `description_display` attribute specifies the name of
           a field that should be included in the serialized representation using the
-          `get_field_description_display()` method.
+          `get_description_display()` method.
 
     Usage example:
     serializer = DefaultInterestDueSchema()
     """
-    field_description_display = serializers.CharField(
-        source='get_field_description_display')
+    description_display = serializers.CharField(source='get_description_display')
 
     class Meta:
         model = DefaultInterestDue
-        exclude = ('statement_pf', )
-
-
-class TotalDueSchema(AbstractValueSchema):
-    """
-    Serializes the fields of the TotalDue model for use in the API.
-
-    This module defines a Django REST Framework serializer that inherits from both
-    `serializers.ModelSerializer` and a custom `AbstractValueSchema` class. The serializer
-    converts instances of the `TotalDue` model to and from JSON format, and
-    validates incoming data based on the model's fields.
-
-    Attributes:
-        - `Meta`: A nested class that specifies metadata for the serializer. The `model`
-          attribute specifies the model class that the serializer should be based on, and
-          `exclude` lists the names of all fields that should be excluded from the serialized
-          representation. The `field_description_display` attribute specifies the name of
-          a field that should be included in the serialized representation using the
-          `get_field_description_display()` method.
-
-    Usage example:
-    serializer = TotalDueSchema()
-    """
-
-    field_description_display = serializers.CharField(
-        source='get_field_description_display')
-
-    class Meta:
-        model = TotalDue
-        exclude = ('statement_pf', )
+        exclude = ('statement_pf',)
 
 
 class FundsDescriptionSchema(AbstractValueSchema):
@@ -191,9 +141,11 @@ class FundsDescriptionSchema(AbstractValueSchema):
     Usage example:
     serializer = FundsDescriptionSchema()
     """
+
     class Meta:
         model = FundsDescription
-        exclude = ('statement_pf', )
+
+        fields = ('total', 'description')
 
 
 class StatementPFSchema(AbstractDescriptionSchema):
@@ -215,28 +167,43 @@ class StatementPFSchema(AbstractDescriptionSchema):
     serializer = StatementPFSchema()
     """
 
-    statement_id = serializers.UUIDField()
+    # statement_id = serializers.UUIDField()
+    # tax_days = TaxDaysSchema(source='taxdays', exclude=('statement_pf_id',))
+    # default_interest = DefaultInterestSchema(source='defaultinterest', exclude=('statement_pf_id',))
+    # default_interest_due = DefaultInterestDueSchema(source='defaultinterestdue', exclude=('statement_pf_id',))
+    # funds_description = FundsDescriptionSchema(source='fundsdescription_set', exclude=('statement_pf_id',), many=True)
+    # description_display = serializers.CharField(source='get_description_display')
+    # status_display = serializers.CharField(source='get_status_display')
+    agreements = FundsDescriptionPJSchema(source='get_agreements', many=True, read_only=True)
 
-    tax_days = TaxDaysSchema(source='taxdays', exclude=('statement_pf_id', ))
+    fund = serializers.SerializerMethodField()
 
-    recurral_deposit = RecurralDepositSchema(
-        source='recurraldeposit', exclude=('statement_pf_id', ))
+    def get_fund(self, obj):
+        tax_days = TaxDaysSchema(source='taxdays', exclude=('statement_pf_id',), allow_null=True)
+        default_interest = DefaultInterestSchema(source='defaultinterest', exclude=('statement_pf_id',))
+        default_interest_due = DefaultInterestDueSchema(source='defaultinterestdue', exclude=('statement_pf_id',))
+        funds_description = FundsDescriptionSchema(source='fundsdescription_set', exclude=('statement_pf_id',),
+                                                   many=True)
 
-    default_interest = DefaultInterestSchema(
-        source='defaultinterest', exclude=('statement_pf_id', ))
+        obj_tax_days = tax_days.to_representation(obj.taxdays) if hasattr(obj, 'taxdays') else None
+        obj_defaultinterest = default_interest.to_representation(obj.defaultinterest) if hasattr(obj,
+                                                                                                     'defaultinterest') else None
+        obj_defaultinterestdue = default_interest_due.to_representation(obj.defaultinterestdue) if hasattr(obj,
+                                                                                                       'defaultinterestdue') else None
 
-    default_interest_due = DefaultInterestDueSchema(
-        source='defaultinterestdue', exclude=('statement_pf_id', ))
-
-    total_due = TotalDueSchema(
-        source='totaldue', exclude=('statement_pf_id', ))
-
-    funds_description = FundsDescriptionSchema(
-        source='fundsdescription_set', exclude=('statement_pf_id', ), many=True)
-
-    field_description_display = serializers.CharField(
-        source='get_field_description_display')
+        return {
+            "statement_id": obj.statement_id,
+            "tax_days": obj_tax_days,
+            "default_interest": obj_defaultinterest,
+            "default_interest_due": obj_defaultinterestdue,
+            "funds_description": funds_description.to_representation(obj.fundsdescription_set.all()),
+            "description_display": obj.get_description_display(),
+            "status_display": obj.get_status_display(),
+            "status": obj.status,
+            "description": obj.description,
+            "total": obj.total,
+        }
 
     class Meta:
         model = StatementPF
-        exclude = ('statement', )
+        fields = ('fund', 'agreements')

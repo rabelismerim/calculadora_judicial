@@ -2,6 +2,8 @@ from base.schemas import AbstractDescriptionSchema
 from calculation.verdict.models import Verdict, TypeCalculation
 from rest_framework import serializers
 
+from utils import _
+
 
 class TypeCalculationSchema(AbstractDescriptionSchema):
     """Serializer TypeCalculation fields"""
@@ -19,7 +21,7 @@ class VerdictSchema(AbstractDescriptionSchema):
 
     class Meta:
         model = Verdict
-        exclude = ('calculation', )
+        exclude = ('calculation',)
 
     def validate(self, data):
         verdict_name = data.get('description')
@@ -27,5 +29,5 @@ class VerdictSchema(AbstractDescriptionSchema):
         verdict = Verdict.objects.filter(
             description=verdict_name, calculation_id=calculation_id).exists()
         if verdict:
-            raise serializers.ValidationError(['Sentença já cadastrada'])
+            raise serializers.ValidationError([_('Verdict already registered')])
         return super(VerdictSchema, self).validate(data)

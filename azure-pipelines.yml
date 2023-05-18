@@ -3,8 +3,7 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 trigger:
-- main
-
+- dev
 pool: 
   name: TR
   demands:
@@ -51,7 +50,6 @@ steps:
     npm run build:prod
   workingDirectory: $(Build.SourcesDirectory)/frontend
   displayName: 'Install node prerequisites'
-
 - script: |
     mkdir ./log
     python -m pip install --upgrade pip setuptools wheel
@@ -73,6 +71,6 @@ steps:
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)/backend'
     Contents: '**'
-    TargetFolder: 'D:\DJUD\Teste'
+    TargetFolder: 'D:\JUCA\'
     OverWrite: true
     flattenFolders: true

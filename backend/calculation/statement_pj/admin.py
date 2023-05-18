@@ -17,7 +17,7 @@ admin.site.register(StatementPJ)
 
 from django.contrib import admin
 
-from calculation.statement_pj.models import StatementPJ, FundsDescriptionPJ
+from calculation.statement_pj.models import StatementPJ, FundsDocumentDescriptionPJ
 
 admin.site.register(StatementPJ)
-admin.site.register(FundsDescriptionPJ)
+admin.site.register(FundsDocumentDescriptionPJ)

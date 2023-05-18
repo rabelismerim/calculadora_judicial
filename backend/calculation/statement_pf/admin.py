@@ -17,12 +17,30 @@ admin.site.register(StatementPF)
 
 from django.contrib import admin
 
-from calculation.statement_pf.models import StatementPF, TaxDays, RecurralDeposit, DefaultInterest, DefaultInterestDue, TotalDue, FundsDescription
+from calculation.statement_pf.models import StatementPF, TaxDays, DefaultInterest, DefaultInterestDue, FundsDescription
 
-admin.site.register(StatementPF)
 admin.site.register(TaxDays)
-admin.site.register(RecurralDeposit)
 admin.site.register(DefaultInterest)
 admin.site.register(DefaultInterestDue)
-admin.site.register(TotalDue)
-admin.site.register(FundsDescription)
+
+
+class FundsDescriptionAdmin(admin.ModelAdmin):
+    """
+    A ModelAdmin class containing the definition of fields displayed in the
+    admin interface for the Comparative instance.
+    """
+    readonly_fields = ['total', 'description']
+
+
+admin.site.register(FundsDescription, FundsDescriptionAdmin)
+
+
+class StatementPFAdmin(admin.ModelAdmin):
+    """
+    A ModelAdmin class containing the definition of fields displayed in the
+    admin interface for the Comparative instance.
+    """
+    readonly_fields = ['total_due', 'total_conclusion']
+
+
+admin.site.register(StatementPF, StatementPFAdmin)

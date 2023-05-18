@@ -17,6 +17,7 @@ import re
 from rest_framework import serializers
 from base.schemas import AbstractDescriptionSchema
 from core.entity.models import Entity
+from utils import _
 
 
 class EntitySchema(AbstractDescriptionSchema):
@@ -47,7 +48,7 @@ class EntitySchema(AbstractDescriptionSchema):
         int_cpf = [int(x) for x in cpf]
         new = int_cpf[:9]
         while len(new) < 11:
-            r = sum([(len(new)+1-i)*v for i, v in enumerate(new)]) % 11
+            r = sum([(len(new) + 1 - i) * v for i, v in enumerate(new)]) % 11
             if r > 1:
                 f = 11 - r
             else:
@@ -57,7 +58,8 @@ class EntitySchema(AbstractDescriptionSchema):
                 return True
         return False
 
-    def __validate_cnpj(self, cnpj):
+    @staticmethod
+    def __validate_cnpj(cnpj):
         """
         This method is essentially the same as the one above, but is used to validate the cnpj 
         variable which is the Brazilian version of a business identification number.
@@ -68,7 +70,7 @@ class EntitySchema(AbstractDescriptionSchema):
         new = int_cnpj[:12]
         prod = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
         while len(new) < 14:
-            r = sum([x*y for (x, y) in zip(new, prod)]) % 11
+            r = sum([x * y for (x, y) in zip(new, prod)]) % 11
             if r > 1:
                 f = 11 - r
             else:
@@ -88,6 +90,24 @@ class EntitySchema(AbstractDescriptionSchema):
         legal_number = ''.join(re.findall(r'\d', str(legal_number)))
         if not self.__validate_cpf(legal_number):
             if not self.__validate_cnpj(legal_number):
-                raise serializers.ValidationError(
-                    ['CPF/CNPJ inválido'])
+                raise serializers.ValidationError([_('Invalid CPF/CNPJ')])
         return legal_number
+
+
+class EntityCheckSchema(EntitySchema):
+    """
+    Serializes EntitySchema model fields for use in the API.
+
+    This module defines a Django REST Framework serializer that inherits from a
+    AbstractDescriptionSchema class. The serializer converts EntitySchema instances
+    model to and from JSON format and validates the received data against the fields in the model. In this model it
+    is used to validate the cpf/cnpj field
+
+    Example of use:
+    serializer = EntitySchema()
+    """
+    legal_number = serializers.CharField(validators=[])
+
+    class Meta:
+        model = Entity
+        fields = ('legal_number',)

@@ -1,9 +1,8 @@
 <script setup lang="ts">
-// onMounted(() => {
-//   $user.login()
-// })
+const { user } = $user
 </script>
 
 <template>
   <RouterView />
+  <NotificationArea />
 </template>

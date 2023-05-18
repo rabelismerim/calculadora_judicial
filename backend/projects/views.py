@@ -1,20 +1,21 @@
 from django.contrib.auth.models import Group
-from config.settings import GROUP_NAME_APPROVER, GROUP_NAME_EXECUTOR, GROUP_NAME_REVIEWER
+from django.db import transaction
+
+from config.settings import GROUP_NAME_APPROVER, GROUP_NAME_EXECUTOR, GROUP_NAME_REVIEWER, GROUP_NAME_SPECIAL_APPROVE
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from rest_framework import status
-from rest_framework.schemas.openapi import AutoSchema
+
 from rest_framework import permissions
 from core.entity.models import Entity
-from core.permission.views import CheckHasPermission
+from core.permission.views import CheckHasPermission, check_query_permission
 from projects.models import Project
 from projects.project_user.models import ProjectUser
-from projects.schemas import ProjectSchema, ProjectListSchema
+from projects.schemas import ProjectSchema, ProjectListSchema, ProjectV2Schema, ProjectEditSchema
 from projects.engagement.models import Engagement, ProjectEngagement
-from recovering.archive.models import Archive
-from recovering.archive_recovering.models import ArchiveRecovering
 from recovering.models import Recovering
-from utils import get_user_model
+from utils import get_user_model, _, doc
+
 User = get_user_model()
 
 
@@ -24,27 +25,102 @@ class AbstractProjectApi(AbstractViewApi):
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Project
     http_method_names = ['get']
-    schema = AutoSchema(tags=["Project"])
 
+    docs = {
+        'init': _("""The `Project` class represents a large project/engagement in a legal or administrative process. It 
+        contains properties like `project_start` and `project_end` to specify the start and end date of the project, 
+        as well as a `status` field with choices specified by the `STATUS_CHOICES`
+        """),
+
+        'get': _("""Get the list of projects, with some information about it, 
+        being able to filter by process_number, status, description and engagement number"""),
+
+    }
     query_params = [
         {
-            "name": "descrição",
+            "name": "description",
             "field": "description__icontains",
             "in": "query",
             "required": False,
-            "description": "Descrição do projeto",
+            "description": str(_("Description")),
             "schema": {"type": "string"}
-        }
+        },
+        {
+            "name": "process_number",
+            "field": "process_number__icontains",
+            "in": "query",
+            "required": False,
+            "description": str(_("Process number")),
+            "schema": {"type": "string"}
+        },
+        {
+            "name": "status",
+            "field": "status__icontains",
+            "in": "query",
+            "required": False,
+            "description": "Status",
+            "schema": {"type": "string"}
+        },
+        {
+            "name": "engagement",
+            "field": "engagement__engagement__number__icontains",
+            "in": "query",
+            "required": False,
+            "description": "Engagement",
+            "schema": {"type": "string"}
+        },
     ]
+    perms = ['can_view_all_projects']
 
+    @check_query_permission(perms)
     def get_queryset(self):
         return {'engagement__users__user': self.request.user}
 
 
-class ProjectDetailApi(AbstractProjectApi):
+class ProjectDetailApi(AbstractProjectApi):  # V1
     """HTTP methods for Project Detail"""
     serializer_class = ProjectSchema
-    http_method_names = ['get']
+    http_method_names = ['get', 'put']
+    layout_serializers = {
+        'default': ProjectSchema,
+        'get': ProjectSchema,
+        'put': ProjectEditSchema,
+    }
+    query_params = []
+
+    def put(self, request, *args, **kwargs):
+        executors = request.data.pop('executors', [])
+        print(executors, 'executores')
+        users = []
+        project = self.model.objects.filter(id=kwargs.get('id')).first()
+        project_users = project.get_project_users()
+
+        group_executor, created = Group.objects.get_or_create(name=GROUP_NAME_EXECUTOR)
+        old_executors = project_users.filter(groups=group_executor)
+        print(old_executors, 'old executors\n\n')
+        for user_django_id in executors:
+            project_user = ProjectUser.objects.filter(user_id=user_django_id, groups=group_executor,
+                                                      projectengagement__project=project)
+            print(project_user, 'project user\n')
+            # project_user = ProjectUser.objects.create(user_id=user_django_id)
+        #     project_user.groups.add(group_executor.id)
+        #     project_user.save()
+        #     users.append(project_user.id)
+
+        return super().put(request, *args, **kwargs)
+
+
+class ProjectDetailV2Api(AbstractProjectApi):  # V2
+    """HTTP methods for Project Detail"""
+    serializer_class = ProjectV2Schema
+    http_method_names = ['get', 'put']
+    allowed_versions = ['v1', 'v2']
+    layout_serializers = {
+        'default': ProjectV2Schema,
+        'get': ProjectV2Schema,
+        'put': ProjectEditSchema,
+    }
+    query_params = []
 
 
 class ProjectApi(AbstractProjectApi):
@@ -57,72 +133,74 @@ class ProjectApi(AbstractProjectApi):
         'post': ProjectSchema,
     }
 
-    def get_serializer_class(self):
-        return self.layout_serializers.get(self.request.method.lower(),
-                                           self.layout_serializers['default'])
-
+    @doc(_("""Create Project receiving a dict, return project detail"""))
     def post(self, request, *args, **kwargs):
-        """
-           Create Project receiving a dict, return project detail
-        """
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        new_project = dict(serializer.validated_data)
 
-        recoverings = new_project.pop('recovering_set')
-        engagements = new_project.pop('engagement')
-        executors = new_project.pop('executors', [])
-        approvers = new_project.pop('approvers', [])
-        reviewers = new_project.pop('reviewers', [])
+        with transaction.atomic():
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            new_project = dict(serializer.validated_data)
 
-        users = []
+            recoverings = new_project.pop('recovering_set')
+            engagements = new_project.pop('engagement')
+            executors = new_project.pop('executors', [])
+            approvers = new_project.pop('approvers', [])
+            special_approvers = new_project.pop('special_approvers', [])
+            reviewers = new_project.pop('reviewers', [])
 
-        group_executor, created = Group.objects.get_or_create(
-            name=GROUP_NAME_EXECUTOR)
-        group_approver, created = Group.objects.get_or_create(
-            name=GROUP_NAME_APPROVER)
-        group_reviewer, created = Group.objects.get_or_create(
-            name=GROUP_NAME_REVIEWER)
+            users = []
 
-        for user_django_id in executors:
-            project_user = ProjectUser.objects.create(user_id=user_django_id)
-            project_user.groups.add(group_executor.id)
-            project_user.save()
-            users.append(project_user.id)
-        for user_django_id in approvers:
-            project_user = ProjectUser.objects.create(user_id=user_django_id)
-            project_user.groups.add(group_approver.id)
-            project_user.save()
-            users.append(project_user.id)
-        for user_django_id in reviewers:
-            project_user = ProjectUser.objects.create(user_id=user_django_id)
-            project_user.groups.add(group_reviewer.id)
-            project_user.save()
-            users.append(project_user.id)
+            group_executor, created = Group.objects.get_or_create(name=GROUP_NAME_EXECUTOR)
+            group_approver, created = Group.objects.get_or_create(name=GROUP_NAME_APPROVER)
+            group_special, created = Group.objects.get_or_create(name=GROUP_NAME_SPECIAL_APPROVE)
+            group_reviewer, created = Group.objects.get_or_create(name=GROUP_NAME_REVIEWER)
 
-        project_engagement = ProjectEngagement.objects.create()  # Create ProjectEngagement
-        project_engagement.users.add(*users)
-        project_engagement.save()
+            for user_django_id in executors:
+                project_user = ProjectUser.objects.create(user_id=user_django_id)
+                project_user.groups.add(group_executor.id)
+                project_user.save()
+                users.append(project_user.id)
+            for user_django_id in approvers:
+                project_user = ProjectUser.objects.create(user_id=user_django_id)
+                project_user.groups.add(group_approver.id)
+                project_user.save()
+                users.append(project_user.id)
+            for user_django_id in reviewers:
+                project_user = ProjectUser.objects.create(user_id=user_django_id)
+                project_user.groups.add(group_reviewer.id)
+                project_user.save()
+                users.append(project_user.id)
+            for user_django_id in special_approvers:
+                project_user = ProjectUser.objects.create(user_id=user_django_id)
+                project_user.groups.add(group_special.id)
+                project_user.save()
+                users.append(project_user.id)
 
-        new_project['engagement_id'] = project_engagement.id
-        project = self.model.objects.create(**new_project)  # Create Project
+            project_engagement = ProjectEngagement.objects.create()  # Create ProjectEngagement
+            project_engagement.users.add(*users)
+            project_engagement.save()
 
-        for number in engagements:  # Create Engagement Project number
-            Engagement.objects.create(
-                **{'number': number, 'project_id': project_engagement.id})
+            new_project['engagement_id'] = project_engagement.id
+            project = self.model.objects.create(**new_project)  # Create Project
 
-        for recovering in recoverings:
-            entity = recovering.pop('entity')
-            new_archive_recovering = recovering.pop('archives', None)
-            recovering['project'] = project
-            recovering['entity'], created = Entity.objects.get_or_create(
-                **entity)
-            new_recovering = Recovering.objects.create(**recovering)
-            if new_archive_recovering:
-                for new_ in new_archive_recovering:
-                    archive = new_.pop('archive')
-                    new_archive = Archive.objects.create(**archive)
-                    ArchiveRecovering.objects.create(
-                        recovering=new_recovering, archive=new_archive)
+            for number in engagements:  # Create Engagement Project number
+                Engagement.objects.create(**{'number': number, 'project_id': project_engagement.id})
 
-        return JsonResponse({'project': self.serializer_class(project, many=False).data}, status=status.HTTP_201_CREATED)
+            for recovering in recoverings:
+                entity = recovering.pop('entity')
+                new_archive_recovering = recovering.pop('archives', None)
+                recovering['project'] = project
+
+                recovering['entity'], created = Entity.objects.get_or_create(defaults=entity,
+                                                                             **{'legal_number': entity.get(
+                                                                                 'legal_number')})
+                new_recovering = Recovering.objects.get_or_create(**recovering)
+                # if new_archive_recovering: # TODO: fase 2. Desativado na fase 1
+                #     for new_ in new_archive_recovering:
+                #         archive = new_.pop('archive')
+                #         new_archive = Archive.objects.create(**archive)
+                #         ArchiveRecovering.objects.create(
+                #             recovering=new_recovering, archive=new_archive)
+
+        return JsonResponse({'project': self.serializer_class(project, many=False).data},
+                            status=status.HTTP_201_CREATED)

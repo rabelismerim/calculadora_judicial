@@ -5,13 +5,15 @@ and updated_at. Does not add any additional fields, so should be subclassed
 to add specific fields as needed.
 """
 
-from django.db.models.signals import post_save
 from django.db import models
 from django.dispatch import receiver
 from base.models import AbstractDescription
-from calculation.funds.models import TotalValuesFunds, TotalValuesFundsIntegrations
+from calculation.funds.integrations.models import TotalValuesFundsIntegrations
+from calculation.funds.models import TotalValuesFunds
+from calculation.comparative.signals import gen_calc
 from calculation.models import Calculation
 from core.abstract.models import AbstractModel
+from utils import _
 
 
 class Comparative(AbstractModel):
@@ -22,12 +24,28 @@ class Comparative(AbstractModel):
     - calculation (models.OneToOneField): The foreign key reference to a Calculation instance.
     - data_base_creditor (models.DateField): The Creditor base date of comparison.
     - data_base_dtt (models.DateField): The DTT base date of comparison.
+    Methods:
+    get_data_base_dtt(): Returns the date of the creditor's recovering request from the DTT.
+    get_dates(): Returns a dictionary with the values for the dates related to this Comparative object.
+    check_create_editable_total_funds(): Verifies if all funds related to the current Comparative object have comparable
+    values in the TotalValuesFunds model.
+    check_create_editable_total_funds_integrations(): Verifies if all funds related to the current Comparative object
+    have comparable values in the TotalValuesFundsIntegrations model.
+    get_create_approved_calculationations(): Creates and returns an instance of
+    the ApprovedCalculation class related to the current Comparative object if such instance does not exist yet.
     """
+
+    # def __init__(self, *args, **kwargs):
+    #     super(Comparative, self).__init__(*args, **kwargs)
+
+    #     if hasattr(self, 'calculation'):
+    #         self.checks()
+
     calculation = models.OneToOneField(Calculation, on_delete=models.PROTECT)
 
     # TODO: Esse valor pode ser nulo?
-    data_base_creditor = models.DateField('Data base Credor')  # C4
-    data_base_dtt = models.DateField('Data base DTT')  # D4
+    data_base_creditor = models.DateField(_('Creditor base date'), null=True)  # C4
+    data_base_dtt = models.DateField(_('DTT base date'), null=True)  # D4
 
     @property
     def difference_date(self) -> int:  # E4 = D4 - C4
@@ -37,8 +55,76 @@ class Comparative(AbstractModel):
         return int((self.data_base_dtt - self.data_base_creditor).days)
 
     def get_data_base_dtt(self):
-        """ Returns the date of the creditor's recovering request from the DTT."""
+        """Returns the date of the creditor's recovering request from the DTT."""
         return self.calculation.creditor.recovering.project.date_rj_request
+
+    def get_dates(self):
+        """
+        Returns a dictionary with the values for the dates related to this Comparative object, including:
+            The creditor date
+            The dtt (Department of Taxation and Finance) date
+            The difference between the two dates.
+        """
+        return {
+            'creditor': self.data_base_creditor,
+            'dtt': self.data_base_dtt,
+            'difference': self.difference_date,
+        }
+
+    def checks(self) -> bool:
+        """
+        Verifies if all funds related to the current Comparative object have comparable values in the
+        TotalValuesFunds model. If not found, creates a new ComparativeFunds object for each missing fund with
+        creditor equal zero. Returns a boolean indicating wheter any funds were missing.
+        """
+        self.check_create_editable_total_funds()
+        self.check_create_editable_total_funds_integrations()
+
+    def check_create_editable_total_funds(self) -> bool:
+        """
+        Verifies if all funds related to the current Comparative object have comparable values in the
+        TotalValuesFunds model. If not found, creates a new ComparativeFunds object for each missing fund with
+        creditor equal zero. Returns a boolean indicating wheter any funds were missing.
+        """
+        funds = TotalValuesFunds.objects.filter(
+            fund__calculation=self.calculation, comparativefunds__isnull=True)
+        for fund in funds:
+            ComparativeFunds.objects.get_or_create(
+                total_funds=fund, calculation=self.get_create_approved_calculation(), creditor=0)
+        return bool(funds)
+
+    def check_create_editable_total_funds_integrations(self) -> bool:
+        """
+        Verifies if all integration funds related to the current Comparative object have comparable values in the
+        TotalValuesFundsIntegrations model. If not found, creates a new ComparativeFundsIntegrations object for each
+        missing fund with creditor equal zero.
+        Returns a boolean indicating wheter any funds were missing.
+        """
+        funds = TotalValuesFundsIntegrations.objects.filter(
+            fund__calculation=self.calculation, comparativefundsintegrations__isnull=True)
+        for fund in funds:
+            ComparativeFundsIntegrations.objects.get_or_create(
+                total_funds=fund, calculation=self.get_create_approved_calculation(), creditor=0)
+        return bool(funds)
+
+    def get_create_approved_calculation(self):
+        """
+        Creates and returns an instance of the ApprovedCalculation class related to the current Comparative object if
+        such instance does not exist yet.
+        """
+        if hasattr(self, 'approvedcalculation') is False:
+            approved = ApprovedCalculation.objects.filter(
+                comparative=self).first()
+            if not approved:
+                approved = ApprovedCalculation.objects.create(
+                    comparative=self,
+                    recurral=ComparativeCalculation.objects.create(),
+                    total_updated=ComparativeCalculation.objects.create(),
+                    default_interest=ComparativeCalculation.objects.create(),
+                    advocative_hours=ComparativeCalculation.objects.create(),
+                )
+            return approved
+        return self.approvedcalculation
 
     def save(self, *args, **kwargs):
         """
@@ -52,7 +138,7 @@ class Comparative(AbstractModel):
         return f'{self.calculation}'
 
 
-class ComparativeCalculation(AbstractModel):
+class ComparativeCalculation(AbstractDescription):
     """
     This is an abstract model class that serves as a base for other comparative models in the application. 
     Fields:
@@ -63,10 +149,8 @@ class ComparativeCalculation(AbstractModel):
     - difference (Float): The difference between dtt and creditor.
     - percentage (Float): The percentage difference between dtt and creditor.
     """
-    creditor = models.FloatField(
-        'Total creditor', default=0)  # C
-    dtt = models.FloatField(
-        'Total da DTT', default=0)  # D
+    creditor = models.FloatField(_("Creditor's total"), default=0)  # C
+    dtt = models.FloatField(_('DTT total'), default=0)  # D
 
     @property
     def difference(self) -> float:  # E = C + D
@@ -95,20 +179,29 @@ class ApprovedCalculation(AbstractDescription):  # Calculo homologado
     advocative_hours: A OneToOneField to a AdvocativeHoursComparative object, protected from deletion, can be null.
 
     Properties:
-    total_due_creditor: Computes the value of total due creditor by adding up the values of the creditor attribute of total_updated, default_interest, and advocative_hours objects.
-    total_due_dtt: Computes the value of total due DTT by adding up the values of the dtt attribute of total_updated, default_interest, and advocative_hours objects.
+    total_due_creditor: Computes the value of total due creditor by adding up the values of the creditor attribute of
+     total_updated, default_interest, and advocative_hours objects.
+    total_due_dtt: Computes the value of total due DTT by adding up the values of the dtt attribute of total_updated,
+    default_interest, and advocative_hours objects.
     total_due_difference: Returns the difference between the values of total_due_dtt and total_due_creditor.
     total_due_percentage: Returns the percentage difference between total_due_dtt and total_due_creditor.
 
     Methods:
-    get_total_advocative_hours_dtt(): Returns the value of the dtt attribute of advocative_hours, or 0 if advocative_hours is None.
-    get_total_advocative_hours_creditor(): Returns the value of the creditor attribute of advocative_hours, or 0 if advocative_hours is None.
-    get_recurral_deposit_dtt(): Returns the value of the recurral deposit as computed by the get_recurral_deposit() method of a statement of a calculation associated with the comparative attribute of this object.
-    get_default_interest_dtt(): Returns the value of the default interest as computed by the get_default_interest() method of a statement of a calculation associated with the comparative attribute of this object.
-    get_advocative_hours_dtt(): Returns the total number of lawyer hours as computed by the get_total_lawyer() method of a statement of a calculation associated with the comparative attribute of this object.
+    get_total_advocative_hours_dtt(): Returns the value of the dtt attribute of advocative_hours, or 0 if
+     advocative_hours is None.
+    get_total_advocative_hours_creditor(): Returns the value of the creditor attribute of advocative_hours, or 0 if
+     advocative_hours is None.
+    get_recurral_deposit_dtt(): Returns the value of the recurral deposit as computed by the get_recurral_deposit()
+     method of a statement of a calculation associated with the comparative attribute of this object.
+    get_default_interest_dtt(): Returns the value of the default interest as computed by the get_default_interest()
+     method of a statement of a calculation associated with the comparative attribute of this object.
+    get_advocative_hours_dtt(): Returns the total number of lawyer hours as computed by the get_total_lawyer() method
+     of a statement of a calculation associated with the comparative attribute of this object.
     get_comparatives(): Returns all associated ComparativeFund objects.
     get_comparatives_integrations(): Returns all associated ComparativeFundIntegrations objects.
-    generate_calculations(): Generates calculations for the instance of ApprovedCalculation and saves it. This includes updating the attribute recurral, adding up all funds and integration funds, and updating attributes total_updated, default_interest, and advocative_hours."""
+    generate_calculations(): Generates calculations for the instance of ApprovedCalculation and saves it. This includes
+     updating the attribute recurral, adding up all funds and integration funds, and updating attributes total_updated,
+      default_interest, and advocative_hours."""
     comparative = models.OneToOneField(Comparative, on_delete=models.PROTECT)
 
     recurral = models.OneToOneField(
@@ -177,15 +270,25 @@ class ApprovedCalculation(AbstractDescription):  # Calculo homologado
 
     def get_recurral_deposit_dtt(self) -> float:
         """Returns float: The recurral deposit value from the associated CalculationStatement object."""
-        return self.comparative.calculation.statement.get_recurral_deposit()
+
+        try:
+            return self.comparative.calculation.statement.get_recurral_deposit()
+        except:
+            return 0
 
     def get_default_interest_dtt(self) -> float:
         """Returns float: The default interest value from the associated CalculationStatement object."""
-        return self.comparative.calculation.statement.get_default_interest()
+        try:
+            return self.comparative.calculation.statement.get_default_interest()
+        except:
+            return 0
 
     def get_advocative_hours_dtt(self) -> float:
         """Returns float: The total credited advocative hours value from the associated CalculationStatement object."""
-        return self.comparative.calculation.statement.get_total_lawyer()
+        try:
+            return self.comparative.calculation.statement.get_total_lawyer()
+        except:
+            return 0
 
     def __str__(self):
         return f'{self.comparative}'
@@ -267,19 +370,21 @@ class ApprovedCalculation(AbstractDescription):  # Calculo homologado
 
 class AbstractComparativeFunds(AbstractDescription):
     """(AbstractDescription): Class for comparing funds with approved calculations."""
-    creditor = models.FloatField('Pedido do creditor')
-    dtt = models.FloatField('Calculo da DTT')
+    creditor = models.FloatField(_("Creditor's request"))
+    dtt = models.FloatField(_('DTT calculation'))
     calculation = models.ForeignKey(
         ApprovedCalculation, on_delete=models.PROTECT)
     total_funds = None
 
-    def save(self, *args, **kwargs):
+    def save(self, send_signal_post_save=True, *args, **kwargs):
         """
         Save the instance of AbstractComparativeFunds and calculate its dtt value
         Calculates the value of dtt using the get_dtt_value() method.
         """
         self.dtt = self.get_dtt_value()
         super(AbstractComparativeFunds, self).save(*args, **kwargs)
+        if send_signal_post_save:
+            gen_calc.send(sender=self.__class__, instance=self)
 
     def get_dtt_value(self) -> float:
         """Returns the total corrected value from TotalValuesFunds object."""
@@ -287,8 +392,7 @@ class AbstractComparativeFunds(AbstractDescription):
 
     def get_total_funds(self):
         if hasattr(self, 'total_funds') is False:
-            raise NotImplementedError(
-                'Must have the total_funds relation to inherit this method')
+            raise NotImplementedError(_('Must have the total_funds relation to inherit this method'))
         return self.total_funds
 
     @property
@@ -327,11 +431,10 @@ class ComparativeFundsIntegrations(AbstractComparativeFunds):
     """
     This class is used to store a OneToOne relationship with the Comparative model.
     """
-    total_funds = models.OneToOneField(
-        TotalValuesFundsIntegrations, on_delete=models.PROTECT)
+    total_funds = models.OneToOneField(TotalValuesFundsIntegrations, on_delete=models.PROTECT)
 
 
-@receiver(post_save, sender=ComparativeFunds)
+@receiver(gen_calc, sender=ComparativeFunds)
 def update_comparative_total(sender, instance, **kwargs) -> None:
     """
     Signal function that updates the total calculations in the associated ApprovedCalculation whenever a ComparativeFunds
@@ -348,7 +451,7 @@ def update_comparative_total(sender, instance, **kwargs) -> None:
     instance.calculation.generate_calculations()
 
 
-@receiver(post_save, sender=ComparativeFundsIntegrations)
+@receiver(gen_calc, sender=ComparativeFundsIntegrations)
 def update_comparative_integrations_total(sender, instance, **kwargs) -> None:
     """
     Signal function that updates the total calculations in the associated ApprovedCalculation whenever a

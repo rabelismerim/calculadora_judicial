@@ -15,9 +15,13 @@ import { QuasarResolver } from 'unplugin-vue-components/resolvers'
 export default defineConfig({
   base: './',
 
+  define: {
+    APP_VERSION: JSON.stringify(process.env.npm_package_version),
+  },
+
   build: {
     // outDir: './dist',
-    outDir: path.resolve(__dirname, '../backend/djud/static/src/vue/dist/'),
+    outDir: path.resolve(__dirname, '../backend/juca/static/src/vue/dist/'),
   },
 
   resolve: {
@@ -68,6 +72,14 @@ export default defineConfig({
             'set',
             'getListOfPaths',
             'getCookie',
+            'normalizeText',
+            'toSplit',
+            'toCamel',
+            'toPascal',
+            'toSnake',
+            'toKebab',
+            'toProperName',
+            'range',
           ],
         },
       ],

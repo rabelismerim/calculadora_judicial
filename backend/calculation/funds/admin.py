@@ -1,9 +1,10 @@
-"""
-Registers the Funds, StatementIntegrations, StatementFunds, StatementIRRF, MonetaryCorrection, MonetaryCorrectionIntegrations, TotalValuesIRRF and TotalValuesFunds models with the Django admin site.
+"""Registers the Funds, StatementIntegrations, StatementFunds, StatementIRRF, MonetaryCorrection,
+MonetaryCorrectionIntegrations, TotalValuesIRRF and TotalValuesFunds models with the Django admin site.
 
-This file facilitates the registration of the Funds, StatementIntegrations, StatementFunds, StatementIRRF, MonetaryCorrection, MonetaryCorrectionIntegrations, TotalValuesIRRF and TotalValuesFunds models with the Django admin site.
-By importing the admin module from the django.contrib package and the relevant models from the funds.models module,
-this code registers the models with the admin site for easy management.
+This file facilitates the registration of the Funds, StatementIntegrations, StatementFunds, StatementIRRF,
+MonetaryCorrection, MonetaryCorrectionIntegrations, TotalValuesIRRF and TotalValuesFunds models with the Django admin
+site. By importing the admin module from the django.contrib package and the relevant models from the funds.models
+module, this code registers the models with the admin site for easy management.
 
 Usage:
 - Import this file in the Django project's admin.py file to register the models with the admin site.
@@ -16,22 +17,57 @@ admin.site.register(Funds)
 """
 
 from django.contrib import admin
-from calculation.funds.models import Days, Interest, Fine, AmountDue, Funds, StatementIntegrations, StatementFunds, StatementIRRF, StatementDocuments, MonetaryCorrection, MonetaryCorrectionIntegrations, MonetaryCorrectionDocuments, TotalValuesIRRF, TotalValuesFunds, TotalValuesFundsIntegrations, ArrearsCharges
 
+from calculation.funds.models import Funds, StatementFunds, MonetaryCorrection, TotalValuesFunds
 
-admin.site.register(Days)
-admin.site.register(Interest)
-admin.site.register(Fine)
-admin.site.register(AmountDue)
 admin.site.register(Funds)
-admin.site.register(StatementFunds)
-admin.site.register(StatementIntegrations)
-admin.site.register(StatementIRRF)
-admin.site.register(StatementDocuments)
-admin.site.register(MonetaryCorrection)
-admin.site.register(MonetaryCorrectionIntegrations)
-admin.site.register(MonetaryCorrectionDocuments)
-admin.site.register(TotalValuesIRRF)
-admin.site.register(TotalValuesFunds)
-admin.site.register(TotalValuesFundsIntegrations)
-admin.site.register(ArrearsCharges)
+
+readonly_fields = ['corrected_value', 'index_data_base', 'index_recovering']
+
+
+class AbstractStatementFundsAdmin(admin.ModelAdmin):
+    """
+    A ModelAdmin class containing the definition of fields displayed in the
+    admin interface for the Comparative instance.
+    """
+    readonly_fields = readonly_fields
+
+    @admin.display(description='Valor corrigido')
+    def corrected_value(self, model):
+        return f'{model.get_monetary_correction().corrected_value}'
+
+    @admin.display(description='Índice na data base')
+    def index_data_base(self, model):
+        return f'{model.get_monetary_correction().index_data_base}'
+
+    @admin.display(description='Índice na recuperanda')
+    def index_recovering(self, model):
+        return f'{model.get_monetary_correction().index_recovering}'
+
+
+class StatementFundsAdmin(AbstractStatementFundsAdmin):
+    """
+    A ModelAdmin class containing the definition of fields displayed in the
+    admin interface for the Comparative instance.
+    """
+
+
+class MonetaryCorrectionAdmin(admin.ModelAdmin):
+    """
+    A ModelAdmin class containing the definition of fields displayed in the
+    admin interface for the Comparative instance.
+    """
+    readonly_fields = ('corrected_value',)
+
+
+class TotalValuesFundsAdmin(admin.ModelAdmin):
+    """
+    A ModelAdmin class containing the definition of fields displayed in the
+    admin interface for the Comparative instance.
+    """
+    readonly_fields = ('total_corrected', 'total_historical', 'total_dsr_reflexes', 'total_accurate')
+
+
+admin.site.register(MonetaryCorrection, MonetaryCorrectionAdmin)
+admin.site.register(StatementFunds, StatementFundsAdmin)
+admin.site.register(TotalValuesFunds, TotalValuesFundsAdmin)

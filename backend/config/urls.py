@@ -18,83 +18,95 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import include, path, re_path, reverse
 from django.shortcuts import render, redirect
-from django.views.generic import TemplateView
-from config.settings import ENABLE_SSO, IS_LOCALHOST
+from config.settings import ENABLE_SSO, IS_LOCALHOST, BASE_URL_NEXT
 from django.conf import settings
 from django.views.generic import TemplateView
 from rest_framework import permissions
-from rest_framework.schemas import get_schema_view, AutoSchema
+from rest_framework.schemas import get_schema_view
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.conf.urls.static import static
 from django.contrib.auth import views
 from config.settings import BASE_URL, BASE_URL_AUTH
 from rest_framework.authtoken import views as rest_views
 
-admin.site.site_header = admin.site.site_title = 'DJUD'
+admin.site.site_header = admin.site.site_title = 'JUCA'
 admin.site.index_title = 'Administration area'
-admin.site.site_url = '/djud/admin/login'
+admin.site.site_url = '/juca/admin/login'
 
 
 @ensure_csrf_cookie
 def frontend_index(request):
-    if request.META.get('REQUEST_URI', 'none')[:5].upper() == '/DJUD':
+    if request.META.get('REQUEST_URI', 'none')[:5].upper() == '/juca':
         return HttpResponseRedirect("/")
     else:
         return render(request, template_name='index.html')
 
 
 urlpatterns = [
+    path('__debug__/', include('debug_toolbar.urls')),
     # API Authentication
-    path('djud/api-auth/', include("rest_framework.urls")),
-
-    # # Base
-    path(f'{BASE_URL}base/', include("base.urls")),
+    path('juca/api-auth/', include("rest_framework.urls")),
 
     # # Projects
-    path(f'{BASE_URL}projects/', include("projects.urls")),
+    path(f'{BASE_URL}projects/', include(("projects.urls.current", 'v1'), namespace='teste')),
+    path(f'{BASE_URL_NEXT}projects/', include(("projects.urls.next", 'v2'), namespace='teste2')),
 
     # # Recovering
-    path(f'{BASE_URL}recovering/', include("recovering.urls")),
+    path(f'{BASE_URL}recovering/', include("recovering.urls.current")),
+    path(f'{BASE_URL_NEXT}recovering/', include("recovering.urls.next")),
 
     # Creditors
     path(f'{BASE_URL}creditors/', include("creditors.urls")),
 
+    # # Base
+    path(f'{BASE_URL}claim/', include("base.urls")),
+
     # Calculation
-    path(f'{BASE_URL}calculation/', include("calculation.urls")),
+    path(f'{BASE_URL}calculation/', include("calculation.urls.current")),
+    path(f'{BASE_URL_NEXT}calculation/', include("calculation.urls.next")),
 
     # Rates
     path(f'{BASE_URL}rates/', include("rates.urls")),
 
     # CORE
     path(BASE_URL, include("core.dttuser.api.urls")),
+
+    # TODO: desativar urls sem versão de api
     path(BASE_URL_AUTH, include("core.drfmsal.urls")),
     path(BASE_URL_AUTH, include("core.dttuser.urls")),
 
+    path(BASE_URL, include("core.drfmsal.urls")),
+    path(BASE_URL, include("core.dttuser.urls")),
+
     # Django
-    path('djud/admin/', admin.site.urls),
-    path('djud/login/', views.LoginView.as_view()),
-    path('djud/logout/', views.LogoutView.as_view()),
+    path('juca/admin/', admin.site.urls),
+    path('juca/login/', views.LoginView.as_view(template_name='admin/login.html'), name='login'),
+    path('juca/logout/', views.LogoutView.as_view(), name='logout'),
 
     # VUE FRONTEND
-    re_path(r'^(?!djud\/admin|djud\/api).*$', frontend_index, name='frontend'),
-    # path('djud/<path:resource>', frontend_index, name='frontend'),
+    re_path(r'^(?!juca\/admin|juca\/api).*$', frontend_index, name='frontend'),
+    # path('juca/<path:resource>', frontend_index, name='frontend'),
 
     # Documentation
     path(f'{BASE_URL}docs/swagger/', TemplateView.as_view(template_name='api_docs.html',
-         extra_context={'schema_url': 'schema-api'}), name='DJUD'),
-    path(f'{BASE_URL}docs/redoc/', get_schema_view(title="Deloitte DJUD Project", description="System that integrates the legal, calculation and financial teams of RJ / Bankruptcy processes (liabilities monitoring)",
-         version="1.0.0", permission_classes=[permissions.AllowAny]), name='schema-api'),
+                                                          extra_context={'schema_url': 'schema-api'}), name='JUCA'),
+    path(f'{BASE_URL}docs/redoc/', get_schema_view(title="Deloitte JUCA Project",
+                                                   description="System that integrates the legal, calculation and "
+                                                               "financial teams of RJ / Bankruptcy processes ("
+                                                               "liabilities monitoring)",
+                                                   version="1.0.0", permission_classes=[permissions.AllowAny]),
+         name='schema-api'),
 ]
 
 # TODO: definir se frontend MFA pode ter alteração de versões
 # Active or inactive MFA login MS
 if IS_LOCALHOST is False:
     urlpatterns.extend([
-        path('djud/admin/login/', lambda r: redirect(
-            reverse('drfmsal_signin', kwargs={'redirect_uri': 'djud/admin'})
+        path('juca/admin/login/', lambda r: redirect(
+            reverse('drfmsal_signin', kwargs={'redirect_uri': 'juca/admin'})
         )),
-        path('djud/admin/logout/', lambda r: redirect(
-            reverse('drfmsal_signout', kwargs={'redirect_uri': 'djud'})
+        path('juca/admin/logout/', lambda r: redirect(
+            reverse('drfmsal_signout', kwargs={'redirect_uri': 'juca'})
         )),
     ])
 
@@ -107,5 +119,5 @@ if ENABLE_SSO is False:
 #     urlpatterns.extend([])
 
 if (str(os.getenv('ENV', )) == 'branch') or (str(os.getenv('ENV')) == 'hml'):
-    urlpatterns += static("/djud"+settings.MEDIA_URL,
+    urlpatterns += static("/juca" + settings.MEDIA_URL,
                           document_root=settings.MEDIA_ROOT)

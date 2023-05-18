@@ -1,21 +1,35 @@
+import datetime
+
 import pandas as pd
+from django.core.validators import MinLengthValidator
 from django.db import models
+from rest_framework.exceptions import ValidationError
+
 from config.settings import RATE_FILE_TYPES
 
 from core.abstract.models import AbstractModel
-from django.utils.translation import gettext as _
 from rest_framework import serializers
+
+from utils import _
 
 
 class Rate(AbstractModel):  # Indices
-    """
-    Model representing a rate or index.
+    index = models.CharField(_('Rate Name'), max_length=50)
+    is_per_day = models.BooleanField(_('Is the Rate per day? day or month'), default=True)
 
-    Attributes:
-    - index (CharField): The name of the index, with a maximum length of 50 characters.
+    def is_ipca_e_selic(self) -> bool:
+        """
+        Excel D65
 
-    """
-    index = models.CharField('Nome do indice', max_length=50)
+        See if the rate is IPCA-E/SELIC reference the analysis sheet worksheet.
+        """
+        return self.index == "IPCA-E/SELIC"
+
+    def is_tst(self) -> bool:
+        """
+        See if the rate is TST reference the analysis sheet worksheet.
+        """
+        return self.index == "TST"
 
     def __str__(self):
         return self.index
@@ -24,6 +38,11 @@ class Rate(AbstractModel):  # Indices
         if hasattr(self, 'ratefile'):
             return self.ratefile
         return None
+
+    def get_rate_by_date(self, date: datetime.date):
+        if self.is_per_day:
+            return self.ratevalues_set.filter(date=date).first()
+        return self.ratevalues_set.filter(date__month=date.month, date__year=date.year).first()
 
 
 class RateValues(AbstractModel):  # Indices
@@ -45,11 +64,11 @@ class RateValues(AbstractModel):  # Indices
         Returns a string representation of the object.
     """
     rate = models.ForeignKey(Rate, on_delete=models.PROTECT)
-    date = models.DateField('Data do indice')
-    value = models.FloatField('Valor do indice')
+    date = models.DateField(_('Rate date'))
+    value = models.FloatField(_('Rate value'))
 
     def __str__(self):
-        return f"indice: {self.rate} | data: {self.date} | value: {self.value}"
+        return str(_('rate: {} | date: {} | value: {}').format(self.rate, self.date, self.value))
 
     @property
     def get_period(self):
@@ -78,7 +97,7 @@ class AbstractCalcule(AbstractModel):
     __str__() -> str
         Returns a string representation of the object.
     """
-    value = models.FloatField('Valor')
+    value = models.FloatField(_('Valor'))
 
     def __str__(self):
         return f"{self.value}"
@@ -133,16 +152,15 @@ class RateFile(AbstractModel):
     (inherited from the AbstractCalcule class)
     """
     rate = models.OneToOneField(Rate, on_delete=models.PROTECT)
-    file = models.FileField('Arquivo de indices',
-                            upload_to=f'djud/indices/%Y-%m-%d/')
+    file = models.FileField(_('Rate file'), upload_to=f'juca/indices/%Y-%m-%d/')
 
     def __str__(self):
-        return f"indice: {self.rate} | arquivo: {self.file.name}"
+        return str(_("rate: {} | file: {}").format(self.rate, self.file.name))
 
     def save(self, *args, **kwargs):
         file_type = self.file.name.split('.')[-1]
         if file_type not in RATE_FILE_TYPES:
-            raise serializers.ValidationError(['Tipo de arquivo inválido'])
+            raise serializers.ValidationError([_('Invalid file type')])
         super(RateFile, self).save(*args, **kwargs)
 
     def get_excel_to_dict(self):
@@ -176,3 +194,134 @@ class RateFile(AbstractModel):
     @property
     def index(self):
         return self.rate.index
+
+
+def validate_reference_year(value):
+    if not value.isnumeric():
+        raise ValidationError(_('The reference year must be an integer.'))
+    if int(value) < 1984:
+        raise ValidationError(_('The reference year must be from 1984 onwards.'))
+
+
+class IndiceIRRF(AbstractModel):
+    reference_year = models.CharField(_('Reference year'), max_length=4,
+                                      validators=[validate_reference_year, MinLengthValidator(4)])
+    start = models.FloatField(_('From'))
+    end = models.FloatField(_('To'))
+    aliquot = models.FloatField(_('Aliquot'))
+    deduction = models.FloatField(_('Deduction'))
+
+    def __str__(self):
+        return f"{self.start} | {self.end} | {self.aliquot} | {self.deduction}"
+
+    class Meta:
+        ordering = ('created_at',)
+
+
+def get_aliquot_by_tax(taxable_portion: float) -> float or None:
+    return IndiceIRRF.objects.filter(start__lte=taxable_portion, end__gte=taxable_portion).first()
+
+
+class Template(AbstractModel):
+    """
+    This class represents a template used for calculating funds. Each template has fields that store information
+    about the data used in the calculation.
+
+    Attributes:
+        name (str): The template name.
+    """
+    name = models.CharField(_('Rates'), max_length=150)
+    end_point = models.CharField(_('End Point'), max_length=150, null=True)
+
+    def __str__(self):
+        return self.name
+
+
+class TemplateRate(AbstractModel):
+    """
+    This class represents a template used for calculating funds. Each template has fields that store information
+    about the data used in the calculation.
+
+    Attributes:
+        description (str): The description name.
+        end_point (str): The endpoint where the data can be accessed.
+        many (bool): Whether there can be multiple instances of the template.
+    """
+    template = models.ForeignKey(Template, on_delete=models.PROTECT)
+    description = models.CharField('Description', max_length=150)
+    end_point = models.CharField(_('End Point'), max_length=150)
+    many = models.BooleanField(_('Is Multiple?'))
+
+    def __str__(self):
+        return f'{self.description} | {self.template.name}'
+
+
+TYPE_CHOICES = (
+    ('D', 'date'),
+    ('B', 'boolean'),
+    ('C', 'text'),
+    ('F', 'float'),
+    ('I', 'integer'),
+    ('T', 'datetime'),
+)
+
+
+class AbstractTemplateField(AbstractModel):
+    """
+    This class represents the fields for a template.
+
+    Attributes:
+        label (str): The name of the field.
+        key (str): A unique key used to identify the field.
+        type (str): The type of data stored in the field.
+        order (str): The order in which the field is displayed.
+        is_editable (bool): Whether the field is editable.
+        required (bool): Whether the field is required.
+    """
+    label = models.CharField(_('Field name'), max_length=150)
+    key = models.CharField(_('Field key'), max_length=150)
+    type = models.CharField(_('Field type'), choices=TYPE_CHOICES, max_length=1)
+    order = models.PositiveIntegerField(_('Order'))
+    is_editable = models.BooleanField(_('Is editable?'))
+    required = models.BooleanField(_('Required?'))
+
+    def __str__(self):
+        return self.label
+
+
+class TemplateMainField(AbstractTemplateField):
+    """
+    This class represents the fields for a template in table
+
+    Attributes:
+        template (Template): The template the field belongs to.
+        label (str): The name of the field.
+        key (str): A unique key used to identify the field.
+        type (str): The type of data stored in the field.
+        order (str): The order in which the field is displayed.
+        is_editable (bool): Whether the field is editable.
+        required (bool): Whether the field is required.
+    """
+    template = models.ForeignKey(Template, on_delete=models.PROTECT, null=True)
+
+    def __str__(self):
+        return f'{self.label} | {self.template.name}'
+
+
+class TemplateField(AbstractTemplateField):
+    """
+    This class represents the fields for a template main.
+
+    Attributes:
+        rate (Template): The template the field belongs to.
+        label (str): The name of the field.
+        key (str): A unique key used to identify the field.
+        type (str): The type of data stored in the field.
+        order (str): The order in which the field is displayed.
+        is_editable (bool): Whether the field is editable.
+        required (bool): Whether the field is required.
+    """
+    rate = models.ForeignKey(TemplateRate, on_delete=models.PROTECT, null=True)
+
+    def __str__(self):
+        return f'{self.label} | {self.rate.description} | {self.rate.template.name}'

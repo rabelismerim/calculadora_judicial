@@ -2,6 +2,7 @@ from django.db import models
 from utils import get_user_model
 from django.contrib.auth.models import Group, Permission, _user_get_permissions, _user_has_perm, _user_has_module_perms
 from django.utils.translation import gettext_lazy as _
+
 User = get_user_model()
 
 
@@ -67,7 +68,7 @@ class ProjectUser(models.Model):
         # Otherwise we need to check the backends.
         return _user_has_perm(self, perm, obj)
 
-    def has_permission(self, perm, obj=None):
+    def has_permission(self, perms: list or str, obj=None):
         """
         Return True if the user has the specified permission in individual or group. Query all
         available auth backends, but return immediately if any backend returns
@@ -75,18 +76,16 @@ class ProjectUser(models.Model):
         assumed to have permission in general. If an object is provided, check
         permissions for that object.
         """
-        sensitive_permissions = ['projetos',
-                                 'credores']  # Only managers have permissions
-        is_sensitive = perm.split('.')[0] in sensitive_permissions
+        if isinstance(perms, str):
+            perms = [perms]
 
-        # Active superusers have all permissions, except in sensitive permissions.
-        if hasattr(self, 'is_active') and self.is_active and self.is_superuser:
-            if is_sensitive:
-                # TODO: verificar nome do grupo de gerente
-                return self.groups.filter(name='gerente').exists()
-            return True
-
-        return any([self.groups.filter(permissions__codename=perm).exists(), self.user_permissions.filter(codename=perm).exists()])
+        has_perm = False
+        for perm in perms:
+            has_perm = any([self.groups.filter(permissions__codename=perm).exists(),
+                            self.user_permissions.filter(codename=perm).exists()])
+            if has_perm is False:
+                break
+        return has_perm
 
     def has_perms(self, perm_list, obj=None):
         """

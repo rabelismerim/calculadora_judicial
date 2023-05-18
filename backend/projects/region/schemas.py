@@ -14,5 +14,5 @@ class RegionSchema(AbstractDescriptionSchema):
         region_name = dict(data).get('description')
         region = Region.objects.filter(description=region_name).exists()
         if region:
-            raise serializers.ValidationError(['Comarca já cadastrada'])
+            raise serializers.ValidationError(['Region already registered'])
         return super(RegionSchema, self).validate(data)
