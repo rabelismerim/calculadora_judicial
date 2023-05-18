@@ -21,6 +21,7 @@ let loading = $ref(false)
 const filterBy = $ref('')
 const showParticipants = $ref(false)
 let project = $ref({} as Project)
+const showEditingProject = $ref(false)
 
 const tab = $ref('all')
 const tabFilters = [
@@ -51,7 +52,9 @@ const loadProject = async () => {
 
 const calculationForm: any = ref(null)
 let showCreateNewCalculation = $ref(false)
-let newCalculation: any = $ref({})
+let newCalculation: any = $ref({
+  isAdm: true,
+})
 const openNewCalculation = (creditor: any) => {
   const { id } = creditor
   newCalculation.creditorId = id
@@ -92,6 +95,7 @@ const loadCalculations = async (creditor: any) => {
   }
 }
 
+// Options Helpers list
 let incidents: any[] = $ref([])
 const addIncident = async (incidentNumber: string) => {
   try {
@@ -111,10 +115,25 @@ const loadIncidents = async () => {
     printError('ERROR ON LOAD INCIDENSTS:', error)
   }
 }
+const options = $ref({
+  users: [],
+  judges: [],
+  lawyers: [],
+  courts: [],
+  regions: [],
+})
+const loadOptions = async () => {
+  options.users = await usersService.getUsers()
+  options.judges = await projectService.getJudges()
+  options.lawyers = await projectService.getLawyers()
+  options.courts = await projectService.getCourts()
+  options.regions = await projectService.getRegions()
+}
 
 onMounted(() => {
   loadIncidents()
   loadProject()
+  loadOptions()
 })
 </script>
 
@@ -138,7 +157,8 @@ onMounted(() => {
       <Btn
         label="Editar"
         icon="i-carbon-edit"
-        disabled
+        :disabled="!project.id"
+        @click="showEditingProject = true"
       />
     </Header>
 
@@ -270,6 +290,12 @@ onMounted(() => {
     </div>
 
     <template #out>
+      <UpdateProject
+        v-model="showEditingProject"
+        v-model:project="project"
+        v-model:options="options"
+        @success="loadProject"
+      />
       <Modal
         v-model="showParticipants"
         title="Participantes"
@@ -313,6 +339,17 @@ onMounted(() => {
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :disable="loading"
             />
+            <label class="flex gap-4 items-center mb-4">
+              <div class="">Fase do Cálculo</div>
+              <BtnToggle
+                v-model="newCalculation.isAdm"
+                class="bg--base flex-1"
+                :items="[
+                  { label: 'Administrativa', value: true },
+                  { label: 'Judiciária', value: false },
+                ]"
+              />
+            </label>
           </div>
           <div class="flex justify-end p4 border-t-1 border-black/12">
             <Btn

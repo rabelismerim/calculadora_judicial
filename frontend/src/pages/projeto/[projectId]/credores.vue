@@ -12,11 +12,12 @@ let loading = $ref(false)
 let project = $ref({} as any)
 let creditors = $ref([] as any[])
 let AJNotices = $ref([])
+let rates = $ref([])
 let recoveringNotices = $ref([])
 let editingCreditor = $ref({
   name: '',
   legalNumber: '',
-  recoveringsId: [],
+  recoverings: [],
 } as any)
 const filterBy = $ref('')
 const filteredCreditors = computed((): Creditor[] => {
@@ -75,7 +76,7 @@ const editCreditor = (creditor: any) => {
     id,
     name,
     legalNumber: `${formatLegalNumber(legalNumber)} `,
-    recoveringsId: recoverings.map(({ id }: any) => id),
+    recoverings: recoverings.map(({ id }: any) => id),
   }
   showModal = true
 }
@@ -83,11 +84,17 @@ const loadOptions = async () => {
   try {
     AJNotices = await creditorsService.getNoticeAJ()
     recoveringNotices = await creditorsService.getNoticeRecovering()
+    rates = await ratesService.getRates()
   }
   catch (error) {
     printError('ERROR ON LOAD CREDITORS OPTIONS:', error)
   }
 }
+
+const options = computed(() => ({
+  recoverings: project?.recoverings || [],
+  rates,
+}))
 onMounted(() => {
   loadOptions()
   loadCreditors()
@@ -198,7 +205,7 @@ onMounted(() => {
       <NewCreditor
         v-model="showModal"
         v-model:creditor="editingCreditor"
-        :options="project?.recoverings || []"
+        :options="options"
         @success="loadCreditors"
       />
     </template>

@@ -100,10 +100,8 @@ const columns = [
     label: 'Data de Criação',
     align: 'left',
     sortable: true,
-    format: (value) => {
-      const [month, day, year] = value.split('/')
-      return `${day}/${month}/${year}`
-    },
+    sortOrder: 'da',
+    format: formatDateFromBackend,
   },
   {
     name: 'responsibles',

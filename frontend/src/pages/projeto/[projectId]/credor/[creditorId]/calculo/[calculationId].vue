@@ -65,13 +65,14 @@ const loadCalculation = async (showLoading = false) => {
     loading = false
 }
 
-const values = $ref([])
-const addValues = (index, amount = 1) => {
+const values = $ref([] as any[])
+const addValues = (index: any, amount = 1) => {
   if (!values[index])
     values[index] = []
-  values[index].push(...Array(amount).fill().map(() => clone({})))
+  values[index].push(...Array(amount).fill(0).map(() => clone({})))
 }
-addValues(0, 3)
+addValues(0, 1)
+addValues(1, 1)
 
 const isRequired = ({ required }: any) => required && [(value: any) => !!value || 'Campo obrigatório!']
 
@@ -103,13 +104,13 @@ const loadTemplate = async (id: string) => {
     required,
   }))
 }
+const host = import.meta.env.VITE_API_URL.slice(0, -9)
 const createCredit = async () => {
   const { classId, coinId, rateId, templateId, endPoint } = newCredit
   loading = true
   try {
     if (!endPoint)
       return
-    const host = import.meta.env.VITE_API_URL.slice(0, -9)
     const result: any = await api.post(`${host}${endPoint}`, {
       ...newCredit,
       classes: {
@@ -158,6 +159,32 @@ onMounted(async () => {
     loading = false
   }
 })
+
+const calculate = async () => {
+  const headers: any = {
+    'Content-type': 'application/json',
+    'Accept': 'application/json',
+  }
+  if (import.meta.env.VITE_TOKEN)
+    headers.Authorization = `Token ${import.meta.env.VITE_TOKEN}`
+  const endpoints = calculation?.credits?.[0]?.template?.tables?.map(({ endPoint }: any) => endPoint)
+  loading = true
+  for (const index in endpoints) {
+    for (const lineIndex in values[index as any]) {
+      const line = values[index as any][lineIndex]
+      if (Object.keys(line).length === 0)
+        break
+      const result: any = await fetch(`${host}${endpoints[index]}`, {
+        method: 'POST',
+        body: JSON.stringify({ ...line, fund_id: calculation?.funds?.[0]?.id }),
+        headers,
+      })
+        .then(response => response.json())
+      values[index as any][lineIndex] = Object.values(result)?.[0]
+    }
+  }
+  loading = false
+}
 </script>
 
 <template>
@@ -312,7 +339,7 @@ onMounted(async () => {
                         {{ props.row[column.field] }}
                       </div>
                       <QInput
-                        v-else-if="column.type === 'textet'"
+                        v-else-if="column.type === 'text'"
                         v-model="props.row[column.field]"
                         :rules="isRequired(column)"
                         class="flex-1"
@@ -327,7 +354,7 @@ onMounted(async () => {
                         type="number"
                         outlined
                         dense
-                        @update:model-value="(value: number) => column.type === 'integer' && (props.row[column.field] = Math.round(value))"
+                        @update:model-value="(value: any) => { if (column.type === 'integer') (props.row[column.field] = Math.round(value)) }"
                       />
                       <InputDate
                         v-else-if="column.type === 'date'"
@@ -356,7 +383,7 @@ onMounted(async () => {
               <div>Calculados com Sucesso: 0</div>
               <div>Calculados com Error: 0</div>
             </div>
-            <Btn label="Calcular" />
+            <Btn label="Calcular" @click="calculate(index)" />
           </div>
         </QForm>
       </Accordion>
