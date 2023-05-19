@@ -86,6 +86,11 @@ class ProjectRolesSchema(serializers.ModelSerializer, AbstractModelSchema):  # V
         if isinstance(special_approvers, list) is False:
             raise serializers.ValidationError([_('The special_approvers field must be in list format')])
         return self.__get_ids(special_approvers)
+    
+
+    class Meta:
+        model = Project
+        fields = '__all__'
 
 
 class ProjectSchema(ProjectRolesSchema):  # V1
