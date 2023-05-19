@@ -37,8 +37,9 @@ const loadCalculation = async (showLoading = false) => {
   if (showLoading)
     loading = true
   const result = await calculationService.getCalculation(attrs.calculationId)
-  const { funds = [], fundsIrrf = [], premisses = [] } = result
-  result.credits = [...funds, ...fundsIrrf, ...premisses]
+  const { allFunds = [] } = result
+  result.credits = allFunds
+    .flatMap(({ data, type }: any) => data.map((el: any) => ({ ...el, type })))
     .sort(({ createdAt: dateA }: any, { createdAt: dateB }: any) => dateA < dateB ? -1 : 1)
     .map((credit: any) => {
       credit.optionsTables = credit?.template?.tables.map(({ fields, description, endPoint, id, many }: any) => {
