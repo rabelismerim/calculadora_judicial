@@ -84,12 +84,12 @@ def create_templates():
 
     templates = [{'name': f'Documentos', 'description': f'Documento',
                   'fund_main': fund_document,
-                  'end_point': '/juca/api/v1/calculation/funds/documents/',
+                  'end_point': '/juca/api/v1/calculation/funds/documents/detail/',
                   'end_point_main': '/juca/api/v1/calculation/funds/documents/',
                   'many': False,
                   'fields': fields_verbas_document}, {'name': f'Acordos', 'description': f'Acordo',
                                                       'fund_main': fund_document,
-                                                      'end_point': '/juca/api/v1/calculation/funds/documents/',
+                                                      'end_point': '/juca/api/v1/calculation/funds/documents/detail/',
                                                       'end_point_main': '/juca/api/v1/calculation/funds/documents/',
                                                       'many': False,
                                                       'fields': fields_verbas_document}]

@@ -9,7 +9,8 @@ from rest_framework.generics import get_object_or_404
 
 from base.coins.models import Coins
 from calculation.funds.irrf.models import StatementIRRF, FundIRRF
-from calculation.funds.irrf.schemas import StatementIRRFSchema, StatementIRRFUpdateSchema, FundIRRFSchema
+from calculation.funds.irrf.schemas import StatementIRRFSchema, StatementIRRFUpdateSchema, FundIRRFSchema, \
+    TotalValuesIRRFSchema
 from core.abstract.views import AbstractViewApi
 
 from rest_framework import permissions, status
@@ -109,6 +110,48 @@ class FundIRRFApi(AbstractFundIRRFApi):
         return JsonResponse({'fund': self.serializer_class(fund, many=False).data}, status=status.HTTP_201_CREATED)
 
 
+class FundIRRFCalculationApi(AbstractFundIRRFApi):
+    """Define the FundIRRFApi view class for handling HTTP methods related to FundIRRF.
+
+    This view class extends the AbstractViewApi class, which provides a basic implementation
+    for common API actions. The FundIRRFApi supports HTTP POST and GET methods, and uses the FundIRRFSchema
+    serializer for input/output validation. The view requires authenticated users with appropriate
+    permissions to access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission
+    permission classes.
+
+    Attributes:
+        http_method_names (list): A list of HTTP methods supported by this view.
+        serializer_class (class): The serializer class for input/output validation.
+        permission_classes (list): A list of permission classes for user authentication and authorization.
+        model (class): The model class associated with this view.
+
+        query_params (list): A list of dictionaries, each specifying a query parameter for the API.
+
+    Examples:
+        To retrieve funds with a matching description:
+        ```
+        GET /api/v1/calculation/funds/?funds=funds_name
+        ```
+    """
+    docs = docs_fund.copy()
+    http_method_names = ['get']
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+
+    @doc(_("""This method handles GET requests for the view. It retrieves a list of funds object using the given 
+                calculation_id from the query parameters and serializes the result into JSON format before returning it as an 
+                HTTP response. 
+
+                    Returns:
+                        JsonResponse: An HTTP response containing the serialized comparative data retrieved.
+                    """))
+    def get(self, request, *args, **kwargs):
+        calculation_id = kwargs.get('calculation_id')
+        print(calculation_id, 'id\n\n')
+        funds = self.model.objects.filter(calculation_id=calculation_id).first()
+        funds_data = self.serializer_class(funds, many=False).data
+        return JsonResponse({'funds': funds_data})
+
+
 class FundIRRFDetailApi(AbstractFundIRRFApi):
     """Define the FundIRRFApi view class for handling HTTP methods related to Funds.
 
@@ -135,6 +178,7 @@ class FundIRRFDetailApi(AbstractFundIRRFApi):
     http_method_names = ['get', 'delete']
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     docs = docs_fund.copy()
+    tags = [_('Cálculo - Verbas - IRRF - Valores das verbas')]
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific fund IRRF 
         object using the given id from the query parameters and serializes the result into JSON format before returning
          it as an HTTP response. 
@@ -195,6 +239,7 @@ class StatementIRRFApi(AbstractStatementIRRFApi):
         ```
     """
     http_method_names = ['post']
+    tags = [_('Cálculo - Verbas - IRRF - Valores das verbas')]
     docs = docs.copy()
     docs['post'] = _("""Create Statement IRRF object from request data and return Statement IRRF detail.
         Returns:
@@ -257,3 +302,49 @@ class StatementIRRFDetailApi(AbstractStatementIRRFApi):
         statement = get_object_or_404(StatementIRRF, id=statement_id)
         statement.delete()
         return JsonResponse({'data': _('Statement fund deleted')}, status=status.HTTP_200_OK)
+
+
+class StatementFundsIRRFListApi(AbstractStatementIRRFApi):
+    """Define the StatementFundsApi view class for handling HTTP methods related to StatementFunds.
+
+    This view class extends the AbstractViewApi class, which provides a basic implementation
+    for common API actions. The StatementFundsApi supports HTTP POST and GET methods, and uses the StatementFundsSchema
+    serializer for input/output validation. The view requires authenticated users with appropriate
+    permissions to access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission
+    permission classes.
+
+    Attributes:
+        http_method_names (list): A list of HTTP methods supported by this view.
+        serializer_class (class): The serializer class for input/output validation.
+        permission_classes (list): A list of permission classes for user authentication and authorization.
+        model (class): The model class associated with this view.
+
+        query_params (list): A list of dictionaries, each specifying a query parameter for the API.
+
+    Examples:
+        To retrieve funds with a matching description:
+        ```
+        GET /api/v1/calculation/funds/labor/integration/<uuid:fund_id>/
+        ```
+    """
+    serializer_class = TotalValuesIRRFSchema
+    http_method_names = ['get']
+    docs = docs.copy()
+    model = FundIRRF
+    tags = [_('Cálculo - Verbas - IRRF - Valores das verbas')]
+
+    @doc(_("""This method handles GET requests for the view. It retrieves the calculated fund total and a list of fund 
+    IRRF objects using the received fund_id from the query parameters and serializes the result into 
+    JSON format before returning it as an JSON response. 
+
+    Returns:
+        JsonResponse: An HTTP response containing the serialized statement IRRF data retrieved.
+    """))
+    def get(self, request, *args, **kwargs):
+        fund_id = kwargs.get('fund_id')
+        fund = self.model.objects.filter(id=fund_id).first()
+        if hasattr(fund, 'totalvaluesirrf'):
+            funds_data = self.serializer_class(fund.totalvaluesirrf, many=False).data
+        else:
+            funds_data = self.serializer_class(fund, many=False).data
+        return JsonResponse({'fund': funds_data})

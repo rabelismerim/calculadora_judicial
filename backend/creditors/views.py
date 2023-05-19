@@ -114,6 +114,7 @@ class CreditorApi(AbstractCreditorApi):
     http_method_names = ['post']
     docs = docs.copy()
 
+
     @doc(_("""Create creditor by receiving a dictionary object with required fields.
         Creditor detail will be returned upon successful completion of operation
         """))

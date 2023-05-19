@@ -80,7 +80,6 @@ class CreditorCreateSchema(serializers.Serializer):
     occurrence_options = AbstractChoicesSerializer(CHOICES_OCCURRENCE, many=True)
 
     class Meta:
-        model = Creditor
         fields = '__all__'
 
 

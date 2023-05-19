@@ -117,6 +117,7 @@ class TemplateRateSchema(AbstractDescriptionSchema):
     """Serializer TemplateRate fields"""
 
     fields = TemplateFieldSchema(source='templatefield_set', many=True, read_only=True)
+    summary = TemplateFieldSchema(source='templatefield_set', many=True, read_only=True)
 
     class Meta:
         model = TemplateRate

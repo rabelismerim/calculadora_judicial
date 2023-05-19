@@ -15,8 +15,6 @@ Attributes:
 Usage example:
 serializer = CalculationSchema()
 """
-from django.db.models import Sum, F
-
 from base.schemas import AbstractDescriptionSchema, UpdateUserSerializer
 from calculation.comment.schemas import StepCommentSchema, CommentSchema
 from calculation.comparative.schemas import ComparativeSchema
