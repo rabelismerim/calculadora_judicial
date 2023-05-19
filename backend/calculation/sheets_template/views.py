@@ -107,7 +107,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                 out_stream = xlsx2html(new_name, sheet=sheet._WorkbookChild__title, parse_formula=False)
                 out_stream.seek(0)
                 result_html = out_stream.read()
-                result_html = result_html.replace('\n    ', '').replace('\n','').replace('\\"','"').encode('utf-8')
+                result_html = result_html.replace('\n    ', '').replace('\n','').replace('\\"','"').encode('utf-8').decode('latin-1')
                 list_html[sheet._WorkbookChild__title]=result_html
 
             remove(new_name)
