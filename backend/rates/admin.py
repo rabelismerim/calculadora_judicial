@@ -14,7 +14,7 @@ Modules:
 
 from django.contrib import admin, messages
 from rates.models import Accumulated, Period, Rate, RateValues, RateFile, IndiceIRRF, Template, TemplateRate, \
-    TemplateField, TemplateMainField
+    TemplateField, TemplateMainField, TemplateMainSummaryField, TemplateSummaryField
 from rates.schemas import RateSchema
 
 admin.site.register(Accumulated)
@@ -25,6 +25,8 @@ admin.site.register(Template)
 admin.site.register(TemplateRate)
 admin.site.register(TemplateField)
 admin.site.register(TemplateMainField)
+admin.site.register(TemplateSummaryField)
+admin.site.register(TemplateMainSummaryField)
 
 
 def load_files(modeladmin, request, queryset):

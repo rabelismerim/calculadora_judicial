@@ -96,8 +96,7 @@ class TotalValuesFundsSchema(AbstractDescriptionSchema):
         fund_id (serializers.UUIDField): The UUID of the related fund.
     """
     fund_id = serializers.UUIDField(read_only=True)
-    funds = StatementFundsSchema(
-        many=True, source='fund.statementfunds_set', exclude=('fund_id',), required=False)
+    data = StatementFundsSchema(many=True, source='fund.statementfunds_set', exclude=('fund_id',), required=False)
 
     class Meta:
         model = TotalValuesFunds
@@ -121,11 +120,11 @@ class FundsSchema(AbstractClassesFundsSchema):
     # statement_integrations = StatementIntegrationsSchema(
     #     many=True, source='statementintegrations_set', exclude=('fund_id', 'status'), write_only=True, required=False)
 
-    values_funds = TotalValuesFundsSchema(
-        source='totalvaluesfunds', read_only=True, exclude=('fund_id',))
-
-    values_funds_integrations = TotalValuesFundsIntegrationsSchema(
-        source='totalvaluesfundsintegrations', read_only=True, exclude=('fund_id',))
+    # values_funds = TotalValuesFundsSchema(
+    #     source='totalvaluesfunds', read_only=True, exclude=('fund_id',))
+    #
+    # values_funds_integrations = TotalValuesFundsIntegrationsSchema(
+    #     source='totalvaluesfundsintegrations', read_only=True, exclude=('fund_id',))
 
     class Meta:
         model = Funds

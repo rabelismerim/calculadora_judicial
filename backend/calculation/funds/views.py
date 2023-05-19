@@ -10,7 +10,8 @@ from rest_framework.generics import get_object_or_404
 
 from base.coins.models import Coins
 from calculation.funds.irrf.models import FundIRRF
-from calculation.funds.schemas import FundsSchema, StatementFundsSchema, StatementFundsUpdateSchema
+from calculation.funds.schemas import FundsSchema, StatementFundsSchema, StatementFundsUpdateSchema, \
+    TotalValuesFundsSchema
 from calculation.funds.models import Funds, StatementFunds
 from core.abstract.views import AbstractViewApi
 
@@ -138,6 +139,7 @@ class FundsCalculationApi(AbstractViewApi):
 
     docs = docs_fund.copy()
     operation_id_base = 'Get calc funds'
+
     @doc(_("""This method handles GET requests for the view. It retrieves a list of funds object using the given 
             calculation_id from the query parameters and serializes the result into JSON format before returning it as an 
             HTTP response. 
@@ -147,7 +149,6 @@ class FundsCalculationApi(AbstractViewApi):
                 """))
     def get(self, request, *args, **kwargs):
         calculation_id = kwargs.get('calculation_id')
-        print(calculation_id, 'get calc id\n')
         funds = self.model.objects.filter(calculation_id=calculation_id)
         funds_data = self.serializer_class(funds, many=True).data
         return JsonResponse({'funds': funds_data})
@@ -178,7 +179,7 @@ class FundsDetailApi(AbstractFundsApi):
     """
     http_method_names = ['get', 'delete']
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
-    operation_id_base = 'Get Calc fund'
+    operation_id_base = 'Get Calc fund detail'
     docs = docs_fund.copy()
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific fund 
         object using the given id from the query parameters and serializes the result into JSON format before returning it
@@ -259,6 +260,7 @@ class AbstractStatementFundsApi(AbstractViewApi):
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = StatementFunds
     query_params = []
+    tags = [_('Cálculo - Valores da Verba')]
 
 
 class StatementFundsApi(AbstractStatementFundsApi):
@@ -284,6 +286,7 @@ class StatementFundsApi(AbstractStatementFundsApi):
         GET /api/v1/calculation/funds/funds/
         ```
     """
+
     http_method_names = ['post']
     docs = docs.copy()
     docs['post'] = _("""Create Statement Fund object from request data and return Statement Fund detail.
@@ -341,8 +344,47 @@ class StatementFundsDetailApi(AbstractStatementFundsApi):
             Returns:
                 JsonResponse: A JSON response containing the ok message.
             """)
-    # def delete(self, request, *args, **kwargs):
-    #     statement_id = kwargs.get('id')
-    #     statement = get_object_or_404(StatementFunds, id=statement_id)
-    #     statement.delete()
-    #     return JsonResponse({'data': _('Statement fund deleted')}, status=status.HTTP_200_OK)
+
+
+class StatementFundsListApi(AbstractStatementFundsApi):
+    """Define the StatementFundsApi view class for handling HTTP methods related to StatementFunds.
+
+    This view class extends the AbstractViewApi class, which provides a basic implementation
+    for common API actions. The StatementFundsApi supports HTTP POST and GET methods, and uses the StatementFundsSchema
+    serializer for input/output validation. The view requires authenticated users with appropriate
+    permissions to access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission
+    permission classes.
+
+    Attributes:
+        http_method_names (list): A list of HTTP methods supported by this view.
+        serializer_class (class): The serializer class for input/output validation.
+        permission_classes (list): A list of permission classes for user authentication and authorization.
+        model (class): The model class associated with this view.
+
+        query_params (list): A list of dictionaries, each specifying a query parameter for the API.
+
+    Examples:
+        To retrieve funds with a matching description:
+        ```
+        GET /api/v1/calculation/funds/labor/<uuid:fund_id>/
+        ```
+    """
+    serializer_class = TotalValuesFundsSchema
+    http_method_names = ['get']
+    docs = docs.copy()
+    model = Funds
+    @doc(_("""This method handles GET requests for the view. It retrieves the calculated fund total and a list of fund 
+    statement objects using the received fund_id from the query parameters and serializes the result into JSON 
+    format before returning it as an JSON response. 
+
+    Returns:
+        JsonResponse: An HTTP response containing the serialized statements data retrieved.
+    """))
+    def get(self, request, *args, **kwargs):
+        fund_id = kwargs.get('fund_id')
+        fund = self.model.objects.filter(id=fund_id).first()
+        if hasattr(fund, 'totalvaluesfunds'):
+            funds_data = self.serializer_class(fund.totalvaluesfunds, many=False).data
+        else:
+            funds_data = self.serializer_class(fund, many=False).data
+        return JsonResponse({'fund': funds_data})

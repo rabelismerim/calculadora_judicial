@@ -1,6 +1,6 @@
 from base.schemas import AbstractDescriptionSchema
 from rates.models import Accumulated, Period, Rate, RateFile, RateValues, AbstractCalcule, TemplateField, TemplateRate, \
-    Template
+    Template, TemplateSummaryField, TemplateMainSummaryField
 from rest_framework import serializers
 
 from utils import _
@@ -113,10 +113,32 @@ class TemplateFieldSchema(AbstractDescriptionSchema):
         exclude = ('rate',)
 
 
+class TemplateSummaryFieldSchema(AbstractDescriptionSchema):
+    """Serializer TemplateField fields"""
+
+    type_display = serializers.CharField(source='get_type_display')
+
+    class Meta:
+        model = TemplateSummaryField
+        exclude = ('rate',)
+
+
+class TemplateMainSummaryFieldSchema(AbstractDescriptionSchema):
+    """Serializer TemplateField fields"""
+
+    type_display = serializers.CharField(source='get_type_display')
+
+    class Meta:
+        model = TemplateMainSummaryField
+        # exclude = ('rate',)
+        fields = '__all__'
+
+
 class TemplateRateSchema(AbstractDescriptionSchema):
     """Serializer TemplateRate fields"""
 
     fields = TemplateFieldSchema(source='templatefield_set', many=True, read_only=True)
+    summary = TemplateSummaryFieldSchema(source='templatesummaryfield_set', many=True, read_only=True)
 
     class Meta:
         model = TemplateRate
@@ -128,6 +150,8 @@ class TemplateSchema(AbstractDescriptionSchema):
 
     tables = TemplateRateSchema(source='templaterate_set', many=True, read_only=True)
     fields = TemplateFieldSchema(source='templatemainfield_set', many=True, read_only=True)
+    summary = TemplateMainSummaryFieldSchema(source='templatemainsummaryfield_set', many=True, read_only=True)
+
     class Meta:
         model = Template
         fields = '__all__'

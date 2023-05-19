@@ -62,8 +62,7 @@ class TotalValuesIRRFSchema(AbstractDescriptionSchema):
         fund_id (serializers.UUIDField): The UUID of the related fund.
     """
     fund_id = serializers.UUIDField(read_only=True)
-    funds = StatementIRRFSchema(
-        many=True, source='fund.statementirrf_set', exclude=('fund_id',), required=False)
+    data = StatementIRRFSchema( many=True, source='fund.statementirrf_set', exclude=('fund_id',), required=False)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
 
     class Meta:
@@ -90,8 +89,8 @@ class FundIRRFSchema(AbstractClassesFundsSchema):
     deserializing StatementIRRF instances.
     """
     calculation_id = serializers.UUIDField()
-    values_funds = TotalValuesIRRFSchema(
-        source='totalvaluesirrf', read_only=True, exclude=('fund_id',))
+    # values_funds = TotalValuesIRRFSchema(
+        # source='totalvaluesirrf', read_only=True, exclude=('fund_id',))
 
     class Meta:
         model = FundIRRF
