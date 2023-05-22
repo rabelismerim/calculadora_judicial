@@ -6,7 +6,6 @@ to add specific fields as needed.
 """
 import datetime
 
-from django.contrib.auth.models import Group
 from django.db import models
 from django.db.models import Sum, F
 from django.utils.translation import gettext_lazy as _
@@ -48,6 +47,7 @@ class Calculation(AbstractModel):
         incident (models.ForeignKey): The incident associated with the calculation.
         step (models.CharField): The step of the calculation (S for survivor or D for deceased).
         appeal_credit (models.BooleanField): Is the credit entirely concursal?
+        validated (models.BooleanField): Validated?
         appeal_deposit (models.BooleanField): Has an appeal deposit been made?
         has_advocative_hours (models.BooleanField): Are there any advocative fees in the homologous calculation?
         date_credit_auth (models.DateField): The date of the credit authorization certificate.
@@ -57,6 +57,7 @@ class Calculation(AbstractModel):
     step = models.CharField(_('Calculation step'), max_length=1, choices=CHOICES_STEP, default='S')
     number = models.CharField(_('Calculation number'), max_length=10, null=True, blank=True)
     recurral_deposit = models.FloatField(_('Recurral deposit released'), default=0)
+    validated = models.BooleanField(_('Validated?'), default=False)
 
     # Statement A5
     incident = models.ForeignKey(Incident, on_delete=models.PROTECT, null=True)
@@ -260,6 +261,7 @@ class Calculation(AbstractModel):
                                     group.replace('_id', '').replace('_', ' ').title()))
                     setattr(self, selected_group, user_executed['id'])
         self.step = next_step
+        self.validated = False
         self.save()
 
     def get_classes(self) -> list:

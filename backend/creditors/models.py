@@ -32,5 +32,13 @@ class Creditor(AbstractDateCreditor):
     #
     # # TODO: pegar a classe que está nos calculos, exibindo como lista
 
+    def validate_calcs(self, calculations: list):
+        """Receives a list of ids of calculations from the creditor and validates those ids, invalidating the
+        calculations that do not have in that list"""
+        self.calculation_set.filter(creditor=self, validated=True).exclude(id__in=calculations, step='A').update(
+            validated=False)  # invalidates all calculations
+        self.calculation_set.filter(creditor=self, id__in=calculations, validated=False, step='A').update(
+            validated=True)  # validates all calculations
+
     def __str__(self):
         return f'{self.entity}'

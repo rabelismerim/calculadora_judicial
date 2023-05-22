@@ -1,6 +1,10 @@
 from django.db import transaction
+from rest_framework.generics import get_object_or_404
+
 from base.claim.models import ClaimCreditor, ClaimLawyer
 from base.coins.models import Coins
+from calculation.models import Calculation
+from calculation.schemas import ValidatedIDSchema
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from rest_framework import status, serializers
@@ -114,7 +118,6 @@ class CreditorApi(AbstractCreditorApi):
     http_method_names = ['post']
     docs = docs.copy()
 
-
     @doc(_("""Create creditor by receiving a dictionary object with required fields.
         Creditor detail will be returned upon successful completion of operation
         """))
@@ -204,3 +207,44 @@ class CreditorUpdateApi(AbstractCreditorApi):
             Finds the Calculation instance based on the URL parameter id.
             Returns a JSON response with the updated Creditor object.
             """)
+
+
+class CalcValidateApi(AbstractViewApi):
+    """
+    API view to change validated calculations of a list of ids.
+
+    Only authenticated users with permissions and access can change validated calculation.
+
+    Allowed HTTP Method: POST
+
+    URL query parameters: None
+
+    Response status code:
+    - 200 OK: Successfully updated the Calculation validate.
+    """
+    http_method_names = ['post']
+
+    serializer_class = ValidatedIDSchema
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    query_params = []
+    model = Creditor
+    docs = docs.copy()
+
+    @doc(_("""PUT to check the step of the Calculation instance.
+
+    Receive and validate JSON data with a next_step string.
+    Finds the calculation instance based on the URL parameter ID.
+    Returns a 200 response if allowed.
+
+    Possible statuses are `To calculate`, `To review`, `To approve`, `To approve special`, `Failed`, `Approved`,
+    """))
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        new_calculation = serializer.validated_data
+        creditor = get_object_or_404(self.model, id=kwargs.get('id'))
+        calculations = new_calculation.pop('calculations', [])
+
+        creditor.validate_calcs(calculations)
+
+        return JsonResponse({}, status=status.HTTP_200_OK)

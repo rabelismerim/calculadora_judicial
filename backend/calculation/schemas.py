@@ -29,6 +29,7 @@ from rest_framework import serializers
 from calculation.models import Calculation, Incident, CHOICES_STEP
 from creditors.classes.models import CLASSE_CHOICES
 from creditors.schemas import CreditorSchema
+from utils import _
 
 
 class IncidentSchema(AbstractDescriptionSchema):
@@ -323,3 +324,52 @@ class ChangeStepSerializer(serializers.Serializer):
     def validate(self, data):
         data['next_step'] = data.pop('step')
         return super(ChangeStepSerializer, self).validate(data)
+
+
+class CheckStepSerializer(serializers.Serializer):
+    """
+    Serializes the field id of the Change Step for use in the API.
+
+    Usage example:
+    serializer = ChangeStepSerializer
+    """
+    next_step = serializers.ChoiceField(source='step', choices=CHOICES_STEP)
+
+
+
+class IdSerializer(serializers.Serializer):
+    """
+    Serializes the field id of the UserSerializer for use in the API.
+
+    Usage example:
+    serializer = UserSerializer
+    """
+    id = serializers.UUIDField()
+
+
+class ValidatedIDSchema(serializers.Serializer):  # V1
+    """
+    Serializes the fields of the ValidatedIDSchema model for use in the API.
+
+    This class defines a Django REST Framework serializer that inherits from a custom
+    AbstractDescriptionSchema class. The serializer converts instances of the Project
+    model to and from JSON format, and validates incoming data based on the model's fields.
+
+    Usage example:
+    serializer = ValidatedIDSchema()
+    """
+
+    calculations = serializers.ListField(write_only=True, child=IdSerializer())
+
+    @staticmethod
+    def __get_ids(list_roles):
+        return [x['id'] for x in list_roles]
+
+    def validate_calculations(self, calculations):
+        """Validate calculations with a list format"""
+        if isinstance(calculations, list) is False:
+            raise serializers.ValidationError(
+                [_('The calculations field must be in list format')])
+        print(calculations, 'calc')
+        print( self.__get_ids(calculations), 'self \ncalc')
+        return self.__get_ids(calculations)

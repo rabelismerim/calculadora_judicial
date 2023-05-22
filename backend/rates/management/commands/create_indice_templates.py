@@ -234,9 +234,13 @@ def create_templates():
             TemplateSummaryField.objects.filter(rate=new_template_rate).delete()
 
         for field in fields:
-            TemplateField.objects.get_or_create(rate=new_template_rate, **field)
+            defaults = field.copy()
+            defaults['rate'] = new_template_rate
+            TemplateField.objects.get_or_create(defaults=defaults, **defaults)
         for field in summary_fields:
-            TemplateSummaryField.objects.get_or_create(rate=new_template_rate, **field)
+            defaults = field.copy()
+            defaults['rate'] = new_template_rate
+            TemplateSummaryField.objects.get_or_create(defaults=defaults, **defaults)
 
 
 class Command(BaseCommand):
