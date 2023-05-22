@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-15 13:42-0300\n"
+"POT-Creation-Date: 2023-05-22 17:32-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -124,7 +124,7 @@ msgstr "Tipo Moeda"
 #: .\backend\base\models.py:10 .\backend\base\models.py:20
 #: .\backend\calculation\verdict\models.py:9
 #: .\backend\calculation\verdict\models.py:15 .\backend\creditors\models.py:11
-#: .\backend\creditors\views.py:38 .\backend\projects\views.py:45
+#: .\backend\creditors\views.py:42 .\backend\projects\views.py:45
 msgid "Description"
 msgstr "Descrição"
 
@@ -324,7 +324,8 @@ msgid ""
 "    Returns:\n"
 "        JsonResponse: An HTTP response containing the updated and serialized comparative object data.\n"
 "    "
-msgstr "Este método lida com solicitações PUT para a exibição. Ele espera dados de entrada que estejam em conformidade com o serializador usado por \n"
+msgstr ""
+"Este método lida com solicitações PUT para a exibição. Ele espera dados de entrada que estejam em conformidade com o serializador usado por \n"
 " a classe view. Ela atualiza o objeto de cálculo aprovado ou data de um objeto comparativo específico usando \n"
 " fornece o calculador_id dos parâmetros de consulta e serializa o objeto atualizado no formato JSON antes de \n"
 " retornando como uma resposta HTTP. \n"
@@ -371,7 +372,7 @@ msgstr ""
 "                        JsonResponse: Uma resposta HTTP contendo os dados da premissa serializada recuperada."
 
 #: .\backend\calculation\funds\abstract\models.py:30
-#: .\backend\calculation\funds\document\views.py:58
+#: .\backend\calculation\funds\document\views.py:61
 msgid "Fund name"
 msgstr "Nome da Verba"
 
@@ -395,65 +396,77 @@ msgid "Calculation failed - rate not found"
 msgstr "Falha no cálculo - taxa não encontrada"
 
 #: .\backend\calculation\funds\abstract\models.py:53
+#, fuzzy
+#| msgid "Calculation failed - rate not found"
+msgid "Calculation failed - rate RJ not found"
+msgstr "Falha no cálculo - taxa não encontrada"
+
+#: .\backend\calculation\funds\abstract\models.py:54
+#, fuzzy
+#| msgid "Calculation failed - rate not found"
+msgid "Calculation failed - rate data base not found"
+msgstr "Falha no cálculo - taxa não encontrada"
+
+#: .\backend\calculation\funds\abstract\models.py:55
 msgid "Calculation failed - aliquot not found"
 msgstr "Falha no cálculo - alíquota não encontrada"
 
-#: .\backend\calculation\funds\abstract\models.py:54
+#: .\backend\calculation\funds\abstract\models.py:56
 msgid "Calculation failed - invalid parameters"
 msgstr "Falha no cálculo - parâmetros inválidos"
 
-#: .\backend\calculation\funds\abstract\models.py:55
+#: .\backend\calculation\funds\abstract\models.py:57
 msgid "Calculation failed - no date RJ"
 msgstr "Falha no cálculo - sem data RJ"
 
-#: .\backend\calculation\funds\abstract\models.py:56
+#: .\backend\calculation\funds\abstract\models.py:58
 msgid "Calculation failed - no date Citation"
 msgstr "Falha no cálculo - sem data Citação"
 
-#: .\backend\calculation\funds\abstract\models.py:57
+#: .\backend\calculation\funds\abstract\models.py:59
 #, fuzzy
 #| msgid "Calculation failed - no date Citation"
 msgid "Calculation failed - in exclusion"
 msgstr "Falha no cálculo - sem data Citação"
 
-#: .\backend\calculation\funds\abstract\models.py:62
+#: .\backend\calculation\funds\abstract\models.py:64
 msgid "Calculation status"
 msgstr "Status do cálculo"
 
-#: .\backend\calculation\funds\abstract\models.py:106
+#: .\backend\calculation\funds\abstract\models.py:116
 msgid "Status {} does not match any valid status"
 msgstr "Status {} não corresponde a nenhum status válido"
 
-#: .\backend\calculation\funds\abstract\models.py:142
+#: .\backend\calculation\funds\abstract\models.py:152
 msgid "Base date"
 msgstr "Data base"
 
-#: .\backend\calculation\funds\abstract\models.py:143
+#: .\backend\calculation\funds\abstract\models.py:153
 msgid "Historical value"
 msgstr "Valor histórico"
 
-#: .\backend\calculation\funds\abstract\models.py:149
+#: .\backend\calculation\funds\abstract\models.py:159
 #: .\backend\calculation\funds\irrf\models.py:91
 msgid "Is extraconcursal"
 msgstr "É extraconcursal"
 
-#: .\backend\calculation\funds\abstract\models.py:218
+#: .\backend\calculation\funds\abstract\models.py:231
 msgid "Index on Base Date"
 msgstr "Índice na Data Base"
 
-#: .\backend\calculation\funds\abstract\models.py:219
+#: .\backend\calculation\funds\abstract\models.py:232
 msgid "Index in recovery"
 msgstr "Índice na recuperação"
 
-#: .\backend\calculation\funds\abstract\models.py:227
+#: .\backend\calculation\funds\abstract\models.py:240
 msgid "OneToOneField relationship required for Statement"
 msgstr "Relação OneToOneField necessária para Extrato"
 
-#: .\backend\calculation\funds\abstract\models.py:259
+#: .\backend\calculation\funds\abstract\models.py:272
 msgid "Total historical value"
 msgstr "Valor histórico total"
 
-#: .\backend\calculation\funds\abstract\models.py:260
+#: .\backend\calculation\funds\abstract\models.py:273
 msgid "Total corrected amount"
 msgstr "Valor total corrigido"
 
@@ -502,11 +515,11 @@ msgstr "multa total"
 msgid "Total due"
 msgstr "Total devido"
 
-#: .\backend\calculation\funds\document\schemas.py:196
+#: .\backend\calculation\funds\document\schemas.py:183
 msgid "Document Fund already registered"
 msgstr "Verba de documento já registrada"
 
-#: .\backend\calculation\funds\document\views.py:21
+#: .\backend\calculation\funds\document\views.py:23
 msgid ""
 "Represents the values that are used for documents, such as `invoices`, `Indemnities`, `agreements`, \n"
 "    etc. Contains fields such as `base date`, `value`, `monetary correction` and `economic charges`.\n"
@@ -515,7 +528,11 @@ msgstr ""
 "Representa os valores que são usados para documentos, como `faturas`, `Indenizações`, `contratos`, \n"
 "    etc. Contém campos como `data de base`, `valor`, `correção monetária` e `encargos econômicos`."
 
-#: .\backend\calculation\funds\document\views.py:91
+#: .\backend\calculation\funds\document\views.py:54
+msgid "Cálculo - Verbas - Documentos"
+msgstr ""
+
+#: .\backend\calculation\funds\document\views.py:94
 msgid ""
 "Create Document Fund object from request data and return Document Fund detail.\n"
 "        The 'has_custom_fine' field controls whether the fine entered in the document will be used, or the standard \n"
@@ -536,7 +553,7 @@ msgstr ""
 "        Raise:\n"
 "            serializers.ValidationError: Se os dados de entrada forem inválidos."
 
-#: .\backend\calculation\funds\document\views.py:140
+#: .\backend\calculation\funds\document\views.py:143
 msgid ""
 "This method handles GET requests for the view. It retrieves a specific document fund object \n"
 "    using the given  id from the query parameters and serializes the result into JSON format before returning it as an \n"
@@ -553,7 +570,7 @@ msgstr ""
 "            Retorna: JsonResponse:\n"
 "Uma resposta HTTP contendo os dados de verba de documentos serializados recuperados."
 
-#: .\backend\calculation\funds\document\views.py:155
+#: .\backend\calculation\funds\document\views.py:158
 msgid ""
 "This method handles PUT requests for the view. It updates a specific document fund object using the given id \n"
 "    from the query parameters and the serialized input data from the request body. \n"
@@ -568,7 +585,7 @@ msgstr ""
 "            Retorna:\n"
 "                JsonResponse: Uma resposta HTTP contendo os dados de fundo de instrução serializados atualizados."
 
-#: .\backend\calculation\funds\document\views.py:177
+#: .\backend\calculation\funds\document\views.py:180
 msgid ""
 "Delete a specific statement document according to the ID passed by the url\n"
 "\n"
@@ -576,12 +593,47 @@ msgid ""
 "                            JsonResponse: A JSON response containing the ok message.\n"
 "                        "
 msgstr ""
+"Excluir um documento de extrato específico de acordo com o ID passado pela url\n"
+"\n"
+" Retorna:\n"
+" JsonResponse: Uma resposta JSON contendo a mensagem ok."
 
-#: .\backend\calculation\funds\document\views.py:186
-#: .\backend\calculation\funds\integrations\views.py:139
-#: .\backend\calculation\funds\irrf\views.py:259
+#: .\backend\calculation\funds\document\views.py:189
+#: .\backend\calculation\funds\integrations\views.py:142
+#: .\backend\calculation\funds\irrf\views.py:304
 msgid "Statement fund deleted"
+msgstr "Fundo da verba deletado"
+
+#: .\backend\calculation\funds\document\views.py:219
+msgid "Cálculo - Verbas - Documentos - Valores das verbas"
 msgstr ""
+
+#: .\backend\calculation\funds\document\views.py:221
+#: .\backend\calculation\funds\irrf\views.py:336
+#, fuzzy
+#| msgid ""
+#| "This method handles GET requests for the view. It retrieves a specific statement integration \n"
+#| "    object using the given id from the query parameters and serializes the result into JSON format before returning it\n"
+#| "     as an HTTP response. \n"
+#| "     \n"
+#| "        Returns:\n"
+#| "            JsonResponse: An HTTP response containing the serialized document fund data retrieved.\n"
+#| "    "
+msgid ""
+"This method handles GET requests for the view. It retrieves the calculated fund total and a list of fund \n"
+"    IRRF objects using the received fund_id from the query parameters and serializes the result into \n"
+"    JSON format before returning it as an JSON response. \n"
+"\n"
+"    Returns:\n"
+"        JsonResponse: An HTTP response containing the serialized statement IRRF data retrieved.\n"
+"    "
+msgstr ""
+"Este método lida com solicitações GET para a visualização. Recupera um extrato de integração específica \n"
+"    objeto usando o id fornecido a partir dos parâmetros de consulta e serializa o resultado no formato JSON antes de retorná-lo\n"
+"     como uma resposta HTTP. \n"
+"     \n"
+"        Retorna:\n"
+"            JsonResponse: Uma resposta HTTP contendo os dados de fundo de documento serializado recuperados."
 
 #: .\backend\calculation\funds\integrations\apps.py:22
 msgid "Funds Integrations"
@@ -595,7 +647,7 @@ msgstr "Descrição da verba"
 msgid "Apply summary 381?"
 msgstr "Aplicar sumúla 381?"
 
-#: .\backend\calculation\funds\integrations\views.py:19
+#: .\backend\calculation\funds\integrations\views.py:21
 msgid ""
 "Statement Integrations is a financial statement of a fund, and includes attributes such as \n"
 "    `base date` and `historical value`. It also has the calculation, `monetary correction` and the `indexes` used in the \n"
@@ -606,7 +658,11 @@ msgstr ""
 "    `Data de base` e `valor histórico`. Ele também tem o cálculo, `correção monetária` e os `índices` utilizados no \n"
 "    cálculos. Tem uma relação com uma verba onde este fundo pode n Integrações de Demonstrativos."
 
-#: .\backend\calculation\funds\integrations\views.py:77
+#: .\backend\calculation\funds\integrations\views.py:54
+msgid "Cálculo - Valores da Verba - Integratórias"
+msgstr ""
+
+#: .\backend\calculation\funds\integrations\views.py:80
 msgid ""
 "Create Statement Integration object from request data and return Statement Integration detail.\n"
 "        Returns:\n"
@@ -625,7 +681,7 @@ msgstr ""
 "        Eleva:\n"
 "            serializers.ValidationError: Se os dados de entrada forem inválidos."
 
-#: .\backend\calculation\funds\integrations\views.py:116
+#: .\backend\calculation\funds\integrations\views.py:119
 msgid ""
 "This method handles GET requests for the view. It retrieves a specific statement integration \n"
 "    object using the given id from the query parameters and serializes the result into JSON format before returning it\n"
@@ -642,7 +698,7 @@ msgstr ""
 "        Retorna:\n"
 "            JsonResponse: Uma resposta HTTP contendo os dados de fundo de documento serializado recuperados."
 
-#: .\backend\calculation\funds\integrations\views.py:123
+#: .\backend\calculation\funds\integrations\views.py:126
 msgid ""
 "This method handles PUT requests for the view. It updates a specific statement integration \n"
 "    object using the given id from the query parameters and the serialized input data from the request body. \n"
@@ -657,7 +713,7 @@ msgstr ""
 "        Retorna:\n"
 "            JsonResponse: Uma resposta HTTP contendo os dados de verba integratória serializadas atualizados."
 
-#: .\backend\calculation\funds\integrations\views.py:130
+#: .\backend\calculation\funds\integrations\views.py:133
 msgid ""
 "Delete a specific statement integrations according to the ID passed by the url\n"
 "\n"
@@ -670,6 +726,32 @@ msgstr ""
 " Retorna:\n"
 " JsonResponse: Uma resposta JSON contendo o ok mensagem.\n"
 " "
+
+#: .\backend\calculation\funds\integrations\views.py:173
+#, fuzzy
+#| msgid ""
+#| "This method handles GET requests for the view. It retrieves a specific statement integration \n"
+#| "    object using the given id from the query parameters and serializes the result into JSON format before returning it\n"
+#| "     as an HTTP response. \n"
+#| "     \n"
+#| "        Returns:\n"
+#| "            JsonResponse: An HTTP response containing the serialized document fund data retrieved.\n"
+#| "    "
+msgid ""
+"This method handles GET requests for the view. It retrieves the calculated fund total and a list of fund \n"
+"    statement integrations objects using the received fund_id from the query parameters and serializes the result into \n"
+"    JSON format before returning it as an JSON response. \n"
+"\n"
+"    Returns:\n"
+"        JsonResponse: An HTTP response containing the serialized statements data retrieved.\n"
+"    "
+msgstr ""
+"Este método lida com solicitações GET para a visualização. Recupera um extrato de integração específica \n"
+"    objeto usando o id fornecido a partir dos parâmetros de consulta e serializa o resultado no formato JSON antes de retorná-lo\n"
+"     como uma resposta HTTP. \n"
+"     \n"
+"        Retorna:\n"
+"            JsonResponse: Uma resposta HTTP contendo os dados de fundo de documento serializado recuperados."
 
 #: .\backend\calculation\funds\irrf\apps.py:23
 msgid "Funds - IRRF"
@@ -707,12 +789,12 @@ msgstr "IRRF por mês"
 msgid "IRRF per period"
 msgstr "IRRF por período"
 
-#: .\backend\calculation\funds\irrf\schemas.py:118
-#: .\backend\calculation\funds\schemas.py:152
+#: .\backend\calculation\funds\irrf\schemas.py:117
+#: .\backend\calculation\funds\schemas.py:151
 msgid "Fund already registered"
 msgstr "Fundo já registrado"
 
-#: .\backend\calculation\funds\irrf\views.py:20
+#: .\backend\calculation\funds\irrf\views.py:21
 msgid ""
 "Statement IRRF is a financial statement of a fund IRRF, and includes attributes such as \n"
 "    `fund_name` and `taxable_amounts`. It also has the calculation, `taxable amount` and the `taxable portion` used in \n"
@@ -723,7 +805,7 @@ msgstr ""
 "    `fund_name` e `taxable_amounts`. Possui também o cálculo, `valor tributável` e a `parcela tributável` utilizada na \n"
 "    os cálculos. Tem uma relação com um fundo IRRF onde este fundo pode n Demonstração IRRF."
 
-#: .\backend\calculation\funds\irrf\views.py:27
+#: .\backend\calculation\funds\irrf\views.py:28
 msgid ""
 "Represent a template for IRRF funds. He has the attributes `taxable_amount` and `months_period`, \n"
 "    which represent the taxable amount of the fund and the number of months of the application period, respectively. \n"
@@ -736,7 +818,7 @@ msgstr ""
 "    Tem uma relação de 1 para n, onde vários valores e seus respectivos valores podem ser alocados, para calcular \n"
 "    o IRRF devido, devolvendo campos como: `valor do imposto`, `parcela tributável` e `alíquota`."
 
-#: .\backend\calculation\funds\irrf\views.py:92
+#: .\backend\calculation\funds\irrf\views.py:93
 msgid ""
 "Create FundIRRF object from request data and return FundIRRF detail.\n"
 "        Args:\n"
@@ -757,7 +839,39 @@ msgstr ""
 "        Eleva:\n"
 "            serializers.ValidationError: Se os dados de entrada forem inválidos."
 
-#: .\backend\calculation\funds\irrf\views.py:138
+#: .\backend\calculation\funds\irrf\views.py:140
+#, fuzzy
+#| msgid ""
+#| "This method handles GET requests for the view. It retrieves a specific Premise object using the given\n"
+#| "            calculation_id from the query parameters and serializes the result into JSON format before returning it as\n"
+#| "             an HTTP response.\n"
+#| "\n"
+#| "                Returns:\n"
+#| "                    JsonResponse: An HTTP response containing the serialized Premise data retrieved.\n"
+#| "                "
+msgid ""
+"This method handles GET requests for the view. It retrieves a list of funds object using the given \n"
+"                calculation_id from the query parameters and serializes the result into JSON format before returning it as an \n"
+"                HTTP response. \n"
+"\n"
+"                    Returns:\n"
+"                        JsonResponse: An HTTP response containing the serialized comparative data retrieved.\n"
+"                    "
+msgstr ""
+"Este método lida com solicitações GET para a visualização. Ele recupera uma premissa usando o\n"
+"    calculation_id a partir dos parâmetros de consulta e serializa o resultado no formato JSON antes de retorná-lo como\n"
+"                 uma resposta HTTP.\n"
+"\n"
+"                    Retorna:\n"
+"                        JsonResponse: Uma resposta HTTP contendo os dados da premissa serializada recuperada."
+
+#: .\backend\calculation\funds\irrf\views.py:181
+#: .\backend\calculation\funds\irrf\views.py:242
+#: .\backend\calculation\funds\irrf\views.py:334
+msgid "Cálculo - Verbas - IRRF - Valores das verbas"
+msgstr ""
+
+#: .\backend\calculation\funds\irrf\views.py:182
 msgid ""
 "This method handles GET requests for the view. It retrieves a specific fund IRRF \n"
 "        object using the given id from the query parameters and serializes the result into JSON format before returning\n"
@@ -774,7 +888,7 @@ msgstr ""
 "            Retorna:\n"
 "                JsonResponse: Uma resposta HTTP contendo os dados de fundo de documento serializado recuperados."
 
-#: .\backend\calculation\funds\irrf\views.py:199
+#: .\backend\calculation\funds\irrf\views.py:244
 msgid ""
 "Create Statement IRRF object from request data and return Statement IRRF detail.\n"
 "        Returns:\n"
@@ -793,7 +907,7 @@ msgstr ""
 "        Eleva:\n"
 "            serializers.ValidationError: Se os dados de entrada forem inválidos."
 
-#: .\backend\calculation\funds\irrf\views.py:236
+#: .\backend\calculation\funds\irrf\views.py:281
 msgid ""
 "This method handles GET requests for the view. It retrieves a specific statement IRRF \n"
 "        object using the given id from the query parameters and serializes the result into JSON format before returning\n"
@@ -810,7 +924,7 @@ msgstr ""
 "            Retorna:\n"
 "                JsonResponse: Uma resposta HTTP contendo os dados de fundo de documento serializado recuperados."
 
-#: .\backend\calculation\funds\irrf\views.py:243
+#: .\backend\calculation\funds\irrf\views.py:288
 msgid ""
 "This method handles PUT requests for the view. It updates a specific statement IRRF \n"
 "        object using the given id from the query parameters and the serialized input data from the request body. \n"
@@ -825,7 +939,7 @@ msgstr ""
 "            Retorna:\n"
 "                JsonResponse: Uma resposta HTTP contendo os dados IRRF de instrução serializados atualizados."
 
-#: .\backend\calculation\funds\irrf\views.py:250
+#: .\backend\calculation\funds\irrf\views.py:295
 #, fuzzy
 #| msgid ""
 #| "This method handles PUT requests for the view. It updates a specific statement IRRF \n"
@@ -863,7 +977,7 @@ msgstr "Total valor reflexos DSR"
 msgid "Total accurate"
 msgstr "Total apurado"
 
-#: .\backend\calculation\funds\views.py:22
+#: .\backend\calculation\funds\views.py:23
 msgid ""
 "Statement Fund is a financial statement of a fund, and includes attributes such as \n"
 "    `base date` and `historical value`. It also has the calculation, `monetary correction` and the `indexes` used in the \n"
@@ -874,7 +988,7 @@ msgstr ""
 "    `Data de base` e `valor histórico`. Ele também tem o cálculo, `correção monetária` e os `índices` utilizados no \n"
 "    cálculos. Tem uma relação com um fundo onde este fundo pode n Verba de Extrato."
 
-#: .\backend\calculation\funds\views.py:29
+#: .\backend\calculation\funds\views.py:30
 msgid ""
 "Represents a template for funds. It has the attributes `name` and `calculated total values`,\n"
 "    that represent the values that were inserted in the extracts.\n"
@@ -887,7 +1001,7 @@ msgstr ""
 "    Tem uma proporção de 1 para n para as integrações de fundos de extrato e fundos de extrato, onde vários valores e seus \n"
 "    os respectivos valores podem ser alocados para calcular as correções."
 
-#: .\backend\calculation\funds\views.py:92
+#: .\backend\calculation\funds\views.py:93
 msgid ""
 "Create Funds object from request data and return Funds detail.\n"
 "        Args:\n"
@@ -908,7 +1022,7 @@ msgstr ""
 "            Raises:\n"
 "                serializers.ValidationError: Se os dados de entrada forem inválidos."
 
-#: .\backend\calculation\funds\views.py:141
+#: .\backend\calculation\funds\views.py:143
 #, fuzzy
 #| msgid ""
 #| "This method handles GET requests for the view. It retrieves a specific Premise object using the given\n"
@@ -934,7 +1048,7 @@ msgstr ""
 "                    Retorna:\n"
 "                        JsonResponse: Uma resposta HTTP contendo os dados da premissa serializada recuperada."
 
-#: .\backend\calculation\funds\views.py:183
+#: .\backend\calculation\funds\views.py:184
 msgid ""
 "This method handles GET requests for the view. It retrieves a specific fund \n"
 "        object using the given id from the query parameters and serializes the result into JSON format before returning it\n"
@@ -951,7 +1065,11 @@ msgstr ""
 "            Returns:\n"
 "                JsonResponse: Uma resposta HTTP contendo os dados de fundos serializados recuperados."
 
-#: .\backend\calculation\funds\views.py:289
+#: .\backend\calculation\funds\views.py:263
+msgid "Cálculo - Valores da Verba"
+msgstr ""
+
+#: .\backend\calculation\funds\views.py:292
 msgid ""
 "Create Statement Fund object from request data and return Statement Fund detail.\n"
 "            Returns:\n"
@@ -970,7 +1088,7 @@ msgstr ""
 "            Eleva:\n"
 "                serializers.ValidationError: Se os dados de entrada forem inválidos."
 
-#: .\backend\calculation\funds\views.py:325
+#: .\backend\calculation\funds\views.py:328
 msgid ""
 "This method handles GET requests for the view. It retrieves a specific statement fund object \n"
 "    using the given id from the query parameters and serializes the result into JSON format before returning it as an \n"
@@ -987,7 +1105,7 @@ msgstr ""
 "            Retorna: JsonResponse:\n"
 "Uma resposta HTTP contendo os dados de fundo de instrução serializados recuperados."
 
-#: .\backend\calculation\funds\views.py:332
+#: .\backend\calculation\funds\views.py:335
 msgid ""
 "This method handles PUT requests for the view. It updates a specific statement fund \n"
 "        object using the given id from the query parameters and the serialized input data from the request body. \n"
@@ -1002,7 +1120,7 @@ msgstr ""
 "            Retorna:\n"
 "                JsonResponse: Uma resposta HTTP contendo os dados de fundo de instrução serializados atualizados."
 
-#: .\backend\calculation\funds\views.py:339
+#: .\backend\calculation\funds\views.py:342
 #, fuzzy
 #| msgid ""
 #| "This method handles PUT requests for the view. It updates a specific statement fund \n"
@@ -1024,38 +1142,64 @@ msgstr ""
 "            Retorna:\n"
 "                JsonResponse: Uma resposta HTTP contendo os dados de fundo de instrução serializados atualizados."
 
-#: .\backend\calculation\models.py:25
+#: .\backend\calculation\funds\views.py:376
+#, fuzzy
+#| msgid ""
+#| "This method handles GET requests for the view. It retrieves a specific statement integration \n"
+#| "    object using the given id from the query parameters and serializes the result into JSON format before returning it\n"
+#| "     as an HTTP response. \n"
+#| "     \n"
+#| "        Returns:\n"
+#| "            JsonResponse: An HTTP response containing the serialized document fund data retrieved.\n"
+#| "    "
+msgid ""
+"This method handles GET requests for the view. It retrieves the calculated fund total and a list of fund \n"
+"    statement objects using the received fund_id from the query parameters and serializes the result into JSON \n"
+"    format before returning it as an JSON response. \n"
+"\n"
+"    Returns:\n"
+"        JsonResponse: An HTTP response containing the serialized statements data retrieved.\n"
+"    "
+msgstr ""
+"Este método lida com solicitações GET para a visualização. Recupera um extrato de integração específica \n"
+"    objeto usando o id fornecido a partir dos parâmetros de consulta e serializa o resultado no formato JSON antes de retorná-lo\n"
+"     como uma resposta HTTP. \n"
+"     \n"
+"        Retorna:\n"
+"            JsonResponse: Uma resposta HTTP contendo os dados de fundo de documento serializado recuperados."
+
+#: .\backend\calculation\models.py:24
 #, fuzzy
 #| msgid "Calculated"
 msgid "To Calculate"
 msgstr "à Calcular"
 
-#: .\backend\calculation\models.py:25
+#: .\backend\calculation\models.py:24
 #, fuzzy
 #| msgid "Revised"
 msgid "To Review"
 msgstr "à Revisar"
 
-#: .\backend\calculation\models.py:25
+#: .\backend\calculation\models.py:24
 #, fuzzy
 #| msgid "Approved"
 msgid "To Approve"
 msgstr "à Aprovar"
 
-#: .\backend\calculation\models.py:25
+#: .\backend\calculation\models.py:24
 msgid "To Approve Special"
 msgstr "à Aprovar Especialmente"
 
-#: .\backend\calculation\models.py:26
+#: .\backend\calculation\models.py:25
 msgid "Approved"
 msgstr "Aprovado"
 
-#: .\backend\calculation\models.py:26
+#: .\backend\calculation\models.py:25
 msgid "Failed"
 msgstr "Falha"
 
-#: .\backend\calculation\models.py:41 .\backend\calculation\views.py:47
-#: .\backend\calculation\views.py:69
+#: .\backend\calculation\models.py:40 .\backend\calculation\views.py:42
+#: .\backend\calculation\views.py:64
 msgid "Incident number"
 msgstr "Número do incidente"
 
@@ -1071,39 +1215,43 @@ msgstr "Número de cálculo"
 msgid "Recurral deposit released"
 msgstr "Depósito recursal liberado"
 
-#: .\backend\calculation\models.py:67
+#: .\backend\calculation\models.py:60
+msgid "Validated?"
+msgstr "Validado?"
+
+#: .\backend\calculation\models.py:68
 msgid "Fully competitive credit?"
 msgstr "Crédito totalmente concursal?"
 
-#: .\backend\calculation\models.py:69
+#: .\backend\calculation\models.py:70
 msgid "Approved calculation date"
 msgstr "Data do calculo homologado"
 
-#: .\backend\calculation\models.py:72
+#: .\backend\calculation\models.py:73
 msgid "Recursal deposit withdrawal?"
 msgstr "Retirada de depósito recursal?"
 
-#: .\backend\calculation\models.py:74
+#: .\backend\calculation\models.py:75
 msgid "Page number of the appeal deposit withdrawal"
 msgstr "Número da página referente ao depósito recursal"
 
-#: .\backend\calculation\models.py:78
+#: .\backend\calculation\models.py:79
 msgid "Date of credit qualification certificate"
 msgstr "Data da autorização de crédito"
 
-#: .\backend\calculation\models.py:80
+#: .\backend\calculation\models.py:81
 msgid "Credit qualification certificate page"
 msgstr "Página da certidão de habilitação de crédito"
 
-#: .\backend\calculation\models.py:83
+#: .\backend\calculation\models.py:84
 msgid "Are there fees in the approved calculation?"
 msgstr "Existem taxas no cálculo aprovado?"
 
-#: .\backend\calculation\models.py:87
+#: .\backend\calculation\models.py:88
 msgid "Edital art. 7º § 2 - 11.101/2005"
 msgstr "Edital art. 7º § 2 - 11.101/2005"
 
-#: .\backend\calculation\models.py:258
+#: .\backend\calculation\models.py:262
 msgid "The user is already in the role of {}, not being able to have two or more roles in the same project"
 msgstr "O usuário já está no papel de {}, não podendo ter dois ou mais papéis no mesmo projeto"
 
@@ -1165,38 +1313,44 @@ msgstr ""
 "            Raises:\n"
 "                serializers.ValidationError: Se os dados de entrada forem inválidos."
 
+#: .\backend\calculation\schemas.py:372
+#, fuzzy
+#| msgid "The executors field must be in list format"
+msgid "The calculations field must be in list format"
+msgstr "O campo executores deve estar em formato de lista"
+
 #: .\backend\calculation\sheets_template\apps.py:9
 msgid "Sheets Template"
 msgstr "Modelo de Planilhas"
 
-#: .\backend\calculation\sheets_template\models.py:24
+#: .\backend\calculation\sheets_template\models.py:26
 msgid "Sheet Name file"
 msgstr "Arquivo Nome da Sheet"
 
-#: .\backend\calculation\sheets_template\models.py:25
+#: .\backend\calculation\sheets_template\models.py:27
 msgid "Sheet Template file"
 msgstr "Arquivo de Modelo de Sheet"
 
-#: .\backend\calculation\sheets_template\models.py:26
+#: .\backend\calculation\sheets_template\models.py:28
 msgid "Json File Value"
 msgstr "Valor do Arquivo Json"
 
-#: .\backend\calculation\sheets_template\models.py:29
+#: .\backend\calculation\sheets_template\models.py:31
 msgid "sheet: {} | file: {}"
 msgstr "sheet: {} | arquivo: {}"
 
-#: .\backend\calculation\sheets_template\models.py:34
+#: .\backend\calculation\sheets_template\models.py:36
 #: .\backend\rates\models.py:163
 msgid "Invalid file type"
 msgstr "Tipo de arquivo inválido"
 
-#: .\backend\calculation\sheets_template\views.py:24
+#: .\backend\calculation\sheets_template\views.py:34
 msgid ""
 "Represents templates to publishing external sheets models to frontend.`, \n"
 "                "
 msgstr "Representa modelos para publicação de modelos de sheets externas no frontend.`,"
 
-#: .\backend\calculation\sheets_template\views.py:28
+#: .\backend\calculation\sheets_template\views.py:38
 msgid ""
 "This method handles GET requests for the view. It retrieves a list of objects sheets file using the given \n"
 "                calculation_id from the query parameters and serializes the result into JSON format before returning it\n"
@@ -1231,12 +1385,12 @@ msgstr "Qualificação"
 msgid "Conclusion legend"
 msgstr "Legenda de conclusão"
 
-#: .\backend\calculation\statement\models.py:106
-#: .\backend\calculation\statement\models.py:142
+#: .\backend\calculation\statement\models.py:110
+#: .\backend\calculation\statement\models.py:146
 msgid "Total"
 msgstr "Total"
 
-#: .\backend\calculation\statement\models.py:141
+#: .\backend\calculation\statement\models.py:145
 msgid "Lawyer name"
 msgstr "Nome do advogado"
 
@@ -1328,7 +1482,7 @@ msgid "SELIC rate in the period"
 msgstr "Taxa SELIC no período"
 
 #: .\backend\calculation\statement_pf\models.py:77
-#: .\backend\calculation\statement_pf\models.py:537
+#: .\backend\calculation\statement_pf\models.py:538
 msgid "Legend"
 msgstr "Legenda"
 
@@ -1336,15 +1490,15 @@ msgstr "Legenda"
 msgid "Amount"
 msgstr "Valor"
 
-#: .\backend\calculation\statement_pf\models.py:580
+#: .\backend\calculation\statement_pf\models.py:581
 msgid "Need at least one rate or rate_integrations or rate_irrf."
 msgstr "Precisa de pelo menos uma taxa ou rate_integrations ou rate_irrf."
 
-#: .\backend\calculation\statement_pf\models.py:582
+#: .\backend\calculation\statement_pf\models.py:583
 msgid "Not allowed to save more than one rate or rate_integrations or rate_irrf."
 msgstr "Não é permitido salvar mais de uma taxa ou rate_integrations ou rate_irrf."
 
-#: .\backend\calculation\statement_pf\models.py:600
+#: .\backend\calculation\statement_pf\models.py:601
 msgid "Need to have a budget tied up"
 msgstr "Precisa ter um orçamento atrelado"
 
@@ -1456,7 +1610,7 @@ msgid ""
 "        "
 msgstr "Criar veredito ao receber um dict, retornar detalhes do veredito"
 
-#: .\backend\calculation\views.py:25
+#: .\backend\calculation\views.py:20
 msgid ""
 "Represents all the calculation information. It gathers all the information relevant to the process.\n"
 "     It gathers the information of `extract`, `appropriations`, `assumptions`, claims, `comparative`, `sentences`,\n"
@@ -1467,7 +1621,7 @@ msgstr ""
 "     Reúne as informações de `extrato`, `premissas`, pleito, `comparativo`, `sentenças`,\n"
 "    `editais` e `estado do cálculo`."
 
-#: .\backend\calculation\views.py:74
+#: .\backend\calculation\views.py:69
 msgid ""
 "Represents the `incident number` related to the process. Within a process there can be several\n"
 "        `numbers of incidents`, and when doing the calculation, it is necessary to pass which number is related.\n"
@@ -1476,7 +1630,7 @@ msgstr ""
 "Representa o `número do incidente` relacionado ao processo. Dentro de um processo pode haver vários\n"
 "        `número de incidentes` e, ao efetuar o cálculo, é necessário indicar qual o número que está relacionado."
 
-#: .\backend\calculation\views.py:77
+#: .\backend\calculation\views.py:72
 msgid ""
 "Create Incident object from request data and return Incident detail.\n"
 "            Returns:\n"
@@ -1495,7 +1649,7 @@ msgstr ""
 "            Eleva:\n"
 "                serializers.ValidationError: Se os dados de entrada forem inválidos."
 
-#: .\backend\calculation\views.py:94 .\backend\calculation\views.py:111
+#: .\backend\calculation\views.py:89 .\backend\calculation\views.py:106
 msgid ""
 "This method handles GET requests for the view. It retrieves a specific Calculation using the\n"
 "    given id from the query parameters and serializes the result into JSON format before returning it as\n"
@@ -1512,7 +1666,7 @@ msgstr ""
 "                    Retorna:\n"
 "                        JsonResponse: Uma resposta HTTP contendo os dados de cálculo serializados recuperados."
 
-#: .\backend\calculation\views.py:126
+#: .\backend\calculation\views.py:121
 msgid ""
 "This method handles GET requests for the view. It retrieves a list of objects Calculation using the given\n"
 "                creditor_id from the query parameters and serializes the result into JSON format before returning it as\n"
@@ -1529,7 +1683,33 @@ msgstr ""
 "                    Retorna:\n"
 "                        JsonResponse: Uma resposta HTTP contendo os dados de cálculo serializados recuperados."
 
-#: .\backend\calculation\views.py:145
+#: .\backend\calculation\views.py:142
+#, fuzzy
+#| msgid ""
+#| "This method handles GET requests for the view. It retrieves a specific statement integration \n"
+#| "    object using the given id from the query parameters and serializes the result into JSON format before returning it\n"
+#| "     as an HTTP response. \n"
+#| "     \n"
+#| "        Returns:\n"
+#| "            JsonResponse: An HTTP response containing the serialized document fund data retrieved.\n"
+#| "    "
+msgid ""
+"This method handles GET requests for the view. It retrieves a list of all funds Calculation \n"
+"    using the given id from the query parameters and serializes the result into JSON format before returning it as \n"
+"    an HTTP response.\n"
+"\n"
+"    Returns:\n"
+"        JsonResponse: An HTTP response containing the serialized Calculation data retrieved.\n"
+"    "
+msgstr ""
+"Este método lida com solicitações GET para a visualização. Recupera um extrato de integração específica \n"
+"    objeto usando o id fornecido a partir dos parâmetros de consulta e serializa o resultado no formato JSON antes de retorná-lo\n"
+"     como uma resposta HTTP. \n"
+"     \n"
+"        Retorna:\n"
+"            JsonResponse: Uma resposta HTTP contendo os dados de fundo de documento serializado recuperados."
+
+#: .\backend\calculation\views.py:156
 msgid ""
 "Creates a new instance of the Calculation model, receiving a dictionary as an argument and returning details\n"
 "         of the newly created instance.\n"
@@ -1556,7 +1736,7 @@ msgstr ""
 "A JsonResponse containing a serialized Calculation instance.\n"
 " "
 
-#: .\backend\calculation\views.py:252
+#: .\backend\calculation\views.py:263
 msgid ""
 "PUT method to change the step of the Calculation instance.\n"
 "\n"
@@ -1565,7 +1745,7 @@ msgid ""
 "        Optional field `comments`, a list of objects containing the text field\n"
 "        Returns a JSON response with the updated Calculation object.\n"
 "\n"
-"        Possible status are `Requested`, `Calculated`, `Revised`, `Approved`, `Failed`, `Specially Approved`,\n"
+"        Possible status are `To Calculate`, `To Review`, `To Approve`, `To Approve Special`, `Failed`, `Approved`,\n"
 "        "
 msgstr ""
 "PUT método para alterar a etapa da instância de Cálculo.\n"
@@ -1574,13 +1754,32 @@ msgstr ""
 "        Localiza a instância de Cálculo com base no ID do parâmetro URL.\n"
 "        Retorna uma resposta JSON com o objeto Calculation atualizado.\n"
 "\n"
-"        Os status possíveis são `Solicitado`, `Calculado`, `Revisado`, `Aprovado`, `Reprovado`, `Especialmente Aprovado`,"
+"        Os status possíveis são `à Calcular`, `à Revisar`, `à Aprovar`, `à Aprovar Especial`, `Falhou`, `Aprovado`,"
 
-#: .\backend\config\settings.py:373
+#: .\backend\calculation\views.py:314
+msgid ""
+"PUT to check the step of the Calculation instance.\n"
+"\n"
+"    Receive and validate JSON data with a next_step string.\n"
+"    Finds the calculation instance based on the URL parameter ID.\n"
+"    Returns a 200 response if allowed.\n"
+"    \n"
+"    Possible statuses are `To calculate`, `To review`, `To approve`, `To approve special`, `Failed`, `Approved`,\n"
+"    "
+msgstr ""
+"PUT método para alterar a etapa da instância de Cálculo.\n"
+"\n"
+"        Recebe e valida dados JSON com a string next_step.\n"
+"        Localiza a instância de Cálculo com base no ID do parâmetro URL.\n"
+"        Retorna uma resposta 200 se permitido.\n"
+"\n"
+"        Os status possíveis são `à Calcular`, `à Revisar`, `à Aprovar`, `à Aprovar Especial`, `Falhou`, `Aprovado`,"
+
+#: .\backend\config\settings.py:391
 msgid "Português"
 msgstr ""
 
-#: .\backend\config\settings.py:374
+#: .\backend\config\settings.py:392
 msgid "English"
 msgstr "Inglês"
 
@@ -1628,11 +1827,11 @@ msgstr "Valor anterior"
 msgid "The archive_json field must be in json format"
 msgstr "O campo archive_json deve estar no formato json"
 
-#: .\backend\core\abstract\views.py:221
+#: .\backend\core\abstract\views.py:220
 msgid "Field in invalid format. It must be in the format{}"
 msgstr "Campo em formato inválido. "
 
-#: .\backend\core\abstract\views.py:390
+#: .\backend\core\abstract\views.py:389
 msgid "{self.__get_model_name().capitalize()} deleted"
 msgstr ""
 
@@ -1805,7 +2004,7 @@ msgstr "nome de usuário"
 
 #: .\backend\core\dttuser\models.py:216
 msgid "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
-msgstr "Obrigatório. "
+msgstr "Obrigatório. 150 caracteres ou menos. Letras, dígitos e apenas @/./+/-/_."
 
 #: .\backend\core\dttuser\models.py:218
 msgid "A user with that username already exists."
@@ -1916,7 +2115,7 @@ msgid ""
 "        "
 msgstr ""
 "Usado para validar e enviar e-mail quando solicitado a criar um novo utilizador.\n"
-"        O serializador é usado para aceder ao objecto de modelo e, em seguida, os dados são devolvidos num formato JSON."
+"        O serializador é usado para acessar ao objecto de modelo e, em seguida, os dados são devolvidos num formato JSON."
 
 #: .\backend\core\dttuser\views.py:149
 msgid "DTT sending email not configured"
@@ -2109,43 +2308,43 @@ msgstr "Pode Reprovar Aprovação Especial para à Revisar"
 msgid "Can Disapprove Special Calculation to Failed"
 msgstr "Pode Reprovar Aprovação Especial para à Falha"
 
-#: .\backend\core\permission\views.py:351
+#: .\backend\core\permission\views.py:357
 msgid "Unable to change status from {} to {}"
 msgstr "Não é possível alterar o status de {} para {}"
 
-#: .\backend\core\permission\views.py:367
+#: .\backend\core\permission\views.py:374
 msgid "You do not have permission. Contact admin"
 msgstr "Você não tem permissão. "
 
-#: .\backend\core\permission\views.py:378
+#: .\backend\core\permission\views.py:385
 msgid "Need to add \"perms: list\" attribute to use CheckPermissions class"
 msgstr "É necessário adicionar o atributo \"perms: list\" para usar a classe CheckPermissions"
 
-#: .\backend\core\permission\views.py:384
+#: .\backend\core\permission\views.py:391
 msgid "It is not possible to register this fund"
 msgstr "Não é possível cadastrar este fundo"
 
-#: .\backend\core\permission\views.py:391
+#: .\backend\core\permission\views.py:398
 msgid "Need to add \"physical_person: bool\" attribute to use CheckFundsPjPfPermissions class"
 msgstr "É necessário adicionar o atributo \"perms: list\" para usar a classe CheckPermissions"
 
-#: .\backend\core\permission\views.py:400
+#: .\backend\core\permission\views.py:407
 msgid "It is not possible to register a fund of the legal entity type for individuals"
 msgstr "Não é possível cadastrar fundo do tipo pessoa jurídica parapessoa fisica"
 
-#: .\backend\core\permission\views.py:402
+#: .\backend\core\permission\views.py:409
 msgid "It is not possible to register a fund of the individuals type for legal entity"
 msgstr "Não é possível cadastrar fundo do tipo pessoa fisica parapessoa jurídica"
 
-#: .\backend\core\permission\views.py:407
+#: .\backend\core\permission\views.py:414
 msgid "it is not possible to register an agreement when there is already an fund or fund IRRF registered"
 msgstr "não é possível registrar acordo trabalhista quando já existe uma verba ou verba IRRF cadastrada"
 
-#: .\backend\core\permission\views.py:421
+#: .\backend\core\permission\views.py:428
 msgid "it is not possible to register an fund when there is already an agreement registered"
 msgstr "não é possível cadastrar uma verba quando já existe um acordo trabalhistaregistrado"
 
-#: .\backend\creditors\apps.py:9 .\backend\creditors\views.py:173
+#: .\backend\creditors\apps.py:9 .\backend\creditors\views.py:179
 msgid "Creditor"
 msgstr "Credor"
 
@@ -2169,6 +2368,12 @@ msgstr "Classe IV - ME/EPP"
 #: .\backend\creditors\classes\views.py:23
 msgid "Class"
 msgstr "Classe"
+
+#: .\backend\creditors\models.py:13
+#, fuzzy
+#| msgid "Total corrected amount"
+msgid "Total sum of valid amounts"
+msgstr "Valor total corrigido"
 
 #: .\backend\creditors\notice\apps.py:9
 msgid "Notice"
@@ -2263,7 +2468,7 @@ msgstr ""
 msgid "Creditor already registered in this recovering"
 msgstr "Credor já inscrito nesta recuperação"
 
-#: .\backend\creditors\views.py:19
+#: .\backend\creditors\views.py:23
 msgid ""
 "The `Creditor` class represents a creditor of an entity in the context of a credit recovery process. \n"
 "    It stores relationship with the `Entity` model and with the `Recovering` model. In addition, it has a description \n"
@@ -2274,7 +2479,7 @@ msgstr ""
 "    Armazena relacionamento com o modelo `Entidade` e com o modelo `Recuperação`. Além disso, possui uma descrição \n"
 "    do credor armazenado no campo `descrição`."
 
-#: .\backend\creditors\views.py:52
+#: .\backend\creditors\views.py:58
 msgid ""
 "Retrieve a creditor by their given ID,\n"
 "        serializes it and returns a JSON response with the serialized data.\n"
@@ -2285,11 +2490,11 @@ msgid ""
 "            A response with a JSON object containing a serialized creditor data object."
 msgstr "Recuperar um credor pelo ID fornecido serializa e retorna uma resposta JSON com os dados serializados.Resposta -------JsonResponseUma resposta com um objeto JSON contendo um objeto de dados de credor serializado."
 
-#: .\backend\creditors\views.py:71
+#: .\backend\creditors\views.py:77
 msgid "Options for creating creditors or calculations"
 msgstr "Opções para criar credores ou cálculos"
 
-#: .\backend\creditors\views.py:95
+#: .\backend\creditors\views.py:101
 msgid ""
 "Retrieves a queryset of creditors related to a given project ID,\n"
 "        serializes it and returns a JSON response with the serialized data.\n"
@@ -2309,7 +2514,7 @@ msgstr ""
 " Uma resposta com um objeto JSON contendo uma lista de dados do credor.\n"
 " "
 
-#: .\backend\creditors\views.py:115
+#: .\backend\creditors\views.py:121
 msgid ""
 "Create creditor by receiving a dictionary object with required fields.\n"
 "        Creditor detail will be returned upon successful completion of operation\n"
@@ -2319,7 +2524,7 @@ msgstr ""
 " Os detalhes do credor serão devolvidos após a conclusão bem-sucedida de operação\n"
 " "
 
-#: .\backend\creditors\views.py:176
+#: .\backend\creditors\views.py:182
 msgid ""
 "Check the creditor to see if he exists in that recovering, based on his legal_number\n"
 "        \n"
@@ -2328,11 +2533,11 @@ msgid ""
 "        "
 msgstr "Verifique o credor para ver se ele existe naquela recuperanda, com base em seu legal_numberRetorna um HTTP 200 se não existir, uma exceção é gerada quando existir"
 
-#: .\backend\creditors\views.py:187 .\backend\recovering\views.py:141
+#: .\backend\creditors\views.py:193 .\backend\recovering\views.py:141
 msgid "Legal number already registered"
 msgstr "CPF/CNPJ já registrado"
 
-#: .\backend\creditors\views.py:196
+#: .\backend\creditors\views.py:202
 msgid ""
 "Method to change creditor information instance.\n"
 "\n"
@@ -2346,6 +2551,28 @@ msgstr ""
 "Método para alterar a etapa da instância de Cálculo.\n"
 "\n"
 "        Recebe e valida dados JSON com os campos `description`, `admission`, `dismissal`,            `default_interest`, `fine` ou `advocative_hours`.                        Localiza a instância de cálculo com base no ID do parâmetro de URL.            Retorna uma resposta JSON com o objeto Credor atualizado."
+
+#: .\backend\creditors\views.py:233
+msgid ""
+"POST to change valid calculations\n"
+"\n"
+"    Receives a list of calculation ids.\n"
+"    Finds the creditor instance based on the URL parameter ID.\n"
+"    Return a 200 response if allowed.\n"
+"\n"
+"    Invalidates all the calculations that are not in the received list, and validates only the calculations of the \n"
+"    received ids that are in the `Approved` step\n"
+"    "
+msgstr ""
+"POST para alterar cálculos válidos\n"
+"\n"
+" Recebe uma lista de IDs de cálculo.\n"
+" Localiza a instância do credor com base no ID do parâmetro de URL.\n"
+" Retorna uma resposta 200 se permitido.\n"
+"\n"
+" Invalida todos os cálculos que não constam na lista recebida, e valida apenas os cálculos do \n"
+" IDs recebidos que estão na etapa `Aprovado`\n"
+" "
 
 #: .\backend\projects\apps.py:9
 msgid "Project"
@@ -2570,23 +2797,28 @@ msgstr ""
 msgid "Region's name"
 msgstr "Nome da comarca"
 
-#: .\backend\projects\schemas.py:100 .\backend\projects\schemas.py:110
-#: .\backend\projects\schemas.py:120 .\backend\projects\schemas.py:210
-#: .\backend\projects\schemas.py:220 .\backend\projects\schemas.py:230
+#: .\backend\projects\schemas.py:61 .\backend\projects\schemas.py:73
+#: .\backend\projects\schemas.py:84
 msgid "Must select at least one user"
 msgstr "Deve selecionar pelo menos um usuário"
 
-#: .\backend\projects\schemas.py:103 .\backend\projects\schemas.py:213
+#: .\backend\projects\schemas.py:65
 msgid "The executors field must be in list format"
 msgstr "O campo executores deve estar em formato de lista"
 
-#: .\backend\projects\schemas.py:113 .\backend\projects\schemas.py:223
+#: .\backend\projects\schemas.py:77
 msgid "The approvers field must be in list format"
 msgstr "O campo de aprovadores deve estar em formato de lista"
 
-#: .\backend\projects\schemas.py:123 .\backend\projects\schemas.py:233
+#: .\backend\projects\schemas.py:88
 msgid "The reviewers field must be in list format"
 msgstr "O campo de revisores deve estar em formato de lista"
+
+#: .\backend\projects\schemas.py:95
+#, fuzzy
+#| msgid "The approvers field must be in list format"
+msgid "The special_approvers field must be in list format"
+msgstr "O campo de aprovadores deve estar em formato de lista"
 
 #: .\backend\projects\views.py:30
 msgid ""
@@ -2607,7 +2839,19 @@ msgstr ""
 "Obter a lista de projetos, com algumas informações sobre o mesmo, \n"
 "        ser capaz de filtrar por process_number, status, descrição e número de engagement"
 
-#: .\backend\projects\views.py:115
+#: .\backend\projects\views.py:91
+msgid ""
+"Update the project and roles.\n"
+"\n"
+"        Returns:\n"
+"            The JSON response with Project detail.\n"
+"        "
+msgstr "Atualize o projeto e as funções.\n"
+"\n"
+" Retorna:\n"
+" A resposta JSON com detalhes do projeto."
+
+#: .\backend\projects\views.py:192
 msgid "Create Project receiving a dict, return project detail"
 msgstr "Criar Projeto recebendo um dict, retornar detalhes do projeto"
 
@@ -2676,30 +2920,34 @@ msgid "End Point"
 msgstr "End Point"
 
 #: .\backend\rates\models.py:253
+msgid "Is Horizontal"
+msgstr "É Horizontal"
+
+#: .\backend\rates\models.py:254
 msgid "Is Multiple?"
 msgstr "É Múltiplo?"
 
-#: .\backend\rates\models.py:281
+#: .\backend\rates\models.py:282
 msgid "Field name"
 msgstr "Nome do campo"
 
-#: .\backend\rates\models.py:282
+#: .\backend\rates\models.py:283
 msgid "Field key"
 msgstr "Chave de campo"
 
-#: .\backend\rates\models.py:283
+#: .\backend\rates\models.py:284
 msgid "Field type"
 msgstr "Tipo de campo"
 
-#: .\backend\rates\models.py:284
+#: .\backend\rates\models.py:285
 msgid "Order"
 msgstr "Ordem"
 
-#: .\backend\rates\models.py:285
+#: .\backend\rates\models.py:286
 msgid "Is editable?"
 msgstr "É editável?"
 
-#: .\backend\rates\models.py:286
+#: .\backend\rates\models.py:287
 msgid "Required?"
 msgstr "Requerido?"
 
@@ -2837,7 +3085,7 @@ msgstr "Atributos"
 msgid "System that integrates the legal, calculation and  financial teams of RJ / Bankruptcy processes (liabilities monitoring)"
 msgstr "Sistema que integra as equipes jurídica, de cálculo e financeira do RJ /Processos de falência (acompanhamento de passivos)"
 
-#: .\backend\utils.py:32
+#: .\backend\utils.py:33
 msgid "The value {} does not match any valid choice"
 msgstr "O valor {} não corresponde a nenhuma escolha válida"
 

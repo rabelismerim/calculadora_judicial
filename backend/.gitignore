@@ -4,7 +4,7 @@ log/
 /cert.crt
 /cert.key
 **/migrations/**
-!**/migrations
+!**/migrations/*.mo
 !**/migrations/__init__.py
 __pycache__
 *.sqlite3
