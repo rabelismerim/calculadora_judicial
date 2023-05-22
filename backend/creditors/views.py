@@ -230,13 +230,14 @@ class CalcValidateApi(AbstractViewApi):
     model = Creditor
     docs = docs.copy()
 
-    @doc(_("""PUT to check the step of the Calculation instance.
+    @doc(_("""POST to change valid calculations
 
-    Receive and validate JSON data with a next_step string.
-    Finds the calculation instance based on the URL parameter ID.
-    Returns a 200 response if allowed.
+    Receives a list of calculation ids.
+    Finds the creditor instance based on the URL parameter ID.
+    Return a 200 response if allowed.
 
-    Possible statuses are `To calculate`, `To review`, `To approve`, `To approve special`, `Failed`, `Approved`,
+    Invalidates all the calculations that are not in the received list, and validates only the calculations of the 
+    received ids that are in the `Approved` step
     """))
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
@@ -245,6 +246,6 @@ class CalcValidateApi(AbstractViewApi):
         creditor = get_object_or_404(self.model, id=kwargs.get('id'))
         calculations = new_calculation.pop('calculations', [])
 
-        creditor.validate_calcs(calculations)
+        invalids, valids = creditor.validate_calcs(calculations)
 
-        return JsonResponse({}, status=status.HTTP_200_OK)
+        return JsonResponse({'invalids': invalids, 'valids': valids}, status=status.HTTP_200_OK)

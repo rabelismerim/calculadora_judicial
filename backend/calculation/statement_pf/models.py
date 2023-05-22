@@ -505,6 +505,7 @@ class StatementPF(AbstractStatus):
                 self.set_error_parameters()
             else:
                 self.set_calculation_done()
+            self.statement.calculation.creditor.set_total()
 
 
 class AbstractValue(AbstractModel):

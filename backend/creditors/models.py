@@ -10,6 +10,8 @@ class Creditor(AbstractDateCreditor):
     recovering = models.ForeignKey(Recovering, on_delete=models.PROTECT)
     description = models.CharField(_('Description'), max_length=255, null=True)
 
+    total = models.FloatField(_('Total sum of valid amounts'), default=0)
+
     def get_count_calculations(self) -> int:
         """Get number of calculations"""
         return self.calculation_set.exclude(number__isnull=True).count()
@@ -32,13 +34,32 @@ class Creditor(AbstractDateCreditor):
     #
     # # TODO: pegar a classe que está nos calculos, exibindo como lista
 
-    def validate_calcs(self, calculations: list):
+    def validate_calcs(self, calculations: list) -> tuple:
         """Receives a list of ids of calculations from the creditor and validates those ids, invalidating the
         calculations that do not have in that list"""
-        self.calculation_set.filter(creditor=self, validated=True).exclude(id__in=calculations, step='A').update(
-            validated=False)  # invalidates all calculations
-        self.calculation_set.filter(creditor=self, id__in=calculations, validated=False, step='A').update(
-            validated=True)  # validates all calculations
+        # invalidates all calculations
+        invalidated_calculations = self.calculation_set.filter(validated=True).exclude(id__in=calculations,
+                                                                                       step='A').values_list('id',
+                                                                                                             flat=True)
+        invalidated = list(invalidated_calculations)
+        invalidated_calculations.update(validated=False)
+
+        # validates all calculations
+        validated_calculations = self.calculation_set.filter(id__in=calculations, validated=False,
+                                                             step='A').values_list('id', flat=True)
+        validated = list(validated_calculations)
+        validated_calculations.update(validated=True)
+        self.set_total()
+
+        return invalidated, validated
 
     def __str__(self):
         return f'{self.entity}'
+
+    def set_total(self):
+        calcs = self.calculation_set.filter(statement__isnull=False, validated=True, step='A')
+        total = 0
+        for calc in calcs:
+            total += calc.statement.total_conclusion
+        self.total = total
+        self.save()

@@ -1,3 +1,4 @@
+import json
 import random
 
 from core.abstract.tests import AbstractTest, generate_name

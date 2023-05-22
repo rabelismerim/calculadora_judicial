@@ -370,6 +370,4 @@ class ValidatedIDSchema(serializers.Serializer):  # V1
         if isinstance(calculations, list) is False:
             raise serializers.ValidationError(
                 [_('The calculations field must be in list format')])
-        print(calculations, 'calc')
-        print( self.__get_ids(calculations), 'self \ncalc')
         return self.__get_ids(calculations)

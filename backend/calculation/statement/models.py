@@ -78,7 +78,7 @@ class Statement(AbstractModel):
         return 0
 
     @property
-    def total_conclusion(self) -> float or None:
+    def total_conclusion(self) -> float:
         """
         Calls the get_default_interest method of the object's statementpf attribute if it exists.
 
@@ -88,8 +88,12 @@ class Statement(AbstractModel):
         """
         # TODO: verify statement pj
         statement_pf = self.get_statement_pf()
+        statement_pj = self.get_statement_pj()
         if statement_pf:
             return statement_pf.total_conclusion
+        elif statement_pj:
+            return statement_pj.corrected_value
+        return 0
 
     def __str__(self):
         return f'{self.calculation}'
