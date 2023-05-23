@@ -39,6 +39,7 @@ class AbstractClassesFundsSchema(AbstractDescriptionSchema):
     rate = RateSchema(exclude=('rate_value', 'is_per_day', 'rate_values'), read_only=True)
     template_id = serializers.UUIDField(required=True, write_only=True)
     template = TemplateSchema(read_only=True)
+    total = serializers.FloatField(source='get_total_summed', read_only=True)
 
 
 class AbstractClassesUpdateSchema(AbstractDescriptionSchema):

@@ -111,6 +111,16 @@ class Funds(AbstractFunds):
         super(Funds, self).delete(*args, **kwargs)
 
 
+    def get_total_summed(self):
+        total: float = 0
+        if hasattr(self, 'totalvaluesfunds'):
+            total += self.totalvaluesfunds.total_accurate
+
+        if hasattr(self, 'totalvaluesfundsintegrations'):
+            total += self.totalvaluesfundsintegrations.total_accurate
+        return total
+
+
 class StatementFunds(AbstractStatement):
     """
     A model class representing a financial statement for a fund.
@@ -261,7 +271,6 @@ class TotalValuesFunds(AbstractTotalValuesFunds):
         statement.
         """
         statements = self.get_calculated_statement()
-
 
         total_corrected_value = 0
         total_historical_value = 0

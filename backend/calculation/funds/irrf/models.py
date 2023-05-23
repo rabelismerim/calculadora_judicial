@@ -70,6 +70,12 @@ class FundIRRF(AbstractFunds):
         self.__delete_total_funds()
         super(FundIRRF, self).delete(*args, **kwargs)
 
+    def get_total_summed(self):
+        total: float = 0
+        if hasattr(self, 'totalvaluesirrf'):
+            total += self.totalvaluesirrf.total_corrected
+        return total
+
 
 class StatementIRRF(AbstractModel):
     """
@@ -89,7 +95,7 @@ class StatementIRRF(AbstractModel):
     fund_name = models.CharField(_('Fund'), max_length=150)
     taxable_amounts = models.FloatField(_('Taxable amounts'))
     is_extraconcursal = models.BooleanField(_('Is extraconcursal'), default=False)
-    
+
     def __str__(self):
         return f'{self.fund_name} | {self.fund} | {self.taxable_amounts}'
 

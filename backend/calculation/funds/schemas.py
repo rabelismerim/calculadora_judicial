@@ -126,6 +126,7 @@ class FundsSchema(AbstractClassesFundsSchema):
     # values_funds_integrations = TotalValuesFundsIntegrationsSchema(
     #     source='totalvaluesfundsintegrations', read_only=True, exclude=('fund_id',))
 
+
     class Meta:
         model = Funds
         exclude = ('calculation',)

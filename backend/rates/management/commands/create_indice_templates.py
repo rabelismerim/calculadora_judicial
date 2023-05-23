@@ -8,6 +8,9 @@ from rates.models import Template, TemplateField, TemplateRate, TemplateMainFiel
 
 def create_templates():
     """Create templates to rates"""
+    fields_default_all = [{'label': 'Status', 'key': 'status_display', 'type': 'C', 'order': 10, 'is_editable': False,
+                   'required': False}]
+
     fund_labor = [{'label': 'Nome da verba', 'key': 'name', 'type': 'C', 'order': 0, 'is_editable': True,
                    'required': True}]
     fund_document = [{'label': 'Nome da verba', 'key': 'name', 'type': 'C', 'order': 0, 'is_editable': True,
@@ -142,12 +145,39 @@ def create_templates():
          'required': False},
     ]
 
+    summary_main_fields = [
+        {'label': '', 'key': 'classes.classe_display', 'type': 'C', 'order': 0,
+         'is_editable': False,
+         'required': False},
+        {'label': '', 'key': 'coins.coin_display', 'type': 'C', 'order': 1,
+         'is_editable': False,
+         'required': False},
+        {'label': '', 'key': 'coins.value', 'type': 'F', 'order': 2,
+         'is_editable': False,
+         'required': False},
+        {'label': '', 'key': 'rate.index', 'type': 'C', 'order': 3,
+         'is_editable': False,
+         'required': False},
+    ]
+
+    summary_main_fields_verbas_irrf_integrations = summary_main_fields.copy()
+    summary_main_fields_verbas_irrf_integrations.extend([
+        {'label': 'R$', 'key': 'total', 'type': 'F', 'order': 4, 'is_editable': False,
+         'required': False},
+    ])
+
+    summary_main_fields_docs = [
+        {'label': 'R$', 'key': 'total.total_corrected', 'type': 'F', 'order': 4, 'is_editable': False,
+         'required': False}
+    ]
+
     templates = [{'name': f'Documentos', 'description': f'Documento',
                   'fund_main': fund_document,
                   'end_point': '/juca/api/v1/calculation/funds/documents/detail/',
                   'end_point_main': '/juca/api/v1/calculation/funds/documents/',
                   'many': False,
                   'summary_fields': summary_fields_document,
+                  'summary_main_fields': summary_main_fields_docs,
                   'fields': fields_verbas_document},
                  {'name': f'Acordos', 'description': f'Acordo',
                   'fund_main': fund_document,
@@ -155,6 +185,7 @@ def create_templates():
                   'end_point_main': '/juca/api/v1/calculation/funds/documents/',
                   'many': False,
                   'summary_fields': summary_fields_document,
+                  'summary_main_fields': summary_main_fields_docs,
                   'fields': fields_verbas_document}
                  ]
     verbas = ['TST', 'TST.IPCA-E', 'IPCA-E', 'SELIC', 'IGP-M', 'INPC', 'IPCA', 'IGP-DI', 'IPC-FIPE', 'TJSP']
@@ -167,6 +198,7 @@ def create_templates():
              'end_point_main': '/juca/api/v1/calculation/funds/',
              'many': True,
              'summary_fields': summary_fields_verbas,
+             'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
              'fields': fields_verbas},
             {'name': f'{verba}', 'description': f'Integrações sobre {verba}',
              'end_point': '/juca/api/v1/calculation/funds/labor/integrations/',
@@ -174,6 +206,7 @@ def create_templates():
              'end_point_main': '/juca/api/v1/calculation/funds/',
              'many': True,
              'summary_fields': summary_fields_verbas_integrations,
+             'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
              'fields': fields_verbas_integrations},
 
             {'name': f'{verba} + Reflexos', 'description': f'{verba} + Reflexos',
@@ -182,6 +215,7 @@ def create_templates():
              'end_point_main': '/juca/api/v1/calculation/funds/',
              'many': True,
              'summary_fields': summary_fields_verbas,
+             'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
              'fields': fields_verbas_reflexos},
             {'name': f'{verba} + Reflexos', 'description': f'Integrações sobre {verba}',
              'end_point': '/juca/api/v1/calculation/funds/labor/integrations/',
@@ -189,6 +223,7 @@ def create_templates():
              'end_point_main': '/juca/api/v1/calculation/funds/',
              'many': True,
              'summary_fields': summary_fields_verbas_integrations,
+             'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
              'fields': fields_verbas_integrations},
 
             {'name': f'{verba} rescisórias', 'description': f'Verbas rescisórias {verba}',
@@ -197,6 +232,7 @@ def create_templates():
              'end_point_main': '/juca/api/v1/calculation/funds/',
              'many': True,
              'summary_fields': summary_fields_verbas,
+             'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
              'fields': fields_verbas},
 
             {'name': f'IRRF - {verba}', 'description': f'Base de cálculo',
@@ -206,6 +242,7 @@ def create_templates():
              'end_point_main': '/juca/api/v1/calculation/funds/irrf/labor/',
              'many': True,
              'summary_fields': summary_fields_irrf,
+             'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
              'fields': fields_verbas_irrf},
 
         ]
@@ -217,6 +254,7 @@ def create_templates():
         end_point = template.pop('end_point_main')
         fund_main = template.pop('fund_main')
         summary_fields = template.pop('summary_fields')
+        summary_main_fields = template.pop('summary_main_fields')
         defaults = {'name': name, 'end_point': end_point}
         filters = {'name': name}
         new_template, created = Template.objects.get_or_create(defaults=defaults, **filters)
@@ -226,14 +264,20 @@ def create_templates():
 
         for fund in fund_main:
             TemplateMainField.objects.get_or_create(template=new_template, **fund)
-        # for fund in summary_fields_verbas: # TODO create summary to template main
-        #     TemplateMainSummaryField.objects.get_or_create(template=new_template, **fund)
+        for fund in summary_main_fields:
+            defaults = fund.copy()
+            defaults['template'] = new_template
+            TemplateMainSummaryField.objects.get_or_create(defaults=defaults, **defaults)
         new_template_rate, created = TemplateRate.objects.get_or_create(template=new_template, **template)
         if created is False:
             TemplateField.objects.filter(rate=new_template_rate).delete()
             TemplateSummaryField.objects.filter(rate=new_template_rate).delete()
 
         for field in fields:
+            defaults = field.copy()
+            defaults['rate'] = new_template_rate
+            TemplateField.objects.get_or_create(defaults=defaults, **defaults)
+        for field in fields_default_all:
             defaults = field.copy()
             defaults['rate'] = new_template_rate
             TemplateField.objects.get_or_create(defaults=defaults, **defaults)
