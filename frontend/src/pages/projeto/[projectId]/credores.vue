@@ -14,6 +14,7 @@ let creditors = $ref([] as any[])
 let AJNotices = $ref([])
 let rates = $ref([])
 let recoveringNotices = $ref([])
+let creditorOptions = $ref({} as any)
 let editingCreditor = $ref({
   name: '',
   legalNumber: '',
@@ -85,13 +86,14 @@ const loadOptions = async () => {
     AJNotices = await creditorsService.getNoticeAJ()
     recoveringNotices = await creditorsService.getNoticeRecovering()
     rates = await ratesService.getRates()
+    creditorOptions = await creditorsService.getOptions()
   }
   catch (error) {
     printError('ERROR ON LOAD CREDITORS OPTIONS:', error)
   }
 }
 
-const options = computed(() => ({
+const newCreditorOptions = computed(() => ({
   recoverings: project?.recoverings || [],
   rates,
 }))
@@ -184,11 +186,42 @@ onMounted(() => {
               flat
               class="vertical border--primary border-1 mb-4 mr-3"
             >
-              <CreditorClaim v-model="creditor.claimCreditor" :name="1" title="Pleito Credor" icon="o_attach_money" />
-              <LawyerClaim v-model="creditor.claimLawyer" :name="2" title="Pleito Advocatício" icon="o_attach_money" />
-              <AJNotice v-model="creditor.noticeAJ" :name="3" title="Edital AJ" icon="o_request_page" />
-              <RecoveringNotice v-model="creditor.noticeRecovering" :name="4" title="Edital Recuperanda" icon="o_request_page" />
-              <Criteria :name="5" title="Critérios" icon="o_checklist_rtl" />
+              <CreditorClaim
+                v-model="creditor.claimCreditor"
+                :creditor-id="creditor.id"
+                :options="creditorOptions"
+                :name="1"
+                title="Pleito Credor"
+                icon="o_attach_money"
+                @save="loadCreditors"
+              />
+              <LawyerClaim
+                v-model="creditor.claimLawyer"
+                :creditor-id="creditor.id"
+                :options="creditorOptions"
+                :name="2"
+                title="Pleito Advocatício"
+                icon="o_attach_money"
+                @save="loadCreditors"
+              />
+              <AJNotice
+                v-model="creditor.noticeAj"
+                :creditor-id="creditor.id"
+                :options="creditorOptions"
+                :name="3"
+                title="Edital AJ"
+                icon="o_request_page"
+                @save="loadCreditors"
+              />
+              <RecoveringNotice
+                v-model="creditor.noticeRecovering"
+                :creditor-id="creditor.id"
+                :options="creditorOptions"
+                :name="4"
+                title="Edital Recuperanda"
+                icon="o_request_page"
+                @save="loadCreditors"
+              />
             </QStepper>
           </Accordion>
         </div>
@@ -205,7 +238,7 @@ onMounted(() => {
       <NewCreditor
         v-model="showModal"
         v-model:creditor="editingCreditor"
-        :options="options"
+        :options="newCreditorOptions"
         @success="loadCreditors"
       />
     </template>
