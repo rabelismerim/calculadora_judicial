@@ -66,76 +66,31 @@ const newCreditors = async (creditor: Creditor) => {
 
 interface Notice {
   id?: string
-  classe: string
-  coin: string
-  value: number
   creditorId: string
 }
-interface Recovering extends Notice {}
 
 const getNoticeAJ = () => api
   .get('/v1/creditors/notice/aj/')
   .then((result: any) => result?.notices)
-
 const setNoticeAJ = async (notice: Notice) => {
-  const { id, classe, coin, creditorId, value } = notice
+  const { id } = notice
   const method = id ? 'put' : 'post'
-  const results = []
-  try {
-    for (const id of creditorId) {
-      const result = await api[method]('/v1/creditors/notice/aj/',
-        ({
-          ...notice,
-          classes: {
-            classe,
-          },
-
-          coins: {
-            coin,
-            value,
-          },
-          creditorId: id,
-        }))
-      results.push(result)
-    }
-    return results
-  }
-  catch (error) {
-    printError('ERROR ON NEW NOTICE', error)
-  }
+  return api[method](`/v1/creditors/notice/aj/${id ? `${id}/` : ''}`, notice)
 }
 
 const getNoticeRecovering = () => api
   .get('/v1/creditors/notice/recovering/')
   .then((result: any) => result?.noticeRecoverings)
-
-const setNoticeRecovering = async (recovering: Recovering) => {
-  const { id, classe, coin, creditorId, value } = recovering
+const setNoticeRecovering = async (notice: Notice) => {
+  const { id } = notice
   const method = id ? 'put' : 'post'
-  const results = []
-  try {
-    for (const id of creditorId) {
-      const result = await api[method]('/v1/creditors/notice/recovering/',
-        ({
-          ...recovering,
-          classes: {
-            classe,
-          },
+  return api[method](`/v1/creditors/notice/recovering/${id ? `${id}/` : ''}`, notice)
+}
 
-          coins: {
-            coin,
-            value,
-          },
-          creditorId: id,
-        }))
-        .then((result: any) => result.recovering)
-      results.push(result)
-    }
-    return results
-  }
-  catch (error) {
-    printError('ERROR ON NEW RECOVERING', error)
-  }
+const setCreditorClaim = async (notice: Notice) => {
+  const { id } = notice
+  const method = id ? 'put' : 'post'
+  return api[method](`/v1/claim/claim/claim-creditor/${id ? `${id}/` : ''}`, notice)
 }
 
 export default {
@@ -147,4 +102,5 @@ export default {
   setNoticeAJ,
   getNoticeRecovering,
   setNoticeRecovering,
+  setCreditorClaim,
 }
