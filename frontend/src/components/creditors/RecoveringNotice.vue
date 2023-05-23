@@ -90,7 +90,7 @@ const onReset = () => {
           v-model="value.coins.coin"
           label="Moeda"
           :disable="!isEditing"
-          :options="options.coinOptions"
+          :options="options?.coinOptions"
           option-label="legend"
           option-value="id"
           emit-value
@@ -101,7 +101,7 @@ const onReset = () => {
         <QSelect
           v-model="value.classes.classe" label="Classe"
           :disable="!isEditing"
-          :options="options.classesOptions"
+          :options="options?.classesOptions"
           option-label="legend"
           option-value="id"
           emit-value
