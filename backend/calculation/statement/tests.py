@@ -24,7 +24,7 @@ from utils import _
 class StatementTest(AbstractTest):
     """Represents tests related to statement calculations and correction"""
 
-    path = f'calculation/statement/{Calculation.objects.first().id}/'
+    path = f'calculation/statement/{Calculation.objects.filter(statement__isnull=False).first().id}/'
 
     def _new_project(self, date_request, date_filling, date_citation, rate):
         """Creates a new project with specified dates and interest rate"""
@@ -127,7 +127,7 @@ class StatementTest(AbstractTest):
                 "value": 500
             },
             "archive_json": {},
-            "rate_id": str(Rate.objects.first().id),
+            "rate_id": str(Rate.objects.filter(index='TST').first().id),
             "template_id": str(Template.objects.first().id),
             "is_extraconcursal": False,
         }
@@ -220,7 +220,7 @@ class StatementTest(AbstractTest):
             _("The value of the lawyer's fees is extra-bankruptcy, since its arbitration occurred after the request "
               "for judicial recovery."),
             _('Fill out the appeal deposit withdrawal page.'),
-            _('The Trustee considered attorney fees of 1.0% on the claim in favor of Patron Alexis Wu.'),
+            _('The Trustee considered attorney fees of 1.0% on the claim in favor of Patron Matthew Adams.'),
             _("There was arrears interest of 1.0% per month, from the filing date of the Labor Complaint to the date "
               "of RJ's request."),
             _('Fill in the approved calculation date.'),

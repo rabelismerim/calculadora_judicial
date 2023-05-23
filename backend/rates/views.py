@@ -3,7 +3,7 @@ from django.http import JsonResponse
 
 from rest_framework import permissions, serializers, status
 from core.permission.views import CheckHasPermission
-from rates.models import Rate, RateFile, Template
+from rates.models import Rate, RateFile, Template, RateValues
 from rates.schemas import RateFileSchema, RateSchema, TemplateSchema, TemplateListSchema, RateListSchema
 from utils import _, doc
 

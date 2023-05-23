@@ -77,13 +77,11 @@ class BaseTestsLocust(BaseTests, SequentialTaskSet):
         """
         # try:
         path = self.get_path()
-        print(path, 'path')
         if path:
             self.counter += 1
-            resp = self.client.get(path, headers=self._get_headers())
-            print(resp, 'resp')
-        print(self.__max_execution, 'self.__max_execution ')
-        print(self.counter, 'self.counter\n\n')
+            resp = self.client.get(path, headers=self._get_headers(), verify=False)
+            if str(resp.status_code).startswith('2') is False:
+                print(resp.content, 'resp content\n')
         if self.__max_execution and self.counter >= self.__max_execution:
             self.stop('get')
         # except BaseException as e:

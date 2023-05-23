@@ -36,14 +36,17 @@ import locust
 from locust import SequentialTaskSet
 from locust.exception import StopUser
 
-django_moa = os.path.join(os.getcwd(), 'config')
-print(django_moa, '\n\n')
+import os
+import certifi
 
+os.environ['SSL_CERT_FILE'] = certifi.where()
 # os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'{django_moa}.settings')
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'config.settings')
 import django
 
 django.setup()
+
+
 def _get_classes(filepath):
     """
     Get classes from filepath.
