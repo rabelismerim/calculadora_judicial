@@ -25,7 +25,7 @@ class AbstractModel(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ('created_at',)
+        ordering = ('-created_at', '-updated_at')
 
     def __init__(self, *args, **kwargs):
         super(AbstractModel, self).__init__(*args, **kwargs)
@@ -79,8 +79,7 @@ class AbstractModel(models.Model):
 
 class UpdateUser(models.Model):
     """Model template to catch all updates made to the model"""
-    id = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     object_id = models.UUIDField()  # uuid AbstractModel
     field_changed = models.CharField(_('Field changed'), max_length=100, null=True)

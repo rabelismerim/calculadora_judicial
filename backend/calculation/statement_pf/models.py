@@ -522,6 +522,7 @@ class AbstractValue(AbstractModel):
 
     class Meta:
         abstract = True
+        ordering = ('-created_at', '-updated_at')
 
     def __str__(self):
         return str(self.value)

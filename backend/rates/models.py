@@ -15,7 +15,8 @@ from utils import _
 
 class Rate(AbstractModel):  # Indices
     index = models.CharField(_('Rate Name'), max_length=50)
-    is_per_day = models.BooleanField(_('Is the Rate per day? day or month'), default=True)
+    is_per_day = models.BooleanField(
+        _('Is the Rate per day? day or month'), default=True)
 
     def is_ipca_e_selic(self) -> bool:
         """
@@ -104,6 +105,7 @@ class AbstractCalcule(AbstractModel):
 
     class Meta:
         abstract = True
+        ordering = ('-created_at', '-updated_at')
 
 
 class Period(AbstractCalcule):
@@ -152,7 +154,8 @@ class RateFile(AbstractModel):
     (inherited from the AbstractCalcule class)
     """
     rate = models.OneToOneField(Rate, on_delete=models.PROTECT)
-    file = models.FileField(_('Rate file'), upload_to=f'juca/indices/%Y-%m-%d/')
+    file = models.FileField(
+        _('Rate file'), upload_to=f'juca/indices/%Y-%m-%d/')
 
     def __str__(self):
         return str(_("rate: {} | file: {}").format(self.rate, self.file.name))
@@ -200,7 +203,8 @@ def validate_reference_year(value):
     if not value.isnumeric():
         raise ValidationError(_('The reference year must be an integer.'))
     if int(value) < 1984:
-        raise ValidationError(_('The reference year must be from 1984 onwards.'))
+        raise ValidationError(
+            _('The reference year must be from 1984 onwards.'))
 
 
 class IndiceIRRF(AbstractModel):
@@ -281,7 +285,8 @@ class AbstractTemplateField(AbstractModel):
     """
     label = models.CharField(_('Field name'), max_length=150)
     key = models.CharField(_('Field key'), max_length=150)
-    type = models.CharField(_('Field type'), choices=TYPE_CHOICES, max_length=1)
+    type = models.CharField(
+        _('Field type'), choices=TYPE_CHOICES, max_length=1)
     order = models.PositiveIntegerField(_('Order'))
     is_editable = models.BooleanField(_('Is editable?'))
     required = models.BooleanField(_('Required?'))

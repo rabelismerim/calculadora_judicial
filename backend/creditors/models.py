@@ -57,6 +57,7 @@ class Creditor(AbstractDateCreditor):
         return f'{self.entity}'
 
     def set_total(self):
+        print('set total called\n')
         calcs = self.calculation_set.filter(statement__isnull=False, validated=True, step='A')
         total = 0
         for calc in calcs:

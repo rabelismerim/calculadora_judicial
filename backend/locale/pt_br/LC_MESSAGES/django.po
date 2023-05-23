@@ -105,6 +105,20 @@ msgstr "Precisa informar as moedas"
 msgid "Need to inform the class"
 msgstr "Precisa informar a classe"
 
+#: .\backend\base\views_historic.py:21
+msgid "Base - Historic"
+msgstr "Base - Histórico"
+
+#: .\backend\base\views_historic.py:23
+msgid ""
+"Method to obtain the entire history of changes for a given object, filtering the changes by the ID \n"
+"    received\n"
+"\n"
+"    Returns a JSON Response with the list of changes"
+msgstr "Método para obter todo o histórico de mudanças de determinado objeto, filtrando as mudanças pelo ID recebido\n"
+"\n"
+"    Retorna um JSON Response com a lista de mudanças"
+
 #: .\backend\base\coins\apps.py:9
 msgid "Coins"
 msgstr "Moedas"

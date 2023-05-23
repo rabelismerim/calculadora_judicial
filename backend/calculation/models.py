@@ -96,7 +96,7 @@ class Calculation(AbstractModel):
     reviewer = models.ForeignKey(ProjectUser, on_delete=models.PROTECT, null=True, related_name='reviewer', blank=True)
 
     class Meta:
-        ordering = ('creditor__entity__name','-created_at', '-updated_at')
+        ordering = ('-created_at', '-updated_at')
 
     def __str__(self):
         return f'{self.creditor.entity.name} || {self.number} || {self.get_step_display()}'

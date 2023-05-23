@@ -417,6 +417,7 @@ class AbstractComparativeFunds(AbstractDescription):
 
     class Meta:
         abstract = True
+        ordering = ('-created_at', '-updated_at')
 
 
 class ComparativeFunds(AbstractComparativeFunds):  # Calculo atualizado

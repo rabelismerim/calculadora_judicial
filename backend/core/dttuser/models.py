@@ -113,6 +113,7 @@ class PermissionsMixin(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ('-created_at', '-updated_at')
 
     def get_user_permissions(self, obj=None):
         """

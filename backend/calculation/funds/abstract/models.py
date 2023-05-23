@@ -34,6 +34,7 @@ class AbstractFunds(AbstractCredit):
 
     class Meta:
         abstract = True
+        ordering = ('-created_at', '-updated_at')
 
     def __str__(self):
         return self.name
@@ -123,6 +124,7 @@ class AbstractStatus(AbstractModel):
 
     class Meta:
         abstract = True
+        ordering = ('-created_at', '-updated_at')
 
 
 class AbstractStatement(AbstractStatus):
@@ -211,6 +213,7 @@ class AbstractStatement(AbstractStatus):
 
     class Meta:
         abstract = True
+        ordering = ('-created_at', '-updated_at')
 
     def __str__(self):
         return f'{self.data_base} - {self.historical_value}'
@@ -254,6 +257,7 @@ class AbstractMonetaryCorrection(AbstractModel):
 
     class Meta:
         abstract = True
+        ordering = ('-created_at', '-updated_at')
 
     def __str__(self):
         return f'{self.index_data_base} - {self.index_recovering} - {self.corrected_value}'
@@ -277,6 +281,7 @@ class AbstractTotalValuesFunds(AbstractModel):
 
     class Meta:
         abstract = True
+        ordering = ('-created_at', '-updated_at')
 
     def get_description(self):
         return self.fund.name
