@@ -39,7 +39,7 @@ const onAddLines = () => {
             <div class="i-carbon-subtract" />
           </button>
           <input
-            :model-value="modelValue"
+            :value="modelValue"
             type="number"
             step="1"
             min="1"
