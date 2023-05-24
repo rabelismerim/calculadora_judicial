@@ -11,7 +11,7 @@ from utils import secret_number
 
 class CreditorValues:
 
-    def __get_creditor_by_rate(self, rate):
+    def __get_creditor_by_rate(self, rate, physical_person: bool = True):
         _recovering = Recovering.objects.first()
         _rate = Rate.objects.filter(index__icontains=rate).first()
 
@@ -20,7 +20,7 @@ class CreditorValues:
                 "name": generate_name(),
                 "legal_number": cpf_generator()
             },
-            "physical_person": True,
+            "physical_person": physical_person,
             "recovering_id": str(_recovering.id),
             "rate_id": str(_rate.id),
             "notice_aj": [{
@@ -63,8 +63,8 @@ class CreditorValues:
         }
         return creditor
 
-    def get_creditor(self, rate='TST'):
-        creditor = self.__get_creditor_by_rate(rate)
+    def get_creditor(self, rate='TST', physical_person=True):
+        creditor = self.__get_creditor_by_rate(rate, physical_person)
         return creditor
 
 

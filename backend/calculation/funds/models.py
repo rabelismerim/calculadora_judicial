@@ -110,7 +110,6 @@ class Funds(AbstractFunds):
         self.__delete_total_funds()
         super(Funds, self).delete(*args, **kwargs)
 
-
     def get_total_summed(self):
         total: float = 0
         if hasattr(self, 'totalvaluesfunds'):
@@ -148,7 +147,8 @@ class StatementFunds(AbstractStatement):
     The 'calcule_monetary_correction()' method uses the '_get_index_monetary_correction()' method, which should be defined
     in the class that inherits or implements the 'AbstractStatement' class.
     """
-    dsr_reflexes = models.FloatField(_('DSR Reflexes'), default=0)  # DRS - Descanso semanal remunerado
+    dsr_reflexes = models.FloatField(
+        _('DSR Reflexes'), default=0)  # DRS - Descanso semanal remunerado
     summary = models.BooleanField(_('Apply Precedent 381?'), default=False)
 
     class Meta:
@@ -207,7 +207,8 @@ class StatementFunds(AbstractStatement):
 
     def create_monetary_correction(self, data: dict):
         """Create or update the MonetaryCorrection object"""
-        MonetaryCorrection.objects.update_or_create(defaults=data, **{'statement': self})
+        MonetaryCorrection.objects.update_or_create(
+            defaults=data, **{'statement': self})
 
     def calcule_monetary_correction(self):
         """
@@ -257,7 +258,8 @@ class TotalValuesFunds(AbstractTotalValuesFunds):
         set_total(): Calculates and sets the total corrected and historical values of the fund based on the calculated
          statement.
     """
-    total_dsr_reflexes = models.FloatField(_('Total value DSR reflexes'), default=0)
+    total_dsr_reflexes = models.FloatField(
+        _('Total value DSR reflexes'), default=0)
     total_accurate = models.FloatField(_('Total accurate'), default=0)
     fund = models.OneToOneField(Funds, on_delete=models.PROTECT)
 

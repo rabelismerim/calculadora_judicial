@@ -45,11 +45,11 @@ def create_templates():
                      {'label': 'Valor histórico', 'key': 'historical_value', 'type': 'F', 'order': 5,
                       'is_editable': True,
                       'required': True},
-                     {'label': 'Índice na data base', 'key': 'index_data_base', 'type': 'F', 'order': 6,
+                     {'label': 'Índice na data base', 'key': 'monetary_correction.index_data_base', 'type': 'F', 'order': 6,
                       'is_editable': False, 'required': False},
-                     {'label': 'Índice na recuperação', 'key': 'index_recovering', 'type': 'F', 'order': 7,
+                     {'label': 'Índice na recuperação', 'key': 'monetary_correction.index_recovering', 'type': 'F', 'order': 7,
                       'is_editable': False, 'required': False},
-                     {'label': 'Valor corrigido', 'key': 'corrected_value', 'type': 'F', 'order': 8,
+                     {'label': 'Valor corrigido', 'key': 'monetary_correction.corrected_value', 'type': 'F', 'order': 8,
                       'is_editable': False, 'required': False}
                      ]
 
@@ -144,6 +144,7 @@ def create_templates():
          'is_editable': False,
          'required': False},
     ]
+
 
     summary_main_fields = [
         {'label': '', 'key': 'classes.classe_display', 'type': 'C', 'order': 0,

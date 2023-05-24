@@ -18,3 +18,7 @@ dir_testes
 db.zip
 db - Copy.sqlite3
 tests_loop.bat
+.env
+.env.dev
+.env.prod
+.env.hml

@@ -33,6 +33,11 @@
 > * Na raiz do projeto crie um arquivo com o nome ".env". Dentro dele coloque o texto "DEBUG=True", "IS_LOCALHOST=True"
     e "ENV='branch' para ativar o modo de desenvolvedor
 
+### Configurando variáveis de ambiente
+> *  Para configurar variáveis de ambiente diferentes para cada ambiente, crie um arquivo `.env` separado para cada ambiente que você deseja configurar. Por exemplo: `.env.dev`, `.env.prod` e `.env.hml`. Cada arquivo `.env` deve conter apenas as variáveis de ambiente necessárias para esse ambiente específico.
+> *  Para executar determinado ambiente, use o comando `python manage.py <command> --env <ENV>` onde `<ENV>` significa o ambiente que você deseja. Use apenas o sufixo do ambiente `dev`, `prod` ou `hml`
+> *  Para usar o ambiente padrão, apenas use `python manage.py <command>` e será utilizado o arquivo padrão `.env`
+
 ### Criação de grupo de permissões
 
 > * Essas permissões são os papéis que os usuários podem ter nos projetos

@@ -143,7 +143,7 @@ class MaxRequests(HttpUser):
     """
     tasks: list = [RequestsTask]
     wait_time: float = between(0.1, 0.5)
-    max_execution: None or int = 5
+    max_execution: None or int = 10
     http_method_names = ['get', 'post']
 
 

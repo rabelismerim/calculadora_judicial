@@ -13,25 +13,69 @@ Attributes:
 - None
 """
 from calculation.funds.document.models import FundDocument
-from calculation.funds.models import Funds
 from calculation.models import Calculation
+from calculation.tests import CalculationValues
 from core.abstract.tests import AbstractTest, generate_name
+from creditors.models import Creditor
+from creditors.tests import CreditorValues
 from rates.models import Rate, Template
+
+
+def get_create_fund():
+    payload = {
+        'name': generate_name(),
+        'calculation_id': Calculation.objects.first().id,
+        'rate_id': Rate.objects.first().id,
+        'template_id': Template.objects.first().id,
+    }
+
+    fund = FundDocument.objects.first()
+    if not fund:
+        fund = FundDocument.objects.create(**payload)
+    return fund.id
 
 
 class FundsDocumentTest(AbstractTest):
     """Funds Document related tests"""
 
-    path = f'calculation/funds/documents/{FundDocument.objects.first().id}'
+    path = f'calculation/funds/documents/{get_create_fund()}'
+    calculation_id = None
+
+    def __get_create_creditor(self, physical_person: bool):
+        payload = Creditor.objects.filter(physical_person=physical_person).first()
+        if payload:
+            return payload.id
+
+        payload = CreditorValues().get_creditor(physical_person=physical_person)
+        path = 'creditors'
+        response = self.post(path, payload)  # creditor
+        return response.content['creditor']['id']
+
+    def __get_create_calculation(self, physical_person: bool):
+        calculation = Calculation.objects.filter(creditor__physical_person=physical_person, funds__isnull=True,
+                                                 fundirrf__isnull=True).first()
+        if calculation:
+            return calculation.id
+
+        parameters = CalculationValues.calculation
+        parameters['creditor_id'] = self.__get_create_creditor(physical_person)
+        path = 'calculation'
+        response = self.post(path, parameters)
+        return response.content['calculation']['id']
+
+    def setUp(self):
+        set_up = super().setUp()
+        self.calculation_agreement_id = self.__get_create_calculation(True)
+        self.calculation_docs_id = self.__get_create_calculation(False)
+        return set_up
 
     @AbstractTest.execute_before_and_after
-    def test_api_post_statement_funds_integrations(self):
+    def test_api_post_document(self):
         """Assert post statements detail"""
-        calculation = Calculation.objects.filter(creditor__physical_person=False, funds__isnull=True,
-                                                 fundirrf__isnull=True).first()
+
         statements = [
             ({
-                 "calculation_id": str(calculation.id),
+                 "calculation_id": self.calculation_docs_id,
                  "classes": {
                      "classe": "1"
                  },
@@ -56,7 +100,7 @@ class FundsDocumentTest(AbstractTest):
               'total_days': 517,
               }),
             ({
-                 "calculation_id": str(calculation.id),
+                 "calculation_id": self.calculation_docs_id,
                  "classes": {
                      "classe": "1"
                  },
@@ -100,15 +144,13 @@ class FundsDocumentTest(AbstractTest):
         return statements
 
     @AbstractTest.execute_before_and_after
-    def test_api_a_post_statement_funds_documents(self):
-        """Assert get lawyers detail"""
-        calculation = Calculation.objects.filter(creditor__physical_person=True, funds__isnull=True,
-                                                 fundirrf__isnull=True).first()
+    def test_api_a_post_statement_funds_agreement(self):
+        """Assert post agreement detail"""
         value = 1500
         data_base = "2014-01-02"
         number = generate_name()
         statement = {
-            "calculation_id": str(calculation.id),
+            "calculation_id": self.calculation_agreement_id,
             "classes": {
                 "classe": "1"
             },
@@ -131,46 +173,4 @@ class FundsDocumentTest(AbstractTest):
         response = self.post('calculation/funds/documents', statement)
         self.assertEqual(201, response.status_code)
         new_statement = response.content['fund_document']
-        return new_statement
-
-    @AbstractTest.execute_before_and_after
-    def test_api_b_post_statement_funds(self):
-        """Assert get lawyers detail"""
-        fund = Funds.objects.first()
-        value = 200
-        data_base = "2020-03-23"
-        dsr_reflexes = 100
-
-        statement_funds = {
-            "fund_id": str(fund.id),
-            "data_base": data_base,
-            "is_extraconcursal": False,
-            "historical_value": value,
-            "dsr_reflexes": dsr_reflexes,
-            "summary": True
-        }
-
-        response = self.post('calculation/funds/labor', statement_funds)
-        new_statement = response.content['statement_fund']
-        return new_statement
-
-    @AbstractTest.execute_before_and_after
-    def test_api_c_post_statement_funds_integrations(self):
-        """Assert get lawyers detail"""
-        fund = Funds.objects.first()
-        value = 559
-        data_base = "2007-11-12"
-        description = generate_name()
-
-        statement = {
-            "fund_id": str(fund.id),
-            'description': description,
-            "data_base": data_base,
-            "is_extraconcursal": False,
-            "historical_value": value,
-            "summary": True
-        }
-
-        response = self.post('calculation/funds/labor/integrations', statement)
-        new_statement = response.content['statement_fund_integration']
         return new_statement

@@ -3,7 +3,7 @@ from django.http import JsonResponse
 
 from rest_framework import permissions, serializers, status
 from core.permission.views import CheckHasPermission
-from rates.models import Rate, RateFile, Template, RateValues
+from rates.models import Rate, RateFile, Template, RateValues, TemplateRate, TemplateField
 from rates.schemas import RateFileSchema, RateSchema, TemplateSchema, TemplateListSchema, RateListSchema
 from utils import _, doc
 
@@ -153,3 +153,8 @@ class TemplateDetailApi(AbstractViewApi):
         'get': _("""Example of how templates should look for each selected rate type
         Returns a detail of template with their id, name, tables and fields in tables""")
     }
+#
+# ab = TemplateField.objects.filter(key='index_recovering')
+# for a in ab:
+#     a.key = 'monetary_correction.index_recovering'
+#     a.save()

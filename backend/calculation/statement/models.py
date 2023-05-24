@@ -86,7 +86,6 @@ class Statement(AbstractModel):
             - The result of calling the get_default_interest method of the object's statementpf attribute, if it exists.
             - 0, otherwise.
         """
-        # TODO: verify statement pj
         statement_pf = self.get_statement_pf()
         statement_pj = self.get_statement_pj()
         if statement_pf:

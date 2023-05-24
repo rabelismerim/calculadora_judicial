@@ -22,7 +22,26 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 
 urllib3.disable_warnings()
 
-load_dotenv()
+if '--env' in sys.argv:
+    # get the index of the --env argument
+    env_index = sys.argv.index('--env') + 1
+
+    # load the .env file based on the specified environment
+    env = sys.argv[env_index]
+    env_file = f".env.{env}"
+
+    if not env in ['dev', 'prod', 'hml']:
+        raise ValueError('Incorrect option to use the --env argument. The options are: dev, prod, hml')
+
+    if not os.path.exists(env_file):
+        raise ValueError(f'Configuration file not found to: {env_file}')
+
+    del sys.argv[env_index]
+    del sys.argv[env_index - 1]
+    load_dotenv(env_file)
+
+else:
+    load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -321,28 +340,38 @@ if BRANCH_DEV or 'test' in sys.argv:
                 }
             }
     else:
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': BASE_DIR / 'db.sqlite3',
-                'TEST': {
-                    'MIRROR': 'default',
-                },
+        if TEST_PROD:
+            DATABASES = {
+                'default': {
+                    'ENGINE': 'django.db.backends.postgresql',
+                    'NAME': str(os.getenv('DB_NAME')),
+                    'USER': str(os.getenv('DB_USER')),
+                    'PASSWORD': str(os.getenv('DB_PASS')),
+                    'HOST': str(os.getenv('DB_HOST')),
+                    'PORT': str(os.getenv('DB_PORT')),
+                    'TEST': {
+                        'MIRROR': 'default',
+                    },
+                }
             }
-        }
+        else:
+            DATABASES = {
+                'default': {
+                    'ENGINE': 'django.db.backends.sqlite3',
+                    'NAME': BASE_DIR / 'db.sqlite3',
+                    'TEST': {
+                        'MIRROR': 'default',
+                    },
+                }
+            }
 else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-
             'NAME': str(os.getenv('DB_NAME')),
-
             'USER': str(os.getenv('DB_USER')),
-
             'PASSWORD': str(os.getenv('DB_PASS')),
-
             'HOST': str(os.getenv('DB_HOST')),
-
             'PORT': str(os.getenv('DB_PORT')),
         }
     }
@@ -485,7 +514,7 @@ if DEBUG:
 SWAGGER_URL = f'/{BASE_URL}docs/redoc/'
 RATE_FILE_TYPES = ['pdf', 'vnd.ms-excel', 'xlsx', 'xls']
 
-TEMPLATE_FILE_TYPES = ['vnd.ms-excel', 'xlsx', 'xls',  'xlsm']
+TEMPLATE_FILE_TYPES = ['vnd.ms-excel', 'xlsx', 'xls', 'xlsm']
 
 GROUP_NAME_EXECUTOR = 'Executor'
 GROUP_NAME_APPROVER = 'Aprovador'
@@ -496,10 +525,7 @@ ENABLE_CACHE = str(os.getenv('ENABLE_CACHE', 'false')).lower() == 'true'
 INDEX_VARIATION_END = os.getenv('INDEX_VARIATION_END', '2017-09-01')
 INDEX_VARIATION_END = datetime.datetime.strptime(INDEX_VARIATION_END, '%Y-%m-%d').date()
 
-if TEST_PROD:
-    TOKEN_TEST = os.getenv('TOKEN_TEST_DEV')  # Token para a execução de teste em ambientes controlados
-else:
-    TOKEN_TEST = os.getenv('TOKEN_TEST')  # Token para a execução de teste em ambientes controlados
+TOKEN_TEST = os.getenv('TOKEN_TEST')  # Token para a execução de teste em ambientes controlados
 INDEX_VARIATION_RJ = os.getenv('INDEX_VARIATION_RJ', '2022-06-01')
 INDEX_VARIATION_RJ = datetime.datetime.strptime(INDEX_VARIATION_RJ, '%Y-%m-%d').date()
 

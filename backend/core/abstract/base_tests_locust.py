@@ -47,12 +47,16 @@ class BaseTestsLocust(BaseTests, SequentialTaskSet):
     counter_stop = 0
     __token = TOKEN_TEST
 
+    def setUp(self):
+        return
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__max_execution = self.parent.max_execution
         self.__http_method_names = self.parent.http_method_names
         if not TOKEN_TEST:
             raise ValueError(_('Need to register a token to perform the tests'))
+
     #
     # def on_start(self):
     #     for task_class in self.tasks:
@@ -76,16 +80,26 @@ class BaseTestsLocust(BaseTests, SequentialTaskSet):
         TOKEN_TEST environment variable.
         """
         # try:
+
         path = self.get_path()
         if path:
+            if path.endswith('None/') or  path.endswith('None'):
+                if hasattr(self, 'setUp'):
+                    self.setUp()
+                    print('setup\n\n')
+                    path = self.get_path()
             self.counter += 1
             resp = self.client.get(path, headers=self._get_headers(), verify=False)
             if str(resp.status_code).startswith('2') is False:
-                print(resp.content, 'resp content\n')
+                if resp.status_code != 404:
+                    print(resp.content, 'resp content\n')
+                else:
+                    print(path, 'resp content\n')
         if self.__max_execution and self.counter >= self.__max_execution:
             self.stop('get')
         # except BaseException as e:
         #     print(e, 'err')
+
     # @task(1)
     # def load_test_post(self):
     #     """

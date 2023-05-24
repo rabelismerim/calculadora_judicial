@@ -39,6 +39,7 @@ class CreditorSchema(AbstractDescriptionSchema):
         model = Creditor
         # fields = '__all__'
         exclude = ('recovering', 'rate')
+        read_only_fields = ('total', )
 
     def validate(self, data):
         recovering_id = data.get('recovering_id')
