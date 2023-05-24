@@ -108,7 +108,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                 list_html[sheet._WorkbookChild__title] = result_html
 
             remove(new_name)
-            return JsonResponse({"html": f"\"{str(list_html)}\"", "excel": f"\"{str(excel_file.decode('latin-1'))}"})
+            return JsonResponse({"html": f"\"{str(list_html)}\"", "excel": f"\"{str(excel_file)}"})
 
         except BaseException as e:
             return JsonResponse({'errors': str(e)})
