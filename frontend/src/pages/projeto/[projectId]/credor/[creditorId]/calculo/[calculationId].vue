@@ -42,7 +42,7 @@ const loadCalculation = async (showLoading = false) => {
     .flatMap(({ data, type }: any) => data.map((el: any) => ({ ...el, type })))
     .sort(({ createdAt: dateA }: any, { createdAt: dateB }: any) => dateA < dateB ? -1 : 1)
     .map((credit: any) => {
-      credit.optionsTables = credit?.template?.tables.map(({ fields, description, endPoint, id, many }: any) => {
+      credit.tables = credit?.template?.tables.map(({ fields, description, endPoint, id, many }: any) => {
         const columns = fields
           ?.map(({ id, isEditable, key, label, order, required, typeDisplay }: any) =>
             ({
@@ -57,8 +57,14 @@ const loadCalculation = async (showLoading = false) => {
               align: (isEditable && typeDisplay !== 'boolean') ? 'left' : 'center',
             }))
           .sort(({ order: orderA }: any, { order: orderB }: any) => orderA < orderB ? -1 : 1)
-        return { columns, description, endPoint, id, many, linesToAdd: 1 }
+        columns.push({
+          name: 'delete',
+          field: 'delete',
+          label: 'Apagar',
+        })
+        return { columns, description, endPoint, id, many, linesToAdd: 1, values: [] }
       })
+      credit.summary = credit?.template?.summary
       return credit
     })
   calculation = result
@@ -66,66 +72,19 @@ const loadCalculation = async (showLoading = false) => {
     loading = false
 }
 
+const headers: any = {
+  'Content-type': 'application/json',
+  'Accept': 'application/json',
+}
+if (import.meta.env.VITE_TOKEN)
+  headers.Authorization = `Token ${import.meta.env.VITE_TOKEN}`
 const host = import.meta.env.VITE_API_URL.slice(0, -9)
-
-const openCredit = async (credit: any) => {
-  console.log('opened')
-  const { optionsTables } = credit
-  const headers: any = {
-    'Content-type': 'application/json',
-    'Accept': 'application/json',
-  }
-  if (import.meta.env.VITE_TOKEN)
-    headers.Authorization = `Token ${import.meta.env.VITE_TOKEN}`
-  const values = []
-  for (const table of optionsTables as any[]) {
-    const result = await fetch(`${host}${table.endPoint + table.id}/`, { method: 'GET', headers })
-      .then((result: any) => result.json())
-    values.push(result)
-  }
-  credit.values = values
-    .map((value: any) => {
-      if (!value.data)
-        value.data = []
-      value.data.push(clone({}))
-      return value
-    })
-}
-
-const values = $ref([] as any[])
-const addValues = (data: any[], amount = 1) => {
-  data.push(...Array(amount).fill(0).map(() => clone({})))
-}
-
-const isRequired = ({ required }: any) => required && [(value: any) => !!value || 'Campo obrigatório!']
-
-const filterInput = $ref('')
-let templates = $ref([] as any[])
 let newCredit = $ref({} as any)
 const newCreditForm = ref(null as any)
 let showNewCredit = $ref(false)
-const filteredTemplates = computed(() => templates
-  .filter(({ name }: any) => name.toLowerCase().includes(filterInput.toLowerCase())))
 const clearNewCredit = () => {
   newCredit = {}
   newCreditForm.value.reset()
-}
-const loadTemplates = async () => {
-  templates = await ratesService.getTemplates()
-}
-const loadTemplate = async (id: string) => {
-  if (!id)
-    return
-  const result = await ratesService.getTemplate(id)
-  newCredit.endPoint = result?.endPoint
-  newCredit.fields = result?.fields?.map(({ id, key, label, order, required, typeDisplay }: any) => ({
-    id,
-    key,
-    label,
-    order,
-    type: typeDisplay,
-    required,
-  }))
 }
 const createCredit = async () => {
   const { classId, coinId, rateId, templateId, endPoint } = newCredit
@@ -158,11 +117,95 @@ const createCredit = async () => {
     loading = false
   }
 }
+const openCredit = async (credit: any) => {
+  const { tables } = credit
+  const isClear = tables
+    .map(({ values }: any) => values.length)
+    .every((length: number) => length === 0)
+  if (!isClear)
+    return
+  loading = true
+  for (const table of tables as any[]) {
+    const result = await fetch(`${host}${table.endPoint + table.id}/`, { method: 'GET', headers })
+      .then((result: any) => result.json())
+      .then((result: any) => Object.values(Object.values(result).at(0) as any)
+        .find((value: any) => Array.isArray(value)))
+    table.values = result
+    if (table.values?.length === 0)
+      table.values.push(clone({}))
+  }
+  loading = false
+}
+const addCreditValues = (data: any[], amount = 1) => {
+  data.push(...Array(amount).fill(0).map(() => clone({})))
+}
+const removeCreditValue = async (values: any[], line: any, index: number, table: any) => {
+  if (!line.id) {
+    values.splice(index, 1)
+    return
+  }
+  line.loading = true
+  const result = await fetch(`${host}${`${table.endPoint}detail/${line.id}`}/`, { method: 'DELETE', headers })
+    .then((result: any) => result.json())
+    .then((result: any) => Object.values(Object.values(result).at(0) as any)?.at(1))
+  line.loading = false
+  if (Array.isArray(result) && result?.at(0)?.code)
+    return
+  values.splice(index, 1)
+}
+const forms = ref(null as any)
+const calculateCredit = async (credit: any, creditIndex: number) => {
+  const form = forms.value[creditIndex]
+  const canSubmit = await form.validate()
+  if (!canSubmit)
+    return
+  const { tables } = credit
+  loading = true
+  for (const table of tables) {
+    for (const lineIndex in table.values) {
+      const line = table.values[lineIndex]
+      table.values[lineIndex].loading = true
+      const result: any = await fetch(`${host}${table.endPoint}${line.id ? `${line.id}/` : ''}`, {
+        method: line.id ? 'PUT' : 'POST',
+        body: JSON.stringify({ ...line, fund_id: credit.id }),
+        headers,
+      })
+        .then(response => response.json())
+        .then(response => Object.values(response).at(0))
+      table.values[lineIndex] = result
+    }
+  }
+  loading = false
+}
+
+const isRequired = ({ required }: any) => required && [(value: any) => !!value || 'Campo obrigatório!']
+
+const filterInput = $ref('')
+let templates = $ref([] as any[])
+const filteredTemplates = computed(() => templates
+  .filter(({ name }: any) => name.toLowerCase().includes(filterInput.toLowerCase())))
+const loadTemplates = async () => {
+  templates = await ratesService.getTemplates()
+}
+const loadTemplate = async (id: string) => {
+  if (!id)
+    return
+  const result = await ratesService.getTemplate(id)
+  newCredit.endPoint = result?.endPoint
+  newCredit.fields = result?.fields?.map(({ id, key, label, order, required, typeDisplay }: any) => ({
+    id,
+    key,
+    label,
+    order,
+    type: typeDisplay,
+    required,
+  }))
+}
 
 const creditsAmount = computed(() => calculation?.credits?.length || 0)
 const classesAmount = computed(() => calculation?.classes?.length)
-const totalValue = computed(() => calculation?.funds
-  ?.flatMap(({ calculations }: any) => calculations?.map(({ updatedValue }: any) => updatedValue))
+const totalValue = computed(() => calculation?.credits
+  ?.map(({ total }: any) => total || 0)
   ?.reduce((acc: number, curr: number) => acc + curr || 0, 0))
 onMounted(async () => {
   loading = true
@@ -182,30 +225,28 @@ onMounted(async () => {
   }
 })
 
-const calculate = async () => {
-  const headers: any = {
-    'Content-type': 'application/json',
-    'Accept': 'application/json',
-  }
-  if (import.meta.env.VITE_TOKEN)
-    headers.Authorization = `Token ${import.meta.env.VITE_TOKEN}`
-  const endpoints = calculation?.credits?.[0]?.template?.tables?.map(({ endPoint }: any) => endPoint)
-  loading = true
-  for (const index in endpoints) {
-    for (const lineIndex in values[index as any]) {
-      const line = values[index as any][lineIndex]
-      if (Object.keys(line).length === 0)
-        break
-      const result: any = await fetch(`${host}${endpoints[index]}`, {
-        method: 'POST',
-        body: JSON.stringify({ ...line, fund_id: calculation?.funds?.[0]?.id }),
-        headers,
-      })
-        .then(response => response.json())
-      values[index as any][lineIndex] = Object.values(result)?.[0]
-    }
-  }
-  loading = false
+const statusColors: any = {
+  S: '#c4d600', // Requested
+  C: '#86BC25', // Concluded
+  E: '#007cb0', // In Progress
+  F: '#DA291C', // Calculation failed - rate not found
+  G: '#DA291C', // Calculation failed - rate RJ not found
+  H: '#DA291C', // Calculation failed - rate data base not found
+  A: '#DA291C', // Calculation failed - aliquot not found
+  P: '#DA291C', // Calculation failed - invalid parameters
+  R: '#DA291C', // Calculation failed - no date RJ
+  D: '#DA291C', // Calculation failed - no date Citation
+  B: '#DA291C', // Calculation failed - in exclusion
+}
+const statusLabel = (status: string) => {
+  if (status === 'S')
+    return 'Solicitado'
+  if (status === 'E')
+    return 'Em Progresso'
+  if (status === 'C')
+    return 'Sucesso'
+  if (['F', 'G', 'H', 'A', 'P', 'R', 'D', 'B'].includes(status))
+    return 'Erro'
 }
 </script>
 
@@ -309,8 +350,8 @@ const calculate = async () => {
 
     <div v-if="calculation?.credits?.length > 0" class="flex gap-4">
       <Accordion
-        v-for="(credit, index) in calculation?.credits as any[]"
-        :key="index"
+        v-for="(credit, creditIndex) in calculation?.credits as any[]"
+        :key="creditIndex"
         :title="`Crédito ${credit?.template?.name}`"
         :subtitle="credit.name"
         class="rounded-0"
@@ -319,22 +360,21 @@ const calculate = async () => {
         <template #header-right>
           <div class="flex gap-2 self-center">
             <Btn
-              label="Editar Crédito"
-              icon="i-carbon-edit"
-              transparent
-              @click.stop
-            />
-            <Btn
               label="Excluir Crédito"
               icon="i-carbon-trash-can"
               transparent
               @click.stop
             />
           </div>
+          <div class="self-center flex-1 flex justify-end text-lg font-bold">
+            Total
+            {{ credit?.summary?.find(({ key }: any) => key === 'total')?.label }}
+            {{ credit.total || 0 }}
+          </div>
         </template>
-        <QForm @submit.prevent>
+        <QForm ref="forms" @submit.prevent>
           <div
-            v-for="(table, index) in credit?.optionsTables as any[]"
+            v-for="table in credit?.tables as any[]"
             :key="table.id"
             class="p-4"
           >
@@ -342,11 +382,11 @@ const calculate = async () => {
               <div>{{ table.description }}</div>
               <AddLines
                 v-model="table.linesToAdd"
-                @add-lines="addValues(credit.values[index], table.linesToAdd)"
+                @add-lines="addCreditValues(table.values, table.linesToAdd)"
               />
             </div>
             <QTable
-              :rows="credit.values[index]"
+              :rows="table.values"
               :columns="table?.columns"
               :pagination="{ rowsPerPage: 0 }"
               hide-pagination
@@ -357,9 +397,30 @@ const calculate = async () => {
               <template #body="props">
                 <QTr :props="props">
                   <QTd v-for="column in props.cols as any[]" :key="column.id" :style="(column?.isEditable) ? 'min-width: 200px' : '' ">
-                    <div class="flex justify-center items-center">
-                      <div v-if="!column.isEditable" class="row justify-center">
-                        {{ props.row[column.field] }}
+                    <div
+                      class="flex justify-center items-center"
+                      :class="{
+                        'is-loading': props.row.loading,
+                        'has-error': statusLabel(props.row?.status) === 'Erro',
+                      }"
+                    >
+                      <div
+                        v-if="column.name === 'delete'"
+                        class="cursor-pointer bg--error h-10 w-10 rounded-.5 border-1 border-red-8 flex justify-center items-center"
+                        @click="removeCreditValue(table.values, props.row, props.rowIndex, table)"
+                      >
+                        <div class="i-carbon-trash-can bg-white" />
+                      </div>
+                      <div v-else-if="column.label === 'Status'">
+                        <StatusTag
+                          v-if="props.row.status"
+                          :label="statusLabel(props.row.status)"
+                          :color="statusColors[props.row.status]"
+                          :hint="props.row[column.field]"
+                        />
+                      </div>
+                      <div v-else-if="!column.isEditable" class="row justify-center">
+                        {{ props.row[column.field] || '-' }}
                       </div>
                       <QInput
                         v-else-if="column.type === 'text'"
@@ -399,14 +460,20 @@ const calculate = async () => {
           </div>
           <div class="flex gap-2 justify-between p-4 bg--primary/12 border--primary border-t-2 color--primary font-bold">
             <div>
-              <div>Quantidade de Créditos: 0</div>
-              <div>Total dos Valores: R$ 0</div>
+              <div>
+                Quantidade de Créditos:
+                {{ credit.tables.reduce((acc:number, table: any) => acc + table.values.length, 0) }}
+              </div>
+              <div>
+                Total dos Valores:
+                {{ credit.tables.reduce((acc:number, table: any) => acc + (table.total || 0), 0) }}
+              </div>
             </div>
             <div>
               <div>Calculados com Sucesso: 0</div>
-              <div>Calculados com Error: 0</div>
+              <div>Calculados com Error 0</div>
             </div>
-            <Btn label="Calcular" @click="calculate()" />
+            <Btn label="Calcular" @click="calculateCredit(credit, creditIndex)" />
           </div>
         </QForm>
       </Accordion>
