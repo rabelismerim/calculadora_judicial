@@ -66,14 +66,36 @@ const loadCalculation = async (showLoading = false) => {
     loading = false
 }
 
-const values = $ref([] as any[])
-const addValues = (index: any, amount = 1) => {
-  if (!values[index])
-    values[index] = []
-  values[index].push(...Array(amount).fill(0).map(() => clone({})))
+const host = import.meta.env.VITE_API_URL.slice(0, -9)
+
+const openCredit = async (credit: any) => {
+  console.log('opened')
+  const { optionsTables } = credit
+  const headers: any = {
+    'Content-type': 'application/json',
+    'Accept': 'application/json',
+  }
+  if (import.meta.env.VITE_TOKEN)
+    headers.Authorization = `Token ${import.meta.env.VITE_TOKEN}`
+  const values = []
+  for (const table of optionsTables as any[]) {
+    const result = await fetch(`${host}${table.endPoint + table.id}/`, { method: 'GET', headers })
+      .then((result: any) => result.json())
+    values.push(result)
+  }
+  credit.values = values
+    .map((value: any) => {
+      if (!value.data)
+        value.data = []
+      value.data.push(clone({}))
+      return value
+    })
 }
-addValues(0, 1)
-addValues(1, 1)
+
+const values = $ref([] as any[])
+const addValues = (data: any[], amount = 1) => {
+  data.push(...Array(amount).fill(0).map(() => clone({})))
+}
 
 const isRequired = ({ required }: any) => required && [(value: any) => !!value || 'Campo obrigatório!']
 
@@ -105,7 +127,6 @@ const loadTemplate = async (id: string) => {
     required,
   }))
 }
-const host = import.meta.env.VITE_API_URL.slice(0, -9)
 const createCredit = async () => {
   const { classId, coinId, rateId, templateId, endPoint } = newCredit
   loading = true
@@ -293,6 +314,7 @@ const calculate = async () => {
         :title="`Crédito ${credit?.template?.name}`"
         :subtitle="credit.name"
         class="rounded-0"
+        @open="openCredit(credit)"
       >
         <template #header-right>
           <div class="flex gap-2 self-center">
@@ -320,11 +342,11 @@ const calculate = async () => {
               <div>{{ table.description }}</div>
               <AddLines
                 v-model="table.linesToAdd"
-                @add-lines="addValues(index, table.linesToAdd)"
+                @add-lines="addValues(credit.values[index], table.linesToAdd)"
               />
             </div>
             <QTable
-              :rows="values[index]"
+              :rows="credit.values[index]"
               :columns="table?.columns"
               :pagination="{ rowsPerPage: 0 }"
               hide-pagination
