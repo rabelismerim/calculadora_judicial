@@ -63,16 +63,17 @@ const calculationColumns: TableColumn[] = [
   },
   {
     name: 'fase',
-    field: 'fase',
-    format: () => '-',
+    field: 'isAdm',
+    format: (isAdm: boolean) => isAdm ? 'Administrativa' : 'Judicial',
     label: 'Fase',
     align: 'left',
     sortable: true,
   },
   {
     name: 'class',
-    field: 'class',
-    format: () => '-',
+    field: 'classes',
+    format: (value: any[]) => value && value
+      .map(({ classeDisplay, totalValue }: any) => `${classeDisplay?.split('-').at(0).trim()}: ${totalValue}`).join(','),
     label: 'Classe',
     align: 'left',
     sortable: true,
@@ -80,15 +81,13 @@ const calculationColumns: TableColumn[] = [
   {
     name: 'executor',
     field: 'excecutor',
-    format: () => '-',
     label: 'Executor',
     align: 'left',
     sortable: true,
   },
   {
-    name: 'revisor',
-    field: 'revisor',
-    format: () => '-',
+    name: 'reviewer',
+    field: 'reviewer',
     label: 'Revisor',
     align: 'left',
     sortable: true,
@@ -96,23 +95,21 @@ const calculationColumns: TableColumn[] = [
   {
     name: 'approver',
     field: 'approver',
-    format: () => '-',
     label: 'Aprovador',
     align: 'left',
     sortable: true,
   },
   {
-    name: 'specialApprover',
+    name: 'specialapprover',
     field: 'specialApprover',
-    format: () => '-',
     label: 'Aprovador Especial',
     align: 'left',
     sortable: true,
   },
   {
     name: 'total',
-    field: 'value',
-    format: () => '-',
+    field: 'statement',
+    format: (value: any) => value?.total || '-',
     label: 'Valor',
     align: 'left',
     sortable: true,
@@ -132,6 +129,15 @@ const calculationColumns: TableColumn[] = [
     sortable: true,
   },
 ]
+
+const statusColors: any = {
+  S: '#AAAAAA', // To Calculate
+  C: '#C4D600', // To Review
+  E: '#86BC25', // To Approve
+  B: '#43B02A', // To Approve Special
+  A: '#007CB0', // Approved
+  R: '#DA291C', // Failed
+}
 </script>
 
 <template>
@@ -141,6 +147,8 @@ const calculationColumns: TableColumn[] = [
     :columns="calculationColumns"
     flat
     class="calculation-table"
+    :pagination="{ rowsPerPage: 0 }"
+    hide-pagination
     @row-click="(evt, row) => emit('row-click', row)"
   >
     <template #header-cell-action="props">
@@ -153,12 +161,96 @@ const calculationColumns: TableColumn[] = [
         </button>
       </QTh>
     </template>
-    <template #body-cell-action>
+    <template #body-cell-action="props">
       <QTd class="flex justify-center items-center">
         <div
-          class="bg-gray-4 w-2 h-2 block rounded-full"
+          class="w-2 h-2 block rounded-full"
+          :class="props.row.validated ? 'bg--primary' : 'bg--error'"
         />
       </QTd>
     </template>
+    <template #body-cell-executor="props">
+      <QTd>
+        <div v-if="props.value">
+          {{ props.value }}
+        </div>
+        <div
+          v-else
+          class="i-carbon-warning-filled color--error text-lg"
+        />
+      </QTd>
+    </template>
+    <template #body-cell-reviewer="props">
+      <QTd>
+        <div v-if="props.value">
+          {{ props.value }}
+        </div>
+        <div
+          v-else
+          class="i-carbon-warning-filled text-lg color-gray"
+          :class="{ 'color--error': props.row.executor }"
+        />
+      </QTd>
+    </template>
+    <template #body-cell-approver="props">
+      <QTd>
+        <div v-if="props.value">
+          {{ props.value }}
+        </div>
+        <div
+          v-else
+          class="i-carbon-warning-filled text-lg color-gray"
+          :class="{ 'color--error': props.row.reviewer }"
+        />
+      </QTd>
+    </template>
+    <template #body-cell-specialapprover="props">
+      <QTd>
+        <div v-if="props.value">
+          {{ props.value }}
+        </div>
+        <div>N/A</div>
+      </QTd>
+    </template>
+    <template #body-cell-status="props">
+      <QTd :props="props">
+        <div class="flex">
+          <StatusTag
+            :label="props.value"
+            :color="statusColors[props.row.step]"
+          />
+        </div>
+      </QTd>
+    </template>
+    <template #body-cell-validated="props">
+      <QTd :props="props" :class="{ 'is-validated': props.value }">
+        <div class="flex">
+          <div
+            class="text-lg color--primary"
+            :class="props.value ? 'i-carbon-checkbox-checked-filled' : 'i-carbon-checkbox'"
+            @click.stop
+          />
+        </div>
+      </QTd>
+    </template>
   </QTable>
+  <div class="flex justify-between items-center py-2 pl-8 pr-5 border-t-3 color--primary font-bold text-lg border--primary bg--primary/12">
+    <div>
+      Quantidade de Cálculos Validados:
+      {{ modelValue?.reduce((acc: number, curr: any) => curr?.validated ? acc++ : acc, 0) }}
+    </div>
+    <div class="flex gap-6 items-center">
+      <div>
+        Valor Total Validado:
+        {{ modelValue?.reduce((acc: number, curr: any) => curr?.statement?.total ? +curr?.statement?.total + acc : acc, 0) }}
+      </div>
+      <Btn label="Validar Cálculos" disabled />
+    </div>
+  </div>
 </template>
+
+<style>
+.calculation-table tr:has(.is-validated) {
+  background-color: hsla(var(--primary,0,0%,0%),0.10)
+}
+</style>
