@@ -240,7 +240,7 @@ onMounted(() => {
         </template>
         <template #header-right>
           <div class="flex-1 flex gap-2 justify-end items-center pl-4 pr-4">
-            <div class="font-bold flex no-wrap items-center gap-2">
+            <div class="font-bold flex no-wrap items-center gap-2 text-lg">
               Total: R$ 0
               <Hint value="Total dos Cálculos Aprovados." />
             </div>
@@ -250,6 +250,7 @@ onMounted(() => {
           <Accordion
             v-for="(creditor, index) in recovering.creditors"
             :key="creditor.id"
+            v-model="creditor.isOpen"
             :title="creditor.entity.name"
             :subtitle="formatLegalNumber(creditor.entity.legalNumber)"
             class="border-x-0 border-b-0 rounded-0"
