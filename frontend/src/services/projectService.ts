@@ -83,8 +83,45 @@ const newProject = (project: any) => {
     .then((result: any) => result?.project)
 }
 
-const updateProject = (project: any) => api
-  .put(`/v1/projects/${project.id}/`, project)
+const updateProject = ({
+  id,
+  description,
+  engagements,
+  processNumber,
+  dateRjRequest,
+  dateRjFiling,
+  dateCitation,
+  projectStart,
+  projectEnd,
+  judgeId,
+  lawyerId,
+  regionId,
+  courtId,
+  financialPartnerId,
+  legalPartnerId,
+  financialManagerId,
+  legalManagerId,
+  calculationManagerId,
+}: any) => api
+  .put(`/v1/projects/${id}/`, {
+    description,
+    engagements,
+    processNumber,
+    dateRjRequest,
+    dateRjFiling,
+    dateCitation,
+    projectStart,
+    projectEnd,
+    judgeId,
+    lawyerId,
+    regionId,
+    courtId,
+    financialPartnerId,
+    legalPartnerId,
+    financialManagerId,
+    legalManagerId,
+    calculationManagerId,
+  })
   .then((result: any) => result?.project)
 
 // JUDGES

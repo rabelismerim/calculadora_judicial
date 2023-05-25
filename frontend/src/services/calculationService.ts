@@ -268,9 +268,25 @@ const getStatement = (calculationId: string) => api
 // CALCULATION - Sheets Template
 
 const getSheetsTemplate = (calculationId: string, exportType: string) => api
-
   .get(`/v1/calculation/export/${calculationId}/${exportType}`)
   .then(({ sheetstemplate }: any) => sheetstemplate)
+
+const getAccountingStatement = (calculationId: string) => {
+  const rgx = /'(((?![×Þß÷þø])[ 0-9a-zA-ZÀ-ÿ])*?)':/
+  return api
+    .get(`/v1/calculation/export/${calculationId}/EXTRATOCONTABIL/`)
+    .then((result: any) => result?.html
+      .split(/(\<\/html\>)/)
+      .filter((value: string) => !!value.match(rgx))
+      .map((value: string) => ({
+        label: value?.match(rgx)?.[1],
+        body: value?.match(/\<body\>(.*?)\<\/body>/)?.[0],
+      })))
+}
+
+const getAccountingStatementXLSX = (calculationId: string) => api
+  .get(`/v1/calculation/export/${calculationId}/EXTRATOCONTABIL/`)
+  .then((result: any) => result?.excel)
 
 export default {
   newCalculation,
@@ -293,4 +309,6 @@ export default {
   updateComparative,
   getStatement,
   getSheetsTemplate,
+  getAccountingStatement,
+  getAccountingStatementXLSX,
 }
