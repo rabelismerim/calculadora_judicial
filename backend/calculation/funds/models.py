@@ -21,6 +21,12 @@ from calculation.funds.integrations.models import TotalValuesFundsIntegrations
 from rates.models import Rate
 
 
+#
+# class FundsManager(models.Manager):
+#     def get_total_summed(self):
+#         # código para calcular o total somado
+#         pass
+#
 class Funds(AbstractFunds):
     """
     This class defines methods for generating total statements and fetching the TotalValuesFunds and
@@ -111,6 +117,7 @@ class Funds(AbstractFunds):
         super(Funds, self).delete(*args, **kwargs)
 
     def get_total_summed(self):
+        """Get the corrected value of the sum of calculated sums"""
         total: float = 0
         if hasattr(self, 'totalvaluesfunds'):
             total += self.totalvaluesfunds.total_corrected

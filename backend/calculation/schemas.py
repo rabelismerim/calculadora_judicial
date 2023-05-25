@@ -67,6 +67,9 @@ class ClassesSerializer(serializers.Serializer):
     classe = serializers.CharField()
     classe_display = serializers.SerializerMethodField('get_classe_display')
     total_value = serializers.FloatField()
+    percentage_value = serializers.FloatField()
+    total_calculated = serializers.FloatField()
+    percentage_calculated = serializers.FloatField()
 
     @staticmethod
     def get_classe_display(obj):

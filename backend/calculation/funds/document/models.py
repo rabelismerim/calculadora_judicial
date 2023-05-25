@@ -50,6 +50,12 @@ class FundDocument(AbstractFunds):
         total_funds = self.get_total_funds()
         total_funds.set_total()
 
+    def get_total_summed(self):
+        """Get the corrected value of the sum of calculated sums"""
+        total: float = 0
+        if hasattr(self, 'totalvaluesdocument'):
+            total += self.totalvaluesdocument.total_corrected
+        return total
 
 class StatementDocument(AbstractStatement):
     """

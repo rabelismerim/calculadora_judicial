@@ -7,7 +7,7 @@ to add specific fields as needed.
 import datetime
 
 from django.db import models
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Func
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
@@ -267,30 +267,57 @@ class Calculation(AbstractModel):
         self.validated = False
         self.save()
 
+    def get_total_summed(self):
+        return 0
+
     def get_classes(self) -> list:
-        """Groups the Funds, Fund Document and FundIRRF by class and adds the values"""
-        classes = list(self.funds_set.all().filter(classes__classe__isnull=False).values(
-            classe=F('classes__classe')).distinct().order_by('classes__classe') \
-                       .annotate(total_value=Sum('coins__value')))
+        """
+        Groups the Funds, Fund Documents, and FundIRRF by class and calculates the total value and total calculated
+        amount for each class.
 
-        classes.extend(
-            list(self.funddocument_set.all().filter(classes__classe__isnull=False).values(classe=F('classes__classe'))
-                 .distinct().order_by('classes__classe').annotate(total_value=Sum('coins__value'))))
+        Returns a list of dictionaries containing the class name, total value, total calculated amount, percentage of
+        total value, and percentage of total calculated amount for each class. Only classes where at least one fund,
+        fund document, or fund IRRF exists are included in the results.
 
-        classes.extend(
-            list(self.fundirrf_set.all().filter(classes__classe__isnull=False).values(classe=F('classes__classe'))
-                 .distinct().order_by('classes__classe').annotate(total_value=Sum('coins__value'))))
+        :return: List of dictionaries containing the class totals.
+        :rtype: list
+        """
+        classes = [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
+                    'total_calculated': fund.get_total_summed()} for fund in
+                   self.funds_set.filter(classes__classe__isnull=False)]
+        classes += [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
+                     'total_calculated': fund.get_total_summed()} for fund in
+                    self.funddocument_set.filter(classes__classe__isnull=False)]
+        classes += [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
+                     'total_calculated': fund.get_total_summed()} for fund in
+                    self.fundirrf_set.filter(classes__classe__isnull=False)]
 
         class_totals = {}
+        total_value_sum = 0
+        total_calculated_sum = 0
         for class_dict in classes:
             class_name = class_dict['classe']
-            class_total = class_dict['total_value']
+            class_total_value = class_dict['total_value']
+            class_total_calculated = class_dict['total_calculated']
+            total_value_sum += class_total_value
+            total_calculated_sum += class_total_calculated
             if class_name not in class_totals:
-                class_totals[class_name] = class_total
+                class_totals[class_name] = {'total_value': class_total_value,
+                                            'total_calculated': class_total_calculated}
             else:
-                class_totals[class_name] += class_total
+                class_totals[class_name]['total_value'] += class_total_value
+                class_totals[class_name]['total_calculated'] += class_total_calculated
+        for class_dict in class_totals.values():
+            total_calculated = class_dict['total_calculated']
+            total_value = class_dict['total_value']
+            class_dict['percentage_calculated'] = (total_calculated / total_calculated_sum) * 100 if total_calculated_sum > 0 else 0
+            class_dict['percentage_value'] = (total_value / total_value_sum) * 100 if total_value_sum > 0 else 0
 
-        return [{'classe': class_name, 'total_value': total} for class_name, total in class_totals.items()]
+        return [
+            {'classe': class_name, 'total_value': total['total_value'], 'total_calculated': total['total_calculated'],
+             'percentage_value': total.get('percentage_value', 0),
+             'percentage_calculated': total.get('percentage_calculated', 0)} for class_name, total in
+            class_totals.items()]
 
     def get_date_rj_filing(self) -> datetime.date or None:  # B19
         """
