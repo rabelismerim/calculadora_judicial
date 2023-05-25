@@ -109,7 +109,7 @@ const calculationColumns: TableColumn[] = [
   {
     name: 'total',
     field: 'statement',
-    format: (value: any) => value?.total || '-',
+    format: (value: any) => value?.total ? (+value.total)?.toFixed(2) : '-',
     label: 'Valor',
     align: 'left',
     sortable: true,
@@ -242,7 +242,7 @@ const statusColors: any = {
     <div class="flex gap-6 items-center">
       <div>
         Valor Total Validado:
-        {{ modelValue?.reduce((acc: number, curr: any) => curr?.statement?.total ? +curr?.statement?.total + acc : acc, 0) }}
+        {{ modelValue?.reduce((acc: number, curr: any) => curr?.statement?.total ? +curr?.statement?.total + acc : acc, 0)?.toFixed(2) }}
       </div>
       <Btn label="Validar Cálculos" disabled />
     </div>
