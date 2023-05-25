@@ -45,6 +45,7 @@ declare global {
   const defineAsyncComponent: typeof import('vue')['defineAsyncComponent']
   const defineComponent: typeof import('vue')['defineComponent']
   const delay: typeof import('./composables/utils')['delay']
+  const downloadFile: typeof import('./composables/utils')['downloadFile']
   const eagerComputed: typeof import('@vueuse/core')['eagerComputed']
   const ease: typeof import('animol')['ease']
   const easing: typeof import('animol')['Easing']
@@ -384,6 +385,7 @@ declare module 'vue' {
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
     readonly delay: UnwrapRef<typeof import('./composables/utils')['delay']>
+    readonly downloadFile: UnwrapRef<typeof import('./composables/utils')['downloadFile']>
     readonly eagerComputed: UnwrapRef<typeof import('@vueuse/core')['eagerComputed']>
     readonly ease: UnwrapRef<typeof import('animol')['ease']>
     readonly easing: UnwrapRef<typeof import('animol')['Easing']>

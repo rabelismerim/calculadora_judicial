@@ -8,6 +8,7 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Accordion: typeof import('./components/common/Accordion.vue')['default']
+    AccountingStatement: typeof import('./components/project/AccountingStatement.vue')['default']
     AddLines: typeof import('./components/common/AddLines.vue')['default']
     AJNotice: typeof import('./components/creditors/AJNotice.vue')['default']
     AnalisysSheet: typeof import('./components/creditors/AnalisysSheet.vue')['default']
