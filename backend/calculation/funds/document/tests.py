@@ -32,11 +32,6 @@ class FundsDocumentTest(AbstractTest):
         statements = [
             ({
                  "calculation_id": str(calculation.id),
-                 # "statement": {
-                 #     "data_base": "2014-01-02",
-                 #     "historical_value": 1500,
-                 #     "number": generate_name()
-                 # },
                  "classes": {
                      "classe": "1"
                  },
@@ -62,11 +57,6 @@ class FundsDocumentTest(AbstractTest):
               }),
             ({
                  "calculation_id": str(calculation.id),
-                 # "statement": {
-                 #     "data_base": "1999-06-09",
-                 #     "historical_value": 500,
-                 #     "number": generate_name()
-                 # },
                  "classes": {
                      "classe": "1"
                  },
@@ -119,11 +109,6 @@ class FundsDocumentTest(AbstractTest):
         number = generate_name()
         statement = {
             "calculation_id": str(calculation.id),
-            # "statement": {
-            #     "data_base": data_base,
-            #     "historical_value": value,
-            #     "number": number
-            # },
             "classes": {
                 "classe": "1"
             },

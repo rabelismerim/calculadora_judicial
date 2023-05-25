@@ -40,6 +40,7 @@ DEBUG = str(os.getenv('DEBUG', 'false')).lower() == 'true'
 ENABLE_SSO = str(os.getenv('ENABLE_SSO', 'true')).lower() == 'true'
 
 BRANCH_DEV = str(os.getenv('ENV', 'hml')) == 'branch'
+TEST_PROD = str(os.getenv('TEST_PROD', 'false')) == 'true'
 BRANCH_LOCAL = str(os.getenv('ENV', 'hml')) == 'dev'
 
 IS_LOCALHOST = str(os.getenv('IS_LOCALHOST', 'false')).lower() == 'true' and BRANCH_DEV
@@ -286,27 +287,39 @@ DRFMSAL_IDENTITY_WEB = IdentityWebPython()
 if BRANCH_DEV or 'test' in sys.argv:
     my_string = sys.argv[0].replace('\\', '').replace('/', '')
 
-    if my_string.endswith('locustmain.py'):
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': ':memory:',
-                'MIRROR': 'default',
-            },
-        }
+    if my_string.endswith('main.py'):
+        if TEST_PROD is False:
+            DATABASES = {
+                'default': {
+                    'ENGINE': 'django.db.backends.sqlite3',
+                    'NAME': ':memory:',
+                    'MIRROR': 'default',
+                },
+            }
 
-        # cria uma cópia do banco de dados atual para testes do locust
-        import shutil
-        import tempfile
-        import os
+            # cria uma cópia do banco de dados atual para testes do locust
+            import shutil
+            import tempfile
+            import os
 
-        tmpdir = os.path.join(tempfile.gettempdir(), 'juca')
-        tmp_db = os.path.join(tmpdir, 'tmp.sqlite3')
-        if os.path.exists(tmpdir) is False:
-            os.mkdir(tmpdir)
-        if os.path.exists(tmp_db) is False:
-            shutil.copy2(BASE_DIR / 'db.sqlite3', tmp_db)
-        DATABASES['default']['NAME'] = tmp_db
+            tmpdir = os.path.join(tempfile.gettempdir(), 'juca')
+            tmp_db = os.path.join(tmpdir, 'tmp.sqlite3')
+            if os.path.exists(tmpdir) is False:
+                os.mkdir(tmpdir)
+            if os.path.exists(tmp_db) is False:
+                shutil.copy2(BASE_DIR / 'db.sqlite3', tmp_db)
+            DATABASES['default']['NAME'] = tmp_db
+        else:
+            DATABASES = {
+                'default': {
+                    'ENGINE': 'django.db.backends.postgresql',
+                    'NAME': str(os.getenv('DB_NAME')),
+                    'USER': str(os.getenv('DB_USER')),
+                    'PASSWORD': str(os.getenv('DB_PASS')),
+                    'HOST': str(os.getenv('DB_HOST')),
+                    'PORT': str(os.getenv('DB_PORT')),
+                }
+            }
     else:
         DATABASES = {
             'default': {
@@ -483,7 +496,10 @@ ENABLE_CACHE = str(os.getenv('ENABLE_CACHE', 'false')).lower() == 'true'
 INDEX_VARIATION_END = os.getenv('INDEX_VARIATION_END', '2017-09-01')
 INDEX_VARIATION_END = datetime.datetime.strptime(INDEX_VARIATION_END, '%Y-%m-%d').date()
 
-TOKEN_TEST = os.getenv('TOKEN_TEST')  # Token para a execução de teste em ambientes controlados
+if TEST_PROD:
+    TOKEN_TEST = os.getenv('TOKEN_TEST_DEV')  # Token para a execução de teste em ambientes controlados
+else:
+    TOKEN_TEST = os.getenv('TOKEN_TEST')  # Token para a execução de teste em ambientes controlados
 INDEX_VARIATION_RJ = os.getenv('INDEX_VARIATION_RJ', '2022-06-01')
 INDEX_VARIATION_RJ = datetime.datetime.strptime(INDEX_VARIATION_RJ, '%Y-%m-%d').date()
 

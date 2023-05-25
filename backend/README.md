@@ -92,7 +92,7 @@
 > * O teste funcional testa se todos os endpoint estão em funcionamento. Esse teste sempre deve ser realizado antes de
     qualquer push ou deploy para garantir a confiabilidade e mantenimento ativo da plataforma. A pipeline falhará se não
     passar nos testes, impedindo que as mudanças feitas vá para a produção.
-> * Para o realizamento dos testes rode o script `python manage.py tests`, com isso todos os endpoints e cenários de
+> * Para o realizamento dos testes rode o script `python manage.py test`, com isso todos os endpoints e cenários de
     testes irão ser executados.
 > * Algumas classes apenas monitoram a resposta 200(GET) e 201(POST). Outras como indices e cálculos verificam se os
     resultados satisfazem a condição esperada. Essas condições vem de acordo com o entendimento junto aos stakeholders e

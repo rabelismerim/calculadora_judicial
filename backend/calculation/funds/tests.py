@@ -121,11 +121,6 @@ class FundsTest(AbstractTest):
         number = generate_name()
         statement = {
             "calculation_id": str(self.calculation.id),
-            "statement": {
-                "data_base": data_base,
-                "historical_value": value,
-                "number": number
-            },
             "classes": {
                 "classe": "1"
             },
@@ -140,6 +135,9 @@ class FundsTest(AbstractTest):
             "template_id": str(Template.objects.first().id),
             "name": generate_name(),
             "is_extraconcursal": False,
+            "data_base": data_base,
+            "historical_value": value,
+            "number": number
         }
 
         response = self.post('calculation/funds/documents', statement)

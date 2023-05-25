@@ -114,10 +114,10 @@ class Funds(AbstractFunds):
     def get_total_summed(self):
         total: float = 0
         if hasattr(self, 'totalvaluesfunds'):
-            total += self.totalvaluesfunds.total_accurate
+            total += self.totalvaluesfunds.total_corrected
 
         if hasattr(self, 'totalvaluesfundsintegrations'):
-            total += self.totalvaluesfundsintegrations.total_accurate
+            total += self.totalvaluesfundsintegrations.total_corrected
         return total
 
 
