@@ -153,6 +153,7 @@ onMounted(() => {
               label="Editar Credor"
               icon="i-carbon-edit"
               transparent
+              disabled
               @click.stop="editCreditor(creditor)"
             />
           </div>

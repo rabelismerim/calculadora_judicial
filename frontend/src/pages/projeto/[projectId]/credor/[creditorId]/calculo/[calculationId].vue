@@ -120,17 +120,17 @@ const createCredit = async () => {
 const openCredit = async (credit: any) => {
   const { tables } = credit
   const isClear = tables
-    .map(({ values }: any) => values.length)
+    .map(({ values }: any) => values?.length)
     .every((length: number) => length === 0)
   if (!isClear)
     return
   loading = true
   for (const table of tables as any[]) {
-    const result = await fetch(`${host}${table.endPoint + table.id}/`, { method: 'GET', headers })
+    const result = await fetch(`${host}${table.endPoint + credit.id}/`, { method: 'GET', headers })
       .then((result: any) => result.json())
       .then((result: any) => Object.values(Object.values(result).at(0) as any)
         .find((value: any) => Array.isArray(value)))
-    table.values = result
+    table.values = result || clone([])
     if (table.values?.length === 0)
       table.values.push(clone({}))
   }
@@ -165,8 +165,9 @@ const calculateCredit = async (credit: any, creditIndex: number) => {
     for (const lineIndex in table.values) {
       const line = table.values[lineIndex]
       table.values[lineIndex].loading = true
-      const result: any = await fetch(`${host}${table.endPoint}${line.id ? `${line.id}/` : ''}`, {
-        method: line.id ? 'PUT' : 'POST',
+      const method = line.id ? 'PUT' : 'POST'
+      const result: any = await fetch(`${host}${table.endPoint}${method === 'PUT' ? 'detail/' : ''}${line.id ? `${line.id}/` : ''}`, {
+        method,
         body: JSON.stringify({ ...line, fund_id: credit.id }),
         headers,
       })
@@ -183,7 +184,7 @@ const isRequired = ({ required }: any) => required && [(value: any) => !!value |
 const filterInput = $ref('')
 let templates = $ref([] as any[])
 const filteredTemplates = computed(() => templates
-  .filter(({ name }: any) => name.toLowerCase().includes(filterInput.toLowerCase())))
+  ?.filter(({ name }: any) => name.toLowerCase().includes(filterInput.toLowerCase())))
 const loadTemplates = async () => {
   templates = await ratesService.getTemplates()
 }
@@ -313,6 +314,7 @@ const statusLabel = (status: string) => {
           @click="loadCalculation(true)"
         />
       </template>
+      <Btn label="Alterar Status" outlined @click="showNewCredit = true" />
       <Btn label="Novo Crédito" icon="i-carbon-add-filled" @click="showNewCredit = true" />
     </Header>
 
@@ -348,139 +350,156 @@ const statusLabel = (status: string) => {
       </GraphCard>
     </div>
 
-    <div v-if="calculation?.credits?.length > 0" class="flex gap-4">
-      <Accordion
-        v-for="(credit, creditIndex) in calculation?.credits as any[]"
-        :key="creditIndex"
-        :title="`Crédito ${credit?.template?.name}`"
-        :subtitle="credit.name"
-        class="rounded-0"
-        @open="openCredit(credit)"
-      >
-        <template #header-right>
-          <div class="flex gap-2 self-center">
-            <Btn
-              label="Excluir Crédito"
-              icon="i-carbon-trash-can"
-              transparent
-              @click.stop
-            />
-          </div>
-          <div class="self-center flex-1 flex justify-end text-lg font-bold">
-            Total
-            {{ credit?.summary?.find(({ key }: any) => key === 'total')?.label }}
-            {{ credit.total || 0 }}
-          </div>
-        </template>
-        <QForm ref="forms" @submit.prevent>
-          <div
-            v-for="table in credit?.tables as any[]"
-            :key="table.id"
-            class="p-4"
+    <QTabPanels v-model="tab" animated class="calculations-credits">
+      <QTabPanel name="cred">
+        <div v-if="calculation?.credits?.length > 0" class="flex gap-4">
+          <Accordion
+            v-for="(credit, creditIndex) in calculation?.credits as any[]"
+            :key="creditIndex"
+            v-model="credit.isOpen"
+            :title="`Crédito ${credit?.template?.name}`"
+            :subtitle="credit.name"
+            class="rounded-0"
+            @open="openCredit(credit)"
           >
-            <div class="text-lg font-bold mb-2 flex justify-between items-center">
-              <div>{{ table.description }}</div>
-              <AddLines
-                v-model="table.linesToAdd"
-                @add-lines="addCreditValues(table.values, table.linesToAdd)"
-              />
-            </div>
-            <QTable
-              :rows="table.values"
-              :columns="table?.columns"
-              :pagination="{ rowsPerPage: 0 }"
-              hide-pagination
-              flat
-              bordered
-              class="credit-table"
-            >
-              <template #body="props">
-                <QTr :props="props">
-                  <QTd v-for="column in props.cols as any[]" :key="column.id" :style="(column?.isEditable) ? 'min-width: 200px' : '' ">
-                    <div
-                      class="flex justify-center items-center"
-                      :class="{
-                        'is-loading': props.row.loading,
-                        'has-error': statusLabel(props.row?.status) === 'Erro',
-                      }"
-                    >
-                      <div
-                        v-if="column.name === 'delete'"
-                        class="cursor-pointer bg--error h-10 w-10 rounded-.5 border-1 border-red-8 flex justify-center items-center"
-                        @click="removeCreditValue(table.values, props.row, props.rowIndex, table)"
-                      >
-                        <div class="i-carbon-trash-can bg-white" />
-                      </div>
-                      <div v-else-if="column.label === 'Status'">
-                        <StatusTag
-                          v-if="props.row.status"
-                          :label="statusLabel(props.row.status)"
-                          :color="statusColors[props.row.status]"
-                          :hint="props.row[column.field]"
-                        />
-                      </div>
-                      <div v-else-if="!column.isEditable" class="row justify-center">
-                        {{ props.row[column.field] || '-' }}
-                      </div>
-                      <QInput
-                        v-else-if="column.type === 'text'"
-                        v-model="props.row[column.field]"
-                        :rules="isRequired(column)"
-                        class="flex-1"
-                        outlined
-                        dense
-                      />
-                      <QInput
-                        v-else-if="column.type === 'float' || column.type === 'integer'"
-                        v-model="props.row[column.field]"
-                        :rules="isRequired(column)"
-                        class="flex-1"
-                        type="number"
-                        outlined
-                        dense
-                        @update:model-value="(value: any) => { if (column.type === 'integer') (props.row[column.field] = Math.round(value)) }"
-                      />
-                      <InputDate
-                        v-else-if="column.type === 'date'"
-                        v-model="props.row[column.field]"
-                        :rules="isRequired(column)"
-                        class="flex-1"
-                      />
-                      <div v-else-if="column.type === 'boolean'" class="row justify-center">
-                        <QToggle
-                          v-model="props.row[column.field]"
-                          class="flex-1"
-                        />
-                      </div>
-                    </div>
-                  </QTd>
-                </QTr>
-              </template>
-            </QTable>
-          </div>
-          <div class="flex gap-2 justify-between p-4 bg--primary/12 border--primary border-t-2 color--primary font-bold">
-            <div>
-              <div>
-                Quantidade de Créditos:
-                {{ credit.tables.reduce((acc:number, table: any) => acc + table.values.length, 0) }}
+            <template #header-right>
+              <div class="flex gap-2 self-center">
+                <Btn
+                  label="Excluir Crédito"
+                  icon="i-carbon-trash-can"
+                  transparent
+                  @click.stop
+                />
               </div>
-              <div>
-                Total dos Valores:
-                {{ credit.tables.reduce((acc:number, table: any) => acc + (table.total || 0), 0) }}
+              <div class="self-center flex-1 flex justify-end text-lg font-bold">
+                Total
+                {{ credit?.summary?.find(({ key }: any) => key === 'total')?.label }}
+                {{ credit.total || 0 }}
               </div>
-            </div>
-            <div>
-              <div>Calculados com Sucesso: 0</div>
-              <div>Calculados com Error 0</div>
-            </div>
-            <Btn label="Calcular" @click="calculateCredit(credit, creditIndex)" />
-          </div>
-        </QForm>
-      </Accordion>
-    </div>
-    <div v-else class="text-lg text-center">
-      Nenhum Crédito listado para este Cálculo...
-    </div>
+            </template>
+            <QForm ref="forms" @submit.prevent>
+              <div
+                v-for="table in credit?.tables as any[]"
+                :key="table.id"
+                class="p-4"
+              >
+                <div class="text-lg font-bold mb-2 flex justify-between items-center">
+                  <div>{{ table.description }}</div>
+                  <AddLines
+                    v-model="table.linesToAdd"
+                    @add-lines="addCreditValues(table.values, table.linesToAdd)"
+                  />
+                </div>
+                <QTable
+                  :rows="table.values"
+                  :columns="table?.columns"
+                  :pagination="{ rowsPerPage: 0 }"
+                  hide-pagination
+                  flat
+                  bordered
+                  class="credit-table"
+                >
+                  <template #body="props">
+                    <QTr :props="props">
+                      <QTd v-for="column in props.cols as any[]" :key="column.id" :style="(column?.isEditable) ? 'min-width: 200px' : '' ">
+                        <div
+                          class="flex justify-center items-center"
+                          :class="{
+                            'is-loading': props.row.loading,
+                            'has-error': statusLabel(props.row?.status) === 'Erro',
+                          }"
+                        >
+                          <div
+                            v-if="column.name === 'delete'"
+                            class="cursor-pointer bg--error h-10 w-10 rounded-.5 border-1 border-red-8 flex justify-center items-center"
+                            @click="removeCreditValue(table.values, props.row, props.rowIndex, table)"
+                          >
+                            <div class="i-carbon-trash-can bg-white" />
+                          </div>
+                          <div v-else-if="column.label === 'Status'">
+                            <StatusTag
+                              v-if="props.row.status"
+                              :label="statusLabel(props.row.status)"
+                              :color="statusColors[props.row.status]"
+                              :hint="props.row[column.field]"
+                            />
+                          </div>
+                          <div v-else-if="!column.isEditable" class="row justify-center">
+                            <span v-if="column.type === 'float'">{{ (get(column.field, props.row))?.toFixed(6) || '-' }}</span>
+                            <span v-else>{{ get(column.field, props.row) || '-' }}</span>
+                          </div>
+                          <QInput
+                            v-else-if="column.type === 'text'"
+                            v-model="props.row[column.field]"
+                            :rules="isRequired(column)"
+                            class="flex-1"
+                            outlined
+                            dense
+                          />
+                          <QInput
+                            v-else-if="column.type === 'float' || column.type === 'integer'"
+                            v-model="props.row[column.field]"
+                            :rules="isRequired(column)"
+                            class="flex-1"
+                            type="number"
+                            outlined
+                            dense
+                            @update:model-value="(value: any) => { if (column.type === 'integer') (props.row[column.field] = Math.round(value)) }"
+                          />
+                          <InputDate
+                            v-else-if="column.type === 'date'"
+                            v-model="props.row[column.field]"
+                            :rules="isRequired(column)"
+                            class="flex-1"
+                          />
+                          <div v-else-if="column.type === 'boolean'" class="row justify-center">
+                            <QToggle
+                              v-model="props.row[column.field]"
+                              class="flex-1"
+                            />
+                          </div>
+                        </div>
+                      </QTd>
+                    </QTr>
+                  </template>
+                </QTable>
+              </div>
+              <div class="flex gap-2 justify-between p-4 bg--primary/12 border--primary border-t-2 color--primary font-bold">
+                <div>
+                  <div>
+                    Quantidade de Créditos:
+                    {{ credit.tables.reduce((acc:number, table: any) => acc + table.values?.length, 0) }}
+                  </div>
+                  <div>
+                    Total dos Valores:
+                    {{ credit?.summary?.find(({ key }: any) => key === 'total')?.label }}
+                    {{ credit.tables.reduce((acc:number, table: any) => acc + (table.total || 0), 0) }}
+                  </div>
+                </div>
+                <div>
+                  <div>
+                    Calculados com Sucesso:
+                    {{ credit.tables.reduce((acc:number, table: any) => acc + table.values?.filter((line: any) => statusLabel(line.status) === 'Sucesso')?.length, 0) }}
+                  </div>
+                  <div>
+                    Calculados com Erro:
+                    {{ credit.tables.reduce((acc:number, table: any) => acc + table.values?.filter((line: any) => statusLabel(line.status) === 'Erro')?.length, 0) }}
+                  </div>
+                </div>
+                <Btn label="Calcular" @click="calculateCredit(credit, creditIndex)" />
+              </div>
+            </QForm>
+          </Accordion>
+        </div>
+        <div v-else class="text-lg text-center">
+          Nenhum Crédito listado para este Cálculo...
+        </div>
+      </QTabPanel>
+      <QTabPanel name="ext">
+        <AccountingStatement v-model="calculation.id" />
+      </QTabPanel>
+    </QTabPanels>
+
     <template #out>
       <Modal
         v-model="showNewCredit"
@@ -628,5 +647,11 @@ const statusLabel = (status: string) => {
   justify-content: center;
   border-radius: 0 0 4px 4px;
   margin-top: -2px;
+}
+.calculations-credits {
+  background: transparent;
+}
+.calculations-credits .q-tab-panel {
+padding: 0;
 }
 </style>
