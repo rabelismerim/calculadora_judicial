@@ -60,6 +60,7 @@ class AbstractFundIRRFApi(AbstractViewApi):
     physical_person = True
     model = FundIRRF
     query_params = []
+    tags = [_('Cálculo - Verbas - IRRF')]
 
 
 class FundIRRFApi(AbstractFundIRRFApi):
@@ -178,7 +179,6 @@ class FundIRRFDetailApi(AbstractFundIRRFApi):
     http_method_names = ['get', 'delete']
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     docs = docs_fund.copy()
-    tags = [_('Cálculo - Verbas - IRRF - Valores das verbas')]
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific fund IRRF 
         object using the given id from the query parameters and serializes the result into JSON format before returning
          it as an HTTP response. 
@@ -214,6 +214,7 @@ class AbstractStatementIRRFApi(AbstractViewApi):
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = StatementIRRF
     query_params = []
+    tags = [_('Cálculo - Verbas - IRRF - Valores das verbas')]
 
 
 class StatementIRRFApi(AbstractStatementIRRFApi):
@@ -239,7 +240,6 @@ class StatementIRRFApi(AbstractStatementIRRFApi):
         ```
     """
     http_method_names = ['post']
-    tags = [_('Cálculo - Verbas - IRRF - Valores das verbas')]
     docs = docs.copy()
     docs['post'] = _("""Create Statement IRRF object from request data and return Statement IRRF detail.
         Returns:

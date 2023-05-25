@@ -19,10 +19,11 @@ from calculation.funds.irrf.views import FundIRRFApi, FundIRRFDetailApi, Stateme
     StatementFundsIRRFListApi, FundIRRFCalculationApi
 
 urlpatterns = [
+    # path('calculation/<uuid:calculation_id>/', FundIRRFCalculationApi.as_view(), name="funds-irrf-list"),
     path('', FundIRRFApi.as_view(), name="funds-irrf-list-create"),
-    path('calculation/<uuid:calculation_id>/', FundIRRFCalculationApi.as_view(), name="funds-irrf-list"),
     path('<uuid:id>/', FundIRRFDetailApi.as_view(), name="document-detail"),
-    path('labor/', StatementIRRFApi.as_view(), name="statement-funds-irrf-detail"),
+    path('labor/', StatementIRRFApi.as_view(), name="statement-funds-irrf"),
+    path('labor/detail/<uuid:id>/', StatementIRRFDetailApi.as_view(), name="statement-funds-irrf-detail"),
     path('labor/<uuid:fund_id>/', StatementFundsIRRFListApi.as_view(), name="funds-irrf-list"),
 
 ]

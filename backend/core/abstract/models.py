@@ -122,7 +122,8 @@ def get_user(sender, **kwargs):
 
     if hasattr(instance, 'create_user'):
         if instance.create_user is None:
-            instance.create_user = username
+            if isinstance(username, User):
+                instance.create_user = username
         else:
             instance.update_user = username
 

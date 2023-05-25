@@ -154,7 +154,9 @@ class TemplateDetailApi(AbstractViewApi):
         Returns a detail of template with their id, name, tables and fields in tables""")
     }
 #
-# ab = TemplateField.objects.filter(key='index_recovering')
+# ab = TemplateRate.objects.filter(end_point='/juca/api/v1/calculation/funds/irrf/')
 # for a in ab:
-#     a.key = 'monetary_correction.index_recovering'
+#     # a.key = 'monetary_correction.index_recovering'
+#     a.end_point = '/juca/api/v1/calculation/funds/irrf/labor/'
 #     a.save()
+#     print(a, 'a')

@@ -237,10 +237,10 @@ def create_templates():
              'fields': fields_verbas},
 
             {'name': f'IRRF - {verba}', 'description': f'Base de cálculo',
-             'end_point': '/juca/api/v1/calculation/funds/irrf/',
+             'end_point_main': '/juca/api/v1/calculation/funds/irrf/',
              'is_horizontal': False,
              'fund_main': fund_irrf,
-             'end_point_main': '/juca/api/v1/calculation/funds/irrf/labor/',
+             'end_point': '/juca/api/v1/calculation/funds/irrf/labor/',
              'many': True,
              'summary_fields': summary_fields_irrf,
              'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
