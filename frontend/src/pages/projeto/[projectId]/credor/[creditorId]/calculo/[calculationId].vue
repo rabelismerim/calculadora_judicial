@@ -88,10 +88,11 @@ const clearNewCredit = () => {
 }
 const createCredit = async () => {
   const { classId, coinId, rateId, templateId, endPoint } = newCredit
-  loading = true
+  if (!endPoint)
+    return
+
   try {
-    if (!endPoint)
-      return
+    loading = true
     const result: any = await api.post(`${host}${endPoint}`, {
       ...newCredit,
       classes: {
@@ -104,11 +105,12 @@ const createCredit = async () => {
       templateId,
       calculationId: attrs.calculationId,
     })
-      .then((result: any) => Object.values(result || {})[0] || {})
-    loadCalculation()
-    notify({ message: 'Crédito Criado com Sucesso!' })
-    showNewCredit = false
-    clearNewCredit()
+    if (result) {
+      loadCalculation()
+      notify({ message: 'Crédito Criado com Sucesso!' })
+      clearNewCredit()
+      showNewCredit = false
+    }
   }
   catch (error) {
     printError('ERROR ON CREATING CREDIT:', error)
@@ -345,7 +347,7 @@ const statusLabel = (status: string) => {
         hint="Somatório dos Créditos neste Cálculo."
       >
         <div class="font-bold text-5xl flex-1 flex items-center">
-          {{ totalValue?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
+          R$ {{ totalValue?.toFixed(2) }}
         </div>
       </GraphCard>
     </div>
@@ -371,10 +373,15 @@ const statusLabel = (status: string) => {
                   @click.stop
                 />
               </div>
-              <div class="self-center flex-1 flex justify-end text-lg font-bold">
-                Total
-                {{ credit?.summary?.find(({ key }: any) => key === 'total')?.label }}
-                {{ credit.total || 0 }}
+              <div class="self-center flex-1 flex justify-end text-lg flex gap-3">
+                <div class="color-gray-9">
+                  {{ credit.classes.classeDisplay }}
+                </div>
+                <div class="font-bold">
+                  Total
+                  {{ credit?.summary?.find(({ key }: any) => key === 'total')?.label }}
+                  {{ (credit.total)?.toFixed(2) || 0 }}
+                </div>
               </div>
             </template>
             <QForm ref="forms" @submit.prevent>

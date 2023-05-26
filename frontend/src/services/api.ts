@@ -39,21 +39,6 @@ api.interceptors.response.use(
     const data = response?.data?.data
     const status = response?.status || 500
 
-    const mainErrors: any = {
-      403: 'Você não está autorizado...',
-      500: 'Problemas no Servidor...',
-      ERR_NETWORK: 'Problemas no Servidor...',
-    }
-
-    const mainMessage = mainErrors[status] || mainErrors[code]
-    if (mainMessage) {
-      throwError({
-        id: status,
-        message: mainMessage,
-      })
-      return
-    }
-
     const { errors: dataErrors } = parseToCamel(data || {})
     const errors = dataErrors.map(({ detail, attr }: any) => ({ message: detail, attr }))
     printError('ON ERROR:', errors)
@@ -63,14 +48,27 @@ api.interceptors.response.use(
         throwError(error)
         await delay(0.5)
       }
+
+      const newError = new Error(message) as any
+      newError.errors = errors
+      newError.status = status
+      newError.code = code
+
+      throw (newError)
     }
 
-    const newError = new Error(message) as any
-    newError.errors = errors
-    newError.status = status
-    newError.code = code
-
-    throw (newError)
+    const mainErrors: any = {
+      403: 'Você não está autorizado...',
+      500: 'Problemas no Servidor...',
+      ERR_NETWORK: 'Problemas no Servidor...',
+    }
+    const mainMessage = mainErrors[status] || mainErrors[code]
+    if (mainMessage) {
+      throwError({
+        id: status,
+        message: mainMessage,
+      })
+    }
   })
 
 export default api
