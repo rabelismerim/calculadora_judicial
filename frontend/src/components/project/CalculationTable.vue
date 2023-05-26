@@ -73,7 +73,7 @@ const calculationColumns: TableColumn[] = [
     name: 'class',
     field: 'classes',
     format: (value: any[]) => value && value
-      .map(({ classeDisplay, totalValue }: any) => `${classeDisplay?.split('-').at(0).trim()}: ${totalValue}`).join(','),
+      .map(({ classeDisplay, percentageCalculated }: any) => `${classeDisplay?.split('-').at(0).trim()}: ${(percentageCalculated || 0)?.toFixed(2)}%`).join(','),
     label: 'Classe',
     align: 'left',
     sortable: true,
