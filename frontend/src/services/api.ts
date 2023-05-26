@@ -40,10 +40,10 @@ api.interceptors.response.use(
     const status = response?.status || 500
 
     const { errors: dataErrors } = parseToCamel(data || {})
-    const errors = dataErrors.map(({ detail, attr }: any) => ({ message: detail, attr }))
+    const errors = dataErrors?.map(({ detail, attr }: any) => ({ message: detail, attr }))
     printError('ON ERROR:', errors)
 
-    if (errors.length > 0) {
+    if (errors?.length > 0) {
       for (const error of errors) {
         throwError(error)
         await delay(0.5)
