@@ -53,6 +53,11 @@ export default defineConfig({
         'vue/macros',
         '@vueuse/core',
         {
+          quasar: [
+            'useQuasar',
+          ],
+        },
+        {
           'animol': [
             ['css', 'animate'],
             'ease',
