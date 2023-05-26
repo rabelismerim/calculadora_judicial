@@ -1842,8 +1842,8 @@ msgid "The archive_json field must be in json format"
 msgstr "O campo archive_json deve estar no formato json"
 
 #: .\backend\core\abstract\views.py:220
-msgid "Field in invalid format. It must be in the format{}"
-msgstr "Campo em formato inválido. "
+msgid "Field in invalid format. It must be in the format {}"
+msgstr "Campo em formato inválido. Deve estar no formato {}"
 
 #: .\backend\core\abstract\views.py:389
 msgid "{self.__get_model_name().capitalize()} deleted"

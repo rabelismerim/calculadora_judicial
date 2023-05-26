@@ -21,6 +21,9 @@ import urllib3
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 
 urllib3.disable_warnings()
+import warnings
+
+warnings.filterwarnings("ignore", message="You have a duplicated operationId")
 
 if '--env' in sys.argv:
     # get the index of the --env argument
@@ -110,6 +113,9 @@ INSTALLED_APPS = [
     'base.claim',
     'base.coins',
 
+    # Dashboard
+    'dashboard',
+
     # Creditors
     'creditors',
     'creditors.classes',
@@ -158,6 +164,9 @@ INSTALLED_APPS = [
     # Rate - Índice
     'rates',
 
+    # Big Numbers - KPIS e Gráficos
+    'big_number',
+
 ]
 
 # Start config debug toolbar
@@ -188,6 +197,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'crum.CurrentRequestUserMiddleware',  # Get current request in Models
     'drf_api_logger.middleware.api_logger_middleware.APILoggerMiddleware',
+    'dashboard.middleware.LoginMiddleware',  # Save the first occurrence of user login on the day
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
@@ -211,6 +221,10 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries': {
+                'custom_filters': 'base.templatetags.custom_filters',
+
+            }
         },
     },
 ]

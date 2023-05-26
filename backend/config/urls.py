@@ -68,6 +68,9 @@ urlpatterns = [
     # Rates
     path(f'{BASE_URL}rates/', include("rates.urls")),
 
+    # Big Numbers
+    path(f'{BASE_URL}big_number/', include("big_number.urls")),
+
     # CORE
     path(BASE_URL, include("core.dttuser.api.urls")),
 
@@ -84,7 +87,7 @@ urlpatterns = [
     path('juca/logout/', views.LogoutView.as_view(), name='logout'),
 
     # VUE FRONTEND
-    re_path(r'^(?!juca\/admin|juca\/api).*$', frontend_index, name='frontend'),
+    re_path(r'^(?!juca\/admin|juca\/api|simple).*$', frontend_index, name='frontend'),
     # path('juca/<path:resource>', frontend_index, name='frontend'),
 
     # Documentation

@@ -56,6 +56,31 @@ class CustomSchema(AutoSchema):
             return view.operation_id_base
         return super(CustomSchema, self).get_operation_id_base(path, method, action)
 
+    def map_serializer(self, serializer):
+        """
+        Maps the serializer by adding dynamic methods to properties.
+
+        Args:
+            serializer: The serializer mapping will be applied.
+
+        Returns:
+            Fields with mapped dynamic methods.
+        """
+        fields = super().map_serializer(serializer)
+
+        big_numbers = self.view.get_dynamic_methods()
+        for big in big_numbers:
+
+            example = {}
+            dynamic_methods = big.bignumbermethod_set.all()
+            for method in dynamic_methods:
+                new_field = getattr(serializers, method.get_field_type_display())()
+                example[method.name] = self.map_field(new_field)['type']
+            fields['properties'][big.path] = {
+                'example': example
+            }
+        return fields
+
     def get_operation(self, path, method):
         """
         Override get_operation method of base class.
@@ -158,14 +183,37 @@ class AbstractViewApi(generics.GenericAPIView):
     #     permissions.append(CheckAPIVersion())
     #
     #     return permissions
+    def get_dynamic_methods(self) -> list:
+        """
+        Returns a list of dynamic methods to be added as properties to the serializer.
+
+        Returns:
+            List of dynamic methods.
+        """
+        return []
 
     def get_serializer_class(self):
+        """
+        Returns the appropriate serializer class based on the HTTP request method.
+
+        Returns:
+            Serializer class.
+        """
         if hasattr(self, 'layout_serializers'):
             return self.layout_serializers.get(self.request.method.lower(), self.layout_serializers['default'])
         return super(AbstractViewApi, self).get_serializer_class()
 
     @staticmethod
     def get_schema_operation_parameters(view):
+        """
+        Returns the query parameters for the schema operation.
+
+        Args:
+            view: The view obtaining the query parameters.
+
+        Returns:
+            Query parameters.
+        """
         return view.query_params
 
     @staticmethod

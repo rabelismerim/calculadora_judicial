@@ -12,6 +12,9 @@ class Creditor(AbstractDateCreditor):
 
     total = models.FloatField(_('Total sum of valid amounts'), default=0)
 
+    def get_total(self) -> float:
+        return self.total
+
     def get_count_calculations(self) -> int:
         """Get number of calculations"""
         return self.calculation_set.exclude(number__isnull=True).count()

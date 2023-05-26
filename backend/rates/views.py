@@ -153,10 +153,17 @@ class TemplateDetailApi(AbstractViewApi):
         'get': _("""Example of how templates should look for each selected rate type
         Returns a detail of template with their id, name, tables and fields in tables""")
     }
-#
-# ab = TemplateRate.objects.filter(end_point='/juca/api/v1/calculation/funds/irrf/')
+# #
+# ab = TemplateRate.objects.filter(end_point='/juca/api/v1/calculation/funds/ducuments/detail/')
 # for a in ab:
 #     # a.key = 'monetary_correction.index_recovering'
-#     a.end_point = '/juca/api/v1/calculation/funds/irrf/labor/'
+#     a.end_point = '/juca/api/v1/calculation/funds/documents/detail/'
 #     a.save()
 #     print(a, 'a')
+#
+# ab = Template.objects.filter(end_point='/juca/api/v1/calculation/funds/ducuments/')
+# for a in ab:
+#     # a.key = 'monetary_correction.index_recovering'
+#     a.end_point = '/juca/api/v1/calculation/funds/documents/'
+#     a.save()
+#     print(a, 'b')

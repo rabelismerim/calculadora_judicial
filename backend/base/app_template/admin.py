@@ -14,9 +14,8 @@ from django.contrib import admin
 
 admin.site.register({{app_name | title}})
 """
-
 from django.contrib import admin
-from {{app_name}}.models import {{app_name | title}}
+from {{app_name }}.models import {{app_name | title}}
 
 
 admin.site.register({{app_name | title}})

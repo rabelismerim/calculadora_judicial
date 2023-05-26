@@ -1,4 +1,3 @@
-import re
 import uuid
 
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -81,12 +80,13 @@ class UpdateUser(models.Model):
     """Model template to catch all updates made to the model"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
-    object_id = models.UUIDField()  # uuid AbstractModel
     field_changed = models.CharField(_('Field changed'), max_length=100, null=True)
     field_changed_display = models.CharField(_('Field changed display'), max_length=100, null=True)
     current_value = models.CharField(_('Current value'), max_length=400, null=True)
     previous_value = models.CharField(_('Previous value '), max_length=400, null=True)
     create_user = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
+
+    object_id = models.UUIDField()  # uuid AbstractModel
     content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
     content_object = GenericForeignKey()
 
@@ -126,6 +126,7 @@ def save_obj(sender, **kwargs):
 
 
 pre_save.connect(save_obj, dispatch_uid=AbstractModel)
+
 
 def delete_obj(sender, **kwargs):
     """Get User on request"""
