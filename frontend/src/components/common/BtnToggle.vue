@@ -4,7 +4,7 @@ interface Option {
   value: string | boolean | number
 }
 const props = withDefaults(defineProps<{
-  modelValue: string | boolean | number
+  modelValue?: string | boolean | number
   items: Option[]
 }>(), {
 
@@ -21,6 +21,7 @@ const emit = defineEmits(['update:model-value'])
       :transparent="modelValue !== button.value"
       :filled="modelValue === button.value"
       class="rounded-0 border-none flex-1"
+      type="button"
       @click="emit('update:model-value', button.value)"
     />
   </div>
