@@ -79,7 +79,9 @@ const createNewCalculation = async () => {
 const closeNewCalculation = () => {
   showCreateNewCalculation = false
   calculationForm.value.reset()
-  newCalculation = {}
+  newCalculation = {
+    isAdm: true,
+  }
 }
 const loadCalculations = async (creditor: any) => {
   const { id } = creditor
@@ -341,7 +343,7 @@ onMounted(() => {
               :disable="loading"
             />
             <label class="flex gap-4 items-center mb-4">
-              <div class="">Fase do Cálculo</div>
+              <div class="font-bold color-gray-8 text-md">Fase do Cálculo</div>
               <BtnToggle
                 v-model="newCalculation.isAdm"
                 class="bg--base flex-1"

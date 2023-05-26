@@ -1,5 +1,6 @@
 <script setup lang='ts'>
 const attrs = useAttrs() as any
+const { dialog } = useQuasar()
 
 let loading = $ref(false)
 
@@ -141,19 +142,48 @@ const openCredit = async (credit: any) => {
 const addCreditValues = (data: any[], amount = 1) => {
   data.push(...Array(amount).fill(0).map(() => clone({})))
 }
+const removeCredit = (credit: any) => {
+  dialog({
+    title: 'Excluir Créditos',
+    message: 'Você tem certeza que deseja excluir este Crédito?',
+    cancel: true,
+    persistent: true,
+  }).onOk(async () => {
+    loading = true
+    try {
+      await calculationService.deleteCredit(credit)
+      await loadCalculation()
+      notify({ message: 'O Crédito foi apagado com sucesso!' })
+    }
+    catch (error) {
+      printError('ERROR ON DELETE CREDIT:', error)
+    }
+    finally {
+      loading = false
+    }
+  })
+}
 const removeCreditValue = async (values: any[], line: any, index: number, table: any) => {
   if (!line.id) {
     values.splice(index, 1)
     return
   }
-  line.loading = true
-  const result = await fetch(`${host}${`${table.endPoint}detail/${line.id}`}/`, { method: 'DELETE', headers })
-    .then((result: any) => result.json())
-    .then((result: any) => Object.values(Object.values(result).at(0) as any)?.at(1))
-  line.loading = false
-  if (Array.isArray(result) && result?.at(0)?.code)
-    return
-  values.splice(index, 1)
+  dialog({
+    title: 'Excluir Linha',
+    message: 'Você tem certeza que deseja excluir esta linha de Crédito?',
+    cancel: true,
+    persistent: true,
+  }).onOk(async () => {
+    line.loading = true
+    const result = await fetch(`${host}${`${table.endPoint}detail/${line.id}`}/`, { method: 'DELETE', headers })
+      .then((result: any) => result.json())
+      .then((result: any) => Object.values(Object.values(result).at(0) as any)?.at(1))
+    line.loading = false
+    if (Array.isArray(result) && result?.at(0)?.code)
+      return
+    values.splice(index, 1)
+    notify({ message: 'Linha de Crédito excluida com sucesso!' })
+  })
 }
 const forms = ref(null as any)
 const calculateCredit = async (credit: any, creditIndex: number) => {
@@ -162,23 +192,31 @@ const calculateCredit = async (credit: any, creditIndex: number) => {
   if (!canSubmit)
     return
   const { tables } = credit
-  loading = true
-  for (const table of tables) {
-    for (const lineIndex in table.values) {
-      const line = table.values[lineIndex]
-      table.values[lineIndex].loading = true
-      const method = line.id ? 'PUT' : 'POST'
-      const result: any = await fetch(`${host}${table.endPoint}${method === 'PUT' ? 'detail/' : ''}${line.id ? `${line.id}/` : ''}`, {
-        method,
-        body: JSON.stringify({ ...line, fund_id: credit.id }),
-        headers,
-      })
-        .then(response => response.json())
-        .then(response => Object.values(response).at(0))
-      table.values[lineIndex] = result
+  dialog({
+    title: 'Calcular Créditos',
+    message: 'Você tem certeza que deseja calcular estes créditos?',
+    cancel: true,
+    persistent: true,
+  }).onOk(async () => {
+    loading = true
+    for (const table of tables) {
+      for (const lineIndex in table.values) {
+        const line = table.values[lineIndex]
+        table.values[lineIndex].loading = true
+        const method = line.id ? 'PUT' : 'POST'
+        const result: any = await fetch(`${host}${table.endPoint}${method === 'PUT' ? 'detail/' : ''}${line.id ? `${line.id}/` : ''}`, {
+          method,
+          body: JSON.stringify({ ...line, fund_id: credit.id }),
+          headers,
+        })
+          .then(response => response.json())
+          .then(response => Object.values(response).at(0))
+        table.values[lineIndex] = result
+      }
     }
-  }
-  loading = false
+    notify({ message: 'Crédito calculado com sucesso!' })
+    loading = false
+  })
 }
 
 const isRequired = ({ required }: any) => required && [(value: any) => !!value || 'Campo obrigatório!']
@@ -208,7 +246,7 @@ const loadTemplate = async (id: string) => {
 const creditsAmount = computed(() => calculation?.credits?.length || 0)
 const classesAmount = computed(() => calculation?.classes?.length)
 const totalValue = computed(() => calculation?.credits
-  ?.map(({ total }: any) => total || 0)
+  ?.map(({ total }: any) => total?.totalCorrected || 0)
   ?.reduce((acc: number, curr: number) => acc + curr || 0, 0))
 onMounted(async () => {
   loading = true
@@ -250,6 +288,9 @@ const statusLabel = (status: string) => {
     return 'Sucesso'
   if (['F', 'G', 'H', 'A', 'P', 'R', 'D', 'B'].includes(status))
     return 'Erro'
+}
+const onClick = () => {
+
 }
 </script>
 
@@ -316,7 +357,7 @@ const statusLabel = (status: string) => {
           @click="loadCalculation(true)"
         />
       </template>
-      <Btn label="Alterar Status" outlined @click="showNewCredit = true" />
+      <Btn label="Alterar Status" outlined @click="onClick" />
       <Btn label="Novo Crédito" icon="i-carbon-add-filled" @click="showNewCredit = true" />
     </Header>
 
@@ -370,7 +411,7 @@ const statusLabel = (status: string) => {
                   label="Excluir Crédito"
                   icon="i-carbon-trash-can"
                   transparent
-                  @click.stop
+                  @click.stop="removeCredit(credit)"
                 />
               </div>
               <div class="self-center flex-1 flex justify-end text-lg flex gap-3">
@@ -380,7 +421,7 @@ const statusLabel = (status: string) => {
                 <div class="font-bold">
                   Total
                   {{ credit?.summary?.find(({ key }: any) => key === 'total')?.label }}
-                  {{ (credit.total)?.toFixed(2) || 0 }}
+                  {{ credit?.total?.totalCorrected?.toFixed(2) || 0 }}
                 </div>
               </div>
             </template>
