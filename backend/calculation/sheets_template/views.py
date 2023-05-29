@@ -21,6 +21,7 @@ from os import remove
 
 import json
 
+import base64
 
 class SheetTemplateViewApi(AbstractViewApi):
     """HTTP methods for verdict"""
@@ -91,13 +92,18 @@ class SheetTemplateViewApi(AbstractViewApi):
                     for col in row:
                         if col.value:
                             if type(col.value) == str and col.value.find('JUCA=') >= 0:
-                                col.value = eval(str(col.value)[5:])
+                                try:
+                                    col.value = str(eval(str(col.value)[5:]))
+                                except:
+                                    col.value = str("")
                         else:
                             pass
 
             archive.save(new_name)
             with open(new_name, 'rb') as archive_excel:
                 excel_file = archive_excel.read()
+                base64_encoded_data = base64.b64encode(excel_file)
+                base64_message = base64_encoded_data.decode('utf-8')
 
             list_html = {}
             for sheet in archive:
@@ -108,7 +114,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                 list_html[sheet._WorkbookChild__title] = result_html
 
             remove(new_name)
-            return JsonResponse({"html": f"\"{str(list_html)}\"", "excel": f"\"{str(excel_file)}"})
+            return JsonResponse({"html": f"\"{str(list_html)}\"", "excel": f"{base64_message}"})
 
         except BaseException as e:
             return JsonResponse({'errors': str(e)})
