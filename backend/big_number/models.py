@@ -63,3 +63,22 @@ class BigNumberMethod(AbstractModel):
 
     def __str__(self):
         return f"{self.name} || {self.big_number.content_object.app_label} || {self.big_number.content_object.name}"
+
+    def get_fields(self):
+        return self.bignumbermethodfields_set.all()
+
+
+class BigNumberMethodFields(AbstractModel):
+    """
+    A model that represents a method associated with a big number method.
+    Attributes:
+        big_number_method (models.ForeignKey): A foreign key to a `BigNumber` object.
+        field (models.CharField): The name of the method for display purposes.
+        field_type (models.CharField): The type of model field as a string.
+    """
+    big_number_method = models.ForeignKey(BigNumberMethod, on_delete=models.PROTECT)
+    field = models.CharField(_('Field for exhibition'), max_length=50)
+    field_type = models.CharField(max_length=50, choices=FIELD_TYPE_CHOICES, default='charfield')
+
+    def __str__(self):
+        return f"{self.field} || {self.big_number_method}"

@@ -15,7 +15,8 @@ from django.contrib import admin
 admin.site.register(BigNumber)
 """
 from django.contrib import admin
-from big_number.models import BigNumber, BigNumberMethod
+from big_number.models import BigNumber, BigNumberMethod, BigNumberMethodFields
 
 admin.site.register(BigNumber)
 admin.site.register(BigNumberMethod)
+admin.site.register(BigNumberMethodFields)
