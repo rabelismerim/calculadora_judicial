@@ -55,6 +55,11 @@ const newCreditor = computed({
     emit('update:creditor', value)
   },
 })
+const removeRecovering = (index: number) => {
+  const creditor = clone(newCreditor.value)
+  creditor.recoverings.splice(index, 1)
+  newCreditor.value = creditor
+}
 const clear = async () => {
   newCreditor.value = clone(nullCreditor)
   await delay(0.1)
@@ -66,6 +71,10 @@ const onSubmit = async () => {
   const isValid = await form.value.validate()
   if (!isValid)
     return
+  if (newCreditor.value.recoverings.length <= 0) {
+    throwError({ message: 'Precisa de no mínimo uma Recuperanda selecionada!' })
+    return
+  }
   loading = true
   try {
     const result: any = await creditorsService.newCreditors(newCreditor.value)
@@ -151,7 +160,7 @@ const onSubmit = async () => {
             />
           </div>
           <div
-            v-for="{ recoveringId, rateId } in newCreditor.recoverings as any[]"
+            v-for="({ recoveringId, rateId }, index) in newCreditor.recoverings as any[]"
             :key="recoveringId"
             class="flex gap-4 py-1 items-center"
           >
@@ -159,7 +168,7 @@ const onSubmit = async () => {
               {{ options.recoverings.find(({ id }) => id === recoveringId)?.entity?.name }}
               - {{ options.rates.find(({ id }) => id === rateId)?.index }}
             </div>
-            <button type="button" class="color--error hover:bg--error/12 rounded p-2">
+            <button type="button" class="color--error hover:bg--error/12 rounded p-2" @click="removeRecovering(index)">
               <div class="i-carbon-trash-can" />
             </button>
           </div>
