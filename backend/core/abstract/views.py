@@ -11,6 +11,7 @@ from django.core.cache.utils import make_template_fragment_key
 from django.http import JsonResponse, Http404
 from django.template.response import ContentNotRenderedError
 from django.utils.encoding import smart_str
+from drf_yasg import openapi
 from rest_framework import generics, serializers, status
 from rest_framework.filters import BaseFilterBackend
 from rest_framework.generics import get_object_or_404
@@ -43,6 +44,14 @@ class CustomSchema(AutoSchema):
 
     Extends AutoSchema to add custom functionality for generating tags and descriptions in the OpenAPI schema.
     """
+    date_example = "2021-08-31"
+    datetime_example = "2021-08-31T19:24:56.830Z"
+    email_example = "jane.doe@example.com"
+    uri_example = "http://example.com"
+    uuid_example = "123e4567-e89b-12d3-a456-426614174000"
+    float_example = 1.23
+    integer_example = 42
+    binary_example = "SGVsbG8gV29ybGQ="  # "Hello World" em base64
 
     def get_operation_id_base(self, path, method, action):
         """
@@ -55,6 +64,21 @@ class CustomSchema(AutoSchema):
         if hasattr(view, 'operation_id_base') and isinstance(view.operation_id_base, str):
             return view.operation_id_base
         return super(CustomSchema, self).get_operation_id_base(path, method, action)
+
+    def get_example(self, example):
+        examples = {
+            'date': "2021-08-31",
+            'datetime': "2021-08-31T19:24:56.830Z",
+            'email': "jane.doe@example.com",
+            'uri': "http://example.com",
+            'uuid': "123e4567-e89b-12d3-a456-426614174000",
+            'float': 0,
+            'integer': 0,
+            'binary': 'binary',
+            'string': 'string',
+        }
+
+        return examples.get(example)
 
     def map_serializer(self, serializer):
         """
@@ -75,7 +99,28 @@ class CustomSchema(AutoSchema):
             dynamic_methods = big.bignumbermethod_set.all()
             for method in dynamic_methods:
                 new_field = getattr(serializers, method.get_field_type_display())()
-                example[method.name] = self.map_field(new_field)['type']
+                big_field_type = self.map_field(new_field)['type']
+                example[method.name] = big_field_type
+
+                if big_field_type in ['object', 'array']:
+                    method_fields = method.get_fields()
+                    new_example = {}
+                    for method_field in method_fields:
+                        field_schema = self.map_field(getattr(serializers, method_field.get_field_type_display())())
+                        field_type = field_schema['type']
+                        format_ = field_schema.get('format')
+                        if format_:
+                            example_value = self.get_example(format_)
+                            new_example[method_field.field] = example_value if example_value is not None else field_type
+                        else:
+                            example_value = self.get_example(field_type)
+                            new_example[method_field.field] = example_value if example_value is not None else field_type
+
+                    if big_field_type == 'array':
+                        example[method.name] = [new_example]
+                    else:
+                        example[method.name] = new_example
+
             fields['properties'][big.path] = {
                 'example': example
             }
