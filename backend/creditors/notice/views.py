@@ -53,6 +53,10 @@ class NoticeUpdateApi(AbstractViewApi):
             process, such as what was requested by the creditor, how much was calculated due, the dates and amounts"""),
         'get': _("""Get the entire list of notices, containing the classes and values.
         """),
+        'delete': _("""Delete a specific Notice to the ID passed by the url
+                Returns:
+                    JsonResponse: A JSON response containing the ok message.
+                """)
     }
 
     @doc(_("""Method to update existing NoticeAJ for a creditor.
@@ -122,6 +126,10 @@ class NoticeRecoveringUpdateApi(AbstractViewApi):
                 process, such as what was requested by the creditor, how much was calculated due, the dates and 
                 amounts.
                 """),
+        'delete':_("""Delete a specific NoticeRecovering to the ID passed by the url
+            Returns:
+                JsonResponse: A JSON response containing the ok message.
+            """)
     }
 
     @doc(_("""    Method to update existing NoticeRecovering for a creditor.

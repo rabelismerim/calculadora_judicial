@@ -58,6 +58,11 @@ class ClaimCreditorUpdateApi(AbstractViewApi):
     model = ClaimCreditor
     query_params = []
     http_method_names = ['put', 'delete']
+    docs = docs.copy()
+    docs['delete'] = _("""Delete a specific Claim Creditor to the ID passed by the url
+    Returns:
+        JsonResponse: A JSON response containing the ok message.
+    """)
 
     @doc(_("""Method to update existing claim for a creditor.
         It validates the serializer data, gets the 'creditor' and 'classes' objects from the input data,
@@ -124,7 +129,6 @@ class ClaimLawyerApi(AbstractViewApi):
 
         return JsonResponse({'creditor': CreditorSchema(creditor).data}, status=status.HTTP_201_CREATED)
 
-
 class ClaimLawyerDeleteApi(AbstractViewApi):
     """This class provides basic HTTP methods for managing Calculation Objects.
     It includes a serializer_class and required permission_classes to authenticate the users,
@@ -135,3 +139,7 @@ class ClaimLawyerDeleteApi(AbstractViewApi):
     model = ClaimLawyer
     http_method_names = ['delete']
     docs = docs.copy()
+    docs['delete'] = _("""Delete a specific Claim Lawyer to the ID passed by the url
+            Returns:
+                JsonResponse: A JSON response containing the ok message.
+            """)

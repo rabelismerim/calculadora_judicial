@@ -183,7 +183,10 @@ class FundDocumentSchema(AbstractClassesFundsSchema):
             raise serializers.ValidationError([_('Document Fund already registered')])
         data['statement_document'] = {}
         for field_name in self.write_only_fields.keys():
-            data['statement_document'][field_name] = data.pop(field_name)
+            if field_name == 'is_extraconcursal':
+                data['statement_document'][field_name] = data.pop(field_name, False)
+            else:
+                data['statement_document'][field_name] = data.pop(field_name)
         return super(FundDocumentSchema, self).validate(data)
 
 
