@@ -82,6 +82,8 @@ class BaseTestsDjango(BaseTests, TransactionTestCase):
         """Assert detail of HTTP GET requests"""
         if hasattr(self, 'path') and self.has_get():
             path = getattr(self, 'path_get', None) or getattr(self, 'path', None)
+            if str(path).endswith('None'):
+                raise ValueError('Parametro nao encontrado')
             response = self.get(path)
             if response.status_code == 404:
                 self.print('\n\n')

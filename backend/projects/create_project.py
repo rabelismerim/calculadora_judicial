@@ -22,6 +22,9 @@ def cpf_generator():
 
     return '{}{}{}.{}{}{}.{}{}{}-{}{}'.format(*cpf)
 
+def generate_number():
+    return ''.join([str(secrets.randbelow(10)) for _ in range(8)])
+
 
 def get_data_project(user_id: str = None):
     if not user_id:

@@ -479,7 +479,7 @@ class AbstractViewApi(generics.GenericAPIView):
         obj_id = kwargs.get('id')
         obj = get_object_or_404(self.model, id=obj_id)
         obj.delete()
-        return JsonResponse({'data': _(f'{self.__get_model_name().capitalize()} deleted')}, status=status.HTTP_200_OK)
+        return JsonResponse({'data': _(f'{self.__get_model_name().replace("_", " ").title()} deleted')}, status=status.HTTP_200_OK)
 
     def __get_exclude_values(self) -> list or tuple:
         if hasattr(self, 'exclude') and (isinstance(self.exclude, list) or isinstance(self.exclude, tuple)):

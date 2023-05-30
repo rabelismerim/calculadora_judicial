@@ -60,7 +60,7 @@ class BigNumberSchema(serializers.Serializer):
         obj_method = getattr(obj, method, None)
 
         if not obj_method:
-            self.fields.pop(name)
+        #     self.fields.pop(name)
             return
         if callable(obj_method):
             try:

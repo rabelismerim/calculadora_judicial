@@ -129,18 +129,17 @@ class Dashboard(AbstractModel, Query):
     """
     query_params = QUERY_DASHBOARD
 
+    def has_permission(self, request):
+        perms = ['can_view_all_projects']
+        return request.user.has_permission(perms)
+
     def calc_by_phase(self, request):
-        """
-        Gets calculations for a given user and returns the number of calculations by phase.
-
-        Args:
-            request: An object that contains information about the current request.
-
-        Returns:
-            dict: A dictionary that contains the number of calculations that are in each phase.
-        """
-        calculations = Calculation.objects.filter(
-            creditor__recovering__project__engagement__users__user=request.user).values_list('id', flat=True).distinct()
+        if self.has_permission(request):
+            calculations = Calculation.objects.all().values_list('id', flat=True).distinct()
+        else:
+            calculations = Calculation.objects.filter(
+                creditor__recovering__project__engagement__users__user=request.user).values_list('id',
+                                                                                                 flat=True).distinct()
         total = calculations.count()
         total_adm = calculations.filter(is_adm=True).distinct().count()
         total_judicial = total - total_adm

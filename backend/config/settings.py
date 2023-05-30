@@ -33,8 +33,8 @@ if '--env' in sys.argv:
     env = sys.argv[env_index]
     env_file = f".env.{env}"
 
-    if not env in ['dev', 'prod', 'hml']:
-        raise ValueError('Incorrect option to use the --env argument. The options are: dev, prod, hml')
+    if not env in ['dev', 'prod', 'hml', 'azure']:
+        raise ValueError('Incorrect option to use the --env argument. The options are: dev, prod, hml, azure')
 
     if not os.path.exists(env_file):
         raise ValueError(f'Configuration file not found to: {env_file}')

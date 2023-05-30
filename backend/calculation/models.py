@@ -15,6 +15,7 @@ from calculation.comparative.signals import new_calc
 from calculation.premise.models import Premise
 from config.settings import GROUP_NAME_EXECUTOR, GROUP_NAME_REVIEWER, GROUP_NAME_APPROVER, GROUP_NAME_SPECIAL_APPROVE
 from core.abstract.models import AbstractModel
+from creditors.classes.models import CLASSE_CHOICES
 from creditors.models import Creditor
 from projects.project_user.models import ProjectUser
 from rates.models import Rate
@@ -295,8 +296,10 @@ class Calculation(AbstractModel):
         class_totals = {}
         total_value_sum = 0
         total_calculated_sum = 0
+        quantity_by_classes = []
         for class_dict in classes:
             class_name = class_dict['classe']
+            quantity_by_classes.append(class_name)
             class_total_value = class_dict['total_value']
             class_total_calculated = class_dict['total_calculated']
             total_value_sum += class_total_value
@@ -313,11 +316,27 @@ class Calculation(AbstractModel):
             class_dict['percentage_calculated'] = (total_calculated / total_calculated_sum) * 100 if total_calculated_sum > 0 else 0
             class_dict['percentage_value'] = (total_value / total_value_sum) * 100 if total_value_sum > 0 else 0
 
-        return [
-            {'classe': class_name, 'total_value': total['total_value'], 'total_calculated': total['total_calculated'],
-             'percentage_value': total.get('percentage_value', 0),
-             'percentage_calculated': total.get('percentage_calculated', 0)} for class_name, total in
-            class_totals.items()]
+        classes_list = []
+        classes_list_included = []
+        classes_choices = dict(CLASSE_CHOICES)
+
+        for class_name, total in class_totals.items():
+            obj = {'classe': class_name, 'classes_display': classes_choices.get(class_name),
+                   'total_value': total['total_value'], 'total_calculated': total['total_calculated'],
+                   'percentage_value': total.get('percentage_value', 0),
+                   'quantity': quantity_by_classes.count(class_name),
+                   'percentage_calculated': total.get('percentage_calculated', 0)}
+            classes_list.append(obj)
+            classes_list_included.append(class_name)
+        for key, value in CLASSE_CHOICES:
+            if not key in classes_list_included:
+                obj = {'classe': key, 'classes_display': value,
+                       'total_value': 0, 'total_calculated': 0,
+                       'percentage_value': 0,
+                       'quantity': 0,
+                       'percentage_calculated': 0}
+                classes_list.append(obj)
+        return classes_list
 
     def get_date_rj_filing(self) -> datetime.date or None:  # B19
         """

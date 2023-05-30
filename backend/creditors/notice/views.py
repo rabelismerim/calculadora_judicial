@@ -41,7 +41,7 @@ class NoticeApi(AbstractViewApi):
 
 class NoticeUpdateApi(AbstractViewApi):
     """HTTP methods for Notice"""
-    http_method_names = ['put']
+    http_method_names = ['put', 'delete']
     serializer_class = NoticeUpdateSchema
     permission_classes = [permissions.IsAuthenticated]
     model = Notice
@@ -110,7 +110,7 @@ class NoticeRecoveringApi(AbstractViewApi):
 
 class NoticeRecoveringUpdateApi(AbstractViewApi):
     """HTTP methods for Notice"""
-    http_method_names = ['put']
+    http_method_names = ['put', 'delete']
     serializer_class = NoticeRecoveringUpdateSchema
     permission_classes = [permissions.IsAuthenticated]
     model = NoticeRecovering

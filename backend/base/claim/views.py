@@ -57,7 +57,7 @@ class ClaimCreditorUpdateApi(AbstractViewApi):
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = ClaimCreditor
     query_params = []
-    http_method_names = ['put']
+    http_method_names = ['put', 'delete']
 
     @doc(_("""Method to update existing claim for a creditor.
         It validates the serializer data, gets the 'creditor' and 'classes' objects from the input data,
@@ -92,7 +92,6 @@ class ClaimLawyerApi(AbstractViewApi):
     serializer_class = ClaimLawyerUpdateSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = ClaimLawyer
-    query_params = []
     http_method_names = ['post']
     docs = docs.copy()
 
@@ -124,3 +123,15 @@ class ClaimLawyerApi(AbstractViewApi):
             claim.coins.dict_update(**coins)
 
         return JsonResponse({'creditor': CreditorSchema(creditor).data}, status=status.HTTP_201_CREATED)
+
+
+class ClaimLawyerDeleteApi(AbstractViewApi):
+    """This class provides basic HTTP methods for managing Calculation Objects.
+    It includes a serializer_class and required permission_classes to authenticate the users,
+    a model instance with a corresponding schema as well as custom query parameters to retrieve data.
+    """
+    serializer_class = ClaimLawyerUpdateSchema
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    model = ClaimLawyer
+    http_method_names = ['delete']
+    docs = docs.copy()
