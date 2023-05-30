@@ -168,26 +168,26 @@ export const parseToSnake = (data: any) => unflatten(Object
     }),
   ))
 
-export const downloadFile = (textToWrite: string, fileNameToSaveAs: string) => {
-  const textFileAsBlob = new Blob([textToWrite], { type: 'text/plain' })
+export const downloadFile = (textToWrite: string, fileNameToSaveAs: string, contentType = 'application/xlsx') => {
+  const byteCharacters = atob(textToWrite)
+  const byteNumbers = byteCharacters
+    .split('')
+    .map((_, index) => byteCharacters.charCodeAt(index))
+  const byteArray = new Uint8Array(byteNumbers)
+  const blob = new Blob([byteArray], { type: contentType })
   const downloadLink = document.createElement('a')
   downloadLink.download = fileNameToSaveAs
   downloadLink.innerHTML = 'Download File'
   if (window.webkitURL != null) {
-    // Chrome allows the link to be clicked
-    // without actually adding it to the DOM.
-    downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob)
+    downloadLink.href = window.webkitURL.createObjectURL(blob)
   }
   else {
-    // Firefox requires the link to be added to the DOM
-    // before it can be clicked.
-    downloadLink.href = window.URL.createObjectURL(textFileAsBlob)
+    downloadLink.href = window.URL.createObjectURL(blob)
     downloadLink.onclick = () => {
       document.body.removeChild(downloadLink)
     }
     downloadLink.style.display = 'none'
     document.body.appendChild(downloadLink)
   }
-
   downloadLink.click()
 }
