@@ -347,16 +347,18 @@ class CanChangeStep(BasePermission):
             next_step = serializer.validated_data['next_step'].lower()
             current_step = calculation.step.lower()
             codename = f'can_change_{current_step}_to_{next_step}'
-            has_perm_user = ProjectUser.objects.filter(user=user, groups__permissions__codename=codename,
-                                                       projectengagement__project__recovering__creditor__calculation__id=
-                                                       calculation_id).exists()
-            if not has_perm_user:
-                return False
             has_codename = PermissionsName().check_exist_codename(codename)
             if not has_codename:
                 text = _('Unable to change status from {} to {}').format(self.__get_choice_step(current_step),
                                                                          self.__get_choice_step(next_step))
                 raise serializers.ValidationError([text])
+
+            has_perm_user = ProjectUser.objects.filter(user=user, groups__permissions__codename=codename,
+                                                       projectengagement__project__recovering__creditor__calculation__id=
+                                                       calculation_id).exists()
+            if not has_perm_user:
+                return False
+
             return True
 
         if request.path == SWAGGER_URL:

@@ -14,6 +14,8 @@ Attributes:
 """
 from rest_framework import serializers
 
+from utils import _
+
 
 class MethodField(serializers.SerializerMethodField):
     def __init__(self, method_name=None, label=None, **kwargs):
@@ -61,6 +63,7 @@ class BigNumberSchema(serializers.Serializer):
 
         if not obj_method:
         #     self.fields.pop(name)
+            raise ValueError(_('{} not found').format(method))
             return
         if callable(obj_method):
             try:

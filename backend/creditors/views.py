@@ -72,13 +72,29 @@ class CreditorCreateApi(AbstractCreditorApi):
     http_method_names = ['get']
     serializer_class = CreditorCreateSchema
     docs = docs.copy()
-    query_params = []
+    query_params = [
+        {
+            "name": "option",
+            "field": "option",
+            "in": "query",
+            "required": False,
+            "description": str(_("Option")),
+            "schema": {"type": "string"}
+        }
+    ]
 
-    @doc(_("""Options for creating creditors or calculations"""))
+    @doc(_("""Choice options for the various Choices that exist on the platform. It can be filtered by the desired 
+    option. Contain the `ID` and the `caption`, where the ID refers to the value that must be passed, and the caption 
+    what must be displayed to the user"""))
     def get(self, request, *args, **kwargs):
         data = {}
+        option = self.get_query_parameters().get('option')
         for key, field in self.serializer_class(many=False).fields.items():
-            data[key] = list(field.data)
+            if option:
+                if option in key:
+                    data[key] = list(field.data)
+            else:
+                data[key] = list(field.data)
         return JsonResponse({'options': data}, status=status.HTTP_200_OK)
 
 

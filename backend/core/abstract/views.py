@@ -289,12 +289,8 @@ class AbstractViewApi(generics.GenericAPIView):
 
         return types.get(instance, str)
 
-    def get_query(self, id_=None, **kwargs):
-        """Validate parameters received in query params, returning query values"""
-        query = self.get_queryset()
-        query_exclude = self.get_exclude_queryset()
-        exclude = self.__get_exclude_values()
-
+    def get_query_parameters(self):
+        query = {}
         for valid_params in self.query_params:
             type_instance = valid_params['schema']['type']
             field = valid_params['field']
@@ -311,6 +307,15 @@ class AbstractViewApi(generics.GenericAPIView):
                 else:
                     raise serializers.ValidationError(
                         {name: _('Field in invalid format. It must be in the format{}').format(instance["legend"])})
+        return query
+    def get_query(self, id_=None, **kwargs):
+        """Validate parameters received in query params, returning query values"""
+        query = self.get_queryset()
+        query_exclude = self.get_exclude_queryset()
+        exclude = self.__get_exclude_values()
+        query_parameters = self.get_query_parameters()
+        query.update(query_parameters)
+
         serializer = self.get_serializer_class()
         if id_:
             obj = self.model.objects.exclude(**query_exclude).filter(id=id_, **query, **kwargs).first()
@@ -479,7 +484,8 @@ class AbstractViewApi(generics.GenericAPIView):
         obj_id = kwargs.get('id')
         obj = get_object_or_404(self.model, id=obj_id)
         obj.delete()
-        return JsonResponse({'data': _(f'{self.__get_model_name().replace("_", " ").title()} deleted')}, status=status.HTTP_200_OK)
+        return JsonResponse({'data': _(f'{self.__get_model_name().replace("_", " ").title()} deleted')},
+                            status=status.HTTP_200_OK)
 
     def __get_exclude_values(self) -> list or tuple:
         if hasattr(self, 'exclude') and (isinstance(self.exclude, list) or isinstance(self.exclude, tuple)):

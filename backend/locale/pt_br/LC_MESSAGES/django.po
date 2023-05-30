@@ -3158,8 +3158,12 @@ msgstr ""
 "objeto JSON contendo um objeto de dados de credor serializado."
 
 #: .\backend\creditors\views.py:77
-msgid "Options for creating creditors or calculations"
-msgstr "Opções para criar credores ou cálculos"
+msgid "Choice options for the various Choices that exist on the platform. It can be filtered by the desired \n"
+"    option. Contain the `ID` and the `caption`, where the ID refers to the value that must be passed, and the caption \n"
+"    what must be displayed to the user"
+msgstr "Opções de escolha para os diversos Choices que há na plataforma. Pode ser filtrado pela opção desejada. \n"
+"Contêm o `ID` e a `legenda`, onde o ID se refere ao valor que deve ser passado, e a legenda o que deve ser exibido ao \n"
+"usuário"
 
 #: .\backend\creditors\views.py:101
 msgid ""

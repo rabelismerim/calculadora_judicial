@@ -104,13 +104,10 @@ class Project(AbstractDescription, AbstractDateRecovering):
         super().__init__(*args, **kwargs)
         self._total_sum_creditors = None
 
-    @property
-    def total_sum_creditors(self):
-        if self._total_sum_creditors is None:
-            self._total_sum_creditors = \
-                Creditor.objects.filter(recovering__project=self).select_related('recovering__project').aggregate(
-                    Sum('total'))['total__sum']
-        return self._total_sum_creditors
+    def total_sum_creditors(self) -> float:
+        total = Creditor.objects.filter(recovering__project=self).select_related('recovering__project').aggregate(
+            Sum('total'))['total__sum']
+        return total if total else 0
 
     def total_creditor(self):
         return Creditor.objects.filter(recovering__project=self).count()
