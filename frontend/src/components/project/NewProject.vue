@@ -8,8 +8,8 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits(['update:modelValue', 'success'])
 
 let loading = $ref(false)
-const form = ref(null) as any
-const stepper = ref(null) as any
+const form = ref(null as any)
+const stepper = ref(null as any)
 const { step, hasError, setStep, nextStep, previousStep, clearErrors, validateAll, loadAll } = useSteps(1, 4, stepper, form)
 const errorMessages = ref({})
 const { setErrors, clearAll } = useBackendErrors(errorMessages)

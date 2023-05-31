@@ -9,8 +9,8 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits(['update:modelValue', 'update:project', 'update:options', 'success'])
 
 let loading = $ref(false)
-const form = ref(null) as any
-const stepper = ref(null) as any
+const form = ref(null as any)
+const stepper = ref(null as any)
 const { step, hasError, setStep, nextStep, previousStep, clearErrors, validateAll, loadAll } = useSteps(1, 4, stepper, form)
 const errorMessages = ref({})
 const { setErrors, clearAll } = useBackendErrors(errorMessages)
@@ -286,6 +286,44 @@ const updateOption = (key: string, value: any) => {
             />
           </div>
         </QStep>
+
+        <QStep
+          :name="3"
+          title="Times e Papéis"
+          icon="o_people"
+          :error="hasError.at(3)"
+          class="relative overflow-y-auto max-h-[calc(100vh-326px)] min-h-87 pb-0 pt-6 px-6 overflow-x-hidden"
+        >
+          <div
+            class=""
+            data-step="3"
+          >
+            <InputUsers
+              v-model="editingProject.executors"
+              :users="options.users"
+              label="Executores"
+              :rules="[(value: any) => value?.length > 0 || 'Este campo é obrigatório!']"
+              :error-messages="errorMessages"
+              error-key="executors"
+            />
+            <InputUsers
+              v-model="editingProject.reviewers"
+              :users="options.users"
+              label="Revisores"
+              :rules="[(value: any) => value?.length > 0 || 'Este campo é obrigatório!']"
+              :error-messages="errorMessages"
+              error-key="reviewers"
+            />
+            <InputUsers
+              v-model="editingProject.approvers"
+              :users="options.users"
+              label="Aprovadores"
+              :rules="[(value: any) => value?.length > 0 || 'Este campo é obrigatório!']"
+              :error-messages="errorMessages"
+              error-key="approvers"
+            />
+          </div>
+        </QStep>
       </QStepper>
 
       <div class="relative flex justify-end gap-2 p-3 border-t-1 ">
@@ -305,7 +343,7 @@ const updateOption = (key: string, value: any) => {
           @press="previousStep"
         />
         <Btn
-          v-if="step < 2"
+          v-if="step < 3"
           label="Próximo"
           outlined
           type="button"
@@ -313,7 +351,7 @@ const updateOption = (key: string, value: any) => {
           @press="nextStep"
         />
         <Btn
-          v-if="step === 2"
+          v-if="step === 3"
           label="Concluir"
           type="button"
           :loading="loading"
