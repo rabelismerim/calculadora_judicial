@@ -17,7 +17,7 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits(['update:modelValue', 'update:creditor', 'success'])
 
 let loading = $ref(false)
-const form = ref(null) as any
+const form = ref(null as any)
 
 const nullRecovering = { recoveringId: null, rateId: null }
 let newRecovering = $ref(clone(nullRecovering))
