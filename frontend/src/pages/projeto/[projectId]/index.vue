@@ -50,7 +50,7 @@ const loadProject = async () => {
   }
 }
 
-const calculationForm: any = ref(null)
+const calculationForm: any = ref(null as any)
 let showCreateNewCalculation = $ref(false)
 let newCalculation: any = $ref({
   isAdm: true,
@@ -141,6 +141,7 @@ onMounted(() => {
 
 <template>
   <Page
+    ref="page"
     menu-label="Informações Principais"
     :loading="loading"
     :links="[{ label: 'Projetos', url: '/projetos' }, { label: project.description }]"
@@ -224,13 +225,13 @@ onMounted(() => {
       :items="tabFilters"
     />
 
-    <div v-if="filteredRecoverings.length > 0" class="grid gap-3">
+    <div v-if="filteredRecoverings.length > 0" class="flex flex-col gap-3">
       <Accordion
         v-for="recovering in filteredRecoverings"
         :key="recovering.id"
         :title="recovering.entity.name"
         :subtitle="formatLegalNumber(recovering.entity.legalNumber)"
-        class="w-[min(calc(100vw_-_106px),100%)_!important]"
+        class="accordion w-[min(1600px,100%)_!important]"
       >
         <template #header-left>
           <IconHint

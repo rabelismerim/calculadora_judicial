@@ -11,6 +11,14 @@ const tabFilters = [
   { label: '2. Extrato Contábil', value: 'ext' },
 ]
 
+const headers: any = {
+  'Content-type': 'application/json',
+  'Accept': 'application/json',
+}
+if (import.meta.env.VITE_TOKEN)
+  headers.Authorization = `Token ${import.meta.env.VITE_TOKEN}`
+const host = import.meta.env.VITE_API_URL.slice(0, -9)
+
 let project = $ref({} as any)
 const loadProject = async () => {
   if (attrs.projectId)
@@ -24,8 +32,26 @@ const loadCreditor = async () => {
 const recovering = computed(() => project?.recoverings?.find(({ id }: any) => id === creditor?.recoveringId))
 
 let options = $ref({} as any)
-const loadOptions = async () => {
-  options = await creditorsService.getOptions()
+const loadOptions = async (calculationId: string) => {
+  const users = await usersService.getUsers()
+  const result = await creditorsService.getOptions()
+  const { stepCalculationOptions = [] } = result
+  const steps = []
+  for (const step of stepCalculationOptions) {
+    const error = await fetch(`${host}/juca/api/v1/calculation/${calculationId}/check_step/`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({
+        next_step: step?.id,
+      }),
+    })
+      .then((result: any) => result?.json())
+    if (!error?.data?.errors)
+      steps.push(step)
+  }
+  result.steps = steps
+  result.users = users
+  options = result
 }
 
 let rates = $ref([] as any[])
@@ -73,13 +99,6 @@ const loadCalculation = async (showLoading = false) => {
     loading = false
 }
 
-const headers: any = {
-  'Content-type': 'application/json',
-  'Accept': 'application/json',
-}
-if (import.meta.env.VITE_TOKEN)
-  headers.Authorization = `Token ${import.meta.env.VITE_TOKEN}`
-const host = import.meta.env.VITE_API_URL.slice(0, -9)
 let newCredit = $ref({} as any)
 const newCreditForm = ref(null as any)
 let showNewCredit = $ref(false)
@@ -255,7 +274,7 @@ onMounted(async () => {
     await loadCreditor()
     await loadCalculation()
     await loadTemplates()
-    await loadOptions()
+    await loadOptions(calculation?.id)
     await loadRates()
   }
   catch (error) {
@@ -266,6 +285,14 @@ onMounted(async () => {
   }
 })
 
+const stepColors: any = {
+  S: '#AAAAAA', // To Calculate
+  C: '#C4D600', // To Review
+  E: '#86BC25', // To Approve
+  B: '#43B02A', // To Approve Special
+  A: '#007CB0', // Approved
+  R: '#DA291C', // Failed
+}
 const statusColors: any = {
   S: '#c4d600', // Requested
   C: '#86BC25', // Concluded
@@ -289,9 +316,13 @@ const statusLabel = (status: string) => {
   if (['F', 'G', 'H', 'A', 'P', 'R', 'D', 'B'].includes(status))
     return 'Erro'
 }
-const onClick = () => {
 
-}
+const history = computed(() => {
+  const { historical = [], step = [] } = calculation?.historical || {}
+  return [...historical, ...step]
+    .sort(({ createdAt: a }: any, { createdAt: b }: any) => a < b ? -1 : 1)
+})
+const showChangeStatus = $ref(false)
 </script>
 
 <template>
@@ -314,39 +345,13 @@ const onClick = () => {
       />
     </template>
     <template #menu>
-      <QTabPanels v-model="menu" animated class="calculation-details">
-        <QTabPanel name="project" class="px-0">
-          <ProjectDescription :project="project" />
-        </QTabPanel>
-        <QTabPanel name="analysis" class="px-0">
-          <ProjectDetailCell label="Id">
-            {{ `#${calculation?.number}` || '-' }}
-          </ProjectDetailCell>
-          <ProjectDetailCell label="Incidente">
-            {{ calculation?.incident?.number || '-' }}
-          </ProjectDetailCell>
-          <ProjectDetailCell label="Recuperanda">
-            {{ recovering?.entity?.name || '-' }}
-          </ProjectDetailCell>
-          <ProjectDetailCell label="Recuperanda - CNPJ">
-            {{ formatLegalNumber(recovering?.entity?.legalNumber) || '-' }}
-          </ProjectDetailCell>
-          <ProjectDetailCell label="Credor">
-            {{ creditor?.entity?.name || '-' }}
-          </ProjectDetailCell>
-          <ProjectDetailCell :label="`Credor - ${creditor?.entity?.legalNumber?.length === 11 ? 'CPF' : 'CNPJ'}`">
-            {{ formatLegalNumber(creditor?.entity?.legalNumber) || '-' }}
-          </ProjectDetailCell>
-          <ProjectDetailCell label="Classes">
-            <div
-              v-for="classe in calculation?.classes as any[]"
-              :key="classe.id"
-            >
-              {{ classe.classeDisplay }}: {{ classe.totalValue }}%
-            </div>
-          </ProjectDetailCell>
-        </QTabPanel>
-      </QTabPanels>
+      <CalculationMenu
+        v-model="menu"
+        :calculation="calculation"
+        :creditor="creditor"
+        :project="project"
+        :recovering="recovering"
+      />
     </template>
     <Header
       :title="`Cálculo #${calculation?.number || ''} - ${calculation?.creditor?.entity?.name || ''}`"
@@ -357,8 +362,16 @@ const onClick = () => {
           @click="loadCalculation(true)"
         />
       </template>
-      <Btn label="Alterar Status" outlined @click="onClick" />
-      <Btn label="Novo Crédito" icon="i-carbon-add-filled" @click="showNewCredit = true" />
+      <template #bottom>
+        <span v-if="calculation?.step" class="self-center mr-3 font-bold text-lg">Status do Cálculo</span>
+        <StatusTag
+          v-if="calculation?.step"
+          :label="calculation?.stepDisplay "
+          :color="stepColors[calculation?.step]"
+        />
+      </template>
+      <Btn label="Alterar Status" outlined :disabled="!calculation?.id" @click="showChangeStatus = true" />
+      <Btn label="Novo Crédito" icon="i-carbon-add-filled" :disabled="!calculation?.id" @click="showNewCredit = true" />
     </Header>
 
     <TabFilter
@@ -549,6 +562,13 @@ const onClick = () => {
     </QTabPanels>
 
     <template #out>
+      <ChangeStatus
+        v-model="showChangeStatus"
+        :history="history"
+        :options="options"
+        :calculation-id="calculation?.id"
+        @update-status="loadOptions(calculation?.id)"
+      />
       <Modal
         v-model="showNewCredit"
         title="Criar Novo Credito"
