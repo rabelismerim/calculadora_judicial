@@ -13,7 +13,10 @@ const props = withDefaults(defineProps<{
     </div>
     <div class="flex justify-between gap-4">
       <div class="flex no-wrap gap-2 items-center">
-        <h2 class="font-bold text-4xl">
+        <div v-if="$slots.title">
+          <slot name="title" />
+        </div>
+        <h2 v-else class="font-bold text-4xl">
           {{ title }}
         </h2>
         <slot name="side" />
