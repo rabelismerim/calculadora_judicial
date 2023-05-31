@@ -63,9 +63,9 @@ const getProject = (id: string) => api
     return project
   })
 
+const mapId = (id: string) => ({ id })
 const newProject = (project: any) => {
   const { executors, approvers, reviewers, engagements, recoverings } = project
-  const mapId = (id: string) => ({ id })
   const data = {
     ...project,
     engagement: {
@@ -102,6 +102,9 @@ const updateProject = ({
   financialManagerId,
   legalManagerId,
   calculationManagerId,
+  executors,
+  reviewers,
+  approvers,
 }: any) => api
   .put(`/v1/projects/${id}/`, {
     description,
@@ -121,6 +124,9 @@ const updateProject = ({
     financialManagerId,
     legalManagerId,
     calculationManagerId,
+    executors: executors.map(mapId),
+    approvers: approvers.map(mapId),
+    reviewers: reviewers.map(mapId),
   })
   .then((result: any) => result?.project)
 

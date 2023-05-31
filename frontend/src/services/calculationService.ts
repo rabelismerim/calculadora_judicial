@@ -298,6 +298,13 @@ const deleteCredit = ({ type, id }: any) => {
     .delete(`${types[type]}/${id}/`)
 }
 
+const checkStep = (step: any, calculationId: string) => api
+  .put(`/v1/calculation/${calculationId}/check_step/`, { nextStep: step?.id })
+
+const changeStep = ({ nextStep, comment }: any, calculationId: string) => api
+  .put(`/v1/calculation/${calculationId}/change_step/`, { nextStep, comments: [{ text: comment }] })
+  .then((result: any) => result)
+
 export default {
   newCalculation,
   getCalculation,
@@ -322,4 +329,6 @@ export default {
   getAccountingStatement,
   getAccountingStatementXLSX,
   deleteCredit,
+  checkStep,
+  changeStep,
 }
