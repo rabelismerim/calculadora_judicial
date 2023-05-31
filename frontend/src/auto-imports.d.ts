@@ -54,6 +54,7 @@ declare global {
   const flatten: typeof import('./composables/utils')['flatten']
   const formatDate: typeof import('./composables/utils')['formatDate']
   const formatDateFromBackend: typeof import('./composables/utils')['formatDateFromBackend']
+  const formatDateHour: typeof import('./composables/utils')['formatDateHour']
   const formatDateToBackend: typeof import('./composables/utils')['formatDateToBackend']
   const formatLegalNumber: typeof import('./composables/utils')['formatLegalNumber']
   const get: typeof import('@jrnwn/utils')['get']
@@ -395,6 +396,7 @@ declare module 'vue' {
     readonly flatten: UnwrapRef<typeof import('./composables/utils')['flatten']>
     readonly formatDate: UnwrapRef<typeof import('./composables/utils')['formatDate']>
     readonly formatDateFromBackend: UnwrapRef<typeof import('./composables/utils')['formatDateFromBackend']>
+    readonly formatDateHour: UnwrapRef<typeof import('./composables/utils')['formatDateHour']>
     readonly formatDateToBackend: UnwrapRef<typeof import('./composables/utils')['formatDateToBackend']>
     readonly formatLegalNumber: UnwrapRef<typeof import('./composables/utils')['formatLegalNumber']>
     readonly get: UnwrapRef<typeof import('@jrnwn/utils')['get']>
