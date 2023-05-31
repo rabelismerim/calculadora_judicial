@@ -24,12 +24,12 @@ steps:
     versionSource: 'spec'
     versionSpec: '8.x'
 - task: DownloadSecureFile@1
-  name: EnvDev
+  name: EnvPrd
   inputs:
-    secureFile: '.env'
+    secureFile: '.envprd'
 - script: |
-    echo Installing $(EnvDev.secureFilePath) to the path backend...
-    copy $(EnvDev.secureFilePath) $(Build.SourcesDirectory)/backend 
+    echo Installing $(EnvPrd.secureFilePath) to the path backend...
+    copy $(EnvPrd.secureFilePath) $(Build.SourcesDirectory)/backend 
 - task: PythonScript@0
   displayName: 'Export project path'
   inputs:
@@ -47,6 +47,7 @@ steps:
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
 - script: |
     npm install --force
+    npm run build:prod
   workingDirectory: $(Build.SourcesDirectory)/frontend
   displayName: 'Install node prerequisites'
 - script: |
@@ -70,6 +71,6 @@ steps:
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)/backend'
     Contents: '**'
-    TargetFolder: 'D:\DJUD'
+    TargetFolder: 'D:\JUCA\'
     OverWrite: true
     flattenFolders: true
