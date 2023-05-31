@@ -99,46 +99,7 @@ const loadCalculation = async (showLoading = false) => {
     loading = false
 }
 
-let newCredit = $ref({} as any)
-const newCreditForm = ref(null as any)
-let showNewCredit = $ref(false)
-const clearNewCredit = () => {
-  newCredit = {}
-  newCreditForm.value.reset()
-}
-const createCredit = async () => {
-  const { classId, coinId, rateId, templateId, endPoint } = newCredit
-  if (!endPoint)
-    return
-
-  try {
-    loading = true
-    const result: any = await api.post(`${host}${endPoint}`, {
-      ...newCredit,
-      classes: {
-        classe: classId,
-      },
-      coins: {
-        coin: coinId,
-      },
-      rateId,
-      templateId,
-      calculationId: attrs.calculationId,
-    })
-    if (result) {
-      loadCalculation()
-      notify({ message: 'Crédito Criado com Sucesso!' })
-      clearNewCredit()
-      showNewCredit = false
-    }
-  }
-  catch (error) {
-    printError('ERROR ON CREATING CREDIT:', error)
-  }
-  finally {
-    loading = false
-  }
-}
+const showNewCredit = $ref(false)
 const openCredit = async (credit: any) => {
   const { tables } = credit
   const isClear = tables
@@ -240,28 +201,6 @@ const calculateCredit = async (credit: any, creditIndex: number) => {
 
 const isRequired = ({ required }: any) => required && [(value: any) => !!value || 'Campo obrigatório!']
 
-const filterInput = $ref('')
-let templates = $ref([] as any[])
-const filteredTemplates = computed(() => templates
-  ?.filter(({ name }: any) => name.toLowerCase().includes(filterInput.toLowerCase())))
-const loadTemplates = async () => {
-  templates = await ratesService.getTemplates()
-}
-const loadTemplate = async (id: string) => {
-  if (!id)
-    return
-  const result = await ratesService.getTemplate(id)
-  newCredit.endPoint = result?.endPoint
-  newCredit.fields = result?.fields?.map(({ id, key, label, order, required, typeDisplay }: any) => ({
-    id,
-    key,
-    label,
-    order,
-    type: typeDisplay,
-    required,
-  }))
-}
-
 const creditsAmount = computed(() => calculation?.credits?.length || 0)
 const classesAmount = computed(() => calculation?.classes?.length)
 const totalValue = computed(() => calculation?.credits
@@ -273,7 +212,6 @@ onMounted(async () => {
     await loadProject()
     await loadCreditor()
     await loadCalculation()
-    await loadTemplates()
     await loadOptions(calculation?.id)
     await loadRates()
   }
@@ -353,26 +291,15 @@ const showChangeStatus = $ref(false)
         :recovering="recovering"
       />
     </template>
-    <Header
-      :title="`Cálculo #${calculation?.number || ''} - ${calculation?.creditor?.entity?.name || ''}`"
+
+    <CalculationHeader
+      :calculation="calculation"
+      :colors="stepColors"
+      @reload-click="loadCalculation(true)"
     >
-      <template #side>
-        <ReloadBtn
-          hint="Recarregar a Lista de Créditos"
-          @click="loadCalculation(true)"
-        />
-      </template>
-      <template #bottom>
-        <span v-if="calculation?.step" class="self-center mr-3 font-bold text-lg">Status do Cálculo</span>
-        <StatusTag
-          v-if="calculation?.step"
-          :label="calculation?.stepDisplay "
-          :color="stepColors[calculation?.step]"
-        />
-      </template>
       <Btn label="Alterar Status" outlined :disabled="!calculation?.id" @click="showChangeStatus = true" />
       <Btn label="Novo Crédito" icon="i-carbon-add-filled" :disabled="!calculation?.id" @click="showNewCredit = true" />
-    </Header>
+    </CalculationHeader>
 
     <TabFilter
       v-model="tab"
@@ -569,125 +496,14 @@ const showChangeStatus = $ref(false)
         :calculation-id="calculation?.id"
         @update-status="loadOptions(calculation?.id)"
       />
-      <Modal
+      <NewCredit
         v-model="showNewCredit"
-        title="Criar Novo Credito"
-        hint="Vincular um Novo Crédito à este Cálculo."
-        modal-class="max-w-200"
-        @close="clearNewCredit"
-      >
-        <QForm ref="newCreditForm" @submit.prevent="createCredit">
-          <div class="p-4 grid grid-cols-2 gap-x-4">
-            <QSelect
-              v-model="newCredit.templateId"
-              :options="filteredTemplates"
-              label="Tipo"
-              outlined
-              use-input
-              emit-value
-              map-options
-              option-value="id"
-              option-label="name"
-              :disable="loading"
-              :rules="[(value: string) => !!value || 'Este Campo é obrigatório!']"
-              dense
-              @input-value="(value: string) => filterInput = value"
-              @update:model-value="(value: string) => loadTemplate(value)"
-            />
-            <QSelect
-              v-model="newCredit.classId"
-              :options="options?.classesOptions"
-              label="Classe"
-              outlined
-              emit-value
-              map-options
-              option-value="id"
-              option-label="legend"
-              :rules="[(value: string) => !!value || 'Este Campo é obrigatório!']"
-              :disable="loading"
-              dense
-            />
-            <QSelect
-              v-model="newCredit.coinId"
-              :options="options?.coinOptions"
-              label="Moeda"
-              outlined
-              emit-value
-              map-options
-              option-value="id"
-              option-label="legend"
-              :rules="[(value: string) => !!value || 'Este Campo é obrigatório!']"
-              :disable="loading"
-              dense
-            />
-            <QSelect
-              v-model="newCredit.rateId"
-              :options="rates"
-              label="Taxa"
-              outlined
-              emit-value
-              map-options
-              option-value="id"
-              option-label="index"
-              :disable="loading"
-              :rules="[(value: string) => !!value || 'Este Campo é obrigatório!']"
-              dense
-            />
-            <div v-for="field in newCredit?.fields as any[]" :key="field.id">
-              <QInput
-                v-if="field.type === 'text'"
-                v-model="newCredit[field.key]"
-                :label="field.label"
-                :rules="isRequired(field)"
-                outlined
-                dense
-              />
-              <QInput
-                v-else-if="field.type === 'float' || field.type === 'integer'"
-                v-model="newCredit[field.key]"
-                :label="field.label"
-                :rules="isRequired(field)"
-                type="number"
-                :step="field.type === 'float' ? 'any' : 1"
-                outlined
-                dense
-                @update:model-value="(value: number | string | null) => (field.type === 'integer') && (newCredit[field.key] = Math.round(value as number))"
-              />
-              <QToggle
-                v-else-if="field.type === 'boolean'"
-                v-model="newCredit[field.key]"
-                :label="field.label"
-                left-label
-              />
-              <InputDate
-                v-else-if="field.type === 'date'"
-                v-model="newCredit[field.key]"
-                :rules="isRequired(field)"
-                :label="field.label"
-                dense
-              />
-              <div v-else>
-                {{ field.label }} - {{ field.key }} - {{ field.type }}
-              </div>
-            </div>
-          </div>
-          <div class="border-1 border-t-black/12 p-4 flex justify-end relative">
-            <QLinearProgress
-              v-if="loading"
-              indeterminate
-              color="secondary"
-              class="absolute top-0 left-0"
-              size="xs"
-            />
-            <Btn
-              type="submit"
-              label="Criar Crédito"
-              :loading="loading"
-              loading-label="Criando Crédito..."
-            />
-          </div>
-        </QForm>
-      </Modal>
+        :options="options"
+        :calculation-id="attrs.calculationId"
+        :rates="rates"
+        :host="host"
+        @success="loadCalculation"
+      />
     </template>
   </Page>
 </template>
