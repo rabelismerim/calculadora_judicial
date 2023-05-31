@@ -46,6 +46,19 @@ const emit = defineEmits(['update:modelValue'])
           {{ classe.classeDisplay }}: {{ classe.totalValue }}%
         </div>
       </ProjectDetailCell>
+
+      <div class="font-bold color--primary uppercase">
+        Critério
+      </div>
+      <ProjectDetailCell label="Data da Citação">
+        {{ formatDateFromBackend(calculation?.criterion?.dateCitation) || '-' }}
+      </ProjectDetailCell>
+      <ProjectDetailCell label="Data de Ajuizamento da Recuperação Judicial">
+        {{ formatDateFromBackend(calculation?.criterion?.dateRjFiling) || '-' }}
+      </ProjectDetailCell>
+      <ProjectDetailCell label="Data de Pedido da Recuperação Judicial">
+        {{ formatDateFromBackend(calculation?.criterion?.dateRjRequest) || '-' }}
+      </ProjectDetailCell>
     </QTabPanel>
   </QTabPanels>
 </template>
