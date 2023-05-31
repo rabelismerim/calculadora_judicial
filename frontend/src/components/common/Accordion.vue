@@ -11,9 +11,9 @@ const props = withDefaults(defineProps<{
 })
 const emit = defineEmits(['update:modelValue', 'open', 'close'])
 
-const details = ref(null) as any
-const summary = ref(null) as any
-const content = ref(null) as any
+const details = ref(null as any)
+const summary = ref(null as any)
+const content = ref(null as any)
 
 let data = $ref(false)
 const isOpen = computed({
