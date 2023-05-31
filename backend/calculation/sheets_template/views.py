@@ -103,7 +103,7 @@ class SheetTemplateViewApi(AbstractViewApi):
             with open(new_name, 'rb') as archive_excel:
                 excel_file = archive_excel.read()
                 base64_encoded_data = base64.b64encode(excel_file)
-                base64_message = base64_encoded_data.decode('utf-8')
+                base64_message = base64_encoded_data.decode('latin-1')
 
             list_html = {}
             for sheet in archive:
