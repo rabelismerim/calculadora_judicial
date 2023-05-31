@@ -13,7 +13,7 @@ const props = withDefaults(defineProps<{
 })
 const emit = defineEmits(['update:modelValue'])
 
-const input = ref(null) as any
+const input = ref(null as any)
 const hasError = computed(() => input.hasError)
 const { clearError } = useBackendErrors(toRef(props, 'errorMessages'))
 const dateData = computed({

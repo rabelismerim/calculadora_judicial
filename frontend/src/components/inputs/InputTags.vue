@@ -13,9 +13,9 @@ const props = withDefaults(defineProps<{
 })
 const emit = defineEmits(['update:modelValue'])
 
-const inputcontent = ref(null) as any
-const inputvalue = ref(null) as any
-const input = ref(null) as any
+const inputcontent = ref(null as any)
+const inputvalue = ref(null as any)
+const input = ref(null as any)
 const hasError = computed(() => input.value.hasError)
 const { clearError } = useBackendErrors(toRef(props, 'errorMessages'))
 const clearErrors = () => {
@@ -70,7 +70,7 @@ const onBlur = () => {
   itemEditing = -1
 }
 
-const content = ref(null) as any
+const content = ref(null as any)
 const getContentSize = (content: string) => {
   const div = createEl('span')
   div.innerText = content
