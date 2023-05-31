@@ -29,6 +29,7 @@ from rest_framework import serializers
 from calculation.models import Calculation, Incident, CHOICES_STEP
 from creditors.classes.models import CLASSE_CHOICES
 from creditors.schemas import CreditorSchema
+from projects.project_user.schemas import ProjectUserProjectSchema
 from utils import _
 
 
@@ -174,6 +175,11 @@ class CalculationSchema(CalculationAllFundsSchema):  # V1
     premises = PremiseSchema(many=True, read_only=True)
     historical = serializers.SerializerMethodField(read_only=True)
 
+    approver = ProjectUserProjectSchema(read_only=True, allow_null=True)
+    special_approver = ProjectUserProjectSchema(read_only=True, allow_null=True)
+    executor = ProjectUserProjectSchema(read_only=True, allow_null=True)
+    reviewer = ProjectUserProjectSchema(read_only=True, allow_null=True)
+
     def get_historical(self, obj):
         return HistoricalSchema(obj).data
 
@@ -255,6 +261,11 @@ class CalculationV2Schema(AbstractDescriptionSchema):  # V2
     classes = ClassesSerializer(source='get_classes', read_only=True, many=True)
     premises = PremiseSchema(many=True, read_only=True)
     historical = serializers.SerializerMethodField(read_only=True)
+
+    approver = ProjectUserProjectSchema(read_only=True, allow_null=True)
+    special_approver = ProjectUserProjectSchema(read_only=True, allow_null=True)
+    executor = ProjectUserProjectSchema(read_only=True, allow_null=True)
+    reviewer = ProjectUserProjectSchema(read_only=True, allow_null=True)
 
     def get_historical(self, obj):
         return HistoricalSchema(obj).data

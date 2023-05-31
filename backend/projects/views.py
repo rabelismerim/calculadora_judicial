@@ -1,5 +1,6 @@
 from django.contrib.auth.models import Group
 from django.db import transaction
+from django.db.models import ProtectedError
 
 from config.settings import GROUP_NAME_APPROVER, GROUP_NAME_EXECUTOR, GROUP_NAME_REVIEWER, GROUP_NAME_SPECIAL_APPROVE
 from core.abstract.views import AbstractViewApi
@@ -109,6 +110,8 @@ class ProjectDetailApi(AbstractProjectApi):  # V1
 
         users = []
         project = self.model.objects.filter(id=kwargs.get('id')).first()
+
+        project_engagement = project.engagement
         project_users = project.get_project_users()
 
         group_executor, created = Group.objects.get_or_create(name=GROUP_NAME_EXECUTOR)
@@ -156,11 +159,31 @@ class ProjectDetailApi(AbstractProjectApi):  # V1
         reviewers_remove = [val for val in old_reviewer_ids if val not in reviewers]
 
         filters = {'projectengagement__project': project}
-        ProjectUser.objects.filter(user_id__in=executors_remove, groups=group_executor, **filters).delete()
-        ProjectUser.objects.filter(user_id__in=approver_remove, groups=group_approver, **filters).delete()
-        ProjectUser.objects.filter(user_id__in=special_remove, groups=group_special, **filters).delete()
-        ProjectUser.objects.filter(user_id__in=reviewers_remove, groups=group_reviewer, **filters).delete()
-        project_engagement = project.engagement
+
+        users_delete = ProjectUser.objects.filter(user_id__in=executors_remove, groups=group_executor, **filters)
+        for user_delete in users_delete:
+            try:
+                user_delete.delete()
+            except ProtectedError:
+                project_engagement.users.remove(user_delete.id)
+        users_delete = ProjectUser.objects.filter(user_id__in=approver_remove, groups=group_approver, **filters)
+        for user_delete in users_delete:
+            try:
+                user_delete.delete()
+            except ProtectedError:
+                project_engagement.users.remove(user_delete.id)
+        users_delete = ProjectUser.objects.filter(user_id__in=special_remove, groups=group_special, **filters)
+        for user_delete in users_delete:
+            try:
+                user_delete.delete()
+            except ProtectedError:
+                project_engagement.users.remove(user_delete.id)
+        users_delete = ProjectUser.objects.filter(user_id__in=reviewers_remove, groups=group_reviewer, **filters)
+        for user_delete in users_delete:
+            try:
+                user_delete.delete()
+            except ProtectedError:
+                project_engagement.users.remove(user_delete.id)
         project_engagement.users.add(*users)
         project_engagement.save()
         return super().put(request, *args, **kwargs)

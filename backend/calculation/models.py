@@ -232,6 +232,18 @@ class Calculation(AbstractModel):
                                           projectengagement__project__recovering__creditor__calculation__id=
                                           self.id).values('id', group_name=F('groups__name')).first()
 
+    def get_complete_project_user(self, user, codename):
+        """
+        Returns a ProjectUser object that represents the given user assigned to a group with a specific permission codename.
+
+        :param user: User instance for which a ProjectUser object will be retrieved.
+        :param codename: The codename of the permission that the group must have.
+        :return: A ProjectUser object representing the user if it exists, None otherwise.
+        """
+        return ProjectUser.objects.filter(user=user, groups__permissions__codename=codename,
+                                          projectengagement__project__recovering__creditor__calculation__id=
+                                          self.id).annotate(group_name=F('groups__name')).first()
+
     def set_step_by_char(self, next_step: str, user=None):
         """
         Sets the current step of the project engagement to a new value represented by a character.
@@ -245,9 +257,9 @@ class Calculation(AbstractModel):
         check_choice(next_step, CHOICES_STEP)
         if user:
             codename = f'can_change_{self.step.lower()}_to_{next_step.lower()}'
-            user_executed = self.get_project_user(user, codename)
+            user_executed = self.get_complete_project_user(user, codename)
             if user_executed:
-                group_name = user_executed['group_name']
+                group_name = user_executed.group_name
                 user_groups = {
                     GROUP_NAME_EXECUTOR: 'executor_id',
                     GROUP_NAME_APPROVER: 'approver_id',
@@ -255,15 +267,16 @@ class Calculation(AbstractModel):
                     GROUP_NAME_REVIEWER: 'reviewer_id'
                 }
                 if group_name in user_groups:
+
                     selected_group = user_groups.pop(group_name)
                     for group in user_groups.values():
-                        group_attribute = getattr(self, group)
-                        if group_attribute == user_executed['id']:
+                        group_attribute = getattr(self, group.replace('_id', ''))
+                        if group_attribute and group_attribute.user.id == user_executed.user.id:
                             raise serializers.ValidationError(
                                 _('The user is already in the role of {}, not being able to have two or more roles in '
                                   'the same project').format(
                                     group.replace('_id', '').replace('_', ' ').title()))
-                    setattr(self, selected_group, user_executed['id'])
+                    setattr(self, selected_group, user_executed.id)
         self.step = next_step
         self.validated = False
         self.save()
