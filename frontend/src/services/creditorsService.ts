@@ -90,10 +90,10 @@ const setNoticeRecovering = async (notice: Notice) => {
 const setCreditorClaim = async (notice: Notice) => {
   const { id } = notice
   const method = id ? 'put' : 'post'
-  return api[method](`/v1/claim/claim/claim-creditor/${id ? `${id}/` : ''}`, notice)
+  return api[method](`/v1/base/claim-creditor/${id ? `${id}/` : ''}`, notice)
 }
 const setLawyerClaim = async (notice: Notice) => api
-  .post('/v1/claim/claim/claim-lawyer/', notice)
+  .post('/v1/base/claim-lawyer/', notice)
 
 export default {
   getCreditors,

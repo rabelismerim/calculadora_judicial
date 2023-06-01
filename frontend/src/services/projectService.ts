@@ -45,7 +45,7 @@ const getProject = (id: string) => api
   .then((project: any) => {
     const { projectUsers = [] } = project
 
-    project.participants = projectUsers.reduce((acc: any, current: any) => {
+    const participants = projectUsers.reduce((acc: any, current: any) => {
       const { firstName, lastName, username, userpicture, groups } = current
       const user = {
         picture: userpicture,
@@ -59,6 +59,11 @@ const getProject = (id: string) => api
       })
       return acc
     }, {})
+    project.participants = [
+      ['Executor', participants.Executor],
+      ['Revisor', participants.Revisor],
+      ['Aprovador', participants.Aprovador],
+    ]
 
     return project
   })
