@@ -307,7 +307,7 @@ onMounted(() => {
       >
         <div class="p-8 pt-4">
           <div
-            v-for="(group, key) in project.participants"
+            v-for="([key, group]) in project.participants as any[]"
             :key="key"
             class="mb-4"
           >
@@ -316,7 +316,7 @@ onMounted(() => {
             </div>
             <div class="flex gap-2">
               <UserTag
-                v-for="user in group" :key="user.id"
+                v-for="user in group as any[]" :key="user.id"
                 :model-value="user"
               />
             </div>
