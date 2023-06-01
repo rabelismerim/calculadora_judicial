@@ -15,7 +15,8 @@ import json
 
 from django.contrib import admin, messages
 from rates.models import Accumulated, Period, Rate, RateValues, RateFile, IndiceIRRF, Template, TemplateRate, \
-    TemplateField, TemplateMainField, TemplateMainSummaryField, TemplateSummaryField
+    TemplateField, TemplateMainField, TemplateMainSummaryField, TemplateSummaryField, TemplateMainFieldDefault, \
+    TemplateFieldDefault
 from rates.schemas import RateSchema
 
 admin.site.register(Accumulated)
@@ -27,6 +28,8 @@ admin.site.register(TemplateRate)
 admin.site.register(TemplateField)
 admin.site.register(TemplateMainField)
 admin.site.register(TemplateSummaryField)
+admin.site.register(TemplateFieldDefault)
+admin.site.register(TemplateMainFieldDefault)
 admin.site.register(TemplateMainSummaryField)
 
 

@@ -1,4 +1,5 @@
 import datetime
+import json
 
 import pandas as pd
 from django.core.validators import MinLengthValidator
@@ -294,6 +295,11 @@ class AbstractTemplateField(AbstractModel):
     def __str__(self):
         return self.label
 
+    def decimals(self) -> int:
+        if self.type == 'F':
+            return 6 if self.key in ['monetary_correction.index_recovering', 'monetary_correction.index_recovering'] else 2
+        return 0
+
 
 class TemplateMainField(AbstractTemplateField):
     """
@@ -309,6 +315,10 @@ class TemplateMainField(AbstractTemplateField):
         required (bool): Whether the field is required.
     """
     template = models.ForeignKey(Template, on_delete=models.PROTECT, null=True)
+
+    def get_default(self, *args, **kwargs):
+        if hasattr(self, 'templatemainfielddefault'):
+            return self.templatemainfielddefault.get_value()
 
     def __str__(self):
         return f'{self.label} | {self.template.name}'
@@ -329,8 +339,50 @@ class TemplateField(AbstractTemplateField):
     """
     rate = models.ForeignKey(TemplateRate, on_delete=models.PROTECT, null=True)
 
+    def get_default(self, *args, **kwargs):
+        if hasattr(self, 'templatefielddefault'):
+            return self.templatefielddefault.get_value()
     def __str__(self):
         return f'{self.label} | {self.rate.description} | {self.rate.template.name}'
+
+
+class AbstractDefault(AbstractModel):
+    """
+    This class represents the fields for a template main.
+
+    Attributes:
+        field (TemplateField): The TemplateField the field belongs to.
+        label (str): The name of the field.
+        value (text): The value of the field.
+    """
+    label = models.CharField(_('Original value'), max_length=150)
+    value = models.TextField(null=True, blank=True)
+
+    def get_value(self):
+        return json.loads(self.value).get('data')
+
+    def set_value(self):
+        self.value = json.dumps({'data': self.label})
+
+
+class TemplateMainFieldDefault(AbstractDefault):
+    """
+    This class represents the fields for a template main.
+
+    Attributes:
+        field (TemplateField): The TemplateField the field belongs to.
+    """
+    field = models.OneToOneField(TemplateMainField, on_delete=models.PROTECT)
+
+
+class TemplateFieldDefault(AbstractDefault):
+    """
+    This class represents the fields for a template main.
+
+    Attributes:
+        field (TemplateField): The TemplateField the field belongs to.
+    """
+    field = models.OneToOneField(TemplateField, on_delete=models.PROTECT)
 
 
 class TemplateMainSummaryField(AbstractTemplateField):

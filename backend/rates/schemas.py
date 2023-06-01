@@ -108,6 +108,12 @@ class TemplateFieldSchema(AbstractDescriptionSchema):
 
     type_display = serializers.CharField(source='get_type_display')
 
+    default = serializers.SerializerMethodField()
+    decimals = serializers.IntegerField()
+
+    def get_default(self, obj):
+        return obj.get_default()
+
     class Meta:
         model = TemplateField
         exclude = ('rate',)
@@ -117,7 +123,7 @@ class TemplateSummaryFieldSchema(AbstractDescriptionSchema):
     """Serializer TemplateField fields"""
 
     type_display = serializers.CharField(source='get_type_display')
-
+    decimals = serializers.IntegerField()
     class Meta:
         model = TemplateSummaryField
         exclude = ('rate',)
@@ -127,7 +133,7 @@ class TemplateMainSummaryFieldSchema(AbstractDescriptionSchema):
     """Serializer TemplateField fields"""
 
     type_display = serializers.CharField(source='get_type_display')
-
+    decimals = serializers.IntegerField()
     class Meta:
         model = TemplateMainSummaryField
         # exclude = ('rate',)
