@@ -11,7 +11,7 @@ const props = withDefaults(defineProps<{
   errorImage: `${baseUrl}/fallback/image.svg`,
 })
 
-const image = ref(null) as unknown as { value: HTMLImageElement }
+const image = ref(null as any)
 
 const onError = () => {
   // image.value.src = props.errorImage

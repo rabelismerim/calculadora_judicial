@@ -1,6 +1,5 @@
 const mapProject = (project: any) => {
   const {
-    createdAt,
     isAdm,
     engagement,
     financialPartner,
@@ -28,7 +27,6 @@ const mapProject = (project: any) => {
 
   return {
     ...project,
-    createdAt: formatDate(createdAt),
     fase: isAdm ? 'Administrativa' : 'Judicial',
     responsible: engagement?.createUser,
     responsibles,
@@ -36,13 +34,13 @@ const mapProject = (project: any) => {
 }
 const getUserProjects = () => api
   .get('/v1/projects/project_user/')
-  .then(({ projectUser }: any) => [...new Set(projectUser)])
+  .then((result: any) => [...new Set(result?.projectUser || [])])
 const getProjects = () => api
   .get('/v1/projects/')
-  .then((res: any) => res?.projects?.map(mapProject))
+  .then((result: any) => result?.projects?.map(mapProject) || [])
 const getProject = (id: string) => api
   .get(`/v1/projects/${id}/`)
-  .then(({ project }: any) => project)
+  .then((result: any) => result?.project)
   .then(mapProject)
   .then((project: any) => {
     const { projectUsers = [] } = project
@@ -65,35 +63,81 @@ const getProject = (id: string) => api
     return project
   })
 
+const mapId = (id: string) => ({ id })
 const newProject = (project: any) => {
-  const { start, end, executors, approvers, reviewers, engagements, recoverings } = project
+  const { executors, approvers, reviewers, engagements, recoverings } = project
   const data = {
     ...project,
-    projectStart: start ? formatDateToBackend(start) : undefined,
-    projectEnd: end ? formatDateToBackend(end) : undefined,
     engagement: {
       numbers: engagements,
     },
     recoverings: recoverings.map((recovering: any) => ({
       entity: recovering,
     })),
-    executors: executors.map((id: string) => ({ id })),
-    approvers: approvers.map((id: string) => ({ id })),
-    reviewers: reviewers.map((id: string) => ({ id })),
+    executors: executors.map(mapId),
+    approvers: approvers.map(mapId),
+    reviewers: reviewers.map(mapId),
   }
   return api
-    .post('v1/projects/', data)
-    .then(({ project }: any) => project)
+    .post('/v1/projects/', data)
+    .then((result: any) => result?.project)
 }
+
+const updateProject = ({
+  id,
+  description,
+  engagements,
+  processNumber,
+  dateRjRequest,
+  dateRjFiling,
+  dateCitation,
+  projectStart,
+  projectEnd,
+  judgeId,
+  lawyerId,
+  regionId,
+  courtId,
+  financialPartnerId,
+  legalPartnerId,
+  financialManagerId,
+  legalManagerId,
+  calculationManagerId,
+  executors,
+  reviewers,
+  approvers,
+}: any) => api
+  .put(`/v1/projects/${id}/`, {
+    description,
+    engagements,
+    processNumber,
+    dateRjRequest,
+    dateRjFiling,
+    dateCitation,
+    projectStart,
+    projectEnd,
+    judgeId,
+    lawyerId,
+    regionId,
+    courtId,
+    financialPartnerId,
+    legalPartnerId,
+    financialManagerId,
+    legalManagerId,
+    calculationManagerId,
+    executors: executors.map(mapId),
+    approvers: approvers.map(mapId),
+    reviewers: reviewers.map(mapId),
+  })
+  .then((result: any) => result?.project)
 
 // JUDGES
 const getJudges = () => api
   .get('/v1/projects/judge/')
-  .then(({ judges }: any) => judges)
+  .then((result: any) => result?.judges || [])
   .then(data => data.map(({ description, id }: any) => ({ description, id })))
 const newJudge = (description: string) => api
   .post('/v1/projects/judge/', { description })
-  .then(({ judges }: any) => judges)
+  .then((result: any) => result?.judge || {})
   .then(({ description, id }) => ({ description, id }))
 
 // LAWYERS
@@ -103,7 +147,7 @@ const getLawyers = () => api
   .then(data => data.map(({ description, id }: any) => ({ description, id })))
 const newLawyer = (description: string) => api
   .post('/v1/projects/lawyer/', { description })
-  .then(({ lawyers }: any) => lawyers)
+  .then((result: any) => result?.lawyer || {})
   .then(({ description, id }) => ({ description, id }))
 
 // REGIONS
@@ -113,7 +157,7 @@ const getRegions = () => api
   .then(data => data.map(({ description, id }: any) => ({ description, id })))
 const newRegion = (description: string) => api
   .post('/v1/projects/region/', { description })
-  .then(({ regions }: any) => regions)
+  .then((result: any) => result?.region || {})
   .then(({ description, id }) => ({ description, id }))
 
 // COURTS
@@ -123,7 +167,7 @@ const getCourts = () => api
   .then(data => data.map(({ description, id }: any) => ({ description, id })))
 const newCourt = (description: string) => api
   .post('/v1/projects/court/', { description })
-  .then(({ courts }: any) => courts)
+  .then((result: any) => result?.court || {})
   .then(({ description, id }) => ({ description, id }))
 
 // ENGAGEMENTS OF PROJECT
@@ -144,6 +188,7 @@ export default {
   getProject,
   getUserProjects,
   newProject,
+  updateProject,
   getCourts,
   newCourt,
   getRegions,

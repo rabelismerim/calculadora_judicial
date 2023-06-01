@@ -18,8 +18,14 @@ export const formatDateToBackend = (value: string) => {
 export const formatDateFromBackend = (value: string) => {
   if (!value)
     return
-  const [year, month, day] = value.split('-')
+  const [year, month, day] = value.slice(0, 10).split('-')
   return `${day}/${month}/${year}`
+}
+export const formatDateHour = (value: string) => {
+  if (!value)
+    return
+  const [year, month, day] = value.slice(0, 10).split('-')
+  return `${day}/${month}/${year} às ${value.slice(11, 19)}`
 }
 
 export const formatLegalNumber = (value: string) => {
@@ -167,3 +173,27 @@ export const parseToSnake = (data: any) => unflatten(Object
       ]
     }),
   ))
+
+export const downloadFile = (textToWrite: string, fileNameToSaveAs: string, contentType = 'application/xlsx') => {
+  const byteCharacters = atob(textToWrite)
+  const byteNumbers = byteCharacters
+    .split('')
+    .map((_, index) => byteCharacters.charCodeAt(index))
+  const byteArray = new Uint8Array(byteNumbers)
+  const blob = new Blob([byteArray], { type: contentType })
+  const downloadLink = document.createElement('a')
+  downloadLink.download = fileNameToSaveAs
+  downloadLink.innerHTML = 'Download File'
+  if (window.webkitURL != null) {
+    downloadLink.href = window.webkitURL.createObjectURL(blob)
+  }
+  else {
+    downloadLink.href = window.URL.createObjectURL(blob)
+    downloadLink.onclick = () => {
+      document.body.removeChild(downloadLink)
+    }
+    downloadLink.style.display = 'none'
+    document.body.appendChild(downloadLink)
+  }
+  downloadLink.click()
+}

@@ -45,6 +45,7 @@ declare global {
   const defineAsyncComponent: typeof import('vue')['defineAsyncComponent']
   const defineComponent: typeof import('vue')['defineComponent']
   const delay: typeof import('./composables/utils')['delay']
+  const downloadFile: typeof import('./composables/utils')['downloadFile']
   const eagerComputed: typeof import('@vueuse/core')['eagerComputed']
   const ease: typeof import('animol')['ease']
   const easing: typeof import('animol')['Easing']
@@ -53,6 +54,7 @@ declare global {
   const flatten: typeof import('./composables/utils')['flatten']
   const formatDate: typeof import('./composables/utils')['formatDate']
   const formatDateFromBackend: typeof import('./composables/utils')['formatDateFromBackend']
+  const formatDateHour: typeof import('./composables/utils')['formatDateHour']
   const formatDateToBackend: typeof import('./composables/utils')['formatDateToBackend']
   const formatLegalNumber: typeof import('./composables/utils')['formatLegalNumber']
   const get: typeof import('@jrnwn/utils')['get']
@@ -106,6 +108,7 @@ declare global {
   const provide: typeof import('vue')['provide']
   const range: typeof import('@jrnwn/utils')['range']
   const rangeBetween: typeof import('./composables/utils')['rangeBetween']
+  const ratesService: typeof import('./services/ratesService')['default']
   const reactify: typeof import('@vueuse/core')['reactify']
   const reactifyObject: typeof import('@vueuse/core')['reactifyObject']
   const reactive: typeof import('vue')['reactive']
@@ -262,6 +265,7 @@ declare global {
   const usePreferredLanguages: typeof import('@vueuse/core')['usePreferredLanguages']
   const usePreferredReducedMotion: typeof import('@vueuse/core')['usePreferredReducedMotion']
   const usePrevious: typeof import('@vueuse/core')['usePrevious']
+  const useQuasar: typeof import('quasar')['useQuasar']
   const useRafFn: typeof import('@vueuse/core')['useRafFn']
   const useRefHistory: typeof import('@vueuse/core')['useRefHistory']
   const useResizeObserver: typeof import('@vueuse/core')['useResizeObserver']
@@ -383,6 +387,7 @@ declare module 'vue' {
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
     readonly delay: UnwrapRef<typeof import('./composables/utils')['delay']>
+    readonly downloadFile: UnwrapRef<typeof import('./composables/utils')['downloadFile']>
     readonly eagerComputed: UnwrapRef<typeof import('@vueuse/core')['eagerComputed']>
     readonly ease: UnwrapRef<typeof import('animol')['ease']>
     readonly easing: UnwrapRef<typeof import('animol')['Easing']>
@@ -391,6 +396,7 @@ declare module 'vue' {
     readonly flatten: UnwrapRef<typeof import('./composables/utils')['flatten']>
     readonly formatDate: UnwrapRef<typeof import('./composables/utils')['formatDate']>
     readonly formatDateFromBackend: UnwrapRef<typeof import('./composables/utils')['formatDateFromBackend']>
+    readonly formatDateHour: UnwrapRef<typeof import('./composables/utils')['formatDateHour']>
     readonly formatDateToBackend: UnwrapRef<typeof import('./composables/utils')['formatDateToBackend']>
     readonly formatLegalNumber: UnwrapRef<typeof import('./composables/utils')['formatLegalNumber']>
     readonly get: UnwrapRef<typeof import('@jrnwn/utils')['get']>
@@ -444,6 +450,7 @@ declare module 'vue' {
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
     readonly range: UnwrapRef<typeof import('@jrnwn/utils')['range']>
     readonly rangeBetween: UnwrapRef<typeof import('./composables/utils')['rangeBetween']>
+    readonly ratesService: UnwrapRef<typeof import('./services/ratesService')['default']>
     readonly reactify: UnwrapRef<typeof import('@vueuse/core')['reactify']>
     readonly reactifyObject: UnwrapRef<typeof import('@vueuse/core')['reactifyObject']>
     readonly reactive: UnwrapRef<typeof import('vue')['reactive']>
@@ -600,6 +607,7 @@ declare module 'vue' {
     readonly usePreferredLanguages: UnwrapRef<typeof import('@vueuse/core')['usePreferredLanguages']>
     readonly usePreferredReducedMotion: UnwrapRef<typeof import('@vueuse/core')['usePreferredReducedMotion']>
     readonly usePrevious: UnwrapRef<typeof import('@vueuse/core')['usePrevious']>
+    readonly useQuasar: UnwrapRef<typeof import('quasar')['useQuasar']>
     readonly useRafFn: UnwrapRef<typeof import('@vueuse/core')['useRafFn']>
     readonly useRefHistory: UnwrapRef<typeof import('@vueuse/core')['useRefHistory']>
     readonly useResizeObserver: UnwrapRef<typeof import('@vueuse/core')['useResizeObserver']>

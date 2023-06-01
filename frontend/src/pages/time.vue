@@ -33,9 +33,9 @@ const mapProjects = computed(() => projects.map((project) => {
     statusDisplay,
   }
 }))
-const activeUsers = computed(() => users.filter(({ isActive }) => isActive))
-const pendingUsers = computed(() => users.filter(({ status }) => ['p', 'r'].includes(status.toLowerCase())))
-const pendingUsersCount = computed(() => users.filter(({ status }) => status.toLowerCase() === 'p').length)
+const activeUsers = computed(() => users.filter(({ status }) => ['A', 'F', 'I'].includes(status)))
+const pendingUsers = computed(() => users.filter(({ status }) => ['P', 'R'].includes(status)))
+const pendingUsersCount = computed(() => users.filter(({ status }) => status === 'P').length)
 const projectsPerUser: any = computed(() => projects?.reduce((acc, project) => {
   const { id, description, projectUsers, engagement } = project
   projectUsers.forEach(({ idUser }: any) => {
@@ -117,6 +117,7 @@ onMounted(() => loadPage())
       <RequestModal
         v-model="showingRequests"
         :users="pendingUsers"
+        @done="loadPage"
       />
     </template>
   </Page>

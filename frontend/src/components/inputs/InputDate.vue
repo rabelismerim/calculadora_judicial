@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ValidationRule } from 'quasar'
 const props = withDefaults(defineProps<{
-  modelValue: any
+  modelValue?: string | null
   label?: string
   rules?: ValidationRule<any>[]
   errorMessages?: any
@@ -13,20 +13,51 @@ const props = withDefaults(defineProps<{
 })
 const emit = defineEmits(['update:modelValue'])
 
-const input = ref(null) as any
+const input = ref(null as any)
 const hasError = computed(() => input.hasError)
 const { clearError } = useBackendErrors(toRef(props, 'errorMessages'))
-const onInput = (value: string | number | null) => {
-  if (props.errorKey)
-    clearError(props.errorKey)
-  emit('update:modelValue', value)
-}
+const dateData = computed({
+  get: () => {
+    if (!props.modelValue)
+      return {}
+    const [year, month, day] = props.modelValue
+      ?.slice(0, 10)
+      ?.split('-')
+    return { day, month, year }
+  },
+  set: (value: any) => {
+    const { day, month, year } = value
+    const newDate = (day && month && year) ? [year, month, day].join('-') : ''
+    if (props.errorKey)
+      clearError(props.errorKey)
+    emit('update:modelValue', newDate)
+  },
+})
+const formatedDate = computed({
+  get: () => {
+    if (!dateData.value)
+      return ''
+    const { day, month, year } = dateData.value
+    return [day, month, year]
+      .filter(e => e)
+      .join('/')
+  },
+  set: (value: string) => {
+    if (value.match(/\d{4}-\d{2}-\d{2}.*/)) {
+      const [year, month, day] = value?.slice(0, 10)?.split('-')
+      dateData.value = { day, month, year }
+      return
+    }
+    const [day, month, year] = value.split('/')
+    dateData.value = { day, month, year }
+  },
+})
 </script>
 
 <template>
   <QInput
     ref="input"
-    :model-value="modelValue"
+    v-model="formatedDate"
     :label="label"
     :rules="rules"
     :error="!!errorMessages[errorKey]"
@@ -34,7 +65,6 @@ const onInput = (value: string | number | null) => {
     outlined
     mask="##/##/####"
     dense
-    @update:model-value="onInput"
   >
     <template #append>
       <div class="i-carbon-calendar cursor-pointer">
@@ -44,9 +74,8 @@ const onInput = (value: string | number | null) => {
           transition-hide="scale"
         >
           <QDate
-            :model-value="modelValue"
+            v-model="formatedDate"
             mask="DD/MM/YYYY"
-            @update:model-value="onInput"
           >
             <div class="row items-center justify-end">
               <Btn

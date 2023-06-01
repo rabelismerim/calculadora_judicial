@@ -20,7 +20,7 @@ const { hasProject } = $user
   >
     <div class="flex gap-1 pb-8 px-8">
       <div
-        v-for="project in user.projects"
+        v-for="project in user.projects as any[]"
         :key="project.id"
         class="rounded-full px-3 py-1 border-1 border--black/10 bg-gray/10 whitespace-nowrap"
         :class="{

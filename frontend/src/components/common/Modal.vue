@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
-  modelValue: boolean
+  modelValue?: boolean
   title?: string
   hint?: string
   modalClass?: string

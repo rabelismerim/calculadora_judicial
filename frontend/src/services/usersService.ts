@@ -1,6 +1,6 @@
 const getPermissions = () => api
   .get('/user/detail/')
-  .then(({ user }: any) => user)
+  .then((result: any) => result?.user || {})
   .then((user: any = {}) => {
     const {
       userpicture: picture,
@@ -15,9 +15,9 @@ const getPermissions = () => api
 
 const getMyProfile = () => api
   .get('/drfmsal_signstatus/')
-  .then(({ profile }: any) => profile)
+  .then((result: any) => result?.profile)
   .then(async (user) => {
-    if (!user.authenticated && import.meta.env.PROD)
+    if (!user?.authenticated && import.meta.env.PROD)
       redirectTo(`${window.location.origin}/juca/api/drfmsal_signin/juca/`)
 
     const permissions = await getPermissions()
@@ -32,21 +32,22 @@ const getMyProfile = () => api
 
 const getUsers = () => api
   .get('/users/')
-  .then(({ users }: any) => users.map((user: any) => ({
+  .then((result: any) => result?.users?.map((user: any) => ({
     ...user,
     picture: user.userpicture,
-  })))
+  })) || [])
 
 const getGroups = () => api
   .get('/groups/')
-  .then(({ groups }: any) => groups
-    .map(({ name: description, id }: any) => ({ id, description })))
+  .then((result: any) => result?.groups
+    ?.map(({ name: description, id }: any) => ({ id, description })))
 
 const requestAccess = (email: string) => api
   .post('/user/sendmail/', { email })
 
-const setPermission = ({ email, groups, role, isActive }: any) => api
-  .post('user/authorize/', { email, groups, role, isActive })
+const setPermission = ({ email, groups, role, status }: any) => api
+  .post('user/authorize/', { email, groups, role, status })
+  .then((result: any) => result?.user)
 
 export default {
   getMyProfile,

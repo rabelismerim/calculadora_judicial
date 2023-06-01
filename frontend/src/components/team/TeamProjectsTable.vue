@@ -11,11 +11,11 @@ const emit = defineEmits(['update:tab', 'update:filter'])
 const router = useRouter()
 
 const statusColors: any = {
-  p: '#c4d600', // Em Preparação
-  e: '#c4d600', // Em Preparação
-  c: '#86bc25', // Concluído
-  a: '#007cb0', // Em Andamento
-  f: '#cccccc', // Cancelado
+  P: '#c4d600', // Em Preparação
+  E: '#c4d600', // Em Preparação
+  C: '#86bc25', // Concluído
+  A: '#007cb0', // Em Andamento
+  F: '#cccccc', // Cancelado
 }
 
 const filteredItems = computed(() => {
@@ -135,7 +135,7 @@ const columns = [
         <div class="flex">
           <StatusTag
             :label="props.value"
-            :color="statusColors[props.row.status.toLowerCase()]"
+            :color="statusColors[props.row.status]"
           />
         </div>
       </QTd>

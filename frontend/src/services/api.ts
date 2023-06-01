@@ -10,7 +10,7 @@ const api = axios.create({
   withCredentials: true,
   xsrfHeaderName: 'X-CSRFToken',
   xsrfCookieName: 'csrftoken',
-  timeout: 10000,
+  timeout: 100000,
   headers,
 })
 
@@ -39,38 +39,36 @@ api.interceptors.response.use(
     const data = response?.data?.data
     const status = response?.status || 500
 
+    const { errors: dataErrors } = parseToCamel(data || {})
+    const errors = dataErrors?.map(({ detail, attr }: any) => ({ message: detail, attr }))
+    printError('ON ERROR:', errors)
+
+    if (errors?.length > 0) {
+      for (const error of errors) {
+        throwError(error)
+        await delay(0.5)
+      }
+
+      const newError = new Error(message) as any
+      newError.errors = errors
+      newError.status = status
+      newError.code = code
+
+      throw (newError)
+    }
+
     const mainErrors: any = {
       403: 'Você não está autorizado...',
       500: 'Problemas no Servidor...',
       ERR_NETWORK: 'Problemas no Servidor...',
     }
-
     const mainMessage = mainErrors[status] || mainErrors[code]
     if (mainMessage) {
       throwError({
         id: status,
         message: mainMessage,
       })
-      return
     }
-
-    const { errors: dataErrors } = parseToCamel(data || {})
-    const errors = dataErrors.map(({ detail, attr }: any) => ({ message: detail, attr }))
-    printError('ON ERROR:', errors)
-
-    if (errors.length > 0) {
-      for (const error of errors) {
-        throwError(error)
-        await delay(0.5)
-      }
-    }
-
-    const newError = new Error(message) as any
-    newError.errors = errors
-    newError.status = status
-    newError.code = code
-
-    throw (newError)
   })
 
 export default api

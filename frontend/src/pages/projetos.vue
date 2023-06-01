@@ -100,10 +100,8 @@ const columns = [
     label: 'Data de Criação',
     align: 'left',
     sortable: true,
-    format: (value) => {
-      const [month, day, year] = value.split('/')
-      return `${day}/${month}/${year}`
-    },
+    sortOrder: 'da',
+    format: formatDateFromBackend,
   },
   {
     name: 'responsibles',
@@ -225,7 +223,7 @@ const columns = [
               <QTooltip v-if="props.value.length">
                 <div class="grid gap-2 p-2">
                   <div
-                    v-for="(item, index) in props.value"
+                    v-for="(item, index) in props.value as any[]"
                     :key="index"
                     class="flex no-wrap items-center justify-between gap-2"
                   >

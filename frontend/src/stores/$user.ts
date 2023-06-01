@@ -1,5 +1,6 @@
 const userFallback = {
   authorized: null,
+  isActive: null,
   name: '',
   fullName: '',
   picture: '',
@@ -25,14 +26,14 @@ const login = async () => {
   }
   catch (error: any) {
     printError('ERROR ON LOGIN:', error)
-    router.push({ path: '/' })
+    router?.push({ path: '/' })
   }
 }
 const logout = () => {
   store.value = { ...userFallback }
 }
 const user = computed(() => store.value)
-const isActive = computed(() => store.value.authorized)
+const isActive = computed(() => store.value.isActive)
 const hasPermissions = (permissions: string[] = []) => permissions
   .every(permission => store.value.permissions.includes(permission))
 const hasProject = (id: string) => store.value.projects.includes(id)

@@ -20,6 +20,8 @@ export default defineConfig({
     [/^stroke--([\w-]+)$/, ([, w]) => ({ stroke: `hsl(var(--${w},0,0%,0%))` })],
     [/^border--([\w-]+)$/, ([, w]) => ({ 'border-color': `hsl(var(--${w},0,0%,0%))` })],
     [/^border--([\w-]+)\/(\d+)$/, ([, w, d]) => ({ 'border-color': `hsla(var(--${w},0,0%,0%),${+d / 100})` })],
+    [/^outline--([\w-]+)$/, ([, w]) => ({ 'outline-color': `hsl(var(--${w},0,0%,0%))` })],
+    [/^outline--([\w-]+)\/(\d+)$/, ([, w, d]) => ({ 'outline-color': `hsla(var(--${w},0,0%,0%),${+d / 100})` })],
     ['max-w-fill', { 'max-width': '-webkit-fill-available' }],
     [/^ring--(\w+)$/, ([, w]) => ({ '--un-ring-color': `hsl(var(--${w},0,0%,0%))` })],
     [/^ring--([\w-]+)\/(\d+)$/, ([, w, d]) => ({ '--un-ring-color': `hsla(var(--${w},0,0%,0%),${+d / 100})` })],
@@ -50,5 +52,4 @@ export default defineConfig({
     transformerDirectives(),
     transformerVariantGroup(),
   ],
-  safelist: 'prose prose-sm m-auto text-left'.split(' '),
 })

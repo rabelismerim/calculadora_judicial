@@ -1,7 +1,8 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
-  label: string
+  label?: string
   color?: string
+  hint?: string
 }>(),
 {
   color: '#007db3',
@@ -11,6 +12,7 @@ const props = withDefaults(defineProps<{
 <template>
   <div
     class="py-1 pl-3 rounded-full flex no-wrap items-center"
+    :class="hint ? 'cursor-help' : ''"
     :style="{
       background: `${color}20`,
       border: `1px solid ${color}20`,
@@ -25,5 +27,8 @@ const props = withDefaults(defineProps<{
         background: color,
       }"
     />
+    <QTooltip v-if="hint">
+      {{ hint }}
+    </QTooltip>
   </div>
 </template>

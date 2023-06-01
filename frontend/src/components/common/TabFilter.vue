@@ -4,11 +4,10 @@ interface Option {
   value: string
 }
 const props = withDefaults(defineProps<{
-  modelValue: string
+  modelValue: string | number
   items: Option[]
   search?: string
 }>(), {
-  search: '',
 })
 const emit = defineEmits(['update:model-value', 'update:search'])
 </script>
@@ -28,7 +27,11 @@ const emit = defineEmits(['update:model-value', 'update:search'])
         :label="tab.label"
       />
     </QTabs>
+    <div v-if="$slots.side">
+      <slot name="side" />
+    </div>
     <SearchFilter
+      v-else-if="search !== undefined"
       :model-value="search"
       @update:model-value="(value: any) => emit('update:search', value)"
     />
