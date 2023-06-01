@@ -19,7 +19,7 @@ const getUser = (username: string) => props.options?.users
 
 const avatar = (username: string) => {
   const picture = getUser(username)?.userpicture
-  return picture || undefined
+  return picture ? `data:image/jpeg;base64,${picture}` : undefined
 }
 
 const label = (step: any = {}) => {

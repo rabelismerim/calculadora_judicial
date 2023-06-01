@@ -38,8 +38,9 @@ const nullProject = {
   financialPartnerId: '',
   calculationManagerId: '',
   executors: [],
-  approvers: [],
   reviewers: [],
+  approvers: [],
+  specialApprovers: [],
   processNumber: '',
 }
 let newProject = $ref(clone(nullProject))
@@ -386,6 +387,13 @@ onMounted(async () => {
               :rules="[(value: any) => value.length > 0 || 'Este campo é obrigatório!']"
               :error-messages="errorMessages"
               error-key="approvers"
+            />
+            <InputUsers
+              v-model="newProject.specialApprovers"
+              :users="users"
+              label="Aprovadores Especiais"
+              :error-messages="errorMessages"
+              error-key="special_approvers"
             />
           </div>
         </QStep>

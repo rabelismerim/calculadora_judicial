@@ -322,6 +322,13 @@ const updateOption = (key: string, value: any) => {
               :error-messages="errorMessages"
               error-key="approvers"
             />
+            <InputUsers
+              v-model="editingProject.specialApprovers"
+              :users="options.users"
+              label="Aprovadores Especiais"
+              :error-messages="errorMessages"
+              error-key="special_approvers"
+            />
           </div>
         </QStep>
       </QStepper>
