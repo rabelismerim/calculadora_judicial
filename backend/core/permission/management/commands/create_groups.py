@@ -2,7 +2,8 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.apps import apps as default_apps
-from config.settings import INSTALLED_APPS
+from config.settings import INSTALLED_APPS, GROUP_NAME_PARTNER
+from utils import _
 
 all_projects = {
     'content_type': 'project',
@@ -19,6 +20,24 @@ view_code = {
     'codename': 'can_view_code',
     'name': 'Can view Code log detail'
 }
+layout_perm = 'can_change_{}_to_{}'
+special_approve = [
+    (layout_perm.format('b', 'a'), _('Can Approve Special Calculation'), 'calculation'),
+    (layout_perm.format('b', 'c'), _('Can Disapprove Special Calculation to Review'), 'calculation'),
+    (layout_perm.format('b', 'r'), _('Can Disapprove Special Calculation to Failed'), 'calculation')
+]
+
+special_approve_perms = [all_projects, authorize_users]
+special_approve_perms_calc = []
+special_approve_perms_exclude = []
+for codename_, name_, content_ in special_approve:
+    special_approve_perms_calc.append({
+        'content_type': content_,
+        'codename': codename_,
+        'name': name_
+    })
+    special_approve_perms_exclude.append(codename_)
+print(special_approve_perms, 'perms\n')
 
 groups = [
     {'name': 'Gestor Financeiro',
@@ -43,6 +62,29 @@ groups = [
           }
      ],
      'custom_perms': [all_projects, authorize_users]
+     },
+    {'name': GROUP_NAME_PARTNER,
+     'models': [
+         {'name': 'project',
+          'actions': ['view', 'add', 'change', 'delete'],
+          },
+         {'name': 'base',
+          'actions': ['view', 'add', 'change', 'delete'],
+          },
+         {'name': 'recovering',
+          'actions': ['view', 'add', 'change', 'delete'],
+          },
+         {'name': 'calculation',
+          'actions': ['view', 'add', 'change', 'delete'],
+          },
+         {'name': 'creditors',
+          'actions': ['view', 'add', 'change', 'delete'],
+          },
+         {'name': 'dttuser',
+          'actions': ['view', 'add', 'change', 'delete'],
+          }
+     ],
+     'custom_perms': special_approve_perms + special_approve_perms_calc
      },
     {'name': 'Gestor Cálculo',
      'models': [
@@ -209,10 +251,13 @@ class Command(BaseCommand):
                     for action in model['actions']:
                         for model_ in app_models.values():
                             codename = f"{action}"
+                            exclude = {}
+                            if group['name'] != GROUP_NAME_PARTNER:
+                                exclude['codename__in'] = special_approve_perms_exclude
                             per = Permission.objects.filter(
                                 content_type__model__icontains=model_._meta.model_name,
                                 codename__icontains=codename
-                            ).values_list('id', flat=True)
+                            ).exclude(**exclude).values_list('id', flat=True)
                             perms.extend(per)
 
             for custom_perm in group['custom_perms']:
