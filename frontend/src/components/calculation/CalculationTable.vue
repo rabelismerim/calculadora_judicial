@@ -73,14 +73,15 @@ const calculationColumns: TableColumn[] = [
     name: 'class',
     field: 'classes',
     format: (value: any[]) => value && value
-      .map(({ classeDisplay, percentageCalculated }: any) => `${classeDisplay?.split('-').at(0).trim()}: ${(percentageCalculated || 0)?.toFixed(2)}%`).join(','),
+      .filter(({ percentageCalculated }: any) => !!percentageCalculated)
+      .map(({ classeDisplay, percentageCalculated }: any) => `${classeDisplay?.split('-').at(0).trim()}: ${(percentageCalculated || 0)?.toFixed(2)}%`).join(' ,'),
     label: 'Classe',
     align: 'left',
     sortable: true,
   },
   {
     name: 'executor',
-    field: 'excecutor',
+    field: 'executor',
     label: 'Executor',
     align: 'left',
     sortable: true,
@@ -209,7 +210,14 @@ const statusColors: any = {
         <div v-if="props.value">
           {{ props.value }}
         </div>
-        <div>N/A</div>
+        <div
+          v-else-if="props.row.step === 'B'"
+          class="i-carbon-warning-filled text-lg color-gray"
+          :class="{ 'color--error': props.row.reviewer }"
+        />
+        <div v-else>
+          N/A
+        </div>
       </QTd>
     </template>
     <template #body-cell-status="props">
