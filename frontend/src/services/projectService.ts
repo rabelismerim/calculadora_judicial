@@ -32,6 +32,7 @@ const mapProject = (project: any) => {
     responsibles,
   }
 }
+
 const getUserProjects = () => api
   .get('/v1/projects/project_user/')
   .then((result: any) => [...new Set(result?.projectUser || [])])
@@ -46,8 +47,9 @@ const getProject = (id: string) => api
     const { projectUsers = [] } = project
 
     const participants = projectUsers.reduce((acc: any, current: any) => {
-      const { firstName, lastName, username, userpicture, groups } = current
+      const { idUser, firstName, lastName, username, userpicture, groups } = current
       const user = {
+        id: idUser,
         picture: userpicture,
         fullName: `${firstName} ${lastName}`,
         email: `${username}@deloitte.com`,
@@ -63,14 +65,19 @@ const getProject = (id: string) => api
       ['Executor', participants.Executor],
       ['Revisor', participants.Revisor],
       ['Aprovador', participants.Aprovador],
+      ['Aprovador Especial', participants['Aprovador Especial']],
     ]
-
+    const mapId = ({ id }: any) => (`${id}`)
+    project.executors = participants.Executor?.map(mapId)
+    project.reviewers = participants.Revisor?.map(mapId)
+    project.approvers = participants.Aprovador?.map(mapId)
+    project.specialApprovers = participants['Aprovador Especial']?.map(mapId)
     return project
   })
 
-const mapId = (id: string) => ({ id })
+const mapId = (id: number) => ({ id })
 const newProject = (project: any) => {
-  const { executors, approvers, reviewers, engagements, recoverings } = project
+  const { executors, reviewers, approvers, specialApprovers, engagements, recoverings } = project
   const data = {
     ...project,
     engagement: {
@@ -79,15 +86,15 @@ const newProject = (project: any) => {
     recoverings: recoverings.map((recovering: any) => ({
       entity: recovering,
     })),
-    executors: executors.map(mapId),
-    approvers: approvers.map(mapId),
-    reviewers: reviewers.map(mapId),
+    executors: executors?.map(mapId),
+    approvers: approvers?.map(mapId),
+    reviewers: reviewers?.map(mapId),
+    specialApprovers: specialApprovers?.map(mapId),
   }
   return api
     .post('/v1/projects/', data)
     .then((result: any) => result?.project)
 }
-
 const updateProject = ({
   id,
   description,
