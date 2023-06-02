@@ -31,8 +31,9 @@ const login = async () => {
     router?.push({ path: '/' })
   }
 }
-const logout = () => {
+const logout = async () => {
   store.value = { ...userFallback }
+  await delay(2)
   deleteAllCookies()
 }
 const user = computed(() => store.value)
