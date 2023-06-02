@@ -50,8 +50,6 @@ declare module '@vue/runtime-core' {
     ProjectDetailCell: typeof import('./components/project/ProjectDetailCell.vue')['default']
     QField: typeof import('quasar')['QField']
     QMenu: typeof import('quasar')['QMenu']
-    QTimeline: typeof import('quasar')['QTimeline']
-    QTimelineEntry: typeof import('quasar')['QTimelineEntry']
     RecoveringNotice: typeof import('./components/creditors/RecoveringNotice.vue')['default']
     ReloadBtn: typeof import('./components/common/ReloadBtn.vue')['default']
     RequestModal: typeof import('./components/team/RequestModal.vue')['default']
