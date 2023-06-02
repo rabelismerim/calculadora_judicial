@@ -155,12 +155,13 @@ onMounted(() => {
         label="Participantes"
         icon="i-carbon-events"
         outlined
+        :disabled="!project.id || loading"
         @click="showParticipants = true"
       />
       <Btn
         label="Editar"
         icon="i-carbon-edit"
-        :disabled="!project.id"
+        :disabled="!project.id || loading"
         @click="showEditingProject = true"
       />
     </Header>
@@ -215,6 +216,7 @@ onMounted(() => {
       />
       <Btn
         label="Credores"
+        :disabled="!project.id || loading"
         @click="router.push({ path: `/projeto/${attrs.projectId}/credores` })"
       />
     </Header>
