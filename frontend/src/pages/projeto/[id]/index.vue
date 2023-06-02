@@ -46,7 +46,7 @@ onMounted(() => {
   >
     <template #menu>
       <ProjectDetailCell label="Engagement">
-        <div v-for="engagement in project?.engagement?.numbers" :key="engagement">
+        <div v-for="engagement in project?.engagement?.numbers as any[]" :key="engagement">
           {{ engagement }}
         </div>
       </ProjectDetailCell>
@@ -73,14 +73,14 @@ onMounted(() => {
 
       <ProjectDetailCell label="Recuperandas">
         <div
-          v-for="recovering in project?.recoverings"
-          :key="recovering.id"
+          v-for="recovering in project?.recoverings as any[]"
+          :key="recovering?.id"
           class="mb-2"
         >
           <div class="font-bold">
-            {{ recovering.entity.name }}
+            {{ recovering?.entity?.name }}
           </div>
-          <div>{{ formatLegalNumber(recovering.entity.legalNumber) }}</div>
+          <div>{{ formatLegalNumber(recovering?.entity?.legalNumber) }}</div>
         </div>
       </ProjectDetailCell>
 
@@ -185,10 +185,10 @@ onMounted(() => {
 
     <div v-if="filteredRecoverings.length > 0" class="grid gap-3">
       <Accordion
-        v-for="recovering in filteredRecoverings"
-        :key="recovering.id"
-        :title="recovering.entity.name"
-        :subtitle="formatLegalNumber(recovering.entity.legalNumber)"
+        v-for="recovering in filteredRecoverings as any[]"
+        :key="recovering?.id"
+        :title="recovering?.entity?.name"
+        :subtitle="formatLegalNumber(recovering?.entity?.legalNumber)"
       >
         <template #header-right>
           <div class="flex-1 flex gap-2 justify-end items-center pl-8 pr-4">
@@ -200,8 +200,8 @@ onMounted(() => {
         </template>
         <div v-if="recovering.creditors.length > 0">
           <Accordion
-            v-for="creditor in recovering.creditors"
-            :key="creditor.id"
+            v-for="creditor in recovering.creditors as any[]"
+            :key="creditor?.id"
             :title="recovering.entity.name"
             :subtitle="formatLegalNumber(recovering.entity.legalNumber)"
           >
@@ -244,7 +244,7 @@ onMounted(() => {
             </div>
             <div class="flex gap-2">
               <UserTag
-                v-for="user in group" :key="user.id"
+                v-for="user in group as any[]" :key="user?.id"
                 :model-value="user"
               />
             </div>
