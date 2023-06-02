@@ -88,6 +88,8 @@ const onSubmit = async () => {
 
 // Options Helpers list
 let users = $ref([])
+const specialApprovers = computed(() => users
+  .filter(({ groups }: any) => groups.map(({ name }: any) => name).includes('Sócio')))
 let judges = $ref([])
 const addJudge = async (description: string) => projectService.newJudge(description)
 let lawyers = $ref([])
@@ -390,7 +392,7 @@ onMounted(async () => {
             />
             <InputUsers
               v-model="newProject.specialApprovers"
-              :users="users"
+              :users="specialApprovers"
               label="Aprovadores Especiais"
               :error-messages="errorMessages"
               error-key="special_approvers"

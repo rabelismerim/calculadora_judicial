@@ -78,6 +78,8 @@ const onSubmit = async () => {
 }
 
 // Options Helpers list
+const specialApprovers = computed(() => props.options?.users
+  .filter(({ groups }: any) => groups.map(({ name }: any) => name).includes('Sócio')))
 const addJudge = async (description: string) => await projectService.newJudge(description)
 const addLawyer = async (description: string) => await projectService.newLawyer(description)
 const addCourt = async (description: string) => await projectService.newCourt(description)
@@ -279,7 +281,7 @@ const updateOption = (key: string, value: any) => {
             <InputUser
               v-model="editingProject.calculationManagerId"
               label="Gerente de Cálculo"
-              :users="options.users"
+              :users="specialApprovers"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="calculation_manager_id"
