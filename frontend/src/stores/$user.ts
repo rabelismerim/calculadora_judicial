@@ -1,3 +1,5 @@
+import { deleteAllCookies } from '../composables/utils'
+
 const userFallback = {
   authorized: null,
   isActive: null,
@@ -17,7 +19,7 @@ const login = async () => {
   try {
     const user = await usersService.getMyProfile()
 
-    console.warn('ON LOGIN SUCCESS:', user)
+    printError('ON LOGIN SUCCESS:', user)
     store.value = {
       ...store.value,
       ...user,
@@ -29,8 +31,10 @@ const login = async () => {
     router?.push({ path: '/' })
   }
 }
-const logout = () => {
+const logout = async () => {
   store.value = { ...userFallback }
+  await delay(2)
+  deleteAllCookies()
 }
 const user = computed(() => store.value)
 const isActive = computed(() => store.value.isActive)

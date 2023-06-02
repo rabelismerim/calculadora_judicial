@@ -23,9 +23,9 @@ const nullRecovering = { recoveringId: null, rateId: null }
 let newRecovering = $ref(clone(nullRecovering))
 
 const freeRecoverings = computed(() => props.options.recoverings
-  .filter(({ id }: any) => !props.creditor?.recoverings
+  ?.filter(({ id }: any) => !props.creditor?.recoverings
     ?.map(({ recoveringId }: any) => recoveringId)?.includes(id))
-  .map(({ id: value, entity: { name: label } }) => ({ label, value })))
+  ?.map(({ id: value, entity: { name: label } }) => ({ label, value })))
 const addRecovering = () => {
   const { recoverings } = props.creditor
   if (!newRecovering.recoveringId || !newRecovering.rateId) {
@@ -40,7 +40,7 @@ const addRecovering = () => {
   newRecovering = clone(nullRecovering)
 }
 const rates = computed(() => props.options.rates
-  .map(({ id: value, index: label }) => ({ label, value })))
+  ?.map(({ id: value, index: label }) => ({ label, value })))
 
 const nullCreditor: Creditor = {
   name: '',
@@ -78,7 +78,7 @@ const onSubmit = async () => {
   loading = true
   try {
     const result: any = await creditorsService.newCreditors(newCreditor.value)
-    if (result.filter((item: any) => !!item).length > 0) {
+    if (result?.filter((item: any) => !!item).length > 0) {
       notify({ message: `Credor ${newCreditor.value.name} foi criado com sucesso!` })
       clear()
       emit('update:modelValue', false)
