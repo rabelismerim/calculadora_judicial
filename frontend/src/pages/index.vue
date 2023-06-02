@@ -30,11 +30,13 @@ const enter = async () => {
           JUCA
         </h1>
         <h2 class="text-gray text-3xl">
-          Sistema de Recuperação Financeira
+          Sistema de Administração Judicial
         </h2>
         <p>
-          <strong>JUCA</strong>, acrônimo de <strong>CÁ</strong>lculo <strong>JU</strong>dicial, é um sistema que simplifica os cálculos financeiros complexos necessários nessas operações, fornecendo resultados precisos e confiáveis ao longo do tempo. Com sua interface amigável e algoritmos avançados, é a ferramenta ideal para advogados, analistas financeiros e demais profissionais envolvidos em processos de recuperação judicial e falência.
-          <!-- Para assistir ao tutorial de uso da ferramenta Clique aqui -->
+          <strong>JUCA</strong>, acrônimo de <strong>CÁ</strong>lculo <strong>JU</strong>dicial, é um sistema que simplifica os cálculos financeiros complexos no processo de administração judicial, fornecendo resultados precisos e confiáveis ao longo do tempo. Com sua interface amigável e algoritmos avançados, é a ferramenta ideal para advogados, analistas financeiros e demais profissionais envolvidos em processos de recuperação judicial e falência.
+        </p>
+        <p>
+          Para assitir o tutorial de uso da ferramenta <a href="https://becurious.edcast.eu/user/login" class="font-bold color--primary">Clique aqui</a>
         </p>
         <div class="flex flex-wrap gap-3">
           <div>
