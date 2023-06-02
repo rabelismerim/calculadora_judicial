@@ -71,10 +71,11 @@ const loadCalculation = async (showLoading = false) => {
     .map((credit: any) => {
       credit.tables = credit?.template?.tables.map(({ fields, description, endPoint, id, many }: any) => {
         const columns = fields
-          ?.map(({ id, isEditable, key, label, order, required, typeDisplay }: any) =>
+          ?.map(({ id, isEditable, key, decimals, label, order, required, typeDisplay }: any) =>
             ({
               id,
               isEditable,
+              decimals,
               name: key,
               field: key,
               label,

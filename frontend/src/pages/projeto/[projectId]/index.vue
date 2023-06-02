@@ -316,11 +316,14 @@ onMounted(() => {
             <div class="font-bold mb-3">
               {{ key }}:
             </div>
-            <div class="flex gap-2">
+            <div v-if="group?.length > 0" class="flex gap-2">
               <UserTag
                 v-for="user in group as any[]" :key="user.id"
                 :model-value="user"
               />
+            </div>
+            <div v-else>
+              Nenhum usuário cadastrado como {{ key }}
             </div>
           </div>
         </div>
