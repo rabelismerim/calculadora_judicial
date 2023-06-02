@@ -11,6 +11,7 @@ StatementIntegrations extends AbstractStatement and includes a description field
 from django.db import models
 from django.db.models import FloatField
 from django.utils.translation import gettext_lazy as _
+from rest_framework import serializers
 
 from calculation.models import Calculation
 from core.abstract.models import AbstractModel
@@ -217,6 +218,14 @@ class AbstractStatement(AbstractStatus):
 
     def __str__(self):
         return f'{self.data_base} - {self.historical_value}'
+
+    def save(self, *args, **kwargs):
+        get_date_rj_filing = self.fund.calculation.get_date_rj_filing()
+        if get_date_rj_filing and self.data_base >= get_date_rj_filing:
+            if self.is_extraconcursal is False:
+                raise serializers.ValidationError(
+                    [_('This is an extra-bankruptcy budget, it is necessary to flag the extra-bankruptcy budget')])
+        super(AbstractStatement, self).save(*args, **kwargs)
 
 
 class AbstractMonetaryCorrection(AbstractModel):

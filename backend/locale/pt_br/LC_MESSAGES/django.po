@@ -639,6 +639,10 @@ msgstr "É extraconcursal"
 msgid "Index on Base Date"
 msgstr "Índice na Data Base"
 
+#: .\backend\calculation\funds\abstract\models.py:227
+msgid "This is an extra-bankruptcy budget, it is necessary to flag the extra-bankruptcy budget"
+msgstr "Essa é uma verba extraconcursal, é necessário usar a flag extraconcursal"
+
 #: .\backend\calculation\funds\abstract\models.py:235
 msgid "Index in recovery"
 msgstr "Índice na recuperação"
