@@ -22,11 +22,11 @@ const avatar = (username: string) => {
   return picture ? `data:image/jpeg;base64,${picture}` : undefined
 }
 
-const label = (step: any = {}) => {
-  if (step?.fieldChanged)
-    return `Campo alterado por ${getUser(step?.createUser)?.fullName || ''}`
-  if (step?.step)
-    return `Status alterado por ${getUser(step?.createUser)?.fullName || ''}`
+const label = ({ type, createUser }: any = {}) => {
+  if (type === 'historical')
+    return `Campo alterado por ${getUser(createUser)?.fullName || ''}`
+  if (type === 'step')
+    return `Status alterado por ${getUser(createUser)?.fullName || ''}`
   return ''
 }
 
@@ -78,18 +78,18 @@ const onSubmit = async () => {
         <div class="max-h-100">
           <QTimeline v-if="history.length > 0" color="primary" layout="comfortable">
             <QTimelineEntry
-              v-for="{ createdAt, createUser, ...rest } in history"
+              v-for="{ createdAt, createUser, type, ...rest } in history"
               :key="createdAt"
               :subtitle="formatDateHour(createdAt)"
               :avatar="avatar(createUser)"
             >
               <template #title>
                 <div class="font-bold text-lg">
-                  {{ label({ ...rest, createUser }) }}
+                  {{ label({ ...rest, type, createUser }) }}
                 </div>
               </template>
               <div>
-                <div v-if="rest?.fieldChanged">
+                <div v-if="type === 'historical'">
                   <div>
                     O Campo <span class="bg-gray-2 rounded px-2">{{ rest?.fieldChangedDisplay }}</span>
                   </div>
@@ -98,7 +98,7 @@ const onSubmit = async () => {
                     para <span class="bg-gray-2 rounded px-2">{{ rest?.currentValue?.toString() || 'Nulo' }}</span>
                   </div>
                 </div>
-                <div v-if="rest?.step">
+                <div v-if="type === 'step'">
                   <div>
                     Status do Cálculo foi alterado para <span class="bg-gray-2 rounded px-2">{{ rest?.stepDisplay }}</span>
                   </div>
