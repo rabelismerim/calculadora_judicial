@@ -261,7 +261,7 @@ const statusLabel = (status: string) => {
 
 const history = computed(() => {
   const { historical = [], step = [] } = calculation?.historical || {}
-  return [...historical, ...step]
+  return [...historical.map((data: any) => ({ type: 'historical', ...data })), ...step.map((data: any) => ({ type: 'step', ...data }))]
     .sort(({ createdAt: a }: any, { createdAt: b }: any) => a < b ? -1 : 1)
 })
 const showChangeStatus = $ref(false)
