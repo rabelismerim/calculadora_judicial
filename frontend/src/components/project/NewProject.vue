@@ -88,6 +88,12 @@ const onSubmit = async () => {
 
 // Options Helpers list
 let users = $ref([])
+const approvers = computed(() => users
+  .filter(({ groups }: any) => {
+    const groupNames = groups.map(({ name }: any) => name)
+    return ['Gestor Jurídico', 'Gestor Cálculo', 'Gestor Financeiro']
+      .some((group: string) => groupNames.includes(group))
+  }))
 const specialApprovers = computed(() => users
   .filter(({ groups }: any) => groups.map(({ name }: any) => name).includes('Sócio')))
 let judges = $ref([])
@@ -384,7 +390,7 @@ onMounted(async () => {
             />
             <InputUsers
               v-model="newProject.approvers"
-              :users="users"
+              :users="approvers"
               label="Aprovadores"
               :rules="[(value: any) => value.length > 0 || 'Este campo é obrigatório!']"
               :error-messages="errorMessages"
