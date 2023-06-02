@@ -4,6 +4,7 @@ It is extended from an AbstractViewApi class and includes a CheckHasPermission p
 Api's responds with JSON data and uses rest_framework.schemas.openapi.AutoSchema to generate the API documents.
 Api's classes use the BigNumber model and schema BigNumber to work with data.
 """
+from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.http import JsonResponse
 from big_number.schemas import BigNumberSchema
@@ -36,7 +37,7 @@ class BigNumberApi(AbstractViewApi):
     """
     http_method_names = ['get']
     serializer_class = BigNumberSchema
-    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    permission_classes = [permissions.IsAuthenticated]
     model = Project  # TODO define permissions
     query_params = QUERY_DASHBOARD
     """O BigNumber representa os valores de kpis, métricas ou gráficos para mensurar a utilização, quantidade ou soma de 
@@ -69,6 +70,15 @@ class BigNumberApi(AbstractViewApi):
         if not self.model:
             raise serializers.ValidationError(_('ID not found'))
 
+        option = {
+            'GET': 'view',
+            'PUT': 'change',
+            'POST': 'add',
+            'DELETE': 'delete',
+        }
+        has_perm = request.user.has_permission(f'{option.get(request.method)}_{self.model._meta.verbose_name.lower()}')
+        if not has_perm:
+            raise PermissionDenied()
         serializer = serializer(self.model, methods_list=methods_list, context={'request': self.request})
         serialized_data = serializer.data
         return JsonResponse(serialized_data, safe=False)

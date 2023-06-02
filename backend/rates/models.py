@@ -297,7 +297,7 @@ class AbstractTemplateField(AbstractModel):
 
     def decimals(self) -> int:
         if self.type == 'F':
-            return 6 if self.key in ['monetary_correction.index_recovering', 'monetary_correction.index_recovering'] else 2
+            return 6 if self.key in ['monetary_correction.index_recovering', 'monetary_correction.index_data_base'] else 2
         return 0
 
 

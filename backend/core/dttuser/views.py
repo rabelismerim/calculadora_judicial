@@ -45,7 +45,7 @@ class AbstractUserDttApi(AbstractViewApi):
     else:
         permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = User
-
+    allow_cache = False
     query_params = [
         {
             "name": "name",
@@ -80,6 +80,7 @@ class UserDttDetailApi(AbstractUserDttApi):
     http_method_names = ['get']
     query_params = []
     docs = docs.copy()
+    allow_cache = False
 
     @doc(_("""This method returns a JSON response that contains the user details as per authenticated user. 
         The serializer is used to access the model object, and then the data is returned in a JSON format.
@@ -100,6 +101,7 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
     query_params = []
     perms = ['can_authorize_users']
     docs = docs.copy()
+    allow_cache = False
 
     @doc(_("""Handles HTTP POST request to authorize or unauthorize user access.
 
@@ -139,7 +141,7 @@ class UserSendMailDttApi(AbstractUserDttApi):
     serializer_class = UserMailDttSchema
     query_params = []
     docs = docs.copy()
-
+    allow_cache = False
     @doc(_("""Used to validate and send email when asked to create a new user.
         The serializer is used to access the model object, and then the data is returned in a JSON format.
         """))
@@ -173,7 +175,7 @@ class GroupApi(AbstractViewApi):
     Methods:
     - get: Returns a list of groups with their names and permissions.
     """
-
+    allow_cache = False
     serializer_class = GroupSchema
     docs = {
         'init': _("""The `Group` class represents a group of users on the system. Contains common properties for 
@@ -227,7 +229,7 @@ class SubgroupApi(AbstractViewApi):
         permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Subgroup
     http_method_names = ['get']
-
+    allow_cache = False
     def get_exclude_queryset(self):
         return {'name': "Security"}
 
@@ -249,7 +251,7 @@ class UserDttApi(AbstractUserDttApi):
         """)
     }
     operation_id_base = 'UserDetail'
-
+    allow_cache = False
     @doc(_("""Only LocalHost. Create a new user by receiving data in the form of dictionaries and 
         returning the specific user details.
         """))

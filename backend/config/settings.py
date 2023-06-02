@@ -24,6 +24,8 @@ urllib3.disable_warnings()
 import warnings
 
 warnings.filterwarnings("ignore", message="You have a duplicated operationId")
+warnings.filterwarnings('ignore', message='DateTimeField LoginRecord.login_time received a naive datetime')
+
 
 if '--env' in sys.argv:
     # get the index of the --env argument

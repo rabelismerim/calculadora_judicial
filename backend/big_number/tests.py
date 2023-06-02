@@ -1,42 +1,58 @@
-"""
-This module defines a test class for testing the BigNumber API endpoints.
-
-The BigNumberTest class inherits from the AbstractTest class and includes two methods for testing
-the HTTP POST and GET methods for managing BigNumber objects. The tests use the Django test client to
-send HTTP requests and assert the responses. 
-
-Methods:
-- test_api_a_post_big_numbers: Sends a POST request to create a new BigNumber object and asserts a successful response status code
-- test_api_b_get_big_numbers: Sends a GET request to retrieve a list of BigNumber objects and asserts a successful response status code and the presence of at least one BigNumber object in the response data
-
-Attributes:
-- None
-"""
-# from core.abstract.tests import AbstractTest
+from core.abstract.tests import AbstractTest
+from creditors.models import Creditor
+from projects.models import Project
 
 
-# class BigNumberTest(AbstractTest):
-#     """big_number related tests"""
+class BigNumberDashboardTest(AbstractTest):
+    """
+    Test class for testing the API endpoints related to big numbers dashboard.
+    """
+    path = 'big_number/dashboard/'
 
-#     def test_api_a_post_big_numbers(self):
-#         """Assert post big_numbers detail"""
-#         self.print_start('Create big_numbers')
-#         big_number = {
-#             "description": "big_number"
-#         }
-#         response = self.client.post(
-#             '/juca/api/v1/projects/big_number', big_number)
-#         self.assertEqual(response.status_code, 201)
-#         self.print_success('Created big_number')
+    def test_api_get_dashboard(self):
+        """
+        Test method to check if API endpoint for getting dashboard data is working correctly.
 
-#     def test_api_b_get_big_numbers(self):
-#         """Assert get big_numbers detail"""
-#         self.print_start('List big_numbers')
-#         response = self.client.get('/juca/api/v1/projects/big_number')
-#         self.assertEqual(response.status_code, 200)
-#         self.print_success('Listed big_numbers')
-#         big_numbers = response.json()['big_numbers']
-#         big_number = big_numbers[0]
-#         self.assertGreaterEqual(len(big_numbers), 1)
-#         self.print_success('Listed big_numbers >= 1')
-#         self.set_project('big_number_id', big_number['id'])
+        """
+        response = super().test_api_get()
+        dashboard = response.content
+        self.assertEqual(len(dashboard['range_for_month']), 12)  # The default is to see the last 12 months
+        self.assertEqual(len(dashboard['range_for_days']), 7)  # The default is to see the last 7 days
+        self.assertSetEqual(set(dashboard['by_phase'].keys()),
+                            {'adm', 'judicial'})  # The default is to see the adm and judicial count
+
+
+class BigNumberProjectTest(AbstractTest):
+    """
+    Test class for testing the API endpoints related to big numbers dashboard.
+    """
+    project = Project.objects.first()
+    path = f'big_number/project/{project.id if project else None}'
+
+    def test_api_get_project(self):
+        """
+        Test method to check if API endpoint for getting project data is working correctly.
+
+        """
+        response = super().test_api_get()
+        dashboard = response.content
+        self.assertSetEqual(set(dashboard.keys()),
+                            {'total_classes_creditor', 'total_creditor', 'total_sum_creditors',
+                             'by_step'})
+
+
+class BigNumberCreditorTest(AbstractTest):
+    """
+    Test class for testing the API endpoints related to big numbers dashboard.
+    """
+    project = Creditor.objects.first()
+    path = f'big_number/creditor/{project.id if project else None}'
+
+    def test_api_get_creditor(self):
+        """
+        Test method to check if API endpoint for getting creditor data is working correctly.
+
+        """
+        response = super().test_api_get()
+        dashboard = response.content
+        self.assertSetEqual(set(dashboard.keys()), {'total'})

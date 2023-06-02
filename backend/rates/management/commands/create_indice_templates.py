@@ -209,6 +209,7 @@ def create_templates():
                   'end_point': '/juca/api/v1/calculation/funds/documents/detail/',
                   'end_point_main': '/juca/api/v1/calculation/funds/documents/',
                   'many': False,
+
                   'summary_fields': summary_fields_document,
                   'summary_main_fields': summary_main_fields_docs,
                   'fields': fields_verbas_document}
@@ -288,7 +289,8 @@ def create_templates():
             TemplateMainFieldDefault.objects.filter(field__template=new_template).delete()
             TemplateMainField.objects.filter(template=new_template).delete()
 
-        for fund in fund_main:
+        for fund_ in fund_main:
+            fund = fund_.copy()
             field_default = fund.pop('default', None)
             main, created = TemplateMainField.objects.get_or_create(template=new_template, **fund)
             if field_default is not None:
@@ -308,8 +310,9 @@ def create_templates():
             TemplateSummaryField.objects.filter(rate=new_template_rate).delete()
 
         for field in fields:
-            field_default = field.pop('default', None)
             defaults = field.copy()
+            field_default = defaults.pop('default', None)
+
             defaults['rate'] = new_template_rate
 
             main, created = TemplateField.objects.get_or_create(defaults=defaults, **defaults)
