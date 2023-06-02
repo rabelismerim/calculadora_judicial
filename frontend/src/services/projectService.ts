@@ -137,10 +137,10 @@ const updateProject = ({
     financialManagerId,
     legalManagerId,
     calculationManagerId,
-    executors: executors.map(mapId),
-    approvers: approvers.map(mapId),
-    reviewers: reviewers.map(mapId),
-    specialApprovers: specialApprovers.map(mapId),
+    executors: executors?.map(mapId),
+    approvers: approvers?.map(mapId),
+    reviewers: reviewers?.map(mapId),
+    specialApprovers: specialApprovers?.map(mapId),
   })
   .then((result: any) => result?.project)
 
