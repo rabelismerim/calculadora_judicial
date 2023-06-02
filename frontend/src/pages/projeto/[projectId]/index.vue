@@ -155,12 +155,13 @@ onMounted(() => {
         label="Participantes"
         icon="i-carbon-events"
         outlined
+        :disabled="!project.id || loading"
         @click="showParticipants = true"
       />
       <Btn
         label="Editar"
         icon="i-carbon-edit"
-        :disabled="!project.id"
+        :disabled="!project.id || loading"
         @click="showEditingProject = true"
       />
     </Header>
@@ -215,6 +216,7 @@ onMounted(() => {
       />
       <Btn
         label="Credores"
+        :disabled="!project.id || loading"
         @click="router.push({ path: `/projeto/${attrs.projectId}/credores` })"
       />
     </Header>
@@ -307,18 +309,21 @@ onMounted(() => {
       >
         <div class="p-8 pt-4">
           <div
-            v-for="(group, key) in project.participants"
+            v-for="([key, group]) in project.participants as any[]"
             :key="key"
             class="mb-4"
           >
             <div class="font-bold mb-3">
               {{ key }}:
             </div>
-            <div class="flex gap-2">
+            <div v-if="group?.length > 0" class="flex gap-2">
               <UserTag
-                v-for="user in group" :key="user.id"
+                v-for="user in group as any[]" :key="user.id"
                 :model-value="user"
               />
+            </div>
+            <div v-else>
+              Nenhum usuário cadastrado como {{ key }}
             </div>
           </div>
         </div>

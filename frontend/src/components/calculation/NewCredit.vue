@@ -22,14 +22,21 @@ const loadTemplate = async (id: string) => {
     return
   const result = await ratesService.getTemplate(id)
   newCredit.endPoint = result?.endPoint
-  newCredit.fields = result?.fields?.map(({ id, key, label, order, required, typeDisplay }: any) => ({
+  const fields = result?.fields?.map(({ id, key, label, default: fallback, order, required, typeDisplay }: any) => ({
     id,
     key,
     label,
     order,
     type: typeDisplay,
     required,
+    fallback,
   }))
+  const defaultValues = fields
+    ?.filter(({ fallback }: any) => fallback !== null)
+    ?.map(({ fallback, key }: any) => [key, fallback])
+  if (defaultValues?.length > 0)
+    defaultValues.forEach(([key, value]: [string, any]) => newCredit[key] = value)
+  newCredit.fields = fields
 }
 
 const clearNewCredit = () => {

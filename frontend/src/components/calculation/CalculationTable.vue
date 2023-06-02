@@ -73,15 +73,17 @@ const calculationColumns: TableColumn[] = [
     name: 'class',
     field: 'classes',
     format: (value: any[]) => value && value
-      .map(({ classeDisplay, percentageCalculated }: any) => `${classeDisplay?.split('-').at(0).trim()}: ${(percentageCalculated || 0)?.toFixed(2)}%`).join(','),
+      .filter(({ percentageCalculated }: any) => !!percentageCalculated)
+      .map(({ classeDisplay, percentageCalculated }: any) => `${classeDisplay?.split('-').at(0).trim()}: ${(percentageCalculated || 0)?.toFixed(2)}%`).join(' ,'),
     label: 'Classe',
     align: 'left',
     sortable: true,
   },
   {
     name: 'executor',
-    field: 'excecutor',
+    field: 'executor',
     label: 'Executor',
+    format: (value: any) => value?.fullName,
     align: 'left',
     sortable: true,
   },
@@ -89,6 +91,7 @@ const calculationColumns: TableColumn[] = [
     name: 'reviewer',
     field: 'reviewer',
     label: 'Revisor',
+    format: (value: any) => value?.fullName,
     align: 'left',
     sortable: true,
   },
@@ -96,6 +99,7 @@ const calculationColumns: TableColumn[] = [
     name: 'approver',
     field: 'approver',
     label: 'Aprovador',
+    format: (value: any) => value?.fullName,
     align: 'left',
     sortable: true,
   },
@@ -103,6 +107,7 @@ const calculationColumns: TableColumn[] = [
     name: 'specialapprover',
     field: 'specialApprover',
     label: 'Aprovador Especial',
+    format: (value: any) => value?.fullName,
     align: 'left',
     sortable: true,
   },
@@ -209,7 +214,14 @@ const statusColors: any = {
         <div v-if="props.value">
           {{ props.value }}
         </div>
-        <div>N/A</div>
+        <div
+          v-else-if="props.row.step === 'B'"
+          class="i-carbon-warning-filled text-lg color-gray"
+          :class="{ 'color--error': props.row.reviewer }"
+        />
+        <div v-else>
+          N/A
+        </div>
       </QTd>
     </template>
     <template #body-cell-status="props">

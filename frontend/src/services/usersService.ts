@@ -42,7 +42,7 @@ const getGroups = () => api
   .then((result: any) => result?.groups
     ?.map(({ name: description, id }: any) => ({ id, description })))
 
-const requestAccess = (email: string) => api
+const sendmail = (email: string) => api
   .post('/user/sendmail/', { email })
 
 const setPermission = ({ email, groups, role, status }: any) => api
@@ -54,6 +54,6 @@ export default {
   getPermissions,
   getGroups,
   getUsers,
-  requestAccess,
+  sendmail,
   setPermission,
 }

@@ -78,6 +78,15 @@ const onSubmit = async () => {
 }
 
 // Options Helpers list
+const approvers = computed(() => props.options?.users
+  .filter(({ groups }: any) => {
+    const groupNames = groups.map(({ name }: any) => name)
+    return ['Gestor Jurídico', 'Gestor Cálculo', 'Gestor Financeiro']
+      .some((group: string) => groupNames.includes(group))
+  }))
+const specialApprovers = computed(() => props.options?.users
+  .filter(({ groups }: any) => groups.map(({ name }: any) => name).includes('Sócio')))
+
 const addJudge = async (description: string) => await projectService.newJudge(description)
 const addLawyer = async (description: string) => await projectService.newLawyer(description)
 const addCourt = async (description: string) => await projectService.newCourt(description)
@@ -316,11 +325,18 @@ const updateOption = (key: string, value: any) => {
             />
             <InputUsers
               v-model="editingProject.approvers"
-              :users="options.users"
+              :users="approvers"
               label="Aprovadores"
               :rules="[(value: any) => value?.length > 0 || 'Este campo é obrigatório!']"
               :error-messages="errorMessages"
               error-key="approvers"
+            />
+            <InputUsers
+              v-model="editingProject.specialApprovers"
+              :users="specialApprovers"
+              label="Aprovadores Especiais"
+              :error-messages="errorMessages"
+              error-key="special_approvers"
             />
           </div>
         </QStep>

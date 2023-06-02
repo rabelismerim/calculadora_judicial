@@ -11,7 +11,7 @@ const props = withDefaults(defineProps<{
   errorMessages: () => ({}),
   errorKey: '',
 })
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'paste'])
 
 const input = ref(null as any)
 const hasError = computed(() => input.hasError)
@@ -65,6 +65,7 @@ const formatedDate = computed({
     outlined
     mask="##/##/####"
     dense
+    @paste="emit('paste', $event)"
   >
     <template #append>
       <div class="i-carbon-calendar cursor-pointer">

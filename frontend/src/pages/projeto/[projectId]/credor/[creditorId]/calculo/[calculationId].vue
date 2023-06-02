@@ -71,10 +71,11 @@ const loadCalculation = async (showLoading = false) => {
     .map((credit: any) => {
       credit.tables = credit?.template?.tables.map(({ fields, description, endPoint, id, many }: any) => {
         const columns = fields
-          ?.map(({ id, isEditable, key, label, order, required, typeDisplay }: any) =>
+          ?.map(({ id, isEditable, key, decimals, label, order, required, typeDisplay }: any) =>
             ({
               id,
               isEditable,
+              decimals,
               name: key,
               field: key,
               label,
@@ -173,8 +174,8 @@ const calculateCredit = async (credit: any, creditIndex: number) => {
     return
   const { tables } = credit
   dialog({
-    title: 'Calcular Créditos',
-    message: 'Você tem certeza que deseja calcular estes créditos?',
+    title: 'Processar Créditos',
+    message: 'Você tem certeza que deseja processar estes créditos?',
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -186,15 +187,18 @@ const calculateCredit = async (credit: any, creditIndex: number) => {
         const method = line.id ? 'PUT' : 'POST'
         const result: any = await fetch(`${host}${table.endPoint}${method === 'PUT' ? 'detail/' : ''}${line.id ? `${line.id}/` : ''}`, {
           method,
-          body: JSON.stringify({ ...line, fund_id: credit.id }),
+          body: JSON.stringify({ ...line, fund_id: credit.id, calculation_id: calculation.id }),
           headers,
         })
           .then(response => response.json())
           .then(response => Object.values(response).at(0))
-        table.values[lineIndex] = result
+        if (!result.errors)
+          table.values[lineIndex] = result
+        else
+          table.values[lineIndex].loading = false
       }
     }
-    notify({ message: 'Crédito calculado com sucesso!' })
+    notify({ message: 'Crédito processado com sucesso!' })
     loading = false
   })
 }
@@ -257,10 +261,25 @@ const statusLabel = (status: string) => {
 
 const history = computed(() => {
   const { historical = [], step = [] } = calculation?.historical || {}
-  return [...historical, ...step]
+  return [...historical.map((data: any) => ({ type: 'historical', ...data })), ...step.map((data: any) => ({ type: 'step', ...data }))]
     .sort(({ createdAt: a }: any, { createdAt: b }: any) => a < b ? -1 : 1)
 })
 const showChangeStatus = $ref(false)
+
+const onPaste = (evt: any, table: any[], key: string, type: string, index: any) => {
+  const clipBoardData = evt?.clipboardData?.getData('text') || ''
+  const splitData = clipBoardData
+    .split('\r\n')
+    .map((item: string) => item.trim())
+    .filter((item: string) => !!item)
+  const values = (type === 'float' || type === 'integer')
+    ? splitData
+      .map((item: string) => Number(item.replaceAll('.', '').replaceAll(',', '.')))
+    : splitData
+  const data = table.slice(index, index + values.length)
+  for (const index in data)
+    data[index][key] = values[index]
+}
 </script>
 
 <template>
@@ -423,6 +442,7 @@ const showChangeStatus = $ref(false)
                             class="flex-1"
                             outlined
                             dense
+                            @paste.prevent="onPaste($event, table.values, column.field, column.type, props.rowIndex)"
                           />
                           <QInput
                             v-else-if="column.type === 'float' || column.type === 'integer'"
@@ -433,12 +453,14 @@ const showChangeStatus = $ref(false)
                             outlined
                             dense
                             @update:model-value="(value: any) => { if (column.type === 'integer') (props.row[column.field] = Math.round(value)) }"
+                            @paste.prevent="onPaste($event, table.values, column.field, column.type, props.rowIndex)"
                           />
                           <InputDate
                             v-else-if="column.type === 'date'"
                             v-model="props.row[column.field]"
                             :rules="isRequired(column)"
                             class="flex-1"
+                            @paste.prevent="onPaste($event, table.values, column.field, column.type, props.rowIndex)"
                           />
                           <div v-else-if="column.type === 'boolean'" class="row justify-center">
                             <QToggle
@@ -474,7 +496,7 @@ const showChangeStatus = $ref(false)
                     {{ credit.tables.reduce((acc:number, table: any) => acc + table.values?.filter((line: any) => statusLabel(line.status) === 'Erro')?.length, 0) }}
                   </div>
                 </div>
-                <Btn label="Calcular" @click="calculateCredit(credit, creditIndex)" />
+                <Btn label="Processar" @click="calculateCredit(credit, creditIndex)" />
               </div>
             </QForm>
           </Accordion>
@@ -494,7 +516,7 @@ const showChangeStatus = $ref(false)
         :history="history"
         :options="options"
         :calculation-id="calculation?.id"
-        @update-status="loadOptions(calculation?.id)"
+        @update-status="loadOptions(calculation?.id); loadCalculation()"
       />
       <NewCredit
         v-model="showNewCredit"

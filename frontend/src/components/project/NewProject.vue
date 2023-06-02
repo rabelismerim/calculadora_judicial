@@ -38,8 +38,9 @@ const nullProject = {
   financialPartnerId: '',
   calculationManagerId: '',
   executors: [],
-  approvers: [],
   reviewers: [],
+  approvers: [],
+  specialApprovers: [],
   processNumber: '',
 }
 let newProject = $ref(clone(nullProject))
@@ -87,6 +88,14 @@ const onSubmit = async () => {
 
 // Options Helpers list
 let users = $ref([])
+const approvers = computed(() => users
+  .filter(({ groups }: any) => {
+    const groupNames = groups.map(({ name }: any) => name)
+    return ['Gestor Jurídico', 'Gestor Cálculo', 'Gestor Financeiro']
+      .some((group: string) => groupNames.includes(group))
+  }))
+const specialApprovers = computed(() => users
+  .filter(({ groups }: any) => groups.map(({ name }: any) => name).includes('Sócio')))
 let judges = $ref([])
 const addJudge = async (description: string) => projectService.newJudge(description)
 let lawyers = $ref([])
@@ -381,11 +390,18 @@ onMounted(async () => {
             />
             <InputUsers
               v-model="newProject.approvers"
-              :users="users"
+              :users="approvers"
               label="Aprovadores"
               :rules="[(value: any) => value.length > 0 || 'Este campo é obrigatório!']"
               :error-messages="errorMessages"
               error-key="approvers"
+            />
+            <InputUsers
+              v-model="newProject.specialApprovers"
+              :users="specialApprovers"
+              label="Aprovadores Especiais"
+              :error-messages="errorMessages"
+              error-key="special_approvers"
             />
           </div>
         </QStep>
