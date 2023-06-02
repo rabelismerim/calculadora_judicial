@@ -281,7 +281,7 @@ const updateOption = (key: string, value: any) => {
             <InputUser
               v-model="editingProject.calculationManagerId"
               label="Gerente de Cálculo"
-              :users="specialApprovers"
+              :users="options.users"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="calculation_manager_id"
@@ -326,7 +326,7 @@ const updateOption = (key: string, value: any) => {
             />
             <InputUsers
               v-model="editingProject.specialApprovers"
-              :users="options.users"
+              :users="specialApprovers"
               label="Aprovadores Especiais"
               :error-messages="errorMessages"
               error-key="special_approvers"

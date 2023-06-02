@@ -117,6 +117,7 @@ const updateProject = ({
   executors,
   reviewers,
   approvers,
+  specialApprovers,
 }: any) => api
   .put(`/v1/projects/${id}/`, {
     description,
@@ -139,6 +140,7 @@ const updateProject = ({
     executors: executors.map(mapId),
     approvers: approvers.map(mapId),
     reviewers: reviewers.map(mapId),
+    specialApprovers: specialApprovers.map(mapId),
   })
   .then((result: any) => result?.project)
 
