@@ -3,38 +3,18 @@ const router = useRouter()
 
 let loading = $ref(false)
 let requested = $ref(false)
-const enter = () => {
-  router.push({ path: '/projetos' })
-}
 
-onMounted(async () => {
+const enter = async () => {
+  loading = true
   try {
-    loading = true
-    $user.login()
+    const user = await $user.login()
+    if (user?.isActive)
+      router.push({ path: '/projetos' })
+    else
+      requested = true
   }
   catch (error) {
     printError('ERROR ON LOGIN:', error)
-  }
-  finally {
-    loading = false
-  }
-})
-const { isActive, user } = $user
-
-const requestPermission = async () => {
-  try {
-    loading = true
-    const { status } = await usersService.requestAccess(user.value.email)
-    if (status === 201) {
-      requested = true
-      notify({
-        message: 'Seu pedido foi enviado para o Gestor responsável, aguarde a autorização dele!',
-        type: 'success',
-      })
-    }
-  }
-  catch (error) {
-    printError('ERROR ON REQUEST PERMISSION:', error)
   }
   finally {
     loading = false
@@ -57,26 +37,13 @@ const requestPermission = async () => {
           <!-- Para assistir ao tutorial de uso da ferramenta Clique aqui -->
         </p>
         <div class="flex flex-wrap gap-3">
-          <div v-if="loading" class="flex items-center gap-4 text--primary font-bold">
-            Carregando seus dados...
-            <Spinner color="primary" />
-          </div>
-          <div v-else-if="isActive">
+          <div>
             <Btn
-              v-if="isActive"
-              label="Entrar"
-              loading-label="Carregando seus dados..."
+              :label="!requested ? 'Entrar' : 'Pedido de acesso solicitado'"
+              loading-label="Processando seus dados..."
               :loading="loading"
-              @click="enter"
-            />
-            <Btn
-              v-else
-              :label="requested ? 'Pedido Enviado' : 'Solicitar acesso'"
-              loading-label="enviando Solicitação..."
               :disabled="requested"
-              :loading="loading"
-              outlined
-              @click="requestPermission"
+              @click="enter"
             />
           </div>
         </div>
