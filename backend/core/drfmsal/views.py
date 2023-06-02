@@ -61,10 +61,16 @@ class SignStatusApi(AbstractViewApi):
                 email=ms_identity_web.id_data.usermail)
             if ms_identity_web.id_data.usermail is not None:
                 if user_view.count() == 0:
-                    serializer = UserDttMFASchema(data=ms_identity_web.id_data)
-                    serializer.is_valid(raise_exception=True)
-                    new_user = serializer.data
-                    User.objects.create_user(**new_user)
+                    user = User()
+                    user.email = ms_identity_web.id_data.usermail
+                    user.username = ms_identity_web.id_data.username.replace(' ', '_')
+                    user.first_name = ms_identity_web.id_data.username.split()[0]
+                    user.last_name = ms_identity_web.id_data.username.split(
+                    )[len(request.identity_context_data.username.split())-1]
+                    user.is_active = False
+                    user.userpicture = ms_identity_web.id_data.userpicture
+                    user.is_staff = False
+                    user.save()
                 elif len(user_view) > 0:
                     for item in user_view:
                         if item.userpicture != ms_identity_web.id_data.userpicture:
