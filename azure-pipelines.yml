@@ -30,7 +30,7 @@ steps:
 - script: |
     echo Installing $(EnvPrd.secureFilePath) to the path backend...
     copy $(Env.secureFilePath) $(Build.SourcesDirectory)/backend 
-- task: DownloadSecureFile@2
+- task: DownloadSecureFile@1
   name: Env-FrontEnd
   inputs:
     secureFile: '.env-frontend'
