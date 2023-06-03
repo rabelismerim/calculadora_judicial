@@ -54,26 +54,44 @@ steps:
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
 - script: |
     npm install --force
+  workingDirectory: $(Build.SourcesDirectory)/frontend
+  displayName: 'Install node prerequisites'
 - script: |
     npm run build:prod
   workingDirectory: $(Build.SourcesDirectory)/frontend
   displayName: 'Install node prerequisites'
 - script: |
     mkdir ./log
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
 - script: |
     pip install virtualenv
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
 - script: |
     virtualenv venv
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
 - script: |
     ./venv/Scripts/activate
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
 - script: |
     python -m pip install --upgrade pip setuptools wheel
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
 - script: |
     pip install -r requirements.txt >> arq1.txt
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
 - script: |
     pip install unittest-xml-reporting
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
 - script: |
     pip install fastcgi
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
 - script: |
     python manage.py collectstatic
   workingDirectory: $(Build.SourcesDirectory)/backend
