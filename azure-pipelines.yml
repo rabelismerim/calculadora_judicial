@@ -67,7 +67,7 @@ steps:
     pip install -r requirements.txt
     pip install unittest-xml-reporting
     pip install fastcgi
-    python manage.py collectstatic
+    python manage.py collectstatic --noinput
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - task: CopyFiles@2
