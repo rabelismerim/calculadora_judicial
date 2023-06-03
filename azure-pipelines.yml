@@ -36,7 +36,7 @@ steps:
     copy $(Env.secureFilePath) $(Build.SourcesDirectory)/backend
 - script: |
     echo Installing $(EnvFrontEnd.secureFilePath) to the path frontend...
-    echo copy $(EnvFrontEnd.secureFilePath) $(Build.SourcesDirectory)/frontend/.env
+    copy $(EnvFrontEnd.secureFilePath) $(Build.SourcesDirectory)/frontend/.env
 - task: PythonScript@0
   displayName: 'Export project path'
   inputs:
@@ -76,4 +76,4 @@ steps:
     Contents: '**'
     TargetFolder: 'D:\JUCA\'
     OverWrite: true
-    flattenFolders: true
+    flattenFolders: false
