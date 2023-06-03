@@ -24,12 +24,19 @@ steps:
     versionSource: 'spec'
     versionSpec: '8.x'
 - task: DownloadSecureFile@1
-  name: EnvPrd
+  name: Env
   inputs:
-    secureFile: '.envprd'
+    secureFile: '.env'
 - script: |
     echo Installing $(EnvPrd.secureFilePath) to the path backend...
-    copy $(EnvPrd.secureFilePath) $(Build.SourcesDirectory)/backend 
+    copy $(Env.secureFilePath) $(Build.SourcesDirectory)/backend 
+- task: DownloadSecureFile@2
+  name: Env-frontend
+  inputs:
+    secureFile: '.env-frontend'
+- script: |
+    echo Installing $(EnvPrd.secureFilePath) to the path backend...
+    copy $(Env-frontend.secureFilePath) $(Build.SourcesDirectory)/frontend 
 - task: PythonScript@0
   displayName: 'Export project path'
   inputs:
@@ -63,14 +70,10 @@ steps:
     python manage.py collectstatic
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
-- task: DeleteFiles@1
-  inputs:
-    SourceFolder: '$(Build.SourcesDirectory)/backend/venv'
-    Contents: '**'
 - task: CopyFiles@2
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)/backend'
     Contents: '**'
-    TargetFolder: 'D:\JUCA\'
+    TargetFolder: 'D:\DJUD\'
     OverWrite: true
     flattenFolders: true
