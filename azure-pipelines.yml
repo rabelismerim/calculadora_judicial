@@ -54,18 +54,27 @@ steps:
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
 - script: |
     npm install --force
+- script: |
     npm run build:prod
   workingDirectory: $(Build.SourcesDirectory)/frontend
   displayName: 'Install node prerequisites'
 - script: |
     mkdir ./log
+- script: |
     pip install virtualenv
+- script: |
     virtualenv venv
+- script: |
     ./venv/Scripts/activate
+- script: |
     python -m pip install --upgrade pip setuptools wheel
+- script: |
     pip install -r requirements.txt >> arq1.txt
+- script: |
     pip install unittest-xml-reporting
+- script: |
     pip install fastcgi
+- script: |
     python manage.py collectstatic
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
