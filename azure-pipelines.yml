@@ -70,9 +70,11 @@ steps:
     virtualenv venv
     .\venv\Scripts\activate
     python -m pip install --upgrade pip setuptools wheel
-    pip install -r requirements.txt
-    pip install unittest-xml-reporting
-    pip install fastcgi
+    python -m pip install -r requirements.txt
+    python -m pip install unittest-xml-reporting
+    python -m pip install fastcgi
+    python manage.py makemigrations
+    python manage.py migrate
     python manage.py collectstatic --no-input
   failOnStderr: true
   workingDirectory: $(Build.SourcesDirectory)/backend
