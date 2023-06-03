@@ -58,7 +58,7 @@ steps:
       print('Found Django project in', project_location)
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
 - script: |
-    npm install --force
+    npm install
     npm run build:prod
   failOnStderr: true
   workingDirectory: $(Build.SourcesDirectory)/frontend
