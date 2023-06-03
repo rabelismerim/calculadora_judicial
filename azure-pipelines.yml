@@ -65,12 +65,11 @@ steps:
   displayName: 'Install node prerequisites'
 - script: |
     md .\log
-    python -m pip install --upgrade pip setuptools wheel
     pip install virtualenv
     virtualenv venv
     .\venv\Scripts\activate
     python -m pip install --upgrade pip setuptools wheel
-    python -m pip install -r requirements.txt
+    python -m pip install -r requirements.txt >> arq1.txt
     python -m pip install unittest-xml-reporting
     python -m pip install fastcgi
     python manage.py makemigrations
