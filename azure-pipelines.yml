@@ -59,6 +59,9 @@ steps:
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
 - script: |
     npm install
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/frontend
+  displayName: 'Install node prerequisites'
 - script: |
     npm run build:prod
   failOnStderr: true
@@ -66,24 +69,54 @@ steps:
   displayName: 'Install node prerequisites'
 - script: |
     md .\log
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
 - script: |
     pip install virtualenv
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
 - script: |
     virtualenv venv
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
 - script: |
     .\venv\Scripts\activate
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
 - script: |
     pip install --upgrade pip setuptools wheel
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
 - script: |
     pip install -r requirements.txt
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
 - script: |
     pip install unittest-xml-reporting
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
 - script: |
     python -m pip install fastcgi
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
 - script: |
     python manage.py makemigrations
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
 - script: |
     python manage.py migrate
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
 - script: |
     python manage.py collectstatic --no-input
   failOnStderr: true
