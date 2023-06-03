@@ -18,7 +18,7 @@ strategy:
 steps:
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: '3.9.6'
+    versionSpec: '3.9'
     allowUnstable: true
     architecture: 'x64'
 - task: NodeTool@0
@@ -59,21 +59,32 @@ steps:
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
 - script: |
     npm install
+- script: |
     npm run build:prod
   failOnStderr: true
   workingDirectory: $(Build.SourcesDirectory)/frontend
   displayName: 'Install node prerequisites'
 - script: |
     md .\log
+- script: |
     pip install virtualenv
+- script: |
     virtualenv venv
+- script: |
     .\venv\Scripts\activate
+- script: |
     pip install --upgrade pip setuptools wheel
+- script: |
     pip install -r requirements.txt
+- script: |
     pip install unittest-xml-reporting
+- script: |
     python -m pip install fastcgi
+- script: |
     python manage.py makemigrations
+- script: |
     python manage.py migrate
+- script: |
     python manage.py collectstatic --no-input
   failOnStderr: true
   workingDirectory: $(Build.SourcesDirectory)/backend
