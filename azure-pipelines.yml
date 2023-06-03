@@ -33,10 +33,10 @@ steps:
     secureFile: '.env-frontend'
 - script: |
     echo Installing $(Env.secureFilePath) to the path backend...
-    echo copy $(Env.secureFilePath) $(Build.SourcesDirectory)backend/.env
+    copy $(Env.secureFilePath) $(Build.SourcesDirectory)\backend\.env
 - script: |
     echo Installing $(EnvFrontEnd.secureFilePath) to the path frontend...
-    echo copy $(EnvFrontEnd.secureFilePath) $(Build.SourcesDirectory)frontend/.env
+    copy $(EnvFrontEnd.secureFilePath) $(Build.SourcesDirectory)\frontend\.env
 - task: PythonScript@0
   displayName: 'Export project path'
   inputs:
