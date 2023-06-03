@@ -24,7 +24,7 @@ steps:
 - task: NodeTool@0
   inputs:
     versionSource: 'spec'
-    versionSpec: '9.x'
+    versionSpec: '10.x'
     checkLatest: true
 - task: DownloadSecureFile@1
   name: Env
