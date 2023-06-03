@@ -37,9 +37,11 @@ steps:
 - script: |
     echo Installing $(Env.secureFilePath) to the path backend...
     copy $(Env.secureFilePath) $(Build.SourcesDirectory)\backend\.env
+  failOnStderr: true
 - script: |
     echo Installing $(EnvFrontEnd.secureFilePath) to the path frontend...
     copy $(EnvFrontEnd.secureFilePath) $(Build.SourcesDirectory)\frontend\.env
+  failOnStderr: true
 - task: PythonScript@0
   displayName: 'Export project path'
   inputs:
@@ -58,6 +60,7 @@ steps:
 - script: |
     npm install --force
     npm run build:prod
+  failOnStderr: true
   workingDirectory: $(Build.SourcesDirectory)/frontend
   displayName: 'Install node prerequisites'
 - script: |
@@ -71,6 +74,7 @@ steps:
     pip install unittest-xml-reporting
     pip install fastcgi
     python manage.py collectstatic --no-input
+  failOnStderr: true
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - task: CopyFiles@2
