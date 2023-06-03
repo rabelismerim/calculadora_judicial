@@ -8,6 +8,8 @@ pool:
   name: TR
   demands:
   - Agent.Name -equals TRDEV
+variables:
+  system.debug: 'true'
 strategy:
   matrix:
     DJUD:
