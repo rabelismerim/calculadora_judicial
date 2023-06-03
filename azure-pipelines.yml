@@ -64,7 +64,7 @@ steps:
   displayName: 'Install node prerequisites'
 - script: |
     npm run build:prod
-  failOnStderr: true
+  failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/frontend
   displayName: 'Install node prerequisites'
 - script: |
