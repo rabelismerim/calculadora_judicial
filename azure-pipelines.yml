@@ -118,7 +118,17 @@ steps:
     Contents: '**'
     RemoveSourceFolder: true
 - script: |
-    del venv\*.* /f /q
+    del 00*.py /s /q
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
+- script: |
+    python manage.py makemigrations
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
+- script: |
+    python manage.py migrate --fake
   failOnStderr: true
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
