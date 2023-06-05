@@ -124,3 +124,8 @@ steps:
     TargetFolder: 'D:\JUCA'
     OverWrite: true
     flattenFolders: false
+- script: |
+    rd venv
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
