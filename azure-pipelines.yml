@@ -119,6 +119,10 @@ steps:
     RemoveSourceFolder: true
 - script: |
     del venv\*.* /f /q
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
+- script: |
     rd venv
   failOnStderr: true
   workingDirectory: $(Build.SourcesDirectory)/backend
