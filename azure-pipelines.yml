@@ -112,3 +112,15 @@ steps:
   failOnStderr: true
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
+- task: DeleteFiles@1
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)/backend/venv'
+    Contents: '**'
+    RemoveSourceFolder: true
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)/backend'
+    Contents: '**'
+    TargetFolder: 'D:\JUCA'
+    OverWrite: true
+    flattenFolders: true
