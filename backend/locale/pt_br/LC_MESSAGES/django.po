@@ -624,7 +624,7 @@ msgstr "Status {} não corresponde a nenhum status válido"
 
 #: .\backend\calculation\funds\abstract\models.py:154
 msgid "Base date"
-msgstr "Data base"
+msgstr "Data base"q
 
 #: .\backend\calculation\funds\abstract\models.py:155
 msgid "Historical value"
@@ -3624,6 +3624,10 @@ msgstr "Nome da Taxa"
 #: .\backend\rates\models.py:19
 msgid "Is the Rate per day? day or month"
 msgstr "A Taxa é por dia? "
+
+#: .\backend\rates\models.py:21
+msgid "Rate is active?"
+msgstr "O Índice está ativo?"
 
 #: .\backend\rates\models.py:68
 msgid "Rate date"

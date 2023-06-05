@@ -18,6 +18,7 @@ class Rate(AbstractModel):  # Indices
     index = models.CharField(_('Rate Name'), max_length=50)
     is_per_day = models.BooleanField(
         _('Is the Rate per day? day or month'), default=True)
+    is_active = models.BooleanField(_('Rate is active?'), default=True)
 
     def is_ipca_e_selic(self) -> bool:
         """
@@ -297,7 +298,8 @@ class AbstractTemplateField(AbstractModel):
 
     def decimals(self) -> int:
         if self.type == 'F':
-            return 6 if self.key in ['monetary_correction.index_recovering', 'monetary_correction.index_data_base'] else 2
+            return 6 if self.key in ['monetary_correction.index_recovering',
+                                     'monetary_correction.index_data_base'] else 2
         return 0
 
 
@@ -342,6 +344,7 @@ class TemplateField(AbstractTemplateField):
     def get_default(self, *args, **kwargs):
         if hasattr(self, 'templatefielddefault'):
             return self.templatefielddefault.get_value()
+
     def __str__(self):
         return f'{self.label} | {self.rate.description} | {self.rate.template.name}'
 

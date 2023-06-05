@@ -3,7 +3,7 @@ from django.http import JsonResponse
 
 from rest_framework import permissions, serializers, status
 from core.permission.views import CheckHasPermission
-from rates.models import Rate, RateFile, Template, RateValues, TemplateRate, TemplateField
+from rates.models import Rate, RateFile, Template
 from rates.schemas import RateFileSchema, RateSchema, TemplateSchema, TemplateListSchema, RateListSchema
 from utils import _, doc
 
@@ -19,6 +19,9 @@ class AbstractRateApi(AbstractViewApi):
         """),
         'get': _("""Returns the rate and its accumulated values, period and date""")
     }
+
+    def get_queryset(self):
+        return {'is_active': True}
 
 
 class RateApi(AbstractRateApi):
