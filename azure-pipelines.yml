@@ -118,11 +118,6 @@ steps:
     Contents: '**'
     RemoveSourceFolder: true
 - script: |
-    del 00*.py /s /q
-  failOnStderr: true
-  workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
-- script: |
     python manage.py makemigrations
   failOnStderr: true
   workingDirectory: $(Build.SourcesDirectory)/backend
