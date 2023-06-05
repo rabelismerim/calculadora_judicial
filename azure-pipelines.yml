@@ -129,7 +129,7 @@ steps:
   displayName: 'Install and preparing python prerequisites'
 - script: |
     rd venv
-  failOnStderr: true
+  failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - script: |
