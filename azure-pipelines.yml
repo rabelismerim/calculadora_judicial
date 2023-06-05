@@ -125,7 +125,7 @@ steps:
     OverWrite: true
     flattenFolders: false
 - script: |
-    del venv\*.* /Y
+    del venv\*.* /f /q
     rd venv
   failOnStderr: true
   workingDirectory: $(Build.SourcesDirectory)/backend
