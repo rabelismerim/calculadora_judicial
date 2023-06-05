@@ -127,6 +127,11 @@ steps:
   failOnStderr: true
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
+- script: |
+    del .env
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
 - task: CopyFiles@2
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)/backend'
