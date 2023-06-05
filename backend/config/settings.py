@@ -75,6 +75,7 @@ IS_HML = any([BRANCH_LOCAL, BRANCH_DEV]) is False
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'uat.fadigitallab.deloitte.com.br',
+    'fadigitallab.deloitte.com.br',
     'localhost',
     'brdcvmdev07',
     'brfojwanderley',

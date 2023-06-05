@@ -84,10 +84,26 @@ class SheetTemplateViewApi(AbstractViewApi):
             comparativecalculation = json.loads(serializers.serialize("json", comparativecalculation_model))
             funds_model = Funds.objects.filter(calculation_id=calculation_id)
             funds = json.loads(serializers.serialize("json", funds_model))
-            archive = xl.load_workbook("uploads/" + Template[0].file.name, read_only=False)
-            new_name = self.new_archive("uploads/" + Template[0].file.name)
 
-            for sheet in archive:
+            #open the archive and process
+            archive_download = xl.load_workbook("uploads/" + Template[0].file.name, read_only=False)
+            archive_view = xl.load_workbook("uploads/" + Template[0].file.name.upper().replace('.XLSX', '-VIEW.XLSX'), read_only=False)
+            new_name_download = self.new_archive("uploads/" + Template[0].file.name)
+            new_name_view = self.new_archive("uploads/" + Template[0].file.name.upper().replace('.XLSX', '-VIEW.XLSX'))
+
+            for sheet in archive_download:
+                for row in sheet.iter_rows():
+                    for col in row:
+                        if col.value:
+                            if type(col.value) == str and col.value.find('JUCA=')==0:
+                                try:
+                                    col.value = str(eval(str(col.value)[5:]))
+                                except:
+                                    col.value = str("")
+                        else:
+                            pass
+
+            for sheet in archive_view:
                 for row in sheet.iter_rows():
                     for col in row:
                         if col.value:
@@ -99,21 +115,25 @@ class SheetTemplateViewApi(AbstractViewApi):
                         else:
                             pass
 
-            archive.save(new_name)
-            with open(new_name, 'rb') as archive_excel:
+            archive_download.save(new_name_download)
+            archive_view.save(new_name_view)
+
+            with open(new_name_download, 'rb') as archive_excel:
                 excel_file = archive_excel.read()
                 base64_encoded_data = base64.b64encode(excel_file)
                 base64_message = base64_encoded_data.decode('latin-1')
 
             list_html = {}
-            for sheet in archive:
-                out_stream = xlsx2html(new_name, sheet=sheet._WorkbookChild__title, parse_formula=False)
+            for sheet in archive_view:
+                out_stream = xlsx2html(new_name_view, sheet=sheet._WorkbookChild__title, parse_formula=False)
                 out_stream.seek(0)
                 result_html = out_stream.read()
                 result_html = result_html.replace('\n    ', '').replace('\n', '').replace('\\"', '"')
                 list_html[sheet._WorkbookChild__title] = result_html
 
-            remove(new_name)
+            remove(new_name_download)
+            remove(new_name_view)
+
             return JsonResponse({"html": f"\"{str(list_html)}\"", "excel": f"{base64_message}"})
 
         except BaseException as e:
