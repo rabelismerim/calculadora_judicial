@@ -123,4 +123,4 @@ steps:
     Contents: '**'
     TargetFolder: 'D:\JUCA'
     OverWrite: true
-    flattenFolders: true
+    flattenFolders: false
