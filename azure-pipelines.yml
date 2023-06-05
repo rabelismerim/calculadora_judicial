@@ -48,12 +48,7 @@ steps:
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
 - script: |
     npm install --force
-<<<<<<< HEAD
     npm run build:prod
-=======
->>>>>>> dev
-  workingDirectory: $(Build.SourcesDirectory)/frontend
-  displayName: 'Install node prerequisites'
 - script: |
     mkdir ./log
     python -m pip install --upgrade pip setuptools wheel
