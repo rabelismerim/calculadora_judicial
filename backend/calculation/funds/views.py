@@ -4,7 +4,7 @@ It extends the AbstractViewApi class and includes a CheckHasPermission permissio
 The API responds with JSON data and utilizes the rest_framework.schemas.openapi.AutoSchema for generating API documentation.
 The FundsApi class uses the Funds model and FundsSchema for working with data.
 """
-
+from django.db import transaction
 from django.http import JsonResponse
 from rest_framework.generics import get_object_or_404
 
@@ -290,13 +290,37 @@ class StatementFundsApi(AbstractStatementFundsApi):
     http_method_names = ['post']
     docs = docs.copy()
     docs['post'] = _("""Create Statement Fund object from request data and return Statement Fund detail.
-            Returns:
-                JsonResponse: A JSON response containing the created Funds
-                 object detail.
+    
+    The `commit` parameter is used to control whether a transaction started during the creation of a new object in 
+    the database should be committed or not. By default, commit=True, which means that the transaction will be 
+    committed automatically when the view's post method has finished executing successfully.
+    However, if commit=False, the view will create a new object within a transaction and then immediately roll 
+    back, effectively undoing any changes made to the database. This can be useful to get the `calculations`, 
+    `results`, `indices`, `corrected value` and etc without saving the information in the database
+    
+    Returns:
+        JsonResponse: A JSON response containing the created Funds
+         object detail.
+    
+    Raises:
+        serializers.ValidationError: If the input data is invalid.
+    """)
 
-            Raises:
-                serializers.ValidationError: If the input data is invalid.
-                """)
+    def post(self, request, *args, **kwargs):
+        commit = request.data.pop('commit', True)
+        if commit is False:
+            with transaction.atomic():
+                serializer = self.serializer_class(data=request.data)
+                serializer.is_valid(raise_exception=True)
+                new_obj = serializer.validated_data
+                obj_teste = self.model(**new_obj)
+                obj_teste.calcule_monetary_correction()
+                transaction.set_rollback(True)
+            transaction.rollback()
+            return JsonResponse({self.get_model_name(): self.serializer_class(obj_teste, many=False).data},
+                                status=status.HTTP_201_CREATED)
+
+        return super().post(request, *args, **kwargs)
 
 
 class StatementFundsDetailApi(AbstractStatementFundsApi):
@@ -373,6 +397,7 @@ class StatementFundsListApi(AbstractStatementFundsApi):
     http_method_names = ['get']
     docs = docs.copy()
     model = Funds
+
     @doc(_("""This method handles GET requests for the view. It retrieves the calculated fund total and a list of fund 
     statement objects using the received fund_id from the query parameters and serializes the result into JSON 
     format before returning it as an JSON response. 

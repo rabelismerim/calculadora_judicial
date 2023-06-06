@@ -257,6 +257,7 @@ class TemplateRate(AbstractModel):
     description = models.CharField('Description', max_length=150)
     end_point = models.CharField(_('End Point'), max_length=150)
     is_horizontal = models.BooleanField(_('Is Horizontal'), default=True)
+    has_commit = models.BooleanField(_('Commit option'), default=True)
     many = models.BooleanField(_('Is Multiple?'))
 
     def __str__(self):

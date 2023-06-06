@@ -51,7 +51,7 @@ class StatementFundsSchema(AbstractDescriptionSchema):
 
     fund_id = serializers.UUIDField()
     status_display = serializers.CharField(source='get_status_display', read_only=True)
-
+    commit = serializers.BooleanField(write_only=True, required=False)
     class Meta:
         model = StatementFunds
         exclude = ('fund',)

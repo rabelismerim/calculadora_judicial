@@ -136,7 +136,7 @@ class FundDocumentSchema(AbstractClassesFundsSchema):
     calculation_id = serializers.UUIDField()
     total = TotalValuesDocumentSchema(source='totalvaluesdocument', read_only=True, exclude=('fund_id', 'statement'))
     statement = StatementDocumentSchema(source='statementdocument', exclude=('fund_id', 'status'), read_only=True)
-
+    commit = serializers.BooleanField(write_only=True, required=False)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         statement_serializer = StatementDocumentSchema(exclude=('fund_id', 'status'))

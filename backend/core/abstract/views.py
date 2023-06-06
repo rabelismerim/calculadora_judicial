@@ -8,6 +8,7 @@ from importlib.util import spec_from_file_location, module_from_spec
 from django.apps import apps
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
+from django.db import transaction
 from django.http import JsonResponse, Http404
 from django.template.response import ContentNotRenderedError
 from django.utils.encoding import smart_str
@@ -438,16 +439,17 @@ class AbstractViewApi(generics.GenericAPIView):
         """Abstract method for default method GET. Override method in class for custom operation"""
         id_ = kwargs.get('id')
         query = self.get_query(id_=id_)
-        model_name = self.model._meta.verbose_name_plural.lower() if not id_ else self.__get_model_name()
+        model_name = self.model._meta.verbose_name_plural.lower() if not id_ else self.get_model_name()
         return JsonResponse({model_name.replace(' ', '_'): query})
 
     def post(self, request, *args, **kwargs):
         """Abstract method for default method POST. Override method in class for custom operation"""
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        new_obj = serializer.validated_data
-        obj = self.model.objects.create(**new_obj)
-        return JsonResponse({self.__get_model_name(): self.serializer_class(obj, many=False).data},
+        with transaction.atomic():
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            new_obj = serializer.validated_data
+            obj = self.model.objects.create(**new_obj)
+        return JsonResponse({self.get_model_name(): self.serializer_class(obj, many=False).data},
                             status=status.HTTP_201_CREATED)
 
     def put(self, request, *args, **kwargs):
@@ -462,20 +464,21 @@ class AbstractViewApi(generics.GenericAPIView):
         comparative object to update. Returns: JsonResponse: An HTTP response containing the updated and serialized
         comparative object data.
         """
-        id_ = kwargs.get('id')
-        exclude = self.__get_exclude_values()
-        serializer = self.get_serializer_class()
-        try:
-            serializer = serializer(data=request.data, exclude=exclude)
-        except ValueError:
-            serializer = serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        data_obj = dict(serializer.validated_data)
-        obj = get_object_or_404(self.model, id=id_)
-        obj.dict_update(**data_obj)
-        return JsonResponse({self.__get_model_name(): self.serializer_class(obj, many=False).data})
+        with transaction.atomic():
+            id_ = kwargs.get('id')
+            exclude = self.__get_exclude_values()
+            serializer = self.get_serializer_class()
+            try:
+                serializer = serializer(data=request.data, exclude=exclude)
+            except ValueError:
+                serializer = serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data_obj = dict(serializer.validated_data)
+            obj = get_object_or_404(self.model, id=id_)
+            obj.dict_update(**data_obj)
+        return JsonResponse({self.get_model_name(): self.serializer_class(obj, many=False).data})
 
-    def __get_model_name(self):
+    def get_model_name(self):
         """Helper method to get app_label."""
         return self.model._meta.verbose_name.lower().replace(' ', '_')
 
@@ -484,7 +487,7 @@ class AbstractViewApi(generics.GenericAPIView):
         obj_id = kwargs.get('id')
         obj = get_object_or_404(self.model, id=obj_id)
         obj.delete()
-        return JsonResponse({'data': _(f'{self.__get_model_name().replace("_", " ").title()} deleted')},
+        return JsonResponse({'data': _(f'{self.get_model_name().replace("_", " ").title()} deleted')},
                             status=status.HTTP_200_OK)
 
     def __get_exclude_values(self) -> list or tuple:

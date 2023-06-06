@@ -94,6 +94,13 @@ class FundDocumentApi(AbstractFundDocumentApi):
     @doc(_("""Create Document Fund object from request data and return Document Fund detail.
         The 'has_custom_fine' field controls whether the fine entered in the document will be used, or the standard 
         fine defined in the calculation
+        
+    The `commit` parameter is used to control whether a transaction started during the creation of a new object in 
+    the database should be committed or not. By default, commit=True, which means that the transaction will be 
+    committed automatically when the view's post method has finished executing successfully.
+    However, if commit=False, the view will create a new object within a transaction and then immediately roll 
+    back, effectively undoing any changes made to the database. This can be useful to get the `calculations`, 
+    `results`, `indices`, `corrected value` and etc without saving the information in the database
 
         Returns:
             JsonResponse: A JSON response containing the created Funds object detail.
@@ -102,15 +109,22 @@ class FundDocumentApi(AbstractFundDocumentApi):
             serializers.ValidationError: If the input data is invalid.
         """))
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        new_funds = serializer.validated_data
-        statement_document = new_funds.pop('statement_document')
-        coins = new_funds.get('coins')
-        new_funds['coins'] = Coins.objects.create(**coins)
-        fund = self.model.objects.create(**new_funds)
-        statement_document['fund'] = fund
-        StatementDocument.objects.create(**statement_document)
+        commit = request.data.pop('commit', True)
+        with transaction.atomic():
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            new_funds = serializer.validated_data
+            statement_document = new_funds.pop('statement_document')
+            coins = new_funds.get('coins')
+            new_funds['coins'] = Coins.objects.create(**coins)
+            fund = self.model.objects.create(**new_funds)
+            statement_document['fund'] = fund
+            StatementDocument.objects.create(**statement_document)
+            if commit is False:
+                transaction.set_rollback(True)
+        if commit is False:
+            transaction.rollback()
+
         return JsonResponse({'fund_document': self.serializer_class(fund, many=False).data},
                             status=status.HTTP_201_CREATED)
 
