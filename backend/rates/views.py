@@ -162,7 +162,7 @@ class TemplateDetailApi(AbstractViewApi):
     }
 
 
-class TemplateDetailApi(AbstractViewApi):
+class TemplateTestEndPointApi(AbstractViewApi):
     """HTTP methods for Template"""
     http_method_names = ['get']
     serializer_class = TemplateSchema
