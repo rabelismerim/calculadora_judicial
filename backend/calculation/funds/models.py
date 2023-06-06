@@ -214,9 +214,9 @@ class StatementFunds(AbstractStatement):
 
     def create_monetary_correction(self, data: dict):
         """Create or update the MonetaryCorrection object"""
-        MonetaryCorrection.objects.update_or_create(
+        money, c =MonetaryCorrection.objects.update_or_create(
             defaults=data, **{'statement': self})
-
+        print(money.id, 'money\n')
     def calcule_monetary_correction(self):
         """
         Calculate the monetary correction and create the MonetaryCorrection object. If there is an error in the

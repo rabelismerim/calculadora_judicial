@@ -117,8 +117,7 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
         groups = user_filter.pop('groups', [])
         subgroups = user_filter.pop('subgroups', [])
 
-        user_approved = self.model.objects.filter(
-            email=user_filter['email']).first()
+        user_approved = self.model.objects.filter(email=user_filter['email']).first()
         if not user_approved:
             raise serializers.ValidationError(
                 [_('Email {}, not found').format(user_filter["email"])])

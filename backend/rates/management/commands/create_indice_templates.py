@@ -201,6 +201,7 @@ def create_templates():
                   'end_point': '/juca/api/v1/calculation/funds/documents/detail/',
                   'end_point_main': '/juca/api/v1/calculation/funds/documents/',
                   'many': False,
+                  'has_commit': True,
                   'summary_fields': summary_fields_document,
                   'summary_main_fields': summary_main_fields_docs,
                   'fields': fields_verbas_document},
@@ -209,7 +210,7 @@ def create_templates():
                   'end_point': '/juca/api/v1/calculation/funds/documents/detail/',
                   'end_point_main': '/juca/api/v1/calculation/funds/documents/',
                   'many': False,
-
+                  'has_commit': True,
                   'summary_fields': summary_fields_document,
                   'summary_main_fields': summary_main_fields_docs,
                   'fields': fields_verbas_document}
@@ -223,6 +224,7 @@ def create_templates():
              'fund_main': fund_labor,
              'end_point_main': '/juca/api/v1/calculation/funds/',
              'many': True,
+             'has_commit': True,
              'summary_fields': summary_fields_verbas,
              'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
              'fields': fields_verbas},
@@ -231,6 +233,7 @@ def create_templates():
              'fund_main': fund_labor,
              'end_point_main': '/juca/api/v1/calculation/funds/',
              'many': True,
+             'has_commit': True,
              'summary_fields': summary_fields_verbas_integrations,
              'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
              'fields': fields_verbas_integrations},
@@ -240,6 +243,7 @@ def create_templates():
              'fund_main': fund_labor,
              'end_point_main': '/juca/api/v1/calculation/funds/',
              'many': True,
+             'has_commit': True,
              'summary_fields': summary_fields_verbas,
              'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
              'fields': fields_verbas_reflexos},
@@ -248,6 +252,7 @@ def create_templates():
              'fund_main': fund_labor,
              'end_point_main': '/juca/api/v1/calculation/funds/',
              'many': True,
+             'has_commit': True,
              'summary_fields': summary_fields_verbas_integrations,
              'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
              'fields': fields_verbas_integrations},
@@ -257,6 +262,7 @@ def create_templates():
              'fund_main': fund_labor,
              'end_point_main': '/juca/api/v1/calculation/funds/',
              'many': True,
+             'has_commit': True,
              'summary_fields': summary_fields_verbas,
              'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
              'fields': fields_verbas},
@@ -267,6 +273,7 @@ def create_templates():
              'fund_main': fund_irrf,
              'end_point': '/juca/api/v1/calculation/funds/irrf/labor/',
              'many': True,
+             'has_commit': False,
              'summary_fields': summary_fields_irrf,
              'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
              'fields': fields_verbas_irrf},
@@ -280,6 +287,7 @@ def create_templates():
         end_point = template.pop('end_point_main')
         fund_main = template.pop('fund_main')
         summary_fields = template.pop('summary_fields')
+        has_commit = template.pop('has_commit')
         summary_main_fields = template.pop('summary_main_fields')
         defaults = {'name': name, 'end_point': end_point}
         filters = {'name': name}
@@ -304,6 +312,8 @@ def create_templates():
             defaults['template'] = new_template
             TemplateMainSummaryField.objects.get_or_create(defaults=defaults, **defaults)
         new_template_rate, created = TemplateRate.objects.get_or_create(template=new_template, **template)
+        new_template_rate.has_commit = has_commit
+        new_template_rate.save()
         if created is False:
             TemplateFieldDefault.objects.filter(field__rate=new_template_rate).delete()
             TemplateField.objects.filter(rate=new_template_rate).delete()

@@ -46,7 +46,7 @@ class StatementIntegrationsSchema(AbstractDescriptionSchema):
         read_only=True, source='monetarycorrectionintegrations')
     fund_id = serializers.UUIDField()
     status_display = serializers.CharField(source='get_status_display', read_only=True)
-
+    commit = serializers.BooleanField(write_only=True, required=False)
     class Meta:
         model = StatementIntegrations
         exclude = ('fund',)
