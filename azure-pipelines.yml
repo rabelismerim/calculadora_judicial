@@ -128,8 +128,8 @@ steps:
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - script: |
-    python manage.py migrate --fake
-  failOnStderr: true
+    python manage.py migrate
+  failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - script: |
