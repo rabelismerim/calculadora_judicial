@@ -27,6 +27,19 @@ export const formatDateHour = (value: string) => {
   const [year, month, day] = value.slice(0, 10).split('-')
   return `${day}/${month}/${year} às ${value.slice(11, 19)}`
 }
+export const formatDay = (value: string) => {
+  if (!value)
+    return
+  const [, month, day] = value.slice(0, 10).split('-')
+  return `${day}/${month}`
+}
+export const formatMonth = (value: string) => {
+  if (!value)
+    return
+  const months = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']
+  const [, month] = value.slice(0, 10).split('-')
+  return months[+month - 1] || ''
+}
 
 export const formatLegalNumber = (value: string) => {
   value = value.replace(/[./-]/gi, '')
