@@ -54,7 +54,9 @@ declare global {
   const formatDateFromBackend: typeof import('./composables/utils')['formatDateFromBackend']
   const formatDateHour: typeof import('./composables/utils')['formatDateHour']
   const formatDateToBackend: typeof import('./composables/utils')['formatDateToBackend']
+  const formatDay: typeof import('./composables/utils')['formatDay']
   const formatLegalNumber: typeof import('./composables/utils')['formatLegalNumber']
+  const formatMonth: typeof import('./composables/utils')['formatMonth']
   const get: typeof import('@jrnwn/utils')['get']
   const getCookie: typeof import('@jrnwn/utils')['getCookie']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
@@ -319,6 +321,7 @@ declare global {
   const useWindowScroll: typeof import('@vueuse/core')['useWindowScroll']
   const useWindowSize: typeof import('@vueuse/core')['useWindowSize']
   const usersService: typeof import('./services/usersService')['default']
+  const vResize: typeof import('./directives/vResize')['default']
   const watch: typeof import('vue')['watch']
   const watchArray: typeof import('@vueuse/core')['watchArray']
   const watchAtMost: typeof import('@vueuse/core')['watchAtMost']
@@ -396,7 +399,9 @@ declare module 'vue' {
     readonly formatDateFromBackend: UnwrapRef<typeof import('./composables/utils')['formatDateFromBackend']>
     readonly formatDateHour: UnwrapRef<typeof import('./composables/utils')['formatDateHour']>
     readonly formatDateToBackend: UnwrapRef<typeof import('./composables/utils')['formatDateToBackend']>
+    readonly formatDay: UnwrapRef<typeof import('./composables/utils')['formatDay']>
     readonly formatLegalNumber: UnwrapRef<typeof import('./composables/utils')['formatLegalNumber']>
+    readonly formatMonth: UnwrapRef<typeof import('./composables/utils')['formatMonth']>
     readonly get: UnwrapRef<typeof import('@jrnwn/utils')['get']>
     readonly getCookie: UnwrapRef<typeof import('@jrnwn/utils')['getCookie']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
@@ -661,6 +666,7 @@ declare module 'vue' {
     readonly useWindowScroll: UnwrapRef<typeof import('@vueuse/core')['useWindowScroll']>
     readonly useWindowSize: UnwrapRef<typeof import('@vueuse/core')['useWindowSize']>
     readonly usersService: UnwrapRef<typeof import('./services/usersService')['default']>
+    readonly vResize: UnwrapRef<typeof import('./directives/vResize')['default']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>
     readonly watchArray: UnwrapRef<typeof import('@vueuse/core')['watchArray']>
     readonly watchAtMost: UnwrapRef<typeof import('@vueuse/core')['watchAtMost']>

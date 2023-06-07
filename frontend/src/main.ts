@@ -22,6 +22,7 @@ app.use(Quasar, {
   iconSet: quasarIconSet,
 })
 app.directive('ripple', Ripple)
+app.directive('resize', vResize)
 app.use(router)
 app.use(autoAnimatePlugin)
 
