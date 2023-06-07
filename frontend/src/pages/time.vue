@@ -51,6 +51,13 @@ const mapUsers = computed(() => activeUsers.value.map((user) => {
   return user
 }))
 
+let showEditUser = $ref(false)
+let editingUser = $ref({})
+const onEditUser = (user: any) => {
+  showEditUser = true
+  editingUser = user
+}
+
 const loadPage = async () => {
   loading = true
   try {
@@ -111,9 +118,15 @@ onMounted(() => loadPage())
       v-model:filter="filterBy"
       :items="mapUsers"
       :loading="loading"
+      @editing-user="onEditUser"
     />
 
     <template #out>
+      <EditUser
+        v-model="showEditUser"
+        :user="editingUser"
+      />
+
       <RequestModal
         v-model="showingRequests"
         :users="pendingUsers"

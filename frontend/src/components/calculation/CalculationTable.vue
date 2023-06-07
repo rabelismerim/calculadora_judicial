@@ -1,10 +1,16 @@
 <script setup lang='ts'>
 const props = withDefaults(defineProps<{
   modelValue?: any[]
+  validation?: boolean
+  creditor?: any
 }>(), {
   modelValue: () => [],
+  validation: false,
 })
-const emit = defineEmits(['update:modelValue', 'row-click'])
+const emit = defineEmits(['update:modelValue', 'rowClick', 'update:validation', 'validated'])
+const { dialog } = useQuasar()
+
+let loading = $ref(false)
 
 let inFullScreen = $ref(false)
 const calculationsTable: any = ref(null as any)
@@ -18,6 +24,54 @@ const toggleFullScreen = () => {
     inFullScreen = false
   }
 }
+
+let selectedRows: number[] = $ref([])
+const resetValidation = () => {
+  selectedRows = []
+  props.modelValue
+    .forEach(({ step, validated }: any, index: number) => {
+      if (step === 'A' && validated)
+        selectedRows.push(index)
+    })
+  emit('update:validation', false)
+}
+watchEffect(() => {
+  resetValidation()
+})
+const selectRow = (index: number, step: string) => {
+  if (!props.validation || step !== 'A')
+    return
+  const rowIndex = selectedRows.findIndex((value: number) => index === value)
+  if (rowIndex > -1) {
+    selectedRows.splice(rowIndex, 1)
+    return
+  }
+  selectedRows.push(index)
+}
+const onValidation = () => {
+  dialog({
+    title: 'Validando Cálculos',
+    message: 'Você tem certeza que deseja validar estes cálculos?',
+    cancel: true,
+    persistent: true,
+  }).onOk(async () => {
+    loading = true
+    try {
+      const items = selectedRows.map((index: number) => props.modelValue[index].id)
+      await creditorsService.validateCalculations(props.creditor.id || '', items)
+      notify({ message: 'Cálculos validados com sucesso!' })
+    }
+    catch (error) {
+      printError('ERROR ON VALIDATING CREDITORS TABLE:', error)
+    }
+    finally {
+      loading = false
+      emit('update:validation', false)
+      emit('validated')
+    }
+  })
+}
+
 interface TableColumn {
   name: string
   label: string
@@ -154,10 +208,10 @@ const statusColors: any = {
     class="calculation-table"
     :pagination="{ rowsPerPage: 0 }"
     hide-pagination
-    @row-click="(evt, row) => emit('row-click', row)"
+    @row-click="(evt, row) => emit('rowClick', row)"
   >
-    <template #header-cell-action="props">
-      <QTh :props="props" class="w-2">
+    <template #header-cell-action="prop">
+      <QTh :props="prop" class="w-2">
         <button
           class="rounded hover:bg--base active:bg--secondary p-2 tween"
           @click="toggleFullScreen"
@@ -166,18 +220,18 @@ const statusColors: any = {
         </button>
       </QTh>
     </template>
-    <template #body-cell-action="props">
+    <template #body-cell-action="prop">
       <QTd class="flex justify-center items-center">
         <div
           class="w-2 h-2 block rounded-full"
-          :class="props.row.validated ? 'bg--primary' : 'bg--error'"
+          :class="prop.row.validated ? 'bg--primary' : 'bg--error'"
         />
       </QTd>
     </template>
-    <template #body-cell-executor="props">
+    <template #body-cell-executor="prop">
       <QTd>
-        <div v-if="props.value">
-          {{ props.value }}
+        <div v-if="prop.value">
+          {{ prop.value }}
         </div>
         <div
           v-else
@@ -185,62 +239,71 @@ const statusColors: any = {
         />
       </QTd>
     </template>
-    <template #body-cell-reviewer="props">
+    <template #body-cell-reviewer="prop">
       <QTd>
-        <div v-if="props.value">
-          {{ props.value }}
+        <div v-if="prop.value">
+          {{ prop.value }}
         </div>
         <div
           v-else
           class="i-carbon-warning-filled text-lg color-gray"
-          :class="{ 'color--error': props.row.executor }"
+          :class="{ 'color--error': prop.row.executor }"
         />
       </QTd>
     </template>
-    <template #body-cell-approver="props">
+    <template #body-cell-approver="prop">
       <QTd>
-        <div v-if="props.value">
-          {{ props.value }}
+        <div v-if="prop.value">
+          {{ prop.value }}
         </div>
         <div
           v-else
           class="i-carbon-warning-filled text-lg color-gray"
-          :class="{ 'color--error': props.row.reviewer }"
+          :class="{ 'color--error': prop.row.reviewer }"
         />
       </QTd>
     </template>
-    <template #body-cell-specialapprover="props">
+    <template #body-cell-specialapprover="prop">
       <QTd>
-        <div v-if="props.value">
-          {{ props.value }}
+        <div v-if="prop.value">
+          {{ prop.value }}
         </div>
         <div
-          v-else-if="props.row.step === 'B'"
+          v-else-if="prop.row.step === 'B'"
           class="i-carbon-warning-filled text-lg color-gray"
-          :class="{ 'color--error': props.row.reviewer }"
+          :class="{ 'color--error': prop.row.reviewer }"
         />
         <div v-else>
           N/A
         </div>
       </QTd>
     </template>
-    <template #body-cell-status="props">
-      <QTd :props="props">
+    <template #body-cell-status="prop">
+      <QTd :props="prop">
         <div class="flex">
           <StatusTag
-            :label="props.value"
-            :color="statusColors[props.row.step]"
+            :label="prop.value"
+            :color="statusColors[prop.row.step]"
           />
         </div>
       </QTd>
     </template>
-    <template #body-cell-validated="props">
-      <QTd :props="props" :class="{ 'is-validated': props.value }">
-        <div class="flex">
+    <template #body-cell-validated="prop">
+      <QTd
+        :props="prop"
+        :class="{
+          'is-validated': prop.row.validated,
+          'cursor-not-allowed color-gray-6': !validation || loading || prop.row.step !== 'A',
+          'color--primary': validation,
+        }"
+      >
+        <div
+          class="flex"
+          @click.stop="selectRow(prop.rowIndex, prop.row?.step)"
+        >
           <div
-            class="text-lg color--primary"
-            :class="props.value ? 'i-carbon-checkbox-checked-filled' : 'i-carbon-checkbox'"
-            @click.stop
+            class="text-lg"
+            :class="selectedRows.includes(prop.rowIndex) ? 'i-carbon-checkbox-checked-filled' : 'i-carbon-checkbox'"
           />
         </div>
       </QTd>
@@ -249,14 +312,29 @@ const statusColors: any = {
   <div class="flex justify-between items-center py-2 pl-8 pr-5 border-t-3 color--primary font-bold text-lg border--primary bg--primary/12">
     <div>
       Quantidade de Cálculos Validados:
-      {{ modelValue?.reduce((acc: number, curr: any) => curr?.validated ? acc++ : acc, 0) }}
+      {{ modelValue?.reduce((acc: number, curr: any) => curr?.validated ? acc + 1 : acc, 0) }}
     </div>
     <div class="flex gap-6 items-center">
       <div>
         Valor Total Validado:
-        {{ modelValue?.reduce((acc: number, curr: any) => curr?.statement?.total ? +curr?.statement?.total + acc : acc, 0)?.toFixed(2) }}
+        R$ {{ creditor.total }}
       </div>
-      <Btn label="Validar Cálculos" disabled />
+      <Btn v-if="validation === false" label="Validar Cálculos" @click="emit('update:validation', true)" />
+      <div v-else class="flex gap-3">
+        <Btn
+          label="Cancelar"
+          :dosabled="loading"
+          outlined
+          @click="resetValidation"
+        />
+        <Btn
+          label="Salvar"
+          :loading="loading"
+          :disabled="loading"
+          loading-label="Salvando Validações..."
+          @click="onValidation"
+        />
+      </div>
     </div>
   </div>
 </template>

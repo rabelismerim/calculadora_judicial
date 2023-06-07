@@ -39,7 +39,7 @@ const biggestValue = computed(() => [...props.values]?.sort(({ count: a }, { cou
             <div
               class="h-full bg--secondary rounded-full"
               :style="{
-                width: `${count / biggestValue * 100}%`,
+                width: `${count / (biggestValue || 1) * 100}%`,
               }"
             />
           </div>

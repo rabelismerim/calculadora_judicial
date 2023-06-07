@@ -21,10 +21,7 @@ interface Creditor {
   description: string
   recoverings?: { recoveringId: string; rateId: string }[]
 }
-interface Detail extends Creditor {}
-interface Options extends Creditor {
-  legend: string
-}
+
 const getCreditors = (id: string) => api
   .get(`/v1/creditors/project/${id}/`)
   .then((result: any) => result?.creditors)
@@ -95,6 +92,11 @@ const setCreditorClaim = async (notice: Notice) => {
 const setLawyerClaim = async (notice: Notice) => api
   .post('/v1/base/claim-lawyer/', notice)
 
+const validateCalculations = async (creditorId: string, calculationIds: string[]) => api
+  .post(`/v1/creditors/${creditorId}/validate/`, {
+    calculations: calculationIds.map((id: string) => ({ id })),
+  })
+
 export default {
   getCreditors,
   getCreditor,
@@ -106,4 +108,5 @@ export default {
   setNoticeRecovering,
   setCreditorClaim,
   setLawyerClaim,
+  validateCalculations,
 }
