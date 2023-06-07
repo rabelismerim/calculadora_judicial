@@ -21,10 +21,7 @@ interface Creditor {
   description: string
   recoverings?: { recoveringId: string; rateId: string }[]
 }
-interface Detail extends Creditor {}
-interface Options extends Creditor {
-  legend: string
-}
+
 const getCreditors = (id: string) => api
   .get(`/v1/creditors/project/${id}/`)
   .then((result: any) => result?.creditors)
