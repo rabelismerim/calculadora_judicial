@@ -371,3 +371,4 @@ def save_statement_documents(sender, instance, **kwargs) -> None:
 
     ExtractFormula(instance, instance.fund.calculation, statement_methods).get_methods(
         [StatementDocument, MonetaryCorrectionDocument, Rate, TotalValuesDocument, save_statement_documents])
+    instance.fund.calculation.invalidate_calculation()

@@ -214,9 +214,10 @@ class StatementFunds(AbstractStatement):
 
     def create_monetary_correction(self, data: dict):
         """Create or update the MonetaryCorrection object"""
-        money, c =MonetaryCorrection.objects.update_or_create(
+        money, c = MonetaryCorrection.objects.update_or_create(
             defaults=data, **{'statement': self})
         print(money.id, 'money\n')
+
     def calcule_monetary_correction(self):
         """
         Calculate the monetary correction and create the MonetaryCorrection object. If there is an error in the
@@ -325,6 +326,7 @@ def save_statement(sender, instance, **kwargs) -> None:
 
     ExtractFormula(instance, instance.fund.calculation, statement_methods).get_methods(
         [StatementFunds, MonetaryCorrection, Rate, TotalValuesFunds, save_statement])
+    instance.fund.calculation.invalidate_calculation()
 
 
 @receiver(gen_total_funds, sender=Funds)
@@ -337,3 +339,5 @@ def save_total_funds(sender, instance, **kwargs) -> None:
     print('Signal somar todas as linhas de extrato verbas\n\n')
     instance.gen_total_statements()
     instance.gen_total_integrations()
+
+    instance.calculation.invalidate_calculation()
