@@ -95,6 +95,11 @@ const setCreditorClaim = async (notice: Notice) => {
 const setLawyerClaim = async (notice: Notice) => api
   .post('/v1/base/claim-lawyer/', notice)
 
+const validateCalculations = async (creditorId: string, calculationIds: string[]) => api
+  .post(`/v1/creditors/${creditorId}/validate/`, {
+    calculations: calculationIds.map((id: string) => ({ id })),
+  })
+
 export default {
   getCreditors,
   getCreditor,
@@ -106,4 +111,5 @@ export default {
   setNoticeRecovering,
   setCreditorClaim,
   setLawyerClaim,
+  validateCalculations,
 }

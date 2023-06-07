@@ -47,7 +47,12 @@ const getProject = (id: string) => api
   .then((result: any) => result?.project)
   .then(mapProject)
   .then((project: any) => {
-    const { projectUsers = [] } = project
+    const { projectUsers = [], recoverings = [] } = project
+
+    project.recoverings = recoverings.map((recovering: any) => ({
+      ...recovering,
+      creditors: recovering.creditors.map((creditor: any) => ({ ...creditor, isValidating: false })),
+    }))
 
     const participants = projectUsers.reduce((acc: any, current: any) => {
       const { idUser, firstName, lastName, username, userpicture, groups } = current
