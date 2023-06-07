@@ -1597,20 +1597,14 @@ msgstr ""
 "documento serializado recuperados."
 
 #: .\backend\calculation\models.py:25
-#, fuzzy
-#| msgid "Calculated"
 msgid "To Calculate"
 msgstr "à Calcular"
 
 #: .\backend\calculation\models.py:25
-#, fuzzy
-#| msgid "Revised"
 msgid "To Review"
 msgstr "à Revisar"
 
 #: .\backend\calculation\models.py:25
-#, fuzzy
-#| msgid "Approved"
 msgid "To Approve"
 msgstr "à Aprovar"
 

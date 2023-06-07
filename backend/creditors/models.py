@@ -59,10 +59,14 @@ class Creditor(AbstractDateCreditor):
     def __str__(self):
         return f'{self.entity}'
 
-    def set_total(self):
+    def set_total(self, commit=True):
+        """Set the total value of the creditor by adding all the corrected amounts of the sums"""
         calcs = self.calculation_set.filter(statement__isnull=False, validated=True, step='A')
         total = 0
         for calc in calcs:
-            total += calc.statement.total_conclusion
+            # To use the total value of the completion, which includes the amount already applied interest, fine etc, use 'calc.statement.total_conclusion'
+            # To use the corrected total value, which only has the index correction applied, use 'calc.statement.total_corrected'
+            total += calc.statement.total_corrected
         self.total = total
-        self.save()
+        if commit:
+            self.save()
