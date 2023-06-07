@@ -2,12 +2,13 @@
 const props = withDefaults(defineProps<{
   modelValue?: any[]
   validation?: boolean
-  creditorId?: string
+  creditor?: any
 }>(), {
   modelValue: () => [],
   validation: false,
 })
 const emit = defineEmits(['update:modelValue', 'rowClick', 'update:validation', 'validated'])
+const { dialog } = useQuasar()
 
 let loading = $ref(false)
 
@@ -38,7 +39,7 @@ watchEffect(() => {
   resetValidation()
 })
 const selectRow = (index: number, step: string) => {
-  if (step !== 'A')
+  if (!props.validation || step !== 'A')
     return
   const rowIndex = selectedRows.findIndex((value: number) => index === value)
   if (rowIndex > -1) {
@@ -47,21 +48,28 @@ const selectRow = (index: number, step: string) => {
   }
   selectedRows.push(index)
 }
-const onValidation = async () => {
-  loading = true
-  try {
-    const items = selectedRows.map((index: number) => props.modelValue[index].id)
-    await creditorsService.validateCalculations(props.creditorId || '', items)
-    notify({ message: 'Cálculos validados com sucesso!' })
-  }
-  catch (error) {
-    printError('ERROR ON VALIDATING CREDITORS TABLE:', error)
-  }
-  finally {
-    loading = false
-    emit('update:validation', false)
-    emit('validated')
-  }
+const onValidation = () => {
+  dialog({
+    title: 'Validando Cálculos',
+    message: 'Você tem certeza que deseja validar estes cálculos?',
+    cancel: true,
+    persistent: true,
+  }).onOk(async () => {
+    loading = true
+    try {
+      const items = selectedRows.map((index: number) => props.modelValue[index].id)
+      await creditorsService.validateCalculations(props.creditor.id || '', items)
+      notify({ message: 'Cálculos validados com sucesso!' })
+    }
+    catch (error) {
+      printError('ERROR ON VALIDATING CREDITORS TABLE:', error)
+    }
+    finally {
+      loading = false
+      emit('update:validation', false)
+      emit('validated')
+    }
+  })
 }
 
 interface TableColumn {
@@ -304,12 +312,12 @@ const statusColors: any = {
   <div class="flex justify-between items-center py-2 pl-8 pr-5 border-t-3 color--primary font-bold text-lg border--primary bg--primary/12">
     <div>
       Quantidade de Cálculos Validados:
-      {{ modelValue?.reduce((acc: number, curr: any) => curr?.validated ? acc++ : acc, 0) }}
+      {{ modelValue?.reduce((acc: number, curr: any) => curr?.validated ? acc + 1 : acc, 0) }}
     </div>
     <div class="flex gap-6 items-center">
       <div>
         Valor Total Validado:
-        {{ modelValue?.reduce((acc: number, curr: any) => curr?.statement?.total ? +curr?.statement?.total + acc : acc, 0)?.toFixed(2) }}
+        R$ {{ creditor.total }}
       </div>
       <Btn v-if="validation === false" label="Validar Cálculos" @click="emit('update:validation', true)" />
       <div v-else class="flex gap-3">
