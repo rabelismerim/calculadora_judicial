@@ -282,7 +282,10 @@ onMounted(() => {
             </template>
             <CalculationTable
               v-model="creditor.calculations"
+              v-model:validation="creditor.isValidating"
+              :creditor-id="creditor.id"
               @row-click="(row) => openCalculation(creditor.id, row.id)"
+              @validated="loadCalculations(creditor)"
             />
           </Accordion>
         </div>
