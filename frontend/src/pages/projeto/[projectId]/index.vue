@@ -7,6 +7,7 @@ interface Project {
     id: string
     entity: any
     creditors: any[]
+    total?: number
   }[]
   engagement: {
     numbers: any[]
@@ -131,11 +132,35 @@ const loadOptions = async () => {
   options.courts = await projectService.getCourts()
   options.regions = await projectService.getRegions()
 }
+let bigNumbers: any = $ref({})
+const loadBigNumbers = async () => {
+  try {
+    bigNumbers = await projectService.getProjectBigNumbers(attrs.projectId)
+  }
+  catch (error) {
+    printError('ERROR ON LOADING PROJECT BIG NUMBERS:', error)
+  }
+}
+const loadTotalValues = async () => {
+  try {
+    for (const recovering of project?.recoverings) {
+      for (const creditor of recovering?.creditors)
+        creditor.total = await projectService.getCreditorBigNumbers(creditor.id)
+      recovering.total = recovering?.creditors
+        .reduce((acc, { total }: any) => acc + total, 0)
+    }
+  }
+  catch (error) {
+    printError('ERROR ON LOADING CREDITORS TOTAL:', error)
+  }
+}
 
-onMounted(() => {
+onMounted(async () => {
+  loadBigNumbers()
   loadIncidents()
-  loadProject()
   loadOptions()
+  await loadProject()
+  await loadTotalValues()
 })
 </script>
 
@@ -168,7 +193,7 @@ onMounted(() => {
 
     <div class="grid grid-cols-3 grid-rows-2 gap-6 mb-8">
       <GraphGauge
-        :values="[]"
+        :values="bigNumbers?.byStep"
         title="Quantidade de Cálculos por Status"
         hint="Esse gráfico apresenta a quantidade de Cálculos para cada status."
         class="row-span-2"
@@ -178,7 +203,7 @@ onMounted(() => {
         hint="O Número total dos Credores deste Projeto."
       >
         <div class="font-bold text-5xl flex-1 flex items-center">
-          0
+          {{ bigNumbers?.totalCreditor || 0 }}
         </div>
       </GraphCard>
       <GraphCard
@@ -186,16 +211,16 @@ onMounted(() => {
         hint="Somatório dos Cálculos aprovados de todos os Credores."
       >
         <div class="font-bold text-5xl flex-1 flex items-center">
-          R$ 0 mil
+          R$ {{ bigNumbers?.totalSumCreditors || 0 }}
         </div>
       </GraphCard>
       <ProgressList
-        :values="[]"
+        :values="bigNumbers?.classesCalculationsCount"
         title="Quantidade de Cálculos por Classe"
         hint="Classes na Recuperação Judicial:\n  • Classe I - Créditos Trabalhistas\n  • Classe II - Créditos com Garantia Real\n  • Classe III - Créditos Quirográficos\n  • Classe IV - Créditos enquadrados como Microempresa ou Empresa de pequeno porte."
       />
       <ProgressList
-        :values="[]"
+        :values="bigNumbers?.classesCalculationsTotal"
         title="Valores dos Cálculos por Classe (mil R$)"
         hint="Classes na Recuperação Judicial:\n  • Classe I - Créditos Trabalhistas\n  • Classe II - Créditos com Garantia Real\n  • Classe III - Créditos Quirográficos\n  • Classe IV - Créditos enquadrados como Microempresa ou Empresa de pequeno porte."
       />
@@ -246,7 +271,7 @@ onMounted(() => {
         <template #header-right>
           <div class="flex-1 flex gap-2 justify-end items-center pl-4 pr-4">
             <div class="font-bold flex no-wrap items-center gap-2 text-lg">
-              Total: R$ 0
+              Total: R$ {{ recovering?.total || 0 }}
               <Hint value="Total dos Cálculos Aprovados." />
             </div>
           </div>
@@ -271,21 +296,25 @@ onMounted(() => {
               />
             </template>
             <template #header-right>
-              <div class="flex-1 flex items-center">
+              <div class="flex-1 flex items-center justify-between pr-4">
                 <Btn
                   label="Novo Cálculo"
                   icon="i-carbon-add-filled"
                   transparent
                   @click.stop="openNewCalculation(creditor)"
                 />
+                <div class="font-bold flex no-wrap items-center gap-2 text-lg">
+                  Total: R$ {{ creditor?.total || 0 }}
+                  <Hint value="Total dos Cálculos Aprovados." />
+                </div>
               </div>
             </template>
             <CalculationTable
               v-model="creditor.calculations"
               v-model:validation="creditor.isValidating"
-              :creditor-id="creditor.id"
+              :creditor="creditor"
               @row-click="(row) => openCalculation(creditor.id, row.id)"
-              @validated="loadCalculations(creditor)"
+              @validated="loadCalculations(creditor); loadBigNumbers(); loadTotalValues()"
             />
           </Accordion>
         </div>
