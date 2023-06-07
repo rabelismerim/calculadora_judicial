@@ -1,10 +1,15 @@
 <script setup lang='ts'>
 const props = withDefaults(defineProps<{
   modelValue?: any[]
+  validation?: boolean
+  creditorId?: string
 }>(), {
   modelValue: () => [],
+  validation: false,
 })
-const emit = defineEmits(['update:modelValue', 'row-click'])
+const emit = defineEmits(['update:modelValue', 'rowClick', 'update:validation', 'validated'])
+
+let loading = $ref(false)
 
 let inFullScreen = $ref(false)
 const calculationsTable: any = ref(null as any)
@@ -18,6 +23,47 @@ const toggleFullScreen = () => {
     inFullScreen = false
   }
 }
+
+let selectedRows: number[] = $ref([])
+const resetValidation = () => {
+  selectedRows = []
+  props.modelValue
+    .forEach(({ step, validated }: any, index: number) => {
+      if (step === 'A' && validated)
+        selectedRows.push(index)
+    })
+  emit('update:validation', false)
+}
+watchEffect(() => {
+  resetValidation()
+})
+const selectRow = (index: number, step: string) => {
+  if (step !== 'A')
+    return
+  const rowIndex = selectedRows.findIndex((value: number) => index === value)
+  if (rowIndex > -1) {
+    selectedRows.splice(rowIndex, 1)
+    return
+  }
+  selectedRows.push(index)
+}
+const onValidation = async () => {
+  loading = true
+  try {
+    const items = selectedRows.map((index: number) => props.modelValue[index].id)
+    await creditorsService.validateCalculations(props.creditorId || '', items)
+    notify({ message: 'Cálculos validados com sucesso!' })
+  }
+  catch (error) {
+    printError('ERROR ON VALIDATING CREDITORS TABLE:', error)
+  }
+  finally {
+    loading = false
+    emit('update:validation', false)
+    emit('validated')
+  }
+}
+
 interface TableColumn {
   name: string
   label: string
@@ -154,7 +200,7 @@ const statusColors: any = {
     class="calculation-table"
     :pagination="{ rowsPerPage: 0 }"
     hide-pagination
-    @row-click="(evt, row) => emit('row-click', row)"
+    @row-click="(evt, row) => emit('rowClick', row)"
   >
     <template #header-cell-action="props">
       <QTh :props="props" class="w-2">
@@ -235,12 +281,21 @@ const statusColors: any = {
       </QTd>
     </template>
     <template #body-cell-validated="props">
-      <QTd :props="props" :class="{ 'is-validated': props.value }">
-        <div class="flex">
+      <QTd
+        :props="props"
+        :class="{
+          'is-validated': props.row.validated,
+          'cursor-not-allowed color-gray-6': !validation || loading || props.row.step !== 'A',
+          'color--primary': validation,
+        }"
+      >
+        <div
+          class="flex"
+          @click.stop="selectRow(props.rowIndex, props.row?.step)"
+        >
           <div
-            class="text-lg color--primary"
-            :class="props.value ? 'i-carbon-checkbox-checked-filled' : 'i-carbon-checkbox'"
-            @click.stop
+            class="text-lg"
+            :class="selectedRows.includes(props.rowIndex) ? 'i-carbon-checkbox-checked-filled' : 'i-carbon-checkbox'"
           />
         </div>
       </QTd>
@@ -256,7 +311,22 @@ const statusColors: any = {
         Valor Total Validado:
         {{ modelValue?.reduce((acc: number, curr: any) => curr?.statement?.total ? +curr?.statement?.total + acc : acc, 0)?.toFixed(2) }}
       </div>
-      <Btn label="Validar Cálculos" disabled />
+      <Btn v-if="validation === false" label="Validar Cálculos" @click="emit('update:validation', true)" />
+      <div v-else class="flex gap-3">
+        <Btn
+          label="Cancelar"
+          :dosabled="loading"
+          outlined
+          @click="resetValidation"
+        />
+        <Btn
+          label="Salvar"
+          :loading="loading"
+          :disabled="loading"
+          loading-label="Salvando Validações..."
+          @click="onValidation"
+        />
+      </div>
     </div>
   </div>
 </template>
