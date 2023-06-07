@@ -378,8 +378,7 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
                   {{ credit.classes.classeDisplay }}
                 </div>
                 <div class="font-bold">
-                  Total
-                  {{ credit?.summary?.find(({ key }: any) => key === 'total')?.label }}
+                  Total R$
                   {{ credit?.total?.totalCorrected?.toFixed(2) || 0 }}
                 </div>
               </div>
@@ -481,9 +480,8 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
                     {{ credit.tables.reduce((acc:number, table: any) => acc + table.values?.length, 0) }}
                   </div>
                   <div>
-                    Total dos Valores:
-                    {{ credit?.summary?.find(({ key }: any) => key === 'total')?.label }}
-                    {{ credit.tables.reduce((acc:number, table: any) => acc + (table.total || 0), 0) }}
+                    Total dos Valores: R$
+                    {{ credit.tables.reduce((acc:number, table: any) => acc + (table.total || 0), 0)?.toFixed(2) }}
                   </div>
                 </div>
                 <div>
