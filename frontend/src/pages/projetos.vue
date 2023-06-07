@@ -50,8 +50,6 @@ const responsibleList = computed(() => Object.entries(projects
   .sort(([labelA], [labelB]) => (labelA < labelB) ? -1 : 1)
   .map(([label, count = 0]) => ({ label, count: Number(count) })))
 
-const usageData: any[] = []
-
 const loadProjects = async () => {
   loading = true
   try {
@@ -76,7 +74,20 @@ const loadProjects = async () => {
 
 const openProject = (_: Event, { id }: any) => router.push(`/projeto/${id}`)
 
-onMounted(() => loadProjects())
+let bigNumbers: any = $ref({})
+const loadBigNumbers = async () => {
+  try {
+    bigNumbers = await projectService.getDashboardBigNumbers()
+  }
+  catch (error) {
+    printError('ERROR ON LOADING PROJECT BIG NUMBERS:', error)
+  }
+}
+
+onMounted(() => {
+  loadBigNumbers()
+  loadProjects()
+})
 
 const columns = [
   {
@@ -162,23 +173,23 @@ const columns = [
         class="md:col-span-2 xl:col-span-3"
       />
       <GraphGauge
-        :values="[]"
+        :values="bigNumbers.byPhase"
         title="Quantidade de Cálculos por Fase"
         hint="Esse gráfico apresenta a quantidade de cálculos em cada fase."
         empty-label="Sem cálculos disponíveis"
         class="md:col-span-2 xl:col-span-3"
-      />
-      <GraphLine
-        :values="usageData"
-        title="Uso da Ferramenta x Tempo"
-        hint="Esse gráfico mostra o uso da ferramenta no último mês."
-        class="sm:col-span-2 xl-col-span-3"
       />
       <ProgressList
         :values="responsibleList"
         title="Projetos x Responsável"
         hint="Esse gráfico apresenta o número de Projetos por Responsável."
         class="sm:col-span-2 xl:col-span-3"
+      />
+      <GraphLine
+        :values="bigNumbers.rangeDays"
+        title="Uso da Ferramenta x Tempo"
+        hint="Esse gráfico mostra o uso da ferramenta no último mês."
+        class="sm:col-span-2 xl-col-span-3"
       />
     </div>
 

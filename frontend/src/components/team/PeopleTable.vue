@@ -7,12 +7,17 @@ const props = withDefaults(defineProps<{
 }>(), {
 
 })
-const emit = defineEmits(['update:tab', 'update:filter'])
+
+const emit = defineEmits(['update:tab', 'update:filter', 'editingUser'])
+
 const router = useRouter()
 
 const { hasProject, user } = $user
 const showUserModal = $ref(false)
 const modalUser = $ref({ fullName: '' })
+const editUser = (evt: Event, user: any) => {
+  emit('editingUser', user)
+}
 
 const canGoTo = (project: any) => hasProject(project.id)
 const goTo = (project: any) => {
@@ -128,6 +133,7 @@ const columns = [
     row-key="id"
     flat
     bordered
+    @row-click="editUser"
   >
     <template #body-cell-name="props">
       <QTd :props="props">

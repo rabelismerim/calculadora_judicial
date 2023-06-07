@@ -93,6 +93,7 @@ export default defineConfig({
         'src/composables',
         'src/stores',
         'src/services',
+        'src/directives',
       ],
       vueTemplate: true,
     }),
