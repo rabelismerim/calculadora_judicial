@@ -26,7 +26,6 @@ import warnings
 warnings.filterwarnings("ignore", message="You have a duplicated operationId")
 warnings.filterwarnings('ignore', message='DateTimeField LoginRecord.login_time received a naive datetime')
 
-
 if '--env' in sys.argv:
     # get the index of the --env argument
     env_index = sys.argv.index('--env') + 1
@@ -538,6 +537,9 @@ GROUP_NAME_APPROVER = 'Aprovador'
 GROUP_NAME_SPECIAL_APPROVE = 'Aprovador Especial'
 GROUP_NAME_REVIEWER = 'Revisor'
 GROUP_NAME_PARTNER = 'Sócio'
+GROUP_NAME_SECURITY = 'Security'
+
+ROLES = [GROUP_NAME_EXECUTOR, GROUP_NAME_APPROVER, GROUP_NAME_SPECIAL_APPROVE, GROUP_NAME_REVIEWER, GROUP_NAME_SECURITY]
 
 ENABLE_CACHE = str(os.getenv('ENABLE_CACHE', 'false')).lower() == 'true'
 INDEX_VARIATION_END = os.getenv('INDEX_VARIATION_END', '2017-09-01')

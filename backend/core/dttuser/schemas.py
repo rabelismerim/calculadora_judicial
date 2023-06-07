@@ -273,12 +273,12 @@ class UserAuthorizeDttSchema(serializers.ModelSerializer):
         renderer_classes (list): A list of JSONRenderer objects.
     """
     renderer_classes = [renderers.JSONRenderer]
-
+    role = serializers.ChoiceField(ROLES_CHOICES,required=False)
     class Meta:
         model = get_user_model()
         groups = GroupSchema(many=True, read_only=False, exclude=('permissions',))
         subgroups = SubgroupSchema(many=True, read_only=False, exclude=('permissions',))
-        fields = ['email', 'status', 'groups', 'subgroups']
+        fields = ['email', 'status', 'groups', 'subgroups', 'role']
 
 
 class UserMailDttSchema(serializers.ModelSerializer):

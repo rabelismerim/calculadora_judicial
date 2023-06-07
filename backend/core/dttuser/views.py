@@ -6,7 +6,7 @@ Api's classes use the DttUser model and schema DttUser to work with data.
 """
 from rest_framework.exceptions import PermissionDenied
 
-from config.settings import IS_LOCALHOST, DTT_EMAIL
+from config.settings import IS_LOCALHOST, DTT_EMAIL, ROLES
 from core.abstract.views import AbstractViewApi
 from core.dttuser.schemas import UserDttSchema, UserAuthorizeDttSchema, GroupSchema, SubgroupSchema, UserMailDttSchema
 from django.contrib.auth import authenticate, login
@@ -116,17 +116,18 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
         user_filter = serializer.validated_data
         groups = user_filter.pop('groups', [])
         subgroups = user_filter.pop('subgroups', [])
+        role = user_filter.pop('role', None)
 
         user_approved = self.model.objects.filter(email=user_filter['email']).first()
         if not user_approved:
             raise serializers.ValidationError(
                 [_('Email {}, not found').format(user_filter["email"])])
-
+        user_approved.groups.clear()
         user_approved.status = user_filter['status']
-        if groups:
-            user_approved.groups.add(*groups)
-        if subgroups:
-            user_approved.subgroups.add(*subgroups)
+        user_approved.groups.add(*groups)
+        user_approved.subgroups.add(*subgroups)
+        if role:
+            user_approved.role = role
         user_approved.save()
 
         return JsonResponse({'user': UserDttSchema(user_approved).data}, status=status.HTTP_201_CREATED)
@@ -141,6 +142,7 @@ class UserSendMailDttApi(AbstractUserDttApi):
     query_params = []
     docs = docs.copy()
     allow_cache = False
+
     @doc(_("""Used to validate and send email when asked to create a new user.
         The serializer is used to access the model object, and then the data is returned in a JSON format.
         """))
@@ -198,7 +200,7 @@ class GroupApi(AbstractViewApi):
     http_method_names = ['get']
 
     def get_exclude_queryset(self):
-        return {'name': "Security"}
+        return {'name__in': ROLES}
 
 
 class SubgroupApi(AbstractViewApi):
@@ -229,8 +231,9 @@ class SubgroupApi(AbstractViewApi):
     model = Subgroup
     http_method_names = ['get']
     allow_cache = False
+
     def get_exclude_queryset(self):
-        return {'name': "Security"}
+        return {'name__in': ROLES}
 
 
 class UserDttApi(AbstractUserDttApi):
@@ -251,6 +254,7 @@ class UserDttApi(AbstractUserDttApi):
     }
     operation_id_base = 'UserDetail'
     allow_cache = False
+
     @doc(_("""Only LocalHost. Create a new user by receiving data in the form of dictionaries and 
         returning the specific user details.
         """))

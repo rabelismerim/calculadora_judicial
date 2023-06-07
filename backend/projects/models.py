@@ -6,7 +6,7 @@ from base.models import AbstractDateRecovering, AbstractDescription
 from calculation.funds.document.models import FundDocument
 from calculation.funds.irrf.models import FundIRRF
 from calculation.funds.models import Funds
-from calculation.models import Calculation
+from calculation.models import Calculation, CHOICES_STEP
 from creditors.classes.models import CLASSE_CHOICES
 from creditors.models import Creditor
 from projects.court.models import Court
@@ -82,21 +82,20 @@ class Project(AbstractDescription, AbstractDateRecovering):
                 - 'step': the status step
                 - 'step_display': the display name for the status step
         """
-        qs = Calculation.objects.filter(
-            creditor__recovering__project=self
-        ).values('step').annotate(total=Count('id'))
+        qs = Calculation.objects.filter(creditor__recovering__project=self).values('step').annotate(total=Count('id'))
 
         step_counts = [
             {'total': x['total'], 'step': x['step'], 'step_display': y}
-            for x, y in zip(qs, dict(STATUS_CHOICES).values())
+            for x, y in zip(qs, dict(CHOICES_STEP).values())
         ]
+
 
         # Add steps with total count of 0
         existing_steps = set(x['step'] for x in step_counts)
-        all_steps = set(x[0] for x in STATUS_CHOICES)
+        all_steps = set(x[0] for x in CHOICES_STEP)
         missing_steps = all_steps - existing_steps
         for step in missing_steps:
-            step_counts.append({'total': 0, 'step': step, 'step_display': dict(STATUS_CHOICES)[step]})
+            step_counts.append({'total': 0, 'step': step, 'step_display': dict(CHOICES_STEP)[step]})
 
         return step_counts
 
@@ -115,14 +114,17 @@ class Project(AbstractDescription, AbstractDateRecovering):
     def total_classes_creditor(self):
         classes = [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
                     'total_calculated': fund.get_total_summed()} for fund in
-                   Funds.objects.filter(classes__classe__isnull=False, calculation__creditor__recovering__project=self)]
+                   Funds.objects.filter(classes__classe__isnull=False, calculation__creditor__recovering__project=self,
+                                        calculation__validated=True, calculation__step='A')]
         classes += [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
                      'total_calculated': fund.get_total_summed()} for fund in
-                    FundDocument.objects.filter(classes__classe__isnull=False,
+                    FundDocument.objects.filter(classes__classe__isnull=False, calculation__validated=True,
+                                                calculation__step='A',
                                                 calculation__creditor__recovering__project=self)]
         classes += [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
                      'total_calculated': fund.get_total_summed()} for fund in
-                    FundIRRF.objects.filter(classes__classe__isnull=False,
+                    FundIRRF.objects.filter(classes__classe__isnull=False, calculation__validated=True,
+                                            calculation__step='A',
                                             calculation__creditor__recovering__project=self)]
 
         class_totals = {}
