@@ -267,3 +267,4 @@ def save_statement_irrf(sender, instance, **kwargs) -> None:
 
     ExtractFormula(instance, instance.fund.calculation, statement_methods).get_methods(
         [StatementIRRF, FundIRRF, TotalValuesIRRF, Rate, save_statement_irrf])
+    instance.fund.calculation.invalidate_calculation()

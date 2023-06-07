@@ -183,3 +183,5 @@ def save_rate_integrations(sender, instance, **kwargs) -> None:
     ExtractFormula(instance, instance.fund.calculation, statement_methods).get_methods(
         [StatementIntegrations, MonetaryCorrectionIntegrations, Rate, TotalValuesFundsIntegrations,
          save_rate_integrations])
+
+    instance.fund.calculation.invalidate_calculation()

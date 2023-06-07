@@ -305,7 +305,6 @@ class Calculation(AbstractModel):
         classes += [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
                      'total_calculated': fund.get_total_summed()} for fund in
                     self.fundirrf_set.filter(classes__classe__isnull=False)]
-
         class_totals = {}
         total_value_sum = 0
         total_calculated_sum = 0
@@ -326,7 +325,8 @@ class Calculation(AbstractModel):
         for class_dict in class_totals.values():
             total_calculated = class_dict['total_calculated']
             total_value = class_dict['total_value']
-            class_dict['percentage_calculated'] = (total_calculated / total_calculated_sum) * 100 if total_calculated_sum > 0 else 0
+            class_dict['percentage_calculated'] = (
+                                                          total_calculated / total_calculated_sum) * 100 if total_calculated_sum > 0 else 0
             class_dict['percentage_value'] = (total_value / total_value_sum) * 100 if total_value_sum > 0 else 0
 
         classes_list = []
@@ -350,6 +350,13 @@ class Calculation(AbstractModel):
                        'percentage_calculated': 0}
                 classes_list.append(obj)
         return classes_list
+
+    def get_total_funds(self) -> float:
+        """Add up the corrected amounts of the sums"""
+        total = sum([fund.get_total_summed() for fund in self.funds_set.all()])
+        total += sum([fund.get_total_summed() for fund in self.funddocument_set.all()])
+        total += sum([fund.get_total_summed() for fund in self.fundirrf_set.all()])
+        return total
 
     def get_date_rj_filing(self) -> datetime.date or None:  # B19
         """
@@ -414,6 +421,12 @@ class Calculation(AbstractModel):
         if statement:
             return True if statement.get_statement_pj() else False
         return False
+
+    def invalidate_calculation(self):
+        if self.validated:
+            self.validated = False
+            self.save()
+            self.creditor.set_total()
 
 
 class StepAction:
