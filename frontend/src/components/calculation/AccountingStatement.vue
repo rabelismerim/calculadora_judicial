@@ -5,6 +5,7 @@ const props = withDefaults(defineProps<{
 })
 const emit = defineEmits(['update:modelValue'])
 let loading = $ref(false)
+let isDownloading = $ref(false)
 
 let content = $ref([] as any[])
 const tabs = computed(() => content.map(({ label }: any, value: number) => ({ label, value })))
@@ -78,7 +79,13 @@ const loadStatement = async () => {
     return
   loading = true
   try {
-    content = await calculationService.getAccountingStatement(calculationId)
+    const result = await calculationService.getAccountingStatement(calculationId)
+    if (result.errors) {
+      throwError({ id: 'ACCOUNTING_STATEMENT', message: result.errors })
+      contentSelected = 0
+      return
+    }
+    content = result
     contentSelected = 0
   }
   catch (error) {
@@ -93,16 +100,21 @@ const downloadXLSX = async () => {
   const calculationId = props.modelValue
   if (!calculationId)
     return
-  loading = true
+  isDownloading = true
   try {
+    await delay(10)
     const result = await calculationService.getAccountingStatementXLSX(calculationId)
+    if (result.errors) {
+      throwError({ id: 'ACCOUNTING_STATEMENT', message: result.errors })
+      return
+    }
     downloadFile(result, `Extrato-Contabil-${Date.now()}.xlsx`)
   }
   catch (error) {
     printError('ERROR ON LOAD ACCOUNTING STATEMENT', error)
   }
   finally {
-    loading = false
+    isDownloading = false
   }
 }
 
@@ -112,15 +124,25 @@ onMounted(() => {
 </script>
 
 <template>
-  <TabFilter v-model="contentSelected" :items="tabs as any[]">
+  <TabFilter v-model="contentSelected" :items="tabs">
     <template #side>
       <Btn
         label="Baixar Extrato Contábil"
+        :loading="isDownloading"
+        :disabled="isDownloading"
+        loading-label="Baixando Extrato Contábil..."
         @click="downloadXLSX"
       />
     </template>
   </TabFilter>
-  <div>
+  <div class="relative">
+    <QLinearProgress
+      v-if="loading"
+      indeterminate
+      color="secondary"
+      class="absolute top-0 left-0"
+      size="xs"
+    />
     <iframe
       v-if="contentSelected > -1"
       ref="iframe"

@@ -224,7 +224,7 @@ const statusColors: any = {
       <QTd class="flex justify-center items-center">
         <div
           class="w-2 h-2 block rounded-full"
-          :class="prop.row.validated ? 'bg--primary' : 'bg--error'"
+          :class="prop.row.validated ? 'bg--secondary' : 'bg--error'"
         />
       </QTd>
     </template>
@@ -317,7 +317,7 @@ const statusColors: any = {
     <div class="flex gap-6 items-center">
       <div>
         Valor Total Validado:
-        R$ {{ creditor.total }}
+        R$ {{ creditor.total?.toFixed(2) }}
       </div>
       <Btn v-if="validation === false" label="Validar Cálculos" @click="emit('update:validation', true)" />
       <div v-else class="flex gap-3">
@@ -341,6 +341,6 @@ const statusColors: any = {
 
 <style>
 .calculation-table tr:has(.is-validated) {
-  background-color: hsla(var(--primary,0,0%,0%),0.10)
+  background-color: hsla(var(--secondary,0,0%,0%),0.05)
 }
 </style>
