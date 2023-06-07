@@ -1,3 +1,6 @@
+// BIG NUMBERS
+import { formatDay, formatMonth } from '../composables/utils'
+
 const mapProject = (project: any) => {
   const {
     isAdm,
@@ -191,6 +194,24 @@ const getEngagements = () => api
 // USER OF PROJECT
 const getUsers = () => api
   .get('/v1/projects/project_user/')
+const getDashboardBigNumbers = () => api
+  .get('/v1/big_number/dashboard/')
+  .then((data: any) => ({
+    rangeDays: data?.rangeForDays?.map(({ day, total }: any) => [formatDay(day), total]) || [],
+    rangeMonths: data?.rangeForMonth?.map(({ month, total }: any) => [formatMonth(month), total]) || [],
+    byPhase: [
+      {
+        color: '#86BC25',
+        count: data?.byPhase.adm || 0,
+        label: 'Administrativa',
+      },
+      {
+        color: '#000000',
+        count: data?.byPhase.judicial || 0,
+        label: 'Judicial',
+      },
+    ],
+  }))
 
 export default {
   getEngagements,
@@ -208,4 +229,5 @@ export default {
   getRegions,
   newRegion,
   getUsers,
+  getDashboardBigNumbers,
 }
