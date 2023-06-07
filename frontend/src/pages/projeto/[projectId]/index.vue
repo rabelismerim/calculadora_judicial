@@ -282,7 +282,7 @@ onMounted(() => {
             </template>
             <CalculationTable
               v-model="creditor.calculations"
-              @row-click="(row) => openCalculation(creditor.id, row.id)"
+              @row-click="(row: any) => openCalculation(creditor.id, row.id)"
             />
           </Accordion>
         </div>
