@@ -202,8 +202,8 @@ const statusColors: any = {
     hide-pagination
     @row-click="(evt, row) => emit('rowClick', row)"
   >
-    <template #header-cell-action="props">
-      <QTh :props="props" class="w-2">
+    <template #header-cell-action="prop">
+      <QTh :props="prop" class="w-2">
         <button
           class="rounded hover:bg--base active:bg--secondary p-2 tween"
           @click="toggleFullScreen"
@@ -212,18 +212,18 @@ const statusColors: any = {
         </button>
       </QTh>
     </template>
-    <template #body-cell-action="props">
+    <template #body-cell-action="prop">
       <QTd class="flex justify-center items-center">
         <div
           class="w-2 h-2 block rounded-full"
-          :class="props.row.validated ? 'bg--primary' : 'bg--error'"
+          :class="prop.row.validated ? 'bg--primary' : 'bg--error'"
         />
       </QTd>
     </template>
-    <template #body-cell-executor="props">
+    <template #body-cell-executor="prop">
       <QTd>
-        <div v-if="props.value">
-          {{ props.value }}
+        <div v-if="prop.value">
+          {{ prop.value }}
         </div>
         <div
           v-else
@@ -231,71 +231,71 @@ const statusColors: any = {
         />
       </QTd>
     </template>
-    <template #body-cell-reviewer="props">
+    <template #body-cell-reviewer="prop">
       <QTd>
-        <div v-if="props.value">
-          {{ props.value }}
+        <div v-if="prop.value">
+          {{ prop.value }}
         </div>
         <div
           v-else
           class="i-carbon-warning-filled text-lg color-gray"
-          :class="{ 'color--error': props.row.executor }"
+          :class="{ 'color--error': prop.row.executor }"
         />
       </QTd>
     </template>
-    <template #body-cell-approver="props">
+    <template #body-cell-approver="prop">
       <QTd>
-        <div v-if="props.value">
-          {{ props.value }}
+        <div v-if="prop.value">
+          {{ prop.value }}
         </div>
         <div
           v-else
           class="i-carbon-warning-filled text-lg color-gray"
-          :class="{ 'color--error': props.row.reviewer }"
+          :class="{ 'color--error': prop.row.reviewer }"
         />
       </QTd>
     </template>
-    <template #body-cell-specialapprover="props">
+    <template #body-cell-specialapprover="prop">
       <QTd>
-        <div v-if="props.value">
-          {{ props.value }}
+        <div v-if="prop.value">
+          {{ prop.value }}
         </div>
         <div
-          v-else-if="props.row.step === 'B'"
+          v-else-if="prop.row.step === 'B'"
           class="i-carbon-warning-filled text-lg color-gray"
-          :class="{ 'color--error': props.row.reviewer }"
+          :class="{ 'color--error': prop.row.reviewer }"
         />
         <div v-else>
           N/A
         </div>
       </QTd>
     </template>
-    <template #body-cell-status="props">
-      <QTd :props="props">
+    <template #body-cell-status="prop">
+      <QTd :props="prop">
         <div class="flex">
           <StatusTag
-            :label="props.value"
-            :color="statusColors[props.row.step]"
+            :label="prop.value"
+            :color="statusColors[prop.row.step]"
           />
         </div>
       </QTd>
     </template>
-    <template #body-cell-validated="props">
+    <template #body-cell-validated="prop">
       <QTd
-        :props="props"
+        :props="prop"
         :class="{
-          'is-validated': props.row.validated,
-          'cursor-not-allowed color-gray-6': !validation || loading || props.row.step !== 'A',
+          'is-validated': prop.row.validated,
+          'cursor-not-allowed color-gray-6': !validation || loading || prop.row.step !== 'A',
           'color--primary': validation,
         }"
       >
         <div
           class="flex"
-          @click.stop="selectRow(props.rowIndex, props.row?.step)"
+          @click.stop="selectRow(prop.rowIndex, prop.row?.step)"
         >
           <div
             class="text-lg"
-            :class="selectedRows.includes(props.rowIndex) ? 'i-carbon-checkbox-checked-filled' : 'i-carbon-checkbox'"
+            :class="selectedRows.includes(prop.rowIndex) ? 'i-carbon-checkbox-checked-filled' : 'i-carbon-checkbox'"
           />
         </div>
       </QTd>
