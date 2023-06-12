@@ -44,6 +44,7 @@ const onEdit = async () => {
     const { status } = result
     if (status)
       clear()
+    window.location.reload()
   }
   catch (error) {
     printError('ERROR ON ACCEPTING THE USER REQUEST:', error)
