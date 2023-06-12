@@ -138,26 +138,26 @@ class SheetTemplateViewApi(AbstractViewApi):
                             funds_sheet=Funds.objects.filter(calculation_id=item.id)
                             ws['D2']='Nº Incidente:'
                             ws['E2']=item.incident.number
-                            ws['D3']='Data de criação:'
-                            ws['E3']=datetime.strftime(item.created_at, "%d/%m/%Y")
-                            ws['D4']='Fase:'
-                            ws['E4']='Administrativa' if item.is_adm == True else 'Judical'
-                            ws['D5']='Classe:'
-                            ws['E5']=str(funds_sheet[0].classes).split(' - ')[0] if len(funds_sheet)>0 and 'classes' in funds_sheet[0]._dict else 'N/A'
-                            ws['D6']='Executor:'
-                            ws['E6']=str(item.executor if item.executor else 'N/A')
-                            ws['D7']='Revisor:'
-                            ws['E7']=str(item.reviewer if item.reviewer else 'N/A')
-                            ws['D8']='Aprovador:'
-                            ws['E8']=str(item.approver if item.approver else 'N/A')
-                            ws['D9']='Aprovador Especial:'
-                            ws['E9']=str(item.special_approver if item.special_approver else 'N/A')
-                            ws['D10']='Valor:'
-                            ws['E10']='{:14,.2f}'.format(float(str(funds_sheet[0].get_total_funds()).split(' - ')[0]))
-                            ws['D11']='Status:'
-                            ws['E11']=str(funds_sheet[0].classes).split(' - ')[1] if len(funds_sheet)>0 and 'classes' in funds_sheet[0]._dict else 'N/A'
-                            ws['D12']='Validado:'
-                            ws['E12']='Sim' if item.validated==True else 'Não' 
+                            ws['D4']='Data de criação:'
+                            ws['E4']=datetime.strftime(item.created_at, "%d/%m/%Y")
+                            ws['D6']='Fase:'
+                            ws['E6']='Administrativa' if item.is_adm == True else 'Judical'
+                            ws['D8']='Classe:'
+                            ws['E8']=str(funds_sheet[0].classes).split(' - ')[0] if len(funds_sheet)>0 and 'classes' in funds_sheet[0]._dict else 'N/A'
+                            ws['D10']='Executor:'
+                            ws['E10']=str(item.executor if item.executor else 'N/A')
+                            ws['D12']='Revisor:'
+                            ws['E12']=str(item.reviewer if item.reviewer else 'N/A')
+                            ws['D14']='Aprovador:'
+                            ws['E14']=str(item.approver if item.approver else 'N/A')
+                            ws['D16']='Aprovador Especial:'
+                            ws['E16']=str(item.special_approver if item.special_approver else 'N/A')
+                            ws['D18']='Valor:'
+                            ws['E18']='{:14,.2f}'.format(float(str(funds_sheet[0].get_total_funds()).split(' - ')[0]))
+                            ws['D20']='Status:'
+                            ws['E20']=str(funds_sheet[0].classes).split(' - ')[1] if len(funds_sheet)>0 and 'classes' in funds_sheet[0]._dict else 'N/A'
+                            ws['D22']='Validado:'
+                            ws['E22']='Sim' if item.validated==True else 'Não' 
 
             for sheet in archive_view:
                 if type(sheet.title) == str and sheet.title.find('JUCA=') >= 0:
