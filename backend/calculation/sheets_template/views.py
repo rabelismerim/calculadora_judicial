@@ -3,9 +3,19 @@ from calculation.sheets_template.schemas import SheetsTemplateSchema
 from calculation.statement.models import Statement
 from calculation.statement_pf.models import StatementPF
 from calculation.statement_pj.models import StatementPJ
+from rates.models import Rate
+from creditors.notice.models import Notice
 from calculation.comparative.models import Comparative, ComparativeCalculation
 from calculation.funds.models import Funds
 from calculation.models import Calculation
+from creditors.models import Creditor 
+from base.coins.models import Coins
+from creditors.classes.models import Classes
+from recovering.models import Recovering
+
+from projects.models import Project
+from projects.court.models import Court
+from core.entity.models import Entity
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from django.core import serializers
@@ -18,9 +28,7 @@ from utils import _, doc
 import openpyxl as xl
 from os.path import exists
 from os import remove
-
-import json
-
+from datetime import datetime
 import base64
 
 class SheetTemplateViewApi(AbstractViewApi):
@@ -43,6 +51,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                     Returns:
                         JsonResponse: An HTTP response containing the serialized sheets file data retrieved.
                     """))
+
     # This function changing the new output file name as report
     def new_archive(self, filename):
         sequence = 0
@@ -68,22 +77,37 @@ class SheetTemplateViewApi(AbstractViewApi):
             if len(Template) <= 0:
                 return JsonResponse({'errors': 'Template not found.'})
 
-                # Objects to publish in sheet
-            calculation_model = Calculation.objects.filter(id=calculation_id)
-            calculation = json.loads(serializers.serialize("json", calculation_model))
-            statement_model = Statement.objects.filter(calculation_id=calculation_id)
-            if len(statement_model) > 0:
-                statement = json.loads(serializers.serialize("json", statement_model))
-                statement_pf_model = StatementPF.objects.filter(id=statement_model[0].id)
-                statement_pf = json.loads(serializers.serialize("json", statement_pf_model))
-                statement_pj_model = StatementPJ.objects.filter(id=statement_model[0].id)
-                statement_pj = json.loads(serializers.serialize("json", statement_pj_model))
-            comparative_model = Comparative.objects.filter(calculation_id=calculation_id)
-            comparative = json.loads(serializers.serialize("json", comparative_model))
-            comparativecalculation_model = ComparativeCalculation.objects.filter(id=calculation_id)
-            comparativecalculation = json.loads(serializers.serialize("json", comparativecalculation_model))
-            funds_model = Funds.objects.filter(calculation_id=calculation_id)
-            funds = json.loads(serializers.serialize("json", funds_model))
+            # Objects to publish in sheet
+            calculation = Calculation.objects.filter(id=calculation_id)
+            if len(calculation) <= 0:
+                return JsonResponse({'errors': 'Calculation not found.'})
+            creditor = Creditor.objects.filter(id=calculation[0].creditor_id)    
+            statement = Statement.objects.filter(calculation_id=calculation_id)
+            if len(statement) > 0:
+                statement_pf = StatementPF.objects.filter(id=statement[0].id)
+                statement_pj = StatementPJ.objects.filter(id=statement[0].id)
+            comparative = Comparative.objects.filter(calculation_id=calculation_id)
+            comparativecalculation = ComparativeCalculation.objects.filter(id=calculation_id)
+            funds = Funds.objects.filter(calculation_id=calculation_id)
+            if len(funds)>0:
+                classes = Classes.objects.filter(id=funds[0].classes_id)
+                coins = Coins.objects.filter(id=funds[0].coins_id)
+            if len(creditor)>0:
+                notice = Notice.objects.filter(creditor_id=creditor[0].id)
+                if len(notice)>0:
+                    classes_notice = Classes.objects.filter(id=notice[0].classes_id)
+                if len(notice)>0:
+                    coins_notice = Coins.objects.filter(id=notice[0].coins_id)
+                recovering = Recovering.objects.filter(id=creditor[0].recovering_id)
+                if len(recovering)>0:
+                    project = Project.objects.filter(id=recovering[0].project_id)
+                entity = Entity.objects.filter(id=creditor[0].entity_id)
+                if len(entity)>0:
+                    calculations_sheet = Calculation.objects.filter(creditor__entity=entity[0])
+                recovering_entity = Entity.objects.filter(id=creditor[0].entity_id)
+            if len(funds)>0:
+                rate = Rate.objects.filter(id=funds[0].rate_id)
+            court = Court.objects.filter(id=project[0].court_id)
 
             #open the archive and process
             archive_download = xl.load_workbook("uploads/" + Template[0].file.name, read_only=False)
@@ -99,10 +123,46 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 try:
                                     col.value = str(eval(str(col.value)[5:]))
                                 except:
-                                    col.value = str("")
+                                    col.value = str("Erro Formula!!!")
                         else:
                             pass
+            for sheet in archive_view:
+                cnt_calc = 0
+                if type(sheet.title) == str and sheet.title.find('JUCA=') >= 0:
+                    if str(sheet.title)[5:]=='Calculation':
+                        copy_sheet=archive_view[sheet.title]
+                        for item in calculations_sheet:
+                            archive_view.copy_worksheet(copy_sheet)
+                            ws = archive_view[sheet.title+' Copy']
+                            ws.title = 'Calculo '+str(item.number.replace('-','e'))
+                            funds_sheet=Funds.objects.filter(calculation_id=item.id)
+                            ws['D2']='Nº Incidente:'
+                            ws['E2']=item.incident.number
+                            ws['D3']='Data de criação:'
+                            ws['E3']=datetime.strftime(item.created_at, "%d/%m/%Y")
+                            ws['D4']='Fase:'
+                            ws['E4']='Administrativa' if item.is_adm == True else 'Judical'
+                            ws['D5']='Classe:'
+                            ws['E5']=str(funds_sheet[0].classes).split(' - ')[0] if len(funds_sheet)>0 and 'classes' in funds_sheet[0]._dict else 'N/A'
+                            ws['D6']='Executor:'
+                            ws['E6']=str(item.executor if item.executor else 'N/A')
+                            ws['D7']='Revisor:'
+                            ws['E7']=str(item.reviewer if item.reviewer else 'N/A')
+                            ws['D8']='Aprovador:'
+                            ws['E8']=str(item.approver if item.approver else 'N/A')
+                            ws['D9']='Aprovador Especial:'
+                            ws['E9']=str(item.special_approver if item.special_approver else 'N/A')
+                            ws['D10']='Valor:'
+                            ws['E10']='{:14,.2f}'.format(float(str(funds_sheet[0].get_total_funds()).split(' - ')[0]))
+                            ws['D11']='Status:'
+                            ws['E11']=str(funds_sheet[0].classes).split(' - ')[1] if len(funds_sheet)>0 and 'classes' in funds_sheet[0]._dict else 'N/A'
+                            ws['D12']='Validado:'
+                            ws['E12']='Sim' if item.validated==True else 'Não' 
 
+            for sheet in archive_view:
+                if type(sheet.title) == str and sheet.title.find('JUCA=') >= 0:
+                    archive_view.remove_sheet(archive_view[sheet.title])
+                sheet.title=sheet.title.replace(' Copy','')
             for sheet in archive_view:
                 for row in sheet.iter_rows():
                     for col in row:
@@ -111,7 +171,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 try:
                                     col.value = str(eval(str(col.value)[5:]))
                                 except:
-                                    col.value = str("")
+                                    col.value = str("Erro Formula!!!")
                         else:
                             pass
 
@@ -125,7 +185,7 @@ class SheetTemplateViewApi(AbstractViewApi):
 
             list_html = {}
             for sheet in archive_view:
-                out_stream = xlsx2html(new_name_view, sheet=sheet._WorkbookChild__title, parse_formula=False)
+                out_stream = xlsx2html(new_name_view, sheet=sheet.title, parse_formula=False)
                 out_stream.seek(0)
                 result_html = out_stream.read()
                 result_html = result_html.replace('\n    ', '').replace('\n', '').replace('\\"', '"')
