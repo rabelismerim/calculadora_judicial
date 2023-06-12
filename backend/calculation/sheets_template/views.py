@@ -26,6 +26,7 @@ from core.permission.views import CheckHasPermission
 from utils import _, doc
 
 import openpyxl as xl
+from openpyxl.styles import PatternFill, Border, Side, Alignment, Protection, Font
 from os.path import exists
 from os import remove
 from datetime import datetime
@@ -136,27 +137,39 @@ class SheetTemplateViewApi(AbstractViewApi):
                             ws = archive_view[sheet.title+' Copy']
                             ws.title = 'Calculo '+str(item.number.replace('-','e'))
                             funds_sheet=Funds.objects.filter(calculation_id=item.id)
+                            font = Font(bold=True)
                             ws['D2']='Nº Incidente:'
+                            ws['D2'].font=font
                             ws['E2']=item.incident.number
                             ws['D4']='Data de criação:'
+                            ws['D4'].font=font
                             ws['E4']=datetime.strftime(item.created_at, "%d/%m/%Y")
                             ws['D6']='Fase:'
+                            ws['D6'].font=font
                             ws['E6']='Administrativa' if item.is_adm == True else 'Judical'
                             ws['D8']='Classe:'
+                            ws['D8'].font=font
                             ws['E8']=str(funds_sheet[0].classes).split(' - ')[0] if len(funds_sheet)>0 and 'classes' in funds_sheet[0]._dict else 'N/A'
                             ws['D10']='Executor:'
+                            ws['D10'].font=font
                             ws['E10']=str(item.executor if item.executor else 'N/A')
                             ws['D12']='Revisor:'
+                            ws['D12'].font=font
                             ws['E12']=str(item.reviewer if item.reviewer else 'N/A')
                             ws['D14']='Aprovador:'
+                            ws['D14'].font=font
                             ws['E14']=str(item.approver if item.approver else 'N/A')
                             ws['D16']='Aprovador Especial:'
+                            ws['D16'].font=font
                             ws['E16']=str(item.special_approver if item.special_approver else 'N/A')
                             ws['D18']='Valor:'
+                            ws['D18'].font=font
                             ws['E18']='{:14,.2f}'.format(float(str(funds_sheet[0].get_total_funds()).split(' - ')[0]))
                             ws['D20']='Status:'
+                            ws['D20'].font=font
                             ws['E20']=str(funds_sheet[0].classes).split(' - ')[1] if len(funds_sheet)>0 and 'classes' in funds_sheet[0]._dict else 'N/A'
                             ws['D22']='Validado:'
+                            ws['D22'].font=font
                             ws['E22']='Sim' if item.validated==True else 'Não' 
 
             for sheet in archive_view:
