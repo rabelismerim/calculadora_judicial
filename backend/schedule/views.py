@@ -7,6 +7,8 @@ from config import settings
 
 from datetime import datetime, time
 
+from utils import _
+
 
 class SchedulerCommand(BaseCommand):
     """
@@ -57,6 +59,8 @@ class SchedulerCommand(BaseCommand):
                 To schedule a job to run on the 1st day of every 3 months at 7:00:
                 scheduler_command.every_month('job_id_5', my_func, day_of_month='1', months='*/3', at_time=time(hour=7, minute=0))
             """
+        if callable(func) is False:
+            raise ValueError(_('Argument func is necessary a callable'))
         if not at_time:
             at_time = time(hour=0, minute=0)
         hour, minute, second = at_time.hour, at_time.minute, at_time.second
