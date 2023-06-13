@@ -26,7 +26,7 @@ from calculation.premise.schemas import PremiseSchema
 from calculation.statement.schemas import StatementSchema
 from calculation.verdict.schemas import VerdictSchema
 from rest_framework import serializers
-from calculation.models import Calculation, Incident, CHOICES_STEP
+from calculation.models import Calculation, Incident, CHOICES_STEP, SpecialApprover
 from creditors.classes.models import CLASSE_CHOICES
 from creditors.schemas import CreditorSchema
 from projects.project_user.schemas import ProjectUserProjectSchema
@@ -94,6 +94,14 @@ class HistoricalSchema(AbstractDescriptionSchema):
     class Meta:
         model = Calculation
         fields = ('step', 'historical')
+
+
+class SpecialApproverSchema(AbstractDescriptionSchema):
+    project_user = ProjectUserProjectSchema(read_only=True, many=False)
+
+    class Meta:
+        model = SpecialApprover
+        fields = '__all__'
 
 
 class CalculationAllFundsSchema(AbstractDescriptionSchema):  # V1
@@ -176,7 +184,8 @@ class CalculationSchema(CalculationAllFundsSchema):  # V1
     historical = serializers.SerializerMethodField(read_only=True)
 
     approver = ProjectUserProjectSchema(read_only=True, allow_null=True)
-    special_approver = ProjectUserProjectSchema(read_only=True, allow_null=True)
+    special_approvers = SpecialApproverSchema(source='special_approvers.all',read_only=True, many=True)
+    # special_approver = ProjectUserProjectSchema(read_only=True, allow_null=True)
     executor = ProjectUserProjectSchema(read_only=True, allow_null=True)
     reviewer = ProjectUserProjectSchema(read_only=True, allow_null=True)
 
@@ -186,7 +195,7 @@ class CalculationSchema(CalculationAllFundsSchema):  # V1
     class Meta:
         model = Calculation
         fields = '__all__'
-        read_only_fields = ('step', 'number', 'approver', 'special_approver', 'executor', 'reviewer')
+        read_only_fields = ('step', 'number', 'approver', 'special_approvers', 'executor', 'reviewer')
 
     def validate(self, data):
         data['verdict'] = data.pop('verdict_set', None)
@@ -322,6 +331,7 @@ class ChangeStepSerializer(serializers.Serializer):
     """
     next_step = serializers.ChoiceField(source='step', choices=CHOICES_STEP)
     comments = CommentSchema(many=True, write_only=True, required=False, exclude=('create_user', 'update_user',))
+    special_approvers = serializers.ListField(required=False, child=serializers.IntegerField(),)
 
     def __init__(self, *args, **kwargs):
         fields = kwargs.pop('exclude', None)
@@ -348,7 +358,6 @@ class CheckStepSerializer(serializers.Serializer):
     serializer = ChangeStepSerializer
     """
     next_step = serializers.ChoiceField(source='step', choices=CHOICES_STEP)
-
 
 
 class IdSerializer(serializers.Serializer):

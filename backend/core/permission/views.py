@@ -90,21 +90,23 @@ class PermissionsName:
 
     reviewer = [
         (_layout_perm.format('c', 'e'), _('Can Reviewer Calculation to Approve'), 'calculation'),
-        (_layout_perm.format('c', 'b'), _('Can Reviewer Calculation to Approve special'), 'calculation'), # Move to approve
         (_layout_perm.format('c', 's'), _('Can Reviewer Calculation to Calculate'), 'calculation'),
-        (_layout_perm.format('c', 'r'), _('Can Reviewer Calculation to Failed'), 'calculation'), # Ver com T&R(Excluir, deletar, arquivar)
+        # (_layout_perm.format('c', 'r'), _('Can Reviewer Calculation to Failed'), 'calculation'), # Ver com T&R(Excluir, deletar, arquivar)
     ]
 
     approve = [
         (_layout_perm.format('e', 'a'), _('Can Approve Revised Calculation'), 'calculation'),
         (_layout_perm.format('e', 'c'), _('Can Disapprove Revised Calculation to Review'), 'calculation'),
-        (_layout_perm.format('e', 'r'), _('Can Disapprove Revised Calculation to Failed'), 'calculation')
+        # (_layout_perm.format('e', 'r'), _('Can Disapprove Revised Calculation to Failed'), 'calculation'),
+
+        (_layout_perm.format('e', 'b'), _('Can Approve Revised Calculation to Approve special'), 'calculation'),
+        (_layout_perm.format('b', 'b'), _('Can Edit Approve Special Calculation to Approve special'), 'calculation'), # Edit list Special Approvers
     ]
 
     special_approve = [
         (_layout_perm.format('b', 'a'), _('Can Approve Special Calculation'), 'calculation'),
-        (_layout_perm.format('b', 'c'), _('Can Disapprove Special Calculation to Review'), 'calculation'),
-        (_layout_perm.format('b', 'r'), _('Can Disapprove Special Calculation to Failed'), 'calculation')
+        (_layout_perm.format('b', 'e'), _('Can Disapprove Special Calculation to Approve'), 'calculation'),
+        # (_layout_perm.format('b', 'r'), _('Can Disapprove Special Calculation to Failed'), 'calculation')
     ]
 
     @staticmethod

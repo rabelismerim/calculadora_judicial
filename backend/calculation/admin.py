@@ -21,7 +21,7 @@ admin.site.register(Incident)
 
 
 class CalculationModelAdmin(admin.ModelAdmin):
-    readonly_fields = ('premises', 'approver', 'special_approver', 'executor', 'reviewer', 'get_classes', 'get_total_funds')
+    readonly_fields = ('premises', 'approver', 'special_approvers', 'executor', 'reviewer', 'get_classes', 'get_total_funds')
 
 
 admin.site.register(Calculation, CalculationModelAdmin)

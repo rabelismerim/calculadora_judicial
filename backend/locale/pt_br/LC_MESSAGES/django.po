@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-30 14:11-0300\n"
+"POT-Creation-Date: 2023-06-13 19:10-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -183,7 +183,7 @@ msgstr "Tipo Moeda"
 #: .\backend\base\models.py:10 .\backend\base\models.py:21
 #: .\backend\calculation\verdict\models.py:9
 #: .\backend\calculation\verdict\models.py:15 .\backend\creditors\models.py:11
-#: .\backend\creditors\views.py:42 .\backend\projects\views.py:45
+#: .\backend\creditors\views.py:43 .\backend\projects\views.py:46
 msgid "Description"
 msgstr "Descrição"
 
@@ -296,7 +296,13 @@ msgstr "Nome para exibição"
 msgid "Field for exhibition"
 msgstr "Campo para exibição"
 
-#: .\backend\big_number\views.py:46
+#: .\backend\big_number\schemas.py:66
+#, fuzzy
+#| msgid "Subgroup not found"
+msgid "{} not found"
+msgstr "Subgrupo não encontrado"
+
+#: .\backend\big_number\views.py:47
 msgid ""
 "The BigNumber represents the values of kpis, metrics or graphs to measure "
 "the use, quantity or \n"
@@ -305,14 +311,13 @@ msgid ""
 "        certain projects, or the number of calculations for a certain "
 "creditor"
 msgstr ""
-"O BigNumber representa os valores de kpis, métricas ou gráficos a medir"
-"o uso, quantidade ou \n"
-" soma de certos objetos, como o número de acessos ao longo "
-"do mês, o número total de credores em \n"
-"certos projetos, ou o número de cálculos para um certo"
-"credor"
+"O BigNumber representa os valores de kpis, métricas ou gráficos a mediro "
+"uso, quantidade ou \n"
+" soma de certos objetos, como o número de acessos ao longo do mês, o número "
+"total de credores em \n"
+"certos projetos, ou o número de cálculos para um certocredor"
 
-#: .\backend\big_number\views.py:51
+#: .\backend\big_number\views.py:52
 msgid ""
 "Retrieves the BigNumbers of an object filtered by its `path` and `ID`.\n"
 "        Returns serialized data in JSON format.\n"
@@ -325,13 +330,13 @@ msgstr ""
 " Lança um ValidationError se o `path` ou o `ID` não for encontrado.\n"
 " "
 
-#: .\backend\big_number\views.py:65
+#: .\backend\big_number\views.py:66
 #, fuzzy
 #| msgid "Email {}, not found"
 msgid "Path not found"
 msgstr "E-mail {}, não encontrado"
 
-#: .\backend\big_number\views.py:70
+#: .\backend\big_number\views.py:71
 #, fuzzy
 #| msgid "Subgroup not found"
 msgid "ID not found"
@@ -556,106 +561,109 @@ msgstr ""
 "                        JsonResponse: Uma resposta HTTP contendo os dados da "
 "premissa serializada recuperada."
 
-#: .\backend\calculation\funds\abstract\models.py:30
+#: .\backend\calculation\funds\abstract\models.py:31
 #: .\backend\calculation\funds\document\views.py:61
 msgid "Fund name"
 msgstr "Nome da Verba"
 
-#: .\backend\calculation\funds\abstract\models.py:52
+#: .\backend\calculation\funds\abstract\models.py:53
 msgid "Requested"
 msgstr "Solicitado"
 
-#: .\backend\calculation\funds\abstract\models.py:52
+#: .\backend\calculation\funds\abstract\models.py:53
 #: .\backend\calculation\statement\tests.py:214 .\backend\projects\models.py:22
 #: .\backend\recovering\models.py:13
 msgid "Concluded"
 msgstr "Concluído"
 
-#: .\backend\calculation\funds\abstract\models.py:52
+#: .\backend\calculation\funds\abstract\models.py:53
 #: .\backend\recovering\models.py:14
 msgid "In Progress"
 msgstr "Em Andamento"
 
-#: .\backend\calculation\funds\abstract\models.py:53
-msgid "Calculation failed - rate not found"
-msgstr "Falha no cálculo - taxa não encontrada"
-
 #: .\backend\calculation\funds\abstract\models.py:54
-#, fuzzy
-#| msgid "Calculation failed - rate not found"
-msgid "Calculation failed - rate RJ not found"
+msgid "Calculation failed - rate not found"
 msgstr "Falha no cálculo - taxa não encontrada"
 
 #: .\backend\calculation\funds\abstract\models.py:55
 #, fuzzy
 #| msgid "Calculation failed - rate not found"
-msgid "Calculation failed - rate data base not found"
+msgid "Calculation failed - rate RJ not found"
 msgstr "Falha no cálculo - taxa não encontrada"
 
 #: .\backend\calculation\funds\abstract\models.py:56
+#, fuzzy
+#| msgid "Calculation failed - rate not found"
+msgid "Calculation failed - rate data base not found"
+msgstr "Falha no cálculo - taxa não encontrada"
+
+#: .\backend\calculation\funds\abstract\models.py:57
 msgid "Calculation failed - aliquot not found"
 msgstr "Falha no cálculo - alíquota não encontrada"
 
-#: .\backend\calculation\funds\abstract\models.py:57
+#: .\backend\calculation\funds\abstract\models.py:58
 msgid "Calculation failed - invalid parameters"
 msgstr "Falha no cálculo - parâmetros inválidos"
 
-#: .\backend\calculation\funds\abstract\models.py:58
+#: .\backend\calculation\funds\abstract\models.py:59
 msgid "Calculation failed - no date RJ"
 msgstr "Falha no cálculo - sem data RJ"
 
-#: .\backend\calculation\funds\abstract\models.py:59
+#: .\backend\calculation\funds\abstract\models.py:60
 msgid "Calculation failed - no date Citation"
 msgstr "Falha no cálculo - sem data Citação"
 
-#: .\backend\calculation\funds\abstract\models.py:60
+#: .\backend\calculation\funds\abstract\models.py:61
 #, fuzzy
 #| msgid "Calculation failed - no date Citation"
 msgid "Calculation failed - in exclusion"
 msgstr "Falha no cálculo - sem data Citação"
 
-#: .\backend\calculation\funds\abstract\models.py:65
+#: .\backend\calculation\funds\abstract\models.py:66
 msgid "Calculation status"
 msgstr "Status do cálculo"
 
-#: .\backend\calculation\funds\abstract\models.py:117
+#: .\backend\calculation\funds\abstract\models.py:118
 msgid "Status {} does not match any valid status"
 msgstr "Status {} não corresponde a nenhum status válido"
 
-#: .\backend\calculation\funds\abstract\models.py:154
+#: .\backend\calculation\funds\abstract\models.py:155
 msgid "Base date"
 msgstr "Data base"
 
-#: .\backend\calculation\funds\abstract\models.py:155
+#: .\backend\calculation\funds\abstract\models.py:156
 msgid "Historical value"
 msgstr "Valor histórico"
 
-#: .\backend\calculation\funds\abstract\models.py:161
+#: .\backend\calculation\funds\abstract\models.py:162
 #: .\backend\calculation\funds\irrf\models.py:97
 msgid "Is extraconcursal"
 msgstr "É extraconcursal"
 
-#: .\backend\calculation\funds\abstract\models.py:234
+#: .\backend\calculation\funds\abstract\models.py:227
+msgid ""
+"This is an extra-bankruptcy budget, it is necessary to flag the extra-"
+"bankruptcy budget"
+msgstr ""
+"Essa é uma verba extraconcursal, é necessário usar a flag extraconcursal"
+
+#: .\backend\calculation\funds\abstract\models.py:243
 msgid "Index on Base Date"
 msgstr "Índice na Data Base"
 
-#: .\backend\calculation\funds\abstract\models.py:227
-msgid "This is an extra-bankruptcy budget, it is necessary to flag the extra-bankruptcy budget"
-msgstr "Essa é uma verba extraconcursal, é necessário usar a flag extraconcursal"
-
-#: .\backend\calculation\funds\abstract\models.py:235
+#: .\backend\calculation\funds\abstract\models.py:244
 msgid "Index in recovery"
 msgstr "Índice na recuperação"
 
-#: .\backend\calculation\funds\abstract\models.py:243
+#: .\backend\calculation\funds\abstract\models.py:252
 msgid "OneToOneField relationship required for Statement"
 msgstr "Relação OneToOneField necessária para Extrato"
 
-#: .\backend\calculation\funds\abstract\models.py:276
+#: .\backend\calculation\funds\abstract\models.py:285
 msgid "Total historical value"
 msgstr "Valor histórico total"
 
-#: .\backend\calculation\funds\abstract\models.py:277
+#: .\backend\calculation\funds\abstract\models.py:286
 msgid "Total corrected amount"
 msgstr "Valor total corrigido"
 
@@ -754,24 +762,32 @@ msgid ""
 "            serializers.ValidationError: If the input data is invalid.\n"
 "        "
 msgstr ""
-"Criar verba de Documento a partir de dados de solicitação e retornar detalhes.\n"
+"Criar verba de Documento a partir de dados de solicitação e retornar "
+"detalhes.\n"
 "\n"
-"    O parâmetro `commit` é usado para controlar se uma transação iniciada durante a criação de um novo objeto no\n"
-"    banco de dados deve ser confirmada ou não. Por padrão, commit=True, o que significa que a transação será \n"
-"    confirmada automaticamente quando o método post da exibição terminar de ser executado com sucesso.\n"
-"    No entanto, se commit=False, a exibição criará um novo objeto dentro de uma transação e, em seguida, \n"
-"    reverterá imediatamente, desfazendo efetivamente quaisquer alterações feitas no banco de dados.\n"
+"    O parâmetro `commit` é usado para controlar se uma transação iniciada "
+"durante a criação de um novo objeto no\n"
+"    banco de dados deve ser confirmada ou não. Por padrão, commit=True, o "
+"que significa que a transação será \n"
+"    confirmada automaticamente quando o método post da exibição terminar de "
+"ser executado com sucesso.\n"
+"    No entanto, se commit=False, a exibição criará um novo objeto dentro de "
+"uma transação e, em seguida, \n"
+"    reverterá imediatamente, desfazendo efetivamente quaisquer alterações "
+"feitas no banco de dados.\n"
 "\n"
-"    Isso pode ser útil para obter os `calculos`,  `resultados`, `indices`, `valor corrigido` e etc sem salvar \n"
+"    Isso pode ser útil para obter os `calculos`,  `resultados`, `indices`, "
+"`valor corrigido` e etc sem salvar \n"
 "    a informação no banco\n"
 "\n"
 "    Response:\n"
-"       JsonResponse: Uma resposta JSON contendo os detalhes do crédito de documento criado\n"
+"       JsonResponse: Uma resposta JSON contendo os detalhes do crédito de "
+"documento criado\n"
 "\n"
 "    Raise:\n"
 "       serializers.ValidationError: Se os dados de entrada forem inválidos."
 
-#: .\backend\calculation\funds\document\views.py:143
+#: .\backend\calculation\funds\document\views.py:157
 msgid ""
 "This method handles GET requests for the view. It retrieves a specific "
 "document fund object \n"
@@ -794,7 +810,7 @@ msgstr ""
 "Uma resposta HTTP contendo os dados de verba de documentos serializados "
 "recuperados."
 
-#: .\backend\calculation\funds\document\views.py:158
+#: .\backend\calculation\funds\document\views.py:172
 msgid ""
 "This method handles PUT requests for the view. It updates a specific "
 "document fund object using the given id \n"
@@ -815,7 +831,7 @@ msgstr ""
 "                JsonResponse: Uma resposta HTTP contendo os dados de fundo "
 "de instrução serializados atualizados."
 
-#: .\backend\calculation\funds\document\views.py:180
+#: .\backend\calculation\funds\document\views.py:194
 msgid ""
 "Delete a specific statement document according to the ID passed by the url\n"
 "\n"
@@ -830,17 +846,17 @@ msgstr ""
 " Retorna:\n"
 " JsonResponse: Uma resposta JSON contendo a mensagem ok."
 
-#: .\backend\calculation\funds\document\views.py:189
-#: .\backend\calculation\funds\integrations\views.py:142
+#: .\backend\calculation\funds\document\views.py:203
+#: .\backend\calculation\funds\integrations\views.py:166
 #: .\backend\calculation\funds\irrf\views.py:304
 msgid "Statement fund deleted"
 msgstr "Fundo da verba deletado"
 
-#: .\backend\calculation\funds\document\views.py:219
+#: .\backend\calculation\funds\document\views.py:233
 msgid "Cálculo - Verbas - Documentos - Valores das verbas"
 msgstr ""
 
-#: .\backend\calculation\funds\document\views.py:221
+#: .\backend\calculation\funds\document\views.py:235
 #: .\backend\calculation\funds\irrf\views.py:336
 #, fuzzy
 #| msgid ""
@@ -888,7 +904,7 @@ msgstr "Descrição da verba"
 msgid "Apply summary 381?"
 msgstr "Aplicar sumúla 381?"
 
-#: .\backend\calculation\funds\integrations\views.py:21
+#: .\backend\calculation\funds\integrations\views.py:22
 msgid ""
 "Statement Integrations is a financial statement of a fund, and includes "
 "attributes such as \n"
@@ -905,11 +921,11 @@ msgstr ""
 "    cálculos. Tem uma relação com uma verba onde este fundo pode n "
 "Integrações de Demonstrativos."
 
-#: .\backend\calculation\funds\integrations\views.py:54
+#: .\backend\calculation\funds\integrations\views.py:55
 msgid "Cálculo - Valores da Verba - Integratórias"
 msgstr ""
 
-#: .\backend\calculation\funds\integrations\views.py:80
+#: .\backend\calculation\funds\integrations\views.py:81
 msgid ""
 "Create Statement Integration object from request data and return Statement "
 "Integration detail.\n"
@@ -937,22 +953,29 @@ msgid ""
 msgstr ""
 "Criar Verba integratória a partir de dados de solicitação\n"
 "\n"
-"    O parâmetro `commit` é usado para controlar se uma transação iniciada durante a criação de um novo objeto no\n"
-"    banco de dados deve ser confirmada ou não. Por padrão, commit=True, o que significa que a transação será \n"
-"    confirmada automaticamente quando o método post da exibição terminar de ser executado com sucesso.\n"
-"    No entanto, se commit=False, a exibição criará um novo objeto dentro de uma transação e, em seguida, \n"
-"    reverterá imediatamente, desfazendo efetivamente quaisquer alterações feitas no banco de dados.\n"
+"    O parâmetro `commit` é usado para controlar se uma transação iniciada "
+"durante a criação de um novo objeto no\n"
+"    banco de dados deve ser confirmada ou não. Por padrão, commit=True, o "
+"que significa que a transação será \n"
+"    confirmada automaticamente quando o método post da exibição terminar de "
+"ser executado com sucesso.\n"
+"    No entanto, se commit=False, a exibição criará um novo objeto dentro de "
+"uma transação e, em seguida, \n"
+"    reverterá imediatamente, desfazendo efetivamente quaisquer alterações "
+"feitas no banco de dados.\n"
 "\n"
-"    Isso pode ser útil para obter os `calculos`,  `resultados`, `indices`, `valor corrigido` e etc sem salvar \n"
+"    Isso pode ser útil para obter os `calculos`,  `resultados`, `indices`, "
+"`valor corrigido` e etc sem salvar \n"
 "    a informação no banco\n"
 "\n"
 "    Response:\n"
-"       JsonResponse: Uma resposta JSON contendo o crédito integratório criado.\n"
+"       JsonResponse: Uma resposta JSON contendo o crédito integratório "
+"criado.\n"
 "\n"
 "    Raise:\n"
 "       serializers.ValidationError: Se os dados de entrada forem inválidos."
 
-#: .\backend\calculation\funds\integrations\views.py:119
+#: .\backend\calculation\funds\integrations\views.py:143
 msgid ""
 "This method handles GET requests for the view. It retrieves a specific "
 "statement integration \n"
@@ -975,7 +998,7 @@ msgstr ""
 "            JsonResponse: Uma resposta HTTP contendo os dados de fundo de "
 "documento serializado recuperados."
 
-#: .\backend\calculation\funds\integrations\views.py:126
+#: .\backend\calculation\funds\integrations\views.py:150
 msgid ""
 "This method handles PUT requests for the view. It updates a specific "
 "statement integration \n"
@@ -996,7 +1019,7 @@ msgstr ""
 "            JsonResponse: Uma resposta HTTP contendo os dados de verba "
 "integratória serializadas atualizados."
 
-#: .\backend\calculation\funds\integrations\views.py:133
+#: .\backend\calculation\funds\integrations\views.py:157
 msgid ""
 "Delete a specific statement integrations according to the ID passed by the "
 "url\n"
@@ -1012,7 +1035,7 @@ msgstr ""
 " JsonResponse: Uma resposta JSON contendo o ok mensagem.\n"
 " "
 
-#: .\backend\calculation\funds\integrations\views.py:173
+#: .\backend\calculation\funds\integrations\views.py:197
 #, fuzzy
 #| msgid ""
 #| "This method handles GET requests for the view. It retrieves a specific "
@@ -1067,7 +1090,7 @@ msgstr "Valor tributável"
 msgid "Taxable portion"
 msgstr "Parcela Tributável"
 
-#: .\backend\calculation\funds\irrf\models.py:137 .\backend\rates\models.py:215
+#: .\backend\calculation\funds\irrf\models.py:137 .\backend\rates\models.py:217
 msgid "Aliquot"
 msgstr "Alíquota"
 
@@ -1321,11 +1344,11 @@ msgstr "Reflexos DSR"
 msgid "Apply Precedent 381?"
 msgstr "Aplicar a sumúla 381?"
 
-#: .\backend\calculation\funds\models.py:269
+#: .\backend\calculation\funds\models.py:270
 msgid "Total value DSR reflexes"
 msgstr "Total valor reflexos DSR"
 
-#: .\backend\calculation\funds\models.py:270
+#: .\backend\calculation\funds\models.py:271
 msgid "Total accurate"
 msgstr "Total apurado"
 
@@ -1339,10 +1362,12 @@ msgid ""
 "Statement Fund.\n"
 "    "
 msgstr ""
-"A verba de crédito é uma demonstração financeira de um crédito e inclui atributos como \n"
+"A verba de crédito é uma demonstração financeira de um crédito e inclui "
+"atributos como \n"
 "    `Data de base` e `valor histórico`. Ele também tem o cálculo, `correção "
 "monetária` e os `índices` utilizados no \n"
-"    cálculos. Tem uma relação com uma Verba onde esta Verba pode ter n créditos."
+"    cálculos. Tem uma relação com uma Verba onde esta Verba pode ter n "
+"créditos."
 
 #: .\backend\calculation\funds\views.py:30
 msgid ""
@@ -1446,6 +1471,10 @@ msgstr ""
 "                JsonResponse: Uma resposta HTTP contendo os dados de fundos "
 "serializados recuperados."
 
+#: .\backend\calculation\funds\views.py:263
+msgid "Cálculo - Valores da Verba"
+msgstr ""
+
 #: .\backend\calculation\funds\views.py:292
 msgid ""
 "Create Statement Fund object from request data and return Statement Fund "
@@ -1474,22 +1503,29 @@ msgid ""
 msgstr ""
 "Criar  Verba a partir de dados de solicitação\n"
 "\n"
-"    O parâmetro `commit` é usado para controlar se uma transação iniciada durante a criação de um novo objeto no\n"
-"    banco de dados deve ser confirmada ou não. Por padrão, commit=True, o que significa que a transação será \n"
-"    confirmada automaticamente quando o método post da exibição terminar de ser executado com sucesso.\n"
-"    No entanto, se commit=False, a exibição criará um novo objeto dentro de uma transação e, em seguida, \n"
-"    reverterá imediatamente, desfazendo efetivamente quaisquer alterações feitas no banco de dados.\n"
+"    O parâmetro `commit` é usado para controlar se uma transação iniciada "
+"durante a criação de um novo objeto no\n"
+"    banco de dados deve ser confirmada ou não. Por padrão, commit=True, o "
+"que significa que a transação será \n"
+"    confirmada automaticamente quando o método post da exibição terminar de "
+"ser executado com sucesso.\n"
+"    No entanto, se commit=False, a exibição criará um novo objeto dentro de "
+"uma transação e, em seguida, \n"
+"    reverterá imediatamente, desfazendo efetivamente quaisquer alterações "
+"feitas no banco de dados.\n"
 "\n"
-"    Isso pode ser útil para obter os `calculos`,  `resultados`, `indices`, `valor corrigido` e etc sem salvar \n"
+"    Isso pode ser útil para obter os `calculos`,  `resultados`, `indices`, "
+"`valor corrigido` e etc sem salvar \n"
 "    a informação no banco\n"
 "\n"
 "    Response:\n"
-"       JsonResponse: Uma resposta JSON contendo os Fundos criados detalhe do objeto.\n"
+"       JsonResponse: Uma resposta JSON contendo os Fundos criados detalhe do "
+"objeto.\n"
 "\n"
 "    Raise:\n"
 "       serializers.ValidationError: Se os dados de entrada forem inválidos."
 
-#: .\backend\calculation\funds\views.py:328
+#: .\backend\calculation\funds\views.py:352
 msgid ""
 "This method handles GET requests for the view. It retrieves a specific "
 "statement fund object \n"
@@ -1512,7 +1548,7 @@ msgstr ""
 "Uma resposta HTTP contendo os dados de fundo de instrução serializados "
 "recuperados."
 
-#: .\backend\calculation\funds\views.py:335
+#: .\backend\calculation\funds\views.py:359
 msgid ""
 "This method handles PUT requests for the view. It updates a specific "
 "statement fund \n"
@@ -1533,7 +1569,7 @@ msgstr ""
 "                JsonResponse: Uma resposta HTTP contendo os dados de fundo "
 "de instrução serializados atualizados."
 
-#: .\backend\calculation\funds\views.py:342
+#: .\backend\calculation\funds\views.py:366
 #, fuzzy
 #| msgid ""
 #| "This method handles PUT requests for the view. It updates a specific "
@@ -1561,7 +1597,7 @@ msgstr ""
 "                JsonResponse: Uma resposta HTTP contendo os dados de fundo "
 "de instrução serializados atualizados."
 
-#: .\backend\calculation\funds\views.py:376
+#: .\backend\calculation\funds\views.py:401
 #, fuzzy
 #| msgid ""
 #| "This method handles GET requests for the view. It retrieves a specific "
@@ -1600,86 +1636,117 @@ msgstr ""
 msgid "To Calculate"
 msgstr "à Calcular"
 
-#: .\backend\calculation\models.py:25
+#: .\backend\calculation\models.py:26
 msgid "To Review"
 msgstr "à Revisar"
 
-#: .\backend\calculation\models.py:25
+#: .\backend\calculation\models.py:27
 msgid "To Approve"
 msgstr "à Aprovar"
 
-#: .\backend\calculation\models.py:25
+#: .\backend\calculation\models.py:28
 msgid "To Approve Special"
 msgstr "à Aprovar Especialmente"
 
-#: .\backend\calculation\models.py:26
-msgid "Approved"
-msgstr "Aprovado"
+#: .\backend\calculation\models.py:29
+msgid "Finalized"
+msgstr "Finalizado"
 
-#: .\backend\calculation\models.py:26
+#: .\backend\calculation\models.py:30
 msgid "Failed"
 msgstr "Falha"
 
-#: .\backend\calculation\models.py:41 .\backend\calculation\views.py:42
+#: .\backend\calculation\models.py:45 .\backend\calculation\views.py:42
 #: .\backend\calculation\views.py:64
 msgid "Incident number"
 msgstr "Número do incidente"
 
-#: .\backend\calculation\models.py:58
+#: .\backend\calculation\models.py:60
+msgid "Approved"
+msgstr "Aprovado"
+
+#: .\backend\calculation\models.py:77
 msgid "Calculation step"
 msgstr "Etapa de cálculo"
 
-#: .\backend\calculation\models.py:59
+#: .\backend\calculation\models.py:78
 msgid "Calculation number"
 msgstr "Número de cálculo"
 
-#: .\backend\calculation\models.py:60
+#: .\backend\calculation\models.py:79
 msgid "Recurral deposit released"
 msgstr "Depósito recursal liberado"
 
-#: .\backend\calculation\models.py:61
+#: .\backend\calculation\models.py:80
 msgid "Validated?"
 msgstr "Validado?"
 
-#: .\backend\calculation\models.py:69
+#: .\backend\calculation\models.py:88
 msgid "Fully competitive credit?"
 msgstr "Crédito totalmente concursal?"
 
-#: .\backend\calculation\models.py:71
+#: .\backend\calculation\models.py:90
 msgid "Approved calculation date"
 msgstr "Data do calculo homologado"
 
-#: .\backend\calculation\models.py:74
+#: .\backend\calculation\models.py:93
 msgid "Recursal deposit withdrawal?"
 msgstr "Retirada de depósito recursal?"
 
-#: .\backend\calculation\models.py:76
+#: .\backend\calculation\models.py:95
 msgid "Page number of the appeal deposit withdrawal"
 msgstr "Número da página referente ao depósito recursal"
 
-#: .\backend\calculation\models.py:80
+#: .\backend\calculation\models.py:99
 msgid "Date of credit qualification certificate"
 msgstr "Data da autorização de crédito"
 
-#: .\backend\calculation\models.py:82
+#: .\backend\calculation\models.py:101
 msgid "Credit qualification certificate page"
 msgstr "Página da certidão de habilitação de crédito"
 
-#: .\backend\calculation\models.py:85
+#: .\backend\calculation\models.py:104
 msgid "Are there fees in the approved calculation?"
 msgstr "Existem taxas no cálculo aprovado?"
 
-#: .\backend\calculation\models.py:89
+#: .\backend\calculation\models.py:108
 msgid "Edital art. 7º § 2 - 11.101/2005"
 msgstr "Edital art. 7º § 2 - 11.101/2005"
 
-#: .\backend\calculation\models.py:263
+#: .\backend\calculation\models.py:330
+#, fuzzy
+#| msgid "You do not have permission. Contact admin"
+msgid "You do not have permission to specially approve this calculation"
+msgstr "Você não tem permissão. "
+
+#: .\backend\calculation\models.py:333
 msgid ""
-"The user is already in the role of {}, not being able to have two or more "
+"You have already specially approved this calculation, wait for the other "
+"approvers"
+msgstr ""
+"Você já aprovou especialmente este cálculo, aguarde os outros aprovadores"
+
+#: .\backend\calculation\models.py:406
+msgid "The users: {} are not allocated in the project as a special approver"
+msgstr "Os usuários: {} não estão alocados no projeto como um aprovador especial"
+
+#: .\backend\calculation\models.py:427
+#, fuzzy
+#| msgid ""
+#| "The user is already in the role of {}, not being able to have two or more "
+#| "roles in the same project"
+msgid ""
+"The user {} is already in the role of {}, not being able to have two or more "
 "roles in the same project"
 msgstr ""
 "O usuário já está no papel de {}, não podendo ter dois ou mais papéis no "
 "mesmo projeto"
+
+#: .\backend\calculation\models.py:450
+#, fuzzy
+#| msgid "The approvers field must be in list format"
+msgid "The list of special approvers is empty"
+msgstr "O campo de aprovadores deve estar em formato de lista"
 
 #: .\backend\calculation\premise\apps.py:22
 #: .\backend\calculation\premise\apps.py:23
@@ -1756,7 +1823,7 @@ msgstr ""
 "                serializers.ValidationError: Se os dados de entrada forem "
 "inválidos."
 
-#: .\backend\calculation\schemas.py:375
+#: .\backend\calculation\schemas.py:395
 #, fuzzy
 #| msgid "The executors field must be in list format"
 msgid "The calculations field must be in list format"
@@ -1783,11 +1850,11 @@ msgid "sheet: {} | file: {}"
 msgstr "sheet: {} | arquivo: {}"
 
 #: .\backend\calculation\sheets_template\models.py:36
-#: .\backend\rates\models.py:166
+#: .\backend\rates\models.py:168
 msgid "Invalid file type"
 msgstr "Tipo de arquivo inválido"
 
-#: .\backend\calculation\sheets_template\views.py:35
+#: .\backend\calculation\sheets_template\views.py:44
 msgid ""
 "Represents templates to publishing external sheets models to frontend.`, \n"
 "                "
@@ -1795,7 +1862,7 @@ msgstr ""
 "Representa modelos para publicação de modelos de sheets externas no frontend."
 "`,"
 
-#: .\backend\calculation\sheets_template\views.py:39
+#: .\backend\calculation\sheets_template\views.py:48
 msgid ""
 "This method handles GET requests for the view. It retrieves a list of "
 "objects sheets file using the given \n"
@@ -1836,12 +1903,12 @@ msgstr "Qualificação"
 msgid "Conclusion legend"
 msgstr "Legenda de conclusão"
 
-#: .\backend\calculation\statement\models.py:109
-#: .\backend\calculation\statement\models.py:145
+#: .\backend\calculation\statement\models.py:118
+#: .\backend\calculation\statement\models.py:154
 msgid "Total"
 msgstr "Total"
 
-#: .\backend\calculation\statement\models.py:144
+#: .\backend\calculation\statement\models.py:153
 msgid "Lawyer name"
 msgstr "Nome do advogado"
 
@@ -2304,7 +2371,7 @@ msgstr ""
 "        Os status possíveis são `à Calcular`, `à Revisar`, `à Aprovar`, `à "
 "Aprovar Especial`, `Falhou`, `Aprovado`,"
 
-#: .\backend\calculation\views.py:314
+#: .\backend\calculation\views.py:315
 msgid ""
 "PUT to check the step of the Calculation instance.\n"
 "\n"
@@ -2325,11 +2392,11 @@ msgstr ""
 "        Os status possíveis são `à Calcular`, `à Revisar`, `à Aprovar`, `à "
 "Aprovar Especial`, `Falhou`, `Aprovado`,"
 
-#: .\backend\config\settings.py:447
+#: .\backend\config\settings.py:449
 msgid "Português"
 msgstr ""
 
-#: .\backend\config\settings.py:448
+#: .\backend\config\settings.py:450
 msgid "English"
 msgstr "Inglês"
 
@@ -2343,33 +2410,33 @@ msgstr "Usuário Abstrato"
 msgid "Need to register a token to perform the tests"
 msgstr "Precisa informar a classe"
 
-#: .\backend\core\abstract\models.py:19
+#: .\backend\core\abstract\models.py:21
 msgid "Creation date"
 msgstr "Data de criação"
 
-#: .\backend\core\abstract\models.py:21
+#: .\backend\core\abstract\models.py:23
 msgid "Creation username"
 msgstr "Criação de nome de usuário"
 
-#: .\backend\core\abstract\models.py:22
+#: .\backend\core\abstract\models.py:24
 msgid "Update username"
 msgstr "Atualizar nome de usuário"
 
-#: .\backend\core\abstract\models.py:83
+#: .\backend\core\abstract\models.py:85
 msgid "Field changed"
 msgstr "Campo alterado"
 
-#: .\backend\core\abstract\models.py:84
+#: .\backend\core\abstract\models.py:86
 #, fuzzy
 #| msgid "Field changed"
 msgid "Field changed display"
 msgstr "Campo alterado"
 
-#: .\backend\core\abstract\models.py:85
+#: .\backend\core\abstract\models.py:87
 msgid "Current value"
 msgstr "Valor atual"
 
-#: .\backend\core\abstract\models.py:86
+#: .\backend\core\abstract\models.py:88
 msgid "Previous value "
 msgstr "Valor anterior"
 
@@ -2377,14 +2444,14 @@ msgstr "Valor anterior"
 msgid "The archive_json field must be in json format"
 msgstr "O campo archive_json deve estar no formato json"
 
-#: .\backend\core\abstract\views.py:313
+#: .\backend\core\abstract\views.py:310
 #, fuzzy
 #| msgid "Field in invalid format. It must be in the format {}"
 msgid "Field in invalid format. It must be in the format{}"
 msgstr "Campo em formato inválido. Deve estar no formato {}"
 
-#: .\backend\core\abstract\views.py:482
-msgid "{self.__get_model_name().replace(\"_\", \" \").title()} deleted"
+#: .\backend\core\abstract\views.py:490
+msgid "{self.get_model_name().replace(\"_\", \" \").title()} deleted"
 msgstr ""
 
 #: .\backend\core\drfmsal\views.py:27
@@ -2413,7 +2480,7 @@ msgstr ""
 "`autorizado`, `autenticado`,\n"
 "         “perfil” e outros."
 
-#: .\backend\core\drfmsal\views.py:55 .\backend\core\dttuser\views.py:84
+#: .\backend\core\drfmsal\views.py:55 .\backend\core\dttuser\views.py:85
 msgid ""
 "This method returns a JSON response that contains the user details as per "
 "authenticated user. \n"
@@ -2537,10 +2604,6 @@ msgstr "permissões"
 #: .\backend\venv\Lib\site-packages\django\contrib\auth\models.py:127
 msgid "groups"
 msgstr "groups"
-
-#: .\backend\venv\Lib\site-packages\django\contrib\auth\models.py:126
-msgid "group"
-msgstr ""
 
 #: .\backend\core\dttuser\models.py:88
 #: .\backend\projects\project_user\models.py:19
@@ -2672,12 +2735,12 @@ msgstr ""
 " inativo.\n"
 " "
 
-#: .\backend\core\dttuser\views.py:55 .\backend\rates\views.py:132
+#: .\backend\core\dttuser\views.py:55 .\backend\rates\views.py:139
 #: .\backend\recovering\views.py:40 .\backend\recovering\views.py:87
 msgid "Name"
 msgstr "Nome"
 
-#: .\backend\core\dttuser\views.py:104
+#: .\backend\core\dttuser\views.py:106
 msgid ""
 "Handles HTTP POST request to authorize or unauthorize user access.\n"
 "\n"
@@ -2695,11 +2758,11 @@ msgstr ""
 "        - Adiciona grupos e subgrupos de permissões especificados ao "
 "utilizador."
 
-#: .\backend\core\dttuser\views.py:122 .\backend\core\dttuser\views.py:158
+#: .\backend\core\dttuser\views.py:124 .\backend\core\dttuser\views.py:161
 msgid "Email {}, not found"
 msgstr "E-mail {}, não encontrado"
 
-#: .\backend\core\dttuser\views.py:143
+#: .\backend\core\dttuser\views.py:146
 msgid ""
 "Used to validate and send email when asked to create a new user.\n"
 "        The serializer is used to access the model object, and then the data "
@@ -2711,15 +2774,15 @@ msgstr ""
 "        O serializador é usado para acessar ao objecto de modelo e, em "
 "seguida, os dados são devolvidos num formato JSON."
 
-#: .\backend\core\dttuser\views.py:149
+#: .\backend\core\dttuser\views.py:152
 msgid "DTT sending email not configured"
 msgstr "e-mail de envio DTT não configurado"
 
-#: .\backend\core\dttuser\views.py:160
+#: .\backend\core\dttuser\views.py:163
 msgid "Release of Use - {}"
 msgstr "Liberação de Uso - {}"
 
-#: .\backend\core\dttuser\views.py:161
+#: .\backend\core\dttuser\views.py:164
 msgid ""
 "This email is automatically sent by the system to request the release of "
 "user {} to system. To release access, please enter the administration panel "
@@ -2729,7 +2792,7 @@ msgstr ""
 "liberação do usuário {} para o sistema. Para liberar o acesso, entre no "
 "painel de administração e registre-o no sistema."
 
-#: .\backend\core\dttuser\views.py:179
+#: .\backend\core\dttuser\views.py:182
 msgid ""
 "The `Group` class represents a group of users on the system. Contains common "
 "properties for \n"
@@ -2757,7 +2820,7 @@ msgstr ""
 " `Consultor Jurídico`.\n"
 " "
 
-#: .\backend\core\dttuser\views.py:186
+#: .\backend\core\dttuser\views.py:189
 msgid ""
 "The Group contains a name and a list of permissions. Groups define what \n"
 "        permissions the user has and what he can do within the system.\n"
@@ -2768,7 +2831,7 @@ msgstr ""
 "        permissões o usuário tem e o que ele pode fazer dentro do sistema.\n"
 "        Retorna uma lista de grupos."
 
-#: .\backend\core\dttuser\views.py:213
+#: .\backend\core\dttuser\views.py:216
 msgid ""
 "The `Subgroup` class represents a group of users on the system. Contains "
 "common properties for \n"
@@ -2796,7 +2859,7 @@ msgstr ""
 " `Consultor Jurídico`.\n"
 " "
 
-#: .\backend\core\dttuser\views.py:220
+#: .\backend\core\dttuser\views.py:223
 msgid ""
 "The Subgroup contains a name and a list of permissions. Groups define what \n"
 "            permissions the user has and what he can do within the system."
@@ -2808,7 +2871,7 @@ msgstr ""
 "            permissões o usuário tem e o que ele pode fazer dentro do "
 "sistema. Retorna uma lista de grupos."
 
-#: .\backend\core\dttuser\views.py:239
+#: .\backend\core\dttuser\views.py:243
 msgid ""
 "The `User` class represents a user on the system, has common properties such "
 "as `username` \n"
@@ -2838,7 +2901,7 @@ msgstr ""
 " inativo.\n"
 " "
 
-#: .\backend\core\dttuser\views.py:247
+#: .\backend\core\dttuser\views.py:251
 msgid ""
 "Get the list of all users. Include user fields like  `name`, `userpicture`, "
 "`permissions list`, etc.\n"
@@ -2852,7 +2915,7 @@ msgstr ""
 "ou `is_active`.\n"
 " "
 
-#: .\backend\core\dttuser\views.py:253
+#: .\backend\core\dttuser\views.py:258
 msgid ""
 "Only LocalHost. Create a new user by receiving data in the form of "
 "dictionaries and \n"
@@ -2876,97 +2939,98 @@ msgstr "CPF/CNPJ inválido"
 msgid "Permission"
 msgstr "Permissão"
 
-#: .\backend\core\permission\views.py:85
-#, fuzzy
-#| msgid "Can Reviewer Calculation"
-msgid "Can Change failed Calculation to calculate"
-msgstr "Pode alterar Cálculo com falha para à Calcular"
-
-#: .\backend\core\permission\views.py:86
-#, fuzzy
-#| msgid "Can Approve Requested Calculation"
-msgid "Can Execute Calculation to Review"
-msgstr "Pode Reprovar o Cálculo Revisado para à Revisar"
-
-#: .\backend\core\permission\views.py:90
-#, fuzzy
-#| msgid "Can Reviewer Calculation"
-msgid "Can Reviewer Calculation to Approve"
-msgstr "Pode Revisar Cálculo para à aprovação"
-
-#: .\backend\core\permission\views.py:91
-#, fuzzy
-#| msgid "Can Reviewer Calculation"
-msgid "Can Reviewer Calculation to Approve special"
-msgstr "Pode revisar Cálculo para à Aprovação Especial"
-
-#: .\backend\core\permission\views.py:92
-#, fuzzy
-#| msgid "Can Reviewer Calculation"
-msgid "Can Reviewer Calculation to Calculate"
-msgstr "Pode Revisar Cálculo para à Calcular"
-
-#: .\backend\core\permission\views.py:93
-#, fuzzy
-#| msgid "Can Reviewer Calculation"
-msgid "Can Reviewer Calculation to Failed"
-msgstr "Pode Revisar Cálculo para à Falha"
-
-#: .\backend\core\permission\views.py:97
-#, fuzzy
-#| msgid "Can Approve Requested Calculation"
-msgid "Can Approve Revised Calculation"
-msgstr "Pode Aprovar o Cálculo Revisado"
-
-#: .\backend\core\permission\views.py:98
-#, fuzzy
-#| msgid "Can Approve Requested Calculation"
-msgid "Can Disapprove Revised Calculation to Review"
-msgstr "Pode Reprovar o Cálculo Revisado para à Revisar"
-
-#: .\backend\core\permission\views.py:99
-#, fuzzy
-#| msgid "Can Approve Requested Calculation"
-msgid "Can Disapprove Revised Calculation to Failed"
-msgstr "Pode Reprovar o Cálculo Revisado para à Falha"
-
-#: .\backend\core\permission\views.py:103
+#: .\backend\core\permission\management\commands\create_groups.py:25
+#: .\backend\core\permission\views.py:107
 #, fuzzy
 #| msgid "Can Approve Calculated Calculation"
 msgid "Can Approve Special Calculation"
 msgstr "Pode Aprovar Especialmente o Cálculo"
 
-#: .\backend\core\permission\views.py:104
+#: .\backend\core\permission\management\commands\create_groups.py:26
 #, fuzzy
 #| msgid "Can Approve Calculated Calculation"
 msgid "Can Disapprove Special Calculation to Review"
 msgstr "Pode Reprovar Aprovação Especial para à Revisar"
 
-#: .\backend\core\permission\views.py:105
+#: .\backend\core\permission\management\commands\create_groups.py:27
 #, fuzzy
 #| msgid "Can Approve Calculated Calculation"
 msgid "Can Disapprove Special Calculation to Failed"
 msgstr "Pode Reprovar Aprovação Especial para à Falha"
 
-#: .\backend\core\permission\views.py:357
+#: .\backend\core\permission\views.py:87
+#, fuzzy
+#| msgid "Can Reviewer Calculation"
+msgid "Can Change failed Calculation to calculate"
+msgstr "Pode alterar Cálculo com falha para à Calcular"
+
+#: .\backend\core\permission\views.py:88
+#, fuzzy
+#| msgid "Can Approve Requested Calculation"
+msgid "Can Execute Calculation to Review"
+msgstr "Pode Reprovar o Cálculo Revisado para à Revisar"
+
+#: .\backend\core\permission\views.py:92
+#, fuzzy
+#| msgid "Can Reviewer Calculation"
+msgid "Can Reviewer Calculation to Approve"
+msgstr "Pode Revisar Cálculo para à aprovação"
+
+#: .\backend\core\permission\views.py:93
+#, fuzzy
+#| msgid "Can Reviewer Calculation"
+msgid "Can Reviewer Calculation to Calculate"
+msgstr "Pode Revisar Cálculo para à Calcular"
+
+#: .\backend\core\permission\views.py:98
+#, fuzzy
+#| msgid "Can Approve Requested Calculation"
+msgid "Can Approve Revised Calculation"
+msgstr "Pode Aprovar o Cálculo Revisado"
+
+#: .\backend\core\permission\views.py:99
+#, fuzzy
+#| msgid "Can Approve Requested Calculation"
+msgid "Can Disapprove Revised Calculation to Review"
+msgstr "Pode Reprovar o Cálculo Revisado para à Revisar"
+
+#: .\backend\core\permission\views.py:102
+#, fuzzy
+#| msgid "Can Reviewer Calculation"
+msgid "Can Approve Revised Calculation to Approve special"
+msgstr "Pode revisar Cálculo para à Aprovação Especial"
+
+#: .\backend\core\permission\views.py:103
+#, fuzzy
+#| msgid "Can Reviewer Calculation"
+msgid "Can Edit Approve Special Calculation to Approve special"
+msgstr "Pode revisar Cálculo para à Aprovação Especial"
+
+#: .\backend\core\permission\views.py:108
+#, fuzzy
+#| msgid "Can Approve Calculated Calculation"
+msgid "Can Disapprove Special Calculation to Approve"
+msgstr "Pode Reprovar Aprovação Especial para à Revisar"
+
+#: .\backend\core\permission\views.py:356
 msgid "Unable to change status from {} to {}"
 msgstr "Não é possível alterar o status de {} para {}"
 
-#: .\backend\core\permission\views.py:374
+#: .\backend\core\permission\views.py:380
 msgid "You do not have permission. Contact admin"
 msgstr "Você não tem permissão. "
 
-#: .\backend\core\permission\views.py:385
+#: .\backend\core\permission\views.py:391
 msgid "Need to add \"perms: list\" attribute to use CheckPermissions class"
 msgstr ""
 "É necessário adicionar o atributo \"perms: list\" para usar a classe "
 "CheckPermissions"
 
-#: .\backend\core\permission\views.py:391
+#: .\backend\core\permission\views.py:397
 msgid "It is not possible to register this fund"
 msgstr "Não é possível cadastrar este fundo"
 
-#: .\backend\core\permission\views.py:398
+#: .\backend\core\permission\views.py:404
 msgid ""
 "Need to add \"physical_person: bool\" attribute to use "
 "CheckFundsPjPfPermissions class"
@@ -2974,21 +3038,21 @@ msgstr ""
 "É necessário adicionar o atributo \"perms: list\" para usar a classe "
 "CheckPermissions"
 
-#: .\backend\core\permission\views.py:407
+#: .\backend\core\permission\views.py:413
 msgid ""
 "It is not possible to register a fund of the legal entity type for "
 "individuals"
 msgstr ""
 "Não é possível cadastrar uma verba do tipo pessoa jurídica para pessoa fisica"
 
-#: .\backend\core\permission\views.py:409
+#: .\backend\core\permission\views.py:415
 msgid ""
 "It is not possible to register a fund of the individuals type for legal "
 "entity"
 msgstr ""
 "Não é possível cadastrar uma verba do tipo pessoa fisica para pessoa jurídica"
 
-#: .\backend\core\permission\views.py:414
+#: .\backend\core\permission\views.py:420
 msgid ""
 "it is not possible to register an agreement when there is already an fund or "
 "fund IRRF registered"
@@ -2996,7 +3060,7 @@ msgstr ""
 "Não é possível registrar acordo trabalhista quando já existe uma verba ou "
 "verba IRRF cadastrada"
 
-#: .\backend\core\permission\views.py:428
+#: .\backend\core\permission\views.py:434
 msgid ""
 "it is not possible to register an fund when there is already an agreement "
 "registered"
@@ -3004,7 +3068,7 @@ msgstr ""
 "Não é possível cadastrar uma verba quando já existe um acordo trabalhista "
 "registrado"
 
-#: .\backend\creditors\apps.py:9 .\backend\creditors\views.py:179
+#: .\backend\creditors\apps.py:9 .\backend\creditors\views.py:196
 msgid "Creditor"
 msgstr "Credor"
 
@@ -3091,8 +3155,7 @@ msgid ""
 msgstr ""
 "Excluir um Edital específico para o ID passado pela url\n"
 " Retorna:\n"
-" JsonResponse: Uma resposta JSON contendo o ok "
-"mensagem.\n"
+" JsonResponse: Uma resposta JSON contendo o ok mensagem.\n"
 " "
 
 #: .\backend\creditors\notice\views.py:62
@@ -3182,7 +3245,7 @@ msgstr ""
 msgid "Creditor already registered in this recovering"
 msgstr "Credor já inscrito nesta recuperação"
 
-#: .\backend\creditors\views.py:23
+#: .\backend\creditors\views.py:24
 msgid ""
 "The `Creditor` class represents a creditor of an entity in the context of a "
 "credit recovery process. \n"
@@ -3197,7 +3260,7 @@ msgstr ""
 "`Recuperação`. Além disso, possui uma descrição \n"
 "    do credor armazenado no campo `descrição`."
 
-#: .\backend\creditors\views.py:58
+#: .\backend\creditors\views.py:59
 msgid ""
 "Retrieve a creditor by their given ID,\n"
 "        serializes it and returns a JSON response with the serialized data.\n"
@@ -3212,15 +3275,25 @@ msgstr ""
 "com os dados serializados.Resposta -------JsonResponseUma resposta com um "
 "objeto JSON contendo um objeto de dados de credor serializado."
 
-#: .\backend\creditors\views.py:77
-msgid "Choice options for the various Choices that exist on the platform. It can be filtered by the desired \n"
-"    option. Contain the `ID` and the `caption`, where the ID refers to the value that must be passed, and the caption \n"
+#: .\backend\creditors\views.py:82
+msgid "Option"
+msgstr "Opção"
+
+#: .\backend\creditors\views.py:87
+msgid ""
+"Choice options for the various Choices that exist on the platform. It can be "
+"filtered by the desired \n"
+"    option. Contain the `ID` and the `caption`, where the ID refers to the "
+"value that must be passed, and the caption \n"
 "    what must be displayed to the user"
-msgstr "Opções de escolha para os diversos Choices que há na plataforma. Pode ser filtrado pela opção desejada. \n"
-"Contêm o `ID` e a `legenda`, onde o ID se refere ao valor que deve ser passado, e a legenda o que deve ser exibido ao \n"
+msgstr ""
+"Opções de escolha para os diversos Choices que há na plataforma. Pode ser "
+"filtrado pela opção desejada. \n"
+"Contêm o `ID` e a `legenda`, onde o ID se refere ao valor que deve ser "
+"passado, e a legenda o que deve ser exibido ao \n"
 "usuário"
 
-#: .\backend\creditors\views.py:101
+#: .\backend\creditors\views.py:118
 msgid ""
 "Retrieves a queryset of creditors related to a given project ID,\n"
 "        serializes it and returns a JSON response with the serialized data.\n"
@@ -3242,7 +3315,7 @@ msgstr ""
 " Uma resposta com um objeto JSON contendo uma lista de dados do credor.\n"
 " "
 
-#: .\backend\creditors\views.py:121
+#: .\backend\creditors\views.py:138
 msgid ""
 "Create creditor by receiving a dictionary object with required fields.\n"
 "        Creditor detail will be returned upon successful completion of "
@@ -3254,7 +3327,7 @@ msgstr ""
 "operação\n"
 " "
 
-#: .\backend\creditors\views.py:182
+#: .\backend\creditors\views.py:199
 msgid ""
 "Check the creditor to see if he exists in that recovering, based on his "
 "legal_number\n"
@@ -3268,11 +3341,11 @@ msgstr ""
 "seu legal_numberRetorna um HTTP 200 se não existir, uma exceção é gerada "
 "quando existir"
 
-#: .\backend\creditors\views.py:193 .\backend\recovering\views.py:141
+#: .\backend\creditors\views.py:210 .\backend\recovering\views.py:141
 msgid "Legal number already registered"
 msgstr "CPF/CNPJ já registrado"
 
-#: .\backend\creditors\views.py:202
+#: .\backend\creditors\views.py:219
 msgid ""
 "Method to change creditor information instance.\n"
 "\n"
@@ -3292,7 +3365,7 @@ msgstr ""
 "com base no ID do parâmetro de URL.            Retorna uma resposta JSON com "
 "o objeto Credor atualizado."
 
-#: .\backend\creditors\views.py:233
+#: .\backend\creditors\views.py:250
 msgid ""
 "POST to change valid calculations\n"
 "\n"
@@ -3519,7 +3592,7 @@ msgstr "Em andamento"
 msgid "Canceled"
 msgstr "Cancelado"
 
-#: .\backend\projects\models.py:42 .\backend\projects\views.py:53
+#: .\backend\projects\models.py:42 .\backend\projects\views.py:54
 msgid "Process number"
 msgstr "Número do processo"
 
@@ -3620,7 +3693,7 @@ msgstr "O campo de revisores deve estar em formato de lista"
 msgid "The special_approvers field must be in list format"
 msgstr "O campo de aprovadores deve estar em formato de lista"
 
-#: .\backend\projects\views.py:30
+#: .\backend\projects\views.py:31
 msgid ""
 "The `Project` class represents a large project/engagement in a legal or "
 "administrative process. It \n"
@@ -3637,7 +3710,7 @@ msgstr ""
 "        bem como um campo `status` com opções especificadas pelo "
 "`STATUS_CHOICES`"
 
-#: .\backend\projects\views.py:35
+#: .\backend\projects\views.py:36
 msgid ""
 "Get the list of projects, with some information about it, \n"
 "        being able to filter by process_number, status, description and "
@@ -3647,7 +3720,7 @@ msgstr ""
 "        ser capaz de filtrar por process_number, status, descrição e número "
 "de engagement"
 
-#: .\backend\projects\views.py:91
+#: .\backend\projects\views.py:92
 msgid ""
 "Update the project and roles.\n"
 "\n"
@@ -3660,19 +3733,19 @@ msgstr ""
 " Retorna:\n"
 " A resposta JSON com detalhes do projeto."
 
-#: .\backend\projects\views.py:192
+#: .\backend\projects\views.py:215
 msgid "Create Project receiving a dict, return project detail"
 msgstr "Criar Projeto recebendo um dict, retornar detalhes do projeto"
 
-#: .\backend\rates\apps.py:9 .\backend\rates\models.py:237
+#: .\backend\rates\apps.py:9 .\backend\rates\models.py:239
 msgid "Rates"
 msgstr "Taxas"
 
-#: .\backend\rates\models.py:17
+#: .\backend\rates\models.py:18
 msgid "Rate Name"
 msgstr "Nome da Taxa"
 
-#: .\backend\rates\models.py:19
+#: .\backend\rates\models.py:20
 msgid "Is the Rate per day? day or month"
 msgstr "A Taxa é por dia? "
 
@@ -3680,95 +3753,107 @@ msgstr "A Taxa é por dia? "
 msgid "Rate is active?"
 msgstr "O Índice está ativo?"
 
-#: .\backend\rates\models.py:68
+#: .\backend\rates\models.py:70
 msgid "Rate date"
 msgstr "Data da taxa"
 
-#: .\backend\rates\models.py:69
+#: .\backend\rates\models.py:71
 msgid "Rate value"
 msgstr "Valor da taxa"
 
-#: .\backend\rates\models.py:72
+#: .\backend\rates\models.py:74
 msgid "rate: {} | date: {} | value: {}"
 msgstr "taxa: {} | data: {} | valor: {}"
 
-#: .\backend\rates\models.py:101
+#: .\backend\rates\models.py:103
 msgid "Valor"
 msgstr "Valor"
 
-#: .\backend\rates\models.py:158
+#: .\backend\rates\models.py:160
 msgid "Rate file"
 msgstr "Arquivo da taxa"
 
-#: .\backend\rates\models.py:161
+#: .\backend\rates\models.py:163
 msgid "rate: {} | file: {}"
 msgstr "taxa: {} | arquivo: {}"
 
-#: .\backend\rates\models.py:204
+#: .\backend\rates\models.py:206
 msgid "The reference year must be an integer."
 msgstr "O ano de referência deve ser um número inteiro."
 
-#: .\backend\rates\models.py:207
+#: .\backend\rates\models.py:209
 msgid "The reference year must be from 1984 onwards."
 msgstr "O ano de referência deve ser de 1984 em diante."
 
-#: .\backend\rates\models.py:211
+#: .\backend\rates\models.py:213
 msgid "Reference year"
 msgstr "Ano de referência"
 
-#: .\backend\rates\models.py:213
+#: .\backend\rates\models.py:215
 msgid "From"
 msgstr "De"
 
-#: .\backend\rates\models.py:214
+#: .\backend\rates\models.py:216
 msgid "To"
 msgstr "Para"
 
-#: .\backend\rates\models.py:216
+#: .\backend\rates\models.py:218
 msgid "Deduction"
 msgstr "Dedução"
 
-#: .\backend\rates\models.py:238 .\backend\rates\models.py:256
+#: .\backend\rates\models.py:240 .\backend\rates\models.py:258
 msgid "End Point"
 msgstr "End Point"
 
-#: .\backend\rates\models.py:257
+#: .\backend\rates\models.py:259
 msgid "Is Horizontal"
 msgstr "É Horizontal"
 
-#: .\backend\rates\models.py:258
+#: .\backend\rates\models.py:260
+#, fuzzy
+#| msgid "Citation"
+msgid "Commit option"
+msgstr "Citação"
+
+#: .\backend\rates\models.py:261
 msgid "Is Multiple?"
 msgstr "É Múltiplo?"
 
-#: .\backend\rates\models.py:286
+#: .\backend\rates\models.py:289
 msgid "Field name"
 msgstr "Nome do campo"
 
-#: .\backend\rates\models.py:287
+#: .\backend\rates\models.py:290
 msgid "Field key"
 msgstr "Chave de campo"
 
-#: .\backend\rates\models.py:289
+#: .\backend\rates\models.py:292
 msgid "Field type"
 msgstr "Tipo de campo"
 
-#: .\backend\rates\models.py:290
+#: .\backend\rates\models.py:293
 msgid "Order"
 msgstr "Ordem"
 
-#: .\backend\rates\models.py:291
+#: .\backend\rates\models.py:294
 msgid "Is editable?"
 msgstr "É editável?"
 
-#: .\backend\rates\models.py:292
+#: .\backend\rates\models.py:295
 msgid "Required?"
 msgstr "Requerido?"
+
+#: .\backend\rates\models.py:362
+#, fuzzy
+#| msgid "Historical value"
+msgid "Original value"
+msgstr "Valor histórico"
 
 #: .\backend\rates\schemas.py:74
 msgid "Rate already registered"
 msgstr "Taxa já cadastrada"
 
-#: .\backend\rates\views.py:18
+#: .\backend\rates\views.py:22
 msgid ""
 "Represents the indices that can be applied to rates to calculate debt "
 "updates.\n"
@@ -3777,19 +3862,19 @@ msgstr ""
 "Representa os índices que podem ser aplicados às taxas para calcular as "
 "atualizações da dívida."
 
-#: .\backend\rates\views.py:20
+#: .\backend\rates\views.py:24
 msgid "Returns the rate and its accumulated values, period and date"
 msgstr "Retorna a taxa e seus valores acumulados, período e data"
 
-#: .\backend\rates\views.py:40 .\backend\rates\views.py:71
+#: .\backend\rates\views.py:47 .\backend\rates\views.py:78
 msgid "Rate"
 msgstr "Taxa"
 
-#: .\backend\rates\views.py:45
+#: .\backend\rates\views.py:52
 msgid "Saves an index according to its name and values"
 msgstr "Salva um índice de acordo com seu nome e valores"
 
-#: .\backend\rates\views.py:76
+#: .\backend\rates\views.py:83
 msgid ""
 "Updating or creating rates through an excel file. Saves an rate using an "
 "excel file. This file must contain \n"
@@ -3801,15 +3886,15 @@ msgstr ""
 "        as colunas mes e indice. Opcionalmente de acordo com a taxa ter os "
 "campos acumulado e periodo"
 
-#: .\backend\rates\views.py:84
+#: .\backend\rates\views.py:91
 msgid "Required field index"
 msgstr "campo index obrigatório"
 
-#: .\backend\rates\views.py:87
+#: .\backend\rates\views.py:94
 msgid "Required field file"
 msgstr "Campo file obrigatório"
 
-#: .\backend\rates\views.py:105
+#: .\backend\rates\views.py:112
 msgid ""
 "The file {} does not contain the correct fields. Required at least the "
 "column mes and indice, "
@@ -3817,11 +3902,11 @@ msgstr ""
 "O ficheiro {} não contém os campos corretos. Necessário, pelo menos, a "
 "coluna mes e índice,"
 
-#: .\backend\rates\views.py:110
+#: .\backend\rates\views.py:117
 msgid "The file {} is empty"
 msgstr "O arquivo {} está vazio"
 
-#: .\backend\rates\views.py:138
+#: .\backend\rates\views.py:145
 msgid ""
 "Example of how templates should look for each selected rate type\n"
 "            Returns a list of templates with their id and name"
@@ -3829,7 +3914,7 @@ msgstr ""
 "Exemplo de como os modelos devem procurar cada tipo de taxa selecionado\n"
 "            Devolve uma lista de modelos com o respetivo ID e nome"
 
-#: .\backend\rates\views.py:153
+#: .\backend\rates\views.py:160 .\backend\rates\views.py:175
 msgid ""
 "Example of how templates should look for each selected rate type\n"
 "        Returns a detail of template with their id, name, tables and fields "
@@ -3838,6 +3923,16 @@ msgstr ""
 "Exemplo de como os modelos devem procurar cada tipo de taxa selecionado\n"
 "        Retorna um detalhe do modelo com o seu id, nome, tabelas e campos "
 "nas tabelas"
+
+#: .\backend\rates\views.py:201
+msgid "Rate Recovering date not found"
+msgstr "Índice da Recuperanda não encontrado"
+
+#: .\backend\rates\views.py:203
+#, fuzzy
+#| msgid "Email {}, not found"
+msgid "Rate Data Base not found"
+msgstr "E-mail {}, não encontrado"
 
 #: .\backend\recovering\apps.py:8 .\backend\recovering\views.py:128
 msgid "Recovering"
@@ -3911,6 +4006,18 @@ msgstr ""
 "seu legal_numberRetorna um HTTP 200 se não existir, uma exceção é gerada "
 "quando existir"
 
+#: .\backend\schedule\apps.py:21
+msgid "Schedule"
+msgstr "Agenda"
+
+#: .\backend\schedule\apps.py:22
+msgid "Schedules"
+msgstr "Agenda"
+
+#: .\backend\schedule\views.py:64
+msgid "Argument func is necessary a callable"
+msgstr "O argumento func é necessário um callable"
+
 #: .\backend\security\formula\models.py:28
 msgid "Method name"
 msgstr "Nome do método"
@@ -3934,6 +4041,16 @@ msgstr ""
 #: .\backend\utils.py:33
 msgid "The value {} does not match any valid choice"
 msgstr "O valor {} não corresponde a nenhuma escolha válida"
+
+#, fuzzy
+#~| msgid "Can Reviewer Calculation"
+#~ msgid "Can Reviewer Calculation to Failed"
+#~ msgstr "Pode Revisar Cálculo para à Falha"
+
+#, fuzzy
+#~| msgid "Can Approve Requested Calculation"
+#~ msgid "Can Disapprove Revised Calculation to Failed"
+#~ msgstr "Pode Reprovar o Cálculo Revisado para à Falha"
 
 #, fuzzy
 #~| msgid "Comments"
