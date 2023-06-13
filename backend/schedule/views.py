@@ -2,6 +2,7 @@ from apscheduler.jobstores.base import JobLookupError
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from django.core.management import BaseCommand
+from django.db import OperationalError
 from django_apscheduler.jobstores import DjangoJobStore
 from config import settings
 
@@ -75,9 +76,11 @@ class SchedulerCommand(BaseCommand):
         else:
             payload = {'hour': at_time.hour, 'minute': at_time.minute, 'day': at_time.day, 'month': at_time.month,
                        'second': at_time.second, 'year': at_time.year}
-
-        self.scheduler.add_job(func, executor='default', trigger=CronTrigger(**payload), id=job_id, job_id=job_id,
-                               replace_existing=True)
+        try:
+            self.scheduler.add_job(func, executor='default', trigger=CronTrigger(**payload), id=job_id, job_id=job_id,
+                                   replace_existing=True)
+        except OperationalError:
+            pass
 
     def at(self, job_id, func, at_time: datetime):
         """
