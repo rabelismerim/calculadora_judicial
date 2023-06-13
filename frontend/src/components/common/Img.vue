@@ -14,7 +14,9 @@ const props = withDefaults(defineProps<{
 const image = ref(null as any)
 
 const onError = () => {
-  image.value.src = props.errorImage
+  // image.value.src = props.errorImage
+  if (image.value && image.value.src !== props.errorImage)
+    image.value.src = props.errorImage
 }
 </script>
 

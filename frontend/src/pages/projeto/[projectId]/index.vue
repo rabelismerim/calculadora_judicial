@@ -211,7 +211,7 @@ onMounted(async () => {
         hint="Somatório dos Cálculos aprovados de todos os Credores."
       >
         <div class="font-bold text-5xl flex-1 flex items-center">
-          R$ {{ bigNumbers?.totalSumCreditors || 0 }}
+          R$ {{ bigNumbers?.totalSumCreditors?.toFixed(2) || 0 }}
         </div>
       </GraphCard>
       <ProgressList
@@ -246,12 +246,6 @@ onMounted(async () => {
       />
     </Header>
 
-    <TabFilter
-      v-model="tab"
-      v-model:search="filterBy"
-      :items="tabFilters"
-    />
-
     <div v-if="filteredRecoverings.length > 0" class="flex flex-col gap-3">
       <Accordion
         v-for="recovering in filteredRecoverings"
@@ -271,7 +265,7 @@ onMounted(async () => {
         <template #header-right>
           <div class="flex-1 flex gap-2 justify-end items-center pl-4 pr-4">
             <div class="font-bold flex no-wrap items-center gap-2 text-lg">
-              Total: R$ {{ recovering?.total || 0 }}
+              Total: R$ {{ recovering?.total?.toFixed(2) || 0 }}
               <Hint value="Total dos Cálculos Aprovados." />
             </div>
           </div>
@@ -304,7 +298,7 @@ onMounted(async () => {
                   @click.stop="openNewCalculation(creditor)"
                 />
                 <div class="font-bold flex no-wrap items-center gap-2 text-lg">
-                  Total: R$ {{ creditor?.total || 0 }}
+                  Total: R$ {{ creditor?.total?.toFixed(2) || 0 }}
                   <Hint value="Total dos Cálculos Aprovados." />
                 </div>
               </div>

@@ -1,6 +1,9 @@
 import axios from 'axios'
 
-const headers: any = {}
+const headers: any = {
+  // TODO: BRING TO USER PREFERENCES
+  'Accept-Language': 'pt-BR,pt;q=1',
+}
 
 if (import.meta.env.VITE_TOKEN)
   headers.Authorization = `Token ${import.meta.env.VITE_TOKEN}`
