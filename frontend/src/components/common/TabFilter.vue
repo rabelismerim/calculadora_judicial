@@ -5,7 +5,7 @@ interface Option {
 }
 const props = withDefaults(defineProps<{
   modelValue: string | number
-  items: Option[]
+  items: Option[] | any[]
   search?: string
 }>(), {
 })
