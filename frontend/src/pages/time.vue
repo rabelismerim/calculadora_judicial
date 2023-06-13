@@ -125,6 +125,7 @@ onMounted(() => loadPage())
       <EditUser
         v-model="showEditUser"
         :user="editingUser"
+        @success="loadPage"
       />
 
       <RequestModal

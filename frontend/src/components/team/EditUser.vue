@@ -5,7 +5,7 @@ const props = withDefaults(defineProps<{
 }>(), {
   user: () => ({}),
 })
-const emit = defineEmits(['update:model-value', 'done'])
+const emit = defineEmits(['update:model-value', 'success'])
 
 const form = ref(null as any)
 
@@ -37,15 +37,17 @@ const onEdit = async () => {
   const isValid = await form.value.validate()
   if (!isValid)
     return
-  const { email, group, role } = editingUser
+  const { email, group, role, status } = editingUser
   loading = true
   try {
-    const result = await usersService.setPermission({ email, groups: [group], role, status: 'A' })
-    const { status } = result
-    if (status)
+    const result = await usersService.setPermission({ email, groups: [group], role, status })
+    const { status: userStatus } = result
+    if (userStatus) {
       clear()
-    window.location.reload()
+      emit('success')
+    }
   }
+
   catch (error) {
     printError('ERROR ON ACCEPTING THE USER REQUEST:', error)
   }
@@ -105,7 +107,7 @@ onMounted(async () => {
         />
       </div>
       <div class="flex justify-end gap-3 p-4 border-t-1 border-black/12">
-        <Btn
+        <btn
           type="submit"
           label="Salvar"
         />
