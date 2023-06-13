@@ -7,6 +7,8 @@ from crum import get_current_request
 from django.db.models import Q
 from django.db.models.signals import pre_save, pre_delete
 from django.forms import model_to_dict
+from rest_framework.exceptions import ValidationError
+
 from utils import get_user_model, _
 
 User = get_user_model()
@@ -136,7 +138,7 @@ def delete_obj(sender, **kwargs):
     username = (requests_.user.username.strip() or None) if requests_ else 'anonymous'
     user_id = requests_.user.id if requests_ else None
     instance.create_user_id = user_id
-    if hasattr(instance, 'id'):
+    if hasattr(instance, 'id') and isinstance(instance.id, uuid.UUID):
         previous_value = instance.__str__()
         current_value = 'deleted'
 

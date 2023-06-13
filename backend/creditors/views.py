@@ -1,9 +1,10 @@
+import datetime
+
 from django.db import transaction
 from rest_framework.generics import get_object_or_404
 
 from base.claim.models import ClaimCreditor, ClaimLawyer
 from base.coins.models import Coins
-from calculation.models import Calculation
 from calculation.schemas import ValidatedIDSchema
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
@@ -16,6 +17,7 @@ from core.permission.views import CheckHasPermission, check_query_permission
 from creditors.notice.models import Notice, NoticeRecovering
 from creditors.schemas import CreditorCreateSchema, CreditorSchema, CreditorUpdateSchema
 from creditors.models import Creditor
+from schedule.views import SCHEDULER
 from utils import get_user_model, _, doc
 
 User = get_user_model()
@@ -263,5 +265,11 @@ class CalcValidateApi(AbstractViewApi):
         calculations = new_calculation.pop('calculations', [])
 
         invalids, valids = creditor.validate_calcs(calculations)
-
         return JsonResponse({'invalids': invalids, 'valids': valids}, status=status.HTTP_200_OK)
+
+
+def func():
+    print('Hello World\n')
+
+
+SCHEDULER.at('scheduler_tess', func, datetime.datetime.now() + datetime.timedelta(minutes=1))

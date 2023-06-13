@@ -109,7 +109,7 @@ INSTALLED_APPS = [
     # 'vinaigrette',
     'modeltranslation',  # Custom field translation
     # 'debug_toolbar', # Debug query, views in realtime on navigation
-
+    'django_apscheduler', # Eventos crontab
     # Base
     'base',
     'base.claim',

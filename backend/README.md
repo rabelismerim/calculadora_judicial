@@ -48,8 +48,10 @@
 > * Na url http://127.0.0.1:8000/juca/admin/rates/ratefile/ adicionar um rate file. Na lista de ratefile, marque o
     checkbox nos arquivos que deseja adicionar. No select action, selecione Load file e clique em Go. Os arquivos serão
     carregados para o banco de dados;
-> * O arquivo para rate file deve estar no formato xlsx e contêr obrigatoriamente as colunas "mes" e "indice".
+> * O arquivo para rate file deve estar no formato xlsx e conter obrigatoriamente as colunas "mes" e "indice".
     Opcionalmente tem as colunas "acumulado" e "periodo" que são usadas em determinados indices, como o TST
+> * Há também os arquivos de backup no formato json, na pasta rates/indices. Para o cadastro em massa desses arquivos, 
+    utilize o comando `python manage.py create_indiceby_json`;
 
 ### Criação dos indices IRRF
 
@@ -101,4 +103,22 @@
     testes irão ser executados.
 > * Algumas classes apenas monitoram a resposta 200(GET) e 201(POST). Outras como indices e cálculos verificam se os
     resultados satisfazem a condição esperada. Essas condições vem de acordo com o entendimento junto aos stakeholders e
-    como são feitos os cálculos judicialmente. 
+    como são feitos os cálculos judicialmente.
+
+### Como usar a classe SCHEDULER
+###### A classe SCHEDULER é uma classe de agendamento, responsável por executar funções em intervalos determinados. Para usá-la, primeiro você precisa instanciar um objeto dessa classe e configurar o seu ambiente.
+> ### Instanciação e configuração
+> ###### Para instanciar a classe e fazer o agendamento de uma função, siga o código abaixo:
+> * `from schedule.views import SCHEDULER` <br/>
+    `date_time = datetime.now() + timedelta(microseconds=10000000)`<br/>
+    `def func():`<br/>
+    &emsp; print('hello word')<br/>
+    `SCHEDULER.at('func_1', func, date_time)`<br/>
+
+> ### Agendando tarefas
+> ###### Para agendar uma tarefa, basta chamar uma das funções da classe SCHEDULER. As funções disponíveis são:
+> * at: executa a função uma vez em um horário específico.
+> * every_day: executa a função todos os dias em um determinado horário.
+> * every_week: executa a função uma vez por semana em um determinado dia da semana e horário.
+> * every_day_in_month: executa a função uma vez por mês em um determinado dia do mês e horário.
+> * every_month: executa a função uma vez por mês em um determinado dia do mês, em meses específicos e horário.

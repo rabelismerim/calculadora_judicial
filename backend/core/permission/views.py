@@ -81,6 +81,8 @@ class PermissionsName:
     """
     _layout_perm = 'can_change_{}_to_{}'
 
+    # TODO: Review permissions T&R
+    # TODO: Block the edition of funds from what moment? step(A, B etc)
     executor = [
         (_layout_perm.format('r', 's'), _('Can Change failed Calculation to calculate'), 'calculation'),
         (_layout_perm.format('s', 'c'), _('Can Execute Calculation to Review'), 'calculation')
@@ -88,9 +90,9 @@ class PermissionsName:
 
     reviewer = [
         (_layout_perm.format('c', 'e'), _('Can Reviewer Calculation to Approve'), 'calculation'),
-        (_layout_perm.format('c', 'b'), _('Can Reviewer Calculation to Approve special'), 'calculation'),
+        (_layout_perm.format('c', 'b'), _('Can Reviewer Calculation to Approve special'), 'calculation'), # Move to approve
         (_layout_perm.format('c', 's'), _('Can Reviewer Calculation to Calculate'), 'calculation'),
-        (_layout_perm.format('c', 'r'), _('Can Reviewer Calculation to Failed'), 'calculation'),
+        (_layout_perm.format('c', 'r'), _('Can Reviewer Calculation to Failed'), 'calculation'), # Ver com T&R(Excluir, deletar, arquivar)
     ]
 
     approve = [
