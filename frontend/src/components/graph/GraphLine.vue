@@ -78,7 +78,7 @@ const closePath = computed(() => `${path.value} L${axis.value.width},${axis.valu
             <g v-for="({ label, value, x, y }, i) in bars" :key="i">
               <circle :cx="x" :cy="y" r="4" rx="2" class="fill--secondary/60 stroke--secondary stroke-1" />
               <text :x="x" :y="size.height - 16">{{ label }}</text>
-              <text :x="x" :y="y - 10">{{ value }}</text>
+              <text v-if="value !== 0" :x="x" :y="y - 10">{{ value }}</text>
             </g>
           </g>
           <path stroke="#64748b" fill="none" stroke-width="2" :d="`M${axis.left} ${axis.top} v${axis.height}h${axis.width}`" />
