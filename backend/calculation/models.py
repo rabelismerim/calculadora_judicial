@@ -553,6 +553,28 @@ class Calculation(AbstractModel):
         total += sum([fund.get_total_summed() for fund in self.fundirrf_set.all()])
         return total
 
+    def get_big_number_calc(self) -> dict:
+        """Count of all registered funds"""
+        total = self.funds_set.all().count()
+        total += self.funddocument_set.all().count()
+        total += self.fundirrf_set.all().count()
+
+        classes = [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
+                    'total_calculated': fund.get_total_summed()} for fund in
+                   self.funds_set.filter(classes__classe__isnull=False)]
+        classes += [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
+                     'total_calculated': fund.get_total_summed()} for fund in
+                    self.funddocument_set.filter(classes__classe__isnull=False)]
+        classes += [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
+                     'total_calculated': fund.get_total_summed()} for fund in
+                    self.fundirrf_set.filter(classes__classe__isnull=False)]
+
+        total = 0
+        count = len(classes)
+        for class_dict in classes:
+            total += class_dict['total_calculated']
+        return {'count_funds': count, 'count_classes': count, "total": total}
+
     def get_date_rj_filing(self) -> datetime.date or None:  # B19
         """
         Excel Analysis sheet B19
