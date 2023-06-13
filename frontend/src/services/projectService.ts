@@ -240,9 +240,9 @@ const getProjectBigNumbers = (projectId: string) => api
       label: classesDisplay.split(' - ')?.[0] || '',
       count: quantity,
     })),
-    classesCalculationsTotal: data?.totalClassesCreditor.map(({ classesDisplay, totalValue }: any) => ({
+    classesCalculationsTotal: data?.totalClassesCreditor.map(({ classesDisplay, totalCalculated }: any) => ({
       label: classesDisplay.split(' - ')?.[0] || '',
-      count: totalValue,
+      count: (totalCalculated / 1000).toFixed(2),
     })),
   }))
 const getCreditorBigNumbers = (creditorId: string) => api

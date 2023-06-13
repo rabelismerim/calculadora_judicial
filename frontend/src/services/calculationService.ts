@@ -275,18 +275,26 @@ const getAccountingStatement = (calculationId: string) => {
   const rgx = /'(((?![×Þß÷þø])[ 0-9a-zA-ZÀ-ÿ])*?)':/
   return api
     .get(`/v1/calculation/export/${calculationId}/EXTRATOCONTABIL/`)
-    .then((result: any) => result?.html
-      .split(/(\<\/html\>)/)
-      .filter((value: string) => !!value.match(rgx))
-      .map((value: string) => ({
-        label: value?.match(rgx)?.[1],
-        body: value?.match(/\<body\>(.*?)\<\/body>/)?.[0],
-      })))
+    .then((result: any) => {
+      if (result.errors)
+        return result
+      return result?.html
+        ?.split(/(\<\/html\>)/)
+        ?.filter((value: string) => !!value.match(rgx))
+        ?.map((value: string) => ({
+          label: value?.match(rgx)?.[1],
+          body: value?.match(/\<body\>(.*?)\<\/body>/)?.[0],
+        })) || []
+    })
 }
 
 const getAccountingStatementXLSX = (calculationId: string) => api
   .get(`/v1/calculation/export/${calculationId}/EXTRATOCONTABIL/`)
-  .then((result: any) => result?.excel)
+  .then((result: any) => {
+    if (result.errors)
+      return result
+    return result?.excel
+  })
 
 const deleteCredit = ({ type, id }: any) => {
   const types: any = {
