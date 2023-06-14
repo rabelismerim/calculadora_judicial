@@ -277,12 +277,14 @@ class ChangeStepApi(AbstractViewApi):
         special_approvers = new_calculation.pop('special_approvers', [])
         calculation_id = kwargs.get('id', None)
         calculation = self.model.objects.filter(id=calculation_id).first()
-        calculation.set_step_by_char(new_calculation['next_step'], user=request.user, special_approvers=special_approvers)
-        calc_comment = StepComment.objects.create(calculation=calculation, step=calculation.step)
-        for comment in comments:
-            new_comment = Comment.objects.create(**comment)
-            calc_comment.comments.add(new_comment.id)
-        calc_comment.save()
+
+        with transaction.atomic():
+            calculation.set_step_by_char(new_calculation['next_step'], user=request.user, special_approvers=special_approvers)
+            calc_comment = StepComment.objects.create(calculation=calculation, step=calculation.step)
+            for comment in comments:
+                new_comment = Comment.objects.create(**comment)
+                calc_comment.comments.add(new_comment.id)
+            calc_comment.save()
         return JsonResponse({'calculation': CalculationSchema(calculation, many=False).data}, status=status.HTTP_200_OK)
 
 class CheckStepApi(AbstractViewApi):

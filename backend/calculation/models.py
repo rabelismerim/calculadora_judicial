@@ -452,6 +452,7 @@ class Calculation(AbstractModel):
 
         project_users = self.__check_user_is_special_approver(special_approvers)
 
+
         users_django_ids = list(project_users.values_list('user__id', flat=True))
         self.__check_user_already_allocated(users_django_ids)
 
