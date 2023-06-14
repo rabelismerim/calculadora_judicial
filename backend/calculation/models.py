@@ -7,7 +7,7 @@ to add specific fields as needed.
 import datetime
 
 from django.db import models
-from django.db.models import Sum, F, Func
+from django.db.models import F
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
@@ -22,8 +22,12 @@ from rates.models import Rate
 from utils import check_choice
 
 CHOICES_STEP = (
-    ('S', _('To Calculate')), ('C', _('To Review')), ('E', _('To Approve')), ('B', _('To Approve Special')),
-    ('A', _('Approved')), ('R', _('Failed')))
+    ('S', _('To Calculate')),
+    ('C', _('To Review')),
+    ('E', _('To Approve')),
+    ('B', _('To Approve Special')),
+    ('A', _('Finalized')),
+    ('R', _('Failed')))
 
 
 class Incident(AbstractModel):
@@ -39,6 +43,21 @@ class Incident(AbstractModel):
     """
     # Statement A5
     number = models.CharField(_('Incident number'), max_length=100)
+
+
+class SpecialApprover(AbstractModel):
+    """
+    # Statement A5
+
+    The Incident class is a subclass of the AbstractModel, representing an incident that can occur during the execution
+    of a process. It has one attribute:
+
+    Attributes:
+        - number (models.CharField): The number of the incident represented as a character field with a maximum length
+            of 100.
+    """
+    project_user = models.ForeignKey(ProjectUser, on_delete=models.PROTECT)
+    approved = models.BooleanField(_('Approved'), default=False)
 
 
 class Calculation(AbstractModel):
@@ -91,10 +110,24 @@ class Calculation(AbstractModel):
     is_adm = models.BooleanField(default=True)  # É administrativa ou judicial
 
     approver = models.ForeignKey(ProjectUser, on_delete=models.PROTECT, null=True, related_name='approver', blank=True)
-    special_approver = models.ForeignKey(ProjectUser, on_delete=models.PROTECT, null=True,
-                                         related_name='special_approver', blank=True)
+    # special_approver = models.ForeignKey(ProjectUser, on_delete=models.PROTECT, null=True,
+    #                                      # TODO: transformar em listas, ter um campo de controle para aprovado
+    #                                      related_name='special_approver', blank=True)
+    special_approvers = models.ManyToManyField(SpecialApprover, blank=True)
     executor = models.ForeignKey(ProjectUser, on_delete=models.PROTECT, null=True, related_name='executor', blank=True)
     reviewer = models.ForeignKey(ProjectUser, on_delete=models.PROTECT, null=True, related_name='reviewer', blank=True)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.codenames_to_special_approve = [
+            f'can_change_{self.get_step_to_approve_special()}_to_{self.get_step_to_approve_special()}',
+            f'can_change_{self.get_step_to_approve()}_to_{self.get_step_to_approve_special()}']
+        self.special_approve_to_approved = f'can_change_{self.get_step_to_approve_special()}_to_{self.get_step_approved()}'
+        self.user_groups = {
+            GROUP_NAME_EXECUTOR: 'executor_id',
+            GROUP_NAME_APPROVER: 'approver_id',
+            GROUP_NAME_REVIEWER: 'reviewer_id'
+        }
 
     class Meta:
         ordering = ('-created_at', '-updated_at')
@@ -244,42 +277,204 @@ class Calculation(AbstractModel):
                                           projectengagement__project__recovering__creditor__calculation__id=
                                           self.id).annotate(group_name=F('groups__name')).first()
 
-    def set_step_by_char(self, next_step: str, user=None):
+    def get_step_to_approve(self):
+        return 'e'
+
+    def get_step_to_approve_special(self):
+        return 'b'
+
+    def get_step_approved(self):
+        return 'a'
+
+    def set_step_by_char(self, next_step: str, user=None, special_approvers=None):
         """
         Sets the current step of the project engagement to a new value represented by a character.
 
         :param next_step: The character representing the new step of the project engagement. Must be one of CHOICES_STEP.
         :param user: User instance of the user executing the change. If given, the function checks if this user has the
         appropriate permission to execute the step change.
+        :param special_approvers: List of Special Approvers when alter step to Approve for to Approve Especial or
+        to Approve Especial for to Approve Especial
         :raises: ValidationError if the user doesn't have the appropriate permission or is already assigned to another
         role in the project.
         """
+        if not special_approvers:
+            special_approvers = []
         check_choice(next_step, CHOICES_STEP)
         if user:
             codename = f'can_change_{self.step.lower()}_to_{next_step.lower()}'
             user_executed = self.get_complete_project_user(user, codename)
             if user_executed:
-                group_name = user_executed.group_name
-                user_groups = {
-                    GROUP_NAME_EXECUTOR: 'executor_id',
-                    GROUP_NAME_APPROVER: 'approver_id',
-                    GROUP_NAME_SPECIAL_APPROVE: 'special_approver_id',
-                    GROUP_NAME_REVIEWER: 'reviewer_id'
-                }
-                if group_name in user_groups:
 
-                    selected_group = user_groups.pop(group_name)
-                    for group in user_groups.values():
-                        group_attribute = getattr(self, group.replace('_id', ''))
-                        if group_attribute and group_attribute.user.id == user_executed.user.id:
-                            raise serializers.ValidationError(
-                                _('The user is already in the role of {}, not being able to have two or more roles in '
-                                  'the same project').format(
-                                    group.replace('_id', '').replace('_', ' ').title()))
-                    setattr(self, selected_group, user_executed.id)
+                if codename in self.special_approve_to_approved:
+                    self._approve_special_calculation(user)
+                else:
+                    self._set_step_user(user, next_step, special_approvers)
+
+    def _approve_special_calculation(self, user):
+        """
+        Sets the given user's special approval flag for this calculation to True.
+
+        If the given user does not have permission to approve the calculation, or if they have already approved it, raises
+        a validation error.
+
+        Args:
+            user (django.contrib.auth.models.User): The Django User object representing the user.
+
+        Raises:
+            serializers.ValidationError: If the user does not have permission to specially approve the calculation,
+            or if the user has already specially approved the calculation.
+        """
+        user_special = self.special_approvers.filter(project_user__user=user).first()
+        if not user_special:
+            raise serializers.ValidationError([_('You do not have permission to specially approve this calculation')])
+        if user_special.approved:
+            raise serializers.ValidationError(
+                [_('You have already specially approved this calculation, wait for the other approvers')])
+        user_special.approved = True
+        user_special.save()
+        self._check_approve_special_calculation()
+
+    def _check_approve_special_calculation(self):
+        """
+        Checks whether all special approvers have approved this calculation.
+
+        If the step is the one where special approvers need to approve the calculation and all special approvers have
+        approved, sets the step to the next step and saves the object.
+        """
+        if self.step == self.get_step_to_approve_special().upper():
+            has_pending_approval = self.special_approvers.filter(approved=False).exists()
+            if has_pending_approval is False:
+                self.step = self.get_step_approved().upper()
+                self.save()
+
+    def _set_step_user(self, user, next_step, special_approvers=None):
+        """
+        Sets the current step to the given next step, and sets the user for the group that is allowed to change to the next step.
+
+        If the user can change the step to the next step according to their group permissions, sets the user
+        for the corresponding step group. Raises a validation error if the user is already allocated to another role in
+        the same project. If the next step requires special approvers, sets them using the provided list.
+
+        Args:
+            user (django.contrib.auth.models.User): The Django User object representing the user.
+            next_step (str): A string representing the next step in the process.
+            special_approvers (list, optional): A list of Django User IDs representing the special approvers.
+                Defaults to None.
+
+        Raises:
+            serializers.ValidationError: If the user cannot change the step to the next step according to their group
+            permissions, or if the user is already allocated to another role in the same project.
+        """
+        codename = f'can_change_{self.step.lower()}_to_{next_step.lower()}'
+        user_executed = self.get_complete_project_user(user, codename)
+        if user_executed:
+            group_name = user_executed.group_name
+            user_groups = self.user_groups.copy()
+            if group_name in user_groups:
+                selected_group = user_groups.pop(group_name)
+
+                if codename in self.codenames_to_special_approve:
+                    self._set_special_approvers(special_approvers)
+
+                self.__check_user_already_allocated([user_executed.user.id], selected_group=group_name)
+                setattr(self, selected_group, user_executed.id)
+
         self.step = next_step
         self.validated = False
         self.save()
+
+    def __check_user_is_special_approver(self, special_approvers: list):
+        """
+        Checks that each user in the given list is a special approver in the project.
+
+        Args:
+            special_approvers (list): A list of Django User IDs representing the users to check.
+
+        Returns:
+            QuerySet: A QuerySet of ProjectUser objects representing the special approvers in the project.
+
+        Raises:
+            serializers.ValidationError: If any user in the list is not a special approver in the project.
+        """
+        project_users = self.creditor.recovering.project.get_project_users().filter(
+            groups__permissions__codename=self.special_approve_to_approved)
+        users_not_in_project = [spe for spe in special_approvers if not project_users.filter(id=spe).exists()]
+        if users_not_in_project:
+            users = ProjectUser.objects.filter(id__in=users_not_in_project).values_list('user__username', flat=True)
+            raise serializers.ValidationError(
+                [_('The users: {} are not allocated in the project as a special approver'.format(', '.join(users)))])
+        return project_users
+
+    def __check_user_already_allocated(self, django_user_ids: list, selected_group=None):
+        """
+        Raises a validation error if any user is already allocated to another role in the same project.
+
+        Args:
+            django_user_ids (list): A list of Django User IDs representing the users to check.
+            selected_group (str, optional): The name of a group to exclude from the check. Defaults to None.
+
+        Raises:
+            serializers.ValidationError: If any user is already allocated to another role in the same project.
+        """
+        user_groups = self.user_groups.copy()
+        if selected_group:
+            user_groups.pop(selected_group)
+        for group in user_groups.values():
+            group_attribute = getattr(self, group.replace('_id', ''))
+            if group_attribute and group_attribute.user.id in django_user_ids:
+                raise serializers.ValidationError(
+                    _('The user {} is already in the role of {}, not being able to have two or more roles in '
+                      'the same project').format(group_attribute.user.get_full_name,
+                                                 group.replace('_id', '').replace('_', ' ').title()))
+
+    def _set_special_approvers(self, special_approvers: list):
+        """
+        Sets the list of special approvers for this object. If the list is empty, raises a validation error.
+        Checks that each user in the list is a special approver in the project.
+        Checks that a user is not already allocated to another role in the same project.
+        Creates new SpecialApprover objects as necessary, and adds them to this object's special approvers.
+        Deletes any existing special approvers that are not in the new list of special approvers and have not been approved.
+        Raises a validation error if any user in the new list of special approvers has already been approved.
+
+        Args:
+            special_approvers (list): A list of Django User IDs representing the new special approvers.
+
+        Raises:
+            serializers.ValidationError: If the list of special approvers is empty, or if any user in the new list of
+            special approvers is not a special approver in the project, or if a user is already allocated to another role
+            in the same project, or if any user in the new list of special approvers has already been approved.
+        """
+        # Check empty list
+        if not special_approvers:
+            raise serializers.ValidationError([_('The list of special approvers is empty')])
+
+        project_users = self.__check_user_is_special_approver(special_approvers)
+
+        users_django_ids = list(project_users.values_list('user__id', flat=True))
+        self.__check_user_already_allocated(users_django_ids)
+
+        specials = SpecialApprover.objects.filter(project_user__id__in=special_approvers, approved=False)
+        special_approvers_list = self.special_approvers.all()
+        special_approvers_approved = list(
+            self.special_approvers.filter(project_user__id__in=special_approvers, approved=True).values_list(
+                'project_user_id', flat=True))
+
+        specials_ids = []
+        specials_bulk = []
+        for approver_id in special_approvers:
+            if approver_id in special_approvers_approved:  # User already registered
+                specials_ids.append(approver_id)
+                continue
+            special = specials.filter(project_user_id=approver_id).first()
+            if not special:
+                special = SpecialApprover(project_user_id=approver_id, approved=False)
+                specials_bulk.append(special)
+            specials_ids.append(special.id)
+
+        SpecialApprover.objects.bulk_create(specials_bulk)
+        special_approvers_list.exclude(id__in=specials_ids, approved=False).delete()
+        self.special_approvers.add(*specials_ids)
 
     def get_total_summed(self):
         return 0
@@ -357,6 +552,28 @@ class Calculation(AbstractModel):
         total += sum([fund.get_total_summed() for fund in self.funddocument_set.all()])
         total += sum([fund.get_total_summed() for fund in self.fundirrf_set.all()])
         return total
+
+    def get_big_number_calc(self) -> dict:
+        """Count of all registered funds"""
+        total = self.funds_set.all().count()
+        total += self.funddocument_set.all().count()
+        total += self.fundirrf_set.all().count()
+
+        classes = [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
+                    'total_calculated': fund.get_total_summed()} for fund in
+                   self.funds_set.filter(classes__classe__isnull=False)]
+        classes += [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
+                     'total_calculated': fund.get_total_summed()} for fund in
+                    self.funddocument_set.filter(classes__classe__isnull=False)]
+        classes += [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
+                     'total_calculated': fund.get_total_summed()} for fund in
+                    self.fundirrf_set.filter(classes__classe__isnull=False)]
+
+        total = 0
+        count = len(classes)
+        for class_dict in classes:
+            total += class_dict['total_calculated']
+        return {'count_funds': count, 'count_classes': count, "total": total}
 
     def get_date_rj_filing(self) -> datetime.date or None:  # B19
         """

@@ -17,7 +17,6 @@ from core.permission.views import CheckHasPermission, check_query_permission
 from creditors.notice.models import Notice, NoticeRecovering
 from creditors.schemas import CreditorCreateSchema, CreditorSchema, CreditorUpdateSchema
 from creditors.models import Creditor
-# from schedule.views import SCHEDULER
 from utils import get_user_model, _, doc
 
 User = get_user_model()
@@ -266,10 +265,3 @@ class CalcValidateApi(AbstractViewApi):
 
         invalids, valids = creditor.validate_calcs(calculations)
         return JsonResponse({'invalids': invalids, 'valids': valids}, status=status.HTTP_200_OK)
-
-#
-# def func():
-#     print('Hello World\n')
-#
-#
-# SCHEDULER.at('scheduler_tess', func, datetime.datetime.now() + datetime.timedelta(minutes=1))

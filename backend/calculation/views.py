@@ -274,9 +274,10 @@ class ChangeStepApi(AbstractViewApi):
         serializer.is_valid(raise_exception=True)
         new_calculation = serializer.validated_data
         comments = new_calculation.pop('comments', [])
+        special_approvers = new_calculation.pop('special_approvers', [])
         calculation_id = kwargs.get('id', None)
         calculation = self.model.objects.filter(id=calculation_id).first()
-        calculation.set_step_by_char(new_calculation['next_step'], user=request.user)
+        calculation.set_step_by_char(new_calculation['next_step'], user=request.user, special_approvers=special_approvers)
         calc_comment = StepComment.objects.create(calculation=calculation, step=calculation.step)
         for comment in comments:
             new_comment = Comment.objects.create(**comment)

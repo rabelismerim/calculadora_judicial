@@ -37,7 +37,6 @@ for codename_, name_, content_ in special_approve:
         'name': name_
     })
     special_approve_perms_exclude.append(codename_)
-print(special_approve_perms, 'perms\n')
 
 groups = [
     {'name': 'Gestor Financeiro',
