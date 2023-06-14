@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.utils.timezone import now
 
 from dashboard.models import LoginRecord
@@ -10,6 +11,7 @@ class LoginMiddleware:
     Args:
         get_response: A callable object that represents the next middleware or view in the process.
     """
+
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -27,9 +29,10 @@ class LoginMiddleware:
         user = request.user
         if user.is_authenticated:
             today = now().date()
-            record_exists_today = LoginRecord.objects.filter(user=user, login_time__date=today).exists()
+            with transaction.atomic():
+                record_exists_today = LoginRecord.objects.filter(user=user, login_time__date=today).exists()
 
-            if not record_exists_today:
-                LoginRecord.objects.create(user=user)
+                if not record_exists_today:
+                    LoginRecord.objects.create(user=user)
 
         return response

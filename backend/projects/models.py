@@ -84,11 +84,10 @@ class Project(AbstractDescription, AbstractDateRecovering):
         """
         qs = Calculation.objects.filter(creditor__recovering__project=self).values('step').annotate(total=Count('id'))
 
-        step_counts = [
-            {'total': x['total'], 'step': x['step'], 'step_display': y}
-            for x, y in zip(qs, dict(CHOICES_STEP).values())
-        ]
-
+        dict_choices = dict(CHOICES_STEP)
+        step_counts = []
+        for calc in qs:
+            step_counts.append({'total': calc['total'], 'step': calc['step'], 'step_display': dict_choices.get(calc['step'])})
 
         # Add steps with total count of 0
         existing_steps = set(x['step'] for x in step_counts)
@@ -96,7 +95,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
         missing_steps = all_steps - existing_steps
         for step in missing_steps:
             step_counts.append({'total': 0, 'step': step, 'step_display': dict(CHOICES_STEP)[step]})
-
+        print(step_counts, 'step counts\n')
         return step_counts
 
     def __init__(self, *args, **kwargs):

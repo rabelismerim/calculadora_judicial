@@ -27,7 +27,8 @@ CHOICES_STEP = (
     ('E', _('To Approve')),
     ('B', _('To Approve Special')),
     ('A', _('Finalized')),
-    ('R', _('Failed')))
+    # ('R', _('Failed'))
+)
 
 
 class Incident(AbstractModel):

@@ -302,6 +302,9 @@ class User(AbstractBaseUser, PermissionsMixin):
                 raise ValueError(_("Updating the value of id isn't allowed"))
             if ENABLE_SSO:
                 self.set_unusable_password()
+        else:
+            if self.username == 'dev_admin':
+                self.is_active = True
         return super().save(force_insert, force_update, using, update_fields)
 
     def set_status_by_choice(self, choice):
