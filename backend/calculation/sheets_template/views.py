@@ -132,46 +132,77 @@ class SheetTemplateViewApi(AbstractViewApi):
                 if type(sheet.title) == str and sheet.title.find('JUCA=') >= 0:
                     if str(sheet.title)[5:]=='Calculation':
                         copy_sheet=archive_view[sheet.title]
-                        for item in calculations_sheet:
+                        cnt_row=2
+                        for item in funds:
                             archive_view.copy_worksheet(copy_sheet)
                             ws = archive_view[sheet.title+' Copy']
-                            ws.title = 'Calculo '+str(item.number.replace('-','e'))
-                            funds_sheet=Funds.objects.filter(calculation_id=item.id)
-                            font = Font(bold=True)
-                            ws['D2']='Nº Incidente:'
-                            ws['D2'].font=font
-                            ws['E2']=item.incident.number
-                            ws['D4']='Data de criação:'
-                            ws['D4'].font=font
-                            ws['E4']=datetime.strftime(item.created_at, "%d/%m/%Y")
-                            ws['D6']='Fase:'
-                            ws['D6'].font=font
-                            ws['E6']='Administrativa' if item.is_adm == True else 'Judical'
-                            ws['D8']='Classe:'
-                            ws['D8'].font=font
-                            ws['E8']=str(funds_sheet[0].classes).split(' - ')[0] if len(funds_sheet)>0 and 'classes' in funds_sheet[0]._dict else 'N/A'
-                            ws['D10']='Executor:'
-                            ws['D10'].font=font
-                            ws['E10']=str(item.executor if item.executor else 'N/A')
-                            ws['D12']='Revisor:'
-                            ws['D12'].font=font
-                            ws['E12']=str(item.reviewer if item.reviewer else 'N/A')
-                            ws['D14']='Aprovador:'
-                            ws['D14'].font=font
-                            ws['E14']=str(item.approver if item.approver else 'N/A')
-                            ws['D16']='Aprovador Especial:'
-                            ws['D16'].font=font
-                            ws['E16']=str(item.special_approver if item.special_approver else 'N/A')
-                            ws['D18']='Valor:'
-                            ws['D18'].font=font
-                            ws['E18']='{:14,.2f}'.format(float(str(funds_sheet[0].get_total_funds()).split(' - ')[0]))
-                            ws['D20']='Status:'
-                            ws['D20'].font=font
-                            ws['E20']=str(funds_sheet[0].classes).split(' - ')[1] if len(funds_sheet)>0 and 'classes' in funds_sheet[0]._dict else 'N/A'
-                            ws['D22']='Validado:'
-                            ws['D22'].font=font
-                            ws['E22']='Sim' if item.validated==True else 'Não' 
-
+                            ws.title = item.name
+                            plan_build = item.get_all_statement_funds_integrations()
+                            if plan_build and len(plan_build)>0:
+                                font = Font(bold=True)
+                                ws['D'+str(cnt_row)]='Crédito '+plan_build[0].fund.template.name
+                                ws['D'+str(cnt_row)].font=font
+                                ws['D'+str(cnt_row+2)]='Integrações sobre '+str(plan_build[0].fund.rate)
+                                ws['D'+str(cnt_row+2)].font=font
+                                ws['D'+str(cnt_row+3)]=plan_build[0].fund.name
+                                ws['D'+str(cnt_row+3)].font=font
+                                ws['D'+str(cnt_row+4)]=str(plan_build[0].fund.classes)
+                                ws['D'+str(cnt_row+4)].font=font
+                                ws['D'+str(cnt_row+5)]="Descrição"
+                                ws['D'+str(cnt_row+5)].font=font
+                                ws['E'+str(cnt_row+5)]="Data base"
+                                ws['E'+str(cnt_row+5)].font=font
+                                ws['F'+str(cnt_row+5)]="Súmula 381"
+                                ws['F'+str(cnt_row+5)].font=font
+                                ws['G'+str(cnt_row+5)]="Valor histórico"
+                                ws['G'+str(cnt_row+5)].font=font
+                                ws['H'+str(cnt_row+5)]="Indíce na data base"
+                                ws['H'+str(cnt_row+5)].font=font
+                                ws['I'+str(cnt_row+5)]="Indíce na recuperação"
+                                ws['I'+str(cnt_row+5)].font=font
+                                ws['J'+str(cnt_row+5)]="Valor corrigido"
+                                ws['J'+str(cnt_row+5)].font=font
+                                cnt_row=cnt_row+6
+                                for item1 in plan_build:
+                                    ws['D'+str(cnt_row)]=str(item1.description)
+                                    ws['E'+str(cnt_row)]=item1.data_base
+                                    ws['F'+str(cnt_row)]='Sim' if item1.summary==True else 'Não'
+                                    ws['G'+str(cnt_row)]=item1.historical_value
+                                    ws['H'+str(cnt_row)]=item1.monetarycorrectionintegrations.index_data_base
+                                    ws['I'+str(cnt_row)]=item1.monetarycorrectionintegrations.index_recovering
+                                    ws['J'+str(cnt_row)]=item1.monetarycorrectionintegrations.corrected_value
+                                    cnt_row=cnt_row+1
+                            cnt_row=cnt_row+2
+                            plan_build1 = item.get_all_statement_funds()
+                            if plan_build1 and len(plan_build1)>0:
+                                font = Font(bold=True)
+                                ws['D'+str(cnt_row)]=str(plan_build1[0].fund.rate)
+                                ws['D'+str(cnt_row)].font=font
+                                ws['D'+str(cnt_row+1)]="Data base"
+                                ws['D'+str(cnt_row+1)].font=font
+                                ws['E'+str(cnt_row+1)]="Súmula 381"
+                                ws['E'+str(cnt_row+1)].font=font
+                                ws['F'+str(cnt_row+1)]="Reflexos DSR"
+                                ws['F'+str(cnt_row+1)].font=font
+                                ws['G'+str(cnt_row+1)]="Valor histórico"
+                                ws['G'+str(cnt_row+1)].font=font
+                                ws['H'+str(cnt_row+1)]="Indíce na data base"
+                                ws['H'+str(cnt_row+1)].font=font
+                                ws['I'+str(cnt_row+1)]="Indíce na recuperação"
+                                ws['I'+str(cnt_row+1)].font=font
+                                ws['J'+str(cnt_row+1)]="Valor corrigido"
+                                ws['J'+str(cnt_row+1)].font=font
+                                cnt_row=cnt_row+2
+                                for item2 in plan_build1:
+                                    ws['D'+str(cnt_row)]=item2.data_base
+                                    ws['E'+str(cnt_row)]='Sim' if item2.summary==True else 'Não'
+                                    ws['F'+str(cnt_row)]=item2.dsr_reflexes
+                                    ws['G'+str(cnt_row)]=item2.historical_value
+                                    value_index=item2.get_monetary_correction()
+                                    ws['H'+str(cnt_row)]=value_index.index_data_base
+                                    ws['I'+str(cnt_row)]=value_index.index_recovering
+                                    ws['J'+str(cnt_row)]=str(value_index).split(' - ')[2]
+                                    cnt_row=cnt_row+1
             for sheet in archive_view:
                 if type(sheet.title) == str and sheet.title.find('JUCA=') >= 0:
                     archive_view.remove_sheet(archive_view[sheet.title])
