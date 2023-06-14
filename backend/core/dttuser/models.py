@@ -305,6 +305,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         else:
             if self.username == 'dev_admin':
                 self.is_active = True
+                self.status = 'A'
         return super().save(force_insert, force_update, using, update_fields)
 
     def set_status_by_choice(self, choice):

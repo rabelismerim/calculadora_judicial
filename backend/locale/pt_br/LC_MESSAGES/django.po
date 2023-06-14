@@ -1742,11 +1742,9 @@ msgstr ""
 "O usuário já está no papel de {}, não podendo ter dois ou mais papéis no "
 "mesmo projeto"
 
-#: .\backend\calculation\models.py:450
-#, fuzzy
-#| msgid "The approvers field must be in list format"
+#: .\backend\calculation\models.py:451
 msgid "The list of special approvers is empty"
-msgstr "O campo de aprovadores deve estar em formato de lista"
+msgstr "A lista de aprovadores especiais está vazia"
 
 #: .\backend\calculation\premise\apps.py:22
 #: .\backend\calculation\premise\apps.py:23

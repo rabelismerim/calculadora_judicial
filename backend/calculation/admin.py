@@ -15,9 +15,10 @@ from django.contrib import admin
 admin.site.register(Calculation)
 """
 from django.contrib import admin
-from calculation.models import Calculation, Incident
+from calculation.models import Calculation, Incident, SpecialApprover
 
 admin.site.register(Incident)
+admin.site.register(SpecialApprover)
 
 
 class CalculationModelAdmin(admin.ModelAdmin):
