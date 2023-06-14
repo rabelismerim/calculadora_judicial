@@ -76,8 +76,11 @@ class BigNumberApi(AbstractViewApi):
             'POST': 'add',
             'DELETE': 'delete',
         }
-        has_perm = request.user.has_permission(f'{option.get(request.method)}_{self.model._meta.verbose_name.lower()}')
-        if not has_perm:
+
+        model_name = self.get_model_name()
+
+        has_perm = request.user.has_permission(f'{option.get(request.method)}_{model_name}')
+        if not has_perm and model_name != 'dashboard':
             raise PermissionDenied()
         serializer = serializer(self.model, methods_list=methods_list, context={'request': self.request})
         serialized_data = serializer.data
