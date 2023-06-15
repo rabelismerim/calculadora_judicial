@@ -523,8 +523,8 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
                             >
                               <QToggle
                                 v-if="calculation?.criterion?.occurrence === 'C'
-                                  ? props.row?.data_base > calculation?.criterion?.dateCitation
-                                  : props.row?.data_base > calculation?.criterion?.dateRjFiling"
+                                  ? props.row?.data_base >= calculation?.criterion?.dateCitation
+                                  : props.row?.data_base >= calculation?.criterion?.dateRjFiling"
                                 v-model="props.row[column.field]"
                                 class="flex-1"
                                 :disable="['A', 'B'].includes(calculation?.step)"
