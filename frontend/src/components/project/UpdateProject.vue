@@ -84,8 +84,13 @@ const approvers = computed(() => props.options?.users
     return ['Gestor Jurídico', 'Gestor Cálculo', 'Gestor Financeiro']
       .some((group: string) => groupNames.includes(group))
   }))
+
 const specialApprovers = computed(() => props.options?.users
-  .filter(({ groups }: any) => groups.map(({ name }: any) => name).includes('Sócio')))
+  .filter(({ groups }: any) => {
+    const groupNames = groups.map(({ name }: any) => name)
+    return ['Gestor Jurídico', 'Gestor Cálculo', 'Gestor Financeiro', 'Sócio']
+      .some((group: string) => groupNames.includes(group))
+  }))
 
 const addJudge = async (description: string) => await projectService.newJudge(description)
 const addLawyer = async (description: string) => await projectService.newLawyer(description)

@@ -95,7 +95,11 @@ const approvers = computed(() => users
       .some((group: string) => groupNames.includes(group))
   }))
 const specialApprovers = computed(() => users
-  .filter(({ groups }: any) => groups.map(({ name }: any) => name).includes('Sócio')))
+  .filter(({ groups }: any) => {
+    const groupNames = groups.map(({ name }: any) => name)
+    return ['Gestor Jurídico', 'Gestor Cálculo', 'Gestor Financeiro', 'Sócio']
+      .some((group: string) => groupNames.includes(group))
+  }))
 let judges = $ref([])
 const addJudge = async (description: string) => projectService.newJudge(description)
 let lawyers = $ref([])
