@@ -73,6 +73,7 @@ class SignStatusApi(AbstractViewApi):
                     user.save()
                 elif len(user_view) > 0:
                     for item in user_view:
+                        #TODO salvar foto recebida em base64 para img Field e passar a url para o front
                         if item.userpicture != ms_identity_web.id_data.userpicture:
                             item.userpicture = ms_identity_web.id_data.userpicture
                             item.save()
