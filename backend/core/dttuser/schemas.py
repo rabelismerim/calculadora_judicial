@@ -158,10 +158,18 @@ class UserDttSchema(serializers.ModelSerializer):
     status_display = serializers.CharField(source='get_status_display', read_only=True)
 
     full_name = serializers.CharField(read_only=True, source='get_full_name')
-    user_url = serializers.URLField(source='user_img.url', read_only=True)
+    user_url = serializers.SerializerMethodField(read_only=True, allow_null=True)
+
+    def get_user_url(self, obj):
+        if obj.user_img:
+            return obj.user_img.url
+        else:
+            return None
+
     class Meta:
         model = get_user_model()
-        fields = ['email', 'username', 'first_name', 'last_name', 'password', 'password_confirm', 'full_name', 'user_url',
+        fields = ['email', 'username', 'first_name', 'last_name', 'password', 'password_confirm', 'full_name',
+                  'user_url',
                   'userpicture', 'status', 'status_display', 'is_staff', 'user_permissions', 'date_joined', 'is_active',
                   'role', 'role_display', 'groups', 'subgroups', 'id']
         read_only_fields = ('user_permissions', 'date_joined', 'is_active')
@@ -273,7 +281,8 @@ class UserAuthorizeDttSchema(serializers.ModelSerializer):
         renderer_classes (list): A list of JSONRenderer objects.
     """
     renderer_classes = [renderers.JSONRenderer]
-    role = serializers.ChoiceField(ROLES_CHOICES,required=False)
+    role = serializers.ChoiceField(ROLES_CHOICES, required=False)
+
     class Meta:
         model = get_user_model()
         groups = GroupSchema(many=True, read_only=False, exclude=('permissions',))

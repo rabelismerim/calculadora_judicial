@@ -20,7 +20,7 @@ from django.core.mail import send_mail
 from rest_framework import status
 
 from core.permission.views import CheckHasPermission, CheckPermissions
-from utils import get_user_model, _, doc
+from utils import get_user_model, _, doc, log_info
 from rest_framework import permissions, serializers
 from django.contrib.auth.models import Group
 from core.dttuser.models import Subgroup

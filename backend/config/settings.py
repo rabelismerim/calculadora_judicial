@@ -483,7 +483,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Setting media info for images
 MEDIA_URL = "/media/"
-MEDIA_ROOT = "uploads"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 REST_FRAMEWORK = {
 
