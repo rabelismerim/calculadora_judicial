@@ -398,14 +398,22 @@ class Calculation(AbstractModel):
         Raises:
             serializers.ValidationError: If any user in the list is not a special approver in the project.
         """
+
+        # Get list of project users with permission special approve to approved
         project_users = self.creditor.recovering.project.get_project_users().filter(
             groups__permissions__codename=self.special_approve_to_approved)
+        # groups__permissions__codename=self.special_approve_to_approved)
+
         users_not_in_project = [spe for spe in special_approvers if not project_users.filter(id=spe).exists()]
+        print(project_users, 'project_users')
+        print(users_not_in_project, 'users_not_in_project\n\n')
         if users_not_in_project:
             users = ProjectUser.objects.filter(id__in=users_not_in_project).values_list('user__username', flat=True)
             raise serializers.ValidationError(
                 [_('The users: {} are not allocated in the project as a special approver'.format(', '.join(users)))])
-        return project_users
+        project_users_filtered = project_users.filter(id__in=special_approvers)
+        print(project_users_filtered, 'project_users_filtered')
+        return project_users_filtered
 
     def __check_user_already_allocated(self, django_user_ids: list, selected_group=None):
         """
@@ -424,6 +432,8 @@ class Calculation(AbstractModel):
         for group in user_groups.values():
             group_attribute = getattr(self, group.replace('_id', ''))
             if group_attribute and group_attribute.user.id in django_user_ids:
+                print(selected_group, 'selected_group')
+                print(django_user_ids, 'django_user_ids\n\n')
                 raise serializers.ValidationError(
                     _('The user {} is already in the role of {}, not being able to have two or more roles in '
                       'the same project').format(group_attribute.user.get_full_name,
@@ -449,9 +459,8 @@ class Calculation(AbstractModel):
         # Check empty list
         if not special_approvers:
             raise serializers.ValidationError([_('The list of special approvers is empty')])
-
+        print(special_approvers, 'special_approvers\n\n')
         project_users = self.__check_user_is_special_approver(special_approvers)
-
 
         users_django_ids = list(project_users.values_list('user__id', flat=True))
         self.__check_user_already_allocated(users_django_ids)

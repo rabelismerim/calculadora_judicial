@@ -10,7 +10,8 @@ from rates.models import Template, TemplateField, TemplateRate, TemplateMainFiel
 def create_templates():
     """Create templates to rates"""
     fields_default_all = [{'label': 'Status', 'key': 'status_display', 'type': 'C', 'order': 10, 'is_editable': False,
-                           'required': False}]
+                           'required': False},
+                          ]
 
     fund_labor = [{'label': 'Nome da verba', 'key': 'name', 'type': 'C', 'order': 0, 'is_editable': True,
                    'required': True}]
@@ -30,7 +31,7 @@ def create_templates():
                      {'label': 'Valor histórico', 'key': 'historical_value', 'type': 'F', 'order': 5,
                       'is_editable': True,
                       'required': True},
-                     {'label': 'É extraconcursal', 'key': 'is_extraconcursal', 'type': 'B', 'order': 6,
+                     {'label': 'É extraconcursal', 'key': 'is_extraconcursal', 'type': 'B', 'order': 4,
                       'is_editable': True,
                       'default': False,
                       'required': True},
@@ -41,26 +42,34 @@ def create_templates():
                  {'label': 'Meses no período', 'key': 'months_period', 'type': 'I', 'order': 1,
                   'default': 1,
                   'is_editable': True,
-                  'required': True}
+                  'required': True},
+                 {'label': 'É extraconcursal', 'key': 'is_extraconcursal', 'type': 'B', 'order': 4,
+                  'is_editable': True,
+                  'default': False,
+                  'required': True},
                  ]
 
     fields_verbas = [{'label': 'Data base', 'key': 'data_base', 'type': 'D', 'order': 2, 'is_editable': True,
                       'required': True},
-                     {'label': 'Valor histórico', 'key': 'historical_value', 'type': 'F', 'order': 5,
 
+                     {'label': 'Valor histórico', 'key': 'historical_value', 'type': 'F', 'order': 6,
                       'is_editable': True,
                       'required': True},
                      {'label': 'Índice na data base', 'key': 'monetary_correction.index_data_base', 'type': 'F',
-                      'order': 6,
-
-                      'is_editable': False, 'required': False},
-                     {'label': 'Índice na recuperação', 'key': 'monetary_correction.index_recovering', 'type': 'F',
                       'order': 7,
 
                       'is_editable': False, 'required': False},
-                     {'label': 'Valor corrigido', 'key': 'monetary_correction.corrected_value', 'type': 'F', 'order': 8,
+                     {'label': 'Índice na recuperação', 'key': 'monetary_correction.index_recovering', 'type': 'F',
+                      'order': 8,
 
-                      'is_editable': False, 'required': False}
+                      'is_editable': False, 'required': False},
+                     {'label': 'Valor corrigido', 'key': 'monetary_correction.corrected_value', 'type': 'F', 'order': 9,
+
+                      'is_editable': False, 'required': False},
+                     {'label': 'É extraconcursal', 'key': 'is_extraconcursal', 'type': 'B', 'order': 4,
+                      'is_editable': True,
+                      'default': False,
+                      'required': True},
                      ]
 
     summary_fields_verbas = [{'label': 'Total: ', 'key': 'none', 'type': 'C', 'order': 0, 'is_editable': False,
@@ -120,10 +129,9 @@ def create_templates():
     summary_fields_verbas_integrations = copy.deepcopy(summary_fields_verbas)
     fields_verbas_reflexos = copy.deepcopy(fields_verbas)
     summary_fields_verbas_reflexos = copy.deepcopy(summary_fields_verbas)
-    fields_verbas_reflexos.append({'label': 'Reflexos DSR ', 'key': 'dsr_reflexes', 'type': 'F', 'order': 4,
-
+    fields_verbas_reflexos.append({'label': 'Reflexos DSR ', 'key': 'dsr_reflexes', 'type': 'F', 'order': 5,
                                    'is_editable': True, 'required': True})
-    summary_fields_verbas_reflexos.append({'label': '', 'key': 'total_dsr_reflexes', 'type': 'F', 'order': 4,
+    summary_fields_verbas_reflexos.append({'label': '', 'key': 'total_dsr_reflexes', 'type': 'F', 'order': 5,
 
                                            'is_editable': False,
                                            'required': False}, )

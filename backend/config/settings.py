@@ -79,7 +79,8 @@ ALLOWED_HOSTS = [
     'brdcvmdev07',
     'brfojwanderley',
     'brsphearndt',  # TEMP
-    'brspwaoliveira'
+    'brspwaoliveira',
+    '10.127.145.231'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -87,7 +88,8 @@ CSRF_TRUSTED_ORIGINS = [
     'https://brfojwanderley:5173',
     'https://brdcvmdev07/juca',
     'https://brsphearndt:8080/juca',
-    'https://uat.fadigitallab.deloitte.com.br/juca'
+    'https://uat.fadigitallab.deloitte.com.br/juca',
+    'https://10.127.145.231:8000/juca'
 ]
 # Application definition
 
