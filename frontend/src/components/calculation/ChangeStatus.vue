@@ -165,7 +165,13 @@ const onSubmit = async () => {
               outlined
               dense
               :rules="[(value: any) => !!value || 'Este campo é obrigatório!']"
-            />
+            >
+              <template #no-option>
+                <div class="p-3 text-center">
+                  Você não tem permissão para alterar o Status do Cálculo no momento.
+                </div>
+              </template>
+            </QSelect>
             <InputUsers
               v-if="editingStep.nextStep === 'B'"
               v-model="editingStep.specialApprovers"

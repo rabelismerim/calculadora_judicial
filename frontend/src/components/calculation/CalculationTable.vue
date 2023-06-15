@@ -41,7 +41,7 @@ watchEffect(() => {
 const selectRow = (index: number, step: string) => {
   if (!props.validation || step !== 'A')
     return
-  const rowIndex = selectedRows.findIndex((value: number) => index === value)
+  const rowIndex = selectedRows?.findIndex((value: number) => index === value)
   if (rowIndex > -1) {
     selectedRows.splice(rowIndex, 1)
     return
@@ -166,8 +166,11 @@ const calculationColumns: TableColumn[] = [
   },
   {
     name: 'total',
-    field: 'statement',
-    format: (value: any) => value?.total ? formatNumber(+value.total, 2) : '-',
+    field: 'allFunds',
+    format: (value: any = []) => formatNumber(value
+      ?.flatMap(({ data }: any) => data)
+      ?.map(({ total }: any) => total)
+      ?.reduce((acc: number, cur: number) => acc + cur, 0), 2) || '-',
     label: 'Valor',
     align: 'left',
     sortable: true,
