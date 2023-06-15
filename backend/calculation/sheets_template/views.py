@@ -132,8 +132,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                 if type(sheet.title) == str and sheet.title.find('JUCA=') >= 0:
                     if str(sheet.title)[5:]=='Calculation':
                         copy_sheet=archive_view[sheet.title]
-                        cnt_row=2
                         for item in funds:
+                            cnt_row=2
                             archive_view.copy_worksheet(copy_sheet)
                             ws = archive_view[sheet.title+' Copy']
                             ws.title = item.name
@@ -150,59 +150,164 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 ws['D'+str(cnt_row+4)].font=font
                                 ws['D'+str(cnt_row+5)]="Descrição"
                                 ws['D'+str(cnt_row+5)].font=font
+                                grayFill = PatternFill(start_color='00C0C0C0',
+                                end_color='00C0C0C0',
+                                fill_type='solid')
+                                ws['D'+str(cnt_row+2)]='Integrações sobre '+str(item.rate)
+                                ws['D'+str(cnt_row+2)].font=font
+                                ws['D'+str(cnt_row+3)]=item.name
+                                ws['D'+str(cnt_row+3)].font=font
+                                ws['D'+str(cnt_row+4)]=str(item.classes)
+                                ws['D'+str(cnt_row+4)].font=font
+                                ws['D'+str(cnt_row+5)]="Descrição"
+                                ws['D'+str(cnt_row+5)].font=font
+                                ws['D'+str(cnt_row+5)].fill=grayFill
                                 ws['E'+str(cnt_row+5)]="Data base"
                                 ws['E'+str(cnt_row+5)].font=font
+                                ws['E'+str(cnt_row+5)].fill=grayFill
                                 ws['F'+str(cnt_row+5)]="Súmula 381"
                                 ws['F'+str(cnt_row+5)].font=font
+                                ws['F'+str(cnt_row+5)].fill=grayFill
                                 ws['G'+str(cnt_row+5)]="Valor histórico"
                                 ws['G'+str(cnt_row+5)].font=font
+                                ws['G'+str(cnt_row+5)].fill=grayFill
                                 ws['H'+str(cnt_row+5)]="Indíce na data base"
                                 ws['H'+str(cnt_row+5)].font=font
+                                ws['H'+str(cnt_row+5)].fill=grayFill
                                 ws['I'+str(cnt_row+5)]="Indíce na recuperação"
                                 ws['I'+str(cnt_row+5)].font=font
+                                ws['I'+str(cnt_row+5)].fill=grayFill
                                 ws['J'+str(cnt_row+5)]="Valor corrigido"
                                 ws['J'+str(cnt_row+5)].font=font
+                                ws['J'+str(cnt_row+5)].fill=grayFill
                                 cnt_row=cnt_row+6
                                 for item1 in plan_build:
-                                    ws['D'+str(cnt_row)]=str(item1.description)
-                                    ws['E'+str(cnt_row)]=item1.data_base
+                                    ws['D'+str(cnt_row)]=str(item1.description).strip()
+                                    ws['E'+str(cnt_row)].alignment = Alignment(horizontal="center")
+                                    ws['E'+str(cnt_row)]=datetime.strftime(item1.data_base, "%d/%m/%Y")
+                                    ws['F'+str(cnt_row)].alignment = Alignment(horizontal="center")
                                     ws['F'+str(cnt_row)]='Sim' if item1.summary==True else 'Não'
-                                    ws['G'+str(cnt_row)]=item1.historical_value
-                                    ws['H'+str(cnt_row)]=item1.monetarycorrectionintegrations.index_data_base
-                                    ws['I'+str(cnt_row)]=item1.monetarycorrectionintegrations.index_recovering
-                                    ws['J'+str(cnt_row)]=item1.monetarycorrectionintegrations.corrected_value
+                                    ws['G'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                    ws['G'+str(cnt_row)]='{:,.2f}'.format(float(item1.historical_value)).strip().replace('.','-').replace(',','.').replace('-',',')
+                                    ws['H'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                    ws['H'+str(cnt_row)]='{:,.5f}'.format(float(item1.monetarycorrectionintegrations.index_data_base)).strip().replace('.','-').replace(',','.').replace('-',',')
+                                    ws['I'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                    ws['I'+str(cnt_row)]='{:,.5f}'.format(float(item1.monetarycorrectionintegrations.index_recovering)).strip().replace('.','-').replace(',','.').replace('-',',')
+                                    ws['J'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                    ws['J'+str(cnt_row)]='{:,.2f}'.format(float(item1.monetarycorrectionintegrations.corrected_value)).strip().replace('.','-').replace(',','.').replace('-',',')
                                     cnt_row=cnt_row+1
+                            else:
+                                font = Font(bold=True)
+                                ws['D'+str(cnt_row)]='Crédito '+item.template.name
+                                ws['D'+str(cnt_row)].font=font
+                                grayFill = PatternFill(start_color='00C0C0C0',
+                                end_color='00C0C0C0',
+                                fill_type='solid')
+                                ws['D'+str(cnt_row+2)]='Integrações sobre '+str(item.rate)
+                                ws['D'+str(cnt_row+2)].font=font
+                                ws['D'+str(cnt_row+3)]=item.name
+                                ws['D'+str(cnt_row+3)].font=font
+                                ws['D'+str(cnt_row+4)]=str(item.classes)
+                                ws['D'+str(cnt_row+4)].font=font
+                                ws['D'+str(cnt_row+5)]="Descrição"
+                                ws['D'+str(cnt_row+5)].font=font
+                                ws['D'+str(cnt_row+5)].fill=grayFill
+                                ws['E'+str(cnt_row+5)]="Data base"
+                                ws['E'+str(cnt_row+5)].font=font
+                                ws['E'+str(cnt_row+5)].fill=grayFill
+                                ws['F'+str(cnt_row+5)]="Súmula 381"
+                                ws['F'+str(cnt_row+5)].font=font
+                                ws['F'+str(cnt_row+5)].fill=grayFill
+                                ws['G'+str(cnt_row+5)]="Valor histórico"
+                                ws['G'+str(cnt_row+5)].font=font
+                                ws['G'+str(cnt_row+5)].fill=grayFill
+                                ws['H'+str(cnt_row+5)]="Indíce na data base"
+                                ws['H'+str(cnt_row+5)].font=font
+                                ws['H'+str(cnt_row+5)].fill=grayFill
+                                ws['I'+str(cnt_row+5)]="Indíce na recuperação"
+                                ws['I'+str(cnt_row+5)].font=font
+                                ws['I'+str(cnt_row+5)].fill=grayFill
+                                ws['J'+str(cnt_row+5)]="Valor corrigido"
+                                ws['J'+str(cnt_row+5)].font=font
+                                ws['J'+str(cnt_row+5)].fill=grayFill
+                                cnt_row=cnt_row+6
                             cnt_row=cnt_row+2
                             plan_build1 = item.get_all_statement_funds()
                             if plan_build1 and len(plan_build1)>0:
                                 font = Font(bold=True)
+                                grayFill = PatternFill(start_color='00C0C0C0',
+                                end_color='00C0C0C0',
+                                fill_type='solid')
                                 ws['D'+str(cnt_row)]=str(plan_build1[0].fund.rate)
                                 ws['D'+str(cnt_row)].font=font
                                 ws['D'+str(cnt_row+1)]="Data base"
                                 ws['D'+str(cnt_row+1)].font=font
+                                ws['D'+str(cnt_row+1)].fill=grayFill
                                 ws['E'+str(cnt_row+1)]="Súmula 381"
                                 ws['E'+str(cnt_row+1)].font=font
+                                ws['E'+str(cnt_row+1)].fill=grayFill
                                 ws['F'+str(cnt_row+1)]="Reflexos DSR"
                                 ws['F'+str(cnt_row+1)].font=font
+                                ws['F'+str(cnt_row+1)].fill=grayFill
                                 ws['G'+str(cnt_row+1)]="Valor histórico"
                                 ws['G'+str(cnt_row+1)].font=font
+                                ws['G'+str(cnt_row+1)].fill=grayFill
                                 ws['H'+str(cnt_row+1)]="Indíce na data base"
                                 ws['H'+str(cnt_row+1)].font=font
+                                ws['H'+str(cnt_row+1)].fill=grayFill
                                 ws['I'+str(cnt_row+1)]="Indíce na recuperação"
                                 ws['I'+str(cnt_row+1)].font=font
+                                ws['I'+str(cnt_row+1)].fill=grayFill
                                 ws['J'+str(cnt_row+1)]="Valor corrigido"
                                 ws['J'+str(cnt_row+1)].font=font
+                                ws['J'+str(cnt_row+1)].fill=grayFill
                                 cnt_row=cnt_row+2
                                 for item2 in plan_build1:
-                                    ws['D'+str(cnt_row)]=item2.data_base
+                                    ws['D'+str(cnt_row)]=datetime.strftime(item2.data_base, "%d/%m/%Y")
+                                    ws['E'+str(cnt_row)].alignment = Alignment(horizontal="center")
                                     ws['E'+str(cnt_row)]='Sim' if item2.summary==True else 'Não'
-                                    ws['F'+str(cnt_row)]=item2.dsr_reflexes
-                                    ws['G'+str(cnt_row)]=item2.historical_value
+                                    ws['F'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                    ws['F'+str(cnt_row)]='{:,.2f}'.format(float(item2.dsr_reflexes)).replace('.','-').replace(',','.').replace('-',',')
+                                    ws['G'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                    ws['G'+str(cnt_row)]='{:,.2f}'.format(float(item2.historical_value)).replace('.','-').replace(',','.').replace('-',',')
                                     value_index=item2.get_monetary_correction()
-                                    ws['H'+str(cnt_row)]=value_index.index_data_base
-                                    ws['I'+str(cnt_row)]=value_index.index_recovering
-                                    ws['J'+str(cnt_row)]=str(value_index).split(' - ')[2]
+                                    ws['H'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                    ws['H'+str(cnt_row)]='{:,.5f}'.format(float(value_index.index_data_base)).replace('.','-').replace(',','.').replace('-',',')
+                                    ws['I'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                    ws['I'+str(cnt_row)]='{:,.5f}'.format(float(value_index.index_recovering)).replace('.','-').replace(',','.').replace('-',',')
+                                    ws['J'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                    ws['J'+str(cnt_row)]='{:,.2f}'.format(float(str(value_index).split(' - ')[2])).replace('.','-').replace(',','.').replace('-',',')
                                     cnt_row=cnt_row+1
+                            else:
+                                font = Font(bold=True)
+                                grayFill = PatternFill(start_color='00C0C0C0',
+                                end_color='00C0C0C0',
+                                fill_type='solid')
+                                ws['D'+str(cnt_row)]=str(item.rate)
+                                ws['D'+str(cnt_row)].font=font
+                                ws['D'+str(cnt_row+1)]="Data base"
+                                ws['D'+str(cnt_row+1)].font=font
+                                ws['D'+str(cnt_row+1)].fill=grayFill
+                                ws['E'+str(cnt_row+1)]="Súmula 381"
+                                ws['E'+str(cnt_row+1)].font=font
+                                ws['E'+str(cnt_row+1)].fill=grayFill
+                                ws['F'+str(cnt_row+1)]="Reflexos DSR"
+                                ws['F'+str(cnt_row+1)].font=font
+                                ws['F'+str(cnt_row+1)].fill=grayFill
+                                ws['G'+str(cnt_row+1)]="Valor histórico"
+                                ws['G'+str(cnt_row+1)].font=font
+                                ws['G'+str(cnt_row+1)].fill=grayFill
+                                ws['H'+str(cnt_row+1)]="Indíce na data base"
+                                ws['H'+str(cnt_row+1)].font=font
+                                ws['H'+str(cnt_row+1)].fill=grayFill
+                                ws['I'+str(cnt_row+1)]="Indíce na recuperação"
+                                ws['I'+str(cnt_row+1)].font=font
+                                ws['I'+str(cnt_row+1)].fill=grayFill
+                                ws['J'+str(cnt_row+1)]="Valor corrigido"
+                                ws['J'+str(cnt_row+1)].font=font
+                                ws['J'+str(cnt_row+1)].fill=grayFill
+                                cnt_row=cnt_row+3
+
             for sheet in archive_view:
                 if type(sheet.title) == str and sheet.title.find('JUCA=') >= 0:
                     archive_view.remove_sheet(archive_view[sheet.title])
