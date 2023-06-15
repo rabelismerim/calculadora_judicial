@@ -2,6 +2,8 @@
 const attrs = useAttrs() as any
 const { dialog } = useQuasar()
 
+const { hasPermissions } = $user
+
 let loading = $ref(false)
 
 const menu = $ref('project')
@@ -149,7 +151,7 @@ const openCredit = async (credit: any) => {
     const result = await fetch(`${host}${table.endPoint + credit.id}/`, { method: 'GET', headers })
       .then((result: any) => result.json())
       .then((result: any) => Object.values(Object.values(result).at(0) as any)
-        .find((value: any) => Array.isArray(value)))
+        ?.find((value: any) => Array.isArray(value)))
     table.values = result || clone([])
     if (table.values?.length === 0)
       addCreditValues(table, 1)
@@ -282,6 +284,7 @@ const statusColors: any = {
   S: '#c4d600', // Requested
   C: '#86BC25', // Concluded
   E: '#007cb0', // In Progress
+  I: '#c4d600', // In Progress
   F: '#DA291C', // Calculation failed - rate not found
   G: '#DA291C', // Calculation failed - rate RJ not found
   H: '#DA291C', // Calculation failed - rate data base not found
@@ -297,6 +300,8 @@ const statusLabel = (status: string) => {
     return 'Solicitado'
   if (status === 'E')
     return 'Em Progresso'
+  if (status === 'I')
+    return 'Registrado'
   if (status === 'C')
     return 'Sucesso'
   if (['F', 'G', 'H', 'A', 'P', 'R', 'D', 'B', 'ERROR'].includes(status))
@@ -317,6 +322,8 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
     .map((item: string) => item.trim())
     .filter((item: string) => !!item)
   const values = (() => {
+    if (type === 'text')
+      return splitData
     if (type === 'float' || type === 'integer') {
       return splitData
         .map((item: string) => getValidNumber(item))
@@ -326,7 +333,7 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
         .map((item: string) => getValidDate(item))
     }
   })()
-  const data = table.slice(index, index + values.length)
+  const data = table.slice(index, index + values?.length)
   for (const index in data)
     data[index][key] = values[index]
 }
@@ -421,6 +428,7 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
                   label="Excluir Crédito"
                   icon="i-carbon-trash-can"
                   transparent
+                  :disabled="!hasPermissions(['delete_calculation'])"
                   @click.stop="removeCredit(credit)"
                 />
               </div>
@@ -470,7 +478,7 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
                           <button
                             v-if="column.name === 'delete'"
                             class="cursor-pointer bg--error h-10 w-10 rounded-.5 border-1 border-red-8 flex justify-center items-center"
-                            :disabled="['A', 'B'].includes(calculation?.step)"
+                            :disabled="['A', 'B'].includes(calculation?.step) || !hasPermissions(['delete_calculation'])"
                             @click.stop="removeCreditValue(table.values, props.row, props.rowIndex, table)"
                           >
                             <div class="i-carbon-trash-can bg-white" />

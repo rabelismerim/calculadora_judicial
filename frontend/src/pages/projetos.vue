@@ -57,7 +57,7 @@ const loadProjects = async () => {
 
     const recoveringResult = await recoveringService.getRecoverings()
     const getRecovering = (project: string) => recoveringResult
-      .find(({ projectId }: any) => projectId === project)
+      ?.find(({ projectId }: any) => projectId === project)
 
     projects = projectResult?.map((project: any) => ({
       ...getRecovering(project.id),

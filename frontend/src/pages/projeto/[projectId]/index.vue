@@ -2,6 +2,8 @@
 const attrs = useAttrs() as any
 const router = useRouter()
 
+const { hasPermissions } = $user
+
 interface Project {
   recoverings: {
     id: string
@@ -184,6 +186,7 @@ onMounted(async () => {
         @click="showParticipants = true"
       />
       <Btn
+        v-if="hasPermissions(['change_project'])"
         label="Editar"
         icon="i-carbon-edit"
         :disabled="!project.id || loading"
