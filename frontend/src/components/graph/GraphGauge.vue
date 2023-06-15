@@ -34,6 +34,7 @@ const mappedValues = computed(() => props.values.reduce((acc: { items: any[]; to
 const strokeSize = computed(() => 2 * Math.PI * props.radius)
 
 const total = computed(() => props.values.reduce((acc, { count }) => acc + count, 0))
+const isAllNull = computed(() => props.values.every(({ count }: any) => count === 0))
 </script>
 
 <template>
@@ -59,21 +60,23 @@ const total = computed(() => props.values.reduce((acc, { count }) => acc + count
             stroke="#DFDFDF"
             class="fill-none"
           />
-          <circle
-            v-for="(item, i) in mappedValues"
-            :key="item.label"
-            :cx="radius + strokeWidth / 2"
-            :cy="radius + strokeWidth / 2"
-            :r="radius"
-            :stroke="item.color ? item.color : colors[i]"
-            :stroke-width="strokeWidth"
-            class="fill-none origin-center -rotate-90"
-            :style="{
-              strokeDasharray: strokeSize,
-              strokeDashoffset: (1 - (item.count / total)) * strokeSize,
-              transform: `rotate(${(360 / total) * item.start - 90}deg)`,
-            }"
-          />
+          <g v-if="!isAllNull">
+            <circle
+              v-for="(item, i) in mappedValues"
+              :key="item.label"
+              :cx="radius + strokeWidth / 2"
+              :cy="radius + strokeWidth / 2"
+              :r="radius"
+              :stroke="item.color ? item.color : colors[i]"
+              :stroke-width="strokeWidth"
+              class="fill-none origin-center -rotate-90"
+              :style="{
+                strokeDasharray: strokeSize,
+                strokeDashoffset: (1 - (item.count / total)) * strokeSize,
+                transform: `rotate(${(360 / total) * item.start - 90}deg)`,
+              }"
+            />
+          </g>
           <g class="origin-center translate-x-50% translate-y-50%">
             <text y="0" class="font-bold" text-anchor="middle">
               {{ total }}

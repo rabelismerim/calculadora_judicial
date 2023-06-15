@@ -112,11 +112,11 @@ onMounted(async () => {
   loadAll()
   loading = true
   try {
-    users = await usersService.getUsers()
-    judges = await projectService.getJudges()
-    lawyers = await projectService.getLawyers()
-    courts = await projectService.getCourts()
-    regions = await projectService.getRegions()
+    users = await usersService.getUsers() || []
+    judges = await projectService.getJudges() || []
+    lawyers = await projectService.getLawyers() || []
+    courts = await projectService.getCourts() || []
+    regions = await projectService.getRegions() || []
   }
   catch (error) {
     printError('ERROR ON LOAD OPTIONS OF NEWPROJECT:', error)
