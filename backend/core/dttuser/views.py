@@ -285,14 +285,3 @@ class UserDttApi(AbstractUserDttApi):
             login(self.request, user_authenticated)
         serializer = self.get_serializer_class()
         return JsonResponse({'user': serializer(request.user, many=False).data}, status=status.HTTP_201_CREATED)
-#
-users = User.objects.all()
-for x in users:
-    if x.userpicture:
-        data = ContentFile(base64.b64decode(x.userpicture))
-        image_data = base64.b64decode(x.userpicture)
-        file_hash = hashlib.md5(image_data).hexdigest()
-        file_name = f"{file_hash}.jpeg"
-        if x.user_img and str(x.user_img.name) in file_name is False:
-            x.user_img.save(file_name, data, save=True)  # image is User's model field
-            x.save()
