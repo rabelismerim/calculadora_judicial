@@ -158,9 +158,9 @@ class UserDttSchema(serializers.ModelSerializer):
     status_display = serializers.CharField(source='get_status_display', read_only=True)
 
     full_name = serializers.CharField(read_only=True, source='get_full_name')
-    user_url = serializers.SerializerMethodField(read_only=True, allow_null=True)
+    picture_url = serializers.SerializerMethodField(read_only=True, allow_null=True)
 
-    def get_user_url(self, obj):
+    def get_picture_url(self, obj):
         if obj.user_img:
             return obj.user_img.url
         else:

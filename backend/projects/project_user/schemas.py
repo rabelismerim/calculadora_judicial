@@ -54,9 +54,9 @@ class ProjectUserProjectSchema(AbstractModelSchema):
     full_name = serializers.CharField(source='user.get_full_name', read_only=True)
     userpicture = serializers.CharField(source='user.userpicture', read_only=True)
     groups = GroupSchema(many=True, read_only=True, exclude=('permissions',))
-    user_url = serializers.SerializerMethodField(read_only=True, allow_null=True)
+    picture_url = serializers.SerializerMethodField(read_only=True, allow_null=True)
 
-    def get_user_url(self, obj):
+    def get_picture_url(self, obj):
         if obj.user.user_img:
             return obj.user.user_img.url
 
