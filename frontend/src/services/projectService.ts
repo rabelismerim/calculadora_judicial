@@ -49,15 +49,16 @@ const getProject = (id: string) => api
   .then((project: any) => {
     const { projectUsers = [], recoverings = [] } = project
 
-    project.recoverings = recoverings.map((recovering: any) => ({
+    project.recoverings = recoverings?.map((recovering: any) => ({
       ...recovering,
-      creditors: recovering.creditors.map((creditor: any) => ({ ...creditor, isValidating: false })),
+      creditors: recovering.creditors?.map((creditor: any) => ({ ...creditor, isValidating: false })),
     }))
 
     const participants = projectUsers.reduce((acc: any, current: any) => {
-      const { idUser, firstName, lastName, username, userpicture, groups } = current
+      const { id, idUser, firstName, lastName, username, userpicture, groups } = current
       const user = {
         id: idUser,
+        idUser: id,
         picture: userpicture,
         fullName: `${firstName} ${lastName}`,
         email: `${username}@deloitte.com`,
@@ -91,7 +92,7 @@ const newProject = (project: any) => {
     engagement: {
       numbers: engagements,
     },
-    recoverings: recoverings.map((recovering: any) => ({
+    recoverings: recoverings?.map((recovering: any) => ({
       entity: recovering,
     })),
     executors: executors?.map(mapId),
@@ -156,7 +157,7 @@ const updateProject = ({
 const getJudges = () => api
   .get('/v1/projects/judge/')
   .then((result: any) => result?.judges || [])
-  .then(data => data.map(({ description, id }: any) => ({ description, id })))
+  .then(data => data?.map(({ description, id }: any) => ({ description, id })))
 const newJudge = (description: string) => api
   .post('/v1/projects/judge/', { description })
   .then((result: any) => result?.judge || {})
@@ -165,8 +166,8 @@ const newJudge = (description: string) => api
 // LAWYERS
 const getLawyers = () => api
   .get('/v1/projects/lawyer/')
-  .then(({ lawyers }: any) => lawyers)
-  .then(data => data.map(({ description, id }: any) => ({ description, id })))
+  .then((result: any) => result?.lawyers)
+  .then(data => data?.map(({ description, id }: any) => ({ description, id })))
 const newLawyer = (description: string) => api
   .post('/v1/projects/lawyer/', { description })
   .then((result: any) => result?.lawyer || {})
@@ -175,8 +176,8 @@ const newLawyer = (description: string) => api
 // REGIONS
 const getRegions = () => api
   .get('/v1/projects/region/')
-  .then(({ regions }: any) => regions)
-  .then(data => data.map(({ description, id }: any) => ({ description, id })))
+  .then((result: any) => result?.regions)
+  .then(data => data?.map(({ description, id }: any) => ({ description, id })))
 const newRegion = (description: string) => api
   .post('/v1/projects/region/', { description })
   .then((result: any) => result?.region || {})
@@ -185,8 +186,8 @@ const newRegion = (description: string) => api
 // COURTS
 const getCourts = () => api
   .get('/v1/projects/court/')
-  .then(({ courts }: any) => courts)
-  .then(data => data.map(({ description, id }: any) => ({ description, id })))
+  .then((result: any) => result?.courts)
+  .then(data => data?.map(({ description, id }: any) => ({ description, id })))
 const newCourt = (description: string) => api
   .post('/v1/projects/court/', { description })
   .then((result: any) => result?.court || {})
@@ -231,18 +232,20 @@ const getProjectBigNumbers = (projectId: string) => api
   .get(`/v1/big_number/project/${projectId}/`)
   .then((data: any) => ({
     ...data,
-    byStep: data?.byStep.map(({ total, step, stepDisplay }: any) => ({
+    byStep: data?.byStep?.map(({ total, step, stepDisplay }: any) => ({
       color: stepColors[step],
       count: total,
       label: stepDisplay,
     })) || [],
-    classesCalculationsCount: data?.totalClassesCreditor.map(({ classesDisplay, quantity }: any) => ({
+    classesCalculationsCount: data?.totalClassesCreditor?.map(({ classesDisplay, quantity }: any) => ({
       label: classesDisplay.split(' - ')?.[0] || '',
       count: quantity,
     })),
-    classesCalculationsTotal: data?.totalClassesCreditor.map(({ classesDisplay, totalCalculated }: any) => ({
+    classesCalculationsTotal: data?.totalClassesCreditor?.map(({ classesDisplay, totalCalculated }: any) => ({
       label: classesDisplay.split(' - ')?.[0] || '',
-      count: (totalCalculated / 1000).toFixed(2),
+      count: totalCalculated / 1000,
+      digits: 2,
+      hint: formatNumber(totalCalculated, 2),
     })),
   }))
 const getCreditorBigNumbers = (creditorId: string) => api

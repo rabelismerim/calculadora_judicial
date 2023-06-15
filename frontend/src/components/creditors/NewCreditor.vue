@@ -165,8 +165,8 @@ const onSubmit = async () => {
             class="flex gap-4 py-1 items-center"
           >
             <div>
-              {{ options.recoverings.find(({ id }) => id === recoveringId)?.entity?.name }}
-              - {{ options.rates.find(({ id }) => id === rateId)?.index }}
+              {{ options.recoverings?.find(({ id }) => id === recoveringId)?.entity?.name }}
+              - {{ options.rates?.find(({ id }) => id === rateId)?.index }}
             </div>
             <button type="button" class="color--error hover:bg--error/12 rounded p-2" @click="removeRecovering(index)">
               <div class="i-carbon-trash-can" />
