@@ -169,7 +169,7 @@ class UserDttSchema(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ['email', 'username', 'first_name', 'last_name', 'password', 'password_confirm', 'full_name',
-                  'user_url',
+                  'picture_url',
                   'userpicture', 'status', 'status_display', 'is_staff', 'user_permissions', 'date_joined', 'is_active',
                   'role', 'role_display', 'groups', 'subgroups', 'id']
         read_only_fields = ('user_permissions', 'date_joined', 'is_active')
