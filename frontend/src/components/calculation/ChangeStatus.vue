@@ -3,11 +3,17 @@ const props = withDefaults(defineProps<{
   modelValue: boolean
   history: any[]
   options: any
-  calculationId?: string
+  calculation?: any
+  status?: string
+  specialApprovers?: any[]
 }>(),
 {
   modelValue: false,
   history: () => ([]),
+  specialApprovers: () => ([]),
+  calculation: () => ({
+    specialApprovers: [],
+  }),
 })
 const emit = defineEmits(['update:modelValue', 'updateStatus'])
 let step = $ref('history')
@@ -46,12 +52,12 @@ const clear = async () => {
 const form = ref(null as any)
 const onSubmit = async () => {
   const isValid = await form.value.validate()
-  if (!props.calculationId || !isValid)
+  if (!props.calculation?.id || !isValid)
     return
 
   loading = true
   try {
-    await calculationService.changeStep(editingStep, props.calculationId)
+    await calculationService.changeStep(editingStep, props.calculation?.id)
     clear()
     emit('updateStatus')
     notify({ message: 'O Status do Cálculo foi alterado com sucesso!' })
@@ -76,7 +82,7 @@ const onSubmit = async () => {
     <QTabPanels v-model="step" animated>
       <QTabPanel name="history">
         <div class="max-h-100">
-          <QTimeline v-if="history.length > 0" color="primary" layout="comfortable">
+          <QTimeline v-if="history?.length > 0" color="primary" layout="comfortable">
             <QTimelineEntry
               v-for="{ createdAt, createUser, type, ...rest } in history"
               :key="createdAt"
@@ -123,10 +129,34 @@ const onSubmit = async () => {
       <QTabPanel name="status">
         <QForm ref="form" @submit="onSubmit">
           <div class="text-h6">
+            <CalculationFluxogram
+              :status="status"
+              class="mb-5"
+            />
+            <div v-if="calculation?.step === 'B'" class="text-sm mb-4">
+              <div class="font-bold mb-2">
+                Aprovadores Especiais
+              </div>
+              <div
+                v-for="approver in calculation.specialApprovers as any[]"
+                :key="approver.id"
+                class="flex gap-2 items-center mb-2"
+              >
+                <UserPicture
+                  v-model="approver.projectUser"
+                  class="h-7 w-7"
+                />
+                <div>{{ approver?.projectUser?.fullName }}</div>
+                <StatusTag
+                  :label="approver?.approved ? 'Aprovou' : 'Aguardando aprovação...'"
+                  :color="approver?.approved ? '#87bc24' : '#c4d600'"
+                />
+              </div>
+            </div>
             <QSelect
               v-model="editingStep.nextStep"
               label="Enviar para Status"
-              :disable="loading || !calculationId"
+              :disable="loading || !calculation?.id"
               :options="options?.steps"
               option-label="legend"
               option-value="id"
@@ -136,12 +166,21 @@ const onSubmit = async () => {
               dense
               :rules="[(value: any) => !!value || 'Este campo é obrigatório!']"
             />
+            <InputUsers
+              v-if="editingStep.nextStep === 'B'"
+              v-model="editingStep.specialApprovers"
+              label="Aprovadores Especiais"
+              value-key="idUser"
+              :users="specialApprovers"
+              :rules="[(value: any) => value?.length > 0 || 'Este campo é obrigatório!']"
+            />
             <QInput
               v-model="editingStep.comment"
               label="Comentário"
-              :disable="loading || !calculationId"
+              :disable="loading || !calculation?.id"
               outlined
               type="textarea"
+              :rules="[(value: any) => !!value || 'Este campo é obrigatório!']"
             />
           </div>
         </QForm>
@@ -160,7 +199,7 @@ const onSubmit = async () => {
         size="xs"
       />
       <Btn label="Voltar" outlined @click="step = 'history'" />
-      <Btn label="salvar" :disabled="loading || !props.calculationId" :loading="loading" @click="onSubmit" />
+      <Btn label="salvar" :disabled="loading || !props.calculation?.id" :loading="loading" @click="onSubmit" />
     </div>
   </Modal>
 </template>

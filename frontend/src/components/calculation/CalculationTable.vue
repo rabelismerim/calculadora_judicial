@@ -62,7 +62,7 @@ const onValidation = () => {
       notify({ message: 'Cálculos validados com sucesso!' })
     }
     catch (error) {
-      printError('ERROR ON VALIDATING CREDITORS TABLE:', error)
+      printError('ERROR ON VALIDATING CALCULATION TABLE:', error)
     }
     finally {
       loading = false
@@ -128,7 +128,7 @@ const calculationColumns: TableColumn[] = [
     field: 'classes',
     format: (value: any[]) => value && value
       .filter(({ percentageCalculated }: any) => !!percentageCalculated)
-      .map(({ classeDisplay, percentageCalculated }: any) => `${classeDisplay?.split('-').at(0).trim()}: ${(percentageCalculated || 0)?.toFixed(2)}%`).join(' ,'),
+      .map(({ classeDisplay, percentageCalculated }: any) => `${classeDisplay?.split('-').at(0).trim()}: ${formatNumber(percentageCalculated || 0, 2)}%`).join(' ,'),
     label: 'Classe',
     align: 'left',
     sortable: true,
@@ -159,16 +159,15 @@ const calculationColumns: TableColumn[] = [
   },
   {
     name: 'specialapprover',
-    field: 'specialApprover',
-    label: 'Aprovador Especial',
-    format: (value: any) => value?.fullName,
+    field: 'specialApprovers',
+    label: 'Aprovadores Especiais',
     align: 'left',
     sortable: true,
   },
   {
     name: 'total',
     field: 'statement',
-    format: (value: any) => value?.total ? (+value.total)?.toFixed(2) : '-',
+    format: (value: any) => value?.total ? formatNumber(+value.total, 2) : '-',
     label: 'Valor',
     align: 'left',
     sortable: true,
@@ -265,8 +264,34 @@ const statusColors: any = {
     </template>
     <template #body-cell-specialapprover="prop">
       <QTd>
-        <div v-if="prop.value">
-          {{ prop.value }}
+        <div v-if="prop.value?.length" class="flex gap-2">
+          <div v-for="approver in prop.value as any[]" :key="approver.id">
+            <UserPicture
+              v-model="approver.projectUser"
+              class="h-8 w-8 rounded-full border-3"
+              :class="{
+                'border--secondary': approver?.approved,
+                'border-yellow': !approver?.approved,
+              }"
+            />
+          </div>
+          <QTooltip class="pt-3">
+            <div
+              v-for="approver in prop.value as any[]"
+              :key="approver.id"
+              class="flex gap-2 items-center mb-2"
+            >
+              <UserPicture
+                v-model="approver.projectUser"
+                class="h-7 w-7"
+              />
+              <div>{{ approver?.projectUser?.fullName }}</div>
+              <StatusTag
+                :label="approver?.approved ? 'Aprovou' : 'Aguardando aprovação...'"
+                :color="approver?.approved ? '#87bc24' : '#c4d600'"
+              />
+            </div>
+          </QTooltip>
         </div>
         <div
           v-else-if="prop.row.step === 'B'"
@@ -317,7 +342,7 @@ const statusColors: any = {
     <div class="flex gap-6 items-center">
       <div>
         Valor Total Validado:
-        R$ {{ creditor.total?.toFixed(2) }}
+        R$ {{ formatNumber(creditor.total, 2) }}
       </div>
       <Btn v-if="validation === false" label="Validar Cálculos" @click="emit('update:validation', true)" />
       <div v-else class="flex gap-3">
