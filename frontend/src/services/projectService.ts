@@ -55,9 +55,10 @@ const getProject = (id: string) => api
     }))
 
     const participants = projectUsers.reduce((acc: any, current: any) => {
-      const { idUser, firstName, lastName, username, userpicture, groups } = current
+      const { id, idUser, firstName, lastName, username, userpicture, groups } = current
       const user = {
         id: idUser,
+        idUser: id,
         picture: userpicture,
         fullName: `${firstName} ${lastName}`,
         email: `${username}@deloitte.com`,
@@ -242,7 +243,9 @@ const getProjectBigNumbers = (projectId: string) => api
     })),
     classesCalculationsTotal: data?.totalClassesCreditor.map(({ classesDisplay, totalCalculated }: any) => ({
       label: classesDisplay.split(' - ')?.[0] || '',
-      count: (totalCalculated / 1000).toFixed(2),
+      count: totalCalculated / 1000,
+      digits: 2,
+      hint: formatNumber(totalCalculated, 2),
     })),
   }))
 const getCreditorBigNumbers = (creditorId: string) => api
