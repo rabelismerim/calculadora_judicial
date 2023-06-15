@@ -15,6 +15,7 @@ declare module '@vue/runtime-core' {
     Breadcrumbs: typeof import('./components/common/Breadcrumbs.vue')['default']
     Btn: typeof import('./components/common/Btn.vue')['default']
     BtnToggle: typeof import('./components/common/BtnToggle.vue')['default']
+    CalculationFluxogram: typeof import('./components/calculation/CalculationFluxogram.vue')['default']
     CalculationHeader: typeof import('./components/calculation/CalculationHeader.vue')['default']
     CalculationMenu: typeof import('./components/calculation/CalculationMenu.vue')['default']
     CalculationTable: typeof import('./components/calculation/CalculationTable.vue')['default']
