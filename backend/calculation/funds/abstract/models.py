@@ -59,6 +59,7 @@ CHOICES_STATUS_FUND = (('S', _('Requested')), ('C', _('Concluded')), ('E', _('In
                        ('R', _('Calculation failed - no date RJ')),
                        ('D', _('Calculation failed - no date Citation')),
                        ('B', _('Calculation failed - in exclusion')),
+                       ('I', _('Registered')),
                        )
 
 
@@ -214,7 +215,7 @@ class AbstractStatement(AbstractStatus):
 
     class Meta:
         abstract = True
-        ordering = ('-created_at', '-updated_at')
+        ordering = ('created_at', '-updated_at', 'data_base')
 
     def __str__(self):
         return f'{self.data_base} - {self.historical_value}'
@@ -225,6 +226,8 @@ class AbstractStatement(AbstractStatus):
             if self.is_extraconcursal is False:
                 raise serializers.ValidationError(
                     [_('This is an extra-bankruptcy budget, it is necessary to flag the extra-bankruptcy budget')])
+            self.status = 'I'
+
         super(AbstractStatement, self).save(*args, **kwargs)
 
 

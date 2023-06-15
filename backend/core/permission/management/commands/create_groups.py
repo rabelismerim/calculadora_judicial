@@ -58,6 +58,9 @@ groups = [
           },
          {'name': 'dttuser',
           'actions': ['view', 'add', 'change', 'delete'],
+          },
+         {'name': 'rates',
+          'actions': ['view', 'add', 'change', 'delete'],
           }
      ],
      'custom_perms': [all_projects, authorize_users]
@@ -80,6 +83,9 @@ groups = [
           'actions': ['view', 'add', 'change', 'delete'],
           },
          {'name': 'dttuser',
+          'actions': ['view', 'add', 'change', 'delete'],
+          },
+         {'name': 'rates',
           'actions': ['view', 'add', 'change', 'delete'],
           }
      ],
@@ -104,6 +110,9 @@ groups = [
           },
          {'name': 'dttuser',
           'actions': ['view', 'add', 'change', 'delete'],
+          },
+         {'name': 'rates',
+          'actions': ['view', 'add', 'change', 'delete'],
           }
      ],
      'custom_perms': [all_projects, authorize_users]
@@ -127,6 +136,9 @@ groups = [
           },
          {'name': 'dttuser',
           'actions': ['view', 'add', 'change', 'delete'],
+          },
+         {'name': 'rates',
+          'actions': ['view', 'add', 'change', 'delete'],
           }
      ],
      'custom_perms': [all_projects, authorize_users]
@@ -143,12 +155,15 @@ groups = [
           'actions': ['view'],
           },
          {'name': 'calculation',
-          'actions': ['view'],
+          'actions': ['view', 'add', 'change', 'delete'],
           },
          {'name': 'creditors',
           'actions': ['view'],
           },
          {'name': 'dttuser',
+          'actions': ['view'],
+          },
+         {'name': 'rates',
           'actions': ['view'],
           }
      ],
@@ -166,12 +181,15 @@ groups = [
           'actions': ['view'],
           },
          {'name': 'calculation',
-          'actions': ['view'],
+          'actions': ['view', 'add', 'change', 'delete'],
           },
          {'name': 'creditors',
           'actions': ['view'],
           },
          {'name': 'dttuser',
+          'actions': ['view'],
+          },
+         {'name': 'rates',
           'actions': ['view'],
           }
      ],
@@ -189,12 +207,15 @@ groups = [
           'actions': ['view'],
           },
          {'name': 'calculation',
-          'actions': ['view'],
+          'actions': ['view', 'add', 'change', 'delete'],
           },
          {'name': 'creditors',
           'actions': ['view'],
           },
          {'name': 'dttuser',
+          'actions': ['view'],
+          },
+         {'name': 'rates',
           'actions': ['view'],
           }
 
