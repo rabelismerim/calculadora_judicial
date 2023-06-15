@@ -7,11 +7,13 @@ const props = withDefaults(defineProps<{
   users?: any[]
   errorMessages?: any
   errorKey?: string
+  valueKey?: string
 }>(), {
   rules: () => ([]),
   users: () => ([]),
   errorMessages: () => ({}),
   errorKey: '',
+  valueKey: 'id',
 })
 const emit = defineEmits(['update:modelValue'])
 
@@ -46,7 +48,7 @@ const onFilter = (val: string, update: any) => {
     :error-message="!!errorMessages[errorKey] ? errorMessages[errorKey] : ''"
     outlined
     option-label="fullName"
-    option-value="id"
+    :option-value="valueKey"
     emit-value
     map-options
     use-input
