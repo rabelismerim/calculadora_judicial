@@ -7,7 +7,16 @@ const props = withDefaults(defineProps<{
   modelValue: false,
 })
 const emit = defineEmits(['update:modelValue', 'success'])
+const router = useRouter()
+
 const { hasProject } = $user
+
+const canGoTo = (project: any) => hasProject(project.id)
+const goTo = (project: any) => {
+  if (!canGoTo(project))
+    return
+  router.push({ path: `/projeto/${project.id}` })
+}
 </script>
 
 <template>
@@ -27,6 +36,7 @@ const { hasProject } = $user
           'cursor-pointer hover:bg--primary/20': hasProject(project.id),
           'cursor-not-allowed': !hasProject(project.id),
         }"
+        @click="goTo(project)"
       >
         {{ project.description }}
       </div>
