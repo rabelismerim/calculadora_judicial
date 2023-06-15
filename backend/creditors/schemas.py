@@ -89,4 +89,4 @@ class CreditorUpdateSchema(AbstractDescriptionSchema):
 
     class Meta:
         model = Creditor
-        fields = ('description', 'admission', 'dismissal', 'default_interest', 'fine', 'advocative_hours')
+        fields = ('description', 'admission', 'dismissal', 'default_interest', 'fine', 'advocative_hours', 'occurrence')

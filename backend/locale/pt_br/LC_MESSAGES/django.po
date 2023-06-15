@@ -619,6 +619,10 @@ msgstr "Falha no cálculo - sem data Citação"
 msgid "Calculation failed - in exclusion"
 msgstr "Falha no cálculo - sem data Citação"
 
+#: .\backend\calculation\funds\abstract\models.py:62
+msgid "Registered"
+msgstr "Registrado"
+
 #: .\backend\calculation\funds\abstract\models.py:66
 msgid "Calculation status"
 msgstr "Status do cálculo"
@@ -1634,19 +1638,19 @@ msgstr ""
 
 #: .\backend\calculation\models.py:25
 msgid "To Calculate"
-msgstr "à Calcular"
+msgstr "a Calcular"
 
 #: .\backend\calculation\models.py:26
 msgid "To Review"
-msgstr "à Revisar"
+msgstr "a Revisar"
 
 #: .\backend\calculation\models.py:27
 msgid "To Approve"
-msgstr "à Aprovar"
+msgstr "a Aprovar"
 
 #: .\backend\calculation\models.py:28
 msgid "To Approve Special"
-msgstr "à Aprovar Especialmente"
+msgstr "a Aprovar Especialmente"
 
 #: .\backend\calculation\models.py:29
 msgid "Finalized"
