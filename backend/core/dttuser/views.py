@@ -4,6 +4,11 @@ It is extended from an AbstractViewApi class and includes a CheckHasPermission p
 Api's responds with JSON data and uses rest_framework.schemas.openapi.AutoSchema to generate the API documents.
 Api's classes use the DttUser model and schema DttUser to work with data.
 """
+import base64
+import hashlib
+import uuid
+
+from django.core.files.base import ContentFile
 from rest_framework.exceptions import PermissionDenied
 
 from config.settings import IS_LOCALHOST, DTT_EMAIL, ROLES
@@ -280,3 +285,14 @@ class UserDttApi(AbstractUserDttApi):
             login(self.request, user_authenticated)
         serializer = self.get_serializer_class()
         return JsonResponse({'user': serializer(request.user, many=False).data}, status=status.HTTP_201_CREATED)
+#
+users = User.objects.all()
+for x in users:
+    if x.userpicture:
+        data = ContentFile(base64.b64decode(x.userpicture))
+        image_data = base64.b64decode(x.userpicture)
+        file_hash = hashlib.md5(image_data).hexdigest()
+        file_name = f"{file_hash}.jpeg"
+        if x.user_img and str(x.user_img.name) in file_name is False:
+            x.user_img.save(file_name, data, save=True)  # image is User's model field
+            x.save()

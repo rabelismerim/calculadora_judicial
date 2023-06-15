@@ -87,7 +87,7 @@ urlpatterns = [
     path('juca/logout/', views.LogoutView.as_view(), name='logout'),
 
     # VUE FRONTEND
-    re_path(r'^(?!juca\/admin|juca\/api|simple).*$', frontend_index, name='frontend'),
+    re_path(r'^(?!juca\/admin|juca\/api|simple|juca\/media).*$', frontend_index, name='frontend'),
     # path('juca/<path:resource>', frontend_index, name='frontend'),
 
     # Documentation
@@ -121,6 +121,6 @@ if ENABLE_SSO is False:
 # if IS_LOCALHOST or BRANCH_LOCAL:
 #     urlpatterns.extend([])
 
-if (str(os.getenv('ENV', )) == 'branch') or (str(os.getenv('ENV')) == 'hml'):
-    urlpatterns += static("/juca" + settings.MEDIA_URL,
-                          document_root=settings.MEDIA_ROOT)
+# if (str(os.getenv('ENV', )) == 'branch') or (str(os.getenv('ENV')) == 'hml'):
+#     urlpatterns += static(f"/juca" + settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(f"/juca" + settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

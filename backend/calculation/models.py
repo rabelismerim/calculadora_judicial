@@ -369,13 +369,14 @@ class Calculation(AbstractModel):
         """
         codename = f'can_change_{self.step.lower()}_to_{next_step.lower()}'
         user_executed = self.get_complete_project_user(user, codename)
+        approve_calculation = codename in self.codenames_to_special_approve
         if user_executed:
             group_name = user_executed.group_name
             user_groups = self.user_groups.copy()
             if group_name in user_groups:
                 selected_group = user_groups.pop(group_name)
 
-                if codename in self.codenames_to_special_approve:
+                if approve_calculation:
                     self._set_special_approvers(special_approvers)
 
                 self.__check_user_already_allocated([user_executed.user.id], selected_group=group_name)
@@ -384,6 +385,8 @@ class Calculation(AbstractModel):
         self.step = next_step
         self.validated = False
         self.save()
+        if approve_calculation:
+            self._check_approve_special_calculation()
 
     def __check_user_is_special_approver(self, special_approvers: list):
         """
@@ -467,15 +470,15 @@ class Calculation(AbstractModel):
 
         specials = SpecialApprover.objects.filter(project_user__id__in=special_approvers, approved=False)
         special_approvers_list = self.special_approvers.all()
-        special_approvers_approved = list(
-            self.special_approvers.filter(project_user__id__in=special_approvers, approved=True).values_list(
-                'project_user_id', flat=True))
+        special_approvers_approved = self.special_approvers.filter(project_user__id__in=special_approvers,
+                                                                   approved=True)
 
         specials_ids = []
         specials_bulk = []
         for approver_id in special_approvers:
-            if approver_id in special_approvers_approved:  # User already registered
-                specials_ids.append(approver_id)
+            user_special = special_approvers_approved.filter(project_user__id=approver_id).first()
+            if user_special:  # User already registered
+                specials_ids.append(user_special.id)
                 continue
             special = specials.filter(project_user_id=approver_id).first()
             if not special:
@@ -484,8 +487,9 @@ class Calculation(AbstractModel):
             specials_ids.append(special.id)
 
         SpecialApprover.objects.bulk_create(specials_bulk)
-        special_approvers_list.exclude(id__in=specials_ids, approved=False).delete()
+        special_approvers_list.exclude(id__in=specials_ids).exclude(approved=True).delete()
         self.special_approvers.add(*specials_ids)
+        # self._check_approve_special_calculation()
 
     def get_total_summed(self):
         return 0
