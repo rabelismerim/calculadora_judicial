@@ -12,9 +12,8 @@ Attributes:
       `fields` lists the names of all fields that should be included in the serialized
       representation.
 """
-from schedule.models import Schedule
+from apps.schedule.models import Schedule
 from base.schemas import AbstractDescriptionSchema
-from rest_framework import serializers
 
 
 class ScheduleSchema(AbstractDescriptionSchema):

@@ -44,7 +44,7 @@ class StatementIRRFUpdateSchema(AbstractDescriptionSchema):
         fund_id (serializers.UUIDField): The UUID of the related fund.
     """
     fund_id = serializers.UUIDField(read_only=True)
-
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
     class Meta:
         model = StatementIRRF
         exclude = ('fund',)

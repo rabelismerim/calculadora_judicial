@@ -173,6 +173,8 @@ def create_templates():
 
          'is_editable': False,
          'required': False},
+        {'label': 'Status', 'key': 'status_display', 'type': 'C', 'order': 6, 'is_editable': False,
+         'required': False},
     ]
 
     summary_main_fields = [

@@ -111,7 +111,7 @@ INSTALLED_APPS = [
     # 'vinaigrette',
     'modeltranslation',  # Custom field translation
     # 'debug_toolbar', # Debug query, views in realtime on navigation
-    'django_apscheduler', # Eventos crontab
+    'django_apscheduler',  # Eventos crontab
     # Base
     'base',
     'base.claim',
@@ -170,6 +170,10 @@ INSTALLED_APPS = [
 
     # Big Numbers - KPIS e Gráficos
     'big_number',
+
+    # Scheduler
+    'apps.schedule',
+    'apps.scrapper',
 
 ]
 

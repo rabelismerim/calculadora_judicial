@@ -18,7 +18,7 @@
 > #### Windows
 >* `.\\venv\\Scripts\\activate`
 > #### Linux
-> * `source venv/bin/activate`>
+> * `source venv/bin/activate`
 
 > * `pip install -r requirements.txt` para instalar as dependências necessárias para o projeto;
 

@@ -17,6 +17,6 @@ from utils import _
 
 class ScheduleConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'schedule'
+    name = 'apps.schedule'
     verbose_name = _('Schedule')
     verbose_plural_name = _('Schedules')
