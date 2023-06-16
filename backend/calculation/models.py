@@ -106,7 +106,11 @@ class Calculation(AbstractModel):
 
     # TODO: definir como @property?
     # True If edital AJ else False
-    has_edital = models.BooleanField(_('Edital art. 7º § 2 - 11.101/2005'), default=False)
+    # has_edital = models.BooleanField(_('Edital art. 7º § 2 - 11.101/2005'), default=False)
+    @property
+    def has_edital(self):
+        return self.creditor.has_notice_aj()
+
     premises = models.ManyToManyField(Premise, blank=True)
     is_adm = models.BooleanField(default=True)  # É administrativa ou judicial
 

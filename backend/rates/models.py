@@ -13,12 +13,36 @@ from rest_framework import serializers
 
 from utils import _
 
-
+UNIT_CHOICES = (
+    ('D','a.d'),
+    ('M','a.m'),
+    ('Y','a.a'),
+)
+PERIODICITY_CHOICES = (
+    ('D','Day'),
+    ('M','Month'),
+    ('Y','Year'),
+    ('Q','Quarterly'),
+)
 class Rate(AbstractModel):  # Indices
     index = models.CharField(_('Rate Name'), max_length=50)
     is_per_day = models.BooleanField(
         _('Is the Rate per day? day or month'), default=True)
     is_active = models.BooleanField(_('Rate is active?'), default=True)
+
+    # code = models.IntegerField(_('Code'), default=0)
+    # description = models.CharField(_('Description'), max_length=150, null=True, blank=True)
+    # unit = models.CharField(_('Unit'), max_length=1, choices=UNIT_CHOICES, default='D')
+    # periodicity = models.CharField(_('Periodicity'), max_length=1, choices=PERIODICITY_CHOICES, default='D')
+    # start_date = models.DateField(_('Fee end date'), null=True, blank=True)
+    # end_date = models.DateField(_('Fee end date'), null=True, blank=True)
+    # source = models.CharField(_('Source'), max_length=150, null=True, blank=True)
+    # C�digo, Nome
+    # completo, Unidade, Periodicidade, Data in�cio, Data
+    # do �ltimo
+    # valor
+    # da
+    # s�rie, Fonte, Especial
 
     def is_ipca_e_selic(self) -> bool:
         """

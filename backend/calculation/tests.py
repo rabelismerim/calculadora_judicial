@@ -33,7 +33,6 @@ class CalculationValues:
         "appeal_deposit": True,
         "has_advocative_hours": True,
         "date_credit_auth": "2023-04-10",
-        "has_edital": True,
         "recurral_deposit": 100,
         "archive_json": {'teste': 'teste'}
     }
@@ -47,7 +46,6 @@ class CalculationTest(AbstractTest):
     path = 'calculation'
     calc = Calculation.objects.first()
     path_get = f'{path}/{calc.id if calc else None}'
-
 
     def test_api_a_get(self):
         """Assert get lawyers detail"""

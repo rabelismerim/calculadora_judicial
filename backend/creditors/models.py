@@ -28,9 +28,10 @@ class Creditor(AbstractDateCreditor):
         return None
 
     def get_notice(self):
-        if hasattr(self, 'notice'):
-            return self.notice
-        return None
+        return self.notice_set.all()
+
+    def has_notice_aj(self) -> bool:
+        return self.noticerecovering_set.exists()
 
     # def get_classes(self):
     #     return self.calculation_set.all().values_list('')

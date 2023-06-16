@@ -4,6 +4,8 @@ from django.http import JsonResponse
 from rest_framework import status
 
 from rest_framework import permissions
+
+from core.permission.views import CheckHasPermission
 from creditors.notice.models import Notice, NoticeRecovering
 from creditors.notice.schemas import NoticeSchema, NoticeUpdateSchema, NoticeRecoveringSchema, \
     NoticeRecoveringUpdateSchema
@@ -14,7 +16,7 @@ class NoticeApi(AbstractViewApi):
     """HTTP methods for Notice"""
     http_method_names = ['post', 'get']
     serializer_class = NoticeSchema
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Notice
 
     query_params = []
@@ -43,7 +45,7 @@ class NoticeUpdateApi(AbstractViewApi):
     """HTTP methods for Notice"""
     http_method_names = ['put', 'delete']
     serializer_class = NoticeUpdateSchema
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Notice
 
     query_params = []
@@ -88,7 +90,7 @@ class NoticeRecoveringApi(AbstractViewApi):
     """HTTP methods for Notice"""
     http_method_names = ['post', 'get']
     serializer_class = NoticeRecoveringSchema
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = NoticeRecovering
 
     query_params = []
@@ -116,7 +118,7 @@ class NoticeRecoveringUpdateApi(AbstractViewApi):
     """HTTP methods for Notice"""
     http_method_names = ['put', 'delete']
     serializer_class = NoticeRecoveringUpdateSchema
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = NoticeRecovering
 
     query_params = []
