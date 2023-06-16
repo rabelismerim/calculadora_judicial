@@ -88,10 +88,16 @@ const onSubmit = async () => {
 
 // Options Helpers list
 let users = $ref([])
-const approvers = computed(() => users
+const managers = computed(() => users
   .filter(({ groups }: any) => {
     const groupNames = groups.map(({ name }: any) => name)
     return ['Gestor Jurídico', 'Gestor Cálculo', 'Gestor Financeiro']
+      .some((group: string) => groupNames.includes(group))
+  }))
+const partners = computed(() => users
+  .filter(({ groups }: any) => {
+    const groupNames = groups.map(({ name }: any) => name)
+    return ['Sócio']
       .some((group: string) => groupNames.includes(group))
   }))
 const specialApprovers = computed(() => users
@@ -325,7 +331,7 @@ onMounted(async () => {
             <InputUser
               v-model="newProject.financialPartnerId"
               label="Sócio Financeiro"
-              :users="users"
+              :users="partners"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="financial_partner_id"
@@ -333,7 +339,7 @@ onMounted(async () => {
             <InputUser
               v-model="newProject.legalPartnerId"
               label="Sócio Jurídico"
-              :users="users"
+              :users="partners"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="legal_partner_id"
@@ -341,7 +347,7 @@ onMounted(async () => {
             <InputUser
               v-model="newProject.financialManagerId"
               label="Gerente Financeiro"
-              :users="users"
+              :users="managers"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="financial_manager_id"
@@ -349,7 +355,7 @@ onMounted(async () => {
             <InputUser
               v-model="newProject.legalManagerId"
               label="Gerente Jurídico"
-              :users="users"
+              :users="managers"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="legal_manager_id"
@@ -357,7 +363,7 @@ onMounted(async () => {
             <InputUser
               v-model="newProject.calculationManagerId"
               label="Gerente de Cálculo"
-              :users="users"
+              :users="managers"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="calculation_manager_id"
@@ -394,7 +400,7 @@ onMounted(async () => {
             />
             <InputUsers
               v-model="newProject.approvers"
-              :users="approvers"
+              :users="managers"
               label="Aprovadores"
               :rules="[(value: any) => value.length > 0 || 'Este campo é obrigatório!']"
               :error-messages="errorMessages"

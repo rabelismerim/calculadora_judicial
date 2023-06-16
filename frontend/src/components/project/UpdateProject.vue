@@ -78,13 +78,18 @@ const onSubmit = async () => {
 }
 
 // Options Helpers list
-const approvers = computed(() => props.options?.users
+const managers = computed(() => props.options?.users
   .filter(({ groups }: any) => {
     const groupNames = groups.map(({ name }: any) => name)
     return ['Gestor Jurídico', 'Gestor Cálculo', 'Gestor Financeiro']
       .some((group: string) => groupNames.includes(group))
   }))
-
+const partners = computed(() => props.options?.users
+  .filter(({ groups }: any) => {
+    const groupNames = groups.map(({ name }: any) => name)
+    return ['Sócio']
+      .some((group: string) => groupNames.includes(group))
+  }))
 const specialApprovers = computed(() => props.options?.users
   .filter(({ groups }: any) => {
     const groupNames = groups.map(({ name }: any) => name)
@@ -261,7 +266,7 @@ const updateOption = (key: string, value: any) => {
             <InputUser
               v-model="editingProject.financialPartnerId"
               label="Sócio Financeiro"
-              :users="options.users"
+              :users="partners"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="financial_partner_id"
@@ -269,7 +274,7 @@ const updateOption = (key: string, value: any) => {
             <InputUser
               v-model="editingProject.legalPartnerId"
               label="Sócio Jurídico"
-              :users="options.users"
+              :users="partners"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="legal_partner_id"
@@ -277,7 +282,7 @@ const updateOption = (key: string, value: any) => {
             <InputUser
               v-model="editingProject.financialManagerId"
               label="Gerente Financeiro"
-              :users="options.users"
+              :users="managers"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="financial_manager_id"
@@ -285,7 +290,7 @@ const updateOption = (key: string, value: any) => {
             <InputUser
               v-model="editingProject.legalManagerId"
               label="Gerente Jurídico"
-              :users="options.users"
+              :users="managers"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="legal_manager_id"
@@ -293,7 +298,7 @@ const updateOption = (key: string, value: any) => {
             <InputUser
               v-model="editingProject.calculationManagerId"
               label="Gerente de Cálculo"
-              :users="options.users"
+              :users="managers"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="calculation_manager_id"
@@ -330,7 +335,7 @@ const updateOption = (key: string, value: any) => {
             />
             <InputUsers
               v-model="editingProject.approvers"
-              :users="approvers"
+              :users="managers"
               label="Aprovadores"
               :rules="[(value: any) => value?.length > 0 || 'Este campo é obrigatório!']"
               :error-messages="errorMessages"
