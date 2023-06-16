@@ -1,5 +1,5 @@
 export const printError = (message: string, error: any) => {
-  if (import.meta.env.VITE_LOG)
+  if (import.meta.env.VITE_LOG === 'true')
     console.warn(message, error)
 }
 
