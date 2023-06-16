@@ -13,7 +13,7 @@ export default (firstTab: string, tabs: Tab[]) => {
       tab = value
     },
   })
-  const currentTabIndex = computed(() => tabs.findIndex(({ name }) => name === tab))
+  const currentTabIndex = computed(() => tabs?.findIndex(({ name }) => name === tab))
   const isFirstTab = computed(() => currentTabIndex.value === 0)
   const isLastTab = computed(() => currentTabIndex.value === tabs.length - 1)
 

@@ -170,7 +170,7 @@ const columns = [
               :key="project.id"
               class="rounded-full px-3 py-1 border-1 border--black/10 bg-gray/10 whitespace-nowrap"
               :class="canGoTo(project) ? 'cursor-pointer hover:bg--primary/20 hover:border--primary/50' : 'cursor-not-allowed'"
-              @click="goTo(project)"
+              @click.stop="goTo(project)"
             >
               {{ project.description }}
             </div>
@@ -179,7 +179,7 @@ const columns = [
             v-if="props.value?.length > 0"
             class="flex justify-end"
           >
-            <div class="flex items-center rounded-full px-3 py-1 border-1 border--black/12 bg-gray/10 whitespace-nowrap cursor-pointer hover:bg--primary/50 hover:border--primary/12" @click="{ modalUser = props.row; showUserModal = true }">
+            <div class="flex items-center rounded-full px-3 py-1 border-1 border--black/12 bg-gray/10 whitespace-nowrap cursor-pointer hover:bg--primary/50 hover:border--primary/12" @click.stop="{ modalUser = props.row; showUserModal = true }">
               Ver Todos
             </div>
           </div>

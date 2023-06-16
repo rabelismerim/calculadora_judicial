@@ -52,7 +52,7 @@ const loadCreditors = async () => {
     creditors = creditorsResult
       .map((creditor: any) => {
         const { id, recoveringId, entity: { legalNumber, name }, noticeAj, noticeRecovering, claimCreditor, claimLawyer } = creditor
-        const { entity: { name: recoveringName, legalNumber: recoveringLegalNuber } } = project?.recoverings.find(({ id }: any) => recoveringId === id)
+        const { entity: { name: recoveringName, legalNumber: recoveringLegalNuber } } = project?.recoverings?.find(({ id }: any) => recoveringId === id)
         return {
           id,
           name,

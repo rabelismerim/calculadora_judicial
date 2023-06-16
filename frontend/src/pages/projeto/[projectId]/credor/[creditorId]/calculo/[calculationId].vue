@@ -2,6 +2,8 @@
 const attrs = useAttrs() as any
 const { dialog } = useQuasar()
 
+const { hasPermissions } = $user
+
 let loading = $ref(false)
 
 const menu = $ref('project')
@@ -34,13 +36,13 @@ const loadCreditor = async () => {
 const recovering = computed(() => project?.recoverings?.find(({ id }: any) => id === creditor?.recoveringId))
 
 let options = $ref({} as any)
-const loadOptions = async (calculationId: string) => {
+const loadOptions = async () => {
   const users = await usersService.getUsers()
   const result = await creditorsService.getOptions()
   const { stepCalculationOptions = [] } = result
   const steps = []
   for (const step of stepCalculationOptions) {
-    const error = await fetch(`${host}/juca/api/v1/calculation/${calculationId}/check_step/`, {
+    const error = await fetch(`${host}/juca/api/v1/calculation/${attrs.calculationId}/check_step/`, {
       method: 'PUT',
       headers,
       body: JSON.stringify({
@@ -62,6 +64,22 @@ const loadRates = async () => {
 }
 
 let calculation = $ref({} as any)
+const loadCalculationBigNumbers = async () => {
+  try {
+    const result = await calculationService.getCalculation(attrs.calculationId)
+    result.allFunds
+      .flatMap(({ data, type }: any) => data.map((el: any) => ({ ...el, type })))
+      .sort(({ createdAt: dateA }: any, { createdAt: dateB }: any) => dateA < dateB ? -1 : 1)
+      .forEach(({ id, total }: any) => {
+        const credit = calculation?.credits?.find(({ id: creditId }: any) => creditId === id)
+        if (credit)
+          credit.total = total
+      })
+  }
+  catch (error) {
+    printError('ERROR ON LOADING CREDITS BIG NUMBERS:', error)
+  }
+}
 const loadCalculation = async (showLoading = false) => {
   if (showLoading)
     loading = true
@@ -73,11 +91,12 @@ const loadCalculation = async (showLoading = false) => {
     .map((credit: any) => {
       credit.tables = credit?.template?.tables.map(({ fields, description, endPoint, id, many }: any) => {
         const columns = fields
-          ?.map(({ id, isEditable, key, decimals, label, order, required, typeDisplay }: any) =>
+          ?.map(({ id, isEditable, key, decimals, label, order, required, typeDisplay, default: defaultValue }: any) =>
             ({
               id,
               isEditable,
               decimals,
+              defaultValue,
               name: key,
               field: key,
               label,
@@ -101,8 +120,25 @@ const loadCalculation = async (showLoading = false) => {
   if (showLoading)
     loading = false
 }
+let bigNumbers: any = $ref({})
+const loadBigNumbers = async (withCredits = false) => {
+  try {
+    bigNumbers = await calculationService.getCalculationBigNumbers(attrs.calculationId)
+    if (withCredits)
+      loadCalculationBigNumbers()
+  }
+  catch (error) {
+    printError('ERROR ON LOADING PROJECT BIG NUMBERS:', error)
+  }
+}
 
 const showNewCredit = $ref(false)
+const addCreditValues = (table: any, amount = 1) => {
+  const defaultValue = Object.fromEntries(table.columns
+    .filter(({ defaultValue }: any) => defaultValue !== null)
+    .map(({ field, defaultValue }: any) => [field, defaultValue]))
+  table.values?.push(...Array(amount).fill(0).map(() => clone(defaultValue)))
+}
 const openCredit = async (credit: any) => {
   const { tables } = credit
   const isClear = tables
@@ -115,15 +151,12 @@ const openCredit = async (credit: any) => {
     const result = await fetch(`${host}${table.endPoint + credit.id}/`, { method: 'GET', headers })
       .then((result: any) => result.json())
       .then((result: any) => Object.values(Object.values(result).at(0) as any)
-        .find((value: any) => Array.isArray(value)))
+        ?.find((value: any) => Array.isArray(value)))
     table.values = result || clone([])
     if (table.values?.length === 0)
-      table.values.push(clone({}))
+      addCreditValues(table, 1)
   }
   loading = false
-}
-const addCreditValues = (data: any[], amount = 1) => {
-  data.push(...Array(amount).fill(0).map(() => clone({})))
 }
 const removeCredit = (credit: any) => {
   dialog({
@@ -143,6 +176,7 @@ const removeCredit = (credit: any) => {
     }
     finally {
       loading = false
+      loadBigNumbers()
     }
   })
 }
@@ -165,6 +199,7 @@ const removeCreditValue = async (values: any[], line: any, index: number, table:
     if (Array.isArray(result) && result?.at(0)?.code)
       return
     values.splice(index, 1)
+    loadBigNumbers(true)
     notify({ message: 'Linha de Crédito excluida com sucesso!' })
   })
 }
@@ -187,21 +222,27 @@ const calculateCredit = async (credit: any, creditIndex: number) => {
         const line = table.values[lineIndex]
         table.values[lineIndex].loading = true
         const method = line.id ? 'PUT' : 'POST'
+
         const result: any = await fetch(`${host}${table.endPoint}${method === 'PUT' ? 'detail/' : ''}${line.id ? `${line.id}/` : ''}`, {
           method,
-          body: JSON.stringify({ ...line, fund_id: credit.id, calculation_id: calculation.id }),
+          body: JSON.stringify({ ...line, fund_id: credit.id, calculation_id: attrs.calculationId }),
           headers,
         })
           .then(response => response.json())
           .then(response => Object.values(response).at(0))
-        if (!result.errors)
+        if (!result.errors) {
           table.values[lineIndex] = result
-        else
+        }
+        else {
           table.values[lineIndex].loading = false
+          table.values[lineIndex].status = 'ERROR'
+          table.values[lineIndex].status_display = result.errors?.[0]?.detail
+        }
       }
     }
     notify({ message: 'Crédito processado com sucesso!' })
     loading = false
+    loadBigNumbers(true)
   })
 }
 
@@ -212,13 +253,15 @@ const classesAmount = computed(() => calculation?.classes?.length)
 const totalValue = computed(() => calculation?.credits
   ?.map(({ total }: any) => total?.totalCorrected || 0)
   ?.reduce((acc: number, curr: number) => acc + curr || 0, 0))
+
 onMounted(async () => {
   loading = true
   try {
+    await loadBigNumbers()
+    await loadCalculation()
     await loadProject()
     await loadCreditor()
-    await loadCalculation()
-    await loadOptions(calculation?.id)
+    await loadOptions()
     await loadRates()
   }
   catch (error) {
@@ -241,6 +284,7 @@ const statusColors: any = {
   S: '#c4d600', // Requested
   C: '#86BC25', // Concluded
   E: '#007cb0', // In Progress
+  I: '#c4d600', // In Progress
   F: '#DA291C', // Calculation failed - rate not found
   G: '#DA291C', // Calculation failed - rate RJ not found
   H: '#DA291C', // Calculation failed - rate data base not found
@@ -249,15 +293,18 @@ const statusColors: any = {
   R: '#DA291C', // Calculation failed - no date RJ
   D: '#DA291C', // Calculation failed - no date Citation
   B: '#DA291C', // Calculation failed - in exclusion
+  ERROR: '#DA291C', // Local Error
 }
 const statusLabel = (status: string) => {
   if (status === 'S')
     return 'Solicitado'
   if (status === 'E')
     return 'Em Progresso'
+  if (status === 'I')
+    return 'Registrado'
   if (status === 'C')
     return 'Sucesso'
-  if (['F', 'G', 'H', 'A', 'P', 'R', 'D', 'B'].includes(status))
+  if (['F', 'G', 'H', 'A', 'P', 'R', 'D', 'B', 'ERROR'].includes(status))
     return 'Erro'
 }
 
@@ -274,11 +321,19 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
     .split('\r\n')
     .map((item: string) => item.trim())
     .filter((item: string) => !!item)
-  const values = (type === 'float' || type === 'integer')
-    ? splitData
-      .map((item: string) => Number(item.replaceAll('.', '').replaceAll(',', '.')))
-    : splitData
-  const data = table.slice(index, index + values.length)
+  const values = (() => {
+    if (type === 'text')
+      return splitData
+    if (type === 'float' || type === 'integer') {
+      return splitData
+        .map((item: string) => getValidNumber(item))
+    }
+    if (type === 'date') {
+      return splitData
+        .map((item: string) => getValidDate(item))
+    }
+  })()
+  const data = table.slice(index, index + values?.length)
   for (const index in data)
     data[index][key] = values[index]
 }
@@ -333,7 +388,7 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
         hint="O Número total dos Créditos neste Cálculo."
       >
         <div class="font-bold text-5xl flex-1 flex items-center">
-          {{ creditsAmount }}
+          {{ bigNumbers?.countFunds || '-' }}
         </div>
       </GraphCard>
       <GraphCard
@@ -341,7 +396,7 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
         hint="O Número total dos Classes neste Cálculo."
       >
         <div class="font-bold text-5xl flex-1 flex items-center">
-          {{ classesAmount }}
+          {{ bigNumbers?.countClasses || '-' }}
         </div>
       </GraphCard>
       <GraphCard
@@ -349,7 +404,7 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
         hint="Somatório dos Créditos neste Cálculo."
       >
         <div class="font-bold text-5xl flex-1 flex items-center">
-          R$ {{ totalValue?.toFixed(2) }}
+          R$ {{ formatNumber(bigNumbers?.total || 0, 2) }}
         </div>
       </GraphCard>
     </div>
@@ -369,9 +424,11 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
             <template #header-right>
               <div class="flex gap-2 self-center">
                 <Btn
+                  v-if="!['A', 'B'].includes(calculation?.step)"
                   label="Excluir Crédito"
                   icon="i-carbon-trash-can"
                   transparent
+                  :disabled="!hasPermissions(['delete_calculation'])"
                   @click.stop="removeCredit(credit)"
                 />
               </div>
@@ -381,7 +438,7 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
                 </div>
                 <div class="font-bold">
                   Total R$
-                  {{ credit?.total?.totalCorrected?.toFixed(2) || 0 }}
+                  {{ formatNumber(credit?.total || 0, 2) }}
                 </div>
               </div>
             </template>
@@ -394,8 +451,9 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
                 <div class="text-lg font-bold mb-2 flex justify-between items-center">
                   <div>{{ table.description }}</div>
                   <AddLines
+                    v-if="!['A', 'B'].includes(calculation?.step)"
                     v-model="table.linesToAdd"
-                    @add-lines="addCreditValues(table.values, table.linesToAdd)"
+                    @add-lines="addCreditValues(table, table.linesToAdd)"
                   />
                 </div>
                 <QTable
@@ -417,14 +475,15 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
                             'has-error': statusLabel(props.row?.status) === 'Erro',
                           }"
                         >
-                          <div
+                          <button
                             v-if="column.name === 'delete'"
                             class="cursor-pointer bg--error h-10 w-10 rounded-.5 border-1 border-red-8 flex justify-center items-center"
-                            @click="removeCreditValue(table.values, props.row, props.rowIndex, table)"
+                            :disabled="['A', 'B'].includes(calculation?.step) || !hasPermissions(['delete_calculation'])"
+                            @click.stop="removeCreditValue(table.values, props.row, props.rowIndex, table)"
                           >
                             <div class="i-carbon-trash-can bg-white" />
-                          </div>
-                          <div v-else-if="column.label === 'Status'">
+                          </button>
+                          <div v-else-if="column.label === 'Status'" :class="{ 'has-error': props.row.status === 'ERROR' }">
                             <StatusTag
                               v-if="props.row.status"
                               :label="statusLabel(props.row.status)"
@@ -433,7 +492,7 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
                             />
                           </div>
                           <div v-else-if="!column.isEditable" class="row justify-center">
-                            <span v-if="column.type === 'float'">{{ (get(column.field, props.row))?.toFixed(6) || '-' }}</span>
+                            <span v-if="column.type === 'float'">{{ formatNumber(get(column.field, props.row), column.decimals) || '-' }}</span>
                             <span v-else>{{ get(column.field, props.row) || '-' }}</span>
                           </div>
                           <QInput
@@ -443,6 +502,7 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
                             class="flex-1"
                             outlined
                             dense
+                            :disable="['A', 'B'].includes(calculation?.step)"
                             @paste.prevent="onPaste($event, table.values, column.field, column.type, props.rowIndex)"
                           />
                           <QInput
@@ -453,6 +513,7 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
                             type="number"
                             outlined
                             dense
+                            :disable="['A', 'B'].includes(calculation?.step)"
                             @update:model-value="(value: any) => { if (column.type === 'integer') (props.row[column.field] = Math.round(value)) }"
                             @paste.prevent="onPaste($event, table.values, column.field, column.type, props.rowIndex)"
                           />
@@ -461,11 +522,26 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
                             v-model="props.row[column.field]"
                             :rules="isRequired(column)"
                             class="flex-1"
+                            :disabled="['A', 'B'].includes(calculation?.step)"
                             @paste.prevent="onPaste($event, table.values, column.field, column.type, props.rowIndex)"
                           />
                           <div v-else-if="column.type === 'boolean'" class="row justify-center">
+                            <div
+                              v-if="column.field === 'is_extraconcursal'"
+                            >
+                              <QToggle
+                                v-if="calculation?.criterion?.occurrence === 'C'
+                                  ? props.row?.data_base >= calculation?.criterion?.dateCitation
+                                  : props.row?.data_base >= calculation?.criterion?.dateRjFiling"
+                                v-model="props.row[column.field]"
+                                class="flex-1"
+                                :disable="['A', 'B'].includes(calculation?.step)"
+                              />
+                            </div>
                             <QToggle
+                              v-else
                               v-model="props.row[column.field]"
+                              :disable="['A', 'B'].includes(calculation?.step)"
                               class="flex-1"
                             />
                           </div>
@@ -483,7 +559,7 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
                   </div>
                   <div>
                     Total dos Valores: R$
-                    {{ credit.tables.reduce((acc:number, table: any) => acc + (table.total || 0), 0)?.toFixed(2) }}
+                    {{ formatNumber(credit.tables.reduce((acc:number, table: any) => acc + (table.total || 0), 0), 2) }}
                   </div>
                 </div>
                 <div>
@@ -496,7 +572,11 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
                     {{ credit.tables.reduce((acc:number, table: any) => acc + table.values?.filter((line: any) => statusLabel(line.status) === 'Erro')?.length, 0) }}
                   </div>
                 </div>
-                <Btn label="Processar" @click="calculateCredit(credit, creditIndex)" />
+                <Btn
+                  label="Processar"
+                  :disabled="['A', 'B'].includes(calculation?.step)"
+                  @click="calculateCredit(credit, creditIndex)"
+                />
               </div>
             </QForm>
           </Accordion>
@@ -506,7 +586,7 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
         </div>
       </QTabPanel>
       <QTabPanel name="ext">
-        <AccountingStatement v-model="calculation.id" />
+        <AccountingStatement v-model="attrs.calculationId" />
       </QTabPanel>
     </QTabPanels>
 
@@ -515,8 +595,10 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
         v-model="showChangeStatus"
         :history="history"
         :options="options"
-        :calculation-id="calculation?.id"
-        @update-status="loadOptions(calculation?.id); loadCalculation()"
+        :calculation="calculation"
+        :status="calculation?.step"
+        :special-approvers="project?.participants?.[3]?.[1]"
+        @update-status="loadOptions(); loadCalculation()"
       />
       <NewCredit
         v-model="showNewCredit"
@@ -553,6 +635,9 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
   justify-content: center;
   border-radius: 0 0 4px 4px;
   margin-top: -2px;
+}
+.credit-table tr:has(.has-error) {
+  background-color: hsla(var(--error,0,0%,0%),0.05)
 }
 .calculations-credits {
   background: transparent;
