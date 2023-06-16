@@ -4,11 +4,12 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 trigger:
 - hml
-
 pool: 
   name: TR
   demands:
-  - Agent.Name -equals TRHMG
+  - Agent.Name -equals TRHML
+variables:
+  system.debug: 'true'
 strategy:
   matrix:
     DJUD:
@@ -17,20 +18,30 @@ strategy:
 steps:
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: '3.10.10'
+    versionSpec: '3.10'
     allowUnstable: true
     architecture: 'x64'
 - task: NodeTool@0
   inputs:
     versionSource: 'spec'
-    versionSpec: '8.x'
+    versionSpec: '18.x'
+    checkLatest: true
 - task: DownloadSecureFile@1
-  name: EnvHml
+  name: Env
   inputs:
-    secureFile: '.envhml'
+    secureFile: '.env-hml'
+- task: DownloadSecureFile@1
+  name: EnvFrontEnd
+  inputs:
+    secureFile: '.env-frontend-hml'
 - script: |
-    echo Installing $(EnvHml.secureFilePath) to the path backend...
-    copy $(EnvHml.secureFilePath) $(Build.SourcesDirectory)/backend 
+    echo Installing $(Env.secureFilePath) to the path backend...
+    copy $(Env.secureFilePath) $(Build.SourcesDirectory)\backend\.env
+  failOnStderr: true
+- script: |
+    echo Installing $(EnvFrontEnd.secureFilePath) to the path frontend...
+    copy $(EnvFrontEnd.secureFilePath) $(Build.SourcesDirectory)\frontend\.env
+  failOnStderr: true
 - task: PythonScript@0
   displayName: 'Export project path'
   inputs:
@@ -47,29 +58,99 @@ steps:
       print('Found Django project in', project_location)
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
 - script: |
-    npm install --force
-    npm run build:prod
+    npm install
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/frontend
+  displayName: 'Install node prerequisites'
 - script: |
-    mkdir ./log
-    python -m pip install --upgrade pip setuptools wheel
+    npm run build:prod
+  failOnStderr: false
+  workingDirectory: $(Build.SourcesDirectory)/frontend
+  displayName: 'Install node prerequisites'
+- script: |
+    md .\log
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
+- script: |
     pip install virtualenv
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
+- script: |
     virtualenv venv
-    ./venv/Scripts/activate
-    python -m pip install --upgrade pip setuptools wheel
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
+- script: |
+    .\venv\Scripts\activate
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
+- script: |
+    pip install --upgrade pip setuptools wheel
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
+- script: |
     pip install -r requirements.txt
+  failOnStderr: false
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
+- script: |
     pip install unittest-xml-reporting
-    pip install fastcgi
-    python manage.py collectstatic
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
+- script: |
+    python -m pip install fastcgi
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
+- script: |
+    python manage.py collectstatic --no-input
+  failOnStderr: true
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - task: DeleteFiles@1
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)/backend/venv'
     Contents: '**'
+    RemoveSourceFolder: true
+- script: |
+    python manage.py makemigrations
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
+- script: |
+    del venv\.*
+  failOnStderr: false
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
+- script: |
+    python manage.py migrate
+  failOnStderr: false
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
+- script: |
+    rd venv
+  failOnStderr: false
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
+- script: |
+    del .env
+  failOnStderr: true
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
+- task: DeleteFiles@1
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)/backend/__pycache__'
+    Contents: '**'
+    RemoveSourceFolder: true
 - task: CopyFiles@2
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)/backend'
     Contents: '**'
-    TargetFolder: 'D:\DJUD'
+    TargetFolder: 'E:\inetpub\wwwroot\uat.fadigitallab.deloitte.com.br\juca\'
     OverWrite: true
-    flattenFolders: true
+    flattenFolders: false
