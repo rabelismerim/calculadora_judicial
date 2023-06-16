@@ -438,7 +438,7 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
                 </div>
                 <div class="font-bold">
                   Total R$
-                  {{ formatNumber(credit?.total || 0, 2) }}
+                  {{ formatNumber((typeof credit?.total === 'number' ? credit?.total : credit?.total?.totalCorrected) || 0, 2) }}
                 </div>
               </div>
             </template>
