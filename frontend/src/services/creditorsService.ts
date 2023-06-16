@@ -60,6 +60,9 @@ const newCreditors = async (creditor: Creditor) => {
     printError('ERROR ON NEW CREDITORS', error)
   }
 }
+const updateCreditor = async (creditor: Creditor) => api
+  .put(`/v1/creditors/${creditor.id}/`, creditor)
+  .then((result: any) => result?.creditor)
 
 interface Notice {
   id?: string
@@ -100,6 +103,7 @@ const validateCalculations = async (creditorId: string, calculationIds: string[]
 export default {
   getCreditors,
   getCreditor,
+  updateCreditor,
   getOptions,
   newCreditors,
   getNoticeAJ,
