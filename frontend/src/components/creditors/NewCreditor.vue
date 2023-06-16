@@ -1,12 +1,14 @@
 <script setup lang='ts'>
+import { QInput } from 'quasar'
+
 interface Creditor {
   name: string
   legalNumber: string
+  description: string
   recoverings: any[]
 }
 const props = withDefaults(defineProps<{
   modelValue: boolean
-  creditor: Creditor
   options: {
     recoverings: any[]
     rates: any[]
@@ -19,67 +21,56 @@ const emit = defineEmits(['update:modelValue', 'update:creditor', 'success'])
 let loading = $ref(false)
 const form = ref(null as any)
 
+const nullCreditor: Creditor = {
+  name: '',
+  legalNumber: '',
+  description: '',
+  recoverings: [],
+}
+let creatingCreditor: Creditor = $ref(clone(nullCreditor))
+
 const nullRecovering = { recoveringId: null, rateId: null }
 let newRecovering = $ref(clone(nullRecovering))
 
 const freeRecoverings = computed(() => props.options.recoverings
-  ?.filter(({ id }: any) => !props.creditor?.recoverings
+  ?.filter(({ id }: any) => !creatingCreditor?.recoverings
     ?.map(({ recoveringId }: any) => recoveringId)?.includes(id))
   ?.map(({ id: value, entity: { name: label } }) => ({ label, value })))
 const addRecovering = () => {
-  const { recoverings } = props.creditor
+  const { recoverings } = clone(creatingCreditor)
   if (!newRecovering.recoveringId || !newRecovering.rateId) {
     throwError({ message: 'Você precisa adicionar uma recuperanda e uma taxa!', id: 'NEW_RECOVERING' })
     return
   }
-  const newCreditor = {
-    ...props.creditor,
-    recoverings: [...recoverings, clone(newRecovering)],
-  }
-  emit('update:creditor', newCreditor)
+  creatingCreditor.recoverings = [...recoverings, clone(newRecovering)]
   newRecovering = clone(nullRecovering)
 }
 const rates = computed(() => props.options.rates
   ?.map(({ id: value, index: label }) => ({ label, value })))
 
-const nullCreditor: Creditor = {
-  name: '',
-  legalNumber: ' ',
-  recoverings: [],
-}
-const newCreditor = computed({
-  get() {
-    return props.creditor
-  },
-  set(value: any) {
-    emit('update:creditor', value)
-  },
-})
 const removeRecovering = (index: number) => {
-  const creditor = clone(newCreditor.value)
-  creditor.recoverings.splice(index, 1)
-  newCreditor.value = creditor
+  const newCreditor = clone(creatingCreditor)
+  newCreditor.recoverings.splice(index, 1)
+  creatingCreditor = newCreditor
 }
 const clear = async () => {
-  newCreditor.value = clone(nullCreditor)
+  creatingCreditor = clone(nullCreditor)
   await delay(0.1)
   form.value.reset()
 }
 const onSubmit = async () => {
-  if (newCreditor.value.id)
-    return
   const isValid = await form.value.validate()
   if (!isValid)
     return
-  if (newCreditor.value.recoverings.length <= 0) {
+  if (creatingCreditor.recoverings.length <= 0) {
     throwError({ message: 'Precisa de no mínimo uma Recuperanda selecionada!' })
     return
   }
   loading = true
   try {
-    const result: any = await creditorsService.newCreditors(newCreditor.value)
+    const result: any = await creditorsService.newCreditors(creatingCreditor as any)
     if (result?.filter((item: any) => !!item).length > 0) {
-      notify({ message: `Credor ${newCreditor.value.name} foi criado com sucesso!` })
+      notify({ message: `Credor ${creatingCreditor.name} foi criado com sucesso!` })
       clear()
       emit('update:modelValue', false)
       emit('success')
@@ -97,7 +88,7 @@ const onSubmit = async () => {
 <template>
   <Modal
     :model-value="modelValue"
-    :title="newCreditor?.id ? `Editar Credor: ${newCreditor.name}` : 'Cadastro de Credor'"
+    title="Cadastro de Credor"
     hint="Vincular o Novo Credor às Recuperandas do Projeto."
     modal-class="max-w-200"
     @update:model-value="(value: boolean) => emit('update:modelValue', value)"
@@ -106,15 +97,23 @@ const onSubmit = async () => {
     <QForm ref="form" @submit="onSubmit">
       <div class="grid sm:grid-cols-2 gap-x-6 gap-y-2 px-6 py-3">
         <InputText
-          v-model="newCreditor.name"
+          v-model="creatingCreditor.name"
           label="Nome do Credor"
           :rules="[(value: any) => !!value || 'Este é um campo obrigatório!']"
           grow
         />
         <InputLegal
-          v-model="newCreditor.legalNumber"
+          v-model="creatingCreditor.legalNumber"
           :rules="[(value: any) => !!value || 'Este é um campo obrigatório!']"
           grow
+        />
+        <QInput
+          v-model="creatingCreditor.description"
+          label="Descrição"
+          outlined
+          type="textarea"
+          rows="3"
+          class="mb-5 col-span-2"
         />
         <div class="col-span-2">
           <div class="flex gap-4 mb-4">
@@ -154,13 +153,16 @@ const onSubmit = async () => {
             </QSelect>
             <Btn
               label="Adicionar"
-              icon="i-carbon-add"
+              icon="i-carbon-add-filled"
               type="button"
               @click="addRecovering"
             />
           </div>
+          <div v-if="creatingCreditor.recoverings.length > 0" class="font-bold text-lg">
+            Recuperandas Selecionadas
+          </div>
           <div
-            v-for="({ recoveringId, rateId }, index) in newCreditor.recoverings as any[]"
+            v-for="({ recoveringId, rateId }, index) in creatingCreditor.recoverings as any[]"
             :key="recoveringId"
             class="flex gap-4 py-1 items-center"
           >
@@ -187,7 +189,7 @@ const onSubmit = async () => {
           type="button"
           :loading="loading"
           loading-label="Criando Projeto..."
-          :disabled="!!newCreditor.id"
+          :disabled="loading"
           @click="onSubmit"
         />
       </div>

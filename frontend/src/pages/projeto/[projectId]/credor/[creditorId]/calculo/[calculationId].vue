@@ -438,7 +438,7 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
                 </div>
                 <div class="font-bold">
                   Total R$
-                  {{ formatNumber(credit?.total || 0, 2) }}
+                  {{ formatNumber((typeof credit?.total === 'number' ? credit?.total : credit?.total?.totalCorrected) || 0, 2) }}
                 </div>
               </div>
             </template>
@@ -586,7 +586,12 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
         </div>
       </QTabPanel>
       <QTabPanel name="ext">
-        <AccountingStatement v-model="attrs.calculationId" />
+        <AccountingStatement
+          v-model="attrs.calculationId"
+          :creditor="creditor"
+          :recovering="recovering"
+          :calculation-number="calculation?.number"
+        />
       </QTabPanel>
     </QTabPanels>
 

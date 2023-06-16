@@ -169,7 +169,7 @@ const calculationColumns: TableColumn[] = [
     field: 'allFunds',
     format: (value: any = []) => formatNumber(value
       ?.flatMap(({ data }: any) => data)
-      ?.map(({ total }: any) => total)
+      ?.map((credit: any) => (typeof credit?.total === 'number' ? credit?.total : credit?.total?.totalCorrected) || 0)
       ?.reduce((acc: number, cur: number) => acc + cur, 0), 2) || '-',
     label: 'Valor',
     align: 'left',
@@ -210,7 +210,7 @@ const statusColors: any = {
     class="calculation-table"
     :pagination="{ rowsPerPage: 0 }"
     hide-pagination
-    @row-click="(evt, row) => emit('rowClick', row)"
+    @row-click="(evt: Event, row: any) => emit('rowClick', row)"
   >
     <template #header-cell-action="prop">
       <QTh :props="prop" class="w-2">
