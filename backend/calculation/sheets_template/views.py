@@ -188,7 +188,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     ws['F'+str(cnt_row)].alignment = Alignment(horizontal="center")
                                     ws['F'+str(cnt_row)]='Sim' if item1.summary==True else 'Não'
                                     ws['G'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                    ws['G'+str(cnt_row)]='{:,.2f}'.format(float(item1.historical_value)).strip().replace('.','-').replace(',','.').replace('-',',')
+                                    ws['G'+str(cnt_row)]='{:,.2f}'.format(float(item1.historical_value)).strip().replace('.','-').replace(',','.').replace('-',',') if 'historical_value' in item1._dict.keys() else 'N/A'
                                     ws['H'+str(cnt_row)].alignment = Alignment(horizontal="right")
                                     ws['H'+str(cnt_row)]='{:,.5f}'.format(float(item1.monetarycorrectionintegrations.index_data_base)).strip().replace('.','-').replace(',','.').replace('-',',')
                                     ws['I'+str(cnt_row)].alignment = Alignment(horizontal="right")
@@ -272,11 +272,11 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     ws['G'+str(cnt_row)]='{:,.2f}'.format(float(item2.historical_value)).replace('.','-').replace(',','.').replace('-',',')
                                     value_index=item2.get_monetary_correction()
                                     ws['H'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                    ws['H'+str(cnt_row)]='{:,.5f}'.format(float(value_index.index_data_base)).replace('.','-').replace(',','.').replace('-',',')
+                                    ws['H'+str(cnt_row)]='{:,.5f}'.format(float(value_index.index_data_base)).replace('.','-').replace(',','.').replace('-',',') if value_index and 'index_data_base' in value_index._dict.keys() else 'N/A'
                                     ws['I'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                    ws['I'+str(cnt_row)]='{:,.5f}'.format(float(value_index.index_recovering)).replace('.','-').replace(',','.').replace('-',',')
+                                    ws['I'+str(cnt_row)]='{:,.5f}'.format(float(value_index.index_recovering)).replace('.','-').replace(',','.').replace('-',',') if value_index and 'index_recovering' in value_index._dict.keys() else 'N/A'
                                     ws['J'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                    ws['J'+str(cnt_row)]='{:,.2f}'.format(float(str(value_index).split(' - ')[2])).replace('.','-').replace(',','.').replace('-',',')
+                                    ws['J'+str(cnt_row)]='{:,.2f}'.format(float(str(value_index).split(' - ')[2])).replace('.','-').replace(',','.').replace('-',',')  if value_index else 'N/A'
                                     cnt_row=cnt_row+1
                             else:
                                 font = Font(bold=True)
