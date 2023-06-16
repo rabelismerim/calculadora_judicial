@@ -60,6 +60,7 @@ declare global {
   const formatDay: typeof import('./composables/utils')['formatDay']
   const formatLegalNumber: typeof import('./composables/utils')['formatLegalNumber']
   const formatMonth: typeof import('./composables/utils')['formatMonth']
+  const formatNumber: typeof import('./composables/utils')['formatNumber']
   const get: typeof import('@jrnwn/utils')['get']
   const getCookie: typeof import('@jrnwn/utils')['getCookie']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
@@ -67,6 +68,8 @@ declare global {
   const getInitials: typeof import('./composables/utils')['getInitials']
   const getListOfPaths: typeof import('@jrnwn/utils')['getListOfPaths']
   const getSelector: typeof import('@jrnwn/utils')['getSelector']
+  const getValidDate: typeof import('./composables/utils')['getValidDate']
+  const getValidNumber: typeof import('./composables/utils')['getValidNumber']
   const h: typeof import('vue')['h']
   const ignorableWatch: typeof import('@vueuse/core')['ignorableWatch']
   const inject: typeof import('vue')['inject']
@@ -406,6 +409,7 @@ declare module 'vue' {
     readonly formatDay: UnwrapRef<typeof import('./composables/utils')['formatDay']>
     readonly formatLegalNumber: UnwrapRef<typeof import('./composables/utils')['formatLegalNumber']>
     readonly formatMonth: UnwrapRef<typeof import('./composables/utils')['formatMonth']>
+    readonly formatNumber: UnwrapRef<typeof import('./composables/utils')['formatNumber']>
     readonly get: UnwrapRef<typeof import('@jrnwn/utils')['get']>
     readonly getCookie: UnwrapRef<typeof import('@jrnwn/utils')['getCookie']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
@@ -413,6 +417,8 @@ declare module 'vue' {
     readonly getInitials: UnwrapRef<typeof import('./composables/utils')['getInitials']>
     readonly getListOfPaths: UnwrapRef<typeof import('@jrnwn/utils')['getListOfPaths']>
     readonly getSelector: UnwrapRef<typeof import('@jrnwn/utils')['getSelector']>
+    readonly getValidDate: UnwrapRef<typeof import('./composables/utils')['getValidDate']>
+    readonly getValidNumber: UnwrapRef<typeof import('./composables/utils')['getValidNumber']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly ignorableWatch: UnwrapRef<typeof import('@vueuse/core')['ignorableWatch']>
     readonly inject: UnwrapRef<typeof import('vue')['inject']>

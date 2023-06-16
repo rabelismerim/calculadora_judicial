@@ -1,6 +1,9 @@
 import axios from 'axios'
 
-const headers: any = {}
+const headers: any = {
+  // TODO: BRING TO USER PREFERENCES
+  'Accept-Language': 'pt-BR,pt;q=1',
+}
 
 if (import.meta.env.VITE_TOKEN)
   headers.Authorization = `Token ${import.meta.env.VITE_TOKEN}`
@@ -19,8 +22,9 @@ api.interceptors.request.use((request) => {
 
   if (data)
     request.data = parseToSnake(data)
-  if (import.meta.env.VITE_LOG)
-    console.warn(`>>>> REQUEST: ${method?.toUpperCase()} ${baseURL + url}`, request)
+
+  if (import.meta.env.VITE_LOG_REQUEST === 'true')
+    printError(`>>>> REQUEST: ${method?.toUpperCase()} ${baseURL + url}`, request)
 
   return request
 })
@@ -30,7 +34,8 @@ api.interceptors.response.use(
     const { data, status, config: { method, baseURL = '', url = '' } } = response
 
     const result = parseToCamel(data)
-    printError(`<<<< RESPONSE(${status}): ${method?.toUpperCase()} ${baseURL + url}`, result)
+    if (import.meta.env.VITE_LOG_RESPONSE === 'true')
+      printError(`<<<< RESPONSE(${status}): ${method?.toUpperCase()} ${baseURL + url}`, result)
 
     return result
   },
@@ -40,7 +45,7 @@ api.interceptors.response.use(
     const status = response?.status || 500
 
     const { errors: dataErrors } = parseToCamel(data || {})
-    const errors = dataErrors?.map(({ detail, attr }: any) => ({ message: detail, attr }))
+    const errors = dataErrors ? dataErrors?.map(({ detail, attr }: any) => ({ message: detail, attr })) : data
     printError('ON ERROR:', errors)
 
     if (errors?.length > 0) {

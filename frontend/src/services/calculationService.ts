@@ -309,9 +309,13 @@ const deleteCredit = ({ type, id }: any) => {
 const checkStep = (step: any, calculationId: string) => api
   .put(`/v1/calculation/${calculationId}/check_step/`, { nextStep: step?.id })
 
-const changeStep = ({ nextStep, comment }: any, calculationId: string) => api
-  .put(`/v1/calculation/${calculationId}/change_step/`, { nextStep, comments: [{ text: comment }] })
+const changeStep = ({ nextStep, comment, specialApprovers }: any, calculationId: string) => api
+  .put(`/v1/calculation/${calculationId}/change_step/`, { nextStep, specialApprovers, comments: [{ text: comment }] })
   .then((result: any) => result)
+
+const getCalculationBigNumbers = (calculationId: string) => api
+  .get(`/v1/big_number/calculation/${calculationId}/`)
+  .then((data: any) => data?.bigNumberCalc)
 
 export default {
   newCalculation,
@@ -336,6 +340,7 @@ export default {
   getSheetsTemplate,
   getAccountingStatement,
   getAccountingStatementXLSX,
+  getCalculationBigNumbers,
   deleteCredit,
   checkStep,
   changeStep,

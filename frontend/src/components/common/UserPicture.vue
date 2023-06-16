@@ -4,6 +4,7 @@ const props = withDefaults(defineProps<{
     fullName: string
     email: string
     picture?: string
+    userpicture?: string
   }
   initialsClass?: string
 }>(),
@@ -19,8 +20,8 @@ const props = withDefaults(defineProps<{
 <template>
   <div class="rounded-1 overflow-hidden">
     <Img
-      v-if="modelValue.picture"
-      :src="`data:image/jpeg;base64,${modelValue.picture}`"
+      v-if="modelValue.picture || modelValue.userpicture"
+      :src="`data:image/jpeg;base64,${modelValue.picture || modelValue.userpicture}`"
       :error-image="`${baseUrl}/fallback/user.svg`"
       class="w-full h-full object-cover"
     />

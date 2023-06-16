@@ -6,6 +6,7 @@ const props = withDefaults(defineProps<{
   rules?: ValidationRule<any>[]
   errorMessages?: any
   errorKey?: string
+  disabled?: boolean
 }>(), {
   rules: () => ([]),
   errorMessages: () => ({}),
@@ -65,6 +66,7 @@ const formatedDate = computed({
     outlined
     mask="##/##/####"
     dense
+    :disable="disabled"
     @paste="emit('paste', $event)"
   >
     <template #append>

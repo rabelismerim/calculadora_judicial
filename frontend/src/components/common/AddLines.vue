@@ -1,6 +1,7 @@
 <script setup lang='ts'>
 const props = withDefaults(defineProps<{
   modelValue: number
+  disabled?: boolean
 }>(), {
 })
 const emit = defineEmits(['update:modelValue', 'addLines'])
@@ -28,6 +29,7 @@ const onAddLines = () => {
     icon="i-carbon-add-filled"
     type="button"
     transparent
+    :disabled="disabled"
   >
     <q-menu anchor="bottom right" self="top right">
       <div class="flex flex-col p-2 gap-2">
