@@ -236,12 +236,15 @@ onMounted(async () => {
           @click="loadProject"
         />
       </template>
-      <Btn
-        label="Exportar Cálculos Válidos"
-        icon="i-carbon-document-export"
-        disabled
-        outlined
-      />
+      <div>
+        <Btn
+          label="Exportar Cálculos Válidos"
+          icon="i-carbon-document-export"
+          disabled
+          outlined
+        />
+        <QTooltip>Funcionalidade não disponível nesta versão.</QTooltip>
+      </div>
       <Btn
         label="Credores"
         :disabled="!project.id || loading"

@@ -233,6 +233,24 @@ onMounted(() => {
               flat
               class="vertical border--primary border-1 mb-4 mr-3"
             >
+              <RecoveringNotice
+                v-model="recovering.noticeRecovering"
+                :creditor-id="recovering.creditorId"
+                :options="creditorOptions"
+                :name="4"
+                title="Edital Recuperanda"
+                icon="o_request_page"
+                @save="loadCreditors"
+              />
+              <AJNotice
+                v-model="recovering.noticeAj"
+                :creditor-id="recovering.creditorId"
+                :options="creditorOptions"
+                :name="3"
+                title="Edital AJ"
+                icon="o_request_page"
+                @save="loadCreditors"
+              />
               <CreditorClaim
                 v-model="recovering.claimCreditor"
                 :creditor-id="recovering.creditorId"
@@ -249,24 +267,6 @@ onMounted(() => {
                 :name="2"
                 title="Pleito Advocatício"
                 icon="o_attach_money"
-                @save="loadCreditors"
-              />
-              <AJNotice
-                v-model="recovering.noticeAj"
-                :creditor-id="recovering.creditorId"
-                :options="creditorOptions"
-                :name="3"
-                title="Edital AJ"
-                icon="o_request_page"
-                @save="loadCreditors"
-              />
-              <RecoveringNotice
-                v-model="recovering.noticeRecovering"
-                :creditor-id="recovering.creditorId"
-                :options="creditorOptions"
-                :name="4"
-                title="Edital Recuperanda"
-                icon="o_request_page"
                 @save="loadCreditors"
               />
             </QStepper>
