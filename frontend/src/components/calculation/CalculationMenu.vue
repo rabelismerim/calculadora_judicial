@@ -43,7 +43,7 @@ const emit = defineEmits(['update:modelValue'])
           v-for="classe in calculation?.classes as any[]"
           :key="classe.id"
         >
-          {{ classe.classeDisplay }}: {{ classe.totalValue }}%
+          {{ classe.classeDisplay }}: {{ formatNumber(classe.percentageCalculated, 2) }}%
         </div>
       </ProjectDetailCell>
 
