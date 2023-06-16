@@ -89,14 +89,16 @@ const columns = [
     style: 'width: 100px',
     sortable: true,
   },
+
   {
     name: 'status',
     field: 'isActive',
-    label: 'Status',
+    label: 'Ativo',
     align: 'left',
     style: 'width: 100px',
     sortable: true,
   },
+
   {
     name: 'count',
     field: 'projects',
@@ -152,7 +154,7 @@ const columns = [
       <QTd :props="props">
         <div class="flex">
           <StatusTag
-            :label="props.value ? 'Ativo' : 'Inativo'"
+            :label="props.row?.statusDisplay"
             :color="statusColors[props.value]"
           />
         </div>

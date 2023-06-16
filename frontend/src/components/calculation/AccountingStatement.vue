@@ -1,6 +1,9 @@
 <script setup lang='ts'>
 const props = withDefaults(defineProps<{
   modelValue: string
+  creditor?: any
+  recovering?: any
+  calculationNumber?: string
 }>(), {
 })
 const emit = defineEmits(['update:modelValue'])
@@ -102,13 +105,19 @@ const downloadXLSX = async () => {
     return
   isDownloading = true
   try {
-    await delay(10)
     const result = await calculationService.getAccountingStatementXLSX(calculationId)
     if (result.errors) {
       throwError({ id: 'ACCOUNTING_STATEMENT', message: result.errors })
       return
     }
-    downloadFile(result, `Extrato-Contabil-${Date.now()}.xlsx`)
+    const date = new Date()
+    const [day, month, year] = date
+      .toLocaleDateString('en')
+      .padStart(10, '0')
+      .split('/')
+    const fileName = `Calc_${props?.calculationNumber?.replaceAll(' ', '')}_${toKebab(props.recovering?.entity?.name)}_${toKebab(props.creditor?.entity?.name)}_${year}-${month}-${day}.xlsx`
+
+    downloadFile(result, fileName)
   }
   catch (error) {
     printError('ERROR ON LOAD ACCOUNTING STATEMENT', error)

@@ -1,19 +1,26 @@
 <script setup lang='ts'>
 const attrs = useAttrs() as any
 
-let showModal = $ref(false)
+const showCreateCreditor = $ref(false)
+let showUpdateCreditor = $ref(false)
 
 let loading = $ref(false)
 let project = $ref({} as any)
 let creditors = $ref([] as any[])
 let rates = $ref([])
 let creditorOptions = $ref({} as any)
-let editingCreditor = $ref({
+const filterBy = $ref('')
+
+const nullCreditor = {
   name: '',
   legalNumber: '',
   recoverings: [],
-} as any)
-const filterBy = $ref('')
+}
+let editingCreditor = $ref(clone(nullCreditor))
+const clearCreditor = () => {
+  editingCreditor = clone(nullCreditor)
+}
+
 const filteredCreditors = computed((): any[] => {
   const filtered: any[] = (!filterBy)
     ? creditors
@@ -28,12 +35,15 @@ const filteredCreditors = computed((): any[] => {
     })
   return Object.values(filtered
     .reduce((accumulator: any, creditor: any) => {
-      const { name, legalNumber } = creditor
-      if (!creditor?.recoverings)
-        creditor.recoverings = []
+      const newCreditor = clone(creditor)
+      const { legalNumber } = creditor
+      if (!newCreditor?.recoverings) {
+        newCreditor.recoverings = []
+        delete newCreditor.recovering
+      }
       if (!accumulator[legalNumber]) {
         accumulator[legalNumber] = {
-          name,
+          ...newCreditor,
           legalNumber,
           recoverings: creditors
             .filter(({ recovering }: any) => recovering.creditorLegalNumber === legalNumber)
@@ -51,12 +61,36 @@ const loadCreditors = async () => {
     const creditorsResult = await creditorsService.getCreditors(attrs.projectId)
     creditors = creditorsResult
       .map((creditor: any) => {
-        const { id, recoveringId, entity: { legalNumber, name }, noticeAj, noticeRecovering, claimCreditor, claimLawyer } = creditor
-        const { entity: { name: recoveringName, legalNumber: recoveringLegalNuber } } = project?.recoverings?.find(({ id }: any) => recoveringId === id)
+        const {
+          id,
+          recoveringId,
+          description,
+          admission,
+          dismissal,
+          advocativeHours,
+          fine,
+          defaultInterest,
+          occurrence,
+          noticeAj,
+          noticeRecovering,
+          claimCreditor,
+          claimLawyer,
+          entity: { legalNumber, name },
+        } = creditor
+        const {
+          entity: { name: recoveringName, legalNumber: recoveringLegalNuber },
+        } = project?.recoverings?.find(({ id }: any) => recoveringId === id)
         return {
           id,
           name,
           legalNumber,
+          description,
+          admission,
+          dismissal,
+          advocativeHours,
+          fine,
+          defaultInterest,
+          occurrence,
           recovering: {
             id: recoveringId,
             step: 1,
@@ -80,15 +114,16 @@ const loadCreditors = async () => {
     loading = false
   }
 }
+
 const editCreditor = (creditor: any) => {
-  const { id, entity: { name, legalNumber }, recoverings } = creditor
+  const newCreditor = clone(creditor)
+  const { legalNumber, recoverings } = newCreditor
   editingCreditor = {
-    id,
-    name,
+    ...newCreditor,
     legalNumber: `${formatLegalNumber(legalNumber)} `,
-    recoverings: recoverings.map(({ id }: any) => id),
+    creditorsIds: recoverings.map(({ creditorId }: any) => creditorId),
   }
-  showModal = true
+  showUpdateCreditor = true
 }
 const loadOptions = async () => {
   try {
@@ -101,6 +136,7 @@ const loadOptions = async () => {
 }
 
 const newCreditorOptions = computed(() => ({
+  ocurrences: creditorOptions?.occurrenceOptions || [],
   recoverings: project?.recoverings || [],
   rates,
 }))
@@ -124,7 +160,7 @@ onMounted(() => {
         <Btn
           label="Novo Credor"
           icon="i-carbon-add-filled"
-          @click="showModal = true"
+          @click="showCreateCreditor = true"
         />
       </div>
     </template>
@@ -163,7 +199,6 @@ onMounted(() => {
               label="Editar Credor"
               icon="i-carbon-edit"
               transparent
-              disabled
               @click.stop="editCreditor(creditor)"
             />
           </div>
@@ -248,10 +283,16 @@ onMounted(() => {
 
     <template #out>
       <NewCreditor
-        v-model="showModal"
+        v-model="showCreateCreditor"
+        :options="newCreditorOptions"
+        @success="loadCreditors"
+      />
+      <UpdateCreditor
+        v-model="showUpdateCreditor"
         v-model:creditor="editingCreditor"
         :options="newCreditorOptions"
         @success="loadCreditors"
+        @clear="clearCreditor"
       />
     </template>
   </Page>
