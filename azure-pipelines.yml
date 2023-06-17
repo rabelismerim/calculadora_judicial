@@ -7,7 +7,7 @@ trigger:
 pool: 
   name: TR
   demands:
-  - Agent.Name -equals TRPRD
+  - Agent.Name -equals TRPROD
 variables:
   system.debug: 'true'
 strategy:
