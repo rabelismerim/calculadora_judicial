@@ -99,12 +99,12 @@ steps:
   displayName: 'Install and preparing python prerequisites'
 - script: |
     pip install --user unittest-xml-reporting
-  failOnStderr: true
+  failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - script: |
     pip install --user fastcgi
-  failOnStderr: true
+  failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - script: |
