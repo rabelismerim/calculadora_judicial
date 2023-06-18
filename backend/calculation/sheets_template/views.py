@@ -117,6 +117,8 @@ class SheetTemplateViewApi(AbstractViewApi):
             new_name_view = self.new_archive("uploads/" + Template[0].file.name.upper().replace('.XLSX', '-VIEW.XLSX'))
 
             for sheet in archive_download:
+                if sheet.sheet_state=='hidden':
+                    continue
                 for row in sheet.iter_rows():
                     for col in row:
                         if col.value:
@@ -128,6 +130,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                         else:
                             pass
             for sheet in archive_view:
+                if sheet.sheet_state=='hidden':
+                    continue
                 cnt_calc = 0
                 if type(sheet.title) == str and sheet.title.find('JUCA=') >= 0:
                     if str(sheet.title)[5:]=='Calculation':
@@ -181,6 +185,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 ws['J'+str(cnt_row+5)].font=font
                                 ws['J'+str(cnt_row+5)].fill=grayFill
                                 cnt_row=cnt_row+6
+                                sum_total = 0
                                 for item1 in plan_build:
                                     ws['D'+str(cnt_row)]=str(item1.description).strip()
                                     ws['E'+str(cnt_row)].alignment = Alignment(horizontal="center")
@@ -188,14 +193,21 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     ws['F'+str(cnt_row)].alignment = Alignment(horizontal="center")
                                     ws['F'+str(cnt_row)]='Sim' if item1.summary==True else 'Não'
                                     ws['G'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                    ws['G'+str(cnt_row)]='{:,.2f}'.format(float(item1.historical_value)).strip().replace('.','-').replace(',','.').replace('-',',') if 'historical_value' in item1._dict.keys() else 'N/A'
+                                    ws['G'+str(cnt_row)]='{:,.2f}'.format(float(item1.historical_value)).strip().replace('.','-').replace(',','.').replace('-',',') if 'historical_value' in item1._dict.keys() else ''
                                     ws['H'+str(cnt_row)].alignment = Alignment(horizontal="right")
                                     ws['H'+str(cnt_row)]='{:,.5f}'.format(float(item1.monetarycorrectionintegrations.index_data_base)).strip().replace('.','-').replace(',','.').replace('-',',')
                                     ws['I'+str(cnt_row)].alignment = Alignment(horizontal="right")
                                     ws['I'+str(cnt_row)]='{:,.5f}'.format(float(item1.monetarycorrectionintegrations.index_recovering)).strip().replace('.','-').replace(',','.').replace('-',',')
                                     ws['J'+str(cnt_row)].alignment = Alignment(horizontal="right")
                                     ws['J'+str(cnt_row)]='{:,.2f}'.format(float(item1.monetarycorrectionintegrations.corrected_value)).strip().replace('.','-').replace(',','.').replace('-',',')
+                                    sum_total += float(item1.monetarycorrectionintegrations.corrected_value)
                                     cnt_row=cnt_row+1
+                                ws['D'+str(cnt_row)]="Total"
+                                ws['D'+str(cnt_row)].font=font
+                                ws['J'+str(cnt_row)]='{:,.2f}'.format(sum_total).strip()
+                                ws['J'+str(cnt_row)].font=font
+                                ws['J'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                cnt_row=cnt_row+1
                             else:
                                 font = Font(bold=True)
                                 ws['D'+str(cnt_row)]='Crédito '+item.template.name
@@ -272,12 +284,19 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     ws['G'+str(cnt_row)]='{:,.2f}'.format(float(item2.historical_value)).replace('.','-').replace(',','.').replace('-',',')
                                     value_index=item2.get_monetary_correction()
                                     ws['H'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                    ws['H'+str(cnt_row)]='{:,.5f}'.format(float(value_index.index_data_base)).replace('.','-').replace(',','.').replace('-',',') if value_index and 'index_data_base' in value_index._dict.keys() else 'N/A'
+                                    ws['H'+str(cnt_row)]='{:,.5f}'.format(float(value_index.index_data_base)).replace('.','-').replace(',','.').replace('-',',') if value_index and 'index_data_base' in value_index._dict.keys() else ''
                                     ws['I'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                    ws['I'+str(cnt_row)]='{:,.5f}'.format(float(value_index.index_recovering)).replace('.','-').replace(',','.').replace('-',',') if value_index and 'index_recovering' in value_index._dict.keys() else 'N/A'
+                                    ws['I'+str(cnt_row)]='{:,.5f}'.format(float(value_index.index_recovering)).replace('.','-').replace(',','.').replace('-',',') if value_index and 'index_recovering' in value_index._dict.keys() else ''
                                     ws['J'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                    ws['J'+str(cnt_row)]='{:,.2f}'.format(float(str(value_index).split(' - ')[2])).replace('.','-').replace(',','.').replace('-',',')  if value_index else 'N/A'
+                                    ws['J'+str(cnt_row)]='{:,.2f}'.format(float(str(value_index).split(' - ')[2])).replace('.','-').replace(',','.').replace('-',',')  if value_index else ''
+                                    sum_total += float(float(str(value_index).split(' - ')[2])) if value_index else 0
                                     cnt_row=cnt_row+1
+                                ws['D'+str(cnt_row)]="Total"
+                                ws['D'+str(cnt_row)].font=font
+                                ws['J'+str(cnt_row)]='{:,.2f}'.format(sum_total).strip()
+                                ws['J'+str(cnt_row)].font=font
+                                ws['J'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                cnt_row=cnt_row+1
                             else:
                                 font = Font(bold=True)
                                 grayFill = PatternFill(start_color='00C0C0C0',
@@ -309,10 +328,14 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 cnt_row=cnt_row+3
 
             for sheet in archive_view:
+                if sheet.sheet_state=='hidden':
+                    continue
                 if type(sheet.title) == str and sheet.title.find('JUCA=') >= 0:
                     archive_view.remove_sheet(archive_view[sheet.title])
                 sheet.title=sheet.title.replace(' Copy','')
             for sheet in archive_view:
+                if sheet.sheet_state=='hidden':
+                    continue
                 for row in sheet.iter_rows():
                     for col in row:
                         if col.value:
@@ -334,6 +357,8 @@ class SheetTemplateViewApi(AbstractViewApi):
 
             list_html = {}
             for sheet in archive_view:
+                if sheet.sheet_state=='hidden':
+                    continue
                 out_stream = xlsx2html(new_name_view, sheet=sheet.title, parse_formula=False)
                 out_stream.seek(0)
                 result_html = out_stream.read()
