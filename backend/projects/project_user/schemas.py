@@ -51,11 +51,17 @@ class ProjectUserProjectSchema(AbstractModelSchema):
     username = serializers.CharField(source='user.username', read_only=True)
     first_name = serializers.CharField(source='user.first_name', read_only=True)
     last_name = serializers.CharField(source='user.last_name', read_only=True)
+    full_name = serializers.CharField(source='user.get_full_name', read_only=True)
     userpicture = serializers.CharField(source='user.userpicture', read_only=True)
-    groups = GroupSchema(many=True, read_only=True, exclude=('permissions', ))
+    groups = GroupSchema(many=True, read_only=True, exclude=('permissions',))
+    picture_url = serializers.SerializerMethodField(read_only=True, allow_null=True)
+
+    def get_picture_url(self, obj):
+        if obj.user.user_img:
+            return obj.user.user_img.url
 
     class Meta:
         model = ProjectUser
         fields = '__all__'
-        exclude = ('user_permissions', )
+        exclude = ('user_permissions',)
         read_only_fields = ('groups', 'user_permissions', 'id')

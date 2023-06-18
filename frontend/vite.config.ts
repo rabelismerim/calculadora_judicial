@@ -1,5 +1,5 @@
 import path from 'path'
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
 
 import UnoCSS from 'unocss/vite'
@@ -53,6 +53,11 @@ export default defineConfig({
         'vue/macros',
         '@vueuse/core',
         {
+          quasar: [
+            'useQuasar',
+          ],
+        },
+        {
           'animol': [
             ['css', 'animate'],
             'ease',
@@ -88,6 +93,7 @@ export default defineConfig({
         'src/composables',
         'src/stores',
         'src/services',
+        'src/directives',
       ],
       vueTemplate: true,
     }),
@@ -107,4 +113,16 @@ export default defineConfig({
 
     mkcert(),
   ],
+
+  test: {
+    // environment: 'jsdom',
+    deps: {
+      inline: ['@vue', '@vueuse', 'vue-demi'],
+    },
+    coverage: {
+      provider: 'c8',
+      reporter: ['text', 'json-summary'],
+      reportsDirectory: './test-coverage',
+    },
+  },
 })

@@ -10,7 +10,6 @@ Attributes:
 - default_auto_field: A string representing the default primary key field type for all models
 - name: A string representing the name of the app
 """
-
 from django.apps import AppConfig
 
 from utils import _

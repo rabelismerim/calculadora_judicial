@@ -1,4 +1,5 @@
 import datetime
+import json
 
 import pandas as pd
 from django.core.validators import MinLengthValidator
@@ -12,10 +13,36 @@ from rest_framework import serializers
 
 from utils import _
 
-
+UNIT_CHOICES = (
+    ('D','a.d'),
+    ('M','a.m'),
+    ('Y','a.a'),
+)
+PERIODICITY_CHOICES = (
+    ('D','Day'),
+    ('M','Month'),
+    ('Y','Year'),
+    ('Q','Quarterly'),
+)
 class Rate(AbstractModel):  # Indices
     index = models.CharField(_('Rate Name'), max_length=50)
-    is_per_day = models.BooleanField(_('Is the Rate per day? day or month'), default=True)
+    is_per_day = models.BooleanField(
+        _('Is the Rate per day? day or month'), default=True)
+    is_active = models.BooleanField(_('Rate is active?'), default=True)
+
+    # code = models.IntegerField(_('Code'), default=0)
+    # description = models.CharField(_('Description'), max_length=150, null=True, blank=True)
+    # unit = models.CharField(_('Unit'), max_length=1, choices=UNIT_CHOICES, default='D')
+    # periodicity = models.CharField(_('Periodicity'), max_length=1, choices=PERIODICITY_CHOICES, default='D')
+    # start_date = models.DateField(_('Fee end date'), null=True, blank=True)
+    # end_date = models.DateField(_('Fee end date'), null=True, blank=True)
+    # source = models.CharField(_('Source'), max_length=150, null=True, blank=True)
+    # C�digo, Nome
+    # completo, Unidade, Periodicidade, Data in�cio, Data
+    # do �ltimo
+    # valor
+    # da
+    # s�rie, Fonte, Especial
 
     def is_ipca_e_selic(self) -> bool:
         """
@@ -104,6 +131,7 @@ class AbstractCalcule(AbstractModel):
 
     class Meta:
         abstract = True
+        ordering = ('-created_at', '-updated_at')
 
 
 class Period(AbstractCalcule):
@@ -152,7 +180,8 @@ class RateFile(AbstractModel):
     (inherited from the AbstractCalcule class)
     """
     rate = models.OneToOneField(Rate, on_delete=models.PROTECT)
-    file = models.FileField(_('Rate file'), upload_to=f'juca/indices/%Y-%m-%d/')
+    file = models.FileField(
+        _('Rate file'), upload_to=f'juca/indices/%Y-%m-%d/')
 
     def __str__(self):
         return str(_("rate: {} | file: {}").format(self.rate, self.file.name))
@@ -200,7 +229,8 @@ def validate_reference_year(value):
     if not value.isnumeric():
         raise ValidationError(_('The reference year must be an integer.'))
     if int(value) < 1984:
-        raise ValidationError(_('The reference year must be from 1984 onwards.'))
+        raise ValidationError(
+            _('The reference year must be from 1984 onwards.'))
 
 
 class IndiceIRRF(AbstractModel):
@@ -250,6 +280,8 @@ class TemplateRate(AbstractModel):
     template = models.ForeignKey(Template, on_delete=models.PROTECT)
     description = models.CharField('Description', max_length=150)
     end_point = models.CharField(_('End Point'), max_length=150)
+    is_horizontal = models.BooleanField(_('Is Horizontal'), default=True)
+    has_commit = models.BooleanField(_('Commit option'), default=True)
     many = models.BooleanField(_('Is Multiple?'))
 
     def __str__(self):
@@ -280,7 +312,8 @@ class AbstractTemplateField(AbstractModel):
     """
     label = models.CharField(_('Field name'), max_length=150)
     key = models.CharField(_('Field key'), max_length=150)
-    type = models.CharField(_('Field type'), choices=TYPE_CHOICES, max_length=1)
+    type = models.CharField(
+        _('Field type'), choices=TYPE_CHOICES, max_length=1)
     order = models.PositiveIntegerField(_('Order'))
     is_editable = models.BooleanField(_('Is editable?'))
     required = models.BooleanField(_('Required?'))
@@ -288,8 +321,99 @@ class AbstractTemplateField(AbstractModel):
     def __str__(self):
         return self.label
 
+    def decimals(self) -> int:
+        if self.type == 'F':
+            return 6 if self.key in ['monetary_correction.index_recovering',
+                                     'monetary_correction.index_data_base'] else 2
+        return 0
+
 
 class TemplateMainField(AbstractTemplateField):
+    """
+    This class represents the fields for a template in table
+
+    Attributes:
+        template (Template): The template the field belongs to.
+        label (str): The name of the field.
+        key (str): A unique key used to identify the field.
+        type (str): The type of data stored in the field.
+        order (str): The order in which the field is displayed.
+        is_editable (bool): Whether the field is editable.
+        required (bool): Whether the field is required.
+    """
+    template = models.ForeignKey(Template, on_delete=models.PROTECT, null=True)
+
+    def get_default(self, *args, **kwargs):
+        if hasattr(self, 'templatemainfielddefault'):
+            return self.templatemainfielddefault.get_value()
+
+    def __str__(self):
+        return f'{self.label} | {self.template.name}'
+
+
+class TemplateField(AbstractTemplateField):
+    """
+    This class represents the fields for a template main.
+
+    Attributes:
+        rate (Template): The template the field belongs to.
+        label (str): The name of the field.
+        key (str): A unique key used to identify the field.
+        type (str): The type of data stored in the field.
+        order (str): The order in which the field is displayed.
+        is_editable (bool): Whether the field is editable.
+        required (bool): Whether the field is required.
+    """
+    rate = models.ForeignKey(TemplateRate, on_delete=models.PROTECT, null=True)
+
+    def get_default(self, *args, **kwargs):
+        if hasattr(self, 'templatefielddefault'):
+            return self.templatefielddefault.get_value()
+
+    def __str__(self):
+        return f'{self.label} | {self.rate.description} | {self.rate.template.name}'
+
+
+class AbstractDefault(AbstractModel):
+    """
+    This class represents the fields for a template main.
+
+    Attributes:
+        field (TemplateField): The TemplateField the field belongs to.
+        label (str): The name of the field.
+        value (text): The value of the field.
+    """
+    label = models.CharField(_('Original value'), max_length=150)
+    value = models.TextField(null=True, blank=True)
+
+    def get_value(self):
+        return json.loads(self.value).get('data')
+
+    def set_value(self):
+        self.value = json.dumps({'data': self.label})
+
+
+class TemplateMainFieldDefault(AbstractDefault):
+    """
+    This class represents the fields for a template main.
+
+    Attributes:
+        field (TemplateField): The TemplateField the field belongs to.
+    """
+    field = models.OneToOneField(TemplateMainField, on_delete=models.PROTECT)
+
+
+class TemplateFieldDefault(AbstractDefault):
+    """
+    This class represents the fields for a template main.
+
+    Attributes:
+        field (TemplateField): The TemplateField the field belongs to.
+    """
+    field = models.OneToOneField(TemplateField, on_delete=models.PROTECT)
+
+
+class TemplateMainSummaryField(AbstractTemplateField):
     """
     This class represents the fields for a template in table
 
@@ -308,7 +432,7 @@ class TemplateMainField(AbstractTemplateField):
         return f'{self.label} | {self.template.name}'
 
 
-class TemplateField(AbstractTemplateField):
+class TemplateSummaryField(AbstractTemplateField):
     """
     This class represents the fields for a template main.
 

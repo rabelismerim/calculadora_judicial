@@ -12,7 +12,7 @@ let projects: any[] = $ref([])
 const mapProjects = computed(() => projects.map((project) => {
   const newProject = clone(project)
   const { id, description, projectUsers, status, statusDisplay } = newProject
-  const filterBy = (toCompare: string) => ({ groups }: any) => groups.findIndex(({ name }: any) => name === toCompare)
+  const filterBy = (toCompare: string) => ({ groups }: any) => groups?.findIndex(({ name }: any) => name === toCompare)
   const mapUser = ({ firstName, lastName, userpicture, username, groups }: any) => ({
     fullName: `${firstName} ${lastName}`,
     picture: userpicture,
@@ -33,9 +33,9 @@ const mapProjects = computed(() => projects.map((project) => {
     statusDisplay,
   }
 }))
-const activeUsers = computed(() => users.filter(({ isActive }) => isActive))
-const pendingUsers = computed(() => users.filter(({ status }) => ['p', 'r'].includes(status.toLowerCase())))
-const pendingUsersCount = computed(() => users.filter(({ status }) => status.toLowerCase() === 'p').length)
+const activeUsers = computed(() => users.filter(({ status }) => ['A', 'F', 'I'].includes(status)))
+const pendingUsers = computed(() => users.filter(({ status }) => ['P', 'R'].includes(status)))
+const pendingUsersCount = computed(() => users.filter(({ status }) => status === 'P').length)
 const projectsPerUser: any = computed(() => projects?.reduce((acc, project) => {
   const { id, description, projectUsers, engagement } = project
   projectUsers.forEach(({ idUser }: any) => {
@@ -50,6 +50,13 @@ const mapUsers = computed(() => activeUsers.value.map((user) => {
   user.projects = projectsPerUser.value[id] || []
   return user
 }))
+
+let showEditUser = $ref(false)
+let editingUser = $ref({})
+const onEditUser = (user: any) => {
+  showEditUser = true
+  editingUser = user
+}
 
 const loadPage = async () => {
   loading = true
@@ -111,12 +118,20 @@ onMounted(() => loadPage())
       v-model:filter="filterBy"
       :items="mapUsers"
       :loading="loading"
+      @editing-user="onEditUser"
     />
 
     <template #out>
+      <EditUser
+        v-model="showEditUser"
+        :user="editingUser"
+        @success="loadPage"
+      />
+
       <RequestModal
         v-model="showingRequests"
         :users="pendingUsers"
+        @done="loadPage"
       />
     </template>
   </Page>

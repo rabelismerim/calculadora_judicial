@@ -12,7 +12,7 @@ Methods:
 Attributes:
 - None
 """
-from core.abstract.tests import AbstractTest
+# from core.abstract.tests import AbstractTest
 
 
 # class {{app_name | title}}Test(AbstractTest):

@@ -7,15 +7,17 @@ const props = withDefaults(defineProps<{
   users?: any[]
   errorMessages?: any
   errorKey?: string
+  valueKey?: string
 }>(), {
   rules: () => ([]),
   users: () => ([]),
   errorMessages: () => ({}),
   errorKey: '',
+  valueKey: 'id',
 })
 const emit = defineEmits(['update:modelValue'])
 
-const input = ref(null) as any
+const input = ref(null as any)
 const hasError = computed(() => input.value.hasError)
 const { clearError } = useBackendErrors(toRef(props, 'errorMessages'))
 const onInput = (value: any) => {
@@ -46,7 +48,7 @@ const onFilter = (val: string, update: any) => {
     :error-message="!!errorMessages[errorKey] ? errorMessages[errorKey] : ''"
     outlined
     option-label="fullName"
-    option-value="id"
+    :option-value="valueKey"
     emit-value
     map-options
     use-input

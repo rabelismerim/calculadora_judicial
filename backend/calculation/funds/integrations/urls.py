@@ -15,11 +15,11 @@ Including another URLconf
 """
 from django.urls import path
 
-from calculation.funds.integrations.views import StatementIntegrationsApi, StatementIntegrationsDetailApi
+from calculation.funds.integrations.views import StatementIntegrationsApi, StatementIntegrationsDetailApi, \
+    StatementFundsIntegrationListApi
 
 urlpatterns = [
-    path('', StatementIntegrationsApi.as_view(),
-         name="statement-funds-integrations-list-create"),
-    path('<uuid:id>/', StatementIntegrationsDetailApi.as_view(),
-         name="statement-funds-integrations-detail"),
+    path('', StatementIntegrationsApi.as_view(), name="statement-funds-integrations-list-create"),
+    path('<uuid:fund_id>/', StatementFundsIntegrationListApi.as_view(), name="statement-funds-integrations-list"),
+    path('detail/<uuid:id>/', StatementIntegrationsDetailApi.as_view(), name="statement-funds-integrations-detail"),
 ]

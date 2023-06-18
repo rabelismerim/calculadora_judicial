@@ -252,17 +252,5 @@
     <g transform="translate(298.2 124)">
       <circle cx="38.8" cy="38.8" r="38.8" fill="url(#j)" />
     </g>
-    <g>
-      <g>
-        <g clip-path="url(#k)" transform="translate(363.6 154.6)">
-          <path fill="url(#l)" d="M0 0h12.9v11.8H0z" transform="rotate(-60 4.5 8.2)" />
-        </g>
-      </g>
-      <g>
-        <g clip-path="url(#m)" transform="translate(325.7 134.2)">
-          <path fill="url(#n)" d="M0 0h52.8v52.8H0z" transform="rotate(-45 13.5 32.5)" />
-        </g>
-      </g>
-    </g>
   </g>
 </svg>

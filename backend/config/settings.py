@@ -21,8 +21,31 @@ import urllib3
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 
 urllib3.disable_warnings()
+import warnings
 
-load_dotenv()
+warnings.filterwarnings("ignore", message="You have a duplicated operationId")
+warnings.filterwarnings('ignore', message='DateTimeField LoginRecord.login_time received a naive datetime')
+
+if '--env' in sys.argv:
+    # get the index of the --env argument
+    env_index = sys.argv.index('--env') + 1
+
+    # load the .env file based on the specified environment
+    env = sys.argv[env_index]
+    env_file = f".env.{env}"
+
+    if not env in ['dev', 'prod', 'hml', 'azure']:
+        raise ValueError('Incorrect option to use the --env argument. The options are: dev, prod, hml, azure')
+
+    if not os.path.exists(env_file):
+        raise ValueError(f'Configuration file not found to: {env_file}')
+
+    del sys.argv[env_index]
+    del sys.argv[env_index - 1]
+    load_dotenv(env_file)
+
+else:
+    load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,6 +63,7 @@ DEBUG = str(os.getenv('DEBUG', 'false')).lower() == 'true'
 ENABLE_SSO = str(os.getenv('ENABLE_SSO', 'true')).lower() == 'true'
 
 BRANCH_DEV = str(os.getenv('ENV', 'hml')) == 'branch'
+TEST_PROD = str(os.getenv('TEST_PROD', 'false')) == 'true'
 BRANCH_LOCAL = str(os.getenv('ENV', 'hml')) == 'dev'
 
 IS_LOCALHOST = str(os.getenv('IS_LOCALHOST', 'false')).lower() == 'true' and BRANCH_DEV
@@ -50,11 +74,13 @@ IS_HML = any([BRANCH_LOCAL, BRANCH_DEV]) is False
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'uat.fadigitallab.deloitte.com.br',
+    'fadigitallab.deloitte.com.br',
     'localhost',
     'brdcvmdev07',
     'brfojwanderley',
     'brsphearndt',  # TEMP
-    'brspwaoliveira'
+    'brspwaoliveira',
+    '10.127.145.231'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -62,7 +88,8 @@ CSRF_TRUSTED_ORIGINS = [
     'https://brfojwanderley:5173',
     'https://brdcvmdev07/juca',
     'https://brsphearndt:8080/juca',
-    'https://uat.fadigitallab.deloitte.com.br/juca'
+    'https://uat.fadigitallab.deloitte.com.br/juca',
+    'https://10.127.145.231:8000/juca'
 ]
 # Application definition
 
@@ -84,11 +111,14 @@ INSTALLED_APPS = [
     # 'vinaigrette',
     'modeltranslation',  # Custom field translation
     # 'debug_toolbar', # Debug query, views in realtime on navigation
-
+    'django_apscheduler',  # Eventos crontab
     # Base
     'base',
     'base.claim',
     'base.coins',
+
+    # Dashboard
+    'dashboard',
 
     # Creditors
     'creditors',
@@ -138,6 +168,13 @@ INSTALLED_APPS = [
     # Rate - Índice
     'rates',
 
+    # Big Numbers - KPIS e Gráficos
+    'big_number',
+
+    # Scheduler
+    'apps.schedule',
+    'apps.scrapper',
+
 ]
 
 # Start config debug toolbar
@@ -168,6 +205,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'crum.CurrentRequestUserMiddleware',  # Get current request in Models
     'drf_api_logger.middleware.api_logger_middleware.APILoggerMiddleware',
+    'dashboard.middleware.LoginMiddleware',  # Save the first occurrence of user login on the day
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
@@ -191,6 +229,10 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries': {
+                'custom_filters': 'base.templatetags.custom_filters',
+
+            }
         },
     },
 ]
@@ -286,50 +328,72 @@ DRFMSAL_IDENTITY_WEB = IdentityWebPython()
 if BRANCH_DEV or 'test' in sys.argv:
     my_string = sys.argv[0].replace('\\', '').replace('/', '')
 
-    if my_string.endswith('locustmain.py'):
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': ':memory:',
-                'MIRROR': 'default',
-            },
-        }
-
-        # cria uma cópia do banco de dados atual para testes do locust
-        import shutil
-        import tempfile
-        import os
-
-        tmpdir = os.path.join(tempfile.gettempdir(), 'juca')
-        tmp_db = os.path.join(tmpdir, 'tmp.sqlite3')
-        if os.path.exists(tmpdir) is False:
-            os.mkdir(tmpdir)
-        if os.path.exists(tmp_db) is False:
-            shutil.copy2(BASE_DIR / 'db.sqlite3', tmp_db)
-        DATABASES['default']['NAME'] = tmp_db
-    else:
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': BASE_DIR / 'db.sqlite3',
-                'TEST': {
+    if my_string.endswith('main.py'):
+        if TEST_PROD is False:
+            DATABASES = {
+                'default': {
+                    'ENGINE': 'django.db.backends.sqlite3',
+                    'NAME': ':memory:',
                     'MIRROR': 'default',
                 },
             }
-        }
+
+            # cria uma cópia do banco de dados atual para testes do locust
+            import shutil
+            import tempfile
+            import os
+
+            tmpdir = os.path.join(tempfile.gettempdir(), 'juca')
+            tmp_db = os.path.join(tmpdir, 'tmp.sqlite3')
+            if os.path.exists(tmpdir) is False:
+                os.mkdir(tmpdir)
+            if os.path.exists(tmp_db) is False:
+                shutil.copy2(BASE_DIR / 'db.sqlite3', tmp_db)
+            DATABASES['default']['NAME'] = tmp_db
+        else:
+            DATABASES = {
+                'default': {
+                    'ENGINE': 'django.db.backends.postgresql',
+                    'NAME': str(os.getenv('DB_NAME')),
+                    'USER': str(os.getenv('DB_USER')),
+                    'PASSWORD': str(os.getenv('DB_PASS')),
+                    'HOST': str(os.getenv('DB_HOST')),
+                    'PORT': str(os.getenv('DB_PORT')),
+                }
+            }
+    else:
+        if TEST_PROD:
+            DATABASES = {
+                'default': {
+                    'ENGINE': 'django.db.backends.postgresql',
+                    'NAME': str(os.getenv('DB_NAME')),
+                    'USER': str(os.getenv('DB_USER')),
+                    'PASSWORD': str(os.getenv('DB_PASS')),
+                    'HOST': str(os.getenv('DB_HOST')),
+                    'PORT': str(os.getenv('DB_PORT')),
+                    'TEST': {
+                        'MIRROR': 'default',
+                    },
+                }
+            }
+        else:
+            DATABASES = {
+                'default': {
+                    'ENGINE': 'django.db.backends.sqlite3',
+                    'NAME': BASE_DIR / 'db.sqlite3',
+                    'TEST': {
+                        'MIRROR': 'default',
+                    },
+                }
+            }
 else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-
             'NAME': str(os.getenv('DB_NAME')),
-
             'USER': str(os.getenv('DB_USER')),
-
             'PASSWORD': str(os.getenv('DB_PASS')),
-
             'HOST': str(os.getenv('DB_HOST')),
-
             'PORT': str(os.getenv('DB_PORT')),
         }
     }
@@ -423,7 +487,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Setting media info for images
 MEDIA_URL = "/media/"
-MEDIA_ROOT = "uploads"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 REST_FRAMEWORK = {
 
@@ -472,12 +536,16 @@ if DEBUG:
 SWAGGER_URL = f'/{BASE_URL}docs/redoc/'
 RATE_FILE_TYPES = ['pdf', 'vnd.ms-excel', 'xlsx', 'xls']
 
-TEMPLATE_FILE_TYPES = ['vnd.ms-excel', 'xlsx', 'xls',  'xlsm']
+TEMPLATE_FILE_TYPES = ['vnd.ms-excel', 'xlsx', 'xls', 'xlsm']
 
 GROUP_NAME_EXECUTOR = 'Executor'
 GROUP_NAME_APPROVER = 'Aprovador'
 GROUP_NAME_SPECIAL_APPROVE = 'Aprovador Especial'
 GROUP_NAME_REVIEWER = 'Revisor'
+GROUP_NAME_PARTNER = 'Sócio'
+GROUP_NAME_SECURITY = 'Security'
+
+ROLES = [GROUP_NAME_EXECUTOR, GROUP_NAME_APPROVER, GROUP_NAME_SPECIAL_APPROVE, GROUP_NAME_REVIEWER, GROUP_NAME_SECURITY]
 
 ENABLE_CACHE = str(os.getenv('ENABLE_CACHE', 'false')).lower() == 'true'
 INDEX_VARIATION_END = os.getenv('INDEX_VARIATION_END', '2017-09-01')

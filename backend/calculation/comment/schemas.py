@@ -17,6 +17,8 @@ from calculation.comment.models import Comment, StepComment
 from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
 
+from core.abstract.schemas import AbstractModelSchema
+
 
 class CommentSchema(AbstractDescriptionSchema):
     """
@@ -36,7 +38,7 @@ class CommentSchema(AbstractDescriptionSchema):
         read_only_fields = ('id',)
 
 
-class StepCommentSchema(serializers.ModelSerializer):
+class StepCommentSchema(AbstractModelSchema):
     """
     Serializes the fields of the StepComment model for use in the API.
 
@@ -48,6 +50,7 @@ class StepCommentSchema(serializers.ModelSerializer):
     serializer = StepCommentSchema()
     """
     comments = CommentSchema(many=True)
+    step_display = serializers.CharField(source='get_step_display')
 
     class Meta:
         model = StepComment

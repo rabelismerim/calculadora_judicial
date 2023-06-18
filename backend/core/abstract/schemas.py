@@ -3,6 +3,8 @@ from json import JSONDecodeError
 
 from rest_framework import serializers, renderers
 
+from base.models import AbstractDescription
+from core.abstract.models import UpdateUser
 from utils import _
 
 
@@ -58,3 +60,31 @@ class AbstractUpdateModelSchema(AbstractModelSchema):
             for key in fields.keys():
                 setattr(fields[key], 'required', False)
         return fields
+
+
+class AbstractDescriptionSchema(serializers.ModelSerializer, AbstractModelSchema):
+    """This class uses serializers.ModelSerializer and AbstractModelSchema to serialize the project fields of the
+     AbstractDescription model."""
+
+    # TODO V2 ter um get para filtrar pelo id do objeto
+    # historical = UpdateUserSerializer(source='get_historical', many=True, read_only=True)
+
+    class Meta:
+        model = AbstractDescription
+        fields = '__all__'
+
+
+class UpdateModelSchema(AbstractDescriptionSchema):
+    """Serializer AbstractModel fields"""
+
+    def get_fields(self):
+        fields = super(UpdateModelSchema, self).get_fields()
+        request = self.context.get('request', None)
+        if request and getattr(request, 'method', None) == "PUT":
+            for key in fields.keys():
+                setattr(fields[key], 'required', False)
+        return fields
+
+    class Meta:
+        model = UpdateUser
+        exclude = ('content_type',)

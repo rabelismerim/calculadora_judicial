@@ -1,0 +1,5634 @@
+{
+  "is_per_day": false,
+  "index": "IGP-DI",
+  "values": [
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1944-01-01",
+      "value": 8.371376e-14
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1944-02-01",
+      "value": 8.4927e-14
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1944-03-01",
+      "value": 8.614024e-14
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1944-04-01",
+      "value": 8.735348e-14
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1944-05-01",
+      "value": 8.856673e-14
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1944-06-01",
+      "value": 8.977997e-14
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1944-07-01",
+      "value": 9.099321e-14
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1944-08-01",
+      "value": 9.220646e-14
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1944-09-01",
+      "value": 9.34197e-14
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1944-10-01",
+      "value": 9.584618e-14
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1944-11-01",
+      "value": 9.827267e-14
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1944-12-01",
+      "value": 9.827267e-14
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1945-01-01",
+      "value": 9.948591e-14
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1945-02-01",
+      "value": 1.019124e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1945-03-01",
+      "value": 1.006991e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1945-04-01",
+      "value": 1.006991e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1945-05-01",
+      "value": 1.019124e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1945-06-01",
+      "value": 1.031256e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1945-07-01",
+      "value": 1.043388e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1945-08-01",
+      "value": 1.055521e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1945-09-01",
+      "value": 1.055521e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1945-10-01",
+      "value": 1.067653e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1945-11-01",
+      "value": 1.079786e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1945-12-01",
+      "value": 1.091918e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1946-01-01",
+      "value": 1.104051e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1946-02-01",
+      "value": 1.116183e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1946-03-01",
+      "value": 1.128315e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1946-04-01",
+      "value": 1.140448e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1946-05-01",
+      "value": 1.15258e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1946-06-01",
+      "value": 1.188978e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1946-07-01",
+      "value": 1.213242e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1946-08-01",
+      "value": 1.261772e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1946-09-01",
+      "value": 1.298169e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1946-10-01",
+      "value": 1.310302e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1946-11-01",
+      "value": 1.322434e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1946-12-01",
+      "value": 1.334567e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1947-01-01",
+      "value": 1.383096e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1947-02-01",
+      "value": 1.395229e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1947-03-01",
+      "value": 1.407361e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1947-04-01",
+      "value": 1.370964e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1947-05-01",
+      "value": 1.358832e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1947-06-01",
+      "value": 1.346699e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1947-07-01",
+      "value": 1.322434e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1947-08-01",
+      "value": 1.322434e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1947-09-01",
+      "value": 1.334567e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1947-10-01",
+      "value": 1.334567e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1947-11-01",
+      "value": 1.346699e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1947-12-01",
+      "value": 1.370964e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1948-01-01",
+      "value": 1.407361e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1948-02-01",
+      "value": 1.443759e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1948-03-01",
+      "value": 1.468023e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1948-04-01",
+      "value": 1.455891e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1948-05-01",
+      "value": 1.443759e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1948-06-01",
+      "value": 1.455891e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1948-07-01",
+      "value": 1.443759e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1948-08-01",
+      "value": 1.455891e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1948-09-01",
+      "value": 1.455891e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1948-10-01",
+      "value": 1.455891e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1948-11-01",
+      "value": 1.468023e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1948-12-01",
+      "value": 1.480156e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1949-01-01",
+      "value": 1.504421e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1949-02-01",
+      "value": 1.516553e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1949-03-01",
+      "value": 1.516553e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1949-04-01",
+      "value": 1.516553e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1949-05-01",
+      "value": 1.516553e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1949-06-01",
+      "value": 1.516553e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1949-07-01",
+      "value": 1.528686e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1949-08-01",
+      "value": 1.540818e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1949-09-01",
+      "value": 1.55295e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1949-10-01",
+      "value": 1.589348e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1949-11-01",
+      "value": 1.662142e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1949-12-01",
+      "value": 1.662142e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1950-01-01",
+      "value": 1.686407e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1950-02-01",
+      "value": 1.686407e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1950-03-01",
+      "value": 1.65001e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1950-04-01",
+      "value": 1.637877e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1950-05-01",
+      "value": 1.65001e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1950-06-01",
+      "value": 1.662142e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1950-07-01",
+      "value": 1.69854e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1950-08-01",
+      "value": 1.747069e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1950-09-01",
+      "value": 1.795599e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1950-10-01",
+      "value": 1.844129e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1950-11-01",
+      "value": 1.844129e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1950-12-01",
+      "value": 1.868394e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1951-01-01",
+      "value": 1.929056e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1951-02-01",
+      "value": 1.953321e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1951-03-01",
+      "value": 2.00185e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1951-04-01",
+      "value": 2.026115e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1951-05-01",
+      "value": 2.05038e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1951-06-01",
+      "value": 2.026115e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1951-07-01",
+      "value": 1.977585e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1951-08-01",
+      "value": 2.00185e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1951-09-01",
+      "value": 2.013983e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1951-10-01",
+      "value": 2.05038e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1951-11-01",
+      "value": 2.062512e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1951-12-01",
+      "value": 2.09891e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1952-01-01",
+      "value": 2.171704e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1952-02-01",
+      "value": 2.208102e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1952-03-01",
+      "value": 2.208102e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1952-04-01",
+      "value": 2.208102e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1952-05-01",
+      "value": 2.220234e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1952-06-01",
+      "value": 2.232366e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1952-07-01",
+      "value": 2.268764e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1952-08-01",
+      "value": 2.280896e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1952-09-01",
+      "value": 2.268764e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1952-10-01",
+      "value": 2.280896e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1952-11-01",
+      "value": 2.341558e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1952-12-01",
+      "value": 2.365823e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1953-01-01",
+      "value": 2.390088e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1953-02-01",
+      "value": 2.414353e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1953-03-01",
+      "value": 2.475015e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1953-04-01",
+      "value": 2.475015e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1953-05-01",
+      "value": 2.462883e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1953-06-01",
+      "value": 2.49928e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1953-07-01",
+      "value": 2.54781e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1953-08-01",
+      "value": 2.644869e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1953-09-01",
+      "value": 2.681266e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1953-10-01",
+      "value": 2.754061e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1953-11-01",
+      "value": 2.790458e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1953-12-01",
+      "value": 2.85112e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1954-01-01",
+      "value": 2.934773e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1954-02-01",
+      "value": 3.007416e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1954-03-01",
+      "value": 3.065531e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1954-04-01",
+      "value": 3.181759e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1954-05-01",
+      "value": 3.239874e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1954-06-01",
+      "value": 3.283459e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1954-07-01",
+      "value": 3.327045e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1954-08-01",
+      "value": 3.356102e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1954-09-01",
+      "value": 3.443274e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1954-10-01",
+      "value": 3.457802e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1954-11-01",
+      "value": 3.530445e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1954-12-01",
+      "value": 3.58856e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1955-01-01",
+      "value": 3.646674e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1955-02-01",
+      "value": 3.646674e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1955-03-01",
+      "value": 3.675731e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1955-04-01",
+      "value": 3.748374e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1955-05-01",
+      "value": 3.748374e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1955-06-01",
+      "value": 3.748374e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1955-07-01",
+      "value": 3.79196e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1955-08-01",
+      "value": 3.864603e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1955-09-01",
+      "value": 3.951774e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1955-10-01",
+      "value": 3.99536e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1955-11-01",
+      "value": 4.009889e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1955-12-01",
+      "value": 4.024417e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1956-01-01",
+      "value": 4.09706e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1956-02-01",
+      "value": 4.213289e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1956-03-01",
+      "value": 4.271403e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1956-04-01",
+      "value": 4.285932e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1956-05-01",
+      "value": 4.416689e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1956-06-01",
+      "value": 4.547446e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1956-07-01",
+      "value": 4.620089e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1956-08-01",
+      "value": 4.707261e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1956-09-01",
+      "value": 4.867075e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1956-10-01",
+      "value": 4.939718e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1956-11-01",
+      "value": 4.997832e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1956-12-01",
+      "value": 5.012361e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1957-01-01",
+      "value": 5.23029e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1957-02-01",
+      "value": 5.23029e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1957-03-01",
+      "value": 5.215761e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1957-04-01",
+      "value": 5.201233e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1957-05-01",
+      "value": 5.186704e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1957-06-01",
+      "value": 5.186704e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1957-07-01",
+      "value": 5.201233e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1957-08-01",
+      "value": 5.23029e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1957-09-01",
+      "value": 5.215761e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1957-10-01",
+      "value": 5.23029e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1957-11-01",
+      "value": 5.288404e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1957-12-01",
+      "value": 5.361047e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1958-01-01",
+      "value": 5.43369e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1958-02-01",
+      "value": 5.462747e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1958-03-01",
+      "value": 5.53539e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1958-04-01",
+      "value": 5.608033e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1958-05-01",
+      "value": 5.709733e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1958-06-01",
+      "value": 5.724262e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1958-07-01",
+      "value": 5.825962e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1958-08-01",
+      "value": 5.94219e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1958-09-01",
+      "value": 6.116533e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1958-10-01",
+      "value": 6.334462e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1958-11-01",
+      "value": 6.595977e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1958-12-01",
+      "value": 6.668619e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1959-01-01",
+      "value": 6.944663e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1959-02-01",
+      "value": 7.438634e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1959-03-01",
+      "value": 7.554863e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1959-04-01",
+      "value": 7.714677e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1959-05-01",
+      "value": 7.801849e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1959-06-01",
+      "value": 7.88902e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1959-07-01",
+      "value": 8.063363e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1959-08-01",
+      "value": 8.441107e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1959-09-01",
+      "value": 8.659035e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1959-10-01",
+      "value": 8.862436e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1959-11-01",
+      "value": 9.182064e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1959-12-01",
+      "value": 9.298293e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1960-01-01",
+      "value": 9.443579e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1960-02-01",
+      "value": 9.676036e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1960-03-01",
+      "value": 9.821322e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1960-04-01",
+      "value": 9.981137e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1960-05-01",
+      "value": 9.995665e-13
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1960-06-01",
+      "value": 1.005377e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1960-07-01",
+      "value": 1.025718e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1960-08-01",
+      "value": 1.056228e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1960-09-01",
+      "value": 1.09836e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1960-10-01",
+      "value": 1.153569e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1960-11-01",
+      "value": 1.188438e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1960-12-01",
+      "value": 1.213136e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1961-01-01",
+      "value": 1.236382e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1961-02-01",
+      "value": 1.240741e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1961-03-01",
+      "value": 1.266892e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1961-04-01",
+      "value": 1.329365e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1961-05-01",
+      "value": 1.348252e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1961-06-01",
+      "value": 1.368592e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1961-07-01",
+      "value": 1.388932e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1961-08-01",
+      "value": 1.461575e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1961-09-01",
+      "value": 1.522595e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1961-10-01",
+      "value": 1.648994e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1961-11-01",
+      "value": 1.728901e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1961-12-01",
+      "value": 1.792827e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1962-01-01",
+      "value": 1.887263e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1962-02-01",
+      "value": 1.919225e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1962-03-01",
+      "value": 1.951188e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1962-04-01",
+      "value": 1.96717e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1962-05-01",
+      "value": 2.045624e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1962-06-01",
+      "value": 2.109549e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1962-07-01",
+      "value": 2.205439e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1962-08-01",
+      "value": 2.267911e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1962-09-01",
+      "value": 2.315856e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1962-10-01",
+      "value": 2.379782e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1962-11-01",
+      "value": 2.55764e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1962-12-01",
+      "value": 2.717978e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1963-01-01",
+      "value": 2.955898e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1963-02-01",
+      "value": 3.131752e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1963-03-01",
+      "value": 3.30502e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1963-04-01",
+      "value": 3.356742e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1963-05-01",
+      "value": 3.493804e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1963-06-01",
+      "value": 3.669658e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1963-07-01",
+      "value": 3.806721e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1963-08-01",
+      "value": 3.94637e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1963-09-01",
+      "value": 4.163601e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1963-10-01",
+      "value": 4.419624e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1963-11-01",
+      "value": 4.616166e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1963-12-01",
+      "value": 4.890292e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1964-01-01",
+      "value": 5.441128e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1964-02-01",
+      "value": 5.808353e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1964-03-01",
+      "value": 6.24023e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1964-04-01",
+      "value": 6.514355e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1964-05-01",
+      "value": 6.690209e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1964-06-01",
+      "value": 6.979851e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1964-07-01",
+      "value": 7.42983e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1964-08-01",
+      "value": 7.647061e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1964-09-01",
+      "value": 7.934117e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1964-10-01",
+      "value": 8.288411e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1964-11-01",
+      "value": 8.865109e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1964-12-01",
+      "value": 9.395257e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1965-01-01",
+      "value": 9.847822e-12
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1965-02-01",
+      "value": 1.015556e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1965-03-01",
+      "value": 1.076588e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1965-04-01",
+      "value": 1.101932e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1965-05-01",
+      "value": 1.12081e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1965-06-01",
+      "value": 1.13374e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1965-07-01",
+      "value": 1.164774e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1965-08-01",
+      "value": 1.178738e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1965-09-01",
+      "value": 1.202013e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1965-10-01",
+      "value": 1.226322e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1965-11-01",
+      "value": 1.237443e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1965-12-01",
+      "value": 1.261235e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1966-01-01",
+      "value": 1.357954e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1966-02-01",
+      "value": 1.397263e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1966-03-01",
+      "value": 1.433727e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1966-04-01",
+      "value": 1.501224e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1966-05-01",
+      "value": 1.536136e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1966-06-01",
+      "value": 1.564583e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1966-07-01",
+      "value": 1.616563e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1966-08-01",
+      "value": 1.651992e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1966-09-01",
+      "value": 1.691301e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1966-10-01",
+      "value": 1.725955e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1966-11-01",
+      "value": 1.742764e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1966-12-01",
+      "value": 1.75466e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1967-01-01",
+      "value": 1.83276e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1967-02-01",
+      "value": 1.877241e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1967-03-01",
+      "value": 1.920428e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1967-04-01",
+      "value": 1.968788e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1967-05-01",
+      "value": 1.994908e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1967-06-01",
+      "value": 2.010941e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1967-07-01",
+      "value": 2.067577e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1967-08-01",
+      "value": 2.084904e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1967-09-01",
+      "value": 2.116454e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1967-10-01",
+      "value": 2.148263e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1967-11-01",
+      "value": 2.181623e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1967-12-01",
+      "value": 2.193519e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1968-01-01",
+      "value": 2.265671e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1968-02-01",
+      "value": 2.318686e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1968-03-01",
+      "value": 2.366787e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1968-04-01",
+      "value": 2.419285e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1968-05-01",
+      "value": 2.455749e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1968-06-01",
+      "value": 2.521694e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1968-07-01",
+      "value": 2.557382e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1968-08-01",
+      "value": 2.587898e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1968-09-01",
+      "value": 2.635223e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1968-10-01",
+      "value": 2.694703e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1968-11-01",
+      "value": 2.734787e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1968-12-01",
+      "value": 2.752631e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1969-01-01",
+      "value": 2.799181e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1969-02-01",
+      "value": 2.839007e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1969-03-01",
+      "value": 2.854006e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1969-04-01",
+      "value": 2.889953e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1969-05-01",
+      "value": 2.923055e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1969-06-01",
+      "value": 2.986414e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1969-07-01",
+      "value": 3.055204e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1969-08-01",
+      "value": 3.106926e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1969-09-01",
+      "value": 3.175457e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1969-10-01",
+      "value": 3.227349e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1969-11-01",
+      "value": 3.274671e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1969-12-01",
+      "value": 3.284136e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1970-01-01",
+      "value": 3.325148e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1970-02-01",
+      "value": 3.37247e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1970-03-01",
+      "value": 3.437143e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1970-04-01",
+      "value": 3.448185e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1970-05-01",
+      "value": 3.503393e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1970-06-01",
+      "value": 3.580686e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1970-07-01",
+      "value": 3.642204e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1970-08-01",
+      "value": 3.725806e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1970-09-01",
+      "value": 3.799944e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1970-10-01",
+      "value": 3.85673e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1970-11-01",
+      "value": 3.8867e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1970-12-01",
+      "value": 3.916671e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1971-01-01",
+      "value": 3.979767e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1971-02-01",
+      "value": 4.041285e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1971-03-01",
+      "value": 4.121732e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1971-04-01",
+      "value": 4.193097e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1971-05-01",
+      "value": 4.270107e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1971-06-01",
+      "value": 4.367634e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1971-07-01",
+      "value": 4.432798e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1971-08-01",
+      "value": 4.473919e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1971-09-01",
+      "value": 4.53828e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1971-10-01",
+      "value": 4.593537e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1971-11-01",
+      "value": 4.640343e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1971-12-01",
+      "value": 4.679214e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1972-01-01",
+      "value": 4.756997e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1972-02-01",
+      "value": 4.850486e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1972-03-01",
+      "value": 4.928942e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1972-04-01",
+      "value": 4.981952e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1972-05-01",
+      "value": 5.024857e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1972-06-01",
+      "value": 5.078807e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1972-07-01",
+      "value": 5.148821e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1972-08-01",
+      "value": 5.222296e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1972-09-01",
+      "value": 5.280695e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1972-10-01",
+      "value": 5.330181e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1972-11-01",
+      "value": 5.37651e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1972-12-01",
+      "value": 5.41486e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1973-01-01",
+      "value": 5.504442e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1973-02-01",
+      "value": 5.568511e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1973-03-01",
+      "value": 5.648524e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1973-04-01",
+      "value": 5.730527e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1973-05-01",
+      "value": 5.791222e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1973-06-01",
+      "value": 5.845342e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1973-07-01",
+      "value": 5.905547e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1973-08-01",
+      "value": 5.964994e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1973-09-01",
+      "value": 6.026653e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1973-10-01",
+      "value": 6.114946e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1973-11-01",
+      "value": 6.190713e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1973-12-01",
+      "value": 6.256542e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1974-01-01",
+      "value": 6.44014e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1974-02-01",
+      "value": 6.611328e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1974-03-01",
+      "value": 6.909536e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1974-04-01",
+      "value": 7.26445e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1974-05-01",
+      "value": 7.519365e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1974-06-01",
+      "value": 7.668303e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1974-07-01",
+      "value": 7.75941e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1974-08-01",
+      "value": 7.859423e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1974-09-01",
+      "value": 7.989667e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1974-10-01",
+      "value": 8.109841e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1974-11-01",
+      "value": 8.237055e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1974-12-01",
+      "value": 8.41793e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1975-01-01",
+      "value": 8.606051e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1975-02-01",
+      "value": 8.801528e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1975-03-01",
+      "value": 8.939904e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1975-04-01",
+      "value": 9.100344e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1975-05-01",
+      "value": 9.293923e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1975-06-01",
+      "value": 9.50065e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1975-07-01",
+      "value": 9.701259e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1975-08-01",
+      "value": 9.971708e-11
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1975-09-01",
+      "value": 1.020188e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1975-10-01",
+      "value": 1.043168e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1975-11-01",
+      "value": 1.065641e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1975-12-01",
+      "value": 1.088875e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1976-01-01",
+      "value": 1.122558e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1976-02-01",
+      "value": 1.169144e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1976-03-01",
+      "value": 1.212282e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1976-04-01",
+      "value": 1.257819e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1976-05-01",
+      "value": 1.30066e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1976-06-01",
+      "value": 1.335386e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1976-07-01",
+      "value": 1.386233e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1976-08-01",
+      "value": 1.443009e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1976-09-01",
+      "value": 1.492551e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1976-10-01",
+      "value": 1.527711e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1976-11-01",
+      "value": 1.556813e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1976-12-01",
+      "value": 1.592548e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1977-01-01",
+      "value": 1.652064e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1977-02-01",
+      "value": 1.704398e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1977-03-01",
+      "value": 1.775158e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1977-04-01",
+      "value": 1.847523e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1977-05-01",
+      "value": 1.913695e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1977-06-01",
+      "value": 1.951271e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1977-07-01",
+      "value": 1.991574e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1977-08-01",
+      "value": 2.017426e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1977-09-01",
+      "value": 2.053165e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1977-10-01",
+      "value": 2.10945e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1977-11-01",
+      "value": 2.164515e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1977-12-01",
+      "value": 2.210135e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1978-01-01",
+      "value": 2.268921e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1978-02-01",
+      "value": 2.346064e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1978-03-01",
+      "value": 2.423365e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1978-04-01",
+      "value": 2.504698e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1978-05-01",
+      "value": 2.585073e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1978-06-01",
+      "value": 2.678934e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1978-07-01",
+      "value": 2.75454e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1978-08-01",
+      "value": 2.828e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1978-09-01",
+      "value": 2.900214e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1978-10-01",
+      "value": 2.983457e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1978-11-01",
+      "value": 3.065498e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1978-12-01",
+      "value": 3.11207e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1979-01-01",
+      "value": 3.226508e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1979-02-01",
+      "value": 3.347431e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1979-03-01",
+      "value": 3.54071e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1979-04-01",
+      "value": 3.674342e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1979-05-01",
+      "value": 3.760308e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1979-06-01",
+      "value": 3.889879e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1979-07-01",
+      "value": 4.059408e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1979-08-01",
+      "value": 4.296261e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1979-09-01",
+      "value": 4.626804e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1979-10-01",
+      "value": 4.869682e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1979-11-01",
+      "value": 5.140737e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1979-12-01",
+      "value": 5.516021e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1980-01-01",
+      "value": 5.860237e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1980-02-01",
+      "value": 6.106183e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1980-03-01",
+      "value": 6.507523e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1980-04-01",
+      "value": 6.880058e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1980-05-01",
+      "value": 7.31977e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1980-06-01",
+      "value": 7.749001e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1980-07-01",
+      "value": 8.403514e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1980-08-01",
+      "value": 8.984787e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1980-09-01",
+      "value": 9.459265e-10
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1980-10-01",
+      "value": 1.018261e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1980-11-01",
+      "value": 1.09514e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1980-12-01",
+      "value": 1.159685e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1981-01-01",
+      "value": 1.235792e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1981-02-01",
+      "value": 1.340589e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1981-03-01",
+      "value": 1.439346e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1981-04-01",
+      "value": 1.518076e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1981-05-01",
+      "value": 1.612085e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1981-06-01",
+      "value": 1.684094e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1981-07-01",
+      "value": 1.769604e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1981-08-01",
+      "value": 1.888716e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1981-09-01",
+      "value": 1.9845e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1981-10-01",
+      "value": 2.070886e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1981-11-01",
+      "value": 2.180857e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1981-12-01",
+      "value": 2.26366e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1982-01-01",
+      "value": 2.405944e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1982-02-01",
+      "value": 2.570738e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1982-03-01",
+      "value": 2.756555e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1982-04-01",
+      "value": 2.904293e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1982-05-01",
+      "value": 3.08202e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1982-06-01",
+      "value": 3.328349e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1982-07-01",
+      "value": 3.529973e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1982-08-01",
+      "value": 3.734755e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1982-09-01",
+      "value": 3.871382e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1982-10-01",
+      "value": 4.056442e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1982-11-01",
+      "value": 4.259352e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1982-12-01",
+      "value": 4.520998e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1983-01-01",
+      "value": 4.929945e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1983-02-01",
+      "value": 5.251314e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1983-03-01",
+      "value": 5.781023e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1983-04-01",
+      "value": 6.312661e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1983-05-01",
+      "value": 6.716671e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1983-06-01",
+      "value": 7.563319e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1983-07-01",
+      "value": 8.569628e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1983-08-01",
+      "value": 9.436254e-09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1983-09-01",
+      "value": 1.064332e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1983-10-01",
+      "value": 1.205508e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1983-11-01",
+      "value": 1.307183e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1983-12-01",
+      "value": 1.405993e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1984-01-01",
+      "value": 1.54397e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1984-02-01",
+      "value": 1.733245e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1984-03-01",
+      "value": 1.905728e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1984-04-01",
+      "value": 2.076101e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1984-05-01",
+      "value": 2.260046e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1984-06-01",
+      "value": 2.469085e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1984-07-01",
+      "value": 2.723872e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1984-08-01",
+      "value": 3.013206e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1984-09-01",
+      "value": 3.329869e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1984-10-01",
+      "value": 3.748743e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1984-11-01",
+      "value": 4.118964e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1984-12-01",
+      "value": 4.552771e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1985-01-01",
+      "value": 5.128074e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1985-02-01",
+      "value": 5.649185e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1985-03-01",
+      "value": 6.367097e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1985-04-01",
+      "value": 6.82657e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1985-05-01",
+      "value": 7.357849e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1985-06-01",
+      "value": 7.935015e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1985-07-01",
+      "value": 8.642482e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1985-08-01",
+      "value": 9.852312e-08
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1985-09-01",
+      "value": 1.075208e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1985-10-01",
+      "value": 1.172484e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1985-11-01",
+      "value": 1.347772e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1985-12-01",
+      "value": 1.525661e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1986-01-01",
+      "value": 1.797041e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1986-02-01",
+      "value": 2.066224e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1986-03-01",
+      "value": 2.180345e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1986-04-01",
+      "value": 2.167655e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1986-05-01",
+      "value": 2.174589e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1986-06-01",
+      "value": 2.186079e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1986-07-01",
+      "value": 2.199903e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1986-08-01",
+      "value": 2.229207e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1986-09-01",
+      "value": 2.253561e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1986-10-01",
+      "value": 2.284805e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1986-11-01",
+      "value": 2.340906e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1986-12-01",
+      "value": 2.517841e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1987-01-01",
+      "value": 2.820931e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1987-02-01",
+      "value": 3.218866e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1987-03-01",
+      "value": 3.701659e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1987-04-01",
+      "value": 4.444787e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1987-05-01",
+      "value": 5.670751e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1987-06-01",
+      "value": 7.138059e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1987-07-01",
+      "value": 7.804132e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1987-08-01",
+      "value": 8.155168e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1987-09-01",
+      "value": 8.808966e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1987-10-01",
+      "value": 9.79095e-07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1987-11-01",
+      "value": 1.120723e-06
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1987-12-01",
+      "value": 1.29879e-06
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1988-01-01",
+      "value": 1.547402e-06
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1988-02-01",
+      "value": 1.820455e-06
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1988-03-01",
+      "value": 2.151096e-06
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1988-04-01",
+      "value": 2.588467e-06
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1988-05-01",
+      "value": 3.093478e-06
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1988-06-01",
+      "value": 3.737849e-06
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1988-07-01",
+      "value": 4.542933e-06
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1988-08-01",
+      "value": 5.583021e-06
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1988-09-01",
+      "value": 7.021114e-06
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1988-10-01",
+      "value": 8.957812e-06
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1988-11-01",
+      "value": 1.146326e-05
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1988-12-01",
+      "value": 1.47745e-05
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1989-01-01",
+      "value": 2.017558e-05
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1989-02-01",
+      "value": 2.255717e-05
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1989-03-01",
+      "value": 2.351083e-05
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1989-04-01",
+      "value": 2.472625e-05
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1989-05-01",
+      "value": 2.788088e-05
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1989-06-01",
+      "value": 3.534312e-05
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1989-07-01",
+      "value": 4.873173e-05
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1989-08-01",
+      "value": 6.650961e-05
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1989-09-01",
+      "value": 9.239392e-05
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1989-10-01",
+      "value": 0.0001290728
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1989-11-01",
+      "value": 0.0001862189
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1989-12-01",
+      "value": 0.0002781883
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1990-01-01",
+      "value": 0.0004782058
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1990-02-01",
+      "value": 0.0008209837
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1990-03-01",
+      "value": 0.001488607
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1990-04-01",
+      "value": 0.001657266
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1990-05-01",
+      "value": 0.001807746
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1990-06-01",
+      "value": 0.001970805
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1990-07-01",
+      "value": 0.002226616
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1990-08-01",
+      "value": 0.002514517
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1990-09-01",
+      "value": 0.002808967
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1990-10-01",
+      "value": 0.003206717
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1990-11-01",
+      "value": 0.003766289
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1990-12-01",
+      "value": 0.00438622
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1991-01-01",
+      "value": 0.005260394
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1991-02-01",
+      "value": 0.006370864
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1991-03-01",
+      "value": 0.006832751
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1991-04-01",
+      "value": 0.007429934
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1991-05-01",
+      "value": 0.007915108
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1991-06-01",
+      "value": 0.008695538
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1991-07-01",
+      "value": 0.009811176
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1991-08-01",
+      "value": 0.01133092
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1991-09-01",
+      "value": 0.0131654
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1991-10-01",
+      "value": 0.01656866
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1991-11-01",
+      "value": 0.02083674
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1991-12-01",
+      "value": 0.02545
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1992-01-01",
+      "value": 0.03228078
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1992-02-01",
+      "value": 0.04028319
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1992-03-01",
+      "value": 0.04862181
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1992-04-01",
+      "value": 0.05763629
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1992-05-01",
+      "value": 0.07057564
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1992-06-01",
+      "value": 0.08569295
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1992-07-01",
+      "value": 0.1042797
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1992-08-01",
+      "value": 0.1309128
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1992-09-01",
+      "value": 0.1667436
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1992-10-01",
+      "value": 0.2083295
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1992-11-01",
+      "value": 0.2587869
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1992-12-01",
+      "value": 0.3201194
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1993-01-01",
+      "value": 0.4120897
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1993-02-01",
+      "value": 0.5213346
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1993-03-01",
+      "value": 0.6663178
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1993-04-01",
+      "value": 0.8542861
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1993-05-01",
+      "value": 1.129964
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1993-06-01",
+      "value": 1.477089
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1993-07-01",
+      "value": 1.949167
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1993-08-01",
+      "value": 2.602722
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1993-09-01",
+      "value": 3.565469
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1993-10-01",
+      "value": 4.818376
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1993-11-01",
+      "value": 6.599247
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1993-12-01",
+      "value": 8.989495
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1994-01-01",
+      "value": 12.78216
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1994-02-01",
+      "value": 18.20307
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1994-03-01",
+      "value": 26.36351
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1994-04-01",
+      "value": 37.55746
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1994-05-01",
+      "value": 52.93725
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1994-06-01",
+      "value": 77.59542
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1994-07-01",
+      "value": 96.76925
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1994-08-01",
+      "value": 100.0
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1994-09-01",
+      "value": 101.549
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1994-10-01",
+      "value": 104.143
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1994-11-01",
+      "value": 106.72
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1994-12-01",
+      "value": 107.325
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1995-01-01",
+      "value": 108.785
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1995-02-01",
+      "value": 110.039
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1995-03-01",
+      "value": 112.035
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1995-04-01",
+      "value": 114.614
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1995-05-01",
+      "value": 115.071
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1995-06-01",
+      "value": 118.09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1995-07-01",
+      "value": 120.733
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1995-08-01",
+      "value": 122.289
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1995-09-01",
+      "value": 120.967
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1995-10-01",
+      "value": 121.241
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1995-11-01",
+      "value": 122.85
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1995-12-01",
+      "value": 123.187
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1996-01-01",
+      "value": 125.397
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1996-02-01",
+      "value": 126.353
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1996-03-01",
+      "value": 126.627
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1996-04-01",
+      "value": 127.509
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1996-05-01",
+      "value": 129.655
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1996-06-01",
+      "value": 131.24
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1996-07-01",
+      "value": 132.674
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1996-08-01",
+      "value": 132.679
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1996-09-01",
+      "value": 132.849
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1996-10-01",
+      "value": 133.141
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1996-11-01",
+      "value": 133.517
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1996-12-01",
+      "value": 134.689
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1997-01-01",
+      "value": 136.814
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1997-02-01",
+      "value": 137.39
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1997-03-01",
+      "value": 138.99
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1997-04-01",
+      "value": 139.807
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1997-05-01",
+      "value": 140.229
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1997-06-01",
+      "value": 141.207
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1997-07-01",
+      "value": 141.33
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1997-08-01",
+      "value": 141.268
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1997-09-01",
+      "value": 142.101
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1997-10-01",
+      "value": 142.587
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1997-11-01",
+      "value": 143.771
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1997-12-01",
+      "value": 144.765
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1998-01-01",
+      "value": 146.038
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1998-02-01",
+      "value": 146.067
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1998-03-01",
+      "value": 146.408
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1998-04-01",
+      "value": 146.211
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1998-05-01",
+      "value": 146.544
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1998-06-01",
+      "value": 146.951
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1998-07-01",
+      "value": 146.398
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1998-08-01",
+      "value": 146.144
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1998-09-01",
+      "value": 146.111
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1998-10-01",
+      "value": 146.063
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1998-11-01",
+      "value": 145.797
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1998-12-01",
+      "value": 147.231
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1999-01-01",
+      "value": 148.921
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1999-02-01",
+      "value": 155.528
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1999-03-01",
+      "value": 158.6
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1999-04-01",
+      "value": 158.647
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1999-05-01",
+      "value": 158.1
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1999-06-01",
+      "value": 159.711
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1999-07-01",
+      "value": 162.253
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1999-08-01",
+      "value": 164.612
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1999-09-01",
+      "value": 167.028
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1999-10-01",
+      "value": 170.182
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1999-11-01",
+      "value": 174.496
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "1999-12-01",
+      "value": 176.647
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2000-01-01",
+      "value": 178.454
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2000-02-01",
+      "value": 178.8
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2000-03-01",
+      "value": 179.128
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2000-04-01",
+      "value": 179.357
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2000-05-01",
+      "value": 180.563
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2000-06-01",
+      "value": 182.236
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2000-07-01",
+      "value": 186.353
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2000-08-01",
+      "value": 189.746
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2000-09-01",
+      "value": 191.049
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2000-10-01",
+      "value": 191.763
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2000-11-01",
+      "value": 192.506
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2000-12-01",
+      "value": 193.97
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2001-01-01",
+      "value": 194.92
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2001-02-01",
+      "value": 195.58
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2001-03-01",
+      "value": 197.151
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2001-04-01",
+      "value": 199.374
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2001-05-01",
+      "value": 200.251
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2001-06-01",
+      "value": 203.167
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2001-07-01",
+      "value": 206.45
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2001-08-01",
+      "value": 208.315
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2001-09-01",
+      "value": 209.111
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2001-10-01",
+      "value": 212.135
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2001-11-01",
+      "value": 213.756
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2001-12-01",
+      "value": 214.137
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2002-01-01",
+      "value": 214.535
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2002-02-01",
+      "value": 214.927
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2002-03-01",
+      "value": 215.17
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2002-04-01",
+      "value": 216.673
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2002-05-01",
+      "value": 219.07
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2002-06-01",
+      "value": 222.872
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2002-07-01",
+      "value": 227.441
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2002-08-01",
+      "value": 232.818
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2002-09-01",
+      "value": 238.973
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2002-10-01",
+      "value": 249.042
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2002-11-01",
+      "value": 263.58
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2002-12-01",
+      "value": 270.692
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2003-01-01",
+      "value": 276.578
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2003-02-01",
+      "value": 280.984
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2003-03-01",
+      "value": 285.64
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2003-04-01",
+      "value": 286.815
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2003-05-01",
+      "value": 284.9
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2003-06-01",
+      "value": 282.913
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2003-07-01",
+      "value": 282.349
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2003-08-01",
+      "value": 284.105
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2003-09-01",
+      "value": 287.081
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2003-10-01",
+      "value": 288.337
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2003-11-01",
+      "value": 289.718
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2003-12-01",
+      "value": 291.462
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2004-01-01",
+      "value": 293.793
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2004-02-01",
+      "value": 296.976
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2004-03-01",
+      "value": 299.746
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2004-04-01",
+      "value": 303.184
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2004-05-01",
+      "value": 307.616
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2004-06-01",
+      "value": 311.576
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2004-07-01",
+      "value": 315.113
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2004-08-01",
+      "value": 319.244
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2004-09-01",
+      "value": 320.788
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2004-10-01",
+      "value": 322.492
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2004-11-01",
+      "value": 325.148
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2004-12-01",
+      "value": 326.833
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2005-01-01",
+      "value": 327.915
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2005-02-01",
+      "value": 329.241
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2005-03-01",
+      "value": 332.49
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2005-04-01",
+      "value": 334.17
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2005-05-01",
+      "value": 333.321
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2005-06-01",
+      "value": 331.823
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2005-07-01",
+      "value": 330.484
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2005-08-01",
+      "value": 327.887
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2005-09-01",
+      "value": 327.454
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2005-10-01",
+      "value": 329.529
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2005-11-01",
+      "value": 330.619
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2005-12-01",
+      "value": 330.835
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2006-01-01",
+      "value": 333.222
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2006-02-01",
+      "value": 333.03
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2006-03-01",
+      "value": 331.531
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2006-04-01",
+      "value": 331.607
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2006-05-01",
+      "value": 332.851
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2006-06-01",
+      "value": 335.067
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2006-07-01",
+      "value": 335.637
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2006-08-01",
+      "value": 337.011
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2006-09-01",
+      "value": 337.817
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2006-10-01",
+      "value": 340.541
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2006-11-01",
+      "value": 342.482
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2006-12-01",
+      "value": 343.384
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2007-01-01",
+      "value": 344.85
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2007-02-01",
+      "value": 345.652
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2007-03-01",
+      "value": 346.407
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2007-04-01",
+      "value": 346.878
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2007-05-01",
+      "value": 347.421
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2007-06-01",
+      "value": 348.328
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2007-07-01",
+      "value": 349.628
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2007-08-01",
+      "value": 354.495
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2007-09-01",
+      "value": 358.633
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2007-10-01",
+      "value": 361.308
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2007-11-01",
+      "value": 365.1
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2007-12-01",
+      "value": 370.485
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2008-01-01",
+      "value": 374.139
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2008-02-01",
+      "value": 375.558
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2008-03-01",
+      "value": 378.194
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2008-04-01",
+      "value": 382.414
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2008-05-01",
+      "value": 389.585
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2008-06-01",
+      "value": 396.954
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2008-07-01",
+      "value": 401.406
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2008-08-01",
+      "value": 399.87
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2008-09-01",
+      "value": 401.327
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2008-10-01",
+      "value": 405.707
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2008-11-01",
+      "value": 405.982
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2008-12-01",
+      "value": 404.185
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2009-01-01",
+      "value": 404.244
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2009-02-01",
+      "value": 403.737
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2009-03-01",
+      "value": 400.353
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2009-04-01",
+      "value": 400.53
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2009-05-01",
+      "value": 401.232
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2009-06-01",
+      "value": 399.966
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2009-07-01",
+      "value": 397.393
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2009-08-01",
+      "value": 397.758
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2009-09-01",
+      "value": 398.738
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2009-10-01",
+      "value": 398.575
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2009-11-01",
+      "value": 398.857
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2009-12-01",
+      "value": 398.407
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2010-01-01",
+      "value": 402.425
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2010-02-01",
+      "value": 406.826
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2010-03-01",
+      "value": 409.399
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2010-04-01",
+      "value": 412.341
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2010-05-01",
+      "value": 418.811
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2010-06-01",
+      "value": 420.241
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2010-07-01",
+      "value": 421.154
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2010-08-01",
+      "value": 425.788
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2010-09-01",
+      "value": 430.453
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2010-10-01",
+      "value": 434.882
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2010-11-01",
+      "value": 441.754
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2010-12-01",
+      "value": 443.427
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2011-01-01",
+      "value": 447.764
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2011-02-01",
+      "value": 452.047
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2011-03-01",
+      "value": 454.805
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2011-04-01",
+      "value": 457.059
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2011-05-01",
+      "value": 457.09
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2011-06-01",
+      "value": 456.49
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2011-07-01",
+      "value": 456.258
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2011-08-01",
+      "value": 459.055
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2011-09-01",
+      "value": 462.509
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2011-10-01",
+      "value": 464.349
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2011-11-01",
+      "value": 466.331
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2011-12-01",
+      "value": 465.586
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2012-01-01",
+      "value": 466.979
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2012-02-01",
+      "value": 467.308
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2012-03-01",
+      "value": 469.91
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2012-04-01",
+      "value": 474.683
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2012-05-01",
+      "value": 479.019
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2012-06-01",
+      "value": 482.311
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2012-07-01",
+      "value": 489.621
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2012-08-01",
+      "value": 495.949
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2012-09-01",
+      "value": 500.314
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2012-10-01",
+      "value": 498.739
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2012-11-01",
+      "value": 499.989
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2012-12-01",
+      "value": 503.283
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2013-01-01",
+      "value": 504.83
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2013-02-01",
+      "value": 505.832
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2013-03-01",
+      "value": 507.375
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2013-04-01",
+      "value": 507.087
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2013-05-01",
+      "value": 508.715
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2013-06-01",
+      "value": 512.598
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2013-07-01",
+      "value": 513.313
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2013-08-01",
+      "value": 515.688
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2013-09-01",
+      "value": 522.69
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2013-10-01",
+      "value": 525.966
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2013-11-01",
+      "value": 527.422
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2013-12-01",
+      "value": 531.056
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2014-01-01",
+      "value": 533.197
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2014-02-01",
+      "value": 537.703
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2014-03-01",
+      "value": 545.684
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2014-04-01",
+      "value": 548.145
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2014-05-01",
+      "value": 545.652
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2014-06-01",
+      "value": 542.194
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2014-07-01",
+      "value": 539.21
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2014-08-01",
+      "value": 539.55
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2014-09-01",
+      "value": 539.649
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2014-10-01",
+      "value": 542.853
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2014-11-01",
+      "value": 549.04
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2014-12-01",
+      "value": 551.149
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2015-01-01",
+      "value": 554.835
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2015-02-01",
+      "value": 557.803
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2015-03-01",
+      "value": 564.568
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2015-04-01",
+      "value": 569.738
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2015-05-01",
+      "value": 572.034
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2015-06-01",
+      "value": 575.938
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2015-07-01",
+      "value": 579.293
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2015-08-01",
+      "value": 581.618
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2015-09-01",
+      "value": 589.897
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2015-10-01",
+      "value": 600.269
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2015-11-01",
+      "value": 607.441
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2015-12-01",
+      "value": 610.128
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2016-01-01",
+      "value": 619.476
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2016-02-01",
+      "value": 624.366
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2016-03-01",
+      "value": 627.06
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2016-04-01",
+      "value": 629.345
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2016-05-01",
+      "value": 636.468
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2016-06-01",
+      "value": 646.868
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2016-07-01",
+      "value": 644.356
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2016-08-01",
+      "value": 647.153
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2016-09-01",
+      "value": 647.36
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2016-10-01",
+      "value": 648.213
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2016-11-01",
+      "value": 648.561
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2016-12-01",
+      "value": 653.951
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2017-01-01",
+      "value": 656.778
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2017-02-01",
+      "value": 657.191
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2017-03-01",
+      "value": 654.709
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2017-04-01",
+      "value": 646.573
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2017-05-01",
+      "value": 643.26
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2017-06-01",
+      "value": 637.079
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2017-07-01",
+      "value": 635.198
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2017-08-01",
+      "value": 636.714
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2017-09-01",
+      "value": 640.654
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2017-10-01",
+      "value": 641.279
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2017-11-01",
+      "value": 646.422
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2017-12-01",
+      "value": 651.214
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2018-01-01",
+      "value": 654.968
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2018-02-01",
+      "value": 655.975
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2018-03-01",
+      "value": 659.665
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2018-04-01",
+      "value": 665.77
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2018-05-01",
+      "value": 676.695
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2018-06-01",
+      "value": 686.696
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2018-07-01",
+      "value": 689.746
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2018-08-01",
+      "value": 694.414
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2018-09-01",
+      "value": 706.834
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2018-10-01",
+      "value": 708.694
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2018-11-01",
+      "value": 700.601
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2018-12-01",
+      "value": 697.446
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2019-01-01",
+      "value": 697.923
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2019-02-01",
+      "value": 706.66
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2019-03-01",
+      "value": 714.243
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2019-04-01",
+      "value": 720.695
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2019-05-01",
+      "value": 723.577
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2019-06-01",
+      "value": 728.142
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2019-07-01",
+      "value": 728.084
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2019-08-01",
+      "value": 724.395
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2019-09-01",
+      "value": 728.04
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2019-10-01",
+      "value": 732.041
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2019-11-01",
+      "value": 738.264
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2019-12-01",
+      "value": 751.121
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2020-01-01",
+      "value": 751.82
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2020-02-01",
+      "value": 751.91
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2020-03-01",
+      "value": 764.276
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2020-04-01",
+      "value": 764.656
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2020-05-01",
+      "value": 772.843
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2020-06-01",
+      "value": 785.221
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2020-07-01",
+      "value": 803.584
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2020-08-01",
+      "value": 834.713
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2020-09-01",
+      "value": 862.259
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2020-10-01",
+      "value": 893.997
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2020-11-01",
+      "value": 917.538
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2020-12-01",
+      "value": 924.504
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2021-01-01",
+      "value": 951.395
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2021-02-01",
+      "value": 977.133
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2021-03-01",
+      "value": 998.344
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2021-04-01",
+      "value": 1020.495
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2021-05-01",
+      "value": 1055.167
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2021-06-01",
+      "value": 1056.343
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2021-07-01",
+      "value": 1071.615
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2021-08-01",
+      "value": 1070.147
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2021-09-01",
+      "value": 1064.31
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2021-10-01",
+      "value": 1081.301
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2021-11-01",
+      "value": 1075.022
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2021-12-01",
+      "value": 1088.489
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2022-01-01",
+      "value": 1110.398
+    },
+    {
+      "accumulated": null,
+      "period": null,
+      "date": "2022-02-01",
+      "value": 1127.077
+    }
+  ]
+}

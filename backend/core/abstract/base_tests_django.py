@@ -13,7 +13,7 @@ import webbrowser
 from django.core.management import color_style
 from django.core.management.base import OutputWrapper
 from django.test import TransactionTestCase
-from config.settings import DEBUG
+from config.settings import DEBUG, TOKEN_TEST
 from utils import get_user_model, secret_number
 from core.abstract.base_tests import BaseTests
 
@@ -82,6 +82,8 @@ class BaseTestsDjango(BaseTests, TransactionTestCase):
         """Assert detail of HTTP GET requests"""
         if hasattr(self, 'path') and self.has_get():
             path = getattr(self, 'path_get', None) or getattr(self, 'path', None)
+            if str(path).endswith('None'):
+                raise ValueError('Parametro nao encontrado')
             response = self.get(path)
             if response.status_code == 404:
                 self.print('\n\n')
@@ -160,12 +162,16 @@ class BaseTestsDjango(BaseTests, TransactionTestCase):
                   encoding='utf-8') as f:
             f.write(json.dumps(payload))
 
+    def get_headers(self) -> dict:
+        return {'Authorization': f'Token {TOKEN_TEST}', 'Content-type': 'application/json'}
+
     def post(self, path, obj):
         """
         Sends a HTTP POST request with payload `obj` to the API endpoint specified by `path`. Returns a dictionary
         with keys 'status_code' and 'content'.
         """
-        response = self.client.post(self.__format_url(path), json.dumps(obj, default=str),
+
+        response = self.client.post(self.__format_url(path), json.dumps(obj, default=str), headers=self.get_headers(),
                                     content_type="application/json")
         data = {'status_code': response.status_code, 'content': response.content}
         dat = self.AttrDict(data)
@@ -195,7 +201,7 @@ class BaseTestsDjango(BaseTests, TransactionTestCase):
         Sends a HTTP GET request to the API endpoint specified by `path`. Returns a dictionary with keys
         'status_code' and 'content'.
         """
-        response = self.client.get(self.__format_url(path), content_type="application/json")
+        response = self.client.get(self.__format_url(path), headers=self.get_headers(), content_type="application/json")
         data = {'status_code': response.status_code, 'content': response.content}
         try:
             data['content'] = response.json()

@@ -1,3 +1,7 @@
+from datetime import date
+
+from dateutil.relativedelta import relativedelta
+
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 
@@ -19,6 +23,9 @@ class AbstractRateApi(AbstractViewApi):
         """),
         'get': _("""Returns the rate and its accumulated values, period and date""")
     }
+
+    def get_queryset(self):
+        return {'is_active': True}
 
 
 class RateApi(AbstractRateApi):
@@ -153,3 +160,58 @@ class TemplateDetailApi(AbstractViewApi):
         'get': _("""Example of how templates should look for each selected rate type
         Returns a detail of template with their id, name, tables and fields in tables""")
     }
+
+
+class TemplateTestEndPointApi(AbstractViewApi):
+    """HTTP methods for Template"""
+    http_method_names = ['get']
+    serializer_class = TemplateSchema
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    model = Template
+
+    query_params = []
+
+    docs = {
+        'get': _("""Example of how templates should look for each selected rate type
+        Returns a detail of template with their id, name, tables and fields in tables""")
+    }
+
+    def get(self, request, *args, **kwargs):
+        pass
+
+    def _get_index_monetary_correction(self, data: dict) -> dict or None:
+        """Retrieves the monetary correction from a financial statement. It gets the calculation, data and rate
+        information and then validates the date and rate. The index_data_base and index_recovering are returned as a
+        dictionary. """
+        data_base: date = data.get('data_base')
+        date_rj: date = data.get('date_rj')
+        index_name: str = data.get('index')
+        summary: bool = data.get('summary')
+        value: float = data.get('value')
+        dsr: float = data.get('dsr', 0)
+        total_historical = value + dsr
+        if summary:
+            data_base + relativedelta(months=1)
+        rate = Rate.objects.filter(index=index_name).first()
+
+        rate_data_base = rate.get_rate_by_date(data_base)
+        rate_date_rj = rate.get_rate_by_date(date_rj)
+
+        if not rate_date_rj:
+            raise serializers.ValidationError(_('Rate Recovering date not found'))
+        if not rate_data_base:
+            raise serializers.ValidationError(_('Rate Data Base not found'))
+
+        data = {
+            'index_data_base': rate_data_base.value,
+            'index_recovering': rate_date_rj.value,
+        }
+
+        return data
+
+    def _calc_corrected_value(self, index_recovering: float, index_data_base: float, total_value: float) -> float:
+        return index_recovering / index_data_base * total_value
+
+    def corrected_value(self, index_recovering, index_data_base, total_value) -> float:
+        """Returns corrected value calculated"""
+        return self._calc_corrected_value(index_recovering, index_data_base, total_value)

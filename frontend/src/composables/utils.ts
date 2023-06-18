@@ -1,5 +1,5 @@
 export const printError = (message: string, error: any) => {
-  if (import.meta.env.VITE_LOG)
+  if (import.meta.env.VITE_LOG === 'true')
     console.warn(message, error)
 }
 
@@ -18,13 +18,64 @@ export const formatDateToBackend = (value: string) => {
 export const formatDateFromBackend = (value: string) => {
   if (!value)
     return
-  const [year, month, day] = value.split('-')
+  const [year, month, day] = value.slice(0, 10).split('-')
   return `${day}/${month}/${year}`
+}
+export const formatDateHour = (value: string) => {
+  if (!value)
+    return
+  const [year, month, day] = value.slice(0, 10).split('-')
+  return `${day}/${month}/${year} às ${value.slice(11, 19)}`
+}
+export const formatDay = (value: string) => {
+  if (!value)
+    return
+  const [, month, day] = value.slice(0, 10).split('-')
+  return `${day}/${month}`
+}
+export const formatMonth = (value: string) => {
+  if (!value)
+    return
+  const months = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']
+  const [, month] = value.slice(0, 10).split('-')
+  return months[+month - 1] || ''
+}
+
+export const formatNumber = (value: number | undefined, digits = 6) => value
+  ?.toLocaleString('pt-BR', { maximumFractionDigits: digits, minimumFractionDigits: digits })
+
+export const getValidNumber = (value: string) => {
+  const num = value
+    .replace(/((?![0-9.,]).)*/g, '')
+  const getCharCount = (char: string, value: string) => value
+    .split(char).length - 1
+  const dotsCount = getCharCount('.', num)
+  const commaCount = getCharCount(',', num)
+  if (!num)
+    return 0
+  if (commaCount === 1 && dotsCount === 1) {
+    const values = value.split(/[.,]/)
+    const last = values.at(-1)
+    const start = values.slice(0, values.length - 1).join('')
+    return Number(`${start}.${last}`)
+  }
+  if (commaCount === 1) {
+    return Number(num
+      .replaceAll('.', '')
+      .replace(',', '.'))
+  }
+  if (dotsCount === 1) {
+    return Number(num
+      .replaceAll(',', ''))
+  }
+  return Number(num.replaceAll('.', '').replaceAll(',', ''))
 }
 
 export const formatLegalNumber = (value: string) => {
-  value = value.replace(/[./-]/gi, '')
-  if (value.length < 14) {
+  if (!value)
+    return
+  value = value?.replace(/[./-]/gi, '')
+  if (value?.length < 14) {
     const [,first, second, third, digit] = value
       .padEnd(11, '0')
       .split(/^(\d{3})(\d{3})(\d{3})(\d{2})/)
@@ -48,6 +99,60 @@ export const getInitials = (text = '') => {
   if (initials.length > 2)
     return initials.slice(0, 2)
   return initials
+}
+
+export const getValidDate = (value: string) => {
+  const months: any = {
+    jan: 1,
+    janeiro: 1,
+    fev: 2,
+    fevereiro: 2,
+    mar: 3,
+    março: 3,
+    abr: 4,
+    abril: 4,
+    mai: 5,
+    maio: 5,
+    jun: 6,
+    junho: 6,
+    jul: 7,
+    julho: 7,
+    ago: 8,
+    agosto: 8,
+    set: 9,
+    setembro: 9,
+    out: 10,
+    outubro: 10,
+    nov: 11,
+    novembro: 11,
+    dez: 12,
+    dezembro: 12,
+  }
+  if (value.match(/\w{3,}[-/]\d{2,4}/)) {
+    const [month, year] = value.split(/[-/]/)
+    const useMonth = months[month]
+    const formatedMonth = (`${useMonth}`).padStart(2, '0')
+    const useYear = year.length === 2 ? `20${year}` : year
+    if (!useMonth)
+      return ''
+    return `${useYear}-${formatedMonth}-01`
+  }
+  if (value.match(/^\d{1,2}[-/]\d{2,4}$/)) {
+    const [month, year] = value.split(/[-/]/)
+    return `${year}-${month}-01`
+  }
+  if (value.match(/^\d{1,2}[-/]\d{1,2}[-/]\d{1,4}$/)) {
+    const [day, month, year] = value.split(/[-/]/)
+    return `${year}-${month}-${day}`
+  }
+  const date = new Date(value)
+  const day = date.getDate()
+  const month = date.getMonth() + 1
+  const year = date.getFullYear()
+  const values = [year, month, day]
+  if (values.some(item => isNaN(item)))
+    return ''
+  return `${year}-${(`${month}`).padStart(2, '0')}-${(`${day}`).padStart(2, '0')}`
 }
 
 export const redirectTo = (url: string) => window.location.replace(url)
@@ -167,3 +272,38 @@ export const parseToSnake = (data: any) => unflatten(Object
       ]
     }),
   ))
+
+export const downloadFile = (textToWrite: string, fileNameToSaveAs: string, contentType = 'application/xlsx') => {
+  const byteCharacters = atob(textToWrite)
+  const byteNumbers = byteCharacters
+    .split('')
+    .map((_, index) => byteCharacters.charCodeAt(index))
+  const byteArray = new Uint8Array(byteNumbers)
+  const blob = new Blob([byteArray], { type: contentType })
+  const downloadLink = document.createElement('a')
+  downloadLink.download = fileNameToSaveAs
+  downloadLink.innerHTML = 'Download File'
+  if (window.webkitURL != null) {
+    downloadLink.href = window.webkitURL.createObjectURL(blob)
+  }
+  else {
+    downloadLink.href = window.URL.createObjectURL(blob)
+    downloadLink.onclick = () => {
+      document.body.removeChild(downloadLink)
+    }
+    downloadLink.style.display = 'none'
+    document.body.appendChild(downloadLink)
+  }
+  downloadLink.click()
+}
+
+export const deleteAllCookies = () => {
+  const cookies = document.cookie.split(';')
+
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i]
+    const eqPos = cookie.indexOf('=')
+    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie
+    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT`
+  }
+}

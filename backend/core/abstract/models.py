@@ -1,4 +1,3 @@
-import re
 import uuid
 
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -6,8 +5,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from crum import get_current_request
 from django.db.models import Q
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, pre_delete
 from django.forms import model_to_dict
+from rest_framework.exceptions import ValidationError
+
 from utils import get_user_model, _
 
 User = get_user_model()
@@ -25,7 +26,7 @@ class AbstractModel(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ('created_at',)
+        ordering = ('-created_at', '-updated_at')
 
     def __init__(self, *args, **kwargs):
         super(AbstractModel, self).__init__(*args, **kwargs)
@@ -79,15 +80,15 @@ class AbstractModel(models.Model):
 
 class UpdateUser(models.Model):
     """Model template to catch all updates made to the model"""
-    id = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
-    object_id = models.UUIDField()  # uuid AbstractModel
     field_changed = models.CharField(_('Field changed'), max_length=100, null=True)
     field_changed_display = models.CharField(_('Field changed display'), max_length=100, null=True)
     current_value = models.CharField(_('Current value'), max_length=400, null=True)
     previous_value = models.CharField(_('Previous value '), max_length=400, null=True)
     create_user = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
+
+    object_id = models.UUIDField()  # uuid AbstractModel
     content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
     content_object = GenericForeignKey()
 
@@ -98,14 +99,11 @@ class UpdateUser(models.Model):
         return str(self.field_changed)
 
 
-def get_user(sender, **kwargs):
+def save_obj(sender, **kwargs):
     """Get User on request"""
     instance = kwargs.get('instance')
     requests_ = get_current_request()
-    username = requests_.user.username if requests_ else 'anonymous'
-    username = username.strip()
-    if not username:
-        username = None
+    username = (requests_.user.username.strip() or None) if requests_ else 'anonymous'
     user_id = requests_.user.id if requests_ else None
     instance.create_user_id = user_id
     if hasattr(instance, 'changed_fields') and hasattr(instance, 'id'):
@@ -123,9 +121,37 @@ def get_user(sender, **kwargs):
 
     if hasattr(instance, 'create_user'):
         if instance.create_user is None:
-            instance.create_user = username
+            # if isinstance(username, User):
+            if username != 'anonymous':
+                instance.create_user = username
         else:
             instance.update_user = username
 
 
-pre_save.connect(get_user, dispatch_uid=AbstractModel)
+pre_save.connect(save_obj, dispatch_uid=AbstractModel)
+
+
+def delete_obj(sender, **kwargs):
+    """Get User on request"""
+    instance = kwargs.get('instance')
+    requests_ = get_current_request()
+    username = (requests_.user.username.strip() or None) if requests_ else 'anonymous'
+    user_id = requests_.user.id if requests_ else None
+    instance.create_user_id = user_id
+    if hasattr(instance, 'id') and isinstance(instance.id, uuid.UUID):
+        previous_value = instance.__str__()
+        current_value = 'deleted'
+
+        UpdateUser.objects.create(field_changed='object', field_changed_display='object',
+                                  previous_value=previous_value, current_value=current_value,
+                                  create_user_id=user_id, object_id=instance.id, content_object=instance)
+
+    if hasattr(instance, 'create_user'):
+        if instance.create_user is None:
+            if isinstance(username, User):
+                instance.create_user = username
+        else:
+            instance.update_user = username
+
+
+pre_delete.connect(delete_obj, dispatch_uid=AbstractModel)

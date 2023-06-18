@@ -5,7 +5,6 @@ Api's responds with JSON data and uses rest_framework.schemas.openapi.AutoSchema
 Api's classes use the {{app_name | title}} model and schema {{app_name | title}} to work with data.
 """
 
-
 from {{app_name}}.schemas import {{app_name | title}}Schema
 from {{app_name}}.models import {{app_name | title}}
 from core.abstract.views import AbstractViewApi

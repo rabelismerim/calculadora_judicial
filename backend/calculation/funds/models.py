@@ -21,6 +21,12 @@ from calculation.funds.integrations.models import TotalValuesFundsIntegrations
 from rates.models import Rate
 
 
+#
+# class FundsManager(models.Manager):
+#     def get_total_summed(self):
+#         # código para calcular o total somado
+#         pass
+#
 class Funds(AbstractFunds):
     """
     This class defines methods for generating total statements and fetching the TotalValuesFunds and
@@ -110,6 +116,16 @@ class Funds(AbstractFunds):
         self.__delete_total_funds()
         super(Funds, self).delete(*args, **kwargs)
 
+    def get_total_summed(self):
+        """Get the corrected value of the sum of calculated sums"""
+        total: float = 0
+        if hasattr(self, 'totalvaluesfunds'):
+            total += self.totalvaluesfunds.total_corrected
+
+        if hasattr(self, 'totalvaluesfundsintegrations'):
+            total += self.totalvaluesfundsintegrations.total_corrected
+        return total
+
 
 class StatementFunds(AbstractStatement):
     """
@@ -138,7 +154,8 @@ class StatementFunds(AbstractStatement):
     The 'calcule_monetary_correction()' method uses the '_get_index_monetary_correction()' method, which should be defined
     in the class that inherits or implements the 'AbstractStatement' class.
     """
-    dsr_reflexes = models.FloatField(_('DSR Reflexes'), default=0)  # DRS - Descanso semanal remunerado
+    dsr_reflexes = models.FloatField(
+        _('DSR Reflexes'), default=0)  # DRS - Descanso semanal remunerado
     summary = models.BooleanField(_('Apply Precedent 381?'), default=False)
 
     class Meta:
@@ -197,7 +214,7 @@ class StatementFunds(AbstractStatement):
 
     def create_monetary_correction(self, data: dict):
         """Create or update the MonetaryCorrection object"""
-        MonetaryCorrection.objects.update_or_create(defaults=data, **{'statement': self})
+        money, c = MonetaryCorrection.objects.update_or_create(defaults=data, **{'statement': self})
 
     def calcule_monetary_correction(self):
         """
@@ -247,7 +264,8 @@ class TotalValuesFunds(AbstractTotalValuesFunds):
         set_total(): Calculates and sets the total corrected and historical values of the fund based on the calculated
          statement.
     """
-    total_dsr_reflexes = models.FloatField(_('Total value DSR reflexes'), default=0)
+    total_dsr_reflexes = models.FloatField(
+        _('Total value DSR reflexes'), default=0)
     total_accurate = models.FloatField(_('Total accurate'), default=0)
     fund = models.OneToOneField(Funds, on_delete=models.PROTECT)
 
@@ -261,7 +279,6 @@ class TotalValuesFunds(AbstractTotalValuesFunds):
         statement.
         """
         statements = self.get_calculated_statement()
-
 
         total_corrected_value = 0
         total_historical_value = 0
@@ -307,6 +324,7 @@ def save_statement(sender, instance, **kwargs) -> None:
 
     ExtractFormula(instance, instance.fund.calculation, statement_methods).get_methods(
         [StatementFunds, MonetaryCorrection, Rate, TotalValuesFunds, save_statement])
+    instance.fund.calculation.invalidate_calculation()
 
 
 @receiver(gen_total_funds, sender=Funds)
@@ -319,3 +337,5 @@ def save_total_funds(sender, instance, **kwargs) -> None:
     print('Signal somar todas as linhas de extrato verbas\n\n')
     instance.gen_total_statements()
     instance.gen_total_integrations()
+
+    instance.calculation.invalidate_calculation()

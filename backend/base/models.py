@@ -11,6 +11,7 @@ class AbstractDescription(AbstractModel):
 
     class Meta:
         abstract = True
+        ordering = ('-created_at', '-updated_at')
 
     def __str__(self):
         return self.description
@@ -22,6 +23,7 @@ class AbstractInfo(AbstractModel):
 
     class Meta:
         abstract = True
+        ordering = ('-created_at', '-updated_at')
 
     def __str__(self):
         return f'{self.name} - {self.legal_number}'
@@ -48,6 +50,7 @@ class AbstractDateCreditor(AbstractModel):
 
     class Meta:
         abstract = True
+        ordering = ('-created_at', '-updated_at')
 
     def __str__(self):
         return _('Admission: {} | Resignation: {}').format(self.admission, self.dismissal)
@@ -68,6 +71,7 @@ class AbstractDateRecovering(AbstractModel):
 
     class Meta:
         abstract = True
+        ordering = ('-created_at', '-updated_at')
 
     def __str__(self):
         return _('Request RJ: {} | Filing RJ: {} | Citation: {}').format(self.date_rj_request, self.date_rj_filing,
@@ -81,6 +85,7 @@ class AbstractCredit(AbstractModel):
 
     class Meta:
         abstract = True
+        ordering = ('-created_at', '-updated_at')
 
     def __str__(self):
         return f"{self.id} | {str(self.classes)}"

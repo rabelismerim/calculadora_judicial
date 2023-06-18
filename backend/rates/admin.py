@@ -11,10 +11,12 @@ Modules:
 - rates.models: Models for the "rates" app.
 - rates.schemas: Schema for validating data from Excel files.
 """
+import json
 
 from django.contrib import admin, messages
 from rates.models import Accumulated, Period, Rate, RateValues, RateFile, IndiceIRRF, Template, TemplateRate, \
-    TemplateField, TemplateMainField
+    TemplateField, TemplateMainField, TemplateMainSummaryField, TemplateSummaryField, TemplateMainFieldDefault, \
+    TemplateFieldDefault
 from rates.schemas import RateSchema
 
 admin.site.register(Accumulated)
@@ -25,6 +27,10 @@ admin.site.register(Template)
 admin.site.register(TemplateRate)
 admin.site.register(TemplateField)
 admin.site.register(TemplateMainField)
+admin.site.register(TemplateSummaryField)
+admin.site.register(TemplateFieldDefault)
+admin.site.register(TemplateMainFieldDefault)
+admin.site.register(TemplateMainSummaryField)
 
 
 def load_files(modeladmin, request, queryset):
@@ -41,13 +47,36 @@ def load_files(modeladmin, request, queryset):
         if len(rows) == 0:
             continue
 
+        index_name = obj.rate.index
+        new_rate, created = Rate.objects.get_or_create(index=index_name, is_per_day=obj.rate.is_per_day)
         cont = 0
-        for new_rate in rows:
-            serializer = RateSchema(data=new_rate)
-            is_valid = serializer.is_valid(raise_exception=False)
-            new_rate = serializer.validated_data
-            if is_valid:
-                cont += 1
+
+        rates = Rate.objects.filter(index=index_name)
+        rate_values_list = []
+        accumulated_values_list = []
+        period_values_list = []
+        for data in rows:
+            rate_value = data.pop('rate_value', None)
+            accumulated = rate_value.get('accumulated', None)
+            period = rate_value.get('period', None)
+            date = rate_value.get('date')
+            value = rate_value.get('value')
+
+            if rates.filter(ratevalues__date=date).exists():
+                continue
+
+            rate_value = RateValues(rate=new_rate, date=date, value=value)
+            rate_values_list.append(rate_value)
+            cont += 1
+            if accumulated is not None:
+                accumulated = Accumulated(rate_id=rate_value.id, value=accumulated)
+                accumulated_values_list.append(accumulated)
+            if period is not None:
+                period = Period(rate_id=rate_value.id, value=period)
+                period_values_list.append(period)
+        RateValues.objects.bulk_create(rate_values_list)
+        Accumulated.objects.bulk_create(accumulated_values_list)
+        Period.objects.bulk_create(period_values_list)
         if cont > 0:
             messages.success(
                 request, f'Carregado {cont} indice(s) do arquivo {obj.filename}')

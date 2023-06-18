@@ -1,4 +1,9 @@
+import base64
+import hashlib
+import uuid
+
 from django.conf import settings
+from django.core.files.base import ContentFile
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.decorators.http import require_GET
@@ -31,6 +36,7 @@ class ClearCacheApi(AbstractViewApi):
     permission_classes = [permissions.IsAuthenticated]
     allow_cache = False
     operation_id_base = 'Get Clear Cache'
+
     @doc(_("""This method returns a Default response"""))
     def get(self, request, *args, **kwargs):
         self.delete_cache_from_user()
@@ -52,6 +58,7 @@ class SignStatusApi(AbstractViewApi):
     authentication_classes = [SessionAuthentication]
     allow_cache = False
     operation_id_base = 'Get Sign Status'
+
     @doc(_("""This method returns a JSON response that contains the user details as per authenticated user. 
         The serializer is used to access the model object, and then the data is returned in a JSON format.
         """))
@@ -61,15 +68,37 @@ class SignStatusApi(AbstractViewApi):
                 email=ms_identity_web.id_data.usermail)
             if ms_identity_web.id_data.usermail is not None:
                 if user_view.count() == 0:
-                    serializer = UserDttMFASchema(data=ms_identity_web.id_data)
-                    serializer.is_valid(raise_exception=True)
-                    new_user = serializer.data
-                    User.objects.create_user(**new_user)
+                    user = User()
+                    user.email = ms_identity_web.id_data.usermail
+                    user.username = ms_identity_web.id_data.username.replace(' ', '_')
+                    user.first_name = ms_identity_web.id_data.username.split()[0]
+                    user.last_name = ms_identity_web.id_data.username.split(
+                    )[len(request.identity_context_data.username.split()) - 1]
+                    user.is_active = False
+                    user.userpicture = ms_identity_web.id_data.userpicture
+                    user.is_staff = False
+                    user.save()
                 elif len(user_view) > 0:
                     for item in user_view:
+                        # TODO salvar foto recebida em base64 para img Field e passar a url para o front
                         if item.userpicture != ms_identity_web.id_data.userpicture:
                             item.userpicture = ms_identity_web.id_data.userpicture
                             item.save()
+
+                            data = ContentFile(base64.b64decode(ms_identity_web.id_data.userpicture))
+                            file_name = f"{uuid.uuid4()}.jpeg"
+                            item.user_img.save(file_name, data, save=True)  # image is User's model field
+
+                            try:
+                                data = ContentFile(base64.b64decode(item.userpicture))
+                                image_data = base64.b64decode(item.userpicture)
+                                file_hash = hashlib.md5(image_data).hexdigest()
+                                file_name = f"{file_hash}.jpeg"
+                                if item.user_img and str(item.user_img.name) in file_name is False:
+                                    item.user_img.save(file_name, data, save=True)  # image is User's model field
+                                    item.save()
+                            except Exception as e:
+                                print(e, 'err save img in base64')
         return Response()
 
 

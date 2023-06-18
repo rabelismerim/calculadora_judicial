@@ -45,7 +45,8 @@ class ProjectRolesSchema(serializers.ModelSerializer, AbstractModelSchema):  # V
 
     executors = serializers.ListField(write_only=True, child=UserSerializer())
     approvers = serializers.ListField(write_only=True, child=UserSerializer())
-    special_approvers = serializers.ListField(write_only=True, child=UserSerializer(), required=False)
+    special_approvers = serializers.ListField(
+        write_only=True, child=UserSerializer(), required=False)
     reviewers = serializers.ListField(write_only=True, child=UserSerializer())
     check_list_empty = True
 
@@ -56,36 +57,47 @@ class ProjectRolesSchema(serializers.ModelSerializer, AbstractModelSchema):  # V
     def validate_executors(self, executors):
         """Validate executors with a list format"""
         if not executors and self.check_list_empty:
-            raise serializers.ValidationError([_('Must select at least one user')])
+            raise serializers.ValidationError(
+                [_('Must select at least one user')])
 
         if isinstance(executors, list) is False:
-            raise serializers.ValidationError([_('The executors field must be in list format')])
+            raise serializers.ValidationError(
+                [_('The executors field must be in list format')])
 
         return self.__get_ids(executors)
 
     def validate_approvers(self, approvers):
         """Validate approvers with a list format"""
         if not approvers and self.check_list_empty:
-            raise serializers.ValidationError([_('Must select at least one user')])
+            raise serializers.ValidationError(
+                [_('Must select at least one user')])
 
         if isinstance(approvers, list) is False:
-            raise serializers.ValidationError([_('The approvers field must be in list format')])
+            raise serializers.ValidationError(
+                [_('The approvers field must be in list format')])
         return self.__get_ids(approvers)
 
     def validate_reviewers(self, reviewers):
         """Validate reviewers with a list format"""
         if not reviewers and self.check_list_empty:
-            raise serializers.ValidationError([_('Must select at least one user')])
+            raise serializers.ValidationError(
+                [_('Must select at least one user')])
 
         if isinstance(reviewers, list) is False:
-            raise serializers.ValidationError([_('The reviewers field must be in list format')])
+            raise serializers.ValidationError(
+                [_('The reviewers field must be in list format')])
         return self.__get_ids(reviewers)
 
     def validate_special_approvers(self, special_approvers):
         """Validate special_approvers with a list format"""
         if isinstance(special_approvers, list) is False:
-            raise serializers.ValidationError([_('The special_approvers field must be in list format')])
+            raise serializers.ValidationError(
+                [_('The special_approvers field must be in list format')])
         return self.__get_ids(special_approvers)
+
+    class Meta:
+        model = Project
+        fields = '__all__'
 
 
 class ProjectSchema(ProjectRolesSchema):  # V1
@@ -136,8 +148,10 @@ class ProjectSchema(ProjectRolesSchema):  # V1
     financial_partner = UserDttSchema(many=False, read_only=True)
     financial_partner_id = serializers.IntegerField(write_only=True)
 
-    project_users = ProjectUserProjectSchema(read_only=True, many=True, source='engagement.users')
-    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    project_users = ProjectUserProjectSchema(
+        read_only=True, many=True, source='engagement.users')
+    status_display = serializers.CharField(
+        source='get_status_display', read_only=True)
     num_recovering = serializers.IntegerField(read_only=True)
 
     class Meta:
@@ -180,8 +194,10 @@ class ProjectV2Schema(ProjectRolesSchema):  # V2
     court = CourtSchema(many=False, read_only=True)
     court_id = serializers.UUIDField(write_only=True)
 
-    engagement = ProjectEngagementSchema(many=False, exclude=('project_id', 'users', 'user_names'))
-    recoverings = RecoveringV2Schema(source='recovering_set', many=True, read_only=False, fields=('id', 'entity'))
+    engagement = ProjectEngagementSchema(
+        many=False, exclude=('project_id', 'users', 'user_names'))
+    recoverings = RecoveringV2Schema(
+        source='recovering_set', many=True, read_only=False, fields=('id', 'entity'))
 
     legal_manager = UserDttSchema(many=False, read_only=True)
     legal_manager_id = serializers.IntegerField(write_only=True)
@@ -198,13 +214,16 @@ class ProjectV2Schema(ProjectRolesSchema):  # V2
     financial_partner = UserDttSchema(many=False, read_only=True)
     financial_partner_id = serializers.IntegerField(write_only=True)
 
-    project_users = ProjectUserProjectSchema(read_only=True, many=True, source='engagement.users')
-    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    project_users = ProjectUserProjectSchema(
+        read_only=True, many=True, source='engagement.users')
+    status_display = serializers.CharField(
+        source='get_status_display', read_only=True)
     num_recovering = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Project
         fields = '__all__'
+
     def validate(self, data):
         """
         Validate the project schema by extracting the necessary data from Project object.
@@ -265,12 +284,14 @@ class ProjectEditSchema(ProjectRolesSchema):
 
         fields = ('project_start', 'project_end', 'process_number', 'competence', 'date_rj_request', 'date_rj_filing',
                   'date_citation', 'description', 'judge_id', 'lawyer_id', 'region_id', 'court_id', 'legal_manager_id',
-                  'calculation_manager_id', 'financial_manager_id', 'legal_partner_id', 'financial_partner_id', 'executors')
+                  'calculation_manager_id', 'financial_manager_id', 'legal_partner_id', 'financial_partner_id',
+                  'executors', 'approvers', 'special_approvers', 'reviewers')
 
     def __init__(self, *args, **kwargs):
         super(ProjectEditSchema, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.required = False
+
 
 exclude = ('create_user', 'created_at',
            'update_user', 'updated_at')

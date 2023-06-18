@@ -1,5 +1,6 @@
 from django.contrib.auth.models import Group
 from django.db import transaction
+from django.db.models import ProtectedError
 
 from config.settings import GROUP_NAME_APPROVER, GROUP_NAME_EXECUTOR, GROUP_NAME_REVIEWER, GROUP_NAME_SPECIAL_APPROVE
 from core.abstract.views import AbstractViewApi
@@ -88,25 +89,103 @@ class ProjectDetailApi(AbstractProjectApi):  # V1
     }
     query_params = []
 
+    @doc(_("""Update the project and roles.
+
+        Returns:
+            The JSON response with Project detail.
+        """))
     def put(self, request, *args, **kwargs):
-        executors = request.data.pop('executors', [])
-        print(executors, 'executores')
+        serializer = self.get_serializer_class()
+        serializer = serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data_obj = serializer.validated_data
+        executors = data_obj.pop('executors', [])
+        approver = data_obj.pop('approvers', [])
+        special_approvers = data_obj.pop('special_approvers', [])
+        reviewers = data_obj.pop('reviewers', [])
+        request.data.pop('executors', [])
+        request.data.pop('approvers', [])
+        request.data.pop('special_approvers', [])
+        request.data.pop('reviewers', [])
+
         users = []
         project = self.model.objects.filter(id=kwargs.get('id')).first()
+
+        project_engagement = project.engagement
         project_users = project.get_project_users()
 
         group_executor, created = Group.objects.get_or_create(name=GROUP_NAME_EXECUTOR)
-        old_executors = project_users.filter(groups=group_executor)
-        print(old_executors, 'old executors\n\n')
-        for user_django_id in executors:
-            project_user = ProjectUser.objects.filter(user_id=user_django_id, groups=group_executor,
-                                                      projectengagement__project=project)
-            print(project_user, 'project user\n')
-            # project_user = ProjectUser.objects.create(user_id=user_django_id)
-        #     project_user.groups.add(group_executor.id)
-        #     project_user.save()
-        #     users.append(project_user.id)
+        group_approver, created = Group.objects.get_or_create(name=GROUP_NAME_APPROVER)
+        group_special, created = Group.objects.get_or_create(name=GROUP_NAME_SPECIAL_APPROVE)
+        group_reviewer, created = Group.objects.get_or_create(name=GROUP_NAME_REVIEWER)
 
+        old_executors_ids = list(project_users.filter(groups=group_executor).values_list('user_id', flat=True))
+        old_approver_ids = list(project_users.filter(groups=group_approver).values_list('user_id', flat=True))
+        old_special_ids = list(project_users.filter(groups=group_special).values_list('user_id', flat=True))
+        old_reviewer_ids = list(project_users.filter(groups=group_reviewer).values_list('user_id', flat=True))
+
+        executors_include = [val for val in executors if val not in old_executors_ids]
+        approver_include = [val for val in approver if val not in old_approver_ids]
+        special_include = [val for val in special_approvers if val not in old_special_ids]
+        reviewer_include = [val for val in reviewers if val not in old_reviewer_ids]
+
+        for user_django_id in executors_include:
+            project_user = ProjectUser.objects.create(user_id=user_django_id)
+            project_user.groups.add(group_executor.id)
+            project_user.save()
+            users.append(project_user.id)
+
+        for user_django_id in approver_include:
+            project_user = ProjectUser.objects.create(user_id=user_django_id)
+            project_user.groups.add(group_approver.id)
+            project_user.save()
+            users.append(project_user.id)
+
+        for user_django_id in special_include:
+            project_user = ProjectUser.objects.create(user_id=user_django_id)
+            project_user.groups.add(group_special.id)
+            project_user.save()
+            users.append(project_user.id)
+
+        for user_django_id in reviewer_include:
+            project_user = ProjectUser.objects.create(user_id=user_django_id)
+            project_user.groups.add(group_reviewer.id)
+            project_user.save()
+            users.append(project_user.id)
+
+        executors_remove = [val for val in old_executors_ids if val not in executors]
+        approver_remove = [val for val in old_approver_ids if val not in approver]
+        special_remove = [val for val in old_special_ids if val not in special_approvers]
+        reviewers_remove = [val for val in old_reviewer_ids if val not in reviewers]
+
+        filters = {'projectengagement__project': project}
+
+        users_delete = ProjectUser.objects.filter(user_id__in=executors_remove, groups=group_executor, **filters)
+        for user_delete in users_delete:
+            try:
+                user_delete.delete()
+            except ProtectedError:
+                project_engagement.users.remove(user_delete.id)
+        users_delete = ProjectUser.objects.filter(user_id__in=approver_remove, groups=group_approver, **filters)
+        for user_delete in users_delete:
+            try:
+                user_delete.delete()
+            except ProtectedError:
+                project_engagement.users.remove(user_delete.id)
+        users_delete = ProjectUser.objects.filter(user_id__in=special_remove, groups=group_special, **filters)
+        for user_delete in users_delete:
+            try:
+                user_delete.delete()
+            except ProtectedError:
+                project_engagement.users.remove(user_delete.id)
+        users_delete = ProjectUser.objects.filter(user_id__in=reviewers_remove, groups=group_reviewer, **filters)
+        for user_delete in users_delete:
+            try:
+                user_delete.delete()
+            except ProtectedError:
+                project_engagement.users.remove(user_delete.id)
+        project_engagement.users.add(*users)
+        project_engagement.save()
         return super().put(request, *args, **kwargs)
 
 

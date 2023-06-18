@@ -23,7 +23,7 @@ class CustomUserAdmin(UserAdmin):
     add_form = UserCreationForm
     fieldsets = (
         (None, {'fields': ('username',)}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'role', 'status')}),
+        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'role', 'status', 'userpicture', 'user_img')}),
         (_('Permissions'), {
             'fields': ('is_active', 'is_staff', 'groups', 'subgroups', 'user_permissions'),
         }),

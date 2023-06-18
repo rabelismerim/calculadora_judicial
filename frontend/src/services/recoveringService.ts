@@ -1,6 +1,6 @@
 const getRecoverings = () => api
   .get('/v1/recovering/')
-  .then(({ recoverings }: any) => recoverings.map((recovering: any) => {
+  .then((result: any) => result?.recoverings?.map((recovering: any) => {
     const { entity } = recovering
     return {
       ...recovering,

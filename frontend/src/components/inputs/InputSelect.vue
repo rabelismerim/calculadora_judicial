@@ -11,15 +11,13 @@ const props = withDefaults(defineProps<{
   errorKey?: string
 }>(), {
   rules: () => ([]),
-  add: () => {},
-  options: () => ([]),
   errorMessages: () => ({}),
   errorKey: '',
   toAdd: () => {},
 })
 const emit = defineEmits(['update:modelValue', 'update:options'])
 
-const select = ref(null) as any
+const select = ref(null as any)
 const hasError = computed(() => select.value.hasError)
 const { clearError } = useBackendErrors(toRef(props, 'errorMessages'))
 const onInput = (value: string | number | null) => {
@@ -31,6 +29,7 @@ const onInput = (value: string | number | null) => {
 let loading = $ref(false)
 let inputValue = $ref('')
 let filteredOptions = $ref(props.options)
+watchEffect(() => filteredOptions = props.options)
 
 const addNewItem = async () => {
   if (!inputValue) {
@@ -58,10 +57,11 @@ const addNewItem = async () => {
 
 const onFilter = (val: any, update: Function) => {
   update(() => {
-    const needle = val.toLowerCase()
+    const needle = val?.toLowerCase()
     inputValue = needle
     filteredOptions = props.options
-      .filter(v => v.description.toLowerCase().includes(needle))
+      .filter(v => !!v)
+      .filter(v => v?.description?.toLowerCase()?.includes(needle))
   })
 }
 </script>
@@ -91,6 +91,7 @@ const onFilter = (val: any, update: Function) => {
   >
     <template #no-option>
       <QBtn
+        v-if="toAdd"
         :label="`Adicionar${label ? ` ${label}` : ''}`"
         class="w-full h-12"
         color="primary"

@@ -18,7 +18,7 @@
 > #### Windows
 >* `.\\venv\\Scripts\\activate`
 > #### Linux
-> * `source venv/bin/activate`>
+> * `source venv/bin/activate`
 
 > * `pip install -r requirements.txt` para instalar as dependências necessárias para o projeto;
 
@@ -33,6 +33,11 @@
 > * Na raiz do projeto crie um arquivo com o nome ".env". Dentro dele coloque o texto "DEBUG=True", "IS_LOCALHOST=True"
     e "ENV='branch' para ativar o modo de desenvolvedor
 
+### Configurando variáveis de ambiente
+> *  Para configurar variáveis de ambiente diferentes para cada ambiente, crie um arquivo `.env` separado para cada ambiente que você deseja configurar. Por exemplo: `.env.dev`, `.env.prod` e `.env.hml`. Cada arquivo `.env` deve conter apenas as variáveis de ambiente necessárias para esse ambiente específico.
+> *  Para executar determinado ambiente, use o comando `python manage.py <command> --env <ENV>` onde `<ENV>` significa o ambiente que você deseja. Use apenas o sufixo do ambiente `dev`, `prod` ou `hml`
+> *  Para usar o ambiente padrão, apenas use `python manage.py <command>` e será utilizado o arquivo padrão `.env`
+
 ### Criação de grupo de permissões
 
 > * Essas permissões são os papéis que os usuários podem ter nos projetos
@@ -43,8 +48,10 @@
 > * Na url http://127.0.0.1:8000/juca/admin/rates/ratefile/ adicionar um rate file. Na lista de ratefile, marque o
     checkbox nos arquivos que deseja adicionar. No select action, selecione Load file e clique em Go. Os arquivos serão
     carregados para o banco de dados;
-> * O arquivo para rate file deve estar no formato xlsx e contêr obrigatoriamente as colunas "mes" e "indice".
+> * O arquivo para rate file deve estar no formato xlsx e conter obrigatoriamente as colunas "mes" e "indice".
     Opcionalmente tem as colunas "acumulado" e "periodo" que são usadas em determinados indices, como o TST
+> * Há também os arquivos de backup no formato json, na pasta rates/indices. Para o cadastro em massa desses arquivos, 
+    utilize o comando `python manage.py create_indiceby_json`;
 
 ### Criação dos indices IRRF
 
@@ -92,8 +99,26 @@
 > * O teste funcional testa se todos os endpoint estão em funcionamento. Esse teste sempre deve ser realizado antes de
     qualquer push ou deploy para garantir a confiabilidade e mantenimento ativo da plataforma. A pipeline falhará se não
     passar nos testes, impedindo que as mudanças feitas vá para a produção.
-> * Para o realizamento dos testes rode o script `python manage.py tests`, com isso todos os endpoints e cenários de
+> * Para o realizamento dos testes rode o script `python manage.py test`, com isso todos os endpoints e cenários de
     testes irão ser executados.
 > * Algumas classes apenas monitoram a resposta 200(GET) e 201(POST). Outras como indices e cálculos verificam se os
     resultados satisfazem a condição esperada. Essas condições vem de acordo com o entendimento junto aos stakeholders e
-    como são feitos os cálculos judicialmente. 
+    como são feitos os cálculos judicialmente.
+
+### Como usar a classe SCHEDULER
+###### A classe SCHEDULER é uma classe de agendamento, responsável por executar funções em intervalos determinados. Para usá-la, primeiro você precisa instanciar um objeto dessa classe e configurar o seu ambiente.
+> ### Instanciação e configuração
+> ###### Para instanciar a classe e fazer o agendamento de uma função, siga o código abaixo:
+> * `from schedule.views import SCHEDULER` <br/>
+    `date_time = datetime.now() + timedelta(microseconds=10000000)`<br/>
+    `def func():`<br/>
+    &emsp; print('hello word')<br/>
+    `SCHEDULER.at('func_1', func, date_time)`<br/>
+
+> ### Agendando tarefas
+> ###### Para agendar uma tarefa, basta chamar uma das funções da classe SCHEDULER. As funções disponíveis são:
+> * at: executa a função uma vez em um horário específico.
+> * every_day: executa a função todos os dias em um determinado horário.
+> * every_week: executa a função uma vez por semana em um determinado dia da semana e horário.
+> * every_day_in_month: executa a função uma vez por mês em um determinado dia do mês e horário.
+> * every_month: executa a função uma vez por mês em um determinado dia do mês, em meses específicos e horário.

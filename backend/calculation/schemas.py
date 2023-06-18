@@ -15,8 +15,6 @@ Attributes:
 Usage example:
 serializer = CalculationSchema()
 """
-from django.db.models import Sum, F
-
 from base.schemas import AbstractDescriptionSchema, UpdateUserSerializer
 from calculation.comment.schemas import StepCommentSchema, CommentSchema
 from calculation.comparative.schemas import ComparativeSchema
@@ -28,9 +26,11 @@ from calculation.premise.schemas import PremiseSchema
 from calculation.statement.schemas import StatementSchema
 from calculation.verdict.schemas import VerdictSchema
 from rest_framework import serializers
-from calculation.models import Calculation, Incident, CHOICES_STEP
+from calculation.models import Calculation, Incident, CHOICES_STEP, SpecialApprover
 from creditors.classes.models import CLASSE_CHOICES
 from creditors.schemas import CreditorSchema
+from projects.project_user.schemas import ProjectUserProjectSchema
+from utils import _
 
 
 class IncidentSchema(AbstractDescriptionSchema):
@@ -68,6 +68,9 @@ class ClassesSerializer(serializers.Serializer):
     classe = serializers.CharField()
     classe_display = serializers.SerializerMethodField('get_classe_display')
     total_value = serializers.FloatField()
+    percentage_value = serializers.FloatField()
+    total_calculated = serializers.FloatField()
+    percentage_calculated = serializers.FloatField()
 
     @staticmethod
     def get_classe_display(obj):
@@ -91,6 +94,14 @@ class HistoricalSchema(AbstractDescriptionSchema):
     class Meta:
         model = Calculation
         fields = ('step', 'historical')
+
+
+class SpecialApproverSchema(AbstractDescriptionSchema):
+    project_user = ProjectUserProjectSchema(read_only=True, many=False)
+
+    class Meta:
+        model = SpecialApprover
+        fields = '__all__'
 
 
 class CalculationAllFundsSchema(AbstractDescriptionSchema):  # V1
@@ -172,13 +183,19 @@ class CalculationSchema(CalculationAllFundsSchema):  # V1
     premises = PremiseSchema(many=True, read_only=True)
     historical = serializers.SerializerMethodField(read_only=True)
 
+    approver = ProjectUserProjectSchema(read_only=True, allow_null=True)
+    special_approvers = SpecialApproverSchema(source='special_approvers.all',read_only=True, many=True)
+    # special_approver = ProjectUserProjectSchema(read_only=True, allow_null=True)
+    executor = ProjectUserProjectSchema(read_only=True, allow_null=True)
+    reviewer = ProjectUserProjectSchema(read_only=True, allow_null=True)
+
     def get_historical(self, obj):
         return HistoricalSchema(obj).data
 
     class Meta:
         model = Calculation
         fields = '__all__'
-        read_only_fields = ('step', 'number', 'approver', 'special_approver', 'executor', 'reviewer')
+        read_only_fields = ('step', 'number', 'approver', 'special_approvers', 'executor', 'reviewer')
 
     def validate(self, data):
         data['verdict'] = data.pop('verdict_set', None)
@@ -254,6 +271,11 @@ class CalculationV2Schema(AbstractDescriptionSchema):  # V2
     premises = PremiseSchema(many=True, read_only=True)
     historical = serializers.SerializerMethodField(read_only=True)
 
+    approver = ProjectUserProjectSchema(read_only=True, allow_null=True)
+    special_approver = ProjectUserProjectSchema(read_only=True, allow_null=True)
+    executor = ProjectUserProjectSchema(read_only=True, allow_null=True)
+    reviewer = ProjectUserProjectSchema(read_only=True, allow_null=True)
+
     def get_historical(self, obj):
         return HistoricalSchema(obj).data
 
@@ -309,6 +331,7 @@ class ChangeStepSerializer(serializers.Serializer):
     """
     next_step = serializers.ChoiceField(source='step', choices=CHOICES_STEP)
     comments = CommentSchema(many=True, write_only=True, required=False, exclude=('create_user', 'update_user',))
+    special_approvers = serializers.ListField(required=False, child=serializers.IntegerField(),)
 
     def __init__(self, *args, **kwargs):
         fields = kwargs.pop('exclude', None)
@@ -325,3 +348,49 @@ class ChangeStepSerializer(serializers.Serializer):
     def validate(self, data):
         data['next_step'] = data.pop('step')
         return super(ChangeStepSerializer, self).validate(data)
+
+
+class CheckStepSerializer(serializers.Serializer):
+    """
+    Serializes the field id of the Change Step for use in the API.
+
+    Usage example:
+    serializer = ChangeStepSerializer
+    """
+    next_step = serializers.ChoiceField(source='step', choices=CHOICES_STEP)
+
+
+class IdSerializer(serializers.Serializer):
+    """
+    Serializes the field id of the UserSerializer for use in the API.
+
+    Usage example:
+    serializer = UserSerializer
+    """
+    id = serializers.UUIDField()
+
+
+class ValidatedIDSchema(serializers.Serializer):  # V1
+    """
+    Serializes the fields of the ValidatedIDSchema model for use in the API.
+
+    This class defines a Django REST Framework serializer that inherits from a custom
+    AbstractDescriptionSchema class. The serializer converts instances of the Project
+    model to and from JSON format, and validates incoming data based on the model's fields.
+
+    Usage example:
+    serializer = ValidatedIDSchema()
+    """
+
+    calculations = serializers.ListField(write_only=True, child=IdSerializer())
+
+    @staticmethod
+    def __get_ids(list_roles):
+        return [x['id'] for x in list_roles]
+
+    def validate_calculations(self, calculations):
+        """Validate calculations with a list format"""
+        if isinstance(calculations, list) is False:
+            raise serializers.ValidationError(
+                [_('The calculations field must be in list format')])
+        return self.__get_ids(calculations)

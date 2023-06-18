@@ -6,11 +6,13 @@ The FundDocumentApi class uses the Funds model and FundDocumentSchema for workin
 """
 from django.db import transaction
 from django.http import JsonResponse
+from django.shortcuts import redirect
 from rest_framework.generics import get_object_or_404
 
 from base.coins.models import Coins
 from calculation.funds.document.models import FundDocument, StatementDocument
-from calculation.funds.document.schemas import FundDocumentSchema, FundDocumentUpdateSchema
+from calculation.funds.document.schemas import FundDocumentSchema, FundDocumentUpdateSchema, FundDocumentGetSchema, \
+    TotalValuesDocumentSchema
 from core.abstract.views import AbstractViewApi
 
 from rest_framework import permissions, status
@@ -49,6 +51,7 @@ class AbstractFundDocumentApi(AbstractViewApi):
     """
     serializer_class = FundDocumentSchema
     model = FundDocument
+    tags = [_('Cálculo - Verbas - Documentos')]
     query_params = [
         {
             "name": "name",
@@ -91,6 +94,13 @@ class FundDocumentApi(AbstractFundDocumentApi):
     @doc(_("""Create Document Fund object from request data and return Document Fund detail.
         The 'has_custom_fine' field controls whether the fine entered in the document will be used, or the standard 
         fine defined in the calculation
+        
+    The `commit` parameter is used to control whether a transaction started during the creation of a new object in 
+    the database should be committed or not. By default, commit=True, which means that the transaction will be 
+    committed automatically when the view's post method has finished executing successfully.
+    However, if commit=False, the view will create a new object within a transaction and then immediately roll 
+    back, effectively undoing any changes made to the database. This can be useful to get the `calculations`, 
+    `results`, `indices`, `corrected value` and etc without saving the information in the database
 
         Returns:
             JsonResponse: A JSON response containing the created Funds object detail.
@@ -99,15 +109,22 @@ class FundDocumentApi(AbstractFundDocumentApi):
             serializers.ValidationError: If the input data is invalid.
         """))
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        new_funds = serializer.validated_data
-        statement_document = new_funds.pop('statement_document')
-        coins = new_funds.get('coins')
-        new_funds['coins'] = Coins.objects.create(**coins)
-        fund = self.model.objects.create(**new_funds)
-        statement_document['fund'] = fund
-        StatementDocument.objects.create(**statement_document)
+        commit = request.data.pop('commit', True)
+        with transaction.atomic():
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            new_funds = serializer.validated_data
+            statement_document = new_funds.pop('statement_document')
+            coins = new_funds.get('coins')
+            new_funds['coins'] = Coins.objects.create(**coins)
+            fund = self.model.objects.create(**new_funds)
+            statement_document['fund'] = fund
+            StatementDocument.objects.create(**statement_document)
+            if commit is False:
+                transaction.set_rollback(True)
+        if commit is False:
+            transaction.rollback()
+
         return JsonResponse({'fund_document': self.serializer_class(fund, many=False).data},
                             status=status.HTTP_201_CREATED)
 
@@ -148,7 +165,7 @@ class FundDocumentDetailApi(AbstractFundDocumentApi):
 
     layout_serializers = {
         'default': FundDocumentSchema,
-        'get': FundDocumentSchema,
+        'get': FundDocumentGetSchema,
         'put': FundDocumentUpdateSchema,
     }
 
@@ -184,3 +201,49 @@ class FundDocumentDetailApi(AbstractFundDocumentApi):
         statement = get_object_or_404(StatementDocument, fund_id=fund_id)
         statement.delete()
         return JsonResponse({'data': _('Statement fund deleted')}, status=status.HTTP_200_OK)
+
+
+class StatementFundsIRRFListApi(AbstractFundDocumentApi):
+    """Define the StatementFundsApi view class for handling HTTP methods related to StatementFunds.
+
+    This view class extends the AbstractViewApi class, which provides a basic implementation
+    for common API actions. The StatementFundsApi supports HTTP POST and GET methods, and uses the StatementFundsSchema
+    serializer for input/output validation. The view requires authenticated users with appropriate
+    permissions to access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission
+    permission classes.
+
+    Attributes:
+        http_method_names (list): A list of HTTP methods supported by this view.
+        serializer_class (class): The serializer class for input/output validation.
+        permission_classes (list): A list of permission classes for user authentication and authorization.
+        model (class): The model class associated with this view.
+
+        query_params (list): A list of dictionaries, each specifying a query parameter for the API.
+
+    Examples:
+        To retrieve funds with a matching description:
+        ```
+        GET /api/v1/calculation/funds/labor/integration/<uuid:fund_id>/
+        ```
+    """
+    serializer_class = TotalValuesDocumentSchema
+    http_method_names = ['get']
+    docs = docs.copy()
+    model = FundDocument
+    tags = [_('Cálculo - Verbas - Documentos - Valores das verbas')]
+
+    @doc(_("""This method handles GET requests for the view. It retrieves the calculated fund total and a list of fund 
+    IRRF objects using the received fund_id from the query parameters and serializes the result into 
+    JSON format before returning it as an JSON response. 
+
+    Returns:
+        JsonResponse: An HTTP response containing the serialized statement IRRF data retrieved.
+    """))
+    def get(self, request, *args, **kwargs):
+        fund_id = kwargs.get('fund_id')
+        fund = self.model.objects.filter(id=fund_id).first()
+        if hasattr(fund, 'totalvaluesdocument'):
+            funds_data = self.serializer_class(fund.totalvaluesdocument, many=False).data
+        else:
+            funds_data = self.serializer_class(fund, many=False).data
+        return JsonResponse({'fund': funds_data})

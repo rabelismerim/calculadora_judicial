@@ -26,18 +26,24 @@ identify and fix problems with your application.
 In summary, Locust's interface allows controlling and monitoring the execution of load tests, as well as viewing
 detailed information about the performance of the tested application.
 """
+import os
+#
 
 from locust import HttpUser, between
 import importlib
-import os
 
 import locust
 from locust import SequentialTaskSet
 from locust.exception import StopUser
 
-from rates.tests import RatesTest
+django_moa = os.path.join(os.getcwd(), 'config')
+print(django_moa, '\n\n')
 
+# os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'{django_moa}.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'config.settings')
+import django
 
+django.setup()
 def _get_classes(filepath):
     """
     Get classes from filepath.

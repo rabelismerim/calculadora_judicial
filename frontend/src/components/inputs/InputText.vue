@@ -15,7 +15,7 @@ const props = withDefaults(defineProps<{
 })
 const emit = defineEmits(['update:modelValue'])
 
-const input = ref(null) as any
+const input = ref(null as any)
 const hasError = computed(() => input.value.hasError)
 const { clearError } = useBackendErrors(toRef(props, 'errorMessages'))
 const onInput = (value: string | number | null) => {

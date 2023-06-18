@@ -4,6 +4,8 @@ from django.http import JsonResponse
 from rest_framework import status
 
 from rest_framework import permissions
+
+from core.permission.views import CheckHasPermission
 from creditors.notice.models import Notice, NoticeRecovering
 from creditors.notice.schemas import NoticeSchema, NoticeUpdateSchema, NoticeRecoveringSchema, \
     NoticeRecoveringUpdateSchema
@@ -14,7 +16,7 @@ class NoticeApi(AbstractViewApi):
     """HTTP methods for Notice"""
     http_method_names = ['post', 'get']
     serializer_class = NoticeSchema
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Notice
 
     query_params = []
@@ -41,9 +43,9 @@ class NoticeApi(AbstractViewApi):
 
 class NoticeUpdateApi(AbstractViewApi):
     """HTTP methods for Notice"""
-    http_method_names = ['put']
+    http_method_names = ['put', 'delete']
     serializer_class = NoticeUpdateSchema
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Notice
 
     query_params = []
@@ -53,6 +55,10 @@ class NoticeUpdateApi(AbstractViewApi):
             process, such as what was requested by the creditor, how much was calculated due, the dates and amounts"""),
         'get': _("""Get the entire list of notices, containing the classes and values.
         """),
+        'delete': _("""Delete a specific Notice to the ID passed by the url
+                Returns:
+                    JsonResponse: A JSON response containing the ok message.
+                """)
     }
 
     @doc(_("""Method to update existing NoticeAJ for a creditor.
@@ -84,7 +90,7 @@ class NoticeRecoveringApi(AbstractViewApi):
     """HTTP methods for Notice"""
     http_method_names = ['post', 'get']
     serializer_class = NoticeRecoveringSchema
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = NoticeRecovering
 
     query_params = []
@@ -110,9 +116,9 @@ class NoticeRecoveringApi(AbstractViewApi):
 
 class NoticeRecoveringUpdateApi(AbstractViewApi):
     """HTTP methods for Notice"""
-    http_method_names = ['put']
+    http_method_names = ['put', 'delete']
     serializer_class = NoticeRecoveringUpdateSchema
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = NoticeRecovering
 
     query_params = []
@@ -122,6 +128,10 @@ class NoticeRecoveringUpdateApi(AbstractViewApi):
                 process, such as what was requested by the creditor, how much was calculated due, the dates and 
                 amounts.
                 """),
+        'delete':_("""Delete a specific NoticeRecovering to the ID passed by the url
+            Returns:
+                JsonResponse: A JSON response containing the ok message.
+            """)
     }
 
     @doc(_("""    Method to update existing NoticeRecovering for a creditor.

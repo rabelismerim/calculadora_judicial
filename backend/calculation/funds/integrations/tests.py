@@ -20,7 +20,9 @@ from core.abstract.tests import AbstractTest
 
 class FundsIntegrationsTest(AbstractTest):
     """funds related tests"""
-    path = f'calculation/funds/labor/integrations/{StatementIntegrations.objects.first().id}'
+    statement = StatementIntegrations.objects.first()
+    statement_id = statement.id if statement else None
+    path = f'calculation/funds/labor/integrations/{statement_id}'
 
     @AbstractTest.execute_before_and_after
     def test_api_post_statement_funds_integrations(self):

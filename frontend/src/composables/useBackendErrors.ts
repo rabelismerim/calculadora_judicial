@@ -12,7 +12,7 @@ export default (errorMessages: Ref) => {
 
   const setErrors = ({ errors }: any) => {
     errorMessages.value = errors
-      .reduce((acc: any, { attr, message }: BackendError) => {
+      ?.reduce((acc: any, { attr, message }: BackendError) => {
         acc[attr] = message
         return acc
       }, {})

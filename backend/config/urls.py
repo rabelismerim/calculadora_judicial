@@ -59,7 +59,7 @@ urlpatterns = [
     path(f'{BASE_URL}creditors/', include("creditors.urls")),
 
     # # Base
-    path(f'{BASE_URL}claim/', include("base.urls")),
+    path(f'{BASE_URL}base/', include("base.urls")),
 
     # Calculation
     path(f'{BASE_URL}calculation/', include("calculation.urls.current")),
@@ -67,6 +67,9 @@ urlpatterns = [
 
     # Rates
     path(f'{BASE_URL}rates/', include("rates.urls")),
+
+    # Big Numbers
+    path(f'{BASE_URL}big_number/', include("big_number.urls")),
 
     # CORE
     path(BASE_URL, include("core.dttuser.api.urls")),
@@ -84,7 +87,7 @@ urlpatterns = [
     path('juca/logout/', views.LogoutView.as_view(), name='logout'),
 
     # VUE FRONTEND
-    re_path(r'^(?!juca\/admin|juca\/api).*$', frontend_index, name='frontend'),
+    re_path(r'^(?!juca\/admin|juca\/api|simple|juca\/media).*$', frontend_index, name='frontend'),
     # path('juca/<path:resource>', frontend_index, name='frontend'),
 
     # Documentation
@@ -118,6 +121,6 @@ if ENABLE_SSO is False:
 # if IS_LOCALHOST or BRANCH_LOCAL:
 #     urlpatterns.extend([])
 
-if (str(os.getenv('ENV', )) == 'branch') or (str(os.getenv('ENV')) == 'hml'):
-    urlpatterns += static("/juca" + settings.MEDIA_URL,
-                          document_root=settings.MEDIA_ROOT)
+# if (str(os.getenv('ENV', )) == 'branch') or (str(os.getenv('ENV')) == 'hml'):
+#     urlpatterns += static(f"/juca" + settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(f"/juca" + settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

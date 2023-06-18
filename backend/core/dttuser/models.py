@@ -113,6 +113,7 @@ class PermissionsMixin(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ('-created_at', '-updated_at')
 
     def get_user_permissions(self, obj=None):
         """
@@ -224,6 +225,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(_('last name'), max_length=150, blank=True)
     email = models.EmailField(_('email address'), blank=True)
     userpicture = models.TextField(_('user picture'), blank=True)
+    user_img = models.ImageField(_('User img'), upload_to='juca/profile/%Y/%m/%d/', blank=True, null=True)
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
@@ -301,6 +303,10 @@ class User(AbstractBaseUser, PermissionsMixin):
                 raise ValueError(_("Updating the value of id isn't allowed"))
             if ENABLE_SSO:
                 self.set_unusable_password()
+        else:
+            if self.username == 'dev_admin':
+                self.is_active = True
+                self.status = 'A'
         return super().save(force_insert, force_update, using, update_fields)
 
     def set_status_by_choice(self, choice):

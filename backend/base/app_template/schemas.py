@@ -12,7 +12,6 @@ Attributes:
       `fields` lists the names of all fields that should be included in the serialized
       representation.
 """
-
 from {{app_name}}.models import {{app_name | title}}
 from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers

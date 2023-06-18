@@ -8,9 +8,11 @@ from importlib.util import spec_from_file_location, module_from_spec
 from django.apps import apps
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
+from django.db import transaction
 from django.http import JsonResponse, Http404
 from django.template.response import ContentNotRenderedError
 from django.utils.encoding import smart_str
+from drf_yasg import openapi
 from rest_framework import generics, serializers, status
 from rest_framework.filters import BaseFilterBackend
 from rest_framework.generics import get_object_or_404
@@ -43,6 +45,14 @@ class CustomSchema(AutoSchema):
 
     Extends AutoSchema to add custom functionality for generating tags and descriptions in the OpenAPI schema.
     """
+    date_example = "2021-08-31"
+    datetime_example = "2021-08-31T19:24:56.830Z"
+    email_example = "jane.doe@example.com"
+    uri_example = "http://example.com"
+    uuid_example = "123e4567-e89b-12d3-a456-426614174000"
+    float_example = 1.23
+    integer_example = 42
+    binary_example = "SGVsbG8gV29ybGQ="  # "Hello World" em base64
 
     def get_operation_id_base(self, path, method, action):
         """
@@ -55,6 +65,67 @@ class CustomSchema(AutoSchema):
         if hasattr(view, 'operation_id_base') and isinstance(view.operation_id_base, str):
             return view.operation_id_base
         return super(CustomSchema, self).get_operation_id_base(path, method, action)
+
+    def get_example(self, example):
+        examples = {
+            'date': "2021-08-31",
+            'datetime': "2021-08-31T19:24:56.830Z",
+            'email': "jane.doe@example.com",
+            'uri': "http://example.com",
+            'uuid': "123e4567-e89b-12d3-a456-426614174000",
+            'float': 0,
+            'integer': 0,
+            'binary': 'binary',
+            'string': 'string',
+        }
+
+        return examples.get(example)
+
+    def map_serializer(self, serializer):
+        """
+        Maps the serializer by adding dynamic methods to properties.
+
+        Args:
+            serializer: The serializer mapping will be applied.
+
+        Returns:
+            Fields with mapped dynamic methods.
+        """
+        fields = super().map_serializer(serializer)
+
+        big_numbers = self.view.get_dynamic_methods()
+        for big in big_numbers:
+
+            example = {}
+            dynamic_methods = big.bignumbermethod_set.all()
+            for method in dynamic_methods:
+                new_field = getattr(serializers, method.get_field_type_display())()
+                big_field_type = self.map_field(new_field)['type']
+                example[method.name] = big_field_type
+
+                if big_field_type in ['object', 'array']:
+                    method_fields = method.get_fields()
+                    new_example = {}
+                    for method_field in method_fields:
+                        field_schema = self.map_field(getattr(serializers, method_field.get_field_type_display())())
+                        field_type = field_schema['type']
+                        format_ = field_schema.get('format')
+                        if format_:
+                            example_value = self.get_example(format_)
+                            new_example[method_field.field] = example_value if example_value is not None else field_type
+                        else:
+                            example_value = self.get_example(field_type)
+                            new_example[method_field.field] = example_value if example_value is not None else field_type
+
+                    if big_field_type == 'array':
+                        example[method.name] = [new_example]
+                    else:
+                        example[method.name] = new_example
+
+            fields['properties'][big.path] = {
+                'example': example
+            }
+        return fields
 
     def get_operation(self, path, method):
         """
@@ -158,14 +229,37 @@ class AbstractViewApi(generics.GenericAPIView):
     #     permissions.append(CheckAPIVersion())
     #
     #     return permissions
+    def get_dynamic_methods(self) -> list:
+        """
+        Returns a list of dynamic methods to be added as properties to the serializer.
+
+        Returns:
+            List of dynamic methods.
+        """
+        return []
 
     def get_serializer_class(self):
+        """
+        Returns the appropriate serializer class based on the HTTP request method.
+
+        Returns:
+            Serializer class.
+        """
         if hasattr(self, 'layout_serializers'):
             return self.layout_serializers.get(self.request.method.lower(), self.layout_serializers['default'])
         return super(AbstractViewApi, self).get_serializer_class()
 
     @staticmethod
     def get_schema_operation_parameters(view):
+        """
+        Returns the query parameters for the schema operation.
+
+        Args:
+            view: The view obtaining the query parameters.
+
+        Returns:
+            Query parameters.
+        """
         return view.query_params
 
     @staticmethod
@@ -196,12 +290,8 @@ class AbstractViewApi(generics.GenericAPIView):
 
         return types.get(instance, str)
 
-    def get_query(self, id_=None, **kwargs):
-        """Validate parameters received in query params, returning query values"""
-        query = self.get_queryset()
-        query_exclude = self.get_exclude_queryset()
-        exclude = self.__get_exclude_values()
-
+    def get_query_parameters(self):
+        query = {}
         for valid_params in self.query_params:
             type_instance = valid_params['schema']['type']
             field = valid_params['field']
@@ -218,6 +308,15 @@ class AbstractViewApi(generics.GenericAPIView):
                 else:
                     raise serializers.ValidationError(
                         {name: _('Field in invalid format. It must be in the format{}').format(instance["legend"])})
+        return query
+    def get_query(self, id_=None, **kwargs):
+        """Validate parameters received in query params, returning query values"""
+        query = self.get_queryset()
+        query_exclude = self.get_exclude_queryset()
+        exclude = self.__get_exclude_values()
+        query_parameters = self.get_query_parameters()
+        query.update(query_parameters)
+
         serializer = self.get_serializer_class()
         if id_:
             obj = self.model.objects.exclude(**query_exclude).filter(id=id_, **query, **kwargs).first()
@@ -340,16 +439,17 @@ class AbstractViewApi(generics.GenericAPIView):
         """Abstract method for default method GET. Override method in class for custom operation"""
         id_ = kwargs.get('id')
         query = self.get_query(id_=id_)
-        model_name = self.model._meta.verbose_name_plural.lower() if not id_ else self.__get_model_name()
+        model_name = self.model._meta.verbose_name_plural.lower() if not id_ else self.get_model_name()
         return JsonResponse({model_name.replace(' ', '_'): query})
 
     def post(self, request, *args, **kwargs):
         """Abstract method for default method POST. Override method in class for custom operation"""
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        new_obj = serializer.validated_data
-        obj = self.model.objects.create(**new_obj)
-        return JsonResponse({self.__get_model_name(): self.serializer_class(obj, many=False).data},
+        with transaction.atomic():
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            new_obj = serializer.validated_data
+            obj = self.model.objects.create(**new_obj)
+        return JsonResponse({self.get_model_name(): self.serializer_class(obj, many=False).data},
                             status=status.HTTP_201_CREATED)
 
     def put(self, request, *args, **kwargs):
@@ -364,20 +464,21 @@ class AbstractViewApi(generics.GenericAPIView):
         comparative object to update. Returns: JsonResponse: An HTTP response containing the updated and serialized
         comparative object data.
         """
-        id_ = kwargs.get('id')
-        exclude = self.__get_exclude_values()
-        serializer = self.get_serializer_class()
-        try:
-            serializer = serializer(data=request.data, exclude=exclude)
-        except ValueError:
-            serializer = serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        data_obj = dict(serializer.validated_data)
-        obj = get_object_or_404(self.model, id=id_)
-        obj.dict_update(**data_obj)
-        return JsonResponse({self.__get_model_name(): self.serializer_class(obj, many=False).data})
+        with transaction.atomic():
+            id_ = kwargs.get('id')
+            exclude = self.__get_exclude_values()
+            serializer = self.get_serializer_class()
+            try:
+                serializer = serializer(data=request.data, exclude=exclude)
+            except ValueError:
+                serializer = serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data_obj = dict(serializer.validated_data)
+            obj = get_object_or_404(self.model, id=id_)
+            obj.dict_update(**data_obj)
+        return JsonResponse({self.get_model_name(): self.serializer_class(obj, many=False).data})
 
-    def __get_model_name(self):
+    def get_model_name(self):
         """Helper method to get app_label."""
         return self.model._meta.verbose_name.lower().replace(' ', '_')
 
@@ -386,7 +487,8 @@ class AbstractViewApi(generics.GenericAPIView):
         obj_id = kwargs.get('id')
         obj = get_object_or_404(self.model, id=obj_id)
         obj.delete()
-        return JsonResponse({'data': _(f'{self.__get_model_name().capitalize()} deleted')}, status=status.HTTP_200_OK)
+        return JsonResponse({'data': _(f'{self.get_model_name().replace("_", " ").title()} deleted')},
+                            status=status.HTTP_200_OK)
 
     def __get_exclude_values(self) -> list or tuple:
         if hasattr(self, 'exclude') and (isinstance(self.exclude, list) or isinstance(self.exclude, tuple)):

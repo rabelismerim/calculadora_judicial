@@ -11,6 +11,7 @@ StatementIntegrations extends AbstractStatement and includes a description field
 from django.db import models
 from django.db.models import FloatField
 from django.utils.translation import gettext_lazy as _
+from rest_framework import serializers
 
 from calculation.models import Calculation
 from core.abstract.models import AbstractModel
@@ -34,6 +35,7 @@ class AbstractFunds(AbstractCredit):
 
     class Meta:
         abstract = True
+        ordering = ('-created_at', '-updated_at')
 
     def __str__(self):
         return self.name
@@ -57,6 +59,7 @@ CHOICES_STATUS_FUND = (('S', _('Requested')), ('C', _('Concluded')), ('E', _('In
                        ('R', _('Calculation failed - no date RJ')),
                        ('D', _('Calculation failed - no date Citation')),
                        ('B', _('Calculation failed - in exclusion')),
+                       ('I', _('Registered')),
                        )
 
 
@@ -123,6 +126,7 @@ class AbstractStatus(AbstractModel):
 
     class Meta:
         abstract = True
+        ordering = ('-created_at', '-updated_at')
 
 
 class AbstractStatement(AbstractStatus):
@@ -211,9 +215,20 @@ class AbstractStatement(AbstractStatus):
 
     class Meta:
         abstract = True
+        ordering = ('created_at', '-updated_at', 'data_base')
 
     def __str__(self):
         return f'{self.data_base} - {self.historical_value}'
+
+    def save(self, *args, **kwargs):
+        get_date_rj_filing = self.fund.calculation.get_date_rj_filing()
+        if get_date_rj_filing and self.data_base >= get_date_rj_filing:
+            if self.is_extraconcursal is False:
+                raise serializers.ValidationError(
+                    [_('This is an extra-bankruptcy budget, it is necessary to flag the extra-bankruptcy budget')])
+            self.status = 'I'
+
+        super(AbstractStatement, self).save(*args, **kwargs)
 
 
 class AbstractMonetaryCorrection(AbstractModel):
@@ -254,6 +269,7 @@ class AbstractMonetaryCorrection(AbstractModel):
 
     class Meta:
         abstract = True
+        ordering = ('-created_at', '-updated_at')
 
     def __str__(self):
         return f'{self.index_data_base} - {self.index_recovering} - {self.corrected_value}'
@@ -277,6 +293,7 @@ class AbstractTotalValuesFunds(AbstractModel):
 
     class Meta:
         abstract = True
+        ordering = ('-created_at', '-updated_at')
 
     def get_description(self):
         return self.fund.name
