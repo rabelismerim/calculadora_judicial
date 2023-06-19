@@ -7,7 +7,7 @@ from rates.models import Rate
 from creditors.notice.models import Notice
 from calculation.comparative.models import Comparative, ComparativeCalculation
 from calculation.funds.models import Funds
-from calculation.models import Calculation
+from calculation.models import Calculation,Premise
 from creditors.models import Creditor 
 from base.coins.models import Coins
 from creditors.classes.models import Classes
@@ -84,12 +84,10 @@ class SheetTemplateViewApi(AbstractViewApi):
                 return JsonResponse({'errors': 'Calculation not found.'})
             creditor = Creditor.objects.filter(id=calculation[0].creditor_id)    
             statement = Statement.objects.filter(calculation_id=calculation_id)
-            if len(statement) > 0:
-                statement_pf = StatementPF.objects.filter(id=statement[0].id)
-                statement_pj = StatementPJ.objects.filter(id=statement[0].id)
             comparative = Comparative.objects.filter(calculation_id=calculation_id)
             comparativecalculation = ComparativeCalculation.objects.filter(id=calculation_id)
             funds = Funds.objects.filter(calculation_id=calculation_id)
+            premises = Premise.objects.filter(calculation=calculation[0])
             if len(funds)>0:
                 classes = Classes.objects.filter(id=funds[0].classes_id)
                 coins = Coins.objects.filter(id=funds[0].coins_id)
@@ -122,7 +120,27 @@ class SheetTemplateViewApi(AbstractViewApi):
                 for row in sheet.iter_rows():
                     for col in row:
                         if col.value:
-                            if type(col.value) == str and col.value.find('JUCA=')==0:
+                            if type(col.value) == str and col.value.find('JUCALST=') >= 0:
+                                if str(col.value)[8:]=='Premises':
+                                    cnt_ini_row = col.row
+                                    col.value=""
+                                    for item in premises:
+                                        sheet.insert_rows(cnt_ini_row)
+                                        sheet['A'+str(cnt_ini_row)]=str(item)
+                                        sheet.merge_cells('A'+str(cnt_ini_row)+':G'+str(cnt_ini_row))
+                                        cnt_ini_row=cnt_ini_row+1
+                                if str(col.value)[8:]=='Sheets':
+                                    cnt_ini_row = col.row
+                                    col.value=""
+                                    for item in funds:
+                                        sheet.insert_rows(cnt_ini_row)
+                                        sheet['A'+str(cnt_ini_row)]=str(item.name)
+                                        sheet['C'+str(cnt_ini_row)]='{:,.2f}'.format(float(item.totalvaluesfunds.total_corrected)).replace('.','-').replace(',','.').replace('-',',')
+                                        cnt_ini_row=cnt_ini_row+1
+                for row in sheet.iter_rows():
+                    for col in row:
+                        if col.value:
+                            if type(col.value) == str and col.value.find('JUCA=') >= 0:
                                 try:
                                     col.value = str(eval(str(col.value)[5:]))
                                 except:
@@ -172,18 +190,21 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 ws['F'+str(cnt_row+5)]="Súmula 381"
                                 ws['F'+str(cnt_row+5)].font=font
                                 ws['F'+str(cnt_row+5)].fill=grayFill
-                                ws['G'+str(cnt_row+5)]="Valor histórico"
+                                ws['G'+str(cnt_row+5)]="É extraconcursal"
                                 ws['G'+str(cnt_row+5)].font=font
                                 ws['G'+str(cnt_row+5)].fill=grayFill
-                                ws['H'+str(cnt_row+5)]="Indíce na data base"
+                                ws['H'+str(cnt_row+5)]="Valor histórico"
                                 ws['H'+str(cnt_row+5)].font=font
                                 ws['H'+str(cnt_row+5)].fill=grayFill
-                                ws['I'+str(cnt_row+5)]="Indíce na recuperação"
+                                ws['I'+str(cnt_row+5)]="Indíce na data base"
                                 ws['I'+str(cnt_row+5)].font=font
                                 ws['I'+str(cnt_row+5)].fill=grayFill
-                                ws['J'+str(cnt_row+5)]="Valor corrigido"
+                                ws['J'+str(cnt_row+5)]="Indíce na recuperação"
                                 ws['J'+str(cnt_row+5)].font=font
                                 ws['J'+str(cnt_row+5)].fill=grayFill
+                                ws['K'+str(cnt_row+5)]="Valor corrigido"
+                                ws['K'+str(cnt_row+5)].font=font
+                                ws['K'+str(cnt_row+5)].fill=grayFill
                                 cnt_row=cnt_row+6
                                 sum_total = 0
                                 for item1 in plan_build:
@@ -192,21 +213,23 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     ws['E'+str(cnt_row)]=datetime.strftime(item1.data_base, "%d/%m/%Y")
                                     ws['F'+str(cnt_row)].alignment = Alignment(horizontal="center")
                                     ws['F'+str(cnt_row)]='Sim' if item1.summary==True else 'Não'
-                                    ws['G'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                    ws['G'+str(cnt_row)]='{:,.2f}'.format(float(item1.historical_value)).strip().replace('.','-').replace(',','.').replace('-',',') if 'historical_value' in item1._dict.keys() else ''
+                                    ws['G'+str(cnt_row)].alignment = Alignment(horizontal="center")
+                                    ws['G'+str(cnt_row)]='Sim' if item1.is_extraconcursal==True else 'Não'
                                     ws['H'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                    ws['H'+str(cnt_row)]='{:,.5f}'.format(float(item1.monetarycorrectionintegrations.index_data_base)).strip().replace('.','-').replace(',','.').replace('-',',')
+                                    ws['H'+str(cnt_row)]='{:,.2f}'.format(float(item1.historical_value)).strip().replace('.','-').replace(',','.').replace('-',',') if 'historical_value' in item1._dict.keys() else ''
                                     ws['I'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                    ws['I'+str(cnt_row)]='{:,.5f}'.format(float(item1.monetarycorrectionintegrations.index_recovering)).strip().replace('.','-').replace(',','.').replace('-',',')
+                                    ws['I'+str(cnt_row)]='{:,.5f}'.format(float(item1.monetarycorrectionintegrations.index_data_base)).strip().replace('.','-').replace(',','.').replace('-',',')
                                     ws['J'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                    ws['J'+str(cnt_row)]='{:,.2f}'.format(float(item1.monetarycorrectionintegrations.corrected_value)).strip().replace('.','-').replace(',','.').replace('-',',')
+                                    ws['J'+str(cnt_row)]='{:,.5f}'.format(float(item1.monetarycorrectionintegrations.index_recovering)).strip().replace('.','-').replace(',','.').replace('-',',')
+                                    ws['K'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                    ws['K'+str(cnt_row)]='{:,.2f}'.format(float(item1.monetarycorrectionintegrations.corrected_value)).strip().replace('.','-').replace(',','.').replace('-',',')
                                     sum_total += float(item1.monetarycorrectionintegrations.corrected_value)
                                     cnt_row=cnt_row+1
                                 ws['D'+str(cnt_row)]="Total"
                                 ws['D'+str(cnt_row)].font=font
-                                ws['J'+str(cnt_row)]='{:,.2f}'.format(sum_total).strip()
-                                ws['J'+str(cnt_row)].font=font
-                                ws['J'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                ws['K'+str(cnt_row)]='{:,.2f}'.format(sum_total).strip()
+                                ws['K'+str(cnt_row)].font=font
+                                ws['K'+str(cnt_row)].alignment = Alignment(horizontal="right")
                                 cnt_row=cnt_row+1
                             else:
                                 font = Font(bold=True)
@@ -230,18 +253,21 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 ws['F'+str(cnt_row+5)]="Súmula 381"
                                 ws['F'+str(cnt_row+5)].font=font
                                 ws['F'+str(cnt_row+5)].fill=grayFill
-                                ws['G'+str(cnt_row+5)]="Valor histórico"
+                                ws['G'+str(cnt_row+5)]="É extraconcursal"
                                 ws['G'+str(cnt_row+5)].font=font
                                 ws['G'+str(cnt_row+5)].fill=grayFill
-                                ws['H'+str(cnt_row+5)]="Indíce na data base"
+                                ws['H'+str(cnt_row+5)]="Valor histórico"
                                 ws['H'+str(cnt_row+5)].font=font
                                 ws['H'+str(cnt_row+5)].fill=grayFill
-                                ws['I'+str(cnt_row+5)]="Indíce na recuperação"
+                                ws['I'+str(cnt_row+5)]="Indíce na data base"
                                 ws['I'+str(cnt_row+5)].font=font
                                 ws['I'+str(cnt_row+5)].fill=grayFill
-                                ws['J'+str(cnt_row+5)]="Valor corrigido"
+                                ws['J'+str(cnt_row+5)]="Indíce na recuperação"
                                 ws['J'+str(cnt_row+5)].font=font
                                 ws['J'+str(cnt_row+5)].fill=grayFill
+                                ws['K'+str(cnt_row+5)]="Valor corrigido"
+                                ws['K'+str(cnt_row+5)].font=font
+                                ws['K'+str(cnt_row+5)].fill=grayFill
                                 cnt_row=cnt_row+6
                             cnt_row=cnt_row+2
                             plan_build1 = item.get_all_statement_funds()
@@ -336,6 +362,26 @@ class SheetTemplateViewApi(AbstractViewApi):
             for sheet in archive_view:
                 if sheet.sheet_state=='hidden':
                     continue
+                for row in sheet.iter_rows():
+                    for col in row:
+                        if col.value:
+                            if type(col.value) == str and col.value.find('JUCALST=') >= 0:
+                                if str(col.value)[8:]=='Premises':
+                                    cnt_ini_row = col.row
+                                    col.value=""
+                                    for item in premises:
+                                        sheet.insert_rows(cnt_ini_row)
+                                        sheet['A'+str(cnt_ini_row)]=str(item)
+                                        sheet.merge_cells('A'+str(cnt_ini_row)+':G'+str(cnt_ini_row))
+                                        cnt_ini_row=cnt_ini_row+1
+                                if str(col.value)[8:]=='Sheets':
+                                    cnt_ini_row = col.row
+                                    col.value=""
+                                    for item in funds:
+                                        sheet.insert_rows(cnt_ini_row)
+                                        sheet['A'+str(cnt_ini_row)]=str(item.name)
+                                        sheet['C'+str(cnt_ini_row)]='{:,.2f}'.format(float(item.totalvaluesfunds.total_corrected)).replace('.','-').replace(',','.').replace('-',',')
+                                        cnt_ini_row=cnt_ini_row+1
                 for row in sheet.iter_rows():
                     for col in row:
                         if col.value:
