@@ -14,7 +14,7 @@ const emit = defineEmits(['update:modelValue'])
   <QTabPanels
     :model-value="modelValue"
     animated class="calculation-details"
-    @update:model-value="value => emit('update:modelValue', value)"
+    @update:model-value="(value: any) => emit('update:modelValue', value)"
   >
     <QTabPanel name="project" class="px-0">
       <ProjectDescription :project="project" />
@@ -43,7 +43,7 @@ const emit = defineEmits(['update:modelValue'])
           v-for="classe in calculation?.classes as any[]"
           :key="classe.id"
         >
-          {{ classe.classeDisplay }}: {{ classe.totalValue }}%
+          {{ classe.classeDisplay }}: {{ formatNumber(classe.percentageCalculated, 2) }}%
         </div>
       </ProjectDetailCell>
 

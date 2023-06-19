@@ -45,9 +45,9 @@ const onEdit = async () => {
     if (userStatus) {
       clear()
       emit('success')
+      notify({ message: 'O Usuário foi alterado com sucesso!' })
     }
   }
-
   catch (error) {
     printError('ERROR ON ACCEPTING THE USER REQUEST:', error)
   }
