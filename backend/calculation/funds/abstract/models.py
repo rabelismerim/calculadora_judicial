@@ -227,8 +227,12 @@ class AbstractStatement(AbstractStatus):
                 raise serializers.ValidationError(
                     [_('This is an extra-bankruptcy budget, it is necessary to flag the extra-bankruptcy budget')])
             self.status = 'I'
+            self.delete_monetary_correction()
 
         super(AbstractStatement, self).save(*args, **kwargs)
+
+    def delete_monetary_correction(self):
+        pass
 
 
 class AbstractMonetaryCorrection(AbstractModel):
