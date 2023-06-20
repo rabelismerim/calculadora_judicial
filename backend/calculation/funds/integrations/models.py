@@ -152,8 +152,8 @@ class TotalValuesFundsIntegrations(AbstractTotalValuesFunds):
         for statement in statements:
             total_corrected_value += statement.get_corrected_value()
             total_historical_value += statement.get_total_value()
-        self.total_historical = total_corrected_value
-        self.total_corrected = total_historical_value
+        self.total_historical = total_historical_value
+        self.total_corrected = total_corrected_value
         self.save()
 
     class Meta:
