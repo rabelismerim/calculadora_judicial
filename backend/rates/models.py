@@ -6,43 +6,111 @@ from django.core.validators import MinLengthValidator
 from django.db import models
 from rest_framework.exceptions import ValidationError
 
+from apps.schedule.views import SCHEDULER
 from config.settings import RATE_FILE_TYPES
 
 from core.abstract.models import AbstractModel
 from rest_framework import serializers
 
-from utils import _
+from utils import _, parse_job_id
 
 UNIT_CHOICES = (
-    ('D','a.d'),
-    ('M','a.m'),
-    ('Y','a.a'),
+    ('D', 'a.d'),
+    ('M', 'a.m'),
+    ('Y', 'a.a'),
 )
 PERIODICITY_CHOICES = (
-    ('D','Day'),
-    ('M','Month'),
-    ('Y','Year'),
-    ('Q','Quarterly'),
+    ('D', 'Day'),
+    ('M', 'Month'),
+    ('Y', 'Year'),
+    ('T', 'Quarterly'),
+    ('Q', 'Quarterly'),
 )
-class Rate(AbstractModel):  # Indices
-    index = models.CharField(_('Rate Name'), max_length=50)
-    is_per_day = models.BooleanField(
-        _('Is the Rate per day? day or month'), default=True)
-    is_active = models.BooleanField(_('Rate is active?'), default=True)
 
-    # code = models.IntegerField(_('Code'), default=0)
-    # description = models.CharField(_('Description'), max_length=150, null=True, blank=True)
-    # unit = models.CharField(_('Unit'), max_length=1, choices=UNIT_CHOICES, default='D')
-    # periodicity = models.CharField(_('Periodicity'), max_length=1, choices=PERIODICITY_CHOICES, default='D')
-    # start_date = models.DateField(_('Fee end date'), null=True, blank=True)
-    # end_date = models.DateField(_('Fee end date'), null=True, blank=True)
-    # source = models.CharField(_('Source'), max_length=150, null=True, blank=True)
-    # C�digo, Nome
-    # completo, Unidade, Periodicidade, Data in�cio, Data
-    # do �ltimo
-    # valor
-    # da
-    # s�rie, Fonte, Especial
+
+class Unit(AbstractModel):  # Indices
+    description = models.CharField(_('Description'), max_length=150)
+
+
+class Source(AbstractModel):  # Indices
+    url = models.URLField(_('Url'))
+    description = models.CharField(_('Description'), max_length=150)
+
+
+class Rate(AbstractModel):  # Indices
+    """
+    Model for representing rates.
+
+    This model represents a rate object that includes information such as the rate name, whether it's per day or per month, if it's active or not, and other metadata fields.
+    It inherits from the AbstractModel class.
+
+    Attributes:
+        index (models.CharField): The name of the rate, represented as a character field with a maximum length of 100.
+        is_per_day (models.BooleanField): A boolean value indicating whether the rate is calculated per day or per month.
+        is_active (models.BooleanField): A boolean value indicating whether the rate is active.
+        is_auto_update (models.BooleanField): A boolean value indicating whether the rate is set to auto-update.
+        last_update (models.DateTimeField): The date and time of the last rate update, represented as a DateTimeField.
+        code (models.IntegerField): An integer code for the rate.
+        description (models.CharField): A brief description of the rate, represented as a character field with a maximum length of 150.
+        unit (models.ForeignKey): A foreign key to the Unit model, representing the unit of measurement for the rate.
+        periodicity (models.CharField): A character field representing the periodicity of the rate.
+        start_date (models.DateField): A date representing the start date of the rate.
+        end_date (models.DateField): A date representing the end date of the rate.
+        source (models.ForeignKey): A foreign key to the Source model, representing the source of the rate data.
+    """
+    index = models.CharField(_('Rate Name'), max_length=100)
+    is_per_day = models.BooleanField(_('Is the Rate per day? day or month'), default=True)
+    is_active = models.BooleanField(_('Rate is active?'), default=True)
+    is_auto_update = models.BooleanField(_('Is auto update?'), default=False)
+    last_update = models.DateTimeField(_('Last update'), null=True, blank=True)
+
+    code = models.IntegerField(_('Code'), default=0)
+    description = models.CharField(_('Description'), max_length=150, null=True, blank=True)
+    unit = models.ForeignKey(Unit, on_delete=models.PROTECT, null=True, blank=True)
+    periodicity = models.CharField(_('Periodicity'), max_length=1, choices=PERIODICITY_CHOICES, default='D')
+    start_date = models.DateField(_('Fee start date'), null=True, blank=True)
+    end_date = models.DateField(_('Fee end date'), null=True, blank=True)
+    source = models.ForeignKey(Source, on_delete=models.PROTECT, null=True, blank=True)
+
+    def __init__(self, *args, **kwargs):
+        """
+        Construct a new Rate object.
+
+        This method constructs a new Rate object by calling the constructor of the superclass (AbstractModel) and initializing
+        a job attribute which represents the associated scheduled job for this Rate object.
+        """
+        super().__init__(*args, **kwargs)
+        self.job = SCHEDULER.get_job(parse_job_id(self.index))
+
+    @property
+    def scheduler_status(self):
+        """
+        Get the status of the associated scheduled job.
+
+        This property returns the status of the associated scheduled job as a string indicating the next scheduled run time.
+        If there is no job associated with the Rate object, it returns 'Inactive'.
+
+        Returns:
+            str: The status of the associated scheduled job.
+        """
+
+        if self.job:
+            if self.job.next_run_time:
+                return self.job.next_run_time
+            return 'Paused'
+        return 'Inactive'
+
+    @property
+    def scheduler_description(self):
+        """
+        Get the description of the associated scheduled job.
+
+        This property returns the description of the associated scheduled job if there is one, or '_' if there isn't.
+
+        Returns:
+            str: The description of the associated scheduled job.
+        """
+        return self.job.description if self.job else '_'
 
     def is_ipca_e_selic(self) -> bool:
         """
@@ -62,14 +130,60 @@ class Rate(AbstractModel):  # Indices
         return self.index
 
     def get_ratefile(self):
+        """
+        Get the rate file associated with the Rate object.
+
+        This method returns the ratefile associated with the Rate object if it exists, or None otherwise.
+
+        Returns:
+            RateFile or None: The ratefile associated with the Rate object.
+        """
         if hasattr(self, 'ratefile'):
             return self.ratefile
         return None
 
     def get_rate_by_date(self, date: datetime.date):
+        """
+        Get the rate values for a specific date.
+
+        This method returns the rate values associated with the Rate object for a specific date.
+
+        Args:
+            date (datetime.date): The date to get the rate values for.
+
+        Returns:
+            RateValues or None: The rate values associated with the Rate object for the given date, or None if no
+            rate values are found.
+        """
         if self.is_per_day:
             return self.ratevalues_set.filter(date=date).first()
         return self.ratevalues_set.filter(date__month=date.month, date__year=date.year).first()
+
+    def get_last_date(self) -> datetime.date or None:
+        """
+        Get the date of the last rate value.
+
+        This method returns the date of the last rate value associated with the Rate object.
+
+        Returns:
+            RateValues or None: The latest rate values associated with the Rate object for the given date, or None if no
+            rate values are found.
+        """
+        if self.ratevalues_set.exists():
+            return self.ratevalues_set.latest('date').date
+
+    def get_first_date(self) -> datetime.date or None:
+        """
+        Get the date of the last rate value.
+
+        This method returns the date of the last rate value associated with the Rate object.
+
+        Returns:
+            RateValues or None: The earliest rate values associated with the Rate object for the given date, or None if no
+            rate values are found.
+        """
+        if self.ratevalues_set.exists():
+            return self.ratevalues_set.earliest('date').date
 
 
 class RateValues(AbstractModel):  # Indices
@@ -97,6 +211,9 @@ class RateValues(AbstractModel):  # Indices
     def __str__(self):
         return str(_('rate: {} | date: {} | value: {}').format(self.rate, self.date, self.value))
 
+    class Meta:
+        ordering = ['-date', '-created_at', '-updated_at']
+
     @property
     def get_period(self):
         if hasattr(self, 'period'):
@@ -105,6 +222,7 @@ class RateValues(AbstractModel):  # Indices
 
     @property
     def get_accumulated(self):
+        # only use if is_ipca_e_selic
         if hasattr(self, 'accumulated'):
             return self.accumulated.value
         return None
