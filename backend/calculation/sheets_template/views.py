@@ -3,13 +3,15 @@ from calculation.sheets_template.schemas import SheetsTemplateSchema
 from calculation.statement.models import Statement
 from calculation.statement_pf.models import StatementPF
 from calculation.statement_pj.models import StatementPJ
+from calculation.schemas import CalculationSchema
 from rates.models import Rate
-from creditors.notice.models import Notice
+from creditors.notice.models import Notice,NoticeRecovering
 from calculation.comparative.models import Comparative, ComparativeCalculation
 from calculation.funds.models import Funds
 from calculation.models import Calculation,Premise
 from creditors.models import Creditor 
 from base.coins.models import Coins
+from base.claim.models import ClaimCreditor,ClaimLawyer
 from creditors.classes.models import Classes
 from recovering.models import Recovering
 
@@ -26,6 +28,7 @@ from core.permission.views import CheckHasPermission
 from utils import _, doc
 
 import openpyxl as xl
+from openpyxl.worksheet.table import Table, TableStyleInfo
 from openpyxl.styles import PatternFill, Border, Side, Alignment, Protection, Font
 from os.path import exists
 from os import remove
@@ -95,8 +98,19 @@ class SheetTemplateViewApi(AbstractViewApi):
                 notice = Notice.objects.filter(creditor_id=creditor[0].id)
                 if len(notice)>0:
                     classes_notice = Classes.objects.filter(id=notice[0].classes_id)
-                if len(notice)>0:
                     coins_notice = Coins.objects.filter(id=notice[0].coins_id)
+                notice_recovering = NoticeRecovering.objects.filter(creditor_id=creditor[0].id)
+                if len(notice_recovering)>0:
+                    classes_notice_recovering = Classes.objects.filter(id=notice_recovering[0].classes_id)
+                    coins_notice_recovering = Coins.objects.filter(id=notice_recovering[0].coins_id)
+                claim_creditor = ClaimCreditor.objects.filter(creditor_id=creditor[0].id)
+                if len(claim_creditor)>0:
+                    classes_claimcreditor = Classes.objects.filter(id=claim_creditor[0].classes_id)
+                    coins_notice = Coins.objects.filter(id=claim_creditor[0].coins_id)
+                claim_lawyer = ClaimLawyer.objects.filter(creditor_id=creditor[0].id)
+                if len(claim_lawyer)>0:
+                    classes_claimlawyer = Classes.objects.filter(id=claim_lawyer[0].classes_id)
+                    coins_claimlawyer = Coins.objects.filter(id=claim_lawyer[0].coins_id)
                 recovering = Recovering.objects.filter(id=creditor[0].recovering_id)
                 if len(recovering)>0:
                     project = Project.objects.filter(id=recovering[0].project_id)
@@ -107,6 +121,16 @@ class SheetTemplateViewApi(AbstractViewApi):
             if len(funds)>0:
                 rate = Rate.objects.filter(id=funds[0].rate_id)
             court = Court.objects.filter(id=project[0].court_id)
+
+            calc = calculation.first()
+            calc_schema = CalculationSchema(calc).data
+            funds_schema = calc.funds_set.all()
+
+            fund_document = calc.funddocument_set.all()
+            fund_irrf = calc.fundirrf_set.all()
+
+            for item in funds_schema:
+                template = item.template
 
             #open the archive and process
             archive_download = xl.load_workbook("uploads/" + Template[0].file.name, read_only=False)
@@ -121,19 +145,93 @@ class SheetTemplateViewApi(AbstractViewApi):
                     for col in row:
                         if col.value:
                             if type(col.value) == str and col.value.find('JUCALST=') >= 0:
+                                if str(col.value)[8:]=='NoticeAJ':
+                                    cnt_ini_row=col.row
+                                    let_ini_col=col.column_letter
+                                    col.value=""
+                                    for item in notice:
+                                        sheet[let_ini_col+str(cnt_ini_row)]=str(item.classes).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins.coin).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+2)]=str(item.coins.value).replace('\n','')
+                                        let_ini_col=chr(ord(let_ini_col)+1)
+                                if str(col.value)[8:]=='Claim_Creditor':
+                                    cnt_ini_row=col.row
+                                    let_ini_col=col.column_letter
+                                    col.value=""
+                                    for item in claim_creditor:
+                                        sheet[let_ini_col+str(cnt_ini_row)]=str(item.classes).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins.coin).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+2)]=str(item.coins.value).replace('\n','')
+                                        let_ini_col=chr(ord(let_ini_col)+1)
+                                if str(col.value)[8:]=='Claim_Lawyer':
+                                    cnt_ini_row=col.row
+                                    let_ini_col=col.column_letter
+                                    col.value=""
+                                    for item in claim_lawyer:
+                                        sheet[let_ini_col+str(cnt_ini_row)]=str(item.coins.coin).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins.value).replace('\n','')
+                                        let_ini_col=chr(ord(let_ini_col)+1)
                                 if str(col.value)[8:]=='Premises':
                                     cnt_ini_row = col.row
                                     col.value=""
-                                    for item in premises:
+                                    for i in range(len(premises)):
                                         sheet.insert_rows(cnt_ini_row)
-                                        sheet['A'+str(cnt_ini_row)]=str(item)
-                                        sheet.merge_cells('A'+str(cnt_ini_row)+':G'+str(cnt_ini_row))
+                                    for item in premises:
+                                        sheet['A'+str(cnt_ini_row)]=str(item).replace('\n','')
                                         cnt_ini_row=cnt_ini_row+1
+                                        sheet.merge_cells('A'+str(cnt_ini_row)+':G'+str(cnt_ini_row))
+                for row in sheet.iter_rows():
+                    for col in row:
+                        if col.value:
+                            if type(col.value) == str and col.value.find('JUCALST=') >= 0:
+                                if str(col.value)[8:]=='NoticeAJ_Vert':
+                                    cnt_ini_row=col.row
+                                    col.value=""
+                                    for item in notice:
+                                        sheet['B'+str(cnt_ini_row)]=str(item.classes).replace('\n','')
+                                        sheet['C'+str(cnt_ini_row+1)]=str(item.coins.coin).replace('\n','')
+                                        sheet['D'+str(cnt_ini_row+2)]=str(item.coins.value).replace('\n','')
+                                        sheet['E'+str(cnt_ini_row+2)]=str(recovering[0].entity.name).replace('\n','')
+                                        cnt_ini_row=cnt_ini_row+1
+                                        sheet.insert_rows(cnt_ini_row)
+                for row in sheet.iter_rows():
+                    for col in row:
+                        if col.value:
+                            if type(col.value) == str and col.value.find('JUCALST=') >= 0:
+                                if str(col.value)[8:]=='Claim_Creditor_Vert':
+                                    cnt_ini_row=col.row
+                                    col.value=""
+                                    for item in claim_creditor:
+                                        sheet['B'+str(cnt_ini_row)]=str(item.classes).replace('\n','')
+                                        sheet['C'+str(cnt_ini_row+1)]=str(item.coins.coin).replace('\n','')
+                                        sheet['D'+str(cnt_ini_row+2)]=str(item.coins.value).replace('\n','')
+                                        sheet['E'+str(cnt_ini_row+2)]=str(recovering[0].entity.name).replace('\n','')
+                                        cnt_ini_row=cnt_ini_row+1
+                                        sheet.insert_rows(cnt_ini_row)
+                for row in sheet.iter_rows():
+                    for col in row:
+                        if col.value:
+                            if type(col.value) == str and col.value.find('JUCALST=') >= 0:
+                                if str(col.value)[8:]=='Claim_Lawyer_Vert':
+                                    cnt_ini_row=col.row
+                                    col.value=""
+                                    for item in claim_lawyer:
+                                        sheet['B'+str(cnt_ini_row)]=str(item.classes).replace('\n','')
+                                        sheet['C'+str(cnt_ini_row+1)]=str(item.coins.coin).replace('\n','')
+                                        sheet['D'+str(cnt_ini_row+2)]=str(item.coins.value).replace('\n','')
+                                        sheet['E'+str(cnt_ini_row+2)]=str(recovering[0].entity.name).replace('\n','')
+                                        cnt_ini_row=cnt_ini_row+1
+                                        sheet.insert_rows(cnt_ini_row)
+                for row in sheet.iter_rows():
+                    for col in row:
+                        if col.value:
+                            if type(col.value) == str and col.value.find('JUCALST=') >= 0:
                                 if str(col.value)[8:]=='Sheets':
                                     cnt_ini_row = col.row
                                     col.value=""
-                                    for item in funds:
+                                    for i in range(len(funds)-1):
                                         sheet.insert_rows(cnt_ini_row)
+                                    for item in funds:
                                         sheet['A'+str(cnt_ini_row)]=str(item.name)
                                         sheet['C'+str(cnt_ini_row)]='{:,.2f}'.format(float(item.totalvaluesfunds.total_corrected)).replace('.','-').replace(',','.').replace('-',',')
                                         cnt_ini_row=cnt_ini_row+1
@@ -164,7 +262,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 font = Font(bold=True)
                                 ws['D'+str(cnt_row)]='Crédito '+plan_build[0].fund.template.name
                                 ws['D'+str(cnt_row)].font=font
-                                ws['D'+str(cnt_row+2)]='Integrações sobre '+str(plan_build[0].fund.rate)
+                                ws['D'+str(cnt_row+2)]='Integrações sobre '+str(plan_build[0].fund.template.name)
                                 ws['D'+str(cnt_row+2)].font=font
                                 ws['D'+str(cnt_row+3)]=plan_build[0].fund.name
                                 ws['D'+str(cnt_row+3)].font=font
@@ -175,9 +273,9 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 grayFill = PatternFill(start_color='00C0C0C0',
                                 end_color='00C0C0C0',
                                 fill_type='solid')
-                                ws['D'+str(cnt_row+2)]='Integrações sobre '+str(item.rate)
+                                ws['D'+str(cnt_row+2)]='Integrações sobre '+str(plan_build[0].fund.template.name)
                                 ws['D'+str(cnt_row+2)].font=font
-                                ws['D'+str(cnt_row+3)]=item.name
+                                ws['D'+str(cnt_row+3)]=plan_build[0].fund.template.name
                                 ws['D'+str(cnt_row+3)].font=font
                                 ws['D'+str(cnt_row+4)]=str(item.classes)
                                 ws['D'+str(cnt_row+4)].font=font
@@ -238,7 +336,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 grayFill = PatternFill(start_color='00C0C0C0',
                                 end_color='00C0C0C0',
                                 fill_type='solid')
-                                ws['D'+str(cnt_row+2)]='Integrações sobre '+str(item.rate)
+                                ws['D'+str(cnt_row+2)]='Integrações sobre '+str(item.template.name)
                                 ws['D'+str(cnt_row+2)].font=font
                                 ws['D'+str(cnt_row+3)]=item.name
                                 ws['D'+str(cnt_row+3)].font=font
@@ -276,7 +374,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 grayFill = PatternFill(start_color='00C0C0C0',
                                 end_color='00C0C0C0',
                                 fill_type='solid')
-                                ws['D'+str(cnt_row)]=str(plan_build1[0].fund.rate)
+                                ws['D'+str(cnt_row)]=str(item.template.name)
                                 ws['D'+str(cnt_row)].font=font
                                 ws['D'+str(cnt_row+1)]="Data base"
                                 ws['D'+str(cnt_row+1)].font=font
@@ -300,6 +398,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 ws['J'+str(cnt_row+1)].font=font
                                 ws['J'+str(cnt_row+1)].fill=grayFill
                                 cnt_row=cnt_row+2
+                                sum_total = 0
                                 for item2 in plan_build1:
                                     ws['D'+str(cnt_row)]=datetime.strftime(item2.data_base, "%d/%m/%Y")
                                     ws['E'+str(cnt_row)].alignment = Alignment(horizontal="center")
@@ -328,7 +427,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 grayFill = PatternFill(start_color='00C0C0C0',
                                 end_color='00C0C0C0',
                                 fill_type='solid')
-                                ws['D'+str(cnt_row)]=str(item.rate)
+                                ws['D'+str(cnt_row)]=str(item.template.name)
                                 ws['D'+str(cnt_row)].font=font
                                 ws['D'+str(cnt_row+1)]="Data base"
                                 ws['D'+str(cnt_row+1)].font=font
@@ -366,19 +465,92 @@ class SheetTemplateViewApi(AbstractViewApi):
                     for col in row:
                         if col.value:
                             if type(col.value) == str and col.value.find('JUCALST=') >= 0:
+                                if str(col.value)[8:]=='NoticeAJ_Vert':
+                                    cnt_ini_row=col.row
+                                    col.value=""
+                                    for item in notice:
+                                        sheet['B'+str(cnt_ini_row)]=str(item.classes).replace('\n','')
+                                        sheet['C'+str(cnt_ini_row+1)]=str(item.coins.coin).replace('\n','')
+                                        sheet['D'+str(cnt_ini_row+2)]=str(item.coins.value).replace('\n','')
+                                        sheet['E'+str(cnt_ini_row+2)]=str(recovering[0].entity.name).replace('\n','')
+                                        cnt_ini_row=cnt_ini_row+1
+                                        sheet.insert_rows(cnt_ini_row)
+                for row in sheet.iter_rows():
+                    for col in row:
+                        if col.value:
+                            if type(col.value) == str and col.value.find('JUCALST=') >= 0:
+                                if str(col.value)[8:]=='Claim_Creditor_Vert':
+                                    cnt_ini_row=col.row
+                                    col.value=""
+                                    for item in claim_creditor:
+                                        sheet['B'+str(cnt_ini_row)]=str(item.classes).replace('\n','')
+                                        sheet['C'+str(cnt_ini_row+1)]=str(item.coins.coin).replace('\n','')
+                                        sheet['D'+str(cnt_ini_row+2)]=str(item.coins.value).replace('\n','')
+                                        sheet['E'+str(cnt_ini_row+2)]=str(recovering[0].entity.name).replace('\n','')
+                                        cnt_ini_row=cnt_ini_row+1
+                                        sheet.insert_rows(cnt_ini_row)
+                for row in sheet.iter_rows():
+                    for col in row:
+                        if col.value:
+                            if type(col.value) == str and col.value.find('JUCALST=') >= 0:
+                                if str(col.value)[8:]=='Claim_Lawyer_Vert':
+                                    cnt_ini_row=col.row
+                                    col.value=""
+                                    for item in claim_lawyer:
+                                        sheet['B'+str(cnt_ini_row)]=str(item.classes).replace('\n','')
+                                        sheet['C'+str(cnt_ini_row+1)]=str(item.coins.coin).replace('\n','')
+                                        sheet['D'+str(cnt_ini_row+2)]=str(item.coins.value).replace('\n','')
+                                        sheet['E'+str(cnt_ini_row+2)]=str(recovering[0].entity.name).replace('\n','')
+                                        cnt_ini_row=cnt_ini_row+1
+                                        sheet.insert_rows(cnt_ini_row)
+                for row in sheet.iter_rows():
+                    for col in row:
+                        if col.value:
+                            if type(col.value) == str and col.value.find('JUCALST=') >= 0:
+                                if str(col.value)[8:]=='NoticeAJ':
+                                    cnt_ini_row=col.row
+                                    let_ini_col=col.column_letter
+                                    col.value=""
+                                    for item in notice:
+                                        sheet[let_ini_col+str(cnt_ini_row)]=str(item.classes).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins.coin).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+2)]=str(item.coins.value).replace('\n','')
+                                        let_ini_col=chr(ord(let_ini_col)+1)
+                                if str(col.value)[8:]=='Claim_Creditor':
+                                    cnt_ini_row=col.row
+                                    let_ini_col=col.column_letter
+                                    col.value=""
+                                    for item in claim_creditor:
+                                        sheet[let_ini_col+str(cnt_ini_row)]=str(item.classes).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins.coin).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+2)]=str(item.coins.value).replace('\n','')
+                                        let_ini_col=chr(ord(let_ini_col)+1)
+                                if str(col.value)[8:]=='Claim_Lawyer':
+                                    cnt_ini_row=col.row
+                                    let_ini_col=col.column_letter
+                                    col.value=""
+                                    for item in claim_lawyer:
+                                        sheet[let_ini_col+str(cnt_ini_row)]=str(item.coins.coin).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins.value).replace('\n','')
+                                        let_ini_col=chr(ord(let_ini_col)+1)
                                 if str(col.value)[8:]=='Premises':
                                     cnt_ini_row = col.row
                                     col.value=""
-                                    for item in premises:
+                                    for i in range(len(premises)):
                                         sheet.insert_rows(cnt_ini_row)
-                                        sheet['A'+str(cnt_ini_row)]=str(item)
-                                        sheet.merge_cells('A'+str(cnt_ini_row)+':G'+str(cnt_ini_row))
+                                    for item in premises:
+                                        sheet['A'+str(cnt_ini_row)]=str(item).replace('\n','')
                                         cnt_ini_row=cnt_ini_row+1
+                                        sheet.merge_cells('A'+str(cnt_ini_row)+':G'+str(cnt_ini_row))
+                for row in sheet.iter_rows():
+                    for col in row:
+                        if col.value:
                                 if str(col.value)[8:]=='Sheets':
                                     cnt_ini_row = col.row
                                     col.value=""
-                                    for item in funds:
+                                    for i in range(len(funds)-1):
                                         sheet.insert_rows(cnt_ini_row)
+                                    for item in funds:
                                         sheet['A'+str(cnt_ini_row)]=str(item.name)
                                         sheet['C'+str(cnt_ini_row)]='{:,.2f}'.format(float(item.totalvaluesfunds.total_corrected)).replace('.','-').replace(',','.').replace('-',',')
                                         cnt_ini_row=cnt_ini_row+1
