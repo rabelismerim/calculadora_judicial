@@ -48,7 +48,6 @@ class ComparativeDetailApi(AbstractViewApi):
             """),
     }
     http_method_names = ['get', 'put']
-    query_params = []
 
     @doc(_("""This method handles GET requests for the view. It retrieves a specific comparative object using the given 
     calculation_id from the query parameters and serializes the result into JSON format before returning it as an 

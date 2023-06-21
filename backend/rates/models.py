@@ -429,7 +429,7 @@ class AbstractTemplateField(AbstractModel):
         required (bool): Whether the field is required.
     """
     label = models.CharField(_('Field name'), max_length=150)
-    key = models.CharField(_('Field key'), max_length=150)
+    key = models.CharField(_('Field key'), max_length=150, null=True, blank=True)
     type = models.CharField(
         _('Field type'), choices=TYPE_CHOICES, max_length=1)
     order = models.PositiveIntegerField(_('Order'))

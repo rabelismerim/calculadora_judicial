@@ -48,7 +48,7 @@ class StatementApi(AbstractViewApi):
         `amounts due`, `claims`, `summary of funds`, `DTT opinion`, `classes` and `used assumptions`.
         """)
     }
-    query_params = []
+    
 
     layout_serializers = {
         'default': StatementSchema,

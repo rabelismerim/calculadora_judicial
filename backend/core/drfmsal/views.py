@@ -27,7 +27,7 @@ class ClearCacheApi(AbstractViewApi):
     """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like
     query_params and schema. """
     http_method_names = ['get']
-    query_params = []
+    
     docs = {
         'init': _("""This view forces the platform to clear caches so that any get methods are reloaded. The platform 
         has cache control in case there is any change, but if this control fails, this view can be used )""")
@@ -47,7 +47,7 @@ class SignStatusApi(AbstractViewApi):
     """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like
     query_params and schema. """
     http_method_names = ['get']
-    query_params = []
+    
     docs = {
         'init': _("""Sign Status shows details of the user who made the request, such as `authorized`, `authenticated`,
          `profile` and others.

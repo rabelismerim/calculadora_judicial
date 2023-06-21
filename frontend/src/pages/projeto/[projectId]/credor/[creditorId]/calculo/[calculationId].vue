@@ -21,7 +21,7 @@ const headers: any = {
 }
 if (import.meta.env.VITE_TOKEN)
   headers.Authorization = `Token ${import.meta.env.VITE_TOKEN}`
-const host = import.meta.env.VITE_API_URL.slice(0, -9)
+const host = import.meta.env.VITE_API_HOST
 
 let project = $ref({} as any)
 const loadProject = async () => {

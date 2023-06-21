@@ -243,7 +243,7 @@ class CalcValidateApi(AbstractViewApi):
 
     serializer_class = ValidatedIDSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
-    query_params = []
+
     model = Creditor
     docs = docs.copy()
 

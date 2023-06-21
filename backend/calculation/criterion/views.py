@@ -35,8 +35,6 @@ class CriterionApi(AbstractViewApi):
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Criterion
 
-    query_params = []
-
     docs = {
         'init': _("""Represents the amounts used as assumptions for the calculation at the time it was requested, 
         to maintain the values in case there are changes later in the creditor, recovering or in the assumptions of the 

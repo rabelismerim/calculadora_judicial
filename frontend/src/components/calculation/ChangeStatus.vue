@@ -24,8 +24,8 @@ const getUser = (username: string) => props.options?.users
   ?.find((user: any) => username === user.username)
 
 const avatar = (username: string) => {
-  const picture = getUser(username)?.userpicture
-  return picture ? `data:image/jpeg;base64,${picture}` : undefined
+  const picture = getUser(username)?.pictureUrl
+  return picture ? `${import.meta.env.VITE_API_HOST}/juca${picture}` : undefined
 }
 
 const label = ({ type, createUser }: any = {}) => {

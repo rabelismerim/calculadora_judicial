@@ -62,7 +62,6 @@ class AbstractFundsApi(AbstractViewApi):
                           CheckHasAgreementRegisteredPermissions]
     model = Funds
     physical_person = True
-    query_params = []
 
 
 class FundsApi(AbstractFundsApi):
@@ -135,7 +134,6 @@ class FundsCalculationApi(AbstractViewApi):
     serializer_class = FundsSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Funds
-    query_params = []
 
     docs = docs_fund.copy()
     operation_id_base = 'Get calc funds'
@@ -259,7 +257,7 @@ class AbstractStatementFundsApi(AbstractViewApi):
     serializer_class = StatementFundsSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = StatementFunds
-    query_params = []
+
     tags = [_('Cálculo - Valores da Verba')]
 
 

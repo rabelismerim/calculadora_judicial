@@ -1,10 +1,11 @@
 from django.urls import path
 
 from rates.views import RateApi, RateFileApi, TemplateApi, TemplateDetailApi, RateDetailApi, RateValueDetailApi, \
-    RateValueDetailUpdateApi
+    RateValueDetailUpdateApi, RateAdminApi
 
 urlpatterns = [
     path('', RateApi.as_view(), name="rate-list-create"),
+    path('administration/', RateAdminApi.as_view(), name="rate-admin-list"),
     path('<uuid:id>/', RateDetailApi.as_view(), name="rate-detail"),
     path('values/', RateValueDetailApi.as_view(), name="rate-values-detail"),
     path('values/<uuid:id>/', RateValueDetailUpdateApi.as_view(), name="rate-values-detail"),
