@@ -72,7 +72,7 @@ def create_templates():
                       'required': True},
                      ]
 
-    summary_fields_verbas = [{'label': 'Total: ', 'key': None, 'type': 'C', 'order': 0, 'is_editable': False,
+    summary_fields_verbas = [{'label': 'Total: ', 'key': None, 'type': 'C', 'order': 2, 'is_editable': False,
                               'required': False},
                              {'label': '', 'key': 'total_historical', 'type': 'F', 'order': 6,
                               'is_editable': False,

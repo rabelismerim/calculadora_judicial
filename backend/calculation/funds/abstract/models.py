@@ -109,6 +109,10 @@ class AbstractStatus(AbstractModel):
         """Sets the status of the calculation to 'B'. Calculation in exclusion"""
         self._set_status('B')
 
+    def set_calculation_registered(self):
+        """Sets the status of the calculation to 'I'. Calculation registered"""
+        self._set_status('I')
+
     @staticmethod
     def _check_status_choice(value: str):
         """Checks if the status value provided is valid"""
@@ -179,6 +183,13 @@ class AbstractStatement(AbstractStatus):
             statement.set_error_rj()
             return None
 
+        if date_rj and data_base >= date_rj:
+            if self.is_extraconcursal is False:
+                raise serializers.ValidationError(
+                    [_('This is an extra-bankruptcy budget, it is necessary to flag the extra-bankruptcy budget')])
+            statement.set_calculation_registered()
+            return None
+
         rate_data_base = rate.get_rate_by_date(data_base)
         rate_date_rj = rate.get_rate_by_date(date_rj)
 
@@ -233,6 +244,7 @@ class AbstractStatement(AbstractStatus):
                     [_('This is an extra-bankruptcy budget, it is necessary to flag the extra-bankruptcy budget')])
             self.status = 'I'
             self.delete_monetary_correction()
+            return
 
         super(AbstractStatement, self).save(*args, **kwargs)
 
