@@ -13,9 +13,9 @@ const mapProjects = computed(() => projects.map((project) => {
   const newProject = clone(project)
   const { id, description, projectUsers, status, statusDisplay } = newProject
   const filterBy = (toCompare: string) => ({ groups }: any) => groups?.findIndex(({ name }: any) => name === toCompare)
-  const mapUser = ({ firstName, lastName, userpicture, username, groups }: any) => ({
+  const mapUser = ({ firstName, lastName, pictureUrl, username, groups }: any) => ({
     fullName: `${firstName} ${lastName}`,
-    picture: userpicture,
+    pictureUrl,
     email: `${username}@deloitte.com`,
     groups,
   })

@@ -5,7 +5,7 @@ const userFallback = {
   isActive: null,
   name: '',
   fullName: '',
-  picture: '',
+  pictureUrl: '',
   email: '',
   groups: [] as any[],
   permissions: [] as string[],

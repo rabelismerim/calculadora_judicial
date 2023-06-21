@@ -22,10 +22,7 @@ const mapProject = (project: any) => {
     .filter(({ user }) => user)
     .map(({ user, role }) => ({
       role,
-      user: {
-        ...user,
-        picture: user.userpicture,
-      },
+      user,
     }))
 
   return {
@@ -55,11 +52,11 @@ const getProject = (id: string) => api
     }))
 
     const participants = projectUsers.reduce((acc: any, current: any) => {
-      const { id, idUser, firstName, lastName, username, userpicture, groups } = current
+      const { id, idUser, firstName, lastName, username, pictureUrl, groups } = current
       const user = {
         id: idUser,
         idUser: id,
-        picture: userpicture,
+        pictureUrl,
         fullName: `${firstName} ${lastName}`,
         email: `${username}@deloitte.com`,
       }
