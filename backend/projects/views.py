@@ -87,7 +87,6 @@ class ProjectDetailApi(AbstractProjectApi):  # V1
         'get': ProjectSchema,
         'put': ProjectEditSchema,
     }
-    query_params = []
 
     @doc(_("""Update the project and roles.
 
@@ -199,7 +198,6 @@ class ProjectDetailV2Api(AbstractProjectApi):  # V2
         'get': ProjectV2Schema,
         'put': ProjectEditSchema,
     }
-    query_params = []
 
 
 class ProjectApi(AbstractProjectApi):

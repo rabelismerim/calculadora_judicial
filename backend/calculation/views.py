@@ -85,7 +85,7 @@ class CalculationDetailApi(AbstractCalculationApi):  # V1
     HTTP methods for retrieving particular Calculation detail"""
     http_method_names = ['get']
     docs = docs.copy()
-    query_params = []
+
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific Calculation using the
     given id from the query parameters and serializes the result into JSON format before returning it as
                  an HTTP response.
@@ -102,7 +102,7 @@ class CalculationDetailV2Api(AbstractCalculationApi):  # V2
     docs = docs.copy()
     serializer_class = CalculationV2Schema
     allowed_versions = ['v1', 'v2']
-    query_params = []
+
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific Calculation using the
     given id from the query parameters and serializes the result into JSON format before returning it as
                  an HTTP response.
@@ -255,10 +255,9 @@ class ChangeStepApi(AbstractViewApi):
 
     serializer_class = ChangeStepSerializer
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CanChangeStep]
-    query_params = []
+
     model = Calculation
     docs = docs.copy()
-
 
     @doc(_("""PUT method to change the step of the Calculation instance.
 
@@ -279,13 +278,15 @@ class ChangeStepApi(AbstractViewApi):
         calculation = self.model.objects.filter(id=calculation_id).first()
 
         with transaction.atomic():
-            calculation.set_step_by_char(new_calculation['next_step'], user=request.user, special_approvers=special_approvers)
+            calculation.set_step_by_char(new_calculation['next_step'], user=request.user,
+                                         special_approvers=special_approvers)
             calc_comment = StepComment.objects.create(calculation=calculation, step=calculation.step)
             for comment in comments:
                 new_comment = Comment.objects.create(**comment)
                 calc_comment.comments.add(new_comment.id)
             calc_comment.save()
         return JsonResponse({'calculation': CalculationSchema(calculation, many=False).data}, status=status.HTTP_200_OK)
+
 
 class CheckStepApi(AbstractViewApi):
     """
@@ -310,7 +311,7 @@ class CheckStepApi(AbstractViewApi):
 
     serializer_class = CheckStepSerializer
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CanChangeStep]
-    query_params = []
+
     model = Calculation
     docs = docs.copy()
 

@@ -83,7 +83,7 @@ class UserDttDetailApi(AbstractUserDttApi):
     """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like
     query_params and schema. """
     http_method_names = ['get']
-    query_params = []
+
     docs = docs.copy()
     allow_cache = False
 
@@ -103,7 +103,7 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
     http_method_names = ['post']
     serializer_class = UserAuthorizeDttSchema
     permission_classes = [permissions.IsAuthenticated, CheckPermissions]
-    query_params = []
+
     perms = ['can_authorize_users']
     docs = docs.copy()
     allow_cache = False
@@ -144,7 +144,7 @@ class UserSendMailDttApi(AbstractUserDttApi):
     """
     http_method_names = ['post']
     serializer_class = UserMailDttSchema
-    query_params = []
+
     docs = docs.copy()
     allow_cache = False
 

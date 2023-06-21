@@ -51,7 +51,7 @@ class AbstractStatementIntegrationsApi(AbstractViewApi):
     serializer_class = StatementIntegrationsSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = StatementIntegrations
-    query_params = []
+
     tags = [_('Cálculo - Valores da Verba - Integratórias')]
 
 
@@ -111,6 +111,7 @@ class StatementIntegrationsApi(AbstractStatementIntegrationsApi):
                                 status=status.HTTP_201_CREATED)
 
         return super().post(request, *args, **kwargs)
+
 
 class StatementIntegrationsDetailApi(AbstractStatementIntegrationsApi):
     """Define the StatementIntegrationsApi view class for handling HTTP methods related to StatementIntegrations.
@@ -205,7 +206,7 @@ class StatementFundsIntegrationListApi(AbstractStatementIntegrationsApi):
         fund_id = kwargs.get('fund_id')
         fund = self.model.objects.filter(id=fund_id).first()
         if hasattr(fund, 'totalvaluesfundsintegrations'):
-            funds_data = self.serializer_class(fund.totalvaluesfunds, many=False).data
+            funds_data = self.serializer_class(fund.totalvaluesfundsintegrations, many=False).data
         else:
             funds_data = self.serializer_class(fund, many=False).data
         return JsonResponse({'fund': funds_data})

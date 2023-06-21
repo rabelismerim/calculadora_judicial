@@ -16,7 +16,7 @@ class UpdateUserApi(AbstractViewApi):
     serializer_class = UpdateModelSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = UpdateUser
-    query_params = []
+
     http_method_names = ['get']
     tags = [_('Base - Historic')]
 

@@ -1,6 +1,7 @@
 from datetime import date
 
 from dateutil.relativedelta import relativedelta
+from rest_framework.pagination import LimitOffsetPagination
 
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
@@ -12,7 +13,65 @@ from rates.schemas import RateFileSchema, RateSchema, TemplateSchema, TemplateLi
     RateUpdateSchema, RateValuesUpdateSchema, RateValuesCreateSchema
 from utils import _, doc
 
+query_params = [
+        {
+            "name": "rate",
+            "field": "index__icontains",
+            "in": "query",
+            "required": False,
+            "description": str(_("Rate")),
+            "schema": {"type": "string"}
+        },
+        {
+            "name": "description",
+            "field": "description__icontains",
+            "in": "query",
+            "required": False,
+            "description": str(_("Description")),
+            "schema": {"type": "string"}
+        },
+        {
+            "name": "is_active",
+            "field": "is_active",
+            "in": "query",
+            "required": False,
+            "description": str(_("Is active")),
+            "schema": {"type": "bool"}
+        },
+        {
+            "name": "is_auto_update",
+            "field": "is_auto_update",
+            "in": "query",
+            "required": False,
+            "description": str(_("Is auto update")),
+            "schema": {"type": "bool"}
+        },
+        {
+            "name": "is_per_day",
+            "field": "is_per_day",
+            "in": "query",
+            "required": False,
+            "description": str(_("Is per day")),
+            "schema": {"type": "bool"}
+        },
+        {
+            "name": "source",
+            "field": "source__description",
+            "in": "query",
+            "required": False,
+            "description": str(_("Source")),
+            "schema": {"type": "string"}
+        },
+        {
+            "name": "url",
+            "field": "url__description",
+            "in": "query",
+            "required": False,
+            "description": str(_("Source url")),
+            "schema": {"type": "string"}
+        },
 
+    ]
 class AbstractRateApi(AbstractViewApi):
     """HTTP methods for Rate"""
     serializer_class = RateSchema
@@ -39,16 +98,7 @@ class RateApi(AbstractRateApi):
         'post': RateSchema,
     }
 
-    query_params = [
-        {
-            "name": "rate",
-            "field": "index__icontains",
-            "in": "query",
-            "required": False,
-            "description": str(_("Rate")),
-            "schema": {"type": "string"}
-        }
-    ]
+    query_params = query_params
 
     @doc(_("""Saves an index according to its name and values"""))
     def post(self, request, *args, **kwargs):
@@ -56,6 +106,26 @@ class RateApi(AbstractRateApi):
         serializer.is_valid(raise_exception=True)
         new_rate = serializer.validated_data
         return JsonResponse({'rate': self.serializer_class(new_rate, many=False).data}, status=status.HTTP_201_CREATED)
+
+class RateAdminApi(AbstractViewApi):
+    """HTTP methods for Rate"""
+    http_method_names = ['get']
+    serializer_class = RateListSchema
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    model = Rate
+    operation_id_base = 'Rate List Admin'
+    docs = {
+        'init': _("""Represents the indices that can be applied to rates to calculate debt updates.
+            """),
+        'get': _("""Returns the rate and its accumulated values, period and date""")
+    }
+
+
+    pagination_class = LimitOffsetPagination
+    page_size = 30
+
+    query_params = query_params
+
 
 
 class RateDetailApi(AbstractRateApi):
@@ -244,7 +314,7 @@ class TemplateDetailApi(AbstractViewApi):
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Template
 
-    query_params = []
+    
 
     docs = {
         'get': _("""Example of how templates should look for each selected rate type
@@ -259,7 +329,7 @@ class TemplateTestEndPointApi(AbstractViewApi):
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Template
 
-    query_params = []
+    
 
     docs = {
         'get': _("""Example of how templates should look for each selected rate type

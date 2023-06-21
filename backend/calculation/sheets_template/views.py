@@ -39,7 +39,7 @@ class SheetTemplateViewApi(AbstractViewApi):
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = SheetsTemplate
 
-    query_params = []
+    
     docs = {
         'init': _("""Represents templates to publishing external sheets models to frontend.`, 
                 """),

@@ -59,7 +59,7 @@ class AbstractFundIRRFApi(AbstractViewApi):
     serializer_class = FundIRRFSchema
     physical_person = True
     model = FundIRRF
-    query_params = []
+    
     tags = [_('Cálculo - Verbas - IRRF')]
 
 
@@ -213,7 +213,7 @@ class AbstractStatementIRRFApi(AbstractViewApi):
     serializer_class = StatementIRRFSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = StatementIRRF
-    query_params = []
+    
     tags = [_('Cálculo - Verbas - IRRF - Valores das verbas')]
 
 

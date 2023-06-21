@@ -16,6 +16,7 @@ from drf_yasg import openapi
 from rest_framework import generics, serializers, status
 from rest_framework.filters import BaseFilterBackend
 from rest_framework.generics import get_object_or_404
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.utils import formatting
 from rest_framework.schemas.openapi import AutoSchema
 
@@ -53,6 +54,7 @@ class CustomSchema(AutoSchema):
     float_example = 1.23
     integer_example = 42
     binary_example = "SGVsbG8gV29ybGQ="  # "Hello World" em base64
+    has_path_parameters = False
 
     def get_operation_id_base(self, path, method, action):
         """
@@ -136,6 +138,11 @@ class CustomSchema(AutoSchema):
         """
         op = super(CustomSchema, self).get_operation(path, method)
         op['parameters'] = list(map(lambda x: {**x, 'description': str(x['description'])}, op['parameters']))
+        if len(op['parameters']) > 1:
+            for x in op['parameters']:
+                if x['required']:
+                    self.has_path_parameters = True
+                    break
         return op
 
     def get_tags(self, path, method):
@@ -204,7 +211,9 @@ class CustomSchema(AutoSchema):
 
 class SimpleFilterBackend(BaseFilterBackend, ABC):
     def get_schema_operation_parameters(self, view):
-        return view.query_params
+        # if view.schema.has_path_parameters:
+        #     return view.query_params
+        return view.query_params + view.default_query_params
 
 
 class AbstractViewApi(generics.GenericAPIView):
@@ -212,6 +221,41 @@ class AbstractViewApi(generics.GenericAPIView):
     filter_backends = (SimpleFilterBackend,)
     permission_classes = [CheckAPIVersion]
     query_params = []
+    pagination_class = None
+    default_query_params = [
+        {
+            "name": "created_at_min",
+            "field": "created_at__gte",
+            "in": "query",
+            "required": False,
+            "description": str(_("Created at start")),
+            "schema": {"type": "date"}
+        },
+        {
+            "name": "created_at_max",
+            "field": "created_at__lte",
+            "in": "query",
+            "required": False,
+            "description": str(_("Created at end")),
+            "schema": {"type": "date"}
+        },
+        {
+            "name": "updated_at_min",
+            "field": "updated_at__gte",
+            "in": "query",
+            "required": False,
+            "description": str(_("Updated at start")),
+            "schema": {"type": "date"}
+        },
+        {
+            "name": "updated_at_max",
+            "field": "updated_at__lte",
+            "in": "query",
+            "required": False,
+            "description": str(_("Updated at end")),
+            "schema": {"type": "date"}
+        }
+    ]
     model = None
     schema = CustomSchema()
     cache_timeout = 60 * 60 * 24
@@ -292,7 +336,9 @@ class AbstractViewApi(generics.GenericAPIView):
 
     def get_query_parameters(self):
         query = {}
-        for valid_params in self.query_params:
+
+        valid_parameters = self.query_params + self.default_query_params
+        for valid_params in valid_parameters:
             type_instance = valid_params['schema']['type']
             field = valid_params['field']
             name = valid_params['name']
@@ -309,6 +355,7 @@ class AbstractViewApi(generics.GenericAPIView):
                     raise serializers.ValidationError(
                         {name: _('Field in invalid format. It must be in the format{}').format(instance["legend"])})
         return query
+
     def get_query(self, id_=None, **kwargs):
         """Validate parameters received in query params, returning query values"""
         query = self.get_queryset()
@@ -439,6 +486,8 @@ class AbstractViewApi(generics.GenericAPIView):
         """Abstract method for default method GET. Override method in class for custom operation"""
         id_ = kwargs.get('id')
         query = self.get_query(id_=id_)
+        if self.pagination_class:
+            return self.get_paginated_response(self.paginate_queryset(query))
         model_name = self.model._meta.verbose_name_plural.lower() if not id_ else self.get_model_name()
         return JsonResponse({model_name.replace(' ', '_'): query})
 
