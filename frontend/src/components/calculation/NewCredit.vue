@@ -45,7 +45,7 @@ const clearNewCredit = () => {
   emit('update:modelValue', false)
 }
 
-const host = import.meta.env.VITE_API_URL.slice(0, -9)
+const host = import.meta.env.VITE_API_HOST
 const createCredit = async () => {
   const { classId, coinId, rateId, templateId, endPoint } = newCredit
   if (!endPoint)
