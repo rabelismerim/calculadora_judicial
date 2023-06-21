@@ -14,64 +14,66 @@ from rates.schemas import RateFileSchema, RateSchema, TemplateSchema, TemplateLi
 from utils import _, doc
 
 query_params = [
-        {
-            "name": "rate",
-            "field": "index__icontains",
-            "in": "query",
-            "required": False,
-            "description": str(_("Rate")),
-            "schema": {"type": "string"}
-        },
-        {
-            "name": "description",
-            "field": "description__icontains",
-            "in": "query",
-            "required": False,
-            "description": str(_("Description")),
-            "schema": {"type": "string"}
-        },
-        {
-            "name": "is_active",
-            "field": "is_active",
-            "in": "query",
-            "required": False,
-            "description": str(_("Is active")),
-            "schema": {"type": "bool"}
-        },
-        {
-            "name": "is_auto_update",
-            "field": "is_auto_update",
-            "in": "query",
-            "required": False,
-            "description": str(_("Is auto update")),
-            "schema": {"type": "bool"}
-        },
-        {
-            "name": "is_per_day",
-            "field": "is_per_day",
-            "in": "query",
-            "required": False,
-            "description": str(_("Is per day")),
-            "schema": {"type": "bool"}
-        },
-        {
-            "name": "source",
-            "field": "source__description",
-            "in": "query",
-            "required": False,
-            "description": str(_("Source")),
-            "schema": {"type": "string"}
-        },
-        {
-            "name": "url",
-            "field": "url__description",
-            "in": "query",
-            "required": False,
-            "description": str(_("Source url")),
-            "schema": {"type": "string"}
-        },
+    {
+        "name": "rate",
+        "field": "index__icontains",
+        "in": "query",
+        "required": False,
+        "description": str(_("Rate")),
+        "schema": {"type": "string"}
+    },
+    {
+        "name": "description",
+        "field": "description__icontains",
+        "in": "query",
+        "required": False,
+        "description": str(_("Description")),
+        "schema": {"type": "string"}
+    },
+    {
+        "name": "is_active",
+        "field": "is_active",
+        "in": "query",
+        "required": False,
+        "description": str(_("Is active")),
+        "schema": {"type": "bool"}
+    },
+    {
+        "name": "is_auto_update",
+        "field": "is_auto_update",
+        "in": "query",
+        "required": False,
+        "description": str(_("Is auto update")),
+        "schema": {"type": "bool"}
+    },
+    {
+        "name": "is_per_day",
+        "field": "is_per_day",
+        "in": "query",
+        "required": False,
+        "description": str(_("Is per day")),
+        "schema": {"type": "bool"}
+    },
+    {
+        "name": "source",
+        "field": "source__description",
+        "in": "query",
+        "required": False,
+        "description": str(_("Source")),
+        "schema": {"type": "string"}
+    },
+    {
+        "name": "url",
+        "field": "url__description",
+        "in": "query",
+        "required": False,
+        "description": str(_("Source url")),
+        "schema": {"type": "string"}
+    },
 
-    ]
+]
+
+
 class AbstractRateApi(AbstractViewApi):
     """HTTP methods for Rate"""
     serializer_class = RateSchema
@@ -107,6 +109,7 @@ class RateApi(AbstractRateApi):
         new_rate = serializer.validated_data
         return JsonResponse({'rate': self.serializer_class(new_rate, many=False).data}, status=status.HTTP_201_CREATED)
 
+
 class RateAdminApi(AbstractViewApi):
     """HTTP methods for Rate"""
     http_method_names = ['get']
@@ -120,12 +123,10 @@ class RateAdminApi(AbstractViewApi):
         'get': _("""Returns the rate and its accumulated values, period and date""")
     }
 
-
     pagination_class = LimitOffsetPagination
     page_size = 30
 
     query_params = query_params
-
 
 
 class RateDetailApi(AbstractRateApi):
@@ -314,8 +315,6 @@ class TemplateDetailApi(AbstractViewApi):
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Template
 
-    
-
     docs = {
         'get': _("""Example of how templates should look for each selected rate type
         Returns a detail of template with their id, name, tables and fields in tables""")
@@ -328,8 +327,6 @@ class TemplateTestEndPointApi(AbstractViewApi):
     serializer_class = TemplateSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Template
-
-    
 
     docs = {
         'get': _("""Example of how templates should look for each selected rate type
