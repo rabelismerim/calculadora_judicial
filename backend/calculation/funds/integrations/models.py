@@ -76,7 +76,7 @@ class StatementIntegrations(AbstractStatement):
     def delete_monetary_correction(self):
         """Delete the MonetaryCorrection object if exists"""
         monetary = self.get_monetary_correction()
-        if monetary:
+        if monetary and monetary.id:
             monetary.delete()
 
     def get_corrected_value(self) -> float:
@@ -118,8 +118,7 @@ class MonetaryCorrectionIntegrations(AbstractMonetaryCorrection):
     Attributes:
         statement (StatementIntegrations): The statement of integrations to which the monetary correction applies.
     """
-    statement = models.OneToOneField(
-        StatementIntegrations, on_delete=models.PROTECT)
+    statement = models.OneToOneField(StatementIntegrations, on_delete=models.PROTECT)
 
 
 class TotalValuesFundsIntegrations(AbstractTotalValuesFunds):
