@@ -89,7 +89,7 @@ const loadCalculation = async (showLoading = false) => {
     .flatMap(({ data, type }: any) => data.map((el: any) => ({ ...el, type })))
     .sort(({ createdAt: dateA }: any, { createdAt: dateB }: any) => dateA < dateB ? -1 : 1)
     .map((credit: any) => {
-      credit.tables = credit?.template?.tables.map(({ fields, description, endPoint, id, many }: any) => {
+      credit.tables = credit?.template?.tables.map(({ fields, description, endPoint, id, many, summary }: any) => {
         const columns = fields
           ?.map(({ id, isEditable, key, decimals, label, order, required, typeDisplay, default: defaultValue }: any) =>
             ({
@@ -111,7 +111,7 @@ const loadCalculation = async (showLoading = false) => {
           field: 'delete',
           label: 'Apagar',
         })
-        return { columns, description, endPoint, id, many, linesToAdd: 1, values: [] }
+        return { summary, columns, description, endPoint, id, many, linesToAdd: 1, values: [] }
       })
       credit.summary = credit?.template?.summary
       return credit
@@ -150,9 +150,13 @@ const openCredit = async (credit: any) => {
   for (const table of tables as any[]) {
     const result = await fetch(`${host}${table.endPoint + credit.id}/`, { method: 'GET', headers })
       .then((result: any) => result.json())
-      .then((result: any) => Object.values(Object.values(result).at(0) as any)
-        ?.find((value: any) => Array.isArray(value)))
-    table.values = result || clone([])
+    const entries = Object.entries(Object.values(result).at(0) as any)
+    const values = entries
+      ?.find(([,value]) => Array.isArray(value))
+    const data = entries
+      ?.filter(([, value]) => !Array.isArray(value))
+    table.values = values?.[1] || clone([])
+    table.data = Object.fromEntries(data)
     if (table.values?.length === 0)
       addCreditValues(table, 1)
   }
@@ -248,12 +252,6 @@ const calculateCredit = async (credit: any, creditIndex: number) => {
 
 const isRequired = ({ required }: any) => required && [(value: any) => !!value || 'Campo obrigatório!']
 
-const creditsAmount = computed(() => calculation?.credits?.length || 0)
-const classesAmount = computed(() => calculation?.classes?.length)
-const totalValue = computed(() => calculation?.credits
-  ?.map(({ total }: any) => total?.totalCorrected || 0)
-  ?.reduce((acc: number, curr: number) => acc + curr || 0, 0))
-
 onMounted(async () => {
   loading = true
   try {
@@ -337,6 +335,9 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
   for (const index in data)
     data[index][key] = values[index]
 }
+
+const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
+  .find(({ order }: any) => orderItem === order)
 </script>
 
 <template>
@@ -530,9 +531,7 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
                               v-if="column.field === 'is_extraconcursal'"
                             >
                               <QToggle
-                                v-if="calculation?.criterion?.occurrence === 'C'
-                                  ? props.row?.data_base >= calculation?.criterion?.dateCitation
-                                  : props.row?.data_base >= calculation?.criterion?.dateRjFiling"
+                                v-if="props.row?.data_base >= calculation?.criterion?.dateRjRequest"
                                 v-model="props.row[column.field]"
                                 class="flex-1"
                                 :disable="['A', 'B'].includes(calculation?.step)"
@@ -549,7 +548,40 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
                       </QTd>
                     </QTr>
                   </template>
+                  <template #bottom-row="props">
+                    <QTr :props="props" class="bg--primary/3 color--primary font-bold">
+                      <QTd
+                        v-for="column in props.cols as any[]"
+                        :key="column.id" :style="(column?.isEditable) ? 'min-width: 200px' : '' "
+                      >
+                        <div
+                          v-if="table?.summary?.some(({ order }: any) => order === column.order)"
+                          class="text-center"
+                        >
+                          <span v-if="getSummary(column.order, table.summary)?.label" class="mr-2">
+                            {{ getSummary(column.order, table.summary).label }}
+                          </span>
+                          <span
+                            v-if="getSummary(column.order, table.summary)?.key"
+                          >
+                            <span v-if="getSummary(column.order, table.summary)?.typeDisplay === 'text'">
+                              {{ get(getSummary(column.order, table.summary).key, table.data) }}
+                            </span>
+                            <span v-if="getSummary(column.order, table.summary)?.typeDisplay === 'float'">
+                              {{ formatNumber(
+                                get(getSummary(column.order, table.summary).key, table.data),
+                                getSummary(column.order, table.summary).decimals,
+                              ) }}
+                            </span>
+                          </span>
+                        </div>
+                      </QTd>
+                    </QTr>
+                  </template>
                 </QTable>
+                <!-- <div>
+                  <pre>{{ table.summary }}</pre>
+                </div> -->
               </div>
               <div class="flex gap-2 justify-between p-4 bg--primary/12 border--primary border-t-2 color--primary font-bold">
                 <div>
@@ -559,7 +591,7 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
                   </div>
                   <div>
                     Total dos Valores: R$
-                    {{ formatNumber(credit.tables.reduce((acc:number, table: any) => acc + (table.total || 0), 0), 2) }}
+                    {{ formatNumber((typeof credit?.total === 'number' ? credit?.total : credit?.total?.totalCorrected) || 0, 2) }}
                   </div>
                 </div>
                 <div>
@@ -608,9 +640,8 @@ const onPaste = (evt: any, table: any[], key: string, type: string, index: any) 
       <NewCredit
         v-model="showNewCredit"
         :options="options"
-        :calculation-id="attrs.calculationId"
         :rates="rates"
-        :host="host"
+        :calculation-id="attrs.calculationId"
         @success="loadCalculation"
       />
     </template>
