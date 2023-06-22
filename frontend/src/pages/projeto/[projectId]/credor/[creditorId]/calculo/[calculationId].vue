@@ -102,6 +102,7 @@ const loadCalculation = async (showLoading = false) => {
               label,
               order,
               required,
+              sortable: ['float', 'integer', 'date'].includes(typeDisplay),
               type: typeDisplay,
               align: (isEditable && typeDisplay !== 'boolean') ? 'left' : 'center',
             }))
