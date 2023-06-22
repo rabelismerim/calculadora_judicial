@@ -15,11 +15,18 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  const permissions = to.meta?.permissions as string[] || []
-  const authenticated = to.meta?.authenticated
-  const { permissions: userPermissions } = JSON.parse(sessionStorage.getItem('deloitte-user') || '{}')
-  const hasAllPermissions = permissions.every((permission: string) => userPermissions.includes(permission))
-  if ((!permissions && !authenticated) || hasAllPermissions) {
+  const needAuthenticated = to.meta?.authenticated
+  const neededPermissions = to.meta?.permissions as string[] || []
+  const user = JSON.parse(sessionStorage.getItem('deloitte-user') || '{}')
+
+  const { isActive, permissions: userPermissions } = user
+  const hasAllPermissions = neededPermissions.every((permission: string) => userPermissions.includes(permission))
+
+  if (
+    (!needAuthenticated && neededPermissions.length === 0)
+    || (needAuthenticated && isActive)
+    || (neededPermissions.length > 0 && isActive && hasAllPermissions)
+  ) {
     next()
     return
   }
