@@ -139,12 +139,12 @@ const addCreditValues = (table: any, amount = 1) => {
     .map(({ field, defaultValue }: any) => [field, defaultValue]))
   table.values?.push(...Array(amount).fill(0).map(() => clone(defaultValue)))
 }
-const openCredit = async (credit: any, reload = false) => {
+const openCredit = async (credit: any) => {
   const { tables } = credit
   const isClear = tables
     .map(({ values }: any) => values?.length)
     .every((length: number) => length === 0)
-  if (!isClear && !reload)
+  if (!isClear)
     return
   loading = true
   for (const table of tables as any[]) {
@@ -159,6 +159,19 @@ const openCredit = async (credit: any, reload = false) => {
     table.data = Object.fromEntries(data)
     if (table.values?.length === 0)
       addCreditValues(table, 1)
+  }
+  loading = false
+}
+const openCreditBigNumbers = async (credit: any) => {
+  const { tables } = credit
+  loading = true
+  for (const table of tables as any[]) {
+    const result = await fetch(`${host}${table.endPoint + credit.id}/`, { method: 'GET', headers })
+      .then((result: any) => result.json())
+    const entries = Object.entries(Object.values(result).at(0) as any)
+    const data = entries
+      ?.filter(([, value]) => !Array.isArray(value))
+    table.data = Object.fromEntries(data)
   }
   loading = false
 }
@@ -246,7 +259,7 @@ const calculateCredit = async (credit: any, creditIndex: number) => {
     }
     notify({ message: 'Crédito processado com sucesso!' })
     loading = false
-    await openCredit(credit, true)
+    await openCreditBigNumbers(credit)
     await loadBigNumbers(true)
   })
 }
@@ -580,9 +593,6 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
                     </QTr>
                   </template>
                 </QTable>
-                <!-- <div>
-                  <pre>{{ table.summary }}</pre>
-                </div> -->
               </div>
               <div class="flex gap-2 justify-between p-4 bg--primary/12 border--primary border-t-2 color--primary font-bold">
                 <div>
