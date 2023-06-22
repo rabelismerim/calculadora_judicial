@@ -139,12 +139,12 @@ const addCreditValues = (table: any, amount = 1) => {
     .map(({ field, defaultValue }: any) => [field, defaultValue]))
   table.values?.push(...Array(amount).fill(0).map(() => clone(defaultValue)))
 }
-const openCredit = async (credit: any) => {
+const openCredit = async (credit: any, reload = false) => {
   const { tables } = credit
   const isClear = tables
     .map(({ values }: any) => values?.length)
     .every((length: number) => length === 0)
-  if (!isClear)
+  if (!isClear && !reload)
     return
   loading = true
   for (const table of tables as any[]) {
@@ -246,7 +246,8 @@ const calculateCredit = async (credit: any, creditIndex: number) => {
     }
     notify({ message: 'Crédito processado com sucesso!' })
     loading = false
-    loadBigNumbers(true)
+    await openCredit(credit, true)
+    await loadBigNumbers(true)
   })
 }
 
