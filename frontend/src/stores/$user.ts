@@ -15,7 +15,6 @@ const userFallback = {
 const store = useStorage('deloitte-user', clone(userFallback), sessionStorage)
 
 const login = async () => {
-  const router = useRouter()
   try {
     const user = await usersService.getMyProfile()
 
