@@ -284,7 +284,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         ws[let_ini_col+str(cnt_row)].fill=grayFill
                                         let_ini_col=chr(ord(let_ini_col)+1)
                                     cnt_row=cnt_row+1
-                                    ws['D'+str(cnt_row)]=str(calc_schema)
+                                    #ws['D'+str(cnt_row)]=str(calc_schema)
                                     #ws['E'+str(cnt_row)]=str(item1)
                                     #ws['F'+str(cnt_row)]=str(item2)
                                     #ws['G'+str(cnt_row)]=str(item3)
