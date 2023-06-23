@@ -22,6 +22,8 @@ declare global {
   const baseUrl: typeof import('./stores/baseUrl')['default']
   const blend: typeof import('animol')['blend']
   const calculationService: typeof import('./services/calculationService')['default']
+  const clearAllCookies: typeof import('./composables/utils')['clearAllCookies']
+  const clearCookie: typeof import('./composables/utils')['clearCookie']
   const clone: typeof import('./composables/utils')['clone']
   const computed: typeof import('vue')['computed']
   const computedAsync: typeof import('@vueuse/core')['computedAsync']
@@ -45,7 +47,6 @@ declare global {
   const defineAsyncComponent: typeof import('vue')['defineAsyncComponent']
   const defineComponent: typeof import('vue')['defineComponent']
   const delay: typeof import('./composables/utils')['delay']
-  const deleteAllCookies: typeof import('./composables/utils')['deleteAllCookies']
   const downloadFile: typeof import('./composables/utils')['downloadFile']
   const eagerComputed: typeof import('@vueuse/core')['eagerComputed']
   const ease: typeof import('animol')['ease']
@@ -62,7 +63,7 @@ declare global {
   const formatMonth: typeof import('./composables/utils')['formatMonth']
   const formatNumber: typeof import('./composables/utils')['formatNumber']
   const get: typeof import('@jrnwn/utils')['get']
-  const getCookie: typeof import('@jrnwn/utils')['getCookie']
+  const getCookie: typeof import('./composables/utils')['getCookie']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
   const getInitials: typeof import('./composables/utils')['getInitials']
@@ -137,6 +138,7 @@ declare global {
   const router: typeof import('./router')['default']
   const set: typeof import('@jrnwn/utils')['set']
   const setClass: typeof import('@jrnwn/utils')['setClass']
+  const setCookie: typeof import('./composables/utils')['setCookie']
   const setStyle: typeof import('@jrnwn/utils')['setStyle']
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']
@@ -373,6 +375,8 @@ declare module 'vue' {
     readonly baseUrl: UnwrapRef<typeof import('./stores/baseUrl')['default']>
     readonly blend: UnwrapRef<typeof import('animol')['blend']>
     readonly calculationService: UnwrapRef<typeof import('./services/calculationService')['default']>
+    readonly clearAllCookies: UnwrapRef<typeof import('./composables/utils')['clearAllCookies']>
+    readonly clearCookie: UnwrapRef<typeof import('./composables/utils')['clearCookie']>
     readonly clone: UnwrapRef<typeof import('./composables/utils')['clone']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly computedAsync: UnwrapRef<typeof import('@vueuse/core')['computedAsync']>
@@ -396,7 +400,6 @@ declare module 'vue' {
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
     readonly delay: UnwrapRef<typeof import('./composables/utils')['delay']>
-    readonly deleteAllCookies: UnwrapRef<typeof import('./composables/utils')['deleteAllCookies']>
     readonly downloadFile: UnwrapRef<typeof import('./composables/utils')['downloadFile']>
     readonly eagerComputed: UnwrapRef<typeof import('@vueuse/core')['eagerComputed']>
     readonly ease: UnwrapRef<typeof import('animol')['ease']>
@@ -413,7 +416,7 @@ declare module 'vue' {
     readonly formatMonth: UnwrapRef<typeof import('./composables/utils')['formatMonth']>
     readonly formatNumber: UnwrapRef<typeof import('./composables/utils')['formatNumber']>
     readonly get: UnwrapRef<typeof import('@jrnwn/utils')['get']>
-    readonly getCookie: UnwrapRef<typeof import('@jrnwn/utils')['getCookie']>
+    readonly getCookie: UnwrapRef<typeof import('./composables/utils')['getCookie']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
     readonly getInitials: UnwrapRef<typeof import('./composables/utils')['getInitials']>
@@ -488,6 +491,7 @@ declare module 'vue' {
     readonly router: UnwrapRef<typeof import('./router')['default']>
     readonly set: UnwrapRef<typeof import('@jrnwn/utils')['set']>
     readonly setClass: UnwrapRef<typeof import('@jrnwn/utils')['setClass']>
+    readonly setCookie: UnwrapRef<typeof import('./composables/utils')['setCookie']>
     readonly setStyle: UnwrapRef<typeof import('@jrnwn/utils')['setStyle']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
