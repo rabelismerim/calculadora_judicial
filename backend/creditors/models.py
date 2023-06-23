@@ -11,9 +11,13 @@ class Creditor(AbstractDateCreditor):
     description = models.CharField(_('Description'), max_length=255, null=True)
 
     total = models.FloatField(_('Total sum of valid amounts'), default=0)
+    total_historical = models.FloatField(_('Total historical sum of valid amounts'), default=0)
 
     def get_total(self) -> float:
         return self.total
+
+    def get_total_historical(self) -> float:
+        return self.total_historical
 
     def get_count_calculations(self) -> int:
         """Get number of calculations"""
@@ -64,15 +68,18 @@ class Creditor(AbstractDateCreditor):
         self.set_total(False)
         super().save(*args, **kwargs)
 
-    def get_total_validated(self):
+    def get_total_validated(self) -> tuple:
         calcs = self.calculation_set.filter(validated=True, step='A')
-        total = 0
+        total_corrected = 0
+        total_historical = 0
         for calc in calcs:
-            total += calc.get_total_funds()
-        return total
+            totals = calc.get_total_funds()
+            total_corrected += totals['total_corrected']
+            total_historical += totals['total_historical']
+        return total_corrected, total_historical
 
     def set_total(self, commit=True):
         """Set the total value of the creditor by adding all the corrected amounts of the sums"""
-        self.total = self.get_total_validated()
+        self.total, self.total_historical = self.get_total_validated()
         if commit:
             self.save()

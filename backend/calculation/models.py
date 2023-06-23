@@ -559,12 +559,24 @@ class Calculation(AbstractModel):
                 classes_list.append(obj)
         return classes_list
 
-    def get_total_funds(self) -> float:
+    def get_total_funds(self) -> dict:
         """Add up the corrected amounts of the sums"""
-        total = sum([fund.get_total_summed() for fund in self.funds_set.all()])
-        total += sum([fund.get_total_summed() for fund in self.funddocument_set.all()])
-        total += sum([fund.get_total_summed() for fund in self.fundirrf_set.all()])
-        return total
+        total_corrected = 0
+        total_historical = 0
+
+        for fund in self.funds_set.all():
+            total_corrected += fund.get_total_summed()
+            total_historical += fund.get_total_historical_summed()
+
+        for fund in self.funddocument_set.all():
+            total_corrected += fund.get_total_summed()
+            total_historical += fund.get_total_historical_summed()
+
+        for fund in self.fundirrf_set.all():
+            total_corrected += fund.get_total_summed()
+            total_historical += fund.get_total_historical_summed()
+
+        return {'total_corrected': total_corrected, 'total_historical': total_historical}
 
     def get_big_number_calc(self) -> dict:
         """Count of all registered funds"""

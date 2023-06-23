@@ -87,7 +87,8 @@ class Project(AbstractDescription, AbstractDateRecovering):
         dict_choices = dict(CHOICES_STEP)
         step_counts = []
         for calc in qs:
-            step_counts.append({'total': calc['total'], 'step': calc['step'], 'step_display': dict_choices.get(calc['step'])})
+            step_counts.append(
+                {'total': calc['total'], 'step': calc['step'], 'step_display': dict_choices.get(calc['step'])})
 
         # Add steps with total count of 0
         existing_steps = set(x['step'] for x in step_counts)
@@ -112,15 +113,18 @@ class Project(AbstractDescription, AbstractDateRecovering):
 
     def total_classes_creditor(self):
         classes = [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
+                    'total_historical': fund.get_total_historical_summed(),
                     'total_calculated': fund.get_total_summed()} for fund in
                    Funds.objects.filter(classes__classe__isnull=False, calculation__creditor__recovering__project=self,
                                         calculation__validated=True, calculation__step='A')]
         classes += [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
+                     'total_historical': fund.get_total_historical_summed(),
                      'total_calculated': fund.get_total_summed()} for fund in
                     FundDocument.objects.filter(classes__classe__isnull=False, calculation__validated=True,
                                                 calculation__step='A',
                                                 calculation__creditor__recovering__project=self)]
         classes += [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
+                     'total_historical': 0,
                      'total_calculated': fund.get_total_summed()} for fund in
                     FundIRRF.objects.filter(classes__classe__isnull=False, calculation__validated=True,
                                             calculation__step='A',
@@ -129,20 +133,26 @@ class Project(AbstractDescription, AbstractDateRecovering):
         class_totals = {}
         total_value_sum = 0
         total_calculated_sum = 0
+        total_calculated_sum_historical = 0
         quantity_by_classes = []
         for class_dict in classes:
             class_name = class_dict['classe']
             quantity_by_classes.append(class_name)
             class_total_value = class_dict['total_value']
             class_total_calculated = class_dict['total_calculated']
+            class_total_historical = class_dict['total_historical']
             total_value_sum += class_total_value
             total_calculated_sum += class_total_calculated
+            total_calculated_sum_historical += class_total_historical
             if class_name not in class_totals:
                 class_totals[class_name] = {'total_value': class_total_value,
-                                            'total_calculated': class_total_calculated}
+                                            'total_calculated': class_total_calculated,
+                                            'total_historical': class_total_historical,
+                                            }
             else:
                 class_totals[class_name]['total_value'] += class_total_value
                 class_totals[class_name]['total_calculated'] += class_total_calculated
+                class_totals[class_name]['total_historical'] += class_total_historical
         for class_dict in class_totals.values():
             total_calculated = class_dict['total_calculated']
             total_value = class_dict['total_value']
@@ -157,6 +167,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
         for class_name, total in class_totals.items():
             obj = {'classe': class_name, 'classes_display': classes_choices.get(class_name),
                    'total_value': total['total_value'], 'total_calculated': total['total_calculated'],
+                   'total_historical': total['total_historical'],
                    'percentage_value': total.get('percentage_value', 0),
                    'quantity': quantity_by_classes.count(class_name),
                    'percentage_calculated': total.get('percentage_calculated', 0)}
@@ -167,6 +178,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
                 obj = {'classe': key, 'classes_display': value,
                        'total_value': 0, 'total_calculated': 0,
                        'percentage_value': 0,
+                       'total_historical': 0,
                        'quantity': 0,
                        'percentage_calculated': 0}
                 classes_list.append(obj)

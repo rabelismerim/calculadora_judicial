@@ -2,7 +2,6 @@ import base64
 import hashlib
 import uuid
 
-from django.conf import settings
 from django.core.files.base import ContentFile
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -12,22 +11,21 @@ from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from config.settings import ENABLE_SSO
-from core.abstract.views import AbstractViewApi, CustomSchema as AutoSchema
+from config.settings import ENABLE_SSO, DRFMSAL_IDENTITY_WEB
+from core.abstract.views import AbstractViewApi
 from core.drfmsal.schemas import SignStatusSerializer
 
 from core.dttuser.models import User
-from core.dttuser.schemas import UserDttMFASchema
 from utils import doc, _
 
-ms_identity_web = settings.DRFMSAL_IDENTITY_WEB
+ms_identity_web = DRFMSAL_IDENTITY_WEB
 
 
 class ClearCacheApi(AbstractViewApi):
     """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like
     query_params and schema. """
     http_method_names = ['get']
-    
+
     docs = {
         'init': _("""This view forces the platform to clear caches so that any get methods are reloaded. The platform 
         has cache control in case there is any change, but if this control fails, this view can be used )""")
@@ -47,7 +45,7 @@ class SignStatusApi(AbstractViewApi):
     """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like
     query_params and schema. """
     http_method_names = ['get']
-    
+
     docs = {
         'init': _("""Sign Status shows details of the user who made the request, such as `authorized`, `authenticated`,
          `profile` and others.

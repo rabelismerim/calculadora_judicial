@@ -116,6 +116,16 @@ class Funds(AbstractFunds):
         self.__delete_total_funds()
         super(Funds, self).delete(*args, **kwargs)
 
+    def get_total_historical_summed(self):
+        """Get the corrected value of the sum of calculated sums"""
+        total: float = 0
+        if hasattr(self, 'totalvaluesfunds'):
+            total += self.totalvaluesfunds.total_historical
+
+        if hasattr(self, 'totalvaluesfundsintegrations'):
+            total += self.totalvaluesfundsintegrations.total_historical
+        return total
+
     def get_total_summed(self):
         """Get the corrected value of the sum of calculated sums"""
         total: float = 0
