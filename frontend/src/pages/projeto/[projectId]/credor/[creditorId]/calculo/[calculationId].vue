@@ -483,7 +483,14 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
                 >
                   <template #body="props">
                     <QTr :props="props">
-                      <QTd v-for="column in props.cols as any[]" :key="column.id" :style="(column?.isEditable) ? 'min-width: 200px' : '' ">
+                      <QTd
+                        v-for="column in props.cols as any[]"
+                        :key="column.id"
+                        :style="(column?.isEditable) && column.type !== 'boolean'
+                          ? (column?.isEditable) && column.type === 'text'
+                            ? 'min-width: 200px; width: 10%' : 'min-width: 150px; width: 10%'
+                          : '' "
+                      >
                         <div
                           class="flex justify-center items-center"
                           :class="{
@@ -565,10 +572,7 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
                   </template>
                   <template #bottom-row="props">
                     <QTr :props="props" class="bg--primary/3 color--primary font-bold">
-                      <QTd
-                        v-for="column in props.cols as any[]"
-                        :key="column.id" :style="(column?.isEditable) ? 'min-width: 200px' : '' "
-                      >
+                      <QTd v-for="column in props.cols as any[]" :key="column.id">
                         <div
                           v-if="table?.summary?.some(({ order }: any) => order === column.order)"
                           class="text-center"
@@ -686,6 +690,17 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
 }
 .credit-table tr:has(.has-error) {
   background-color: hsla(var(--error,0,0%,0%),0.05)
+}
+.credit-table td.q-td {
+  padding: 8px 6px;
+  width: 0.1%;
+  white-space: nowrap;
+}
+.credit-table tr td:first-child {
+  padding-left: 16px;
+}
+.credit-table tr td:last-child {
+  padding-right: 8px;
 }
 .calculations-credits {
   background: transparent;
