@@ -77,6 +77,8 @@ export default defineConfig({
             'set',
             'getListOfPaths',
             'getCookie',
+            'setCookie',
+            'deleteCookie',
             'normalizeText',
             'toSplit',
             'toCamel',

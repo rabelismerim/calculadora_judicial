@@ -46,6 +46,7 @@ declare global {
   const defineComponent: typeof import('vue')['defineComponent']
   const delay: typeof import('./composables/utils')['delay']
   const deleteAllCookies: typeof import('./composables/utils')['deleteAllCookies']
+  const deleteCookie: typeof import('@jrnwn/utils')['deleteCookie']
   const downloadFile: typeof import('./composables/utils')['downloadFile']
   const eagerComputed: typeof import('@vueuse/core')['eagerComputed']
   const ease: typeof import('animol')['ease']
@@ -137,6 +138,7 @@ declare global {
   const router: typeof import('./router')['default']
   const set: typeof import('@jrnwn/utils')['set']
   const setClass: typeof import('@jrnwn/utils')['setClass']
+  const setCookie: typeof import('@jrnwn/utils')['setCookie']
   const setStyle: typeof import('@jrnwn/utils')['setStyle']
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']
@@ -397,6 +399,7 @@ declare module 'vue' {
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
     readonly delay: UnwrapRef<typeof import('./composables/utils')['delay']>
     readonly deleteAllCookies: UnwrapRef<typeof import('./composables/utils')['deleteAllCookies']>
+    readonly deleteCookie: UnwrapRef<typeof import('@jrnwn/utils')['deleteCookie']>
     readonly downloadFile: UnwrapRef<typeof import('./composables/utils')['downloadFile']>
     readonly eagerComputed: UnwrapRef<typeof import('@vueuse/core')['eagerComputed']>
     readonly ease: UnwrapRef<typeof import('animol')['ease']>
@@ -488,6 +491,7 @@ declare module 'vue' {
     readonly router: UnwrapRef<typeof import('./router')['default']>
     readonly set: UnwrapRef<typeof import('@jrnwn/utils')['set']>
     readonly setClass: UnwrapRef<typeof import('@jrnwn/utils')['setClass']>
+    readonly setCookie: UnwrapRef<typeof import('@jrnwn/utils')['setCookie']>
     readonly setStyle: UnwrapRef<typeof import('@jrnwn/utils')['setStyle']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>

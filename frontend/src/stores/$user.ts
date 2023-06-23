@@ -1,5 +1,3 @@
-import { deleteAllCookies } from '../composables/utils'
-
 const userFallback = {
   authorized: null,
   isActive: null,
