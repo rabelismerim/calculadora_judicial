@@ -297,30 +297,7 @@ export const downloadFile = (textToWrite: string, fileNameToSaveAs: string, cont
   downloadLink.click()
 }
 
-export const setCookie = (name: string, value: string, expireDays = 1) => {
-  let expires = ''
-  if (expireDays) {
-    const date = new Date()
-    date.setTime(date.getTime() + (expireDays * 24 * 60 * 60 * 1000))
-    expires = `; expires=${date.toUTCString()}`
-  }
-  document.cookie = `${name}=${value || ''}${expires}; path=/`
-}
-export const getCookie = (name: string) => {
-  const nameEQ = `${name}=`
-  return document.cookie
-    .split(';')
-    .forEach((item) => {
-      while (item.charAt(0) === ' ')
-        item = item.substring(1, item.length)
-      if (item.indexOf(nameEQ) === 0)
-        return item.substring(nameEQ.length, item.length)
-    })
-}
-export const clearCookie = (name: string) => {
-  document.cookie = `${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;`
-}
-export const clearAllCookies = () => {
+export const deleteAllCookies = () => {
   document.cookie
     .split(';')
     .forEach((cookie) => {
