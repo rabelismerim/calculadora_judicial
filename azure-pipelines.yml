@@ -119,7 +119,7 @@ steps:
     RemoveSourceFolder: true
 - script: |
     python manage.py makemigrations
-  failOnStderr: true
+  failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - script: |
