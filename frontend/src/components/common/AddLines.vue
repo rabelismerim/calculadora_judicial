@@ -31,7 +31,7 @@ const onAddLines = () => {
     transparent
     :disabled="disabled"
   >
-    <q-menu anchor="bottom right" self="top right">
+    <QMenu anchor="bottom right" self="top right">
       <div class="flex flex-col p-2 gap-2">
         <div class="flex gap-2 no-wrap">
           <button
@@ -63,6 +63,6 @@ const onAddLines = () => {
           Adicionar Linhas
         </button>
       </div>
-    </q-menu>
+    </QMenu>
   </Btn>
 </template>

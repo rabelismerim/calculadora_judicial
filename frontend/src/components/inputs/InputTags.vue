@@ -85,7 +85,7 @@ const getContentSize = (content: string) => {
 </script>
 
 <template>
-  <q-field
+  <QField
     ref="input"
     :model-value="modelValue"
     :label="label"
@@ -164,5 +164,5 @@ const getContentSize = (content: string) => {
         </div>
       </div>
     </template>
-  </q-field>
+  </QField>
 </template>

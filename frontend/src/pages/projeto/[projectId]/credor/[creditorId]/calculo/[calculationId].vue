@@ -102,6 +102,7 @@ const loadCalculation = async (showLoading = false) => {
               label,
               order,
               required,
+              sortable: ['float', 'integer', 'date'].includes(typeDisplay),
               type: typeDisplay,
               align: (isEditable && typeDisplay !== 'boolean') ? 'left' : 'center',
             }))
@@ -139,12 +140,12 @@ const addCreditValues = (table: any, amount = 1) => {
     .map(({ field, defaultValue }: any) => [field, defaultValue]))
   table.values?.push(...Array(amount).fill(0).map(() => clone(defaultValue)))
 }
-const openCredit = async (credit: any, reload = false) => {
+const openCredit = async (credit: any) => {
   const { tables } = credit
   const isClear = tables
     .map(({ values }: any) => values?.length)
     .every((length: number) => length === 0)
-  if (!isClear && !reload)
+  if (!isClear)
     return
   loading = true
   for (const table of tables as any[]) {
@@ -159,6 +160,19 @@ const openCredit = async (credit: any, reload = false) => {
     table.data = Object.fromEntries(data)
     if (table.values?.length === 0)
       addCreditValues(table, 1)
+  }
+  loading = false
+}
+const openCreditBigNumbers = async (credit: any) => {
+  const { tables } = credit
+  loading = true
+  for (const table of tables as any[]) {
+    const result = await fetch(`${host}${table.endPoint + credit.id}/`, { method: 'GET', headers })
+      .then((result: any) => result.json())
+    const entries = Object.entries(Object.values(result).at(0) as any)
+    const data = entries
+      ?.filter(([, value]) => !Array.isArray(value))
+    table.data = Object.fromEntries(data)
   }
   loading = false
 }
@@ -246,7 +260,7 @@ const calculateCredit = async (credit: any, creditIndex: number) => {
     }
     notify({ message: 'Crédito processado com sucesso!' })
     loading = false
-    await openCredit(credit, true)
+    await openCreditBigNumbers(credit)
     await loadBigNumbers(true)
   })
 }
@@ -469,7 +483,14 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
                 >
                   <template #body="props">
                     <QTr :props="props">
-                      <QTd v-for="column in props.cols as any[]" :key="column.id" :style="(column?.isEditable) ? 'min-width: 200px' : '' ">
+                      <QTd
+                        v-for="column in props.cols as any[]"
+                        :key="column.id"
+                        :style="(column?.isEditable) && column.type !== 'boolean'
+                          ? (column?.isEditable) && column.type === 'text'
+                            ? 'min-width: 200px; width: 10%' : 'min-width: 150px; width: 10%'
+                          : '' "
+                      >
                         <div
                           class="flex justify-center items-center"
                           :class="{
@@ -551,10 +572,7 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
                   </template>
                   <template #bottom-row="props">
                     <QTr :props="props" class="bg--primary/3 color--primary font-bold">
-                      <QTd
-                        v-for="column in props.cols as any[]"
-                        :key="column.id" :style="(column?.isEditable) ? 'min-width: 200px' : '' "
-                      >
+                      <QTd v-for="column in props.cols as any[]" :key="column.id">
                         <div
                           v-if="table?.summary?.some(({ order }: any) => order === column.order)"
                           class="text-center"
@@ -580,9 +598,6 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
                     </QTr>
                   </template>
                 </QTable>
-                <!-- <div>
-                  <pre>{{ table.summary }}</pre>
-                </div> -->
               </div>
               <div class="flex gap-2 justify-between p-4 bg--primary/12 border--primary border-t-2 color--primary font-bold">
                 <div>
@@ -675,6 +690,17 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
 }
 .credit-table tr:has(.has-error) {
   background-color: hsla(var(--error,0,0%,0%),0.05)
+}
+.credit-table td.q-td {
+  padding: 8px 6px;
+  width: 0.1%;
+  white-space: nowrap;
+}
+.credit-table tr td:first-child {
+  padding-left: 16px;
+}
+.credit-table tr td:last-child {
+  padding-right: 8px;
 }
 .calculations-credits {
   background: transparent;

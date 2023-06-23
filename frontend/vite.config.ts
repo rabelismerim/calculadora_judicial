@@ -90,6 +90,7 @@ export default defineConfig({
       ],
       dts: 'src/auto-imports.d.ts',
       dirs: [
+        'src/',
         'src/composables',
         'src/stores',
         'src/services',

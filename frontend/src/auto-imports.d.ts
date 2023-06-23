@@ -134,6 +134,7 @@ declare global {
   const resolveComponent: typeof import('vue')['resolveComponent']
   const resolveRef: typeof import('@vueuse/core')['resolveRef']
   const resolveUnref: typeof import('@vueuse/core')['resolveUnref']
+  const router: typeof import('./router')['default']
   const set: typeof import('@jrnwn/utils')['set']
   const setClass: typeof import('@jrnwn/utils')['setClass']
   const setStyle: typeof import('@jrnwn/utils')['setStyle']
@@ -329,6 +330,7 @@ declare global {
   const useWindowSize: typeof import('@vueuse/core')['useWindowSize']
   const usersService: typeof import('./services/usersService')['default']
   const vResize: typeof import('./directives/vResize')['default']
+  const viteEnvD: typeof import('./vite-env.d')['default']
   const watch: typeof import('vue')['watch']
   const watchArray: typeof import('@vueuse/core')['watchArray']
   const watchAtMost: typeof import('@vueuse/core')['watchAtMost']
@@ -483,6 +485,7 @@ declare module 'vue' {
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
     readonly resolveRef: UnwrapRef<typeof import('@vueuse/core')['resolveRef']>
     readonly resolveUnref: UnwrapRef<typeof import('@vueuse/core')['resolveUnref']>
+    readonly router: UnwrapRef<typeof import('./router')['default']>
     readonly set: UnwrapRef<typeof import('@jrnwn/utils')['set']>
     readonly setClass: UnwrapRef<typeof import('@jrnwn/utils')['setClass']>
     readonly setStyle: UnwrapRef<typeof import('@jrnwn/utils')['setStyle']>
@@ -678,6 +681,7 @@ declare module 'vue' {
     readonly useWindowSize: UnwrapRef<typeof import('@vueuse/core')['useWindowSize']>
     readonly usersService: UnwrapRef<typeof import('./services/usersService')['default']>
     readonly vResize: UnwrapRef<typeof import('./directives/vResize')['default']>
+    readonly viteEnvD: UnwrapRef<typeof import('./vite-env.d')['default']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>
     readonly watchArray: UnwrapRef<typeof import('@vueuse/core')['watchArray']>
     readonly watchAtMost: UnwrapRef<typeof import('@vueuse/core')['watchAtMost']>
