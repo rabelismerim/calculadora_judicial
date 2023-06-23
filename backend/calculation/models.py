@@ -603,7 +603,7 @@ class Calculation(AbstractModel):
         count = len(classes)
         for class_dict in classes:
             total += class_dict['total_calculated']
-            total += class_dict['total_historical']
+            total_historical += class_dict['total_historical']
         return {'count_funds': count, 'count_classes': count, "total": total, "total_historical": total_historical}
 
     def get_date_rj_filing(self) -> datetime.date or None:  # B19
