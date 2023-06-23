@@ -585,20 +585,26 @@ class Calculation(AbstractModel):
         total += self.fundirrf_set.all().count()
 
         classes = [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
-                    'total_calculated': fund.get_total_summed()} for fund in
+                    'total_calculated': fund.get_total_summed(),
+                    'total_historical': fund.get_total_historical_summed(),
+                    } for fund in
                    self.funds_set.filter(classes__classe__isnull=False)]
         classes += [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
-                     'total_calculated': fund.get_total_summed()} for fund in
+                     'total_calculated': fund.get_total_summed(),
+                     'total_historical': fund.get_total_historical_summed(),} for fund in
                     self.funddocument_set.filter(classes__classe__isnull=False)]
         classes += [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
-                     'total_calculated': fund.get_total_summed()} for fund in
+                     'total_calculated': fund.get_total_summed(),
+                     'total_historical': 0} for fund in
                     self.fundirrf_set.filter(classes__classe__isnull=False)]
 
         total = 0
+        total_historical = 0
         count = len(classes)
         for class_dict in classes:
             total += class_dict['total_calculated']
-        return {'count_funds': count, 'count_classes': count, "total": total}
+            total += class_dict['total_historical']
+        return {'count_funds': count, 'count_classes': count, "total": total, "total_historical": total_historical}
 
     def get_date_rj_filing(self) -> datetime.date or None:  # B19
         """
