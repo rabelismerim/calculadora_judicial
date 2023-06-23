@@ -77,6 +77,8 @@ export default defineConfig({
             'set',
             'getListOfPaths',
             'getCookie',
+            'setCookie',
+            'deleteCookie',
             'normalizeText',
             'toSplit',
             'toCamel',
@@ -90,6 +92,7 @@ export default defineConfig({
       ],
       dts: 'src/auto-imports.d.ts',
       dirs: [
+        'src/',
         'src/composables',
         'src/stores',
         'src/services',
