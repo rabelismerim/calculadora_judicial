@@ -1,5 +1,3 @@
-import { deleteAllCookies } from '../composables/utils'
-
 const userFallback = {
   authorized: null,
   isActive: null,
@@ -33,7 +31,7 @@ const login = async () => {
 const logout = async () => {
   store.value = clone(userFallback)
   await delay(2)
-  deleteAllCookies()
+  clearAllCookies()
 }
 const user = computed(() => store.value)
 const isActive = computed(() => store.value.isActive)
