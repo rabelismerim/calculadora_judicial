@@ -297,13 +297,35 @@ export const downloadFile = (textToWrite: string, fileNameToSaveAs: string, cont
   downloadLink.click()
 }
 
-export const deleteAllCookies = () => {
-  const cookies = document.cookie.split(';')
-
-  for (let i = 0; i < cookies.length; i++) {
-    const cookie = cookies[i]
-    const eqPos = cookie.indexOf('=')
-    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie
-    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT`
+export const setCookie = (name: string, value: string, expireDays = 1) => {
+  let expires = ''
+  if (expireDays) {
+    const date = new Date()
+    date.setTime(date.getTime() + (expireDays * 24 * 60 * 60 * 1000))
+    expires = `; expires=${date.toUTCString()}`
   }
+  document.cookie = `${name}=${value || ''}${expires}; path=/`
+}
+export const getCookie = (name: string) => {
+  const nameEQ = `${name}=`
+  return document.cookie
+    .split(';')
+    .forEach((item) => {
+      while (item.charAt(0) === ' ')
+        item = item.substring(1, item.length)
+      if (item.indexOf(nameEQ) === 0)
+        return item.substring(nameEQ.length, item.length)
+    })
+}
+export const clearCookie = (name: string) => {
+  document.cookie = `${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;`
+}
+export const clearAllCookies = () => {
+  document.cookie
+    .split(';')
+    .forEach((cookie) => {
+      const eqPos = cookie.indexOf('=')
+      const name = eqPos > -1 ? cookie.slice(0, eqPos) : cookie
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT`
+    })
 }
