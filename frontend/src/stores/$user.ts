@@ -31,7 +31,7 @@ const login = async () => {
 const logout = async () => {
   store.value = clone(userFallback)
   await delay(2)
-  clearAllCookies()
+  deleteAllCookies()
 }
 const user = computed(() => store.value)
 const isActive = computed(() => store.value.isActive)
