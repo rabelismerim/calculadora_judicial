@@ -16,8 +16,8 @@ const tabFilters = [
 const headers: any = {
   'Content-type': 'application/json',
   'Accept': 'application/json',
-  // TODO: BRING TO USER PREFERENCES
   'Accept-Language': 'pt-BR,pt;q=1',
+  'X-CSRFToken': getCookie('csrftoken'),
 }
 if (import.meta.env.VITE_TOKEN)
   headers.Authorization = `Token ${import.meta.env.VITE_TOKEN}`
