@@ -317,24 +317,24 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 cnt_row=cnt_row+6
                                 sum_total = 0
                                 for item1 in plan_build:
-                                    ws['D'+str(cnt_row)]=str(item1.description).strip()
-                                    ws['E'+str(cnt_row)].alignment = Alignment(horizontal="center")
-                                    ws['E'+str(cnt_row)]=datetime.strftime(item1.data_base, "%d/%m/%Y")
-                                    ws['F'+str(cnt_row)].alignment = Alignment(horizontal="center")
-                                    ws['F'+str(cnt_row)]='Sim' if item1.summary==True else 'Não'
-                                    ws['G'+str(cnt_row)].alignment = Alignment(horizontal="center")
-                                    ws['G'+str(cnt_row)]='Sim' if item1.is_extraconcursal==True else 'Não'
-                                    ws['H'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                    ws['H'+str(cnt_row)]='{:,.2f}'.format(float(item1.historical_value)).strip().replace('.','-').replace(',','.').replace('-',',') if 'historical_value' in item1._dict.keys() else ''
-                                    ws['I'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                    ws['I'+str(cnt_row)]='{:,.5f}'.format(float(item1.monetarycorrectionintegrations.index_data_base)).strip().replace('.','-').replace(',','.').replace('-',',')
-                                    ws['J'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                    ws['J'+str(cnt_row)]='{:,.5f}'.format(float(item1.monetarycorrectionintegrations.index_recovering)).strip().replace('.','-').replace(',','.').replace('-',',')
-                                    ws['K'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                    ws['K'+str(cnt_row)]='{:,.2f}'.format(float(item1.monetarycorrectionintegrations.corrected_value)).strip().replace('.','-').replace(',','.').replace('-',',')
                                     if item1.status=='C':
+                                        ws['D'+str(cnt_row)]=str(item1.description).strip()
+                                        ws['E'+str(cnt_row)].alignment = Alignment(horizontal="center")
+                                        ws['E'+str(cnt_row)]=datetime.strftime(item1.data_base, "%d/%m/%Y")
+                                        ws['F'+str(cnt_row)].alignment = Alignment(horizontal="center")
+                                        ws['F'+str(cnt_row)]='Sim' if item1.summary==True else 'Não'
+                                        ws['G'+str(cnt_row)].alignment = Alignment(horizontal="center")
+                                        ws['G'+str(cnt_row)]='Sim' if item1.is_extraconcursal==True else 'Não'
+                                        ws['H'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                        ws['H'+str(cnt_row)]='{:,.2f}'.format(float(item1.historical_value)).strip().replace('.','-').replace(',','.').replace('-',',') if 'historical_value' in item1._dict.keys() else ''
+                                        ws['I'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                        ws['I'+str(cnt_row)]='{:,.5f}'.format(float(item1.monetarycorrectionintegrations.index_data_base)).strip().replace('.','-').replace(',','.').replace('-',',')
+                                        ws['J'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                        ws['J'+str(cnt_row)]='{:,.5f}'.format(float(item1.monetarycorrectionintegrations.index_recovering)).strip().replace('.','-').replace(',','.').replace('-',',')
+                                        ws['K'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                        ws['K'+str(cnt_row)]='{:,.2f}'.format(float(item1.monetarycorrectionintegrations.corrected_value)).strip().replace('.','-').replace(',','.').replace('-',',')
                                         sum_total += float(item1.monetarycorrectionintegrations.corrected_value)
-                                    cnt_row=cnt_row+1
+                                        cnt_row=cnt_row+1
                                 ws['D'+str(cnt_row)]="Total"
                                 ws['D'+str(cnt_row)].font=font
                                 ws['K'+str(cnt_row)]='{:,.2f}'.format(sum_total).strip()
@@ -412,23 +412,23 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 cnt_row=cnt_row+2
                                 sum_total = 0
                                 for item2 in plan_build1:
-                                    ws['D'+str(cnt_row)]=datetime.strftime(item2.data_base, "%d/%m/%Y")
-                                    ws['E'+str(cnt_row)].alignment = Alignment(horizontal="center")
-                                    ws['E'+str(cnt_row)]='Sim' if item2.summary==True else 'Não'
-                                    ws['F'+str(cnt_row)].alignment = Alignment(horizontal="center")
-                                    ws['F'+str(cnt_row)]='Sim' if item2.is_extraconcursal==True else 'Não'
-                                    ws['G'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                    ws['G'+str(cnt_row)]='{:,.2f}'.format(float(item2.historical_value)).replace('.','-').replace(',','.').replace('-',',')
-                                    value_index=item2.get_monetary_correction()
-                                    ws['H'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                    ws['H'+str(cnt_row)]='{:,.5f}'.format(float(value_index.index_data_base)).replace('.','-').replace(',','.').replace('-',',') if value_index and 'index_data_base' in value_index._dict.keys() else ''
-                                    ws['I'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                    ws['I'+str(cnt_row)]='{:,.5f}'.format(float(value_index.index_recovering)).replace('.','-').replace(',','.').replace('-',',') if value_index and 'index_recovering' in value_index._dict.keys() else ''
-                                    ws['J'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                    ws['J'+str(cnt_row)]='{:,.2f}'.format(float(str(value_index).split(' - ')[2])).replace('.','-').replace(',','.').replace('-',',')  if value_index else ''
                                     if item2.status=='C':
+                                        ws['D'+str(cnt_row)]=datetime.strftime(item2.data_base, "%d/%m/%Y")
+                                        ws['E'+str(cnt_row)].alignment = Alignment(horizontal="center")
+                                        ws['E'+str(cnt_row)]='Sim' if item2.summary==True else 'Não'
+                                        ws['F'+str(cnt_row)].alignment = Alignment(horizontal="center")
+                                        ws['F'+str(cnt_row)]='Sim' if item2.is_extraconcursal==True else 'Não'
+                                        ws['G'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                        ws['G'+str(cnt_row)]='{:,.2f}'.format(float(item2.historical_value)).replace('.','-').replace(',','.').replace('-',',')
+                                        value_index=item2.get_monetary_correction()
+                                        ws['H'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                        ws['H'+str(cnt_row)]='{:,.5f}'.format(float(value_index.index_data_base)).replace('.','-').replace(',','.').replace('-',',') if value_index and 'index_data_base' in value_index._dict.keys() else ''
+                                        ws['I'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                        ws['I'+str(cnt_row)]='{:,.5f}'.format(float(value_index.index_recovering)).replace('.','-').replace(',','.').replace('-',',') if value_index and 'index_recovering' in value_index._dict.keys() else ''
+                                        ws['J'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                        ws['J'+str(cnt_row)]='{:,.2f}'.format(float(str(value_index).split(' - ')[2])).replace('.','-').replace(',','.').replace('-',',')  if value_index else ''
                                         sum_total += float(float(str(value_index).split(' - ')[2])) if value_index else 0
-                                    cnt_row=cnt_row+1
+                                        cnt_row=cnt_row+1
                                 ws['D'+str(cnt_row)]="Total"
                                 ws['D'+str(cnt_row)].font=font
                                 ws['J'+str(cnt_row)]='{:,.2f}'.format(sum_total).strip()
