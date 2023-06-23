@@ -108,6 +108,11 @@ class Project(AbstractDescription, AbstractDateRecovering):
             Sum('total'))['total__sum']
         return total if total else 0
 
+    def total_historical_sum_creditors(self) -> float:
+        total = Creditor.objects.filter(recovering__project=self).select_related('recovering__project').aggregate(
+            Sum('total_historical'))['total_historical__sum']
+        return total if total else 0
+
     def total_creditor(self):
         return Creditor.objects.filter(recovering__project=self).count()
 

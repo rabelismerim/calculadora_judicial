@@ -20,7 +20,7 @@ from projects.models import Project
 
 
 class ProjectModelAdmin(admin.ModelAdmin):
-    readonly_fields = ('total_classes_creditor',)
+    readonly_fields = ('total_classes_creditor', 'total_historical_sum_creditors', 'total_sum_creditors')
 
 
 admin.site.register(Project, ProjectModelAdmin)

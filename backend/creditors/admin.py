@@ -18,4 +18,9 @@ admin.site.register(Creditor)
 from django.contrib import admin
 from creditors.models import Creditor
 
-admin.site.register(Creditor)
+
+class CreditorModelAdmin(admin.ModelAdmin):
+    list_display = ('total', 'total_historical')
+
+
+admin.site.register(Creditor, CreditorModelAdmin)
