@@ -11,6 +11,27 @@ from datetime import datetime, time
 from utils import _
 
 
+class AttrDict(dict):
+    """
+    A subclass of dict that allows its content to be accessed as attributes.
+
+    Methods:
+        __getattr__(attr): Returns the value of an attribute. If it doesn't exist, raises an AttributeError.
+        __setattr__(attr, value): Sets the value of an attribute.
+    """
+
+    def __getattr__(self, attr):
+        return self[attr]
+
+    def __setattr__(self, attr, value):
+        value = str(value)
+        if value.isnumeric() or value == '0':
+            value = int(value)
+        else:
+            value = value
+        self[attr] = value
+
+
 class SchedulerCommand(BaseCommand):
     """
     A class to create and manage scheduled jobs using BackgroundScheduler from the apscheduler library.
@@ -77,8 +98,9 @@ class SchedulerCommand(BaseCommand):
             payload = {'hour': at_time.hour, 'minute': at_time.minute, 'day': at_time.day, 'month': at_time.month,
                        'second': at_time.second, 'year': at_time.year}
         try:
-            self.scheduler.add_job(func, executor='default', trigger=CronTrigger(**payload), id=job_id, job_id=job_id,
-                                   replace_existing=True)
+            return self.scheduler.add_job(func, executor='default', trigger=CronTrigger(**payload), id=job_id,
+                                          job_id=job_id,
+                                          replace_existing=True)
         except OperationalError:
             pass
 
@@ -98,7 +120,7 @@ class SchedulerCommand(BaseCommand):
             To schedule a job to run once at 2022-01-01 00:00:00:
             scheduler_command.every_day('job_id_2', my_func, at_time=datetime(2022, 1, 1, 0, 0, 0))
         """
-        self.__handle('date', job_id, func, at_time=at_time)
+        return self.__handle('date', job_id, func, at_time=at_time)
 
     def every_day(self, job_id, func, days='*', at_time=None):
         """
@@ -119,7 +141,7 @@ class SchedulerCommand(BaseCommand):
             To schedule a job to run in days 12 and 14, at 12:30:
             scheduler_command.every_day('job_id_2', my_func, days='12,14', at_time=time(hour=12, minute=30))
         """
-        self.__handle('day', job_id, func, days=days, at_time=at_time)
+        return self.__handle('day', job_id, func, days=days, at_time=at_time)
 
     def every_week(self, job_id, func, day_of_week='*', at_time=None):
         """
@@ -140,7 +162,7 @@ class SchedulerCommand(BaseCommand):
             To schedule a job to run every Tuesday and Friday at 5:00:
             scheduler_command.every_week('job_id_3', my_func, day_of_week='2,5', at_time=time(hour=5, minute=0))
         """
-        self.__handle('week', job_id, func, day_of_week=str(day_of_week), at_time=at_time)
+        return self.__handle('week', job_id, func, day_of_week=str(day_of_week), at_time=at_time)
 
     def every_day_in_month(self, job_id, func, day_of_month='1', at_time=None):
         """
@@ -161,7 +183,7 @@ class SchedulerCommand(BaseCommand):
             To schedule a job to run on the 15th day of each month at 8:30:
             scheduler_command.every_day_in_month('job_id_4', my_func, day_of_month='15', at_time=time(hour=8, minute=30))
         """
-        self.__handle('month', job_id, func, day_of_month=day_of_month, at_time=at_time)
+        return self.__handle('month', job_id, func, day_of_month=day_of_month, at_time=at_time)
 
     def every_month(self, job_id, func, day_of_month='1', months='*', at_time=None):
         """
@@ -186,12 +208,100 @@ class SchedulerCommand(BaseCommand):
             To schedule a task to run on the 15th of the 7th and 8th month:
             scheduler_command.every_day_in_month('job_id_4', my_func, day_of_month='15', months='7, 8')
         """
-        self.__handle('months', job_id, func, day_of_month=day_of_month, months=months, at_time=at_time)
+        return self.__handle('months', job_id, func, day_of_month=day_of_month, months=months, at_time=at_time)
 
     def remove_job(self, job_id):
         """Removes a specific job by ending its execution schedule"""
         try:
-            self.scheduler.remove_job(str(job_id))
+            return self.scheduler.remove_job(str(job_id))
+        except JobLookupError:
+            pass
+
+    def get_trigger_description(self, job) -> str:
+        """
+        Generate a human-readable description of a job's trigger properties.
+
+            This method takes a `job` object as input and generates a string describing the properties of its
+            associated CronTrigger object.
+
+        Args:
+            job: A job object containing a CronTrigger object.
+
+        Returns:
+            A string describing the properties of the CronTrigger object in a human-readable way.
+        """
+        cron_trigger = job.trigger.fields
+        new_dict = {}
+        for i in range(len(cron_trigger)):
+            new_dict[cron_trigger[i].name] = str(cron_trigger[i])
+
+        new_dict = AttrDict(new_dict)
+        description = ''
+        if new_dict.day == '*' and new_dict.week == '*' and new_dict.day_of_week == '*':
+            description += "todos os dias"
+        elif new_dict.month == '*' and new_dict.day == '1' and new_dict.week == '*' and new_dict.day_of_week == '*':
+            description += "todo mês"
+        elif new_dict.week != '*' and new_dict.day_of_week != '*':
+            description += "toda semana"
+        elif new_dict.week != '*' and new_dict.day_of_week != '*':
+            description += "toda semana"
+        elif new_dict.year == '*' and new_dict.month != '*' and new_dict.day != '*' and new_dict.week == '*' and new_dict.day_of_week == '*':
+            description += f"todo mês {new_dict.month},"
+        else:
+            description += "todo"
+
+        if new_dict.day_of_week != '*':
+            week_days = ["domingo", "segunda-feira", "terça-feira", "quarta-feira", "quinta-feira", "sexta-feira",
+                         "sábado"]
+
+            days = new_dict.day_of_week.split(",")
+            weekday_names = [week_days[int(day)] for day in days if day.isdigit()]
+            weekday_str = " ".join(weekday_names)
+            description += f" dias da semana: {weekday_str}"
+
+        if new_dict.day != '*' and new_dict.day_of_week == '*':
+            description += f" {'dias' if len(new_dict.day.split(',')) > 1 else 'dia'} {new_dict.day}"
+
+        if int(new_dict.hour) == 0 and int(new_dict.minute) == 0 and int(new_dict.second) == 0:
+            description += f" à meia-noite"
+        else:
+            if int(new_dict.hour) < 10:
+                description += f" às 0{new_dict.hour}:"
+            else:
+                description += f" às {new_dict.hour}:"
+
+            if int(new_dict.minute) < 10:
+                description += f"0{new_dict.minute}"
+            else:
+                description += f"{new_dict.minute}"
+
+            if int(new_dict.hour) < 12:
+                description += "AM"
+            else:
+                description += "PM"
+        return description
+
+    def get_job(self, job_id):
+        """Get a specific job by ending its execution schedule"""
+        job = self.scheduler.get_job(str(job_id))
+
+        if job:
+            new_job = job.__getstate__()
+            new_job['description'] = f"({self.get_trigger_description(job)})"
+            job = AttrDict(new_job)
+        return job
+
+    def pause_job(self, job_id):
+        """Pause a specific job by ending its execution schedule"""
+        try:
+            return self.scheduler.pause_job(str(job_id))
+        except JobLookupError:
+            pass
+
+    def resume_job(self, job_id):
+        """Resume a specific job by ending its execution schedule"""
+        try:
+            return self.scheduler.resume_job(str(job_id))
         except JobLookupError:
             pass
 

@@ -30,14 +30,14 @@ const filteredItems = computed(() => {
   if (props.tab === 'all')
     return props.items
   return props.items
-    .filter(({ status }) => status?.toLowerCase() === props.tab)
+    .filter(({ groups }: any) => groups?.[0]?.name?.toLowerCase()?.includes(props.tab))
 })
 
 const filters = [
   { label: 'Todos', value: 'all' },
-  { label: 'Administrador', value: 'd' },
-  { label: 'Gestor', value: 'c' },
-  { label: 'Consultor', value: 'p' },
+  { label: 'Administrador', value: 'admin' },
+  { label: 'Gestor', value: 'gestor' },
+  { label: 'Consultor', value: 'consultor' },
 ]
 const statusColors: any = {
   true: '#86bc25', // Ativo

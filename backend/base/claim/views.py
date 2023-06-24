@@ -25,7 +25,7 @@ class ClaimCreditorApi(AbstractViewApi):
     serializer_class = ClaimCreditorSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = ClaimCreditor
-    query_params = []
+    
     http_method_names = ['post']
     docs = docs.copy()
 
@@ -56,7 +56,7 @@ class ClaimCreditorUpdateApi(AbstractViewApi):
     serializer_class = ClaimCreditorUpdateSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = ClaimCreditor
-    query_params = []
+    
     http_method_names = ['put', 'delete']
     docs = docs.copy()
     docs['delete'] = _("""Delete a specific Claim Creditor to the ID passed by the url

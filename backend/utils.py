@@ -2,6 +2,9 @@
 import datetime
 import secrets
 import logging
+
+from unidecode import unidecode
+
 from config import settings
 from django.contrib.auth import get_user_model as md
 from django.utils.translation import gettext_lazy
@@ -48,10 +51,34 @@ def days360(start_date, end_date) -> int:
 
 
 def _(text):
+    """
+    Helper function for creating translated docstrings.
+
+    This function takes a string as input and returns it wrapped in a gettext_lazy() call.
+    The purpose of this function is to support i18n by allowing docstrings to be translated into different languages.
+
+    Args:
+        text: A string to be translated.
+
+    Returns:
+        A lazy translation object containing the translated string.
+    """
     return gettext_lazy(text.lstrip())
 
 
 def doc(docstring):
+    """
+    Decorator function for adding docstrings to functions.
+
+    This function takes a docstring as input and returns a decorator function.
+    The decorator function takes a function as input and sets its __doc__ attribute to the docstring passed to the doc function.
+
+    Args:
+        docstring: A docstring to be added to a function.
+
+    Returns:
+        A decorator function that adds the input docstring to the decorated function.
+    """
     def decorate(fn):
         fn.__doc__ = _(docstring.lstrip())
         return fn
@@ -59,7 +86,35 @@ def doc(docstring):
     return decorate
 
 
+def parse_job_id(index):
+    """
+    Parse a job ID from an index.
+
+    This function takes an index as input and cleans it up to create a unique job ID.
+    It removes any whitespace, replaces spaces with underscores, converts the text to lowercase and removes any diacritical marks.
+
+    Args:
+        index: A string used to generate a job ID.
+
+    Returns:
+        A cleaned up string that can be used as a job ID.
+    """
+    if not index:
+        return ''
+    return unidecode(index.strip()).replace(' ', '_').lower()
+
+
 def log_info(*args):
+    """
+    Log info messages to console and file.
+
+    This function logs info messages to both a file and the console.
+    The format of the log messages is set using the LOG_FORMAT setting in Django.
+    The level of logging is set using the LOG_LEVEL setting.
+
+    Args:
+        *args: Any number of arguments to be logged as info messages.
+    """
     fmt = getattr(settings, 'LOG_FORMAT', None)
     lvl = getattr(settings, 'LOG_LEVEL', logging.DEBUG)
 

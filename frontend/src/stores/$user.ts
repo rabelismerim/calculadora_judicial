@@ -1,21 +1,18 @@
-import { deleteAllCookies } from '../composables/utils'
-
 const userFallback = {
   authorized: null,
   isActive: null,
   name: '',
   fullName: '',
-  picture: '',
+  pictureUrl: '',
   email: '',
   groups: [] as any[],
   permissions: [] as string[],
   projects: [] as string[],
 }
 
-const store = useStorage('deloitte-user', { ...userFallback }, sessionStorage)
+const store = useStorage('deloitte-user', clone(userFallback), sessionStorage)
 
 const login = async () => {
-  const router = useRouter()
   try {
     const user = await usersService.getMyProfile()
 
@@ -32,7 +29,7 @@ const login = async () => {
   }
 }
 const logout = async () => {
-  store.value = { ...userFallback }
+  store.value = clone(userFallback)
   await delay(2)
   deleteAllCookies()
 }

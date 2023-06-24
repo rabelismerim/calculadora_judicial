@@ -8,6 +8,8 @@ with fields for a Data base date, historical value, and a foreign key to Funds.
 StatementFunds class extends AbstractStatement to represent a statement related to funds.
 StatementIntegrations extends AbstractStatement and includes a description field.
 """
+import datetime
+
 from django.db import models
 from django.db.models import FloatField
 from django.utils.translation import gettext_lazy as _
@@ -107,6 +109,10 @@ class AbstractStatus(AbstractModel):
         """Sets the status of the calculation to 'B'. Calculation in exclusion"""
         self._set_status('B')
 
+    def set_calculation_registered(self):
+        """Sets the status of the calculation to 'I'. Calculation registered"""
+        self._set_status('I')
+
     @staticmethod
     def _check_status_choice(value: str):
         """Checks if the status value provided is valid"""
@@ -177,6 +183,13 @@ class AbstractStatement(AbstractStatus):
             statement.set_error_rj()
             return None
 
+        if date_rj and data_base >= date_rj:
+            if self.is_extraconcursal is False:
+                raise serializers.ValidationError(
+                    [_('This is an extra-bankruptcy budget, it is necessary to flag the extra-bankruptcy budget')])
+            statement.set_calculation_registered()
+            return None
+
         rate_data_base = rate.get_rate_by_date(data_base)
         rate_date_rj = rate.get_rate_by_date(date_rj)
 
@@ -221,14 +234,22 @@ class AbstractStatement(AbstractStatus):
         return f'{self.data_base} - {self.historical_value}'
 
     def save(self, *args, **kwargs):
-        get_date_rj_filing = self.fund.calculation.get_date_rj_filing()
-        if get_date_rj_filing and self.data_base >= get_date_rj_filing:
+        date_rj_request = self.fund.calculation.get_date_rj_request()
+        """=IF($B$5<>"TST";"ERRO";VLOOKUP(DATE(YEAR($B$4);MONTH($B$4);DAY($B$4));TST!$A:$B;2;FALSE))"""
+
+        data_base = self.get_data_base()
+        if date_rj_request and data_base >= date_rj_request:
             if self.is_extraconcursal is False:
                 raise serializers.ValidationError(
                     [_('This is an extra-bankruptcy budget, it is necessary to flag the extra-bankruptcy budget')])
             self.status = 'I'
+            self.delete_monetary_correction()
+            return
 
         super(AbstractStatement, self).save(*args, **kwargs)
+
+    def delete_monetary_correction(self):
+        pass
 
 
 class AbstractMonetaryCorrection(AbstractModel):

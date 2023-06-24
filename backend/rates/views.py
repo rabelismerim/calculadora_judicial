@@ -1,15 +1,77 @@
 from datetime import date
 
 from dateutil.relativedelta import relativedelta
+from rest_framework.pagination import LimitOffsetPagination
 
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 
 from rest_framework import permissions, serializers, status
 from core.permission.views import CheckHasPermission
-from rates.models import Rate, RateFile, Template
-from rates.schemas import RateFileSchema, RateSchema, TemplateSchema, TemplateListSchema, RateListSchema
+from rates.models import Rate, RateFile, Template, Accumulated, Period, RateValues
+from rates.schemas import RateFileSchema, RateSchema, TemplateSchema, TemplateListSchema, RateListSchema, \
+    RateUpdateSchema, RateValuesUpdateSchema, RateValuesCreateSchema
 from utils import _, doc
+
+query_params = [
+    {
+        "name": "rate",
+        "field": "index__icontains",
+        "in": "query",
+        "required": False,
+        "description": str(_("Rate")),
+        "schema": {"type": "string"}
+    },
+    {
+        "name": "description",
+        "field": "description__icontains",
+        "in": "query",
+        "required": False,
+        "description": str(_("Description")),
+        "schema": {"type": "string"}
+    },
+    {
+        "name": "is_active",
+        "field": "is_active",
+        "in": "query",
+        "required": False,
+        "description": str(_("Is active")),
+        "schema": {"type": "bool"}
+    },
+    {
+        "name": "is_auto_update",
+        "field": "is_auto_update",
+        "in": "query",
+        "required": False,
+        "description": str(_("Is auto update")),
+        "schema": {"type": "bool"}
+    },
+    {
+        "name": "is_per_day",
+        "field": "is_per_day",
+        "in": "query",
+        "required": False,
+        "description": str(_("Is per day")),
+        "schema": {"type": "bool"}
+    },
+    {
+        "name": "source",
+        "field": "source__description",
+        "in": "query",
+        "required": False,
+        "description": str(_("Source")),
+        "schema": {"type": "string"}
+    },
+    {
+        "name": "url",
+        "field": "url__description",
+        "in": "query",
+        "required": False,
+        "description": str(_("Source url")),
+        "schema": {"type": "string"}
+    },
+
+]
 
 
 class AbstractRateApi(AbstractViewApi):
@@ -38,16 +100,7 @@ class RateApi(AbstractRateApi):
         'post': RateSchema,
     }
 
-    query_params = [
-        {
-            "name": "rate",
-            "field": "index__icontains",
-            "in": "query",
-            "required": False,
-            "description": str(_("Rate")),
-            "schema": {"type": "string"}
-        }
-    ]
+    query_params = query_params
 
     @doc(_("""Saves an index according to its name and values"""))
     def post(self, request, *args, **kwargs):
@@ -57,9 +110,117 @@ class RateApi(AbstractRateApi):
         return JsonResponse({'rate': self.serializer_class(new_rate, many=False).data}, status=status.HTTP_201_CREATED)
 
 
+class RateAdminApi(AbstractViewApi):
+    """HTTP methods for Rate"""
+    http_method_names = ['get']
+    serializer_class = RateListSchema
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    model = Rate
+    operation_id_base = 'Rate List Admin'
+    docs = {
+        'init': _("""Represents the indices that can be applied to rates to calculate debt updates.
+            """),
+        'get': _("""Returns the rate and its accumulated values, period and date""")
+    }
+
+    pagination_class = LimitOffsetPagination
+    page_size = 30
+
+    query_params = query_params
+
+
 class RateDetailApi(AbstractRateApi):
     """HTTP methods for Rate detail"""
-    http_method_names = ['get']
+    http_method_names = ['get', 'put']
+    layout_serializers = {
+        'default': RateSchema,
+        'get': RateSchema,
+        'put': RateUpdateSchema,
+    }
+
+
+class RateValueDetailApi(AbstractRateApi):
+    """HTTP methods for Rate detail"""
+    http_method_names = ['post']
+    serializer_class = RateValuesCreateSchema
+    model = RateValues
+
+    @doc(_("""Saves an rate date according to its name and values"""))
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        new_rate = serializer.validated_data
+        return JsonResponse({'rate': self.serializer_class(new_rate, many=False).data}, status=status.HTTP_201_CREATED)
+
+
+class RateValueDetailUpdateApi(AbstractRateApi):
+    """
+    A view for updating rate values.
+
+    API endpoint that allows updating of rate values with HTTP PUT requests. Accepts request data in JSON format.
+
+    Methods:
+        put(self, request, *args, **kwargs): Method for handling PUT requests to the view.
+    """
+    http_method_names = ['get', 'put']
+    model = RateValues
+    layout_serializers = {
+        'default': RateValuesCreateSchema,
+        'get': RateValuesCreateSchema,
+        'put': RateValuesUpdateSchema,
+    }
+
+    @doc(_("""The put method in the given code snippet updates rate values stored in the database. Specifically, 
+    it updates the accumulated and period fields of a RateValues model object. If the accumulated 
+    or period fields have a value of None, the respective object attribute will be deleted if it exists. If 
+    the accumulated or period field has a non-null value, the corresponding object attribute will be updated with the 
+    new value. If the attribute does not exist, a new Accumulated or Period object will be created with the new value 
+    and associated with the appropriate RateValues object. For example, if the request data contains { "date": 
+    "2021-08-26", "accumulated": 5.0 }, the accumulated field of the RateValues object will 
+    be updated to 5.0. Similarly, if the request data contains { "date": "2021-08-26", "period": 3.0 }, the period 
+    field of the RateValues object will be updated to 3.0. It's important to note that the 
+    code checks for uniqueness of the date field before updating the RateValues object, so that duplicate entries are 
+    not created in the database. If there is already a RateValues object with the same date in the database, 
+    the method will raise a serializers.ValidationError with a message indicating that the rate date is already 
+    registered."""))
+    def put(self, request, *args, **kwargs):
+        serializer_class = self.get_serializer_class()
+        serializer = serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        update_rate = serializer.validated_data
+
+        accumulated = update_rate.pop('accumulated')
+        period = update_rate.pop('period')
+
+        rate_date = update_rate.get('date')
+        rate_values_id = kwargs.get('id')
+        update_rate_values = self.model.objects.filter(id=rate_values_id).first()
+
+        if update_rate_values.rate.ratevalues_set.filter(date=rate_date).exclude(id=rate_values_id).exists():
+            raise serializers.ValidationError([_('Rate date already registered')])
+        has_accumulated = accumulated in [None, False]
+        has_period = period in [None, False]
+        if has_accumulated is False:
+            if hasattr(update_rate_values, 'accumulated'):
+                update_rate_values.accumulated.value = accumulated
+                update_rate_values.accumulated.save()
+            else:
+                Accumulated.objects.create(rate=update_rate_values, value=accumulated)
+        elif accumulated is None and hasattr(update_rate_values, 'accumulated'):
+            update_rate_values.accumulated.delete()
+            update_rate_values.accumulated = None
+        if has_period is False:
+            if hasattr(update_rate_values, 'period'):
+                update_rate_values.period.value = period
+                update_rate_values.period.save()
+            else:
+                Period.objects.create(rate=update_rate_values, value=period)
+        elif period is None and hasattr(update_rate_values, 'period'):
+            update_rate_values.period.delete()
+            update_rate_values.period = None
+        update_rate_values.dict_update(**update_rate)
+        return JsonResponse({'rate': serializer_class(update_rate_values, many=False).data},
+                            status=status.HTTP_201_CREATED)
 
 
 class RateFileApi(AbstractViewApi):
@@ -154,8 +315,6 @@ class TemplateDetailApi(AbstractViewApi):
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Template
 
-    query_params = []
-
     docs = {
         'get': _("""Example of how templates should look for each selected rate type
         Returns a detail of template with their id, name, tables and fields in tables""")
@@ -168,8 +327,6 @@ class TemplateTestEndPointApi(AbstractViewApi):
     serializer_class = TemplateSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Template
-
-    query_params = []
 
     docs = {
         'get': _("""Example of how templates should look for each selected rate type

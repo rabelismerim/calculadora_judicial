@@ -57,7 +57,7 @@ QUERY_DASHBOARD = [
 
 
 class Query:
-    query_params = []
+    
 
     @staticmethod
     def __parse_date(date_string):

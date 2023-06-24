@@ -3,12 +3,10 @@ const getPermissions = () => api
   .then((result: any) => result?.user || {})
   .then((user: any = {}) => {
     const {
-      userpicture: picture,
       userPermissions: permissions,
     } = user
     return {
       ...user,
-      picture,
       permissions: permissions ? permissions.map(({ codename }: any) => codename) : [],
     }
   })
@@ -32,10 +30,7 @@ const getMyProfile = () => api
 
 const getUsers = () => api
   .get('/users/')
-  .then((result: any) => result?.users?.map((user: any) => ({
-    ...user,
-    picture: user.userpicture,
-  })) || [])
+  .then((result: any) => result?.users || [])
 
 const getGroups = () => api
   .get('/groups/')

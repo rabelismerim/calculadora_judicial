@@ -19,8 +19,6 @@ class NoticeApi(AbstractViewApi):
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Notice
 
-    query_params = []
-
     docs = {
         'init': _("""NoticeAJ gathers information about the creditor's process. It contains data relevant to the 
         process, such as what was requested by the creditor, how much was calculated due, the dates and amounts."""),
@@ -47,8 +45,6 @@ class NoticeUpdateApi(AbstractViewApi):
     serializer_class = NoticeUpdateSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Notice
-
-    query_params = []
 
     docs = {
         'init': _("""NoticeAJ gathers information about the creditor's process. It contains data relevant to the 
@@ -93,8 +89,6 @@ class NoticeRecoveringApi(AbstractViewApi):
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = NoticeRecovering
 
-    query_params = []
-
     docs = {
         'init': _("""NoticeRecovering gathers information about the creditor's process. It contains data relevant to the 
             process, such as what was requested by the creditor, how much was calculated due, the dates and amounts""")
@@ -121,14 +115,12 @@ class NoticeRecoveringUpdateApi(AbstractViewApi):
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = NoticeRecovering
 
-    query_params = []
-
     docs = {
         'init': _("""NoticeAJ gathers information about the creditor's process. It contains data relevant to the 
                 process, such as what was requested by the creditor, how much was calculated due, the dates and 
                 amounts.
                 """),
-        'delete':_("""Delete a specific NoticeRecovering to the ID passed by the url
+        'delete': _("""Delete a specific NoticeRecovering to the ID passed by the url
             Returns:
                 JsonResponse: A JSON response containing the ok message.
             """)

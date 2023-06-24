@@ -57,6 +57,14 @@ class FundDocument(AbstractFunds):
             total += self.totalvaluesdocument.total_corrected
         return total
 
+    def get_total_historical_summed(self):
+        """Get the corrected value of the sum of calculated sums"""
+        total: float = 0
+        if hasattr(self, 'totalvaluesdocument'):
+            total += self.totalvaluesdocument.total_historical
+        return total
+
+
 class StatementDocument(AbstractStatement):
     """
     A model class that represents a financial statement for a fund.
