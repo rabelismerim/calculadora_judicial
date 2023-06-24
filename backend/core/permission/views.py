@@ -81,6 +81,8 @@ class PermissionsName:
     """
     _layout_perm = 'can_change_{}_to_{}'
 
+    # TODO: Review permissions T&R
+    # TODO: Block the edition of funds from what moment? step(A, B etc)
     executor = [
         (_layout_perm.format('r', 's'), _('Can Change failed Calculation to calculate'), 'calculation'),
         (_layout_perm.format('s', 'c'), _('Can Execute Calculation to Review'), 'calculation')
@@ -88,21 +90,23 @@ class PermissionsName:
 
     reviewer = [
         (_layout_perm.format('c', 'e'), _('Can Reviewer Calculation to Approve'), 'calculation'),
-        (_layout_perm.format('c', 'b'), _('Can Reviewer Calculation to Approve special'), 'calculation'),
         (_layout_perm.format('c', 's'), _('Can Reviewer Calculation to Calculate'), 'calculation'),
-        (_layout_perm.format('c', 'r'), _('Can Reviewer Calculation to Failed'), 'calculation'),
+        # (_layout_perm.format('c', 'r'), _('Can Reviewer Calculation to Failed'), 'calculation'), # Ver com T&R(Excluir, deletar, arquivar)
     ]
 
     approve = [
         (_layout_perm.format('e', 'a'), _('Can Approve Revised Calculation'), 'calculation'),
         (_layout_perm.format('e', 'c'), _('Can Disapprove Revised Calculation to Review'), 'calculation'),
-        (_layout_perm.format('e', 'r'), _('Can Disapprove Revised Calculation to Failed'), 'calculation')
+        # (_layout_perm.format('e', 'r'), _('Can Disapprove Revised Calculation to Failed'), 'calculation'),
+
+        (_layout_perm.format('e', 'b'), _('Can Approve Revised Calculation to Approve special'), 'calculation'),
+        (_layout_perm.format('b', 'b'), _('Can Edit Approve Special Calculation to Approve special'), 'calculation'), # Edit list Special Approvers
     ]
 
     special_approve = [
         (_layout_perm.format('b', 'a'), _('Can Approve Special Calculation'), 'calculation'),
-        (_layout_perm.format('b', 'c'), _('Can Disapprove Special Calculation to Review'), 'calculation'),
-        (_layout_perm.format('b', 'r'), _('Can Disapprove Special Calculation to Failed'), 'calculation')
+        (_layout_perm.format('b', 'e'), _('Can Disapprove Special Calculation to Approve'), 'calculation'),
+        # (_layout_perm.format('b', 'r'), _('Can Disapprove Special Calculation to Failed'), 'calculation')
     ]
 
     @staticmethod
@@ -337,6 +341,7 @@ class CanChangeStep(BasePermission):
         user doesn't have permission, it raises a ValidationError with a message indicating the current and next
         steps that cannot be changed.
         """
+
         user = request.user
         calculation_id = view.kwargs.get('id', None)
         if calculation_id:
@@ -351,10 +356,18 @@ class CanChangeStep(BasePermission):
                 text = _('Unable to change status from {} to {}').format(self.__get_choice_step(current_step),
                                                                          self.__get_choice_step(next_step))
                 raise serializers.ValidationError([text])
-            return ProjectUser.objects.filter(user=user, groups__permissions__codename=codename,
-                                              projectengagement__project__recovering__creditor__calculation__id=
-                                              calculation_id).exists()
-        return IS_LOCALHOST
+
+            has_perm_user = ProjectUser.objects.filter(user=user, groups__permissions__codename=codename,
+                                                       projectengagement__project__recovering__creditor__calculation__id=
+                                                       calculation_id).exists()
+            if not has_perm_user:
+                return False
+
+            return True
+
+        if request.path == SWAGGER_URL:
+            return True
+        return False
 
 
 class CheckPermissions(BasePermission):

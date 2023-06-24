@@ -81,6 +81,7 @@ class StatementSchema(AbstractDescriptionSchema):
     lawyer = TotalLawyerSchema(read_only=True, source='totallawyer')
     calculation_id = serializers.UUIDField(read_only=True)
     conclusion_display = serializers.CharField(source='get_conclusion_display')
+    total = serializers.CharField(source='total_conclusion', read_only=True)
 
     class Meta:
         model = Statement

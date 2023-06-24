@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import { autoAnimatePlugin } from '@formkit/auto-animate/vue'
-import { Quasar, Ripple } from 'quasar'
+import { Dialog, Quasar } from 'quasar'
 import quasarLang from 'quasar/lang/pt-BR'
 import quasarIconSet from 'quasar/icon-set/material-icons-outlined'
 import router from './router'
@@ -15,11 +15,13 @@ import 'uno.css'
 const app = createApp(App)
 
 app.use(Quasar, {
-  plugins: {}, // import Quasar plugins and add here
+  plugins: {
+    Dialog,
+  }, // import Quasar plugins and add here
   lang: quasarLang,
   iconSet: quasarIconSet,
 })
-app.directive('ripple', Ripple)
+app.directive('resize', vResize)
 app.use(router)
 app.use(autoAnimatePlugin)
 

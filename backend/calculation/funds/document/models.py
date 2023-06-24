@@ -50,6 +50,20 @@ class FundDocument(AbstractFunds):
         total_funds = self.get_total_funds()
         total_funds.set_total()
 
+    def get_total_summed(self):
+        """Get the corrected value of the sum of calculated sums"""
+        total: float = 0
+        if hasattr(self, 'totalvaluesdocument'):
+            total += self.totalvaluesdocument.total_corrected
+        return total
+
+    def get_total_historical_summed(self):
+        """Get the corrected value of the sum of calculated sums"""
+        total: float = 0
+        if hasattr(self, 'totalvaluesdocument'):
+            total += self.totalvaluesdocument.total_historical
+        return total
+
 
 class StatementDocument(AbstractStatement):
     """
@@ -365,3 +379,4 @@ def save_statement_documents(sender, instance, **kwargs) -> None:
 
     ExtractFormula(instance, instance.fund.calculation, statement_methods).get_methods(
         [StatementDocument, MonetaryCorrectionDocument, Rate, TotalValuesDocument, save_statement_documents])
+    instance.fund.calculation.invalidate_calculation()

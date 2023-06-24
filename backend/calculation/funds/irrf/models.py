@@ -15,6 +15,8 @@ from calculation.funds.abstract.models import AbstractFunds, AbstractStatus
 from core.abstract.models import AbstractModel
 from rates.models import get_aliquot_by_tax, Rate
 
+CHOICES_STATUS_IRRF = (('I', _('Registered')),)
+
 
 class FundIRRF(AbstractFunds):
     """
@@ -70,6 +72,12 @@ class FundIRRF(AbstractFunds):
         self.__delete_total_funds()
         super(FundIRRF, self).delete(*args, **kwargs)
 
+    def get_total_summed(self):
+        total: float = 0
+        if hasattr(self, 'totalvaluesirrf'):
+            total += self.totalvaluesirrf.total_corrected
+        return total
+
 
 class StatementIRRF(AbstractModel):
     """
@@ -89,7 +97,9 @@ class StatementIRRF(AbstractModel):
     fund_name = models.CharField(_('Fund'), max_length=150)
     taxable_amounts = models.FloatField(_('Taxable amounts'))
     is_extraconcursal = models.BooleanField(_('Is extraconcursal'), default=False)
-    
+
+    status = models.CharField(_('Calculation status'), max_length=1, choices=CHOICES_STATUS_IRRF, default='I')
+
     def __str__(self):
         return f'{self.fund_name} | {self.fund} | {self.taxable_amounts}'
 
@@ -261,3 +271,4 @@ def save_statement_irrf(sender, instance, **kwargs) -> None:
 
     ExtractFormula(instance, instance.fund.calculation, statement_methods).get_methods(
         [StatementIRRF, FundIRRF, TotalValuesIRRF, Rate, save_statement_irrf])
+    instance.fund.calculation.invalidate_calculation()

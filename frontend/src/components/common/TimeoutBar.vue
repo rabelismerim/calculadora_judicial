@@ -6,7 +6,7 @@ const props = defineProps({
   },
 })
 
-const bar = ref(null)
+const bar = ref(null as any)
 
 watchEffect(() => {
   if (bar.value === null)

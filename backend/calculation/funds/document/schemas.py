@@ -114,31 +114,13 @@ class TotalValuesDocumentSchema(AbstractDescriptionSchema):
         fund_id (serializers.UUIDField): The UUID of the related fund.
     """
     fund_id = serializers.UUIDField(read_only=True)
-    statement = StatementDocumentSchema(
-        many=False, source='fund.statementdocument', exclude=('fund_id',), required=False)
+    data = StatementDocumentSchema(many=False, source='fund.statementdocument', exclude=('fund_id',), required=False)
     total_days = serializers.IntegerField(read_only=True, source='fund.statementdocument.days')
 
     class Meta:
         model = TotalValuesDocument
-        exclude = ('fund',)
-
-
-class StatementDocumentSchema(AbstractDescriptionSchema):
-    """
-    A schema for serializing and deserializing StatementDocuments instances.
-
-    Attributes:
-        fund_id (serializers.UUIDField): The UUID of the related fund.
-    """
-    monetary_correction = MonetaryCorrectionDocumentSchema(read_only=True, source='monetarycorrectiondocument')
-
-    fund_id = serializers.UUIDField()
-    status_display = serializers.CharField(source='get_status_display', read_only=True)
-
-    class Meta:
-        model = StatementDocument
-        exclude = ('fund',)
-        read_only_fields = ('status', 'status_display')
+        # exclude = ('id',)
+        fields = '__all__'
 
 
 class FundDocumentSchema(AbstractClassesFundsSchema):
@@ -152,9 +134,9 @@ class FundDocumentSchema(AbstractClassesFundsSchema):
     deserializing StatementIRRF instances.
     """
     calculation_id = serializers.UUIDField()
-    total = TotalValuesDocumentSchema(source='totalvaluesdocument', read_only=True, exclude=('fund_id','statement'))
+    total = TotalValuesDocumentSchema(source='totalvaluesdocument', read_only=True, exclude=('fund_id', 'statement'))
     statement = StatementDocumentSchema(source='statementdocument', exclude=('fund_id', 'status'), read_only=True)
-
+    commit = serializers.BooleanField(write_only=True, required=False)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         statement_serializer = StatementDocumentSchema(exclude=('fund_id', 'status'))
@@ -190,14 +172,42 @@ class FundDocumentSchema(AbstractClassesFundsSchema):
         object with the given name and calculation_id already exists.
         """
         name = data.get('name')
+        data_base = data.get('data_base')
+        number = data.get('number')
+        historical_value = data.get('historical_value')
         calculation_id = data.get('calculation_id')
 
-        if FundDocument.objects.filter(calculation_id=calculation_id, name=name).exists():
+        if FundDocument.objects.filter(calculation_id=calculation_id, name=name, statementdocument__data_base=data_base,
+                                       statementdocument__number=number,
+                                       statementdocument__historical_value=historical_value).exists():
             raise serializers.ValidationError([_('Document Fund already registered')])
         data['statement_document'] = {}
         for field_name in self.write_only_fields.keys():
-            data['statement_document'][field_name] = data.pop(field_name)
+            if field_name == 'is_extraconcursal':
+                data['statement_document'][field_name] = data.pop(field_name, False)
+            else:
+                data['statement_document'][field_name] = data.pop(field_name)
         return super(FundDocumentSchema, self).validate(data)
+
+
+class FundDocumentGetSchema(AbstractClassesFundsSchema):
+    """
+    A schema for serializing and deserializing Funds instances.
+
+    Attributes: calculation_id (serializers.UUIDField): The UUID of the related calculation. statement_funds (
+    StatementFundDocumentSchema): The schema for serializing and deserializing StatementFunds instances.
+    statement_integrations (StatementIntegrationsSchema): The schema for serializing and deserializing
+    StatementIntegrations instances. statement_irrf (StatementIRRFSchema): The schema for serializing and
+    deserializing StatementIRRF instances.
+    """
+    calculation_id = serializers.UUIDField()
+    total = TotalValuesDocumentSchema(source='totalvaluesdocument', read_only=True, exclude=('fund_id', 'statement'))
+
+    # statement = StatementDocumentSchema(source='statementdocument', exclude=('fund_id', 'status'), read_only=True)
+
+    class Meta:
+        model = FundDocument
+        exclude = ('calculation',)
 
 
 class FundDocumentUpdateSchema(AbstractDescriptionSchema):

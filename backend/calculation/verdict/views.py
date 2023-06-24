@@ -16,7 +16,7 @@ class VerdictDetailApi(AbstractViewApi):
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Verdict
 
-    query_params = []
+    
     docs = {
         'init': _("""Represents additional sentences related to the process. They may include `material damages`, 
         `moral damages` among others.

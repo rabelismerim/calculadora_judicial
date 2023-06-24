@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
-  values?: { label: string; count: number }[]
+  values?: { label: string; count: number; hint?: string | number; digits?: number }[]
   title?: string
   hint?: string
 }>(), {
@@ -28,7 +28,7 @@ const biggestValue = computed(() => [...props.values]?.sort(({ count: a }, { cou
         class="max-h-42 overflow-y-auto pr-6 pb-4"
       >
         <div
-          v-for="{ label, count } in values"
+          v-for="{ label, count, hint: valueHint, digits } in values"
           :key="label"
           class="grid grid-cols-[130px_auto_30px] gap-1 items-center"
         >
@@ -39,12 +39,15 @@ const biggestValue = computed(() => [...props.values]?.sort(({ count: a }, { cou
             <div
               class="h-full bg--secondary rounded-full"
               :style="{
-                width: `${count / biggestValue * 100}%`,
+                width: `${count / (biggestValue || 1) * 100}%`,
               }"
             />
           </div>
-          <div class="text-end font-bold">
-            {{ count }}
+          <div class="text-end font-bold" :class="{ 'cursor-pointer': valueHint }">
+            {{ digits ? formatNumber(count, digits) : count }}
+            <QTooltip v-if="valueHint">
+              {{ valueHint }}
+            </QTooltip>
           </div>
         </div>
       </div>

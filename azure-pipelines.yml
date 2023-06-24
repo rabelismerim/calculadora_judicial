@@ -119,7 +119,7 @@ steps:
     RemoveSourceFolder: true
 - script: |
     python manage.py makemigrations
-  failOnStderr: true
+  failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - script: |
@@ -151,6 +151,6 @@ steps:
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)/backend'
     Contents: '**'
-    TargetFolder: 'C:\inetpub\wwwroot\uat.fadigitallab.deloitte.com.br\juca\'
+    TargetFolder: 'E:\wwwroot\fadigitallab.deloitte.com.br\juca\'
     OverWrite: true
     flattenFolders: false

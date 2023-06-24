@@ -4,9 +4,9 @@ from core.abstract.models import AbstractModel
 
 COIN_CHOICES = (
     ("B", "BRL"),
-    ("E", "EUR"),
-    ("U", "US$"),
-    ("C", "CAN$")
+    # ("E", "EUR"),
+    # ("U", "US$"),
+    # ("C", "CAN$")
 )
 
 

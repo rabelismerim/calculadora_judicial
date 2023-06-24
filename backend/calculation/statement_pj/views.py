@@ -4,7 +4,7 @@ It extends the AbstractViewApi class and includes a CheckHasPermission permissio
 The API responds with JSON data and utilizes the rest_framework.schemas.openapi.AutoSchema for generating API documentation.
 The StatementPJApi class uses the Statement_Pj model and Statement_PjSchema for working with data.
 """
-from compat import JsonResponse
+from django.http import JsonResponse
 
 from core.abstract.views import AbstractViewApi
 
@@ -50,8 +50,6 @@ class StatementPJApi(AbstractViewApi):
             """),
     }
 
-    query_params = []
-
     @doc(_("""This method handles GET requests for the view. It retrieves a specific statement PJ object using the given 
             calculation_id from the query parameters and serializes the result into JSON format before returning it as
              an HTTP response. 
@@ -61,7 +59,6 @@ class StatementPJApi(AbstractViewApi):
                 """))
     def get(self, request, *args, **kwargs):
         calculation_id = kwargs.get('calculation_id')
-        statement = self.model.objects.filter(
-            statement__calculation_id=calculation_id).first()
+        statement = self.model.objects.filter(statement__calculation_id=calculation_id).first()
         statement_data = self.serializer_class(statement, many=False).data
         return JsonResponse({'statement_pj': statement_data})

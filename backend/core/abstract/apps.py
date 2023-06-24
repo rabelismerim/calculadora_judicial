@@ -42,4 +42,4 @@ def get_fields(model):
 
     return [field.name for field in model._meta.get_fields() if
             not field.is_relation or not isinstance(field, (
-                models.OneToOneField, models.ManyToManyField, models.ForeignKey, GenericForeignKey))]
+                models.OneToOneField, models.ManyToManyField, models.ManyToOneRel, models.ForeignKey, GenericForeignKey))]

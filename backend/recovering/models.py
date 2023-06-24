@@ -2,12 +2,11 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from core.abstract.models import AbstractModel
 from core.entity.models import Entity
-from projects.models import Project
 
 
 class Recovering(AbstractModel):
     """Class responsible for the grand project/engagement"""
-    project = models.ForeignKey(Project, on_delete=models.PROTECT)
+    project = models.ForeignKey('projects.Project', on_delete=models.PROTECT)
     entity = models.ForeignKey(Entity, on_delete=models.PROTECT)
     STATUS_CHOICES = (
         ("E", _("Under Analysis")),

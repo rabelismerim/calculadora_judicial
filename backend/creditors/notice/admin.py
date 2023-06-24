@@ -16,7 +16,7 @@ admin.site.register(Notice)
 """
 
 from django.contrib import admin
-from creditors.notice.models import Notice
-
+from creditors.notice.models import Notice, NoticeRecovering
 
 admin.site.register(Notice)
+admin.site.register(NoticeRecovering)

@@ -4,7 +4,7 @@ log/
 /cert.crt
 /cert.key
 **/migrations/**
-!**/migrations
+!**/migrations/*.mo
 !**/migrations/__init__.py
 __pycache__
 *.sqlite3
@@ -18,3 +18,8 @@ dir_testes
 db.zip
 db - Copy.sqlite3
 tests_loop.bat
+.env
+.env.dev
+.env.prod
+.env.hml
+.env.azure

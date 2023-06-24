@@ -4,9 +4,14 @@ It is extended from an AbstractViewApi class and includes a CheckHasPermission p
 Api's responds with JSON data and uses rest_framework.schemas.openapi.AutoSchema to generate the API documents.
 Api's classes use the DttUser model and schema DttUser to work with data.
 """
+import base64
+import hashlib
+import uuid
+
+from django.core.files.base import ContentFile
 from rest_framework.exceptions import PermissionDenied
 
-from config.settings import IS_LOCALHOST, DTT_EMAIL
+from config.settings import IS_LOCALHOST, DTT_EMAIL, ROLES
 from core.abstract.views import AbstractViewApi
 from core.dttuser.schemas import UserDttSchema, UserAuthorizeDttSchema, GroupSchema, SubgroupSchema, UserMailDttSchema
 from django.contrib.auth import authenticate, login
@@ -15,7 +20,7 @@ from django.core.mail import send_mail
 from rest_framework import status
 
 from core.permission.views import CheckHasPermission, CheckPermissions
-from utils import get_user_model, _, doc
+from utils import get_user_model, _, doc, log_info
 from rest_framework import permissions, serializers
 from django.contrib.auth.models import Group
 from core.dttuser.models import Subgroup
@@ -45,7 +50,7 @@ class AbstractUserDttApi(AbstractViewApi):
     else:
         permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = User
-
+    allow_cache = False
     query_params = [
         {
             "name": "name",
@@ -78,8 +83,9 @@ class UserDttDetailApi(AbstractUserDttApi):
     """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like
     query_params and schema. """
     http_method_names = ['get']
-    query_params = []
+
     docs = docs.copy()
+    allow_cache = False
 
     @doc(_("""This method returns a JSON response that contains the user details as per authenticated user. 
         The serializer is used to access the model object, and then the data is returned in a JSON format.
@@ -97,9 +103,10 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
     http_method_names = ['post']
     serializer_class = UserAuthorizeDttSchema
     permission_classes = [permissions.IsAuthenticated, CheckPermissions]
-    query_params = []
+
     perms = ['can_authorize_users']
     docs = docs.copy()
+    allow_cache = False
 
     @doc(_("""Handles HTTP POST request to authorize or unauthorize user access.
 
@@ -114,18 +121,18 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
         user_filter = serializer.validated_data
         groups = user_filter.pop('groups', [])
         subgroups = user_filter.pop('subgroups', [])
+        role = user_filter.pop('role', None)
 
-        user_approved = self.model.objects.filter(
-            email=user_filter['email']).first()
+        user_approved = self.model.objects.filter(email=user_filter['email']).first()
         if not user_approved:
             raise serializers.ValidationError(
                 [_('Email {}, not found').format(user_filter["email"])])
-
+        user_approved.groups.clear()
         user_approved.status = user_filter['status']
-        if groups:
-            user_approved.groups.add(*groups)
-        if subgroups:
-            user_approved.subgroups.add(*subgroups)
+        user_approved.groups.add(*groups)
+        user_approved.subgroups.add(*subgroups)
+        if role:
+            user_approved.role = role
         user_approved.save()
 
         return JsonResponse({'user': UserDttSchema(user_approved).data}, status=status.HTTP_201_CREATED)
@@ -137,8 +144,9 @@ class UserSendMailDttApi(AbstractUserDttApi):
     """
     http_method_names = ['post']
     serializer_class = UserMailDttSchema
-    query_params = []
+
     docs = docs.copy()
+    allow_cache = False
 
     @doc(_("""Used to validate and send email when asked to create a new user.
         The serializer is used to access the model object, and then the data is returned in a JSON format.
@@ -173,7 +181,7 @@ class GroupApi(AbstractViewApi):
     Methods:
     - get: Returns a list of groups with their names and permissions.
     """
-
+    allow_cache = False
     serializer_class = GroupSchema
     docs = {
         'init': _("""The `Group` class represents a group of users on the system. Contains common properties for 
@@ -197,7 +205,7 @@ class GroupApi(AbstractViewApi):
     http_method_names = ['get']
 
     def get_exclude_queryset(self):
-        return {'name': "Security"}
+        return {'name__in': ROLES}
 
 
 class SubgroupApi(AbstractViewApi):
@@ -227,9 +235,10 @@ class SubgroupApi(AbstractViewApi):
         permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Subgroup
     http_method_names = ['get']
+    allow_cache = False
 
     def get_exclude_queryset(self):
-        return {'name': "Security"}
+        return {'name__in': ROLES}
 
 
 class UserDttApi(AbstractUserDttApi):
@@ -249,6 +258,7 @@ class UserDttApi(AbstractUserDttApi):
         """)
     }
     operation_id_base = 'UserDetail'
+    allow_cache = False
 
     @doc(_("""Only LocalHost. Create a new user by receiving data in the form of dictionaries and 
         returning the specific user details.

@@ -1,25 +1,19 @@
-from django.contrib.admin.options import get_content_type_for_model
-from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from base.claim.models import Claim
 from calculation.comment.models import Comment, StepComment
 from calculation.comparative.models import Comparative
 from calculation.criterion.models import Criterion, CriterionClaimCredor
-from calculation.funds.models import Funds, MonetaryCorrection
 from calculation.funds.views import CreateFunds
 from calculation.models import Calculation, Incident
 from calculation.premise.views import PremiseCreator
 from calculation.schemas import CalculationSchema, IncidentSchema, ChangeStepSerializer, CalculationV2Schema, \
-    CalculationAllFundsSchema
-from calculation.statement.models import Statement
+    CalculationAllFundsSchema, CheckStepSerializer
 from calculation.verdict.models import TypeCalculation, Verdict
-from core.abstract.models import UpdateUser
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission, CanChangeStep
-from projects.project_user.models import ProjectUser
 from utils import _, doc
 
 docs = {
@@ -91,7 +85,7 @@ class CalculationDetailApi(AbstractCalculationApi):  # V1
     HTTP methods for retrieving particular Calculation detail"""
     http_method_names = ['get']
     docs = docs.copy()
-    query_params = []
+
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific Calculation using the
     given id from the query parameters and serializes the result into JSON format before returning it as
                  an HTTP response.
@@ -108,7 +102,7 @@ class CalculationDetailV2Api(AbstractCalculationApi):  # V2
     docs = docs.copy()
     serializer_class = CalculationV2Schema
     allowed_versions = ['v1', 'v2']
-    query_params = []
+
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific Calculation using the
     given id from the query parameters and serializes the result into JSON format before returning it as
                  an HTTP response.
@@ -260,9 +254,8 @@ class ChangeStepApi(AbstractViewApi):
     http_method_names = ['put']
 
     serializer_class = ChangeStepSerializer
-    # permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CanChangeStep]
-    query_params = []
+
     model = Calculation
     docs = docs.copy()
 
@@ -273,24 +266,62 @@ class ChangeStepApi(AbstractViewApi):
         Optional field `comments`, a list of objects containing the text field
         Returns a JSON response with the updated Calculation object.
 
-        Possible status are `Requested`, `Calculated`, `Revised`, `Approved`, `Failed`, `Specially Approved`,
+        Possible status are `To Calculate`, `To Review`, `To Approve`, `To Approve Special`, `Failed`, `Approved`,
         """))
     def put(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_calculation = serializer.validated_data
         comments = new_calculation.pop('comments', [])
+        special_approvers = new_calculation.pop('special_approvers', [])
         calculation_id = kwargs.get('id', None)
         calculation = self.model.objects.filter(id=calculation_id).first()
-        # get project user related calculation
-        # project_users = ProjectUser.objects.filter(projectengagement__engagement__project__project=calculation.creditor.recovering.project)
-        project_users = calculation.creditor.recovering.project.get_project_users()
-        for x in project_users:
-            gp = x.groups.all().values('name')
-        calculation.set_step_by_char(new_calculation['next_step'], user=request.user)
-        calc_comment = StepComment.objects.create(calculation=calculation, step=calculation.step)
-        for comment in comments:
-            new_comment = Comment.objects.create(**comment)
-            calc_comment.comments.add(new_comment.id)
-        calc_comment.save()
+
+        with transaction.atomic():
+            calculation.set_step_by_char(new_calculation['next_step'], user=request.user,
+                                         special_approvers=special_approvers)
+            calc_comment = StepComment.objects.create(calculation=calculation, step=calculation.step)
+            for comment in comments:
+                new_comment = Comment.objects.create(**comment)
+                calc_comment.comments.add(new_comment.id)
+            calc_comment.save()
         return JsonResponse({'calculation': CalculationSchema(calculation, many=False).data}, status=status.HTTP_200_OK)
+
+
+class CheckStepApi(AbstractViewApi):
+    """
+    API view to change the step of a Calculation model instance.
+
+    Only authenticated users with permissions and access to the Calculation can change the step.
+
+    Allowed HTTP Method: PUT
+
+    Required data to be sent in the request body:
+    - next_step (string): The next step to be set.
+
+    URL query parameters: None
+
+    Response data format:
+    - calculation (object): Serialized Calculation object with the updated step.
+
+    Response status code:
+    - 200 OK: Successfully updated the Calculation step.
+    """
+    http_method_names = ['put']
+
+    serializer_class = CheckStepSerializer
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CanChangeStep]
+
+    model = Calculation
+    docs = docs.copy()
+
+    @doc(_("""PUT to check the step of the Calculation instance.
+
+    Receive and validate JSON data with a next_step string.
+    Finds the calculation instance based on the URL parameter ID.
+    Returns a 200 response if allowed.
+    
+    Possible statuses are `To calculate`, `To review`, `To approve`, `To approve special`, `Failed`, `Approved`,
+    """))
+    def put(self, request, *args, **kwargs):
+        return JsonResponse({}, status=status.HTTP_200_OK)

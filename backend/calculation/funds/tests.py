@@ -14,34 +14,16 @@ Attributes:
 """
 from calculation.funds.models import Funds
 from calculation.models import Calculation
+from calculation.tests import CalculationValues
 from core.abstract.tests import AbstractTest, generate_name
+from creditors.models import Creditor
+from creditors.tests import CreditorValues
 from rates.models import Rate, Template
 
 
 class FundsTest(AbstractTest):
     """funds related tests"""
 
-    calculation = Calculation.objects.filter(creditor__physical_person=True, funddocument__isnull=True).first()
-    name = generate_name()
-    parameters = {
-        "description": generate_name(),
-        "name": name,
-        "classes": {
-            "classe": "1"
-        },
-        "coins": {
-            "coin": "B",
-            "value": 500
-        },
-        "archive_json": {},
-        "rate_id": str(Rate.objects.first().id),
-        "template_id": str(Template.objects.first().id),
-        'calculation_id': str(calculation.id)
-    }
-    fund_id = str(Funds.objects.filter(calculation__creditor__physical_person=True,
-                                       calculation__funddocument__isnull=True).first().id)
-    path = 'calculation/funds'
-    path_get = f'{path}/{fund_id}/'
     def test_api_get(self):
         """Assert get lawyers detail"""
         self.path = f'{self.path}/{self.fund_id}/'
@@ -70,7 +52,7 @@ class FundsTest(AbstractTest):
                  "historical_value": 555.94,
                  "dsr_reflexes": 188.94,
                  "summary": True,
-                "is_extraconcursal": False,
+                 "is_extraconcursal": False,
              }, {'corrected_value': 759.773709479113,
                  'index_data_base': 2.7310656005592993,
                  'index_recovering': 2.7856726481684837}),
@@ -87,7 +69,7 @@ class FundsTest(AbstractTest):
                  "data_base": "2011-08-10",
                  "historical_value": 2300,
                  "summary": True,
-                "is_extraconcursal": False,
+                 "is_extraconcursal": False,
              }, {'corrected_value': 2349.6542360353938, 'index_data_base': 2.726804221883394,
                  'index_recovering': 2.7856726481684837}),
 
@@ -107,8 +89,7 @@ class FundsTest(AbstractTest):
         It is not possible to register a fund of the individuals type for legal entity.
         """
         params = self.parameters.copy()
-        params['calculation_id'] = Calculation.objects.filter(creditor__physical_person=False,
-                                                              funddocument__isnull=True).first().id
+        params['calculation_id'] = self.calculation_docs_id
         response = self.post(self.path, params)
         self.assertEqual(response.status_code, 403)
 
@@ -120,12 +101,7 @@ class FundsTest(AbstractTest):
         data_base = "2014-01-02"
         number = generate_name()
         statement = {
-            "calculation_id": str(self.calculation.id),
-            "statement": {
-                "data_base": data_base,
-                "historical_value": value,
-                "number": number
-            },
+            "calculation_id": self.calculation_agreement_id,
             "classes": {
                 "classe": "1"
             },
@@ -140,7 +116,60 @@ class FundsTest(AbstractTest):
             "template_id": str(Template.objects.first().id),
             "name": generate_name(),
             "is_extraconcursal": False,
+            "data_base": data_base,
+            "historical_value": value,
+            "number": number
         }
 
         response = self.post('calculation/funds/documents', statement)
         self.assertEqual(response.status_code, 403)
+
+    def __get_create_creditor(self, physical_person: bool):
+        payload = Creditor.objects.filter(physical_person=physical_person).first()
+        if payload:
+            return payload.id
+
+        payload = CreditorValues().get_creditor(physical_person=physical_person)
+        path = 'creditors'
+        response = self.post(path, payload)  # creditor
+        return response.content['creditor']['id']
+
+    def __get_create_calculation(self, physical_person: bool):
+        calculation = Calculation.objects.filter(creditor__physical_person=physical_person,
+                                                 funddocument__isnull=True).first()
+        if calculation:
+            return calculation.id
+
+        parameters = CalculationValues.calculation
+        parameters['creditor_id'] = self.__get_create_creditor(physical_person)
+        path = 'calculation'
+        response = self.post(path, parameters)
+        return response.content['calculation']['id']
+
+    def setUp(self):
+        set_up = super().setUp()
+        self.calculation_agreement_id = self.__get_create_calculation(True)
+        self.calculation_docs_id = self.__get_create_calculation(False)
+
+        name = generate_name()
+        self.parameters = {
+            "description": generate_name(),
+            "name": name,
+            "classes": {
+                "classe": "1"
+            },
+            "coins": {
+                "coin": "B",
+                "value": 500
+            },
+            "archive_json": {},
+            "rate_id": str(Rate.objects.first().id),
+            "template_id": str(Template.objects.first().id),
+            'calculation_id': self.calculation_agreement_id
+        }
+        self.fund_id = str(Funds.objects.filter(calculation__creditor__physical_person=True,
+                                                calculation__funddocument__isnull=True).first().id)
+        self.path = 'calculation/funds'
+        self.path_get = f'{self.path}/{self.fund_id}/'
+
+        return set_up

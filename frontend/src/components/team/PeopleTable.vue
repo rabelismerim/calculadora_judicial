@@ -7,12 +7,17 @@ const props = withDefaults(defineProps<{
 }>(), {
 
 })
-const emit = defineEmits(['update:tab', 'update:filter'])
+
+const emit = defineEmits(['update:tab', 'update:filter', 'editingUser'])
+
 const router = useRouter()
 
 const { hasProject, user } = $user
 const showUserModal = $ref(false)
 const modalUser = $ref({ fullName: '' })
+const editUser = (evt: Event, user: any) => {
+  emit('editingUser', user)
+}
 
 const canGoTo = (project: any) => hasProject(project.id)
 const goTo = (project: any) => {
@@ -25,14 +30,14 @@ const filteredItems = computed(() => {
   if (props.tab === 'all')
     return props.items
   return props.items
-    .filter(({ status }) => status?.toLowerCase() === props.tab)
+    .filter(({ groups }: any) => groups?.[0]?.name?.toLowerCase()?.includes(props.tab))
 })
 
 const filters = [
   { label: 'Todos', value: 'all' },
-  { label: 'Administrador', value: 'd' },
-  { label: 'Gestor', value: 'c' },
-  { label: 'Consultor', value: 'p' },
+  { label: 'Administrador', value: 'admin' },
+  { label: 'Gestor', value: 'gestor' },
+  { label: 'Consultor', value: 'consultor' },
 ]
 const statusColors: any = {
   true: '#86bc25', // Ativo
@@ -84,14 +89,16 @@ const columns = [
     style: 'width: 100px',
     sortable: true,
   },
+
   {
     name: 'status',
     field: 'isActive',
-    label: 'Status',
+    label: 'Ativo',
     align: 'left',
     style: 'width: 100px',
     sortable: true,
   },
+
   {
     name: 'count',
     field: 'projects',
@@ -128,6 +135,7 @@ const columns = [
     row-key="id"
     flat
     bordered
+    @row-click="editUser"
   >
     <template #body-cell-name="props">
       <QTd :props="props">
@@ -146,7 +154,7 @@ const columns = [
       <QTd :props="props">
         <div class="flex">
           <StatusTag
-            :label="props.value ? 'Ativo' : 'Inativo'"
+            :label="props.row?.statusDisplay"
             :color="statusColors[props.value]"
           />
         </div>
@@ -158,11 +166,11 @@ const columns = [
         <div class="flex justify-end gap-1 no-wrap">
           <div class="flex justify-end gap-1  max-h-7.5 overflow-hidden">
             <div
-              v-for="project in props.value"
+              v-for="project in props.value as any[]"
               :key="project.id"
               class="rounded-full px-3 py-1 border-1 border--black/10 bg-gray/10 whitespace-nowrap"
               :class="canGoTo(project) ? 'cursor-pointer hover:bg--primary/20 hover:border--primary/50' : 'cursor-not-allowed'"
-              @click="goTo(project)"
+              @click.stop="goTo(project)"
             >
               {{ project.description }}
             </div>
@@ -171,7 +179,7 @@ const columns = [
             v-if="props.value?.length > 0"
             class="flex justify-end"
           >
-            <div class="flex items-center rounded-full px-3 py-1 border-1 border--black/12 bg-gray/10 whitespace-nowrap cursor-pointer hover:bg--primary/50 hover:border--primary/12" @click="{ modalUser = props.row; showUserModal = true }">
+            <div class="flex items-center rounded-full px-3 py-1 border-1 border--black/12 bg-gray/10 whitespace-nowrap cursor-pointer hover:bg--primary/50 hover:border--primary/12" @click.stop="{ modalUser = props.row; showUserModal = true }">
               Ver Todos
             </div>
           </div>

@@ -505,6 +505,7 @@ class StatementPF(AbstractStatus):
                 self.set_error_parameters()
             else:
                 self.set_calculation_done()
+            self.statement.calculation.creditor.set_total()
 
 
 class AbstractValue(AbstractModel):
@@ -521,6 +522,7 @@ class AbstractValue(AbstractModel):
 
     class Meta:
         abstract = True
+        ordering = ('-created_at', '-updated_at')
 
     def __str__(self):
         return str(self.value)

@@ -1,11 +1,14 @@
 from calculation.models import Incident, Calculation
 from core.abstract.tests import AbstractTest
 from creditors.models import Creditor
+from projects.create_project import generate_number
 
 
 class CalculationValues:
     creditor = Creditor.objects.first()
     incident = Incident.objects.first()
+    if not incident:
+        incident = Incident.objects.create(number=generate_number())
     calculation = {
         "classes": {
             "classe": "1"
@@ -30,7 +33,6 @@ class CalculationValues:
         "appeal_deposit": True,
         "has_advocative_hours": True,
         "date_credit_auth": "2023-04-10",
-        "has_edital": True,
         "recurral_deposit": 100,
         "archive_json": {'teste': 'teste'}
     }
@@ -40,10 +42,20 @@ class CalculationTest(AbstractTest):
     """Calculation related tests"""
 
     creditor = Creditor.objects.first()
-    incident = Incident.objects.first()
     parameters = CalculationValues.calculation
     path = 'calculation'
-    path_get = f'{path}/{Calculation.objects.first().id}'
+    calc = Calculation.objects.first()
+    path_get = f'{path}/{calc.id if calc else None}'
+
+    def test_api_a_get(self):
+        """Assert get lawyers detail"""
+        path = 'calculation/incident'
+        parameters = {
+            'number': generate_number()
+        }
+        response = self.post(path, parameters)
+        self.assertEqual(response.status_code, 201)
+        return response.content['incident']['number']
 
     def test_api_get(self):
         """Assert get lawyers detail"""

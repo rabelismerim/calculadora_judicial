@@ -6,6 +6,7 @@ from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
 
 from calculation.funds.abstract.models import CHOICES_STATUS_FUND
+from calculation.funds.irrf.models import CHOICES_STATUS_IRRF
 from calculation.models import CHOICES_STEP
 from core.dttuser.models import ROLES_CHOICES, STATUS_CHOICES
 from core.entity.schemas import EntitySchema
@@ -39,6 +40,7 @@ class CreditorSchema(AbstractDescriptionSchema):
         model = Creditor
         # fields = '__all__'
         exclude = ('recovering', 'rate')
+        read_only_fields = ('total',)
 
     def validate(self, data):
         recovering_id = data.get('recovering_id')
@@ -78,6 +80,7 @@ class CreditorCreateSchema(serializers.Serializer):
     status_funds_options = AbstractChoicesSerializer(CHOICES_STATUS_FUND, many=True)
     step_calculation_options = AbstractChoicesSerializer(CHOICES_STEP, many=True)
     occurrence_options = AbstractChoicesSerializer(CHOICES_OCCURRENCE, many=True)
+    status_irrf_options = AbstractChoicesSerializer(CHOICES_STATUS_IRRF, many=True)
 
     class Meta:
         fields = '__all__'
@@ -88,4 +91,4 @@ class CreditorUpdateSchema(AbstractDescriptionSchema):
 
     class Meta:
         model = Creditor
-        fields = ('description', 'admission', 'dismissal', 'default_interest', 'fine', 'advocative_hours')
+        fields = ('description', 'admission', 'dismissal', 'default_interest', 'fine', 'advocative_hours', 'occurrence')

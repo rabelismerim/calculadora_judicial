@@ -28,7 +28,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UpdateUser
-        fields = ('created_at', 'field_changed', 'current_value', 'previous_value', 'create_user')
+        fields = ('created_at', 'field_changed', 'current_value', 'previous_value', 'create_user', 'field_changed_display')
 
 
 class AbstractDescriptionSchema(serializers.ModelSerializer, AbstractModelSchema):

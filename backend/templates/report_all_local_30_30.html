@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Test Report for locust_main_sequential.py</title>
-    <link rel="shortcut icon" href="../static/img/favicon.ico" type="image/x-icon"/>
+    <title>Test Report for JUCA Local</title>
+    <link rel="shortcut icon" type="image/png" href="/juca/static/src/vue/dist/icon-app.svg">
     <style>
         body {
             background: #173529;
@@ -116,50 +116,55 @@ table.stats tr.total td {
 </head>
 <body>
     <div class="container">
-        <h1>Locust Test Report</h1>
+        <h1>JUCA Test Report Local</h1>
 
         <div class="info">
-            <p>During: <span class="l10n datetime">2023-05-02 23:16:14</span> - <span class="l10n datetime">2023-05-02 23:49:10</span></p>
-
+            <p>During: <span class="l10n datetime">2023-04-29 17:31:31</span> - <span class="l10n datetime">2023-04-29 18:01:31</span></p>
             <p>This test was carried out to evaluate the performance of the JUCA application under simulated load.</p>
             <p>The tests had requests in parallel. Simulating the behavior of people using the platform same time</p>
 
             <h2>Parameters used</h2>
             <ul>
-                <li>Number of virtual users: 1</li>
+                <li>Number of virtual users: 30</li>
                 <li>Rate of requests per user: 1 per second</li>
-                <li>Test duration: 33 minutes</li>
+                <li>Test duration: 30 minutes</li>
                 <li>Test endpoint: <span>http://127.0.0.1:8000/juca/api/v1/</span></li>
             </ul>
 
             <h2>Results</h2>
             <ul>
-                <li>Total requests sent: 240</li>
-                <li>Average response time: 5533 ms</li>
+                <li>Total requests sent: 11448</li>
+                <li>Average response time: 2631 ms</li>
                 <li>Errors found:
-                <ul>
-                    <li>Average time above maximum server response time (30s):
-                        <ul>
-                            <li>/juca/api/v1/rates/</li>
-                            <li>/juca/api/v1/recovering/</li>
-                        </ul>
-                    </li>
-                    <li>Average time above good user experience (3s):
-                        <ul>
-                            <li>/juca/api/v1/calculation/funds/id/</li>
-                            <li>/juca/api/v1/projects/</li>
-                            <li>/juca/api/v1/creditors/notice/aj/</li>
-                            <li>/juca/api/v1/calculation/id/</li>
-                        </ul>
-                    </li>
-                </ul>
-            </ul>
-            <h2>Analysis</h2>
             <ul>
-                <li>High wait rate on certain pages indicates that the application is not handling properly with the simulated load.</li>
-                <li>Possible improvements include optimizing server resources or tweaking application code.</li>
-                <li>Create data caching for static urls.</li>
-                <li>Create data caching for urls that consume more resources and have little change.</li>
+                <li>Average time above maximum server response time (30s):
+                    <ul>
+                        <li>/juca/api/v1/rates/</li>
+                        <li>/juca/api/v1/projects/</li>
+                        <li>/juca/api/v1/recovering/</li>
+                        <li>/juca/api/v1/calculation/funds/id/</li>
+                        <li>/juca/api/v1/creditors/notice/aj/</li>
+                    </ul>
+                </li>
+                <li>Average time above good user experience (3s):
+                    <ul>
+                        <li>/juca/api/v1/calculation/id/</li>
+                        <li>/juca/api/v1/calculation/statement/id/</li>
+                        <li>/juca/api/v1/projects/engagement/</li>
+                        <li>/juca/api/v1/groups/</li>
+                        <li>/juca/api/v1/projects/project_user/</li>
+                        <li>/juca/api/v1/creditors/notice/recovering/</li>
+                        <li>/juca/api/v1/calculation/verdict/id/</li>
+                    </ul>
+                </li>
+            </ul>
+            </ul>
+                <h2>Analysis</h2>
+                <ul>
+                    <li>High wait rate on certain pages indicates that the application is not handling properly with the simulated load.</li>
+                    <li>Possible improvements include optimizing server resources or tweaking application code.</li>
+                    <li>Create data caching for static urls.</li>
+                    <li>Create data caching for urls that consume more resources and have little change.</li>
                 <li>Limit fields when it is a list GET, so that access to them is only in the detail.</li>
             </ul>
         </div>
@@ -168,705 +173,732 @@ table.stats tr.total td {
             <h2>Request Statistics</h2>
             <table class="stats">
                 <thead>
-                    <tr>
-                        <th class="sortable">Method</th>
-                        <th class="sortable">Name</th>
-                        <th class="sortable"># Requests</th>
-                        <th class="sortable"># Fails</th>
-                        <th class="sortable">Average (ms)</th>
-                        <th class="sortable">Min (ms)</th>
-                        <th class="sortable">Max (ms)</th>
-                        <th class="sortable">Average size (bytes)</th>
-                        <th class="sortable">RPS</th>
-                        <th class="sortable">Failures/s</th>
-                    </tr>
+                <tr>
+                    <th class="sortable">Method</th>
+                    <th class="sortable">Name</th>
+                    <th class="sortable"># Requests</th>
+                    <th class="sortable"># Fails</th>
+                    <th class="sortable">Average (ms)</th>
+                    <th class="sortable">Min (ms)</th>
+                    <th class="sortable">Max (ms)</th>
+                    <th class="sortable">Average size (bytes)</th>
+                    <th class="sortable">RPS</th>
+                    <th class="sortable">Failures/s</th>
+                </tr>
                 </thead>
                 <tbody>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/calculation/ad474048-6627-4a15-950a-fd565d419186/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>3224</td>
-                            <td>3143</td>
-                            <td>3371</td>
-                            <td>235823</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/calculation/funds/003be3b9-0d9c-4eb0-ba7e-8d694483505c/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>9886</td>
-                            <td>9687</td>
-                            <td>10157</td>
-                            <td>1036633</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/calculation/funds/documents/034f22b1-6c67-446a-85d7-930d4487eaea/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>52</td>
-                            <td>41</td>
-                            <td>97</td>
-                            <td>2774</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/calculation/funds/irrf/01897045-d52d-4bb7-800c-328b881b0c3c/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>79</td>
-                            <td>64</td>
-                            <td>123</td>
-                            <td>6954</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/calculation/funds/labor/integrations/00b80274-8e9a-4b11-b4a0-607e8827657b/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>28</td>
-                            <td>23</td>
-                            <td>37</td>
-                            <td>1092</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/calculation/statement/ad474048-6627-4a15-950a-fd565d419186/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>1510</td>
-                            <td>1378</td>
-                            <td>1691</td>
-                            <td>127151</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/calculation/verdict/ad474048-6627-4a15-950a-fd565d419186/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>722</td>
-                            <td>682</td>
-                            <td>806</td>
-                            <td>37598</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/creditors/notice/aj/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>6665</td>
-                            <td>6422</td>
-                            <td>7210</td>
-                            <td>321244</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/creditors/notice/recovering/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>1288</td>
-                            <td>1209</td>
-                            <td>1549</td>
-                            <td>61685</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/creditors/project/00df25f4-3091-4cb3-b13c-93402a330432/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>78</td>
-                            <td>72</td>
-                            <td>96</td>
-                            <td>3045</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/drfmsal_signstatus/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>5</td>
-                            <td>2</td>
-                            <td>11</td>
-                            <td>149</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/groups/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>66</td>
-                            <td>59</td>
-                            <td>87</td>
-                            <td>158915</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/projects/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>9183</td>
-                            <td>8946</td>
-                            <td>9559</td>
-                            <td>1258163</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/projects/court/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>363</td>
-                            <td>348</td>
-                            <td>387</td>
-                            <td>16497</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/projects/judge/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>407</td>
-                            <td>351</td>
-                            <td>690</td>
-                            <td>17125</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/projects/lawyer/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>367</td>
-                            <td>343</td>
-                            <td>433</td>
-                            <td>16545</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/projects/project_user/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>304</td>
-                            <td>286</td>
-                            <td>332</td>
-                            <td>13138</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/projects/region/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>415</td>
-                            <td>376</td>
-                            <td>475</td>
-                            <td>18250</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/rates/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>70195</td>
-                            <td>66302</td>
-                            <td>74350</td>
-                            <td>3049692</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/rates/templates/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>12</td>
-                            <td>8</td>
-                            <td>26</td>
-                            <td>3055</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/rates/templates/e9ddfe35-b3b4-402c-84b3-13b2726b5d89/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>85</td>
-                            <td>81</td>
-                            <td>91</td>
-                            <td>4487</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/recovering/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>27840</td>
-                            <td>26552</td>
-                            <td>29371</td>
-                            <td>1277610</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/user/detail/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>17</td>
-                            <td>12</td>
-                            <td>30</td>
-                            <td>528</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/users/</td>
-                            <td>10</td>
-                            <td>0</td>
-                            <td>11</td>
-                            <td>7</td>
-                            <td>27</td>
-                            <td>670</td>
-                            <td>0.0</td>
-                            <td>0.0</td>
-                        </tr>
-                    
-                        <tr class="total">
-                            <td></td>
-                            <td>Aggregated</td>
-                            <td>240</td>
-                            <td>0</td>
-                            <td>5533</td>
-                            <td>2</td>
-                            <td>74350</td>
-                            <td>319534</td>
-                            <td>0.1</td>
-                            <td>0.0</td>
-                        </tr>
-                    
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/calculation/ad474048-6627-4a15-950a-fd565d419186/</td>
+                    <td>94</td>
+                    <td>0</td>
+                    <td>35963</td>
+                    <td>4283</td>
+                    <td>40869</td>
+                    <td>235823</td>
+                    <td>0.1</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/calculation/funds/003be3b9-0d9c-4eb0-ba7e-8d694483505c/</td>
+                    <td>14</td>
+                    <td>0</td>
+                    <td>126008</td>
+                    <td>73677</td>
+                    <td>142026</td>
+                    <td>1036633</td>
+                    <td>0.0</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/calculation/funds/documents/034f22b1-6c67-446a-85d7-930d4487eaea/</td>
+                    <td>1391</td>
+                    <td>0</td>
+                    <td>563</td>
+                    <td>81</td>
+                    <td>2140</td>
+                    <td>2774</td>
+                    <td>0.8</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/calculation/funds/irrf/01897045-d52d-4bb7-800c-328b881b0c3c/</td>
+                    <td>528</td>
+                    <td>0</td>
+                    <td>1423</td>
+                    <td>131</td>
+                    <td>2528</td>
+                    <td>6954</td>
+                    <td>0.3</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/calculation/funds/labor/integrations/00b80274-8e9a-4b11-b4a0-607e8827657b/</td>
+                    <td>794</td>
+                    <td>0</td>
+                    <td>248</td>
+                    <td>28</td>
+                    <td>1371</td>
+                    <td>1092</td>
+                    <td>0.4</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/calculation/statement/ad474048-6627-4a15-950a-fd565d419186/</td>
+                    <td>78</td>
+                    <td>0</td>
+                    <td>20757</td>
+                    <td>17485</td>
+                    <td>23198</td>
+                    <td>127151</td>
+                    <td>0.0</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/calculation/verdict/ad474048-6627-4a15-950a-fd565d419186/</td>
+                    <td>268</td>
+                    <td>0</td>
+                    <td>4636</td>
+                    <td>3102</td>
+                    <td>6257</td>
+                    <td>37598</td>
+                    <td>0.1</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/creditors/notice/aj/</td>
+                    <td>42</td>
+                    <td>0</td>
+                    <td>40088</td>
+                    <td>33524</td>
+                    <td>44135</td>
+                    <td>321244</td>
+                    <td>0.0</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/creditors/notice/recovering/</td>
+                    <td>180</td>
+                    <td>0</td>
+                    <td>7962</td>
+                    <td>4853</td>
+                    <td>10995</td>
+                    <td>61685</td>
+                    <td>0.1</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/creditors/project/00df25f4-3091-4cb3-b13c-93402a330432/</td>
+                    <td>1396</td>
+                    <td>0</td>
+                    <td>575</td>
+                    <td>98</td>
+                    <td>2244</td>
+                    <td>3045</td>
+                    <td>0.8</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/drfmsal_signstatus/</td>
+                    <td>877</td>
+                    <td>0</td>
+                    <td>33</td>
+                    <td>3</td>
+                    <td>1172</td>
+                    <td>149</td>
+                    <td>0.5</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/groups/</td>
+                    <td>146</td>
+                    <td>0</td>
+                    <td>10098</td>
+                    <td>117</td>
+                    <td>13598</td>
+                    <td>158915</td>
+                    <td>0.1</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/projects/</td>
+                    <td>8</td>
+                    <td>0</td>
+                    <td>203298</td>
+                    <td>171982</td>
+                    <td>214404</td>
+                    <td>1258163</td>
+                    <td>0.0</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/projects/court/</td>
+                    <td>890</td>
+                    <td>0</td>
+                    <td>2030</td>
+                    <td>439</td>
+                    <td>5287</td>
+                    <td>16497</td>
+                    <td>0.5</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/projects/engagement/</td>
+                    <td>158</td>
+                    <td>0</td>
+                    <td>20550</td>
+                    <td>1482</td>
+                    <td>24527</td>
+                    <td>120259</td>
+                    <td>0.1</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/projects/judge/</td>
+                    <td>439</td>
+                    <td>0</td>
+                    <td>2068</td>
+                    <td>666</td>
+                    <td>3974</td>
+                    <td>17125</td>
+                    <td>0.2</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/projects/lawyer/</td>
+                    <td>443</td>
+                    <td>0</td>
+                    <td>2040</td>
+                    <td>811</td>
+                    <td>3650</td>
+                    <td>16545</td>
+                    <td>0.2</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/projects/project_user/</td>
+                    <td>159</td>
+                    <td>0</td>
+                    <td>9203</td>
+                    <td>5875</td>
+                    <td>11828</td>
+                    <td>13138</td>
+                    <td>0.1</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/projects/region/</td>
+                    <td>423</td>
+                    <td>0</td>
+                    <td>2235</td>
+                    <td>1285</td>
+                    <td>4997</td>
+                    <td>18250</td>
+                    <td>0.2</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/rates/</td>
+                    <td>3</td>
+                    <td>0</td>
+                    <td>488240</td>
+                    <td>479491</td>
+                    <td>497975</td>
+                    <td>3049692</td>
+                    <td>0.0</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/rates/templates/</td>
+                    <td>778</td>
+                    <td>0</td>
+                    <td>292</td>
+                    <td>56</td>
+                    <td>1291</td>
+                    <td>3055</td>
+                    <td>0.4</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/rates/templates/e9ddfe35-b3b4-402c-84b3-13b2726b5d89/</td>
+                    <td>695</td>
+                    <td>0</td>
+                    <td>567</td>
+                    <td>254</td>
+                    <td>1776</td>
+                    <td>4487</td>
+                    <td>0.4</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/recovering/</td>
+                    <td>10</td>
+                    <td>0</td>
+                    <td>168430</td>
+                    <td>149099</td>
+                    <td>178494</td>
+                    <td>1277610</td>
+                    <td>0.0</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/user/detail/</td>
+                    <td>805</td>
+                    <td>0</td>
+                    <td>200</td>
+                    <td>68</td>
+                    <td>1239</td>
+                    <td>528</td>
+                    <td>0.4</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/users/</td>
+                    <td>829</td>
+                    <td>0</td>
+                    <td>155</td>
+                    <td>14</td>
+                    <td>1205</td>
+                    <td>670</td>
+                    <td>0.5</td>
+                    <td>0.0</td>
+                </tr>
+
+                <tr class="total">
+                    <td></td>
+                    <td>Aggregated</td>
+                    <td>11448</td>
+                    <td>0</td>
+                    <td>2631</td>
+                    <td>3</td>
+                    <td>497975</td>
+                    <td>18698</td>
+                    <td>6.4</td>
+                    <td>0.0</td>
+                </tr>
+
                 </tbody>
             </table>
         </div>
 
-        <div class="responses">
+        <div class="responses" id="code_1">
             <h2>Response Time Statistics</h2>
             <table class="stats">
                 <thead>
-                    <tr>
-                        <th class="sortable">Method</th>
-                        <th class="sortable">Name</th>
-                        <th class="sortable">50%ile (ms)</th>
-                        <th class="sortable">60%ile (ms)</th>
-                        <th class="sortable">70%ile (ms)</th>
-                        <th class="sortable">80%ile (ms)</th>
-                        <th class="sortable">90%ile (ms)</th>
-                        <th class="sortable">95%ile (ms)</th>
-                        <th class="sortable">99%ile (ms)</th>
-                        <th class="sortable">100%ile (ms)</th>
-                    </tr>
+                <tr>
+                    <th class="sortable">Method</th>
+                    <th class="sortable">Name</th>
+                    <th class="sortable">50%ile (ms)</th>
+                    <th class="sortable">60%ile (ms)</th>
+                    <th class="sortable">70%ile (ms)</th>
+                    <th class="sortable">80%ile (ms)</th>
+                    <th class="sortable">90%ile (ms)</th>
+                    <th class="sortable">95%ile (ms)</th>
+                    <th class="sortable">99%ile (ms)</th>
+                    <th class="sortable">100%ile (ms)</th>
+                </tr>
                 </thead>
                 <tbody>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/calculation/ad474048-6627-4a15-950a-fd565d419186/</td>
-                            <td>3200</td>
-                            <td>3200</td>
-                            <td>3300</td>
-                            <td>3300</td>
-                            <td>3400</td>
-                            <td>3400</td>
-                            <td>3400</td>
-                            <td>3400</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/calculation/funds/003be3b9-0d9c-4eb0-ba7e-8d694483505c/</td>
-                            <td>9800</td>
-                            <td>9900</td>
-                            <td>10000</td>
-                            <td>10000</td>
-                            <td>10000</td>
-                            <td>10000</td>
-                            <td>10000</td>
-                            <td>10000</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/calculation/funds/documents/034f22b1-6c67-446a-85d7-930d4487eaea/</td>
-                            <td>47</td>
-                            <td>48</td>
-                            <td>51</td>
-                            <td>52</td>
-                            <td>98</td>
-                            <td>98</td>
-                            <td>98</td>
-                            <td>98</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/calculation/funds/irrf/01897045-d52d-4bb7-800c-328b881b0c3c/</td>
-                            <td>73</td>
-                            <td>78</td>
-                            <td>89</td>
-                            <td>91</td>
-                            <td>120</td>
-                            <td>120</td>
-                            <td>120</td>
-                            <td>120</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/calculation/funds/labor/integrations/00b80274-8e9a-4b11-b4a0-607e8827657b/</td>
-                            <td>28</td>
-                            <td>28</td>
-                            <td>28</td>
-                            <td>32</td>
-                            <td>37</td>
-                            <td>37</td>
-                            <td>37</td>
-                            <td>37</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/calculation/statement/ad474048-6627-4a15-950a-fd565d419186/</td>
-                            <td>1500</td>
-                            <td>1500</td>
-                            <td>1600</td>
-                            <td>1700</td>
-                            <td>1700</td>
-                            <td>1700</td>
-                            <td>1700</td>
-                            <td>1700</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/calculation/verdict/ad474048-6627-4a15-950a-fd565d419186/</td>
-                            <td>710</td>
-                            <td>740</td>
-                            <td>750</td>
-                            <td>770</td>
-                            <td>810</td>
-                            <td>810</td>
-                            <td>810</td>
-                            <td>810</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/creditors/notice/aj/</td>
-                            <td>6600</td>
-                            <td>6700</td>
-                            <td>6800</td>
-                            <td>7000</td>
-                            <td>7200</td>
-                            <td>7200</td>
-                            <td>7200</td>
-                            <td>7200</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/creditors/notice/recovering/</td>
-                            <td>1300</td>
-                            <td>1300</td>
-                            <td>1300</td>
-                            <td>1300</td>
-                            <td>1500</td>
-                            <td>1500</td>
-                            <td>1500</td>
-                            <td>1500</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/creditors/project/00df25f4-3091-4cb3-b13c-93402a330432/</td>
-                            <td>77</td>
-                            <td>80</td>
-                            <td>82</td>
-                            <td>83</td>
-                            <td>96</td>
-                            <td>96</td>
-                            <td>96</td>
-                            <td>96</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/drfmsal_signstatus/</td>
-                            <td>4</td>
-                            <td>8</td>
-                            <td>8</td>
-                            <td>10</td>
-                            <td>11</td>
-                            <td>11</td>
-                            <td>11</td>
-                            <td>11</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/groups/</td>
-                            <td>65</td>
-                            <td>67</td>
-                            <td>67</td>
-                            <td>70</td>
-                            <td>87</td>
-                            <td>87</td>
-                            <td>87</td>
-                            <td>87</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/projects/</td>
-                            <td>9200</td>
-                            <td>9300</td>
-                            <td>9300</td>
-                            <td>9500</td>
-                            <td>9600</td>
-                            <td>9600</td>
-                            <td>9600</td>
-                            <td>9600</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/projects/court/</td>
-                            <td>360</td>
-                            <td>370</td>
-                            <td>370</td>
-                            <td>370</td>
-                            <td>390</td>
-                            <td>390</td>
-                            <td>390</td>
-                            <td>390</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/projects/judge/</td>
-                            <td>390</td>
-                            <td>390</td>
-                            <td>390</td>
-                            <td>410</td>
-                            <td>690</td>
-                            <td>690</td>
-                            <td>690</td>
-                            <td>690</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/projects/lawyer/</td>
-                            <td>360</td>
-                            <td>360</td>
-                            <td>380</td>
-                            <td>400</td>
-                            <td>430</td>
-                            <td>430</td>
-                            <td>430</td>
-                            <td>430</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/projects/project_user/</td>
-                            <td>300</td>
-                            <td>310</td>
-                            <td>310</td>
-                            <td>320</td>
-                            <td>330</td>
-                            <td>330</td>
-                            <td>330</td>
-                            <td>330</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/projects/region/</td>
-                            <td>420</td>
-                            <td>430</td>
-                            <td>440</td>
-                            <td>470</td>
-                            <td>480</td>
-                            <td>480</td>
-                            <td>480</td>
-                            <td>480</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/rates/</td>
-                            <td>70000</td>
-                            <td>72000</td>
-                            <td>73000</td>
-                            <td>74000</td>
-                            <td>74000</td>
-                            <td>74000</td>
-                            <td>74000</td>
-                            <td>74000</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/rates/templates/</td>
-                            <td>11</td>
-                            <td>12</td>
-                            <td>13</td>
-                            <td>15</td>
-                            <td>26</td>
-                            <td>26</td>
-                            <td>26</td>
-                            <td>26</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/rates/templates/e9ddfe35-b3b4-402c-84b3-13b2726b5d89/</td>
-                            <td>85</td>
-                            <td>86</td>
-                            <td>86</td>
-                            <td>89</td>
-                            <td>91</td>
-                            <td>91</td>
-                            <td>91</td>
-                            <td>91</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/recovering/</td>
-                            <td>28000</td>
-                            <td>28000</td>
-                            <td>28000</td>
-                            <td>28000</td>
-                            <td>29000</td>
-                            <td>29000</td>
-                            <td>29000</td>
-                            <td>29000</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/user/detail/</td>
-                            <td>15</td>
-                            <td>18</td>
-                            <td>19</td>
-                            <td>23</td>
-                            <td>31</td>
-                            <td>31</td>
-                            <td>31</td>
-                            <td>31</td>
-                        </tr>
-                    
-                        <tr>
-                            <td>GET</td>
-                            <td>/juca/api/v1/users/</td>
-                            <td>9</td>
-                            <td>10</td>
-                            <td>12</td>
-                            <td>13</td>
-                            <td>27</td>
-                            <td>27</td>
-                            <td>27</td>
-                            <td>27</td>
-                        </tr>
-                    
-                        <tr class="total">
-                            <td></td>
-                            <td>Aggregated</td>
-                            <td>360</td>
-                            <td>430</td>
-                            <td>1300</td>
-                            <td>6500</td>
-                            <td>9900</td>
-                            <td>28000</td>
-                            <td>73000</td>
-                            <td>74000</td>
-                        </tr>
-                    
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/calculation/ad474048-6627-4a15-950a-fd565d419186/</td>
+                    <td>37000</td>
+                    <td>37000</td>
+                    <td>38000</td>
+                    <td>39000</td>
+                    <td>39000</td>
+                    <td>40000</td>
+                    <td>41000</td>
+                    <td>41000</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/calculation/funds/003be3b9-0d9c-4eb0-ba7e-8d694483505c/</td>
+                    <td>130000</td>
+                    <td>131000</td>
+                    <td>132000</td>
+                    <td>136000</td>
+                    <td>138000</td>
+                    <td>142000</td>
+                    <td>142000</td>
+                    <td>142000</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/calculation/funds/documents/034f22b1-6c67-446a-85d7-930d4487eaea/</td>
+                    <td>540</td>
+                    <td>570</td>
+                    <td>600</td>
+                    <td>640</td>
+                    <td>720</td>
+                    <td>810</td>
+                    <td>1200</td>
+                    <td>2100</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/calculation/funds/irrf/01897045-d52d-4bb7-800c-328b881b0c3c/</td>
+                    <td>1400</td>
+                    <td>1500</td>
+                    <td>1500</td>
+                    <td>1600</td>
+                    <td>1700</td>
+                    <td>1900</td>
+                    <td>2200</td>
+                    <td>2500</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/calculation/funds/labor/integrations/00b80274-8e9a-4b11-b4a0-607e8827657b/</td>
+                    <td>230</td>
+                    <td>240</td>
+                    <td>260</td>
+                    <td>280</td>
+                    <td>320</td>
+                    <td>380</td>
+                    <td>700</td>
+                    <td>1400</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/calculation/statement/ad474048-6627-4a15-950a-fd565d419186/</td>
+                    <td>21000</td>
+                    <td>21000</td>
+                    <td>22000</td>
+                    <td>22000</td>
+                    <td>22000</td>
+                    <td>23000</td>
+                    <td>23000</td>
+                    <td>23000</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/calculation/verdict/ad474048-6627-4a15-950a-fd565d419186/</td>
+                    <td>4600</td>
+                    <td>4700</td>
+                    <td>4800</td>
+                    <td>5000</td>
+                    <td>5200</td>
+                    <td>5400</td>
+                    <td>5800</td>
+                    <td>6300</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/creditors/notice/aj/</td>
+                    <td>41000</td>
+                    <td>41000</td>
+                    <td>42000</td>
+                    <td>42000</td>
+                    <td>43000</td>
+                    <td>43000</td>
+                    <td>44000</td>
+                    <td>44000</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/creditors/notice/recovering/</td>
+                    <td>7900</td>
+                    <td>8100</td>
+                    <td>8300</td>
+                    <td>8500</td>
+                    <td>8900</td>
+                    <td>9100</td>
+                    <td>9600</td>
+                    <td>11000</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/creditors/project/00df25f4-3091-4cb3-b13c-93402a330432/</td>
+                    <td>550</td>
+                    <td>570</td>
+                    <td>610</td>
+                    <td>650</td>
+                    <td>740</td>
+                    <td>820</td>
+                    <td>1200</td>
+                    <td>2200</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/drfmsal_signstatus/</td>
+                    <td>15</td>
+                    <td>16</td>
+                    <td>18</td>
+                    <td>21</td>
+                    <td>30</td>
+                    <td>65</td>
+                    <td>630</td>
+                    <td>1200</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/groups/</td>
+                    <td>10000</td>
+                    <td>11000</td>
+                    <td>11000</td>
+                    <td>11000</td>
+                    <td>12000</td>
+                    <td>13000</td>
+                    <td>13000</td>
+                    <td>14000</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/projects/</td>
+                    <td>206000</td>
+                    <td>206000</td>
+                    <td>211000</td>
+                    <td>214000</td>
+                    <td>214000</td>
+                    <td>214000</td>
+                    <td>214000</td>
+                    <td>214000</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/projects/court/</td>
+                    <td>2000</td>
+                    <td>2100</td>
+                    <td>2100</td>
+                    <td>2200</td>
+                    <td>2400</td>
+                    <td>2600</td>
+                    <td>3000</td>
+                    <td>5300</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/projects/engagement/</td>
+                    <td>21000</td>
+                    <td>21000</td>
+                    <td>22000</td>
+                    <td>22000</td>
+                    <td>23000</td>
+                    <td>23000</td>
+                    <td>24000</td>
+                    <td>25000</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/projects/judge/</td>
+                    <td>2000</td>
+                    <td>2100</td>
+                    <td>2200</td>
+                    <td>2300</td>
+                    <td>2400</td>
+                    <td>2600</td>
+                    <td>3100</td>
+                    <td>4000</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/projects/lawyer/</td>
+                    <td>2000</td>
+                    <td>2100</td>
+                    <td>2100</td>
+                    <td>2200</td>
+                    <td>2400</td>
+                    <td>2500</td>
+                    <td>3100</td>
+                    <td>3700</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/projects/project_user/</td>
+                    <td>9300</td>
+                    <td>9400</td>
+                    <td>9600</td>
+                    <td>9900</td>
+                    <td>10000</td>
+                    <td>11000</td>
+                    <td>11000</td>
+                    <td>12000</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/projects/region/</td>
+                    <td>2200</td>
+                    <td>2300</td>
+                    <td>2400</td>
+                    <td>2400</td>
+                    <td>2600</td>
+                    <td>2800</td>
+                    <td>3100</td>
+                    <td>5000</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/rates/</td>
+                    <td>487000</td>
+                    <td>487000</td>
+                    <td>498000</td>
+                    <td>498000</td>
+                    <td>498000</td>
+                    <td>498000</td>
+                    <td>498000</td>
+                    <td>498000</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/rates/templates/</td>
+                    <td>280</td>
+                    <td>290</td>
+                    <td>310</td>
+                    <td>340</td>
+                    <td>390</td>
+                    <td>470</td>
+                    <td>920</td>
+                    <td>1300</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/rates/templates/e9ddfe35-b3b4-402c-84b3-13b2726b5d89/</td>
+                    <td>540</td>
+                    <td>570</td>
+                    <td>610</td>
+                    <td>640</td>
+                    <td>710</td>
+                    <td>830</td>
+                    <td>1200</td>
+                    <td>1800</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/recovering/</td>
+                    <td>170000</td>
+                    <td>173000</td>
+                    <td>175000</td>
+                    <td>175000</td>
+                    <td>178000</td>
+                    <td>178000</td>
+                    <td>178000</td>
+                    <td>178000</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/user/detail/</td>
+                    <td>180</td>
+                    <td>190</td>
+                    <td>210</td>
+                    <td>230</td>
+                    <td>260</td>
+                    <td>320</td>
+                    <td>550</td>
+                    <td>1200</td>
+                </tr>
+
+                <tr>
+                    <td>GET</td>
+                    <td>/juca/api/v1/users/</td>
+                    <td>140</td>
+                    <td>150</td>
+                    <td>160</td>
+                    <td>170</td>
+                    <td>200</td>
+                    <td>250</td>
+                    <td>730</td>
+                    <td>1200</td>
+                </tr>
+
+                <tr class="total">
+                    <td></td>
+                    <td>Aggregated</td>
+                    <td>540</td>
+                    <td>650</td>
+                    <td>1500</td>
+                    <td>2000</td>
+                    <td>3900</td>
+                    <td>9500</td>
+                    <td>37000</td>
+                    <td>498000</td>
+                </tr>
+
                 </tbody>
             </table>
         </div>
-
+        
         <div class="charts-container">
             <h2>Charts</h2>
         </div>
+    
 
         <div id="tasks">
             <h2>Final ratio</h2>
-            <div class="tasks" data-tasks="{&quot;per_class&quot;: {&quot;MaxRequests&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;RequestsTask&quot;: {&quot;ratio&quot;: 1.0, &quot;tasks&quot;: {&quot;FundsDocumentTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;LawyerTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;UserTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;GroupTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;FundsIntegrationsTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;CalculationTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;ProjectUserTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;RateTemplateDetailTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;NoticeRecoveringTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;VerdictTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;EngagementTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;IrrfTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;UserDetailTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;RegionTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;StatementTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;FundsTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;ProjectTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;RateTemplateTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;RatesTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;CourtTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;RecoveringTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;JudgeTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;CreditorTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;SignStatusTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;NoticeTest&quot;: {&quot;ratio&quot;: 0.04, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}}}}}}, &quot;total&quot;: {&quot;MaxRequests&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;RequestsTask&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;FundsDocumentTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;LawyerTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;UserTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;GroupTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;FundsIntegrationsTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;CalculationTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;ProjectUserTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;RateTemplateDetailTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;NoticeRecoveringTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;VerdictTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;EngagementTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;IrrfTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;UserDetailTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;RegionTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;StatementTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;FundsTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;ProjectTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;RateTemplateTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;RatesTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;CourtTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;RecoveringTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;JudgeTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;CreditorTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;SignStatusTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}, &quot;NoticeTest&quot;: {&quot;ratio&quot;: 0.0, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.0}}}}}}}}}"></div>
+            <div class="tasks" data-tasks="{&quot;per_class&quot;: {&quot;CalculationTest&quot;: {&quot;ratio&quot;: 0.06666666666666667, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;FundsTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;FundsDocumentTest&quot;: {&quot;ratio&quot;: 0.06666666666666667, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;FundsIntegrationsTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;IrrfTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;VerdictTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;StatementTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;UserTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;UserDetailTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;GroupTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;SignStatusTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;CreditorTest&quot;: {&quot;ratio&quot;: 0.06666666666666667, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;NoticeTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;NoticeRecoveringTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;ProjectTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;CourtTest&quot;: {&quot;ratio&quot;: 0.06666666666666667, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;EngagementTest&quot;: {&quot;ratio&quot;: 0.06666666666666667, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;JudgeTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;LawyerTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;ProjectUserTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;RegionTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;RatesTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;RateTemplateTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;RateTemplateDetailTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}, &quot;RecoveringTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 1.0}}}}, &quot;total&quot;: {&quot;CalculationTest&quot;: {&quot;ratio&quot;: 0.06666666666666667, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.06666666666666667}}}, &quot;FundsTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.03333333333333333}}}, &quot;FundsDocumentTest&quot;: {&quot;ratio&quot;: 0.06666666666666667, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.06666666666666667}}}, &quot;FundsIntegrationsTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.03333333333333333}}}, &quot;IrrfTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.03333333333333333}}}, &quot;VerdictTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.03333333333333333}}}, &quot;StatementTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.03333333333333333}}}, &quot;UserTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.03333333333333333}}}, &quot;UserDetailTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.03333333333333333}}}, &quot;GroupTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.03333333333333333}}}, &quot;SignStatusTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.03333333333333333}}}, &quot;CreditorTest&quot;: {&quot;ratio&quot;: 0.06666666666666667, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.06666666666666667}}}, &quot;NoticeTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.03333333333333333}}}, &quot;NoticeRecoveringTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.03333333333333333}}}, &quot;ProjectTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.03333333333333333}}}, &quot;CourtTest&quot;: {&quot;ratio&quot;: 0.06666666666666667, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.06666666666666667}}}, &quot;EngagementTest&quot;: {&quot;ratio&quot;: 0.06666666666666667, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.06666666666666667}}}, &quot;JudgeTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.03333333333333333}}}, &quot;LawyerTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.03333333333333333}}}, &quot;ProjectUserTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.03333333333333333}}}, &quot;RegionTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.03333333333333333}}}, &quot;RatesTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.03333333333333333}}}, &quot;RateTemplateTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.03333333333333333}}}, &quot;RateTemplateDetailTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.03333333333333333}}}, &quot;RecoveringTest&quot;: {&quot;ratio&quot;: 0.03333333333333333, &quot;tasks&quot;: {&quot;load_test_get&quot;: {&quot;ratio&quot;: 0.03333333333333333}}}}}"></div>
         </div>
 
     </div>
@@ -1143,12 +1175,12 @@ function fillTasksFromRequest() {
     <script>
         
 var stats_history = {
-    "time": ["23:16:18", "23:16:23", "23:16:28", "23:16:33", "23:16:38", "23:16:43", "23:16:48", "23:16:53", "23:16:58", "23:17:03", "23:17:08", "23:17:13", "23:17:18", "23:17:23", "23:17:28", "23:17:33", "23:17:38", "23:17:43", "23:17:48", "23:17:53", "23:17:58", "23:18:03", "23:18:08", "23:18:13", "23:18:18", "23:18:23", "23:18:28", "23:18:33", "23:18:38", "23:18:43", "23:18:48", "23:18:53", "23:18:58", "23:19:03", "23:19:08", "23:19:13", "23:19:18", "23:19:23", "23:19:28", "23:19:33", "23:19:38", "23:19:43", "23:19:48", "23:19:53", "23:19:58", "23:20:03", "23:20:08", "23:20:13", "23:20:18", "23:20:23", "23:20:28", "23:20:33", "23:20:38", "23:20:43", "23:20:48", "23:20:53", "23:20:58", "23:21:03", "23:21:08", "23:21:13", "23:21:18", "23:21:23", "23:21:28", "23:21:33", "23:21:38", "23:21:43", "23:21:49", "23:21:54", "23:21:59", "23:22:04", "23:22:09", "23:22:14", "23:22:19", "23:22:24", "23:22:29", "23:22:34", "23:22:39", "23:22:44", "23:22:49", "23:22:54", "23:22:59", "23:23:04", "23:23:09", "23:23:14", "23:23:19", "23:23:24", "23:23:29", "23:23:34", "23:23:39", "23:23:44", "23:23:49", "23:23:54", "23:23:59", "23:24:04", "23:24:09", "23:24:14", "23:24:19", "23:24:24", "23:24:29", "23:24:34", "23:24:39", "23:24:44", "23:24:49", "23:24:54", "23:24:59", "23:25:04", "23:25:09", "23:25:14", "23:25:19", "23:25:24", "23:25:29", "23:25:34", "23:25:39", "23:25:44", "23:25:49", "23:25:54", "23:25:59", "23:26:04", "23:26:09", "23:26:14", "23:26:19", "23:26:24", "23:26:29", "23:26:34", "23:26:39", "23:26:44", "23:26:49", "23:26:54", "23:26:59", "23:27:04", "23:27:09", "23:27:14", "23:27:19", "23:27:24", "23:27:29", "23:27:34", "23:27:39", "23:27:44", "23:27:49", "23:27:54", "23:27:59", "23:28:04", "23:28:09", "23:28:14", "23:28:19", "23:28:24", "23:28:29", "23:28:34", "23:28:39", "23:28:44", "23:28:49", "23:28:54", "23:28:59", "23:29:04", "23:29:09", "23:29:14", "23:29:19", "23:29:24", "23:29:29", "23:29:34", "23:29:39", "23:29:44", "23:29:49", "23:29:54", "23:29:59", "23:30:04", "23:30:09", "23:30:14", "23:30:19", "23:30:24", "23:30:29", "23:30:34", "23:30:39", "23:30:44", "23:30:49", "23:30:54", "23:30:59", "23:31:05", "23:31:10", "23:31:15", "23:31:20", "23:31:25", "23:31:30", "23:31:35", "23:31:40", "23:31:45", "23:31:50", "23:31:55", "23:32:00", "23:32:05", "23:32:10", "23:32:15", "23:32:20", "23:32:25", "23:32:30", "23:32:35", "23:32:40", "23:32:45", "23:32:50", "23:32:55", "23:33:00", "23:33:05", "23:33:10", "23:33:15", "23:33:20", "23:33:25", "23:33:30", "23:33:35", "23:33:40", "23:33:45", "23:33:50", "23:33:55", "23:34:00", "23:34:05", "23:34:10", "23:34:15", "23:34:20", "23:34:25", "23:34:30", "23:34:35", "23:34:40", "23:34:45", "23:34:50", "23:34:55", "23:35:00", "23:35:05", "23:35:10", "23:35:15", "23:35:20", "23:35:25", "23:35:30", "23:35:35", "23:35:40", "23:35:45", "23:35:50", "23:35:55", "23:36:00", "23:36:05", "23:36:10", "23:36:15", "23:36:20", "23:36:25", "23:36:30", "23:36:35", "23:36:40", "23:36:45", "23:36:50", "23:36:55", "23:37:00", "23:37:05", "23:37:10", "23:37:15", "23:37:20", "23:37:25", "23:37:30", "23:37:35", "23:37:40", "23:37:45", "23:37:50", "23:37:55", "23:38:00", "23:38:05", "23:38:10", "23:38:15", "23:38:20", "23:38:25", "23:38:30", "23:38:35", "23:38:40", "23:38:45", "23:38:50", "23:38:55", "23:39:00", "23:39:05", "23:39:10", "23:39:15", "23:39:20", "23:39:25", "23:39:30", "23:39:36", "23:39:41", "23:39:46", "23:39:51", "23:39:56", "23:40:01", "23:40:06", "23:40:11", "23:40:16", "23:40:21", "23:40:26", "23:40:31", "23:40:36", "23:40:41", "23:40:46", "23:40:51", "23:40:56", "23:41:01", "23:41:06", "23:41:11", "23:41:16", "23:41:21", "23:41:26", "23:41:31", "23:41:36", "23:41:41", "23:41:46", "23:41:51", "23:41:56", "23:42:01", "23:42:06", "23:42:11", "23:42:16", "23:42:21", "23:42:26", "23:42:31", "23:42:36", "23:42:41", "23:42:46", "23:42:51", "23:42:56", "23:43:01", "23:43:06", "23:43:11", "23:43:16", "23:43:21", "23:43:26", "23:43:31", "23:43:36", "23:43:41", "23:43:46", "23:43:51", "23:43:56", "23:44:01", "23:44:06", "23:44:11", "23:44:16", "23:44:21", "23:44:26", "23:44:31", "23:44:36", "23:44:41", "23:44:46", "23:44:51", "23:44:56", "23:45:01", "23:45:06", "23:45:11", "23:45:16", "23:45:21", "23:45:26", "23:45:31", "23:45:36", "23:45:41", "23:45:46", "23:45:51", "23:45:56", "23:46:01", "23:46:06", "23:46:11", "23:46:16", "23:46:21", "23:46:26", "23:46:31", "23:46:36", "23:46:41", "23:46:46", "23:46:51", "23:46:56", "23:47:01", "23:47:06", "23:47:11", "23:47:16", "23:47:21", "23:47:26", "23:47:31", "23:47:36", "23:47:41", "23:47:46", "23:47:51", "23:47:56", "23:48:01", "23:48:06", "23:48:11", "23:48:16", "23:48:21", "23:48:26", "23:48:31", "23:48:36", "23:48:41", "23:48:46", "23:48:51", "23:48:56", "23:49:01", "23:49:06", "23:49:11", "23:49:16", "23:49:21", "23:49:26", "23:49:31", "23:49:36", "23:49:41", "23:49:46", "23:49:52", "23:49:57", "23:50:02", "23:50:07", "23:50:12", "23:50:17", "23:50:22", "23:50:27", "23:50:32", "23:50:37", "23:50:42", "23:50:47", "23:50:52", "23:50:57", "23:51:02", "23:51:07", "23:51:12", "23:51:17", "23:51:22"].map(server_time => new Date(new Date().setUTCHours(...(server_time.split(":")))).toLocaleTimeString()),
-    "user_count": [{"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 1}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}, {"value": 0}],
-    "current_rps": [{"users": 1, "value": 0}, {"users": 1, "value": 0.3333333333333333}, {"users": 1, "value": 0.4444444444444444}, {"users": 1, "value": 0.5}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.6}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.5}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.5}, {"users": 1, "value": 0.5}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.5}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.6}, {"users": 1, "value": 0.5}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.5}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.5}, {"users": 1, "value": 0.5}, {"users": 1, "value": 0.6}, {"users": 1, "value": 0.5}, {"users": 1, "value": 0.5}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.6}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.5}, {"users": 1, "value": 0.5}, {"users": 1, "value": 0.5}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.3}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.5}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.2}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.4}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 1, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}, {"users": 0, "value": 0.1}],
-    "current_fail_per_sec": [{"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}],
-    "response_time_percentile_1": [{"users": 1, "value": 98}, {"users": 1, "value": 47}, {"users": 1, "value": 47}, {"users": 1, "value": 47}, {"users": 1, "value": 46}, {"users": 1, "value": 52}, {"users": 1, "value": 350.0}, {"users": 1, "value": 360.0}, {"users": 1, "value": 360.0}, {"users": 1, "value": 430.0}, {"users": 1, "value": 380.0}, {"users": 1, "value": 340.0}, {"users": 1, "value": 13}, {"users": 1, "value": 13}, {"users": 1, "value": 13}, {"users": 1, "value": 8}, {"users": 1, "value": 9}, {"users": 1, "value": 12}, {"users": 1, "value": 65}, {"users": 1, "value": 64}, {"users": 1, "value": 65}, {"users": 1, "value": 65}, {"users": 1, "value": 64}, {"users": 1, "value": 64}, {"users": 1, "value": 64}, {"users": 1, "value": 28}, {"users": 1, "value": 28}, {"users": 1, "value": 24}, {"users": 1, "value": 24}, {"users": 1, "value": 28}, {"users": 1, "value": 32}, {"users": 1, "value": 3100.0}, {"users": 1, "value": 3100.0}, {"users": 1, "value": 3100.0}, {"users": 1, "value": 3300.0}, {"users": 1, "value": 3300.0}, {"users": 1, "value": 3200.0}, {"users": 1, "value": 3200.0}, {"users": 1, "value": 3200.0}, {"users": 1, "value": 3200.0}, {"users": 1, "value": 3200.0}, {"users": 1, "value": 3300.0}, {"users": 1, "value": 330.0}, {"users": 1, "value": 320.0}, {"users": 1, "value": 310.0}, {"users": 1, "value": 300.0}, {"users": 1, "value": 300.0}, {"users": 1, "value": 300.0}, {"users": 1, "value": 89}, {"users": 1, "value": 85}, {"users": 1, "value": 85}, {"users": 1, "value": 85}, {"users": 1, "value": 86}, {"users": 1, "value": 1200.0}, {"users": 1, "value": 1300.0}, {"users": 1, "value": 1300.0}, {"users": 1, "value": 1300.0}, {"users": 1, "value": 1300.0}, {"users": 1, "value": 1300.0}, {"users": 1, "value": 1300.0}, {"users": 1, "value": 1200.0}, {"users": 1, "value": 690.0}, {"users": 1, "value": 740.0}, {"users": 1, "value": 750.0}, {"users": 1, "value": 700.0}, {"users": 1, "value": 770.0}, {"users": 1, "value": 690.0}, {"users": 1, "value": 120.0}, {"users": 1, "value": 72}, {"users": 1, "value": 71}, {"users": 1, "value": 71}, {"users": 1, "value": 70}, {"users": 1, "value": 64}, {"users": 1, "value": 19}, {"users": 1, "value": 14}, {"users": 1, "value": 18}, {"users": 1, "value": 31}, {"users": 1, "value": 380.0}, {"users": 1, "value": 380.0}, {"users": 1, "value": 380.0}, {"users": 1, "value": 440.0}, {"users": 1, "value": 390.0}, {"users": 1, "value": 430.0}, {"users": 1, "value": 1400.0}, {"users": 1, "value": 1500.0}, {"users": 1, "value": 1600.0}, {"users": 1, "value": 1500.0}, {"users": 1, "value": 1400.0}, {"users": 1, "value": 1400.0}, {"users": 1, "value": 1500.0}, {"users": 1, "value": 1700.0}, {"users": 1, "value": 10000.0}, {"users": 1, "value": 10000.0}, {"users": 1, "value": 10000.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 10000.0}, {"users": 1, "value": 10000.0}, {"users": 1, "value": 10000.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 9900.0}, {"users": 1, "value": 9900.0}, {"users": 1, "value": 9900.0}, {"users": 1, "value": 9700.0}, {"users": 1, "value": 9700.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 10000.0}, {"users": 1, "value": 10000.0}, {"users": 1, "value": 10000.0}, {"users": 1, "value": 9300.0}, {"users": 1, "value": 9300.0}, {"users": 1, "value": 8900.0}, {"users": 1, "value": 8900.0}, {"users": 1, "value": 9000.0}, {"users": 1, "value": 9000.0}, {"users": 1, "value": 9100.0}, {"users": 1, "value": 9100.0}, {"users": 1, "value": 9100.0}, {"users": 1, "value": 9500.0}, {"users": 1, "value": 9500.0}, {"users": 1, "value": 9500.0}, {"users": 1, "value": 9300.0}, {"users": 1, "value": 9300.0}, {"users": 1, "value": 9000.0}, {"users": 1, "value": 9000.0}, {"users": 1, "value": 9200.0}, {"users": 1, "value": 9200.0}, {"users": 1, "value": 9200.0}, {"users": 1, "value": 9000.0}, {"users": 1, "value": 9000.0}, {"users": 1, "value": 9000.0}, {"users": 1, "value": 15}, {"users": 1, "value": 15}, {"users": 1, "value": 11}, {"users": 1, "value": 12}, {"users": 1, "value": 12}, {"users": 1, "value": 9}, {"users": 1, "value": 9}, {"users": 1, "value": 9}, {"users": 1, "value": 9}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 67000.0}, {"users": 1, "value": 67000.0}, {"users": 1, "value": 67000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 66000.0}, {"users": 1, "value": 66000.0}, {"users": 1, "value": 66000.0}, {"users": 1, "value": 66000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 67000.0}, {"users": 1, "value": 67000.0}, {"users": 1, "value": 67000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 68000.0}, {"users": 1, "value": 68000.0}, {"users": 1, "value": 68000.0}, {"users": 1, "value": 68000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 70000.0}, {"users": 1, "value": 70000.0}, {"users": 1, "value": 70000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 72000.0}, {"users": 1, "value": 72000.0}, {"users": 1, "value": 72000.0}, {"users": 1, "value": 72000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 74000.0}, {"users": 1, "value": 74000.0}, {"users": 1, "value": 74000.0}, {"users": 1, "value": 74000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 74000.0}, {"users": 1, "value": 74000.0}, {"users": 1, "value": 74000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 73000.0}, {"users": 1, "value": 73000.0}, {"users": 1, "value": 73000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 70000.0}, {"users": 1, "value": 390.0}, {"users": 1, "value": 370.0}, {"users": 1, "value": 370.0}, {"users": 1, "value": 350.0}, {"users": 1, "value": 360.0}, {"users": 1, "value": 360.0}, {"users": 1, "value": 360.0}, {"users": 1, "value": 360.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 27000.0}, {"users": 1, "value": 27000.0}, {"users": 1, "value": 27000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 29000.0}, {"users": 1, "value": 29000.0}, {"users": 1, "value": 29000.0}, {"users": 1, "value": 29000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 27000.0}, {"users": 1, "value": 27000.0}, {"users": 1, "value": 27000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 690.0}, {"users": 1, "value": 370.0}, {"users": 1, "value": 360.0}, {"users": 1, "value": 370.0}, {"users": 1, "value": 390.0}, {"users": 1, "value": 390.0}, {"users": 1, "value": 96}, {"users": 1, "value": 80}, {"users": 1, "value": 77}, {"users": 1, "value": 74}, {"users": 1, "value": 74}, {"users": 1, "value": 73}, {"users": 1, "value": 72}, {"users": 1, "value": 4}, {"users": 1, "value": 4}, {"users": 1, "value": 10}, {"users": 1, "value": 4}, {"users": 1, "value": 8}, {"users": 1, "value": 8}, {"users": 1, "value": 6400.0}, {"users": 1, "value": 6500.0}, {"users": 1, "value": 6500.0}, {"users": 1, "value": 6600.0}, {"users": 1, "value": 6600.0}, {"users": 1, "value": 7000.0}, {"users": 1, "value": 7000.0}, {"users": 1, "value": 7000.0}, {"users": 1, "value": 6800.0}, {"users": 1, "value": 7200.0}, {"users": 1, "value": 7200.0}, {"users": 1, "value": 6500.0}, {"users": 1, "value": 6500.0}, {"users": 1, "value": 6500.0}, {"users": 1, "value": 6700.0}, {"users": 1, "value": 6700.0}, {"users": 0, "value": 6700.0}, {"users": 0, "value": 6500.0}, {"users": 0, "value": 6500.0}, {"users": 0, "value": 6500.0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}],
-    "response_time_percentile_2": [{"users": 1, "value": 98}, {"users": 1, "value": 98}, {"users": 1, "value": 48}, {"users": 1, "value": 48}, {"users": 1, "value": 46}, {"users": 1, "value": 400.0}, {"users": 1, "value": 400.0}, {"users": 1, "value": 360.0}, {"users": 1, "value": 360.0}, {"users": 1, "value": 430.0}, {"users": 1, "value": 430.0}, {"users": 1, "value": 380.0}, {"users": 1, "value": 350.0}, {"users": 1, "value": 27}, {"users": 1, "value": 27}, {"users": 1, "value": 10}, {"users": 1, "value": 87}, {"users": 1, "value": 87}, {"users": 1, "value": 65}, {"users": 1, "value": 67}, {"users": 1, "value": 67}, {"users": 1, "value": 67}, {"users": 1, "value": 67}, {"users": 1, "value": 70}, {"users": 1, "value": 70}, {"users": 1, "value": 28}, {"users": 1, "value": 28}, {"users": 1, "value": 28}, {"users": 1, "value": 28}, {"users": 1, "value": 32}, {"users": 1, "value": 3400.0}, {"users": 1, "value": 3400.0}, {"users": 1, "value": 3100.0}, {"users": 1, "value": 3100.0}, {"users": 1, "value": 3300.0}, {"users": 1, "value": 3300.0}, {"users": 1, "value": 3200.0}, {"users": 1, "value": 3200.0}, {"users": 1, "value": 3200.0}, {"users": 1, "value": 3200.0}, {"users": 1, "value": 3200.0}, {"users": 1, "value": 3300.0}, {"users": 1, "value": 3300.0}, {"users": 1, "value": 3300.0}, {"users": 1, "value": 330.0}, {"users": 1, "value": 310.0}, {"users": 1, "value": 310.0}, {"users": 1, "value": 310.0}, {"users": 1, "value": 290.0}, {"users": 1, "value": 86}, {"users": 1, "value": 91}, {"users": 1, "value": 91}, {"users": 1, "value": 1200.0}, {"users": 1, "value": 1500.0}, {"users": 1, "value": 1500.0}, {"users": 1, "value": 1300.0}, {"users": 1, "value": 1300.0}, {"users": 1, "value": 1300.0}, {"users": 1, "value": 1300.0}, {"users": 1, "value": 1300.0}, {"users": 1, "value": 1200.0}, {"users": 1, "value": 1200.0}, {"users": 1, "value": 750.0}, {"users": 1, "value": 810.0}, {"users": 1, "value": 810.0}, {"users": 1, "value": 810.0}, {"users": 1, "value": 770.0}, {"users": 1, "value": 710.0}, {"users": 1, "value": 120.0}, {"users": 1, "value": 72}, {"users": 1, "value": 72}, {"users": 1, "value": 91}, {"users": 1, "value": 91}, {"users": 1, "value": 78}, {"users": 1, "value": 18}, {"users": 1, "value": 31}, {"users": 1, "value": 420.0}, {"users": 1, "value": 420.0}, {"users": 1, "value": 380.0}, {"users": 1, "value": 470.0}, {"users": 1, "value": 470.0}, {"users": 1, "value": 440.0}, {"users": 1, "value": 1500.0}, {"users": 1, "value": 1600.0}, {"users": 1, "value": 1600.0}, {"users": 1, "value": 1700.0}, {"users": 1, "value": 1700.0}, {"users": 1, "value": 1500.0}, {"users": 1, "value": 1500.0}, {"users": 1, "value": 1700.0}, {"users": 1, "value": 1700.0}, {"users": 1, "value": 10000.0}, {"users": 1, "value": 10000.0}, {"users": 1, "value": 10000.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 10000.0}, {"users": 1, "value": 10000.0}, {"users": 1, "value": 10000.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 9900.0}, {"users": 1, "value": 9900.0}, {"users": 1, "value": 9900.0}, {"users": 1, "value": 9700.0}, {"users": 1, "value": 9700.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 9800.0}, {"users": 1, "value": 10000.0}, {"users": 1, "value": 10000.0}, {"users": 1, "value": 10000.0}, {"users": 1, "value": 9300.0}, {"users": 1, "value": 9300.0}, {"users": 1, "value": 8900.0}, {"users": 1, "value": 8900.0}, {"users": 1, "value": 9000.0}, {"users": 1, "value": 9000.0}, {"users": 1, "value": 9100.0}, {"users": 1, "value": 9100.0}, {"users": 1, "value": 9100.0}, {"users": 1, "value": 9500.0}, {"users": 1, "value": 9500.0}, {"users": 1, "value": 9500.0}, {"users": 1, "value": 9300.0}, {"users": 1, "value": 9300.0}, {"users": 1, "value": 9000.0}, {"users": 1, "value": 9000.0}, {"users": 1, "value": 9200.0}, {"users": 1, "value": 9200.0}, {"users": 1, "value": 9200.0}, {"users": 1, "value": 9000.0}, {"users": 1, "value": 9000.0}, {"users": 1, "value": 9600.0}, {"users": 1, "value": 9600.0}, {"users": 1, "value": 9600.0}, {"users": 1, "value": 13}, {"users": 1, "value": 26}, {"users": 1, "value": 26}, {"users": 1, "value": 10}, {"users": 1, "value": 9}, {"users": 1, "value": 9}, {"users": 1, "value": 9}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 67000.0}, {"users": 1, "value": 67000.0}, {"users": 1, "value": 67000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 66000.0}, {"users": 1, "value": 66000.0}, {"users": 1, "value": 66000.0}, {"users": 1, "value": 66000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 67000.0}, {"users": 1, "value": 67000.0}, {"users": 1, "value": 67000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 68000.0}, {"users": 1, "value": 68000.0}, {"users": 1, "value": 68000.0}, {"users": 1, "value": 68000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 70000.0}, {"users": 1, "value": 70000.0}, {"users": 1, "value": 70000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 72000.0}, {"users": 1, "value": 72000.0}, {"users": 1, "value": 72000.0}, {"users": 1, "value": 72000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 74000.0}, {"users": 1, "value": 74000.0}, {"users": 1, "value": 74000.0}, {"users": 1, "value": 74000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 74000.0}, {"users": 1, "value": 74000.0}, {"users": 1, "value": 74000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 73000.0}, {"users": 1, "value": 73000.0}, {"users": 1, "value": 73000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 70000.0}, {"users": 1, "value": 70000.0}, {"users": 1, "value": 370.0}, {"users": 1, "value": 370.0}, {"users": 1, "value": 370.0}, {"users": 1, "value": 360.0}, {"users": 1, "value": 360.0}, {"users": 1, "value": 360.0}, {"users": 1, "value": 360.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 27000.0}, {"users": 1, "value": 27000.0}, {"users": 1, "value": 27000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 29000.0}, {"users": 1, "value": 29000.0}, {"users": 1, "value": 29000.0}, {"users": 1, "value": 29000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 27000.0}, {"users": 1, "value": 27000.0}, {"users": 1, "value": 27000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 28000.0}, {"users": 1, "value": 690.0}, {"users": 1, "value": 370.0}, {"users": 1, "value": 410.0}, {"users": 1, "value": 410.0}, {"users": 1, "value": 390.0}, {"users": 1, "value": 390.0}, {"users": 1, "value": 82}, {"users": 1, "value": 77}, {"users": 1, "value": 76}, {"users": 1, "value": 76}, {"users": 1, "value": 83}, {"users": 1, "value": 83}, {"users": 1, "value": 11}, {"users": 1, "value": 11}, {"users": 1, "value": 11}, {"users": 1, "value": 10}, {"users": 1, "value": 10}, {"users": 1, "value": 6400.0}, {"users": 1, "value": 6400.0}, {"users": 1, "value": 6500.0}, {"users": 1, "value": 6500.0}, {"users": 1, "value": 6600.0}, {"users": 1, "value": 6600.0}, {"users": 1, "value": 7000.0}, {"users": 1, "value": 7000.0}, {"users": 1, "value": 7000.0}, {"users": 1, "value": 6800.0}, {"users": 1, "value": 7200.0}, {"users": 1, "value": 7200.0}, {"users": 1, "value": 6500.0}, {"users": 1, "value": 6500.0}, {"users": 1, "value": 6500.0}, {"users": 1, "value": 6700.0}, {"users": 1, "value": 6700.0}, {"users": 0, "value": 6700.0}, {"users": 0, "value": 6500.0}, {"users": 0, "value": 6500.0}, {"users": 0, "value": 6500.0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}, {"users": 0, "value": 0}],
+    "time": ["17:31:32", "17:31:37", "17:31:42", "17:31:48", "17:31:53", "17:31:58", "17:32:03", "17:32:08", "17:32:13", "17:32:18", "17:32:23", "17:32:28", "17:32:33", "17:32:38", "17:32:43", "17:32:48", "17:32:53", "17:32:58", "17:33:03", "17:33:08", "17:33:13", "17:33:18", "17:33:23", "17:33:28", "17:33:33", "17:33:38", "17:33:43", "17:33:48", "17:33:53", "17:33:58", "17:34:03", "17:34:08", "17:34:13", "17:34:18", "17:34:23", "17:34:28", "17:34:33", "17:34:38", "17:34:43", "17:34:48", "17:34:53", "17:34:58", "17:35:03", "17:35:08", "17:35:13", "17:35:18", "17:35:23", "17:35:28", "17:35:33", "17:35:38", "17:35:43", "17:35:48", "17:35:53", "17:35:58", "17:36:03", "17:36:08", "17:36:13", "17:36:18", "17:36:23", "17:36:28", "17:36:33", "17:36:38", "17:36:43", "17:36:48", "17:36:53", "17:36:58", "17:37:03", "17:37:08", "17:37:13", "17:37:18", "17:37:23", "17:37:28", "17:37:33", "17:37:38", "17:37:43", "17:37:48", "17:37:53", "17:37:58", "17:38:03", "17:38:08", "17:38:13", "17:38:18", "17:38:23", "17:38:28", "17:38:33", "17:38:38", "17:38:43", "17:38:48", "17:38:53", "17:38:58", "17:39:03", "17:39:08", "17:39:13", "17:39:18", "17:39:23", "17:39:28", "17:39:33", "17:39:38", "17:39:43", "17:39:48", "17:39:53", "17:39:58", "17:40:04", "17:40:09", "17:40:14", "17:40:19", "17:40:24", "17:40:29", "17:40:34", "17:40:39", "17:40:44", "17:40:49", "17:40:54", "17:40:59", "17:41:04", "17:41:09", "17:41:14", "17:41:19", "17:41:24", "17:41:29", "17:41:34", "17:41:39", "17:41:44", "17:41:49", "17:41:54", "17:41:59", "17:42:04", "17:42:09", "17:42:14", "17:42:19", "17:42:24", "17:42:29", "17:42:34", "17:42:39", "17:42:44", "17:42:49", "17:42:54", "17:42:59", "17:43:04", "17:43:09", "17:43:14", "17:43:19", "17:43:24", "17:43:29", "17:43:34", "17:43:39", "17:43:44", "17:43:49", "17:43:54", "17:43:59", "17:44:04", "17:44:09", "17:44:14", "17:44:19", "17:44:24", "17:44:29", "17:44:34", "17:44:39", "17:44:44", "17:44:49", "17:44:54", "17:44:59", "17:45:04", "17:45:09", "17:45:14", "17:45:19", "17:45:24", "17:45:29", "17:45:34", "17:45:39", "17:45:44", "17:45:49", "17:45:54", "17:45:59", "17:46:04", "17:46:09", "17:46:14", "17:46:19", "17:46:24", "17:46:29", "17:46:34", "17:46:39", "17:46:44", "17:46:49", "17:46:54", "17:46:59", "17:47:04", "17:47:09", "17:47:14", "17:47:19", "17:47:24", "17:47:29", "17:47:34", "17:47:39", "17:47:44", "17:47:49", "17:47:54", "17:47:59", "17:48:04", "17:48:09", "17:48:14", "17:48:19", "17:48:24", "17:48:29", "17:48:34", "17:48:39", "17:48:44", "17:48:49", "17:48:55", "17:49:00", "17:49:05", "17:49:10", "17:49:15", "17:49:20", "17:49:25", "17:49:30", "17:49:35", "17:49:40", "17:49:45", "17:49:50", "17:49:55", "17:50:00", "17:50:05", "17:50:10", "17:50:15", "17:50:20", "17:50:25", "17:50:30", "17:50:35", "17:50:40", "17:50:45", "17:50:50", "17:50:55", "17:51:00", "17:51:05", "17:51:10", "17:51:15", "17:51:20", "17:51:25", "17:51:30", "17:51:35", "17:51:40", "17:51:45", "17:51:50", "17:51:55", "17:52:00", "17:52:05", "17:52:10", "17:52:15", "17:52:20", "17:52:25", "17:52:30", "17:52:35", "17:52:40", "17:52:45", "17:52:50", "17:52:55", "17:53:00", "17:53:05", "17:53:10", "17:53:15", "17:53:20", "17:53:25", "17:53:30", "17:53:35", "17:53:40", "17:53:45", "17:53:50", "17:53:55", "17:54:00", "17:54:05", "17:54:10", "17:54:15", "17:54:20", "17:54:25", "17:54:30", "17:54:35", "17:54:40", "17:54:45", "17:54:50", "17:54:55", "17:55:00", "17:55:05", "17:55:10", "17:55:15", "17:55:20", "17:55:25", "17:55:30", "17:55:35", "17:55:40", "17:55:45", "17:55:50", "17:55:55", "17:56:00", "17:56:05", "17:56:10", "17:56:15", "17:56:20", "17:56:25", "17:56:30", "17:56:35", "17:56:40", "17:56:45", "17:56:50", "17:56:55", "17:57:00", "17:57:05", "17:57:10", "17:57:15", "17:57:20", "17:57:25", "17:57:31", "17:57:36", "17:57:41", "17:57:46", "17:57:51", "17:57:56", "17:58:01", "17:58:06", "17:58:11", "17:58:16", "17:58:21", "17:58:26", "17:58:31", "17:58:36", "17:58:41", "17:58:46", "17:58:51", "17:58:56", "17:59:01", "17:59:06", "17:59:11", "17:59:16", "17:59:21", "17:59:26", "17:59:31", "17:59:36", "17:59:41", "17:59:46", "17:59:51", "17:59:56", "18:00:01", "18:00:06", "18:00:11", "18:00:16", "18:00:21", "18:00:26", "18:00:31", "18:00:36", "18:00:41", "18:00:46", "18:00:51", "18:00:56", "18:01:01", "18:01:06", "18:01:11", "18:01:16", "18:01:21", "18:01:26", "18:01:31"].map(server_time => new Date(new Date().setUTCHours(...(server_time.split(":")))).toLocaleTimeString()),
+    "user_count": [{"value": 2}, {"value": 7}, {"value": 12}, {"value": 16}, {"value": 21}, {"value": 26}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}, {"value": 30}],
+    "current_rps": [{"users": 2, "value": 0}, {"users": 7, "value": 0.5}, {"users": 12, "value": 1.7777777777777777}, {"users": 16, "value": 3.0}, {"users": 21, "value": 3.4}, {"users": 26, "value": 4.0}, {"users": 30, "value": 5.0}, {"users": 30, "value": 5.5}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.5}, {"users": 30, "value": 7.0}, {"users": 30, "value": 6.5}, {"users": 30, "value": 7.1}, {"users": 30, "value": 6.7}, {"users": 30, "value": 7.0}, {"users": 30, "value": 6.9}, {"users": 30, "value": 7.0}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.9}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.7}, {"users": 30, "value": 7.0}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.8}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.8}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.8}, {"users": 30, "value": 7.3}, {"users": 30, "value": 7.1}, {"users": 30, "value": 6.7}, {"users": 30, "value": 5.9}, {"users": 30, "value": 6.0}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.5}, {"users": 30, "value": 7.0}, {"users": 30, "value": 6.8}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.8}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.4}, {"users": 30, "value": 5.9}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.9}, {"users": 30, "value": 7.0}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.0}, {"users": 30, "value": 5.4}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.6}, {"users": 30, "value": 5.8}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.0}, {"users": 30, "value": 5.9}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.0}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.0}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.0}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.2}, {"users": 30, "value": 5.9}, {"users": 30, "value": 5.9}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.2}, {"users": 30, "value": 5.9}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.0}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.5}, {"users": 30, "value": 5.9}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.8}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.9}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.4}, {"users": 30, "value": 5.9}, {"users": 30, "value": 6.0}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.9}, {"users": 30, "value": 7.0}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.0}, {"users": 30, "value": 6.6}, {"users": 30, "value": 7.2}, {"users": 30, "value": 6.5}, {"users": 30, "value": 5.9}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.8}, {"users": 30, "value": 6.8}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.2}, {"users": 30, "value": 5.8}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.2}, {"users": 30, "value": 5.9}, {"users": 30, "value": 5.9}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.8}, {"users": 30, "value": 7.0}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.0}, {"users": 30, "value": 5.9}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.1}, {"users": 30, "value": 5.6}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.0}, {"users": 30, "value": 6.0}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.1}, {"users": 30, "value": 5.6}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.4}, {"users": 30, "value": 5.8}, {"users": 30, "value": 6.3}, {"users": 30, "value": 7.0}, {"users": 30, "value": 6.8}, {"users": 30, "value": 5.7}, {"users": 30, "value": 5.7}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.4}, {"users": 30, "value": 5.8}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.3}, {"users": 30, "value": 7.1}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.5}, {"users": 30, "value": 7.2}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.8}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.3}, {"users": 30, "value": 7.0}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.0}, {"users": 30, "value": 5.8}, {"users": 30, "value": 7.0}, {"users": 30, "value": 6.8}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.8}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.0}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.0}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.0}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.8}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.0}, {"users": 30, "value": 5.9}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.9}, {"users": 30, "value": 6.8}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.3}, {"users": 30, "value": 5.4}, {"users": 30, "value": 6.0}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.9}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.0}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.1}, {"users": 30, "value": 5.8}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.0}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.5}, {"users": 30, "value": 5.7}, {"users": 30, "value": 6.0}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.9}, {"users": 30, "value": 6.9}, {"users": 30, "value": 7.1}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.0}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.7}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.3}, {"users": 30, "value": 5.8}, {"users": 30, "value": 5.8}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.2}, {"users": 30, "value": 5.9}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.9}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.8}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.2}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.0}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.8}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.5}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.6}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.8}, {"users": 30, "value": 6.8}, {"users": 30, "value": 6.1}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.3}, {"users": 30, "value": 6.4}, {"users": 30, "value": 6.7}],
+    "current_fail_per_sec": [{"users": 2, "value": 0}, {"users": 7, "value": 0}, {"users": 12, "value": 0}, {"users": 16, "value": 0}, {"users": 21, "value": 0}, {"users": 26, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}, {"users": 30, "value": 0}],
+    "response_time_percentile_1": [{"users": 2, "value": 0}, {"users": 7, "value": 160.0}, {"users": 12, "value": 160.0}, {"users": 16, "value": 290.0}, {"users": 21, "value": 430.0}, {"users": 26, "value": 380.0}, {"users": 30, "value": 460.0}, {"users": 30, "value": 630.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 500.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 460.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 500.0}, {"users": 30, "value": 470.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 500.0}, {"users": 30, "value": 480.0}, {"users": 30, "value": 480.0}, {"users": 30, "value": 490.0}, {"users": 30, "value": 480.0}, {"users": 30, "value": 490.0}, {"users": 30, "value": 500.0}, {"users": 30, "value": 470.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 500.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 470.0}, {"users": 30, "value": 450.0}, {"users": 30, "value": 470.0}, {"users": 30, "value": 480.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 470.0}, {"users": 30, "value": 480.0}, {"users": 30, "value": 460.0}, {"users": 30, "value": 480.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 490.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 620.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 580.0}, {"users": 30, "value": 580.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 580.0}, {"users": 30, "value": 600.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 600.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 610.0}, {"users": 30, "value": 610.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 500.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 610.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 650.0}, {"users": 30, "value": 660.0}, {"users": 30, "value": 590.0}, {"users": 30, "value": 620.0}, {"users": 30, "value": 620.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 590.0}, {"users": 30, "value": 610.0}, {"users": 30, "value": 610.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 640.0}, {"users": 30, "value": 590.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 600.0}, {"users": 30, "value": 590.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 650.0}, {"users": 30, "value": 600.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 590.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 580.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 590.0}, {"users": 30, "value": 610.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 600.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 500.0}, {"users": 30, "value": 490.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 600.0}, {"users": 30, "value": 640.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 590.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 490.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 470.0}, {"users": 30, "value": 490.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 600.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 710.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 500.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 500.0}, {"users": 30, "value": 610.0}, {"users": 30, "value": 690.0}, {"users": 30, "value": 580.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 580.0}, {"users": 30, "value": 590.0}, {"users": 30, "value": 590.0}, {"users": 30, "value": 590.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 630.0}, {"users": 30, "value": 640.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 630.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 610.0}, {"users": 30, "value": 610.0}, {"users": 30, "value": 650.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 580.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 490.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 630.0}, {"users": 30, "value": 630.0}, {"users": 30, "value": 500.0}, {"users": 30, "value": 500.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 610.0}, {"users": 30, "value": 600.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 500.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 500.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 490.0}, {"users": 30, "value": 470.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 580.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 500.0}, {"users": 30, "value": 490.0}, {"users": 30, "value": 490.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 600.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 490.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 620.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 610.0}, {"users": 30, "value": 580.0}, {"users": 30, "value": 590.0}, {"users": 30, "value": 630.0}, {"users": 30, "value": 640.0}, {"users": 30, "value": 620.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 580.0}, {"users": 30, "value": 580.0}, {"users": 30, "value": 590.0}, {"users": 30, "value": 580.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 580.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 480.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 610.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 580.0}, {"users": 30, "value": 610.0}, {"users": 30, "value": 650.0}, {"users": 30, "value": 590.0}, {"users": 30, "value": 570.0}, {"users": 30, "value": 630.0}, {"users": 30, "value": 580.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 580.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 480.0}, {"users": 30, "value": 500.0}, {"users": 30, "value": 580.0}, {"users": 30, "value": 600.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 630.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 610.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 810.0}, {"users": 30, "value": 610.0}, {"users": 30, "value": 590.0}, {"users": 30, "value": 610.0}, {"users": 30, "value": 580.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 600.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 500.0}, {"users": 30, "value": 480.0}, {"users": 30, "value": 470.0}, {"users": 30, "value": 590.0}, {"users": 30, "value": 640.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 460.0}, {"users": 30, "value": 480.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 580.0}, {"users": 30, "value": 530.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 550.0}, {"users": 30, "value": 500.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 520.0}, {"users": 30, "value": 560.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 510.0}, {"users": 30, "value": 540.0}, {"users": 30, "value": 540.0}],
+    "response_time_percentile_2": [{"users": 2, "value": 0}, {"users": 7, "value": 4300.0}, {"users": 12, "value": 2000.0}, {"users": 16, "value": 4900.0}, {"users": 21, "value": 4900.0}, {"users": 26, "value": 5700.0}, {"users": 30, "value": 6000.0}, {"users": 30, "value": 5500.0}, {"users": 30, "value": 9300.0}, {"users": 30, "value": 9600.0}, {"users": 30, "value": 21000.0}, {"users": 30, "value": 8100.0}, {"users": 30, "value": 8900.0}, {"users": 30, "value": 9700.0}, {"users": 30, "value": 9700.0}, {"users": 30, "value": 8300.0}, {"users": 30, "value": 17000.0}, {"users": 30, "value": 17000.0}, {"users": 30, "value": 7800.0}, {"users": 30, "value": 9800.0}, {"users": 30, "value": 7600.0}, {"users": 30, "value": 7600.0}, {"users": 30, "value": 6700.0}, {"users": 30, "value": 8500.0}, {"users": 30, "value": 8500.0}, {"users": 30, "value": 4200.0}, {"users": 30, "value": 8800.0}, {"users": 30, "value": 8300.0}, {"users": 30, "value": 9600.0}, {"users": 30, "value": 7000.0}, {"users": 30, "value": 7000.0}, {"users": 30, "value": 18000.0}, {"users": 30, "value": 6700.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 6300.0}, {"users": 30, "value": 8500.0}, {"users": 30, "value": 8300.0}, {"users": 30, "value": 18000.0}, {"users": 30, "value": 7200.0}, {"users": 30, "value": 8100.0}, {"users": 30, "value": 20000.0}, {"users": 30, "value": 9600.0}, {"users": 30, "value": 4700.0}, {"users": 30, "value": 9000.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 9600.0}, {"users": 30, "value": 4500.0}, {"users": 30, "value": 8100.0}, {"users": 30, "value": 19000.0}, {"users": 30, "value": 8600.0}, {"users": 30, "value": 4800.0}, {"users": 30, "value": 7800.0}, {"users": 30, "value": 9900.0}, {"users": 30, "value": 9400.0}, {"users": 30, "value": 8400.0}, {"users": 30, "value": 20000.0}, {"users": 30, "value": 9300.0}, {"users": 30, "value": 12000.0}, {"users": 30, "value": 8000.0}, {"users": 30, "value": 9400.0}, {"users": 30, "value": 7700.0}, {"users": 30, "value": 9400.0}, {"users": 30, "value": 9600.0}, {"users": 30, "value": 9300.0}, {"users": 30, "value": 9300.0}, {"users": 30, "value": 9000.0}, {"users": 30, "value": 9400.0}, {"users": 30, "value": 5600.0}, {"users": 30, "value": 23000.0}, {"users": 30, "value": 12000.0}, {"users": 30, "value": 8900.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 8300.0}, {"users": 30, "value": 9000.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 8100.0}, {"users": 30, "value": 13000.0}, {"users": 30, "value": 8600.0}, {"users": 30, "value": 8900.0}, {"users": 30, "value": 13000.0}, {"users": 30, "value": 13000.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 9500.0}, {"users": 30, "value": 8600.0}, {"users": 30, "value": 12000.0}, {"users": 30, "value": 12000.0}, {"users": 30, "value": 8200.0}, {"users": 30, "value": 9800.0}, {"users": 30, "value": 4700.0}, {"users": 30, "value": 8900.0}, {"users": 30, "value": 12000.0}, {"users": 30, "value": 22000.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 5100.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 9100.0}, {"users": 30, "value": 9100.0}, {"users": 30, "value": 7900.0}, {"users": 30, "value": 23000.0}, {"users": 30, "value": 23000.0}, {"users": 30, "value": 8000.0}, {"users": 30, "value": 14000.0}, {"users": 30, "value": 9600.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 8100.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 8900.0}, {"users": 30, "value": 8900.0}, {"users": 30, "value": 8900.0}, {"users": 30, "value": 21000.0}, {"users": 30, "value": 9200.0}, {"users": 30, "value": 2400.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 9000.0}, {"users": 30, "value": 23000.0}, {"users": 30, "value": 9200.0}, {"users": 30, "value": 9200.0}, {"users": 30, "value": 23000.0}, {"users": 30, "value": 22000.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 7200.0}, {"users": 30, "value": 20000.0}, {"users": 30, "value": 19000.0}, {"users": 30, "value": 9000.0}, {"users": 30, "value": 7700.0}, {"users": 30, "value": 7900.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 8900.0}, {"users": 30, "value": 6000.0}, {"users": 30, "value": 6000.0}, {"users": 30, "value": 13000.0}, {"users": 30, "value": 23000.0}, {"users": 30, "value": 22000.0}, {"users": 30, "value": 4700.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 21000.0}, {"users": 30, "value": 21000.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 2300.0}, {"users": 30, "value": 12000.0}, {"users": 30, "value": 20000.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 7300.0}, {"users": 30, "value": 8700.0}, {"users": 30, "value": 20000.0}, {"users": 30, "value": 9900.0}, {"users": 30, "value": 8300.0}, {"users": 30, "value": 8000.0}, {"users": 30, "value": 8000.0}, {"users": 30, "value": 12000.0}, {"users": 30, "value": 9200.0}, {"users": 30, "value": 7700.0}, {"users": 30, "value": 9800.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 9600.0}, {"users": 30, "value": 8200.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 22000.0}, {"users": 30, "value": 8200.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 20000.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 9200.0}, {"users": 30, "value": 8300.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 21000.0}, {"users": 30, "value": 9700.0}, {"users": 30, "value": 7700.0}, {"users": 30, "value": 12000.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 8000.0}, {"users": 30, "value": 4800.0}, {"users": 30, "value": 9700.0}, {"users": 30, "value": 21000.0}, {"users": 30, "value": 9400.0}, {"users": 30, "value": 8400.0}, {"users": 30, "value": 4800.0}, {"users": 30, "value": 5100.0}, {"users": 30, "value": 22000.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 7900.0}, {"users": 30, "value": 9300.0}, {"users": 30, "value": 8300.0}, {"users": 30, "value": 9400.0}, {"users": 30, "value": 8100.0}, {"users": 30, "value": 5000.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 9100.0}, {"users": 30, "value": 7600.0}, {"users": 30, "value": 7600.0}, {"users": 30, "value": 9600.0}, {"users": 30, "value": 22000.0}, {"users": 30, "value": 22000.0}, {"users": 30, "value": 6300.0}, {"users": 30, "value": 9600.0}, {"users": 30, "value": 12000.0}, {"users": 30, "value": 22000.0}, {"users": 30, "value": 9800.0}, {"users": 30, "value": 8400.0}, {"users": 30, "value": 9100.0}, {"users": 30, "value": 21000.0}, {"users": 30, "value": 8300.0}, {"users": 30, "value": 8300.0}, {"users": 30, "value": 9500.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 20000.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 4700.0}, {"users": 30, "value": 7900.0}, {"users": 30, "value": 7900.0}, {"users": 30, "value": 13000.0}, {"users": 30, "value": 21000.0}, {"users": 30, "value": 20000.0}, {"users": 30, "value": 8800.0}, {"users": 30, "value": 9400.0}, {"users": 30, "value": 9400.0}, {"users": 30, "value": 7700.0}, {"users": 30, "value": 9400.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 19000.0}, {"users": 30, "value": 18000.0}, {"users": 30, "value": 8400.0}, {"users": 30, "value": 8300.0}, {"users": 30, "value": 9800.0}, {"users": 30, "value": 1900.0}, {"users": 30, "value": 8400.0}, {"users": 30, "value": 8400.0}, {"users": 30, "value": 20000.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 7500.0}, {"users": 30, "value": 7500.0}, {"users": 30, "value": 9000.0}, {"users": 30, "value": 19000.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 9500.0}, {"users": 30, "value": 20000.0}, {"users": 30, "value": 9100.0}, {"users": 30, "value": 8600.0}, {"users": 30, "value": 8900.0}, {"users": 30, "value": 9700.0}, {"users": 30, "value": 12000.0}, {"users": 30, "value": 8200.0}, {"users": 30, "value": 8800.0}, {"users": 30, "value": 21000.0}, {"users": 30, "value": 9800.0}, {"users": 30, "value": 9800.0}, {"users": 30, "value": 8300.0}, {"users": 30, "value": 9500.0}, {"users": 30, "value": 9900.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 8400.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 9600.0}, {"users": 30, "value": 9600.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 9900.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 9600.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 7500.0}, {"users": 30, "value": 7700.0}, {"users": 30, "value": 21000.0}, {"users": 30, "value": 8700.0}, {"users": 30, "value": 13000.0}, {"users": 30, "value": 13000.0}, {"users": 30, "value": 8100.0}, {"users": 30, "value": 22000.0}, {"users": 30, "value": 9600.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 8000.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 7400.0}, {"users": 30, "value": 7400.0}, {"users": 30, "value": 4200.0}, {"users": 30, "value": 18000.0}, {"users": 30, "value": 18000.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 8600.0}, {"users": 30, "value": 9400.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 5300.0}, {"users": 30, "value": 8400.0}, {"users": 30, "value": 9900.0}, {"users": 30, "value": 21000.0}, {"users": 30, "value": 21000.0}, {"users": 30, "value": 4600.0}, {"users": 30, "value": 9200.0}, {"users": 30, "value": 7900.0}, {"users": 30, "value": 8700.0}, {"users": 30, "value": 5300.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 21000.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 8900.0}, {"users": 30, "value": 8800.0}, {"users": 30, "value": 8000.0}, {"users": 30, "value": 8300.0}, {"users": 30, "value": 9600.0}, {"users": 30, "value": 8900.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 9700.0}, {"users": 30, "value": 8500.0}, {"users": 30, "value": 4900.0}, {"users": 30, "value": 9600.0}, {"users": 30, "value": 9000.0}, {"users": 30, "value": 20000.0}, {"users": 30, "value": 38000.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 9900.0}, {"users": 30, "value": 8000.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 8700.0}, {"users": 30, "value": 9100.0}, {"users": 30, "value": 21000.0}, {"users": 30, "value": 22000.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 10000.0}, {"users": 30, "value": 8200.0}, {"users": 30, "value": 21000.0}, {"users": 30, "value": 8400.0}, {"users": 30, "value": 8400.0}, {"users": 30, "value": 8500.0}, {"users": 30, "value": 8500.0}, {"users": 30, "value": 9400.0}, {"users": 30, "value": 8900.0}, {"users": 30, "value": 5800.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 22000.0}, {"users": 30, "value": 37000.0}, {"users": 30, "value": 20000.0}, {"users": 30, "value": 9000.0}, {"users": 30, "value": 7900.0}, {"users": 30, "value": 9200.0}, {"users": 30, "value": 8500.0}, {"users": 30, "value": 7700.0}, {"users": 30, "value": 9800.0}, {"users": 30, "value": 19000.0}, {"users": 30, "value": 9000.0}, {"users": 30, "value": 9000.0}, {"users": 30, "value": 11000.0}, {"users": 30, "value": 9000.0}, {"users": 30, "value": 7400.0}, {"users": 30, "value": 19000.0}, {"users": 30, "value": 35000.0}],
     "markers": [],
 };
         var percentile1 = 0.5

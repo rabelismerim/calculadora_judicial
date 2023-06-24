@@ -17,13 +17,25 @@ from calculation.models import Calculation
 from core.abstract.tests import AbstractTest, generate_name
 from rates.models import Rate, Template
 
+def get_create_fund():
+    payload = {
+        'name': generate_name(),
+        'calculation_id': Calculation.objects.first().id,
+        'rate_id': Rate.objects.first().id,
+        'template_id': Template.objects.first().id,
+    }
+
+    fund = FundIRRF.objects.first()
+    if not fund:
+        fund = FundIRRF.objects.create(**payload)
+    return fund.id
 
 class IrrfTest(AbstractTest):
     """irrf related tests"""
     http_method_names = ['post', 'get']
 
     path = 'calculation/funds/irrf'
-    path_get = f'calculation/funds/irrf/{FundIRRF.objects.first().id}'
+    path_get = f'calculation/funds/irrf/{get_create_fund()}'
     parameters = {
         "classes": {
             "classe": "1"

@@ -5,7 +5,7 @@ const props = withDefaults(defineProps<{
 }>(), {
   users: () => ([]),
 })
-const emit = defineEmits(['update:model-value'])
+const emit = defineEmits(['update:model-value', 'done'])
 
 const form = ref(null as any)
 
@@ -29,6 +29,11 @@ const editUser = (user: any) => {
   if (email)
     editingUser = { id, picture, fullName, email, role, group: groups[0] }
 }
+const clear = () => {
+  emit('update:model-value', false)
+  tab = 'pending'
+  editingUser = {}
+}
 const onAuthorize = async () => {
   const isValid = await form.value.validate()
   if (!isValid)
@@ -36,8 +41,10 @@ const onAuthorize = async () => {
   const { email, group, role } = editingUser
   loading = true
   try {
-    const result = await usersService.setPermission({ email, groups: [group], role, isActive: true })
-    console.warn(result)
+    const result = await usersService.setPermission({ email, groups: [group], role, status: 'A' })
+    const { status } = result
+    if (status)
+      clear()
   }
   catch (error) {
     printError('ERROR ON ACCEPTING THE USER REQUEST:', error)
@@ -52,8 +59,10 @@ const onReject = async (user: any) => {
   loading = true
   await delay(3)
   try {
-    const result = await usersService.setPermission({ email: user.email, isActive: false })
-    console.warn(result)
+    const result = await usersService.setPermission({ email: user.email, status: 'R' })
+    const { status } = result
+    if (status)
+      clear()
   }
   catch (error) {
     printError('ERROR ON REJECTING THE USER REQUEST:', error)
@@ -61,11 +70,6 @@ const onReject = async (user: any) => {
   finally {
     loading = false
   }
-}
-const clear = () => {
-  emit('update:model-value', false)
-  tab = 'pending'
-  editingUser = {}
 }
 onMounted(async () => {
   try {
@@ -113,7 +117,7 @@ onMounted(async () => {
           <Btn
             label="Voltar"
             outlined
-            tag="div"
+            type="button"
             @click="editingUser = {}"
           />
           <Btn

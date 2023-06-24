@@ -13,7 +13,7 @@ const appVersion = APP_VERSION || '0.0.0'
   <footer class="z-100">
     <div v-if="showLinks" class="flex flex-col sm:flex-row justify-center p-2 bg-[#F5F5F4] border-t-1 border-[#D0D0CE]">
       <a
-        v-for="({ title, url }, index) in links" :key="title" :href="url"
+        v-for="({ title, url }, index) in links as any[]" :key="title" :href="url"
         :class="{ 'sm:border-l-1 border-[#D0D0CE]': index > 0 }" class="px-2"
       >
         {{ title }}

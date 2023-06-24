@@ -1,22 +1,22 @@
 const userFallback = {
   authorized: null,
+  isActive: null,
   name: '',
   fullName: '',
-  picture: '',
+  pictureUrl: '',
   email: '',
   groups: [] as any[],
   permissions: [] as string[],
   projects: [] as string[],
 }
 
-const store = useStorage('deloitte-user', { ...userFallback }, sessionStorage)
+const store = useStorage('deloitte-user', clone(userFallback), sessionStorage)
 
 const login = async () => {
-  const router = useRouter()
   try {
     const user = await usersService.getMyProfile()
 
-    console.warn('ON LOGIN SUCCESS:', user)
+    printError('ON LOGIN SUCCESS:', user)
     store.value = {
       ...store.value,
       ...user,
@@ -25,14 +25,16 @@ const login = async () => {
   }
   catch (error: any) {
     printError('ERROR ON LOGIN:', error)
-    router.push({ path: '/' })
+    router?.push({ path: '/' })
   }
 }
-const logout = () => {
-  store.value = { ...userFallback }
+const logout = async () => {
+  store.value = clone(userFallback)
+  await delay(2)
+  deleteAllCookies()
 }
 const user = computed(() => store.value)
-const isActive = computed(() => store.value.authorized)
+const isActive = computed(() => store.value.isActive)
 const hasPermissions = (permissions: string[] = []) => permissions
   .every(permission => store.value.permissions.includes(permission))
 const hasProject = (id: string) => store.value.projects.includes(id)

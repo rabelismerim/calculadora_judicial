@@ -8,8 +8,8 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits(['update:modelValue', 'success'])
 
 let loading = $ref(false)
-const form = ref(null) as any
-const stepper = ref(null) as any
+const form = ref(null as any)
+const stepper = ref(null as any)
 const { step, hasError, setStep, nextStep, previousStep, clearErrors, validateAll, loadAll } = useSteps(1, 4, stepper, form)
 const errorMessages = ref({})
 const { setErrors, clearAll } = useBackendErrors(errorMessages)
@@ -27,23 +27,27 @@ const nullProject = {
   engagements: [],
   recoverings: [clone(nullRecovering)],
   description: '',
-  start: null,
-  end: null,
+  projectStart: null,
+  projectEnd: null,
+  dateRjRequest: null,
+  dateRjFiling: null,
+  dateCitation: null,
   legalManagerId: '',
   legalPartnerId: '',
   financialManagerId: '',
   financialPartnerId: '',
   calculationManagerId: '',
   executors: [],
-  approvers: [],
   reviewers: [],
+  approvers: [],
+  specialApprovers: [],
   processNumber: '',
 }
 let newProject = $ref(clone(nullProject))
 const clear = async () => {
   newProject = clone(nullProject)
   await delay(0.5)
-  form.value.resetValidation ()
+  form.value.resetValidation()
   setStep(1)
   clearAll()
   clearErrors()
@@ -84,6 +88,24 @@ const onSubmit = async () => {
 
 // Options Helpers list
 let users = $ref([])
+const managers = computed(() => users
+  .filter(({ groups }: any) => {
+    const groupNames = groups.map(({ name }: any) => name)
+    return ['Gestor Jurídico', 'Gestor Cálculo', 'Gestor Financeiro']
+      .some((group: string) => groupNames.includes(group))
+  }))
+const partners = computed(() => users
+  .filter(({ groups }: any) => {
+    const groupNames = groups.map(({ name }: any) => name)
+    return ['Sócio']
+      .some((group: string) => groupNames.includes(group))
+  }))
+const specialApprovers = computed(() => users
+  .filter(({ groups }: any) => {
+    const groupNames = groups.map(({ name }: any) => name)
+    return ['Gestor Jurídico', 'Gestor Cálculo', 'Gestor Financeiro', 'Sócio']
+      .some((group: string) => groupNames.includes(group))
+  }))
 let judges = $ref([])
 const addJudge = async (description: string) => projectService.newJudge(description)
 let lawyers = $ref([])
@@ -96,11 +118,11 @@ onMounted(async () => {
   loadAll()
   loading = true
   try {
-    users = await usersService.getUsers()
-    judges = await projectService.getJudges()
-    lawyers = await projectService.getLawyers()
-    courts = await projectService.getCourts()
-    regions = await projectService.getRegions()
+    users = await usersService.getUsers() || []
+    judges = await projectService.getJudges() || []
+    lawyers = await projectService.getLawyers() || []
+    courts = await projectService.getCourts() || []
+    regions = await projectService.getRegions() || []
   }
   catch (error) {
     printError('ERROR ON LOAD OPTIONS OF NEWPROJECT:', error)
@@ -164,8 +186,38 @@ onMounted(async () => {
               error-key="process_number"
             />
             <InputDate
-              v-model="newProject.start"
-              label="Data do Pedido de Recuperação Judicial"
+              v-model="newProject.dateRjRequest"
+              label="Data de Pedido da Recuperação Judicial"
+              :rules="[
+                (value: any) => value.length === 0 || value.length === 10 || 'Precisa preencher o padrão ##/##/####',
+                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Precisa ser uma data válida!',
+              ]"
+              :error-messages="errorMessages"
+              error-key="date_rj_request"
+            />
+            <InputDate
+              v-model="newProject.dateRjFiling"
+              label="Data de Ajuizamento da Recuperação Judicial"
+              :rules="[
+                (value: any) => value.length === 0 || value.length === 10 || 'Precisa preencher o padrão ##/##/####',
+                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Precisa ser uma data válida!',
+              ]"
+              :error-messages="errorMessages"
+              error-key="date_rj_filling"
+            />
+            <InputDate
+              v-model="newProject.dateCitation"
+              label="Data da Citação"
+              :rules="[
+                (value: any) => value.length === 0 || value.length === 10 || 'Precisa preencher o padrão ##/##/####',
+                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Precisa ser uma data válida!',
+              ]"
+              :error-messages="errorMessages"
+              error-key="date_citation"
+            />
+            <InputDate
+              v-model="newProject.projectStart"
+              label="Data de Início do Projeto"
               :rules="[
                 (value: any) => !!value || 'É um campo obrigatório',
                 (value: any) => value.length === 10 || 'Precisa preencher o padrão ##/##/####',
@@ -173,6 +225,16 @@ onMounted(async () => {
               ]"
               :error-messages="errorMessages"
               error-key="project_start"
+            />
+            <InputDate
+              v-model="newProject.projectEnd"
+              label="Data de Encerramento do Projeto"
+              :rules="[
+                (value: any) => value.length === 0 || value.length === 10 || 'Precisa preencher o padrão ##/##/####',
+                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Precisa ser uma data válida!',
+              ]"
+              :error-messages="errorMessages"
+              error-key="project_end"
             />
             <InputSelect
               v-model="newProject.judgeId"
@@ -221,7 +283,7 @@ onMounted(async () => {
           class="relative overflow-y-auto max-h-[calc(100vh-326px)] min-h-87 overflow-x-hidden"
         >
           <div
-            v-for="(recovering, index) in newProject.recoverings"
+            v-for="(recovering, index) in newProject.recoverings as any[]"
             :key="index"
             class="grid items-stretch grid-cols-[1fr_1fr_42px] gap-x-4"
             data-step="2"
@@ -269,7 +331,7 @@ onMounted(async () => {
             <InputUser
               v-model="newProject.financialPartnerId"
               label="Sócio Financeiro"
-              :users="users"
+              :users="partners"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="financial_partner_id"
@@ -277,7 +339,7 @@ onMounted(async () => {
             <InputUser
               v-model="newProject.legalPartnerId"
               label="Sócio Jurídico"
-              :users="users"
+              :users="partners"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="legal_partner_id"
@@ -285,7 +347,7 @@ onMounted(async () => {
             <InputUser
               v-model="newProject.financialManagerId"
               label="Gerente Financeiro"
-              :users="users"
+              :users="managers"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="financial_manager_id"
@@ -293,7 +355,7 @@ onMounted(async () => {
             <InputUser
               v-model="newProject.legalManagerId"
               label="Gerente Jurídico"
-              :users="users"
+              :users="managers"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="legal_manager_id"
@@ -301,7 +363,7 @@ onMounted(async () => {
             <InputUser
               v-model="newProject.calculationManagerId"
               label="Gerente de Cálculo"
-              :users="users"
+              :users="managers"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :error-messages="errorMessages"
               error-key="calculation_manager_id"
@@ -338,11 +400,18 @@ onMounted(async () => {
             />
             <InputUsers
               v-model="newProject.approvers"
-              :users="users"
+              :users="managers"
               label="Aprovadores"
               :rules="[(value: any) => value.length > 0 || 'Este campo é obrigatório!']"
               :error-messages="errorMessages"
               error-key="approvers"
+            />
+            <InputUsers
+              v-model="newProject.specialApprovers"
+              :users="specialApprovers"
+              label="Aprovadores Especiais"
+              :error-messages="errorMessages"
+              error-key="special_approvers"
             />
           </div>
         </QStep>
@@ -360,7 +429,7 @@ onMounted(async () => {
           v-if="step > 1"
           label="Anterior"
           outlined
-          tag="div"
+          type="button"
           @click="previousStep"
           @press="previousStep"
         />
@@ -368,14 +437,14 @@ onMounted(async () => {
           v-if="step < 4"
           label="Próximo"
           outlined
-          tag="div"
+          type="button"
           @click="nextStep"
           @press="nextStep"
         />
         <Btn
           v-if="step === 4"
           label="Concluir"
-          tag="div"
+          type="button"
           :loading="loading"
           loading-label="Criando Projeto..."
           @click="onSubmit"

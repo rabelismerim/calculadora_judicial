@@ -3,17 +3,18 @@ from projects.models import Project
 from projects.project_user.models import ProjectUser
 from utils import secret_number
 
+
 class EngagementTest(AbstractTest):
     """Engagement related tests"""
     project = Project.objects.first()
-    user = ProjectUser.objects.first()
+    user_project = ProjectUser.objects.first()
     parameters = {
         "numbers": [
             f"{secret_number(50000, 100000)}"
         ],
         "users": [
             {
-                "id": str(user.id)
+                "id": str(user_project.id)
             }
         ],
         "project_id": str(project.id)

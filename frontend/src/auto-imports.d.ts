@@ -45,6 +45,9 @@ declare global {
   const defineAsyncComponent: typeof import('vue')['defineAsyncComponent']
   const defineComponent: typeof import('vue')['defineComponent']
   const delay: typeof import('./composables/utils')['delay']
+  const deleteAllCookies: typeof import('./composables/utils')['deleteAllCookies']
+  const deleteCookie: typeof import('@jrnwn/utils')['deleteCookie']
+  const downloadFile: typeof import('./composables/utils')['downloadFile']
   const eagerComputed: typeof import('@vueuse/core')['eagerComputed']
   const ease: typeof import('animol')['ease']
   const easing: typeof import('animol')['Easing']
@@ -53,8 +56,12 @@ declare global {
   const flatten: typeof import('./composables/utils')['flatten']
   const formatDate: typeof import('./composables/utils')['formatDate']
   const formatDateFromBackend: typeof import('./composables/utils')['formatDateFromBackend']
+  const formatDateHour: typeof import('./composables/utils')['formatDateHour']
   const formatDateToBackend: typeof import('./composables/utils')['formatDateToBackend']
+  const formatDay: typeof import('./composables/utils')['formatDay']
   const formatLegalNumber: typeof import('./composables/utils')['formatLegalNumber']
+  const formatMonth: typeof import('./composables/utils')['formatMonth']
+  const formatNumber: typeof import('./composables/utils')['formatNumber']
   const get: typeof import('@jrnwn/utils')['get']
   const getCookie: typeof import('@jrnwn/utils')['getCookie']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
@@ -62,6 +69,8 @@ declare global {
   const getInitials: typeof import('./composables/utils')['getInitials']
   const getListOfPaths: typeof import('@jrnwn/utils')['getListOfPaths']
   const getSelector: typeof import('@jrnwn/utils')['getSelector']
+  const getValidDate: typeof import('./composables/utils')['getValidDate']
+  const getValidNumber: typeof import('./composables/utils')['getValidNumber']
   const h: typeof import('vue')['h']
   const ignorableWatch: typeof import('@vueuse/core')['ignorableWatch']
   const inject: typeof import('vue')['inject']
@@ -106,6 +115,7 @@ declare global {
   const provide: typeof import('vue')['provide']
   const range: typeof import('@jrnwn/utils')['range']
   const rangeBetween: typeof import('./composables/utils')['rangeBetween']
+  const ratesService: typeof import('./services/ratesService')['default']
   const reactify: typeof import('@vueuse/core')['reactify']
   const reactifyObject: typeof import('@vueuse/core')['reactifyObject']
   const reactive: typeof import('vue')['reactive']
@@ -125,8 +135,10 @@ declare global {
   const resolveComponent: typeof import('vue')['resolveComponent']
   const resolveRef: typeof import('@vueuse/core')['resolveRef']
   const resolveUnref: typeof import('@vueuse/core')['resolveUnref']
+  const router: typeof import('./router')['default']
   const set: typeof import('@jrnwn/utils')['set']
   const setClass: typeof import('@jrnwn/utils')['setClass']
+  const setCookie: typeof import('@jrnwn/utils')['setCookie']
   const setStyle: typeof import('@jrnwn/utils')['setStyle']
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']
@@ -262,6 +274,7 @@ declare global {
   const usePreferredLanguages: typeof import('@vueuse/core')['usePreferredLanguages']
   const usePreferredReducedMotion: typeof import('@vueuse/core')['usePreferredReducedMotion']
   const usePrevious: typeof import('@vueuse/core')['usePrevious']
+  const useQuasar: typeof import('quasar')['useQuasar']
   const useRafFn: typeof import('@vueuse/core')['useRafFn']
   const useRefHistory: typeof import('@vueuse/core')['useRefHistory']
   const useResizeObserver: typeof import('@vueuse/core')['useResizeObserver']
@@ -318,6 +331,8 @@ declare global {
   const useWindowScroll: typeof import('@vueuse/core')['useWindowScroll']
   const useWindowSize: typeof import('@vueuse/core')['useWindowSize']
   const usersService: typeof import('./services/usersService')['default']
+  const vResize: typeof import('./directives/vResize')['default']
+  const viteEnvD: typeof import('./vite-env.d')['default']
   const watch: typeof import('vue')['watch']
   const watchArray: typeof import('@vueuse/core')['watchArray']
   const watchAtMost: typeof import('@vueuse/core')['watchAtMost']
@@ -383,6 +398,9 @@ declare module 'vue' {
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
     readonly delay: UnwrapRef<typeof import('./composables/utils')['delay']>
+    readonly deleteAllCookies: UnwrapRef<typeof import('./composables/utils')['deleteAllCookies']>
+    readonly deleteCookie: UnwrapRef<typeof import('@jrnwn/utils')['deleteCookie']>
+    readonly downloadFile: UnwrapRef<typeof import('./composables/utils')['downloadFile']>
     readonly eagerComputed: UnwrapRef<typeof import('@vueuse/core')['eagerComputed']>
     readonly ease: UnwrapRef<typeof import('animol')['ease']>
     readonly easing: UnwrapRef<typeof import('animol')['Easing']>
@@ -391,8 +409,12 @@ declare module 'vue' {
     readonly flatten: UnwrapRef<typeof import('./composables/utils')['flatten']>
     readonly formatDate: UnwrapRef<typeof import('./composables/utils')['formatDate']>
     readonly formatDateFromBackend: UnwrapRef<typeof import('./composables/utils')['formatDateFromBackend']>
+    readonly formatDateHour: UnwrapRef<typeof import('./composables/utils')['formatDateHour']>
     readonly formatDateToBackend: UnwrapRef<typeof import('./composables/utils')['formatDateToBackend']>
+    readonly formatDay: UnwrapRef<typeof import('./composables/utils')['formatDay']>
     readonly formatLegalNumber: UnwrapRef<typeof import('./composables/utils')['formatLegalNumber']>
+    readonly formatMonth: UnwrapRef<typeof import('./composables/utils')['formatMonth']>
+    readonly formatNumber: UnwrapRef<typeof import('./composables/utils')['formatNumber']>
     readonly get: UnwrapRef<typeof import('@jrnwn/utils')['get']>
     readonly getCookie: UnwrapRef<typeof import('@jrnwn/utils')['getCookie']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
@@ -400,6 +422,8 @@ declare module 'vue' {
     readonly getInitials: UnwrapRef<typeof import('./composables/utils')['getInitials']>
     readonly getListOfPaths: UnwrapRef<typeof import('@jrnwn/utils')['getListOfPaths']>
     readonly getSelector: UnwrapRef<typeof import('@jrnwn/utils')['getSelector']>
+    readonly getValidDate: UnwrapRef<typeof import('./composables/utils')['getValidDate']>
+    readonly getValidNumber: UnwrapRef<typeof import('./composables/utils')['getValidNumber']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly ignorableWatch: UnwrapRef<typeof import('@vueuse/core')['ignorableWatch']>
     readonly inject: UnwrapRef<typeof import('vue')['inject']>
@@ -444,6 +468,7 @@ declare module 'vue' {
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
     readonly range: UnwrapRef<typeof import('@jrnwn/utils')['range']>
     readonly rangeBetween: UnwrapRef<typeof import('./composables/utils')['rangeBetween']>
+    readonly ratesService: UnwrapRef<typeof import('./services/ratesService')['default']>
     readonly reactify: UnwrapRef<typeof import('@vueuse/core')['reactify']>
     readonly reactifyObject: UnwrapRef<typeof import('@vueuse/core')['reactifyObject']>
     readonly reactive: UnwrapRef<typeof import('vue')['reactive']>
@@ -463,8 +488,10 @@ declare module 'vue' {
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
     readonly resolveRef: UnwrapRef<typeof import('@vueuse/core')['resolveRef']>
     readonly resolveUnref: UnwrapRef<typeof import('@vueuse/core')['resolveUnref']>
+    readonly router: UnwrapRef<typeof import('./router')['default']>
     readonly set: UnwrapRef<typeof import('@jrnwn/utils')['set']>
     readonly setClass: UnwrapRef<typeof import('@jrnwn/utils')['setClass']>
+    readonly setCookie: UnwrapRef<typeof import('@jrnwn/utils')['setCookie']>
     readonly setStyle: UnwrapRef<typeof import('@jrnwn/utils')['setStyle']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
@@ -600,6 +627,7 @@ declare module 'vue' {
     readonly usePreferredLanguages: UnwrapRef<typeof import('@vueuse/core')['usePreferredLanguages']>
     readonly usePreferredReducedMotion: UnwrapRef<typeof import('@vueuse/core')['usePreferredReducedMotion']>
     readonly usePrevious: UnwrapRef<typeof import('@vueuse/core')['usePrevious']>
+    readonly useQuasar: UnwrapRef<typeof import('quasar')['useQuasar']>
     readonly useRafFn: UnwrapRef<typeof import('@vueuse/core')['useRafFn']>
     readonly useRefHistory: UnwrapRef<typeof import('@vueuse/core')['useRefHistory']>
     readonly useResizeObserver: UnwrapRef<typeof import('@vueuse/core')['useResizeObserver']>
@@ -656,6 +684,8 @@ declare module 'vue' {
     readonly useWindowScroll: UnwrapRef<typeof import('@vueuse/core')['useWindowScroll']>
     readonly useWindowSize: UnwrapRef<typeof import('@vueuse/core')['useWindowSize']>
     readonly usersService: UnwrapRef<typeof import('./services/usersService')['default']>
+    readonly vResize: UnwrapRef<typeof import('./directives/vResize')['default']>
+    readonly viteEnvD: UnwrapRef<typeof import('./vite-env.d')['default']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>
     readonly watchArray: UnwrapRef<typeof import('@vueuse/core')['watchArray']>
     readonly watchAtMost: UnwrapRef<typeof import('@vueuse/core')['watchAtMost']>
