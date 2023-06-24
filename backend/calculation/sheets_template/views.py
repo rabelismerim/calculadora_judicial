@@ -510,6 +510,10 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     for i in range(len(funds)-1):
                                         sheet.insert_rows(cnt_ini_row)
                                     for item in funds:
+                                        try:
+                                            sheet.unmerge_cells('A'+str(cnt_ini_row)+':G'+str(cnt_ini_row))
+                                        except:
+                                            pass
                                         sheet['A'+str(cnt_ini_row)]=str(item.name)
                                         sheet['C'+str(cnt_ini_row)]='{:,.2f}'.format(float(item.totalvaluesfunds.total_corrected)).replace('.','-').replace(',','.').replace('-',',')
                                         sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
@@ -899,6 +903,10 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     for i in range(len(funds)-1):
                                         sheet.insert_rows(cnt_ini_row)
                                     for item in funds:
+                                        try:
+                                            sheet.unmerge_cells('A'+str(cnt_ini_row)+':G'+str(cnt_ini_row))
+                                        except:
+                                            pass
                                         sheet['A'+str(cnt_ini_row)]=str(item.name)
                                         sheet['C'+str(cnt_ini_row)]='{:,.2f}'.format(float(item.totalvaluesfunds.total_corrected)).replace('.','-').replace(',','.').replace('-',',')
                                         sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
