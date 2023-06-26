@@ -416,7 +416,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     col.value=""
                                     for item in notice:
                                         sheet[let_ini_col+str(cnt_ini_row)]=str(item.classes).replace('\n','')
-                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins.coin).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins).replace('\n','')
                                         sheet[let_ini_col+str(cnt_ini_row+2)]=str(item.coins.value).replace('\n','')
                                         let_ini_col=chr(ord(let_ini_col)+1)
                 for row in sheet.iter_rows():
@@ -429,7 +429,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     col.value=""
                                     for item in claim_creditor:
                                         sheet[let_ini_col+str(cnt_ini_row)]=str(item.classes).replace('\n','')
-                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins.coin).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins).replace('\n','')
                                         sheet[let_ini_col+str(cnt_ini_row+2)]=str(item.coins.value).replace('\n','')
                                         let_ini_col=chr(ord(let_ini_col)+1)
                 for row in sheet.iter_rows():
@@ -441,8 +441,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     let_ini_col=col.column_letter
                                     col.value=""
                                     for item in claim_lawyer:
-                                        sheet[let_ini_col+str(cnt_ini_row)]=str(item.coins.coin).replace('\n','')
-                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins.value).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row)]=str(item.coins).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins).replace('\n','')
                                         let_ini_col=chr(ord(let_ini_col)+1)
                 for row in sheet.iter_rows():
                     for col in row:
@@ -454,9 +454,14 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     for i in range(len(premises)):
                                         sheet.insert_rows(cnt_ini_row)
                                     for item in premises:
+                                        sheet.merge_cells('A'+str(cnt_ini_row)+':H'+str(cnt_ini_row))
                                         sheet['A'+str(cnt_ini_row)]=str(item).replace('\n','')
-                                        sheet.merge_cells('A'+str(cnt_ini_row)+':G'+str(cnt_ini_row))
                                         cnt_ini_row=cnt_ini_row+1
+                                    sheet.merge_cells('A'+str(cnt_ini_row)+':H'+str(cnt_ini_row))
+                                    cnt_ini_row=cnt_ini_row+1
+                                    sheet.merge_cells('A'+str(cnt_ini_row)+':H'+str(cnt_ini_row))
+                                    cnt_ini_row=cnt_ini_row+1
+                                    sheet.merge_cells('A'+str(cnt_ini_row)+':H'+str(cnt_ini_row))
                 for row in sheet.iter_rows():
                     for col in row:
                         if col.value:
@@ -467,7 +472,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     for item in notice:
                                         sheet['B'+str(cnt_ini_row)]=str(item.classes).replace('\n','')
                                         sheet['B'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
-                                        sheet['C'+str(cnt_ini_row)]=str(item.coins.coin).replace('\n','')
+                                        sheet['C'+str(cnt_ini_row)]=str(item.coins).replace('\n','')
                                         sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
                                         sheet['D'+str(cnt_ini_row)]=str(item.coins.value).replace('\n','')
                                         sheet['D'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
@@ -484,7 +489,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     for item in claim_creditor:
                                         sheet['B'+str(cnt_ini_row)]=str(item.classes).replace('\n','')
                                         sheet['B'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
-                                        sheet['C'+str(cnt_ini_row)]=str(item.coins.coin).replace('\n','')
+                                        sheet['C'+str(cnt_ini_row)]=str(item.coins).replace('\n','')
                                         sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
                                         sheet['D'+str(cnt_ini_row)]=str(item.coins.value).replace('\n','')
                                         sheet['D'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
@@ -501,7 +506,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     for item in claim_lawyer:
                                         sheet['B'+str(cnt_ini_row)]=str(item.classes).replace('\n','')
                                         sheet['B'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
-                                        sheet['C'+str(cnt_ini_row)]=str(item.coins.coin).replace('\n','')
+                                        sheet['C'+str(cnt_ini_row)]=str(item.coins).replace('\n','')
                                         sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
                                         sheet['D'+str(cnt_ini_row)]=str(item.coins.value).replace('\n','')
                                         sheet['D'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
@@ -515,6 +520,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 if str(col.value)[8:]=='Sheets':
                                     cnt_ini_row = col.row
                                     col.value=""
+                                    sum_total=0
                                     for i in range(len(funds)-1):
                                         sheet.insert_rows(cnt_ini_row)
                                     for item in funds:
@@ -527,6 +533,12 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
                                         sheet.merge_cells('A'+str(cnt_ini_row)+':B'+str(cnt_ini_row))
                                         cnt_ini_row=cnt_ini_row+1
+                                        sum_total+=item.totalvaluesfunds.total_corrected
+                                    sheet['A'+str(cnt_ini_row)]='Total Atualizado:' if project[0].date_citation<project[0].date_rj_request else 'Total Devido:'
+                                    sheet['C'+str(cnt_ini_row)]='{:,.2f}'.format(float(sum_total)).replace('.','-').replace(',','.').replace('-',',')
+                                    sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
+                                    sheet.merge_cells('A'+str(cnt_ini_row)+':B'+str(cnt_ini_row))
+                                    cnt_ini_row=cnt_ini_row+2
                 for row in sheet.iter_rows():
                     for col in row:
                         if col.value:
@@ -818,7 +830,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     for item in notice:
                                         sheet['B'+str(cnt_ini_row)]=str(item.classes).replace('\n','')
                                         sheet['B'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
-                                        sheet['C'+str(cnt_ini_row)]=str(item.coins.coin).replace('\n','')
+                                        sheet['C'+str(cnt_ini_row)]=str(item.coins).replace('\n','')
                                         sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
                                         sheet['D'+str(cnt_ini_row)]=str(item.coins.value).replace('\n','')
                                         sheet['D'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
@@ -835,7 +847,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     for item in claim_creditor:
                                         sheet['B'+str(cnt_ini_row)]=str(item.classes).replace('\n','')
                                         sheet['B'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
-                                        sheet['C'+str(cnt_ini_row)]=str(item.coins.coin).replace('\n','')
+                                        sheet['C'+str(cnt_ini_row)]=str(item.coins).replace('\n','')
                                         sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
                                         sheet['D'+str(cnt_ini_row)]=str(item.coins.value).replace('\n','')
                                         sheet['D'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
@@ -852,7 +864,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     for item in claim_lawyer:
                                         sheet['B'+str(cnt_ini_row)]=str(item.classes).replace('\n','')
                                         sheet['B'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
-                                        sheet['C'+str(cnt_ini_row)]=str(item.coins.coin).replace('\n','')
+                                        sheet['C'+str(cnt_ini_row)]=str(item.coins).replace('\n','')
                                         sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
                                         sheet['D'+str(cnt_ini_row)]=str(item.coins.value).replace('\n','')
                                         sheet['D'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
@@ -869,7 +881,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     col.value=""
                                     for item in notice:
                                         sheet[let_ini_col+str(cnt_ini_row)]=str(item.classes).replace('\n','')
-                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins.coin).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins).replace('\n','')
                                         sheet[let_ini_col+str(cnt_ini_row+2)]=str(item.coins.value).replace('\n','')
                                         let_ini_col=chr(ord(let_ini_col)+1)
                 for row in sheet.iter_rows():
@@ -882,7 +894,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     col.value=""
                                     for item in claim_creditor:
                                         sheet[let_ini_col+str(cnt_ini_row)]=str(item.classes).replace('\n','')
-                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins.coin).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins).replace('\n','')
                                         sheet[let_ini_col+str(cnt_ini_row+2)]=str(item.coins.value).replace('\n','')
                                         let_ini_col=chr(ord(let_ini_col)+1)
                 for row in sheet.iter_rows():
@@ -894,7 +906,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     let_ini_col=col.column_letter
                                     col.value=""
                                     for item in claim_lawyer:
-                                        sheet[let_ini_col+str(cnt_ini_row)]=str(item.coins.coin).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row)]=str(item.coins).replace('\n','')
                                         sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins.value).replace('\n','')
                                         let_ini_col=chr(ord(let_ini_col)+1)
                 for row in sheet.iter_rows():
@@ -902,32 +914,46 @@ class SheetTemplateViewApi(AbstractViewApi):
                         if col.value:
                             if type(col.value) == str and col.value.find('JUCALST=') >= 0:
                                 if str(col.value)[8:]=='Premises':
+                                    cnt_ini_row_prem = col.row
                                     cnt_ini_row = col.row
                                     col.value=""
                                     for i in range(len(premises)):
                                         sheet.insert_rows(cnt_ini_row)
                                     for item in premises:
+                                        sheet.merge_cells('A'+str(cnt_ini_row)+':H'+str(cnt_ini_row))
                                         sheet['A'+str(cnt_ini_row)]=str(item).replace('\n','')
-                                        sheet.merge_cells('A'+str(cnt_ini_row)+':G'+str(cnt_ini_row))
                                         cnt_ini_row=cnt_ini_row+1
+                                    sheet.merge_cells('A'+str(cnt_ini_row)+':H'+str(cnt_ini_row))
+                                    cnt_ini_row=cnt_ini_row+1
+                                    sheet.merge_cells('A'+str(cnt_ini_row)+':H'+str(cnt_ini_row))
+                                    cnt_ini_row=cnt_ini_row+1
+                                    sheet.merge_cells('A'+str(cnt_ini_row)+':H'+str(cnt_ini_row))
                 for row in sheet.iter_rows():
                     for col in row:
                         if col.value:
-                                if str(col.value)[8:]=='Sheets':
-                                    cnt_ini_row = col.row
-                                    col.value=""
-                                    for i in range(len(funds)-1):
-                                        sheet.insert_rows(cnt_ini_row)
-                                    for item in funds:
-                                        try:
-                                            sheet.unmerge_cells('A'+str(cnt_ini_row)+':G'+str(cnt_ini_row))
-                                        except:
-                                            pass
-                                        sheet['A'+str(cnt_ini_row)]=str(item.name)
-                                        sheet['C'+str(cnt_ini_row)]='{:,.2f}'.format(float(item.totalvaluesfunds.total_corrected)).replace('.','-').replace(',','.').replace('-',',')
-                                        sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
-                                        sheet.merge_cells('A'+str(cnt_ini_row)+':B'+str(cnt_ini_row))
-                                        cnt_ini_row=cnt_ini_row+1
+                            if str(col.value)[8:]=='Sheets':
+                                cnt_ini_row = col.row
+                                col.value=""
+                                sum_total=0
+                                for i in range(len(funds)-1):
+                                    sheet.insert_rows(cnt_ini_row)
+                                for item in funds:
+                                    try:
+                                        sheet.unmerge_cells('A'+str(cnt_ini_row)+':G'+str(cnt_ini_row))
+                                    except:
+                                        pass
+                                    sheet['A'+str(cnt_ini_row)]=str(item.name)
+                                    sheet['C'+str(cnt_ini_row)]='{:,.2f}'.format(float(item.totalvaluesfunds.total_corrected)).replace('.','-').replace(',','.').replace('-',',')
+                                    sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
+                                    sheet.merge_cells('A'+str(cnt_ini_row)+':B'+str(cnt_ini_row))
+                                    sum_total+=item.totalvaluesfunds.total_corrected
+                                    cnt_ini_row=cnt_ini_row+1
+                                sheet['A'+str(cnt_ini_row)]='Total Atualizado:' if project[0].date_citation<project[0].date_rj_request else 'Total Devido:'
+                                sheet['C'+str(cnt_ini_row)]='{:,.2f}'.format(float(sum_total)).replace('.','-').replace(',','.').replace('-',',')
+                                sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
+                                sheet.merge_cells('A'+str(cnt_ini_row)+':B'+str(cnt_ini_row))
+                                cnt_ini_row=cnt_ini_row+2
+                                
                 for row in sheet.iter_rows():
                     for col in row:
                         if col.value:
