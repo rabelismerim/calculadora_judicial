@@ -226,6 +226,7 @@ onMounted(async () => {
         :values="bigNumbers?.classesCalculationsTotal"
         title="Valores dos Cálculos por Classe (mil R$)"
         hint="Classes na Recuperação Judicial:\n  • Classe I - Créditos Trabalhistas\n  • Classe II - Créditos com Garantia Real\n  • Classe III - Créditos Quirográficos\n  • Classe IV - Créditos enquadrados como Microempresa ou Empresa de pequeno porte."
+        :value-keys="['hist', 'calc']"
       />
     </div>
 

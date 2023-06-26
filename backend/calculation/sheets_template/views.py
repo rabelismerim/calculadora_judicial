@@ -206,15 +206,23 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         ws['D'+str(cnt_row)].alignment = Alignment(horizontal="center")
                                         ws['D'+str(cnt_row)]='Sim' if item1.is_extraconcursal==True else 'Não'
                                         ws['E'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                        ws['E'+str(cnt_row)]='{:,.2f}'.format(float(item1.historical_value)).strip().replace('.','-').replace(',','.').replace('-',',') if 'historical_value' in item1._dict.keys() else ''
-                                        ws['F'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                        ws['F'+str(cnt_row)]='{:,.5f}'.format(float(item1.monetarycorrectionintegrations.index_data_base)).strip().replace('.','-').replace(',','.').replace('-',',')
-                                        ws['G'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                        ws['G'+str(cnt_row)]='{:,.5f}'.format(float(item1.monetarycorrectionintegrations.index_recovering)).strip().replace('.','-').replace(',','.').replace('-',',')
-                                        ws['H'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                        ws['H'+str(cnt_row)]='{:,.2f}'.format(float(item1.monetarycorrectionintegrations.corrected_value)).strip().replace('.','-').replace(',','.').replace('-',',')
-                                        sum_total += float(item1.historical_value)
-                                        sum_total1 += float(item1.monetarycorrectionintegrations.corrected_value)
+                                        ws['E'+str(cnt_row)]='{:,.2f}'.format(float(item1.historical_value)).strip().replace('.','-').replace(',','.').replace('-',',') if 'historical_value' in item1._dict.keys() else '{:,.2f}'.format(0).strip().replace('.','-').replace(',','.').replace('-',',')
+                                        sum_total += float(item1.historical_value) if 'historical_value' in item1._dict.keys() else 0
+                                        try:
+                                            ws['F'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                            ws['F'+str(cnt_row)]='{:,.5f}'.format(float(item1.monetarycorrectionintegrations.index_data_base)).strip().replace('.','-').replace(',','.').replace('-',',') if item1.monetarycorrectionintegrations else '{:,.5f}'.format(0).strip().replace('.','-').replace(',','.').replace('-',',')
+                                            ws['G'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                            ws['G'+str(cnt_row)]='{:,.5f}'.format(float(item1.monetarycorrectionintegrations.index_recovering)).strip().replace('.','-').replace(',','.').replace('-',',') if item1.monetarycorrectionintegrations else '{:,.5f}'.format(0).strip().replace('.','-').replace(',','.').replace('-',',')
+                                            ws['H'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                            ws['H'+str(cnt_row)]='{:,.2f}'.format(float(item1.monetarycorrectionintegrations.corrected_value)).strip().replace('.','-').replace(',','.').replace('-',',') if item1.monetarycorrectionintegrations else '{:,.5f}'.format(0).strip().replace('.','-').replace(',','.').replace('-',',')
+                                            sum_total1 += float(item1.monetarycorrectionintegrations.corrected_value) if item1.monetarycorrectionintegrations else 0
+                                        except:
+                                            ws['F'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                            ws['F'+str(cnt_row)]='{:,.5f}'.format(0).strip().replace('.','-').replace(',','.').replace('-',',')
+                                            ws['G'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                            ws['G'+str(cnt_row)]='{:,.5f}'.format(0).strip().replace('.','-').replace(',','.').replace('-',',')
+                                            ws['H'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                            ws['H'+str(cnt_row)]='{:,.2f}'.format(0).strip().replace('.','-').replace(',','.').replace('-',',')
                                         cnt_row=cnt_row+1
                                 ws['A'+str(cnt_row)]="Total"
                                 ws['A'+str(cnt_row)].font=font
@@ -600,15 +608,23 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         ws['G'+str(cnt_row)].alignment = Alignment(horizontal="center")
                                         ws['G'+str(cnt_row)]='Sim' if item1.is_extraconcursal==True else 'Não'
                                         ws['H'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                        ws['H'+str(cnt_row)]='{:,.2f}'.format(float(item1.historical_value)).strip().replace('.','-').replace(',','.').replace('-',',') if 'historical_value' in item1._dict.keys() else ''
-                                        ws['I'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                        ws['I'+str(cnt_row)]='{:,.5f}'.format(float(item1.monetarycorrectionintegrations.index_data_base)).strip().replace('.','-').replace(',','.').replace('-',',')
-                                        ws['J'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                        ws['J'+str(cnt_row)]='{:,.5f}'.format(float(item1.monetarycorrectionintegrations.index_recovering)).strip().replace('.','-').replace(',','.').replace('-',',')
-                                        ws['K'+str(cnt_row)].alignment = Alignment(horizontal="right")
-                                        ws['K'+str(cnt_row)]='{:,.2f}'.format(float(item1.monetarycorrectionintegrations.corrected_value)).strip().replace('.','-').replace(',','.').replace('-',',')
-                                        sum_total += float(item1.historical_value)
-                                        sum_total1 += float(item1.monetarycorrectionintegrations.corrected_value)
+                                        ws['H'+str(cnt_row)]='{:,.2f}'.format(float(item1.historical_value)).strip().replace('.','-').replace(',','.').replace('-',',') if 'historical_value' in item1._dict.keys() else '{:,.2f}'.format(0).strip().replace('.','-').replace(',','.').replace('-',',')
+                                        sum_total += float(item1.historical_value) if 'historical_value' in item1._dict.keys() else 0
+                                        try:
+                                            ws['I'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                            ws['I'+str(cnt_row)]='{:,.5f}'.format(float(item1.monetarycorrectionintegrations.index_data_base)).strip().replace('.','-').replace(',','.').replace('-',',') if item1.monetarycorrectionintegrations else '{:,.5f}'.format(0).strip().replace('.','-').replace(',','.').replace('-',',')
+                                            ws['J'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                            ws['J'+str(cnt_row)]='{:,.5f}'.format(float(item1.monetarycorrectionintegrations.index_recovering)).strip().replace('.','-').replace(',','.').replace('-',',') if item1.monetarycorrectionintegrations else '{:,.5f}'.format(0).strip().replace('.','-').replace(',','.').replace('-',',')
+                                            ws['K'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                            ws['K'+str(cnt_row)]='{:,.2f}'.format(float(item1.monetarycorrectionintegrations.corrected_value)).strip().replace('.','-').replace(',','.').replace('-',',') if item1.monetarycorrectionintegrations else '{:,.5f}'.format(0).strip().replace('.','-').replace(',','.').replace('-',',')
+                                            sum_total1 += float(item1.monetarycorrectionintegrations.corrected_value) if item1.monetarycorrectionintegrations else 0
+                                        except:
+                                            ws['I'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                            ws['I'+str(cnt_row)]='{:,.5f}'.format(0).strip().replace('.','-').replace(',','.').replace('-',',')
+                                            ws['J'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                            ws['J'+str(cnt_row)]='{:,.5f}'.format(0).strip().replace('.','-').replace(',','.').replace('-',',')
+                                            ws['K'+str(cnt_row)].alignment = Alignment(horizontal="right")
+                                            ws['K'+str(cnt_row)]='{:,.2f}'.format(0).strip().replace('.','-').replace(',','.').replace('-',',')
                                         cnt_row=cnt_row+1
                                 ws['D'+str(cnt_row)]="Total"
                                 ws['D'+str(cnt_row)].font=font
