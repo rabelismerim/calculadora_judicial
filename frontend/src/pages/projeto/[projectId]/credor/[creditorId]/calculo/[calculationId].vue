@@ -398,7 +398,7 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
       :items="tabFilters"
     />
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <GraphCard
         title="Quantidade de Créditos"
         hint="O Número total dos Créditos neste Cálculo."
@@ -416,7 +416,15 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
         </div>
       </GraphCard>
       <GraphCard
-        title="Total Geral de Créditos"
+        title="Total Histórico de Créditos"
+        hint="Somatório dos Créditos neste Cálculo."
+      >
+        <div class="font-bold text-5xl flex-1 flex items-center">
+          R$ {{ formatNumber(bigNumbers?.totalHistorical || 0, 2) }}
+        </div>
+      </GraphCard>
+      <GraphCard
+        title="Total Calculado de Créditos"
         hint="Somatório dos Créditos neste Cálculo."
       >
         <div class="font-bold text-5xl flex-1 flex items-center">
