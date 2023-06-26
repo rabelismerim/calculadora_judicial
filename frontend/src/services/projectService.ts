@@ -238,11 +238,13 @@ const getProjectBigNumbers = (projectId: string) => api
       label: classesDisplay.split(' - ')?.[0] || '',
       count: quantity,
     })),
-    classesCalculationsTotal: data?.totalClassesCreditor?.map(({ classesDisplay, totalCalculated }: any) => ({
+    classesCalculationsTotal: data?.totalClassesCreditor?.map(({ classesDisplay, totalHistorical, totalCalculated }: any) => ({
       label: classesDisplay.split(' - ')?.[0] || '',
-      count: totalCalculated / 1000,
+      calc: totalCalculated / 1000,
+      calcHint: formatNumber(totalCalculated, 2),
+      hist: totalHistorical / 1000,
+      histHint: formatNumber(totalHistorical, 2),
       digits: 2,
-      hint: formatNumber(totalCalculated, 2),
     })),
   }))
 const getCreditorBigNumbers = (creditorId: string) => api
