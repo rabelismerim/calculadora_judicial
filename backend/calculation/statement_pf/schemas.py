@@ -201,6 +201,8 @@ class StatementPFSchema(AbstractDescriptionSchema):
             "status_display": obj.get_status_display(),
             "status": obj.status,
             "description": obj.description,
+            "legend_monetary_correction_update": obj.legend_monetary_correction_update,
+            "legend_date_rj_filing_citation": obj.legend_date_rj_filing_citation,
             "total": obj.total,
         }
 

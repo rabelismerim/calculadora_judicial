@@ -128,12 +128,25 @@ class StatementPF(AbstractStatus):
             self.set_error_citation()
         return date_citation
 
+    @property
+    def legend_date_rj_filing_citation(self) -> str:  # A19
+        """
+        Excel A19
+
+        =IF('Ficha de Análise'!$F$66="citação";'Data da citação:';'Data do ajuizamento da RT:';)
+
+        """
+
+        if self.statement.calculation.is_citation():
+            return _('Citation date:')
+        return _('RT filing date:')
+
     def _get_date_rj_request(self) -> datetime.date or None:  # B18
         """
-            Excel B18
+        Excel B18
 
-            Returns 'date_rj_request' from statement criteria
-            If date_rj_request does not exist, sets an error value and returns None
+        Returns 'date_rj_request' from statement criteria
+        If date_rj_request does not exist, sets an error value and returns None
         """
         date_rj_request = self.statement.calculation.get_date_rj_request()
         if not date_rj_request:
@@ -326,6 +339,18 @@ class StatementPF(AbstractStatus):
         elif not self._has_tax():
             return None  # EXCLUIR LINHA
         return 'D'  # Dias em atraso
+
+    @property
+    def legend_monetary_correction_update(self) -> str or None:
+        """
+        =IF('Ficha de Análise'!D65="IPCA-E/SELIC";"Atualização";"Correção monetária:")
+
+        Determines and returns the legend value of Excel A20
+        """
+        rate = self._get_rate()
+        if rate.is_ipca_e_selic():
+            return _("Update")
+        return _('Monetary correction')
 
     def _calcule_get_tax_days_value(self) -> float or None:
         """
