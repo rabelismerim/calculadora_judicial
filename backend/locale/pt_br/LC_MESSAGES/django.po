@@ -2037,6 +2037,14 @@ msgstr "Legenda"
 msgid "Amount"
 msgstr "Valor"
 
+#: .\backend\calculation\statement_pf\models.py:141
+msgid "Citation date:"
+msgstr "Data da citação:"
+
+#: .\backend\calculation\statement_pf\models.py:142
+msgid "RT filing date:"
+msgstr "Data do ajuizamento da RT:"
+
 #: .\backend\calculation\statement_pf\models.py:582
 msgid "Need at least one rate or rate_integrations or rate_irrf."
 msgstr "Precisa de pelo menos uma taxa ou rate_integrations ou rate_irrf."
