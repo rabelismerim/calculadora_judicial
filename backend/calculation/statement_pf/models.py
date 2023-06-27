@@ -350,7 +350,7 @@ class StatementPF(AbstractStatus):
         rate = self._get_rate()
         if rate.is_ipca_e_selic():
             return _("Update")
-        return _('Monetary correction')
+        return _('Monetary correction:')
 
     def _calcule_get_tax_days_value(self) -> float or None:
         """
