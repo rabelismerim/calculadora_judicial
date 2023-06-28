@@ -57,7 +57,6 @@ QUERY_DASHBOARD = [
 
 
 class Query:
-    
 
     @staticmethod
     def __parse_date(date_string):
@@ -237,10 +236,12 @@ class Dashboard(AbstractModel, Query):
 
 class LoginRecord(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
-    login_time = models.DateTimeField(auto_now_add=True)
+    login_date = models.DateField(auto_now_add=True)
+    login_time = models.TimeField(auto_now_add=True)
 
     class Meta:
         verbose_name_plural = "Login Register"
+        unique_together = [['user', 'login_date']]
 
     def __str__(self):
         return f"{self.user.username} {self.login_time}"
