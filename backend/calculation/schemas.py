@@ -71,6 +71,7 @@ class ClassesSerializer(serializers.Serializer):
     percentage_value = serializers.FloatField()
     total_calculated = serializers.FloatField()
     percentage_calculated = serializers.FloatField()
+    coin = serializers.CharField()
 
     @staticmethod
     def get_classe_display(obj):
