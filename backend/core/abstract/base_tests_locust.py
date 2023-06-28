@@ -50,6 +50,34 @@ class BaseTestsLocust(BaseTests, SequentialTaskSet):
     def setUp(self):
         return
 
+    base_url = '/juca/api/v1/'
+
+    def get_headers(self) -> dict:
+        return {'Authorization': f'Token {self.__token}', 'Content-type': 'application/json'}
+
+    def get_base_url(self):
+        return self.base_url
+
+    def __format_url(self, path: str) -> str:
+        """Formats and returns the URL for the API endpoint at `path`."""
+        return f'{self.get_base_url()}{path}/'.replace('//', '/')
+
+    def post(self, path, obj):
+        """
+        Sends a HTTP POST request with payload `obj` to the API endpoint specified by `path`. Returns a dictionary
+        with keys 'status_code' and 'content'.
+        """
+
+        response = self.client.post(self.__format_url(path), json.dumps(obj, default=str), headers=self.get_headers(),
+                                    content_type="application/json")
+        data = {'status_code': response.status_code, 'content': response.content}
+        try:
+            data['content'] = response.json()
+        except ValueError:
+            pass
+
+        return self.AttrDict(data)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__max_execution = self.parent.max_execution
@@ -83,18 +111,17 @@ class BaseTestsLocust(BaseTests, SequentialTaskSet):
 
         path = self.get_path()
         if path:
-            if path.endswith('None/') or  path.endswith('None'):
+            if path.endswith('None/') or path.endswith('None'):
                 if hasattr(self, 'setUp'):
                     self.setUp()
-                    print('setup\n\n')
                     path = self.get_path()
             self.counter += 1
             resp = self.client.get(path, headers=self._get_headers(), verify=False)
-            if str(resp.status_code).startswith('2') is False:
-                if resp.status_code != 404:
-                    print(resp.content, 'resp content\n')
-                else:
-                    print(path, 'resp content\n')
+            # if str(resp.status_code).startswith('2') is False:
+            # if resp.status_code != 404:
+            #     print(resp.content, 'resp content\n')
+            # else:
+            #     print(path, 'resp content\n')
         if self.__max_execution and self.counter >= self.__max_execution:
             self.stop('get')
         # except BaseException as e:

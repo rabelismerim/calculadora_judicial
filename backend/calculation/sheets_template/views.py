@@ -1,4 +1,5 @@
 from calculation.sheets_template.models import SheetsTemplate
+from calculation.sheets_template.models import SheetsTemplate
 from calculation.sheets_template.schemas import SheetsTemplateSchema
 from calculation.statement.models import Statement
 from calculation.statement_pf.models import StatementPF
@@ -22,6 +23,7 @@ from core.entity.models import Entity
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from django.core import serializers
+from django.db.models import Sum
 from xlsx2html import xlsx2html
 
 from rest_framework import permissions
@@ -35,6 +37,12 @@ from os.path import exists
 from os import remove
 from datetime import datetime
 import base64
+
+grayFill = PatternFill(start_color='00C0C0C0',
+end_color='00C0C0C0',
+fill_type='solid')
+
+font = Font(bold=True)
 
 class SheetTemplateViewApi(AbstractViewApi):
     """HTTP methods for verdict"""
@@ -149,7 +157,6 @@ class SheetTemplateViewApi(AbstractViewApi):
                             ws.title = item.name
                             plan_build = item.get_all_statement_funds_integrations()
                             if plan_build and len(plan_build)>0:
-                                font = Font(bold=True)
                                 ws['A'+str(cnt_row)]='Crédito '+plan_build[0].fund.template.name
                                 ws['A'+str(cnt_row)].font=font
                                 ws['A'+str(cnt_row+2)]='Integrações sobre '+str(plan_build[0].fund.template.name)
@@ -160,9 +167,6 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 ws['A'+str(cnt_row+4)].font=font
                                 ws['A'+str(cnt_row+5)]="Descrição"
                                 ws['A'+str(cnt_row+5)].font=font
-                                grayFill = PatternFill(start_color='00C0C0C0',
-                                end_color='00C0C0C0',
-                                fill_type='solid')
                                 ws['A'+str(cnt_row+2)]='Integrações sobre '+str(plan_build[0].fund.template.name)
                                 ws['A'+str(cnt_row+2)].font=font
                                 ws['A'+str(cnt_row+3)]=plan_build[0].fund.template.name
@@ -234,12 +238,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 ws['H'+str(cnt_row)].alignment = Alignment(horizontal="right")
                                 cnt_row=cnt_row+1
                             else:
-                                font = Font(bold=True)
                                 ws['A'+str(cnt_row)]='Crédito '+item.template.name
                                 ws['A'+str(cnt_row)].font=font
-                                grayFill = PatternFill(start_color='00C0C0C0',
-                                end_color='00C0C0C0',
-                                fill_type='solid')
                                 ws['A'+str(cnt_row+2)]='Integrações sobre '+str(item.template.name)
                                 ws['A'+str(cnt_row+2)].font=font
                                 ws['A'+str(cnt_row+3)]=item.name
@@ -274,10 +274,6 @@ class SheetTemplateViewApi(AbstractViewApi):
                             cnt_row=cnt_row+2
                             plan_build1 = item.get_all_statement_funds()
                             if plan_build1 and len(plan_build1)>0:
-                                font = Font(bold=True)
-                                grayFill = PatternFill(start_color='00C0C0C0',
-                                end_color='00C0C0C0',
-                                fill_type='solid')
                                 ws['A'+str(cnt_row)]=str(item.template.name)
                                 ws['A'+str(cnt_row)].font=font
                                 ws['A'+str(cnt_row+1)]="Data base"
@@ -333,10 +329,6 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 ws['G'+str(cnt_row)].alignment = Alignment(horizontal="right")
                                 cnt_row=cnt_row+1
                             else:
-                                font = Font(bold=True)
-                                grayFill = PatternFill(start_color='00C0C0C0',
-                                end_color='00C0C0C0',
-                                fill_type='solid')
                                 ws['A'+str(cnt_row)]=str(item.template.name)
                                 ws['A'+str(cnt_row)].font=font
                                 ws['A'+str(cnt_row+1)]="Data base"
@@ -366,10 +358,6 @@ class SheetTemplateViewApi(AbstractViewApi):
                         #         archive_download.copy_worksheet(copy_sheet)
                         #         ws = archive_download[sheet.title+' Copy']
                         #         ws.title = item1['name']
-                        #         font = Font(bold=True)
-                        #         grayFill = PatternFill(start_color='00C0C0C0',
-                        #         end_color='00C0C0C0',
-                        #         fill_type='solid')
                         #         ws['D'+str(cnt_row)]='Crédito '+item1['template']['name']
                         #         ws['D'+str(cnt_row)].font=font
                         #         cnt_row=cnt_row+1
@@ -403,6 +391,16 @@ class SheetTemplateViewApi(AbstractViewApi):
                 if type(sheet.title) == str and sheet.title.find('JUCA=') >= 0:
                     archive_download.remove_sheet(archive_download[sheet.title])
                 sheet.title=sheet.title.replace(' Copy','')
+                for row in sheet.iter_rows():
+                    for col in row:
+                        if col.value:
+                            if type(col.value) == str and col.value.find('JUCA=') >= 0:
+                                try:
+                                    col.value = str(eval(str(col.value)[5:]))
+                                except:
+                                    col.value = str("Erro Formula!!!")
+                        else:
+                            pass
             for sheet in archive_download:
                 if sheet.sheet_state=='hidden':
                     continue
@@ -416,7 +414,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     col.value=""
                                     for item in notice:
                                         sheet[let_ini_col+str(cnt_ini_row)]=str(item.classes).replace('\n','')
-                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins.coin).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins).replace('\n','')
                                         sheet[let_ini_col+str(cnt_ini_row+2)]=str(item.coins.value).replace('\n','')
                                         let_ini_col=chr(ord(let_ini_col)+1)
                 for row in sheet.iter_rows():
@@ -429,7 +427,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     col.value=""
                                     for item in claim_creditor:
                                         sheet[let_ini_col+str(cnt_ini_row)]=str(item.classes).replace('\n','')
-                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins.coin).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins).replace('\n','')
                                         sheet[let_ini_col+str(cnt_ini_row+2)]=str(item.coins.value).replace('\n','')
                                         let_ini_col=chr(ord(let_ini_col)+1)
                 for row in sheet.iter_rows():
@@ -441,22 +439,9 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     let_ini_col=col.column_letter
                                     col.value=""
                                     for item in claim_lawyer:
-                                        sheet[let_ini_col+str(cnt_ini_row)]=str(item.coins.coin).replace('\n','')
-                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins.value).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row)]=str(item.coins).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins).replace('\n','')
                                         let_ini_col=chr(ord(let_ini_col)+1)
-                for row in sheet.iter_rows():
-                    for col in row:
-                        if col.value:
-                            if type(col.value) == str and col.value.find('JUCALST=') >= 0:
-                                if str(col.value)[8:]=='Premises':
-                                    cnt_ini_row = col.row
-                                    col.value=""
-                                    for i in range(len(premises)):
-                                        sheet.insert_rows(cnt_ini_row)
-                                    for item in premises:
-                                        sheet['A'+str(cnt_ini_row)]=str(item).replace('\n','')
-                                        sheet.merge_cells('A'+str(cnt_ini_row)+':G'+str(cnt_ini_row))
-                                        cnt_ini_row=cnt_ini_row+1
                 for row in sheet.iter_rows():
                     for col in row:
                         if col.value:
@@ -467,7 +452,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     for item in notice:
                                         sheet['B'+str(cnt_ini_row)]=str(item.classes).replace('\n','')
                                         sheet['B'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
-                                        sheet['C'+str(cnt_ini_row)]=str(item.coins.coin).replace('\n','')
+                                        sheet['C'+str(cnt_ini_row)]=str(item.coins).replace('\n','')
                                         sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
                                         sheet['D'+str(cnt_ini_row)]=str(item.coins.value).replace('\n','')
                                         sheet['D'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
@@ -484,7 +469,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     for item in claim_creditor:
                                         sheet['B'+str(cnt_ini_row)]=str(item.classes).replace('\n','')
                                         sheet['B'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
-                                        sheet['C'+str(cnt_ini_row)]=str(item.coins.coin).replace('\n','')
+                                        sheet['C'+str(cnt_ini_row)]=str(item.coins).replace('\n','')
                                         sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
                                         sheet['D'+str(cnt_ini_row)]=str(item.coins.value).replace('\n','')
                                         sheet['D'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
@@ -501,7 +486,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     for item in claim_lawyer:
                                         sheet['B'+str(cnt_ini_row)]=str(item.classes).replace('\n','')
                                         sheet['B'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
-                                        sheet['C'+str(cnt_ini_row)]=str(item.coins.coin).replace('\n','')
+                                        sheet['C'+str(cnt_ini_row)]=str(item.coins).replace('\n','')
                                         sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
                                         sheet['D'+str(cnt_ini_row)]=str(item.coins.value).replace('\n','')
                                         sheet['D'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
@@ -515,11 +500,13 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 if str(col.value)[8:]=='Sheets':
                                     cnt_ini_row = col.row
                                     col.value=""
-                                    for i in range(len(funds)-1):
+                                    sum_total=0
+                                    for i in range(len(funds)):
                                         sheet.insert_rows(cnt_ini_row)
                                     for item in funds:
+                                        cnt_ini_row = cnt_ini_row + 1
                                         try:
-                                            sheet.unmerge_cells('A'+str(cnt_ini_row)+':G'+str(cnt_ini_row))
+                                            sheet.unmerge_cells('A'+str(cnt_ini_row)+':H'+str(cnt_ini_row))
                                         except:
                                             pass
                                         sheet['A'+str(cnt_ini_row)]=str(item.name)
@@ -527,16 +514,133 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
                                         sheet.merge_cells('A'+str(cnt_ini_row)+':B'+str(cnt_ini_row))
                                         cnt_ini_row=cnt_ini_row+1
+                                        sum_total+=item.totalvaluesfunds.total_corrected
+                                    try:
+                                        sheet.unmerge_cells('A'+str(cnt_ini_row)+':H'+str(cnt_ini_row))
+                                    except:
+                                        pass
+                                    sheet['A'+str(cnt_ini_row)]='Total Atualizado:' if project[0].date_citation<project[0].date_rj_request else 'Total Devido:'
+                                    sheet['C'+str(cnt_ini_row)]='{:,.2f}'.format(sum_total).replace('.','-').replace(',','.').replace('-',',')
+                                    sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
+                                    sheet.merge_cells('A'+str(cnt_ini_row)+':B'+str(cnt_ini_row))
+                                    cnt_ini_row=cnt_ini_row+1
+                                    if project[0].date_citation>=project[0].date_rj_request:
+                                        try:
+                                            sheet.unmerge_cells('A'+str(cnt_ini_row)+':H'+str(cnt_ini_row))
+                                        except:
+                                            pass
+                                        sheet.insert_rows(cnt_ini_row)
+                                        sheet['A'+str(cnt_ini_row)]='Dias em atraso:'
+                                        sheet['C'+str(cnt_ini_row)]='{:,.0f}'.format(calculation[0].statement.statementpf._calcule_get_tax_days_description()).replace('.','-').replace(',','.').replace('-',',') if calculation[0].statement.statementpf._calcule_get_tax_days_description() else 0
+                                        sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
+                                        sheet.merge_cells('A'+str(cnt_ini_row)+':B'+str(cnt_ini_row))
+                                        cnt_ini_row=cnt_ini_row+1
+                                        try:
+                                            sheet.unmerge_cells('A'+str(cnt_ini_row)+':H'+str(cnt_ini_row))
+                                        except:
+                                            pass
+                                        sheet.insert_rows(cnt_ini_row)
+                                        sheet['A'+str(cnt_ini_row)]='Juros moratórios:'
+                                        sheet['C'+str(cnt_ini_row)]='{:,.2f}'.format(calculation[0].statement.statementpf._calcule_default_interest()).replace('.','-').replace(',','.').replace('-',',')
+                                        sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
+                                        sheet.merge_cells('A'+str(cnt_ini_row)+':B'+str(cnt_ini_row))
+                                        cnt_ini_row=cnt_ini_row+1
+                                        try:
+                                            sheet.unmerge_cells('A'+str(cnt_ini_row)+':H'+str(cnt_ini_row))
+                                        except:
+                                            pass
+                                        sheet.insert_rows(cnt_ini_row)
+                                        sheet['A'+str(cnt_ini_row)]='Total após juros moratórios:'
+                                        sheet['C'+str(cnt_ini_row)]='{:,.2f}'.format(sum_total+calculation[0].statement.statementpf._calcule_default_interest()).replace('.','-').replace(',','.').replace('-',',')
+                                        sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
+                                        sheet.merge_cells('A'+str(cnt_ini_row)+':B'+str(cnt_ini_row))
+                                        cnt_ini_row=cnt_ini_row+2
                 for row in sheet.iter_rows():
                     for col in row:
                         if col.value:
-                            if type(col.value) == str and col.value.find('JUCA=') >= 0:
-                                try:
-                                    col.value = str(eval(str(col.value)[5:]))
-                                except:
-                                    col.value = str("Erro Formula!!!")
-                        else:
-                            pass
+                            if type(col.value) == str and col.value.find('JUCALST=') >= 0:
+                                if str(col.value)[8:]=='Premises':
+                                    cnt_ini_row = col.row
+                                    col.value=""
+                                    for i in range(len(premises)):
+                                        sheet.insert_rows(cnt_ini_row)
+                                    for item in premises:
+                                        sheet.merge_cells('A'+str(cnt_ini_row)+':H'+str(cnt_ini_row))
+                                        sheet['A'+str(cnt_ini_row)]=str(item).replace('\n','')
+                                        cnt_ini_row=cnt_ini_row+1
+                for row in sheet.iter_rows():
+                    for col in row:
+                        if col.value:
+                            if type(col.value) == str and col.value.find('JUCALST=') >= 0:
+                                if str(col.value)[8:]=='FinalSchema':
+                                    cnt_ini_row = col.row
+                                    col.value="A Administradora Judicial opina pelo valor e classe indicados abaixo:"
+                                    sheet.merge_cells('A'+str(cnt_ini_row)+':K'+str(cnt_ini_row))
+                                    cnt_ini_row += 1
+                                    sheet.merge_cells('A'+str(cnt_ini_row)+':K'+str(cnt_ini_row))
+                                    cnt_ini_row=cnt_ini_row+1
+                                    sheet.insert_rows(cnt_ini_row)
+                                    sheet['A'+str(cnt_ini_row)].font=font
+                                    sheet['A'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['A'+str(cnt_ini_row)]='Conclusão AJ'
+                                    sheet['B'+str(cnt_ini_row)].font=font
+                                    sheet['B'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['B'+str(cnt_ini_row)]='Impugnação' if len(notice)==0 else 'Habilitação'
+                                    sheet['C'+str(cnt_ini_row)].font=font
+                                    sheet['C'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['C'+str(cnt_ini_row)]=str(claim_creditor[0].coins)
+                                    sheet['D'+str(cnt_ini_row)].font=font
+                                    sheet['D'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['D'+str(cnt_ini_row)]=claim_creditor.aggregate(Sum('coins__value'))['coins__value__sum']
+                                    sheet['E'+str(cnt_ini_row)].font=font
+                                    sheet['E'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['E'+str(cnt_ini_row)]=str(recovering[0].entity.name)
+                                    sheet.merge_cells('E'+str(cnt_ini_row)+':K'+str(cnt_ini_row))
+                                    cnt_ini_row=cnt_ini_row+1
+                                    sheet.insert_rows(cnt_ini_row)
+                                    sheet['A'+str(cnt_ini_row)].font=font
+                                    sheet['A'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['A'+str(cnt_ini_row)]=''
+                                    sheet['B'+str(cnt_ini_row)].font=font
+                                    sheet['B'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['B'+str(cnt_ini_row)]='Edital art. 7º § 2 - 11.101/2005'
+                                    sheet['C'+str(cnt_ini_row)].font=font
+                                    sheet['C'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['C'+str(cnt_ini_row)]=str(notice[0].coins) if notice else '-'
+                                    sheet['D'+str(cnt_ini_row)].font=font
+                                    sheet['D'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['D'+str(cnt_ini_row)]=notice.aggregate(Sum('coins__value'))['coins__value__sum']  if notice else '-'
+                                    sheet['E'+str(cnt_ini_row)].font=font
+                                    sheet['E'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['E'+str(cnt_ini_row)]=str(recovering[0].entity.name) if notice else '-'
+                                    sheet.merge_cells('E'+str(cnt_ini_row)+':K'+str(cnt_ini_row))
+                                    for item in claim_creditor:
+                                        cnt_ini_row=cnt_ini_row+1
+                                        sheet.insert_rows(cnt_ini_row)
+                                        sheet['A'+str(cnt_ini_row)].font=font
+                                        sheet['A'+str(cnt_ini_row)].fill=grayFill
+                                        sheet['A'+str(cnt_ini_row)]=''
+                                        sheet['B'+str(cnt_ini_row)].font=font
+                                        sheet['B'+str(cnt_ini_row)].fill=grayFill
+                                        sheet['B'+str(cnt_ini_row)]=str(item.classes).replace('\n','')
+                                        sheet['C'+str(cnt_ini_row)].font=font
+                                        sheet['C'+str(cnt_ini_row)].fill=grayFill
+                                        sheet['C'+str(cnt_ini_row)]=str(item.coins).replace('\n','')
+                                        sheet['D'+str(cnt_ini_row)].font=font
+                                        sheet['D'+str(cnt_ini_row)].fill=grayFill
+                                        sheet['D'+str(cnt_ini_row)]=str(item.coins.value).replace('\n','')
+                                        sheet['E'+str(cnt_ini_row)].font=font
+                                        sheet['E'+str(cnt_ini_row)].fill=grayFill
+                                        sheet['E'+str(cnt_ini_row)]=str(recovering[0].entity.name)
+                                        sheet.merge_cells('E'+str(cnt_ini_row)+':K'+str(cnt_ini_row))
+                                    cnt_ini_row=cnt_ini_row+1
+                                    sheet.insert_rows(cnt_ini_row)
+                                    cnt_ini_row=cnt_ini_row+1
+                                    sheet.insert_rows(cnt_ini_row)
+                                    sheet.merge_cells('A'+str(cnt_ini_row)+':G'+str(cnt_ini_row))
+                                    sheet['A'+str(cnt_ini_row)]="São Paulo, "+str(calculation[0].created_at.day)+" de "+("janeiro" if calculation[0].created_at.month == 1 else "fevereiro" if calculation[0].created_at.month == 2 else "março" if calculation[0].created_at.month == 3 else "abril" if calculation[0].created_at.month == 4 else "maio" if calculation[0].created_at.month == 5 else "junho" if calculation[0].created_at.month == 6 else "julho" if calculation[0].created_at.month == 7 else "agosto" if calculation[0].created_at.month == 8 else "setembro" if calculation[0].created_at.month == 9 else "outubro" if calculation[0].created_at.month == 10 else "novembro" if calculation[0].created_at.month == 11 else "dezembro") + " de "+str(calculation[0].created_at.year)
+
+                                    
             for sheet in archive_view:
                 if sheet.sheet_state=='hidden':
                     continue
@@ -551,7 +655,6 @@ class SheetTemplateViewApi(AbstractViewApi):
                             ws.title = item.name
                             plan_build = item.get_all_statement_funds_integrations()
                             if plan_build and len(plan_build)>0:
-                                font = Font(bold=True)
                                 ws['D'+str(cnt_row)]='Crédito '+plan_build[0].fund.template.name
                                 ws['D'+str(cnt_row)].font=font
                                 ws['D'+str(cnt_row+2)]='Integrações sobre '+str(plan_build[0].fund.template.name)
@@ -562,9 +665,6 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 ws['D'+str(cnt_row+4)].font=font
                                 ws['D'+str(cnt_row+5)]="Descrição"
                                 ws['D'+str(cnt_row+5)].font=font
-                                grayFill = PatternFill(start_color='00C0C0C0',
-                                end_color='00C0C0C0',
-                                fill_type='solid')
                                 ws['D'+str(cnt_row+2)]='Integrações sobre '+str(plan_build[0].fund.template.name)
                                 ws['D'+str(cnt_row+2)].font=font
                                 ws['D'+str(cnt_row+3)]=plan_build[0].fund.template.name
@@ -636,12 +736,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 ws['K'+str(cnt_row)].alignment = Alignment(horizontal="right")
                                 cnt_row=cnt_row+1
                             else:
-                                font = Font(bold=True)
                                 ws['D'+str(cnt_row)]='Crédito '+item.template.name
                                 ws['D'+str(cnt_row)].font=font
-                                grayFill = PatternFill(start_color='00C0C0C0',
-                                end_color='00C0C0C0',
-                                fill_type='solid')
                                 ws['D'+str(cnt_row+2)]='Integrações sobre '+str(item.template.name)
                                 ws['D'+str(cnt_row+2)].font=font
                                 ws['D'+str(cnt_row+3)]=item.name
@@ -676,10 +772,6 @@ class SheetTemplateViewApi(AbstractViewApi):
                             cnt_row=cnt_row+2
                             plan_build1 = item.get_all_statement_funds()
                             if plan_build1 and len(plan_build1)>0:
-                                font = Font(bold=True)
-                                grayFill = PatternFill(start_color='00C0C0C0',
-                                end_color='00C0C0C0',
-                                fill_type='solid')
                                 ws['D'+str(cnt_row)]=str(item.template.name)
                                 ws['D'+str(cnt_row)].font=font
                                 ws['D'+str(cnt_row+1)]="Data base"
@@ -735,10 +827,6 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 ws['J'+str(cnt_row)].alignment = Alignment(horizontal="right")
                                 cnt_row=cnt_row+1
                             else:
-                                font = Font(bold=True)
-                                grayFill = PatternFill(start_color='00C0C0C0',
-                                end_color='00C0C0C0',
-                                fill_type='solid')
                                 ws['D'+str(cnt_row)]=str(item.template.name)
                                 ws['D'+str(cnt_row)].font=font
                                 ws['D'+str(cnt_row+1)]="Data base"
@@ -768,10 +856,6 @@ class SheetTemplateViewApi(AbstractViewApi):
                         #         archive_view.copy_worksheet(copy_sheet)
                         #         ws = archive_view[sheet.title+' Copy']
                         #         ws.title = item1['name']
-                        #         font = Font(bold=True)
-                        #         grayFill = PatternFill(start_color='00C0C0C0',
-                        #         end_color='00C0C0C0',
-                        #         fill_type='solid')
                         #         ws['D'+str(cnt_row)]='Crédito '+item1['template']['name']
                         #         ws['D'+str(cnt_row)].font=font
                         #         cnt_row=cnt_row+1
@@ -811,6 +895,16 @@ class SheetTemplateViewApi(AbstractViewApi):
                 for row in sheet.iter_rows():
                     for col in row:
                         if col.value:
+                            if type(col.value) == str and col.value.find('JUCA=') >= 0:
+                                try:
+                                    col.value = str(eval(str(col.value)[5:]))
+                                except:
+                                    col.value = str("Erro Formula!!!")
+                        else:
+                            pass
+                for row in sheet.iter_rows():
+                    for col in row:
+                        if col.value:
                             if type(col.value) == str and col.value.find('JUCALST=') >= 0:
                                 if str(col.value)[8:]=='NoticeAJ_Vert':
                                     cnt_ini_row=col.row
@@ -818,7 +912,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     for item in notice:
                                         sheet['B'+str(cnt_ini_row)]=str(item.classes).replace('\n','')
                                         sheet['B'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
-                                        sheet['C'+str(cnt_ini_row)]=str(item.coins.coin).replace('\n','')
+                                        sheet['C'+str(cnt_ini_row)]=str(item.coins).replace('\n','')
                                         sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
                                         sheet['D'+str(cnt_ini_row)]=str(item.coins.value).replace('\n','')
                                         sheet['D'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
@@ -835,7 +929,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     for item in claim_creditor:
                                         sheet['B'+str(cnt_ini_row)]=str(item.classes).replace('\n','')
                                         sheet['B'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
-                                        sheet['C'+str(cnt_ini_row)]=str(item.coins.coin).replace('\n','')
+                                        sheet['C'+str(cnt_ini_row)]=str(item.coins).replace('\n','')
                                         sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
                                         sheet['D'+str(cnt_ini_row)]=str(item.coins.value).replace('\n','')
                                         sheet['D'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
@@ -852,7 +946,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     for item in claim_lawyer:
                                         sheet['B'+str(cnt_ini_row)]=str(item.classes).replace('\n','')
                                         sheet['B'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
-                                        sheet['C'+str(cnt_ini_row)]=str(item.coins.coin).replace('\n','')
+                                        sheet['C'+str(cnt_ini_row)]=str(item.coins).replace('\n','')
                                         sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
                                         sheet['D'+str(cnt_ini_row)]=str(item.coins.value).replace('\n','')
                                         sheet['D'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
@@ -869,7 +963,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     col.value=""
                                     for item in notice:
                                         sheet[let_ini_col+str(cnt_ini_row)]=str(item.classes).replace('\n','')
-                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins.coin).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins).replace('\n','')
                                         sheet[let_ini_col+str(cnt_ini_row+2)]=str(item.coins.value).replace('\n','')
                                         let_ini_col=chr(ord(let_ini_col)+1)
                 for row in sheet.iter_rows():
@@ -882,7 +976,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     col.value=""
                                     for item in claim_creditor:
                                         sheet[let_ini_col+str(cnt_ini_row)]=str(item.classes).replace('\n','')
-                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins.coin).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins).replace('\n','')
                                         sheet[let_ini_col+str(cnt_ini_row+2)]=str(item.coins.value).replace('\n','')
                                         let_ini_col=chr(ord(let_ini_col)+1)
                 for row in sheet.iter_rows():
@@ -894,9 +988,76 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     let_ini_col=col.column_letter
                                     col.value=""
                                     for item in claim_lawyer:
-                                        sheet[let_ini_col+str(cnt_ini_row)]=str(item.coins.coin).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row)]=str(item.coins).replace('\n','')
                                         sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins.value).replace('\n','')
                                         let_ini_col=chr(ord(let_ini_col)+1)
+                for row in sheet.iter_rows():
+                    for col in row:
+                        if col.value:
+                            if type(col.value) == str and col.value.find('JUCALST=') >= 0:
+                                if str(col.value)[8:]=='Sheets':
+                                    cnt_ini_row = col.row
+                                    try:
+                                        sheet.unmerge_cells('A'+str(cnt_ini_row-1)+':H'+str(cnt_ini_row-1))
+                                    except:
+                                        pass
+                                    sheet.merge_cells('A'+str(cnt_ini_row-1)+':B'+str(cnt_ini_row-1))
+                                    col.value=""
+                                    sum_total=0
+                                    if project[0].date_citation>=project[0].date_rj_request:
+                                        for i in range(len(funds)+4):
+                                            sheet.insert_rows(cnt_ini_row)
+                                    else:
+                                        for i in range(len(funds)+1):
+                                            sheet.insert_rows(cnt_ini_row)
+                                    for item in funds:
+                                        try:
+                                            sheet.unmerge_cells('A'+str(cnt_ini_row)+':K'+str(cnt_ini_row))
+                                        except:
+                                            pass
+                                        sheet['A'+str(cnt_ini_row)]=str(item.name)
+                                        sheet['C'+str(cnt_ini_row)]='{:,.2f}'.format(float(item.totalvaluesfunds.total_corrected)).replace('.','-').replace(',','.').replace('-',',')
+                                        sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
+                                        sheet.merge_cells('A'+str(cnt_ini_row)+':B'+str(cnt_ini_row))
+                                        sum_total+=item.totalvaluesfunds.total_corrected
+                                        cnt_ini_row=cnt_ini_row+1
+                                    try:
+                                        sheet.unmerge_cells('A'+str(cnt_ini_row)+':G'+str(cnt_ini_row))
+                                    except:
+                                        pass
+                                    sheet['A'+str(cnt_ini_row)]='Total Atualizado:' if project[0].date_citation<project[0].date_rj_request else 'Total Devido:'
+                                    sheet['C'+str(cnt_ini_row)]='{:,.2f}'.format(sum_total).replace('.','-').replace(',','.').replace('-',',')
+                                    sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
+                                    sheet.merge_cells('A'+str(cnt_ini_row)+':B'+str(cnt_ini_row))
+                                    cnt_ini_row=cnt_ini_row+1
+                                    if project[0].date_citation>=project[0].date_rj_request:
+                                        try:
+                                            sheet.unmerge_cells('A'+str(cnt_ini_row)+':H'+str(cnt_ini_row))
+                                        except:
+                                            pass
+                                        sheet['A'+str(cnt_ini_row)]='Dias em atraso:'
+                                        sheet['C'+str(cnt_ini_row)]='{:,.0f}'.format(calculation[0].statement.statementpf._calcule_get_tax_days_description()).replace('.','-').replace(',','.').replace('-',',') if calculation[0].statement.statementpf._calcule_get_tax_days_description() else 0
+                                        sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
+                                        sheet.merge_cells('A'+str(cnt_ini_row)+':B'+str(cnt_ini_row))
+                                        cnt_ini_row=cnt_ini_row+1
+                                        try:
+                                            sheet.unmerge_cells('A'+str(cnt_ini_row)+':H'+str(cnt_ini_row))
+                                        except:
+                                            pass
+                                        sheet['A'+str(cnt_ini_row)]='Juros moratórios:'
+                                        sheet['C'+str(cnt_ini_row)]='{:,.2f}'.format(calculation[0].statement.statementpf._calcule_default_interest()).replace('.','-').replace(',','.').replace('-',',')
+                                        sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
+                                        sheet.merge_cells('A'+str(cnt_ini_row)+':B'+str(cnt_ini_row))
+                                        cnt_ini_row=cnt_ini_row+1
+                                        try:
+                                            sheet.unmerge_cells('A'+str(cnt_ini_row)+':K'+str(cnt_ini_row))
+                                        except:
+                                            pass
+                                        sheet['A'+str(cnt_ini_row)]='Total após juros moratórios:'
+                                        sheet['C'+str(cnt_ini_row)]='{:,.2f}'.format(sum_total+calculation[0].statement.statementpf._calcule_default_interest()).replace('.','-').replace(',','.').replace('-',',')
+                                        sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
+                                        sheet.merge_cells('A'+str(cnt_ini_row)+':B'+str(cnt_ini_row))
+                                        cnt_ini_row=cnt_ini_row+1
                 for row in sheet.iter_rows():
                     for col in row:
                         if col.value:
@@ -907,37 +1068,80 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     for i in range(len(premises)):
                                         sheet.insert_rows(cnt_ini_row)
                                     for item in premises:
+                                        sheet.merge_cells('A'+str(cnt_ini_row)+':H'+str(cnt_ini_row))
                                         sheet['A'+str(cnt_ini_row)]=str(item).replace('\n','')
-                                        sheet.merge_cells('A'+str(cnt_ini_row)+':G'+str(cnt_ini_row))
                                         cnt_ini_row=cnt_ini_row+1
                 for row in sheet.iter_rows():
                     for col in row:
                         if col.value:
-                                if str(col.value)[8:]=='Sheets':
+                            if type(col.value) == str and col.value.find('JUCALST=') >= 0:
+                                if str(col.value)[8:]=='FinalSchema':
                                     cnt_ini_row = col.row
-                                    col.value=""
-                                    for i in range(len(funds)-1):
-                                        sheet.insert_rows(cnt_ini_row)
-                                    for item in funds:
-                                        try:
-                                            sheet.unmerge_cells('A'+str(cnt_ini_row)+':G'+str(cnt_ini_row))
-                                        except:
-                                            pass
-                                        sheet['A'+str(cnt_ini_row)]=str(item.name)
-                                        sheet['C'+str(cnt_ini_row)]='{:,.2f}'.format(float(item.totalvaluesfunds.total_corrected)).replace('.','-').replace(',','.').replace('-',',')
-                                        sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
-                                        sheet.merge_cells('A'+str(cnt_ini_row)+':B'+str(cnt_ini_row))
+                                    col.value="A Administradora Judicial opina pelo valor e classe indicados abaixo:"
+                                    sheet.merge_cells('A'+str(cnt_ini_row)+':K'+str(cnt_ini_row))
+                                    cnt_ini_row += 1
+                                    sheet.merge_cells('A'+str(cnt_ini_row)+':K'+str(cnt_ini_row))
+                                    cnt_ini_row=cnt_ini_row+1
+                                    sheet.insert_rows(cnt_ini_row)
+                                    sheet['A'+str(cnt_ini_row)].font=font
+                                    sheet['A'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['A'+str(cnt_ini_row)]='Conclusão AJ'
+                                    sheet['B'+str(cnt_ini_row)].font=font
+                                    sheet['B'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['B'+str(cnt_ini_row)]='Impugnação' if len(notice)==0 else 'Habilitação'
+                                    sheet['C'+str(cnt_ini_row)].font=font
+                                    sheet['C'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['C'+str(cnt_ini_row)]=str(claim_creditor[0].coins)
+                                    sheet['D'+str(cnt_ini_row)].font=font
+                                    sheet['D'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['D'+str(cnt_ini_row)]=claim_creditor.aggregate(Sum('coins__value'))['coins__value__sum']
+                                    sheet['E'+str(cnt_ini_row)].font=font
+                                    sheet['E'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['E'+str(cnt_ini_row)]=str(recovering[0].entity.name)
+                                    sheet.merge_cells('E'+str(cnt_ini_row)+':K'+str(cnt_ini_row))
+                                    cnt_ini_row=cnt_ini_row+1
+                                    sheet.insert_rows(cnt_ini_row)
+                                    sheet['A'+str(cnt_ini_row)].font=font
+                                    sheet['A'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['A'+str(cnt_ini_row)]=''
+                                    sheet['B'+str(cnt_ini_row)].font=font
+                                    sheet['B'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['B'+str(cnt_ini_row)]='Edital art. 7º § 2 - 11.101/2005'
+                                    sheet['C'+str(cnt_ini_row)].font=font
+                                    sheet['C'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['C'+str(cnt_ini_row)]=str(notice[0].coins) if notice else '-'
+                                    sheet['D'+str(cnt_ini_row)].font=font
+                                    sheet['D'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['D'+str(cnt_ini_row)]=notice.aggregate(Sum('coins__value'))['coins__value__sum']  if notice else '-'
+                                    sheet['E'+str(cnt_ini_row)].font=font
+                                    sheet['E'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['E'+str(cnt_ini_row)]=str(recovering[0].entity.name) if notice else '-'
+                                    sheet.merge_cells('E'+str(cnt_ini_row)+':K'+str(cnt_ini_row))
+                                    for item in claim_creditor:
                                         cnt_ini_row=cnt_ini_row+1
-                for row in sheet.iter_rows():
-                    for col in row:
-                        if col.value:
-                            if type(col.value) == str and col.value.find('JUCA=') >= 0:
-                                try:
-                                    col.value = str(eval(str(col.value)[5:]))
-                                except:
-                                    col.value = str("Erro Formula!!!")
-                        else:
-                            pass
+                                        sheet.insert_rows(cnt_ini_row)
+                                        sheet['A'+str(cnt_ini_row)].font=font
+                                        sheet['A'+str(cnt_ini_row)].fill=grayFill
+                                        sheet['A'+str(cnt_ini_row)]=''
+                                        sheet['B'+str(cnt_ini_row)].font=font
+                                        sheet['B'+str(cnt_ini_row)].fill=grayFill
+                                        sheet['B'+str(cnt_ini_row)]=str(item.classes).replace('\n','')
+                                        sheet['C'+str(cnt_ini_row)].font=font
+                                        sheet['C'+str(cnt_ini_row)].fill=grayFill
+                                        sheet['C'+str(cnt_ini_row)]=str(item.coins).replace('\n','')
+                                        sheet['D'+str(cnt_ini_row)].font=font
+                                        sheet['D'+str(cnt_ini_row)].fill=grayFill
+                                        sheet['D'+str(cnt_ini_row)]=str(item.coins.value).replace('\n','')
+                                        sheet['E'+str(cnt_ini_row)].font=font
+                                        sheet['E'+str(cnt_ini_row)].fill=grayFill
+                                        sheet['E'+str(cnt_ini_row)]=str(recovering[0].entity.name)
+                                        sheet.merge_cells('E'+str(cnt_ini_row)+':K'+str(cnt_ini_row))
+                                    cnt_ini_row=cnt_ini_row+1
+                                    sheet.insert_rows(cnt_ini_row)
+                                    cnt_ini_row=cnt_ini_row+1
+                                    sheet.insert_rows(cnt_ini_row)
+                                    sheet.merge_cells('A'+str(cnt_ini_row)+':K'+str(cnt_ini_row))
+                                    sheet['A'+str(cnt_ini_row)]="São Paulo, "+str(calculation[0].created_at.day)+" de "+("janeiro" if calculation[0].created_at.month == 1 else "fevereiro" if calculation[0].created_at.month == 2 else "março" if calculation[0].created_at.month == 3 else "abril" if calculation[0].created_at.month == 4 else "maio" if calculation[0].created_at.month == 5 else "junho" if calculation[0].created_at.month == 6 else "julho" if calculation[0].created_at.month == 7 else "agosto" if calculation[0].created_at.month == 8 else "setembro" if calculation[0].created_at.month == 9 else "outubro" if calculation[0].created_at.month == 10 else "novembro" if calculation[0].created_at.month == 11 else "dezembro") + " de "+str(calculation[0].created_at.year)
 
             archive_download.save(new_name_download)
             archive_view.save(new_name_view)
