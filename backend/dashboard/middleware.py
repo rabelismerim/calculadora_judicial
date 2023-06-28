@@ -27,6 +27,7 @@ class LoginMiddleware:
         """
         response = self.get_response(request)
         user = request.user
+
         if user.is_authenticated:
             today = now().date()
             with transaction.atomic():
