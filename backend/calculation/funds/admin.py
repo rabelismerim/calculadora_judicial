@@ -20,10 +20,16 @@ from django.contrib import admin
 
 from calculation.funds.models import Funds, StatementFunds, MonetaryCorrection, TotalValuesFunds
 
-admin.site.register(Funds)
 
 readonly_fields = ['corrected_value', 'index_data_base', 'index_recovering']
 
+
+class FundsAdmin(admin.ModelAdmin):
+    """
+    A ModelAdmin class containing the definition of fields displayed in the
+    admin interface for the Comparative instance.
+    """
+    readonly_fields = ['rate']
 
 class AbstractStatementFundsAdmin(admin.ModelAdmin):
     """
@@ -71,3 +77,4 @@ class TotalValuesFundsAdmin(admin.ModelAdmin):
 admin.site.register(MonetaryCorrection, MonetaryCorrectionAdmin)
 admin.site.register(StatementFunds, StatementFundsAdmin)
 admin.site.register(TotalValuesFunds, TotalValuesFundsAdmin)
+admin.site.register(Funds, FundsAdmin)
