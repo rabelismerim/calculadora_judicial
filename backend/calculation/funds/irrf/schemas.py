@@ -78,6 +78,24 @@ class TotalValuesIRRFSchema(AbstractDescriptionSchema):
         return super(TotalValuesIRRFSchema, self).validate(data)
 
 
+class FundIRRFExcelSchema(AbstractClassesFundsSchema):
+    """
+    A schema for serializing and deserializing FundIRRF instances.
+
+    Attributes: calculation_id (serializers.UUIDField): The UUID of the related calculation. statement_funds (
+    StatementFundIRRFSchema): The schema for serializing and deserializing StatementFundIRRF instances.
+    statement_integrations (StatementIntegrationsSchema): The schema for serializing and deserializing
+    StatementIntegrations instances. statement_irrf (StatementIRRFSchema): The schema for serializing and
+    deserializing StatementIRRF instances.
+    """
+    calculation_id = serializers.UUIDField()
+    values_funds = TotalValuesIRRFSchema(
+        source='totalvaluesirrf', read_only=True, exclude=('fund_id',))
+
+    class Meta:
+        model = FundIRRF
+        exclude = ('calculation', )
+
 class FundIRRFSchema(AbstractClassesFundsSchema):
     """
     A schema for serializing and deserializing FundIRRF instances.

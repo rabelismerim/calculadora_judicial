@@ -4,7 +4,7 @@ from calculation.sheets_template.schemas import SheetsTemplateSchema
 from calculation.statement.models import Statement
 from calculation.statement_pf.models import StatementPF
 from calculation.statement_pj.models import StatementPJ
-from calculation.schemas import CalculationSchema
+from calculation.schemas import CalculationSchema, CalculationExcelSchema
 from rates.models import Rate
 from creditors.notice.models import Notice,NoticeRecovering
 from calculation.comparative.models import Comparative, ComparativeCalculation
@@ -135,8 +135,10 @@ class SheetTemplateViewApi(AbstractViewApi):
             court = Court.objects.filter(id=project[0].court_id)
 
             calc = calculation.first()
-            calc_schema = CalculationSchema(calc).data
+            # calc_schema = CalculationSchema(calc).data
+            calc_schema = CalculationExcelSchema(calc).data
             funds_schema = calc.funds_set.all()
+
 
             #open the archive and process
             archive_download = xl.load_workbook("uploads/" + Template[0].file.name, read_only=False)
