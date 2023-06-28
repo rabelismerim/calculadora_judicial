@@ -23,7 +23,6 @@ from core.entity.models import Entity
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
 from django.core import serializers
-from django.db.models import Sum
 from xlsx2html import xlsx2html
 
 from rest_framework import permissions
@@ -40,6 +39,10 @@ import base64
 
 grayFill = PatternFill(start_color='00C0C0C0',
 end_color='00C0C0C0',
+fill_type='solid')
+
+grayFill1 = PatternFill(start_color='00D9D9D9',
+end_color='00D9D9D9',
 fill_type='solid')
 
 font = Font(bold=True)
@@ -129,7 +132,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                 entity = Entity.objects.filter(id=creditor[0].entity_id)
                 if len(entity)>0:
                     calculations_sheet = Calculation.objects.filter(creditor__entity=entity[0])
-                recovering_entity = Entity.objects.filter(id=creditor[0].entity_id)
+                recovering_entity = Entity.objects.filter(id=recovering[0].id)
             if len(funds)>0:
                 rate = Rate.objects.filter(id=funds[0].rate_id)
             court = Court.objects.filter(id=project[0].court_id)
@@ -379,7 +382,6 @@ class SheetTemplateViewApi(AbstractViewApi):
                         #             cnt_row=cnt_row+1
                         #             let_ini_col='A'
                         #             for item3 in item2['fields']:
-
                         #                 #ws[let_ini_col+str(cnt_row)]=item3['label']
                         #                 #ws[let_ini_col+str(cnt_row)].font=font
                         #                 #ws[let_ini_col+str(cnt_row)].fill=grayFill
@@ -415,7 +417,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     for item in notice:
                                         sheet[let_ini_col+str(cnt_ini_row)]=str(item.classes).replace('\n','')
                                         sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins).replace('\n','')
-                                        sheet[let_ini_col+str(cnt_ini_row+2)]=str(item.coins.value).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+2)]='{:,.2f}'.format(float(str(item.coins.value).replace('\n',''))).replace('.','-').replace(',','.').replace('-',',')
                                         let_ini_col=chr(ord(let_ini_col)+1)
                 for row in sheet.iter_rows():
                     for col in row:
@@ -428,7 +430,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     for item in claim_creditor:
                                         sheet[let_ini_col+str(cnt_ini_row)]=str(item.classes).replace('\n','')
                                         sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins).replace('\n','')
-                                        sheet[let_ini_col+str(cnt_ini_row+2)]=str(item.coins.value).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+2)]='{:,.2f}'.format(float(str(item.coins.value).replace('\n',''))).replace('.','-').replace(',','.').replace('-',',')
                                         let_ini_col=chr(ord(let_ini_col)+1)
                 for row in sheet.iter_rows():
                     for col in row:
@@ -454,7 +456,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         sheet['B'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
                                         sheet['C'+str(cnt_ini_row)]=str(item.coins).replace('\n','')
                                         sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
-                                        sheet['D'+str(cnt_ini_row)]=str(item.coins.value).replace('\n','')
+                                        sheet['D'+str(cnt_ini_row)]='{:,.2f}'.format(float(str(item.coins.value).replace('\n',''))).replace('.','-').replace(',','.').replace('-',',')
                                         sheet['D'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
                                         sheet['E'+str(cnt_ini_row)]=str(recovering[0].entity.name).replace('\n','')
                                         cnt_ini_row=cnt_ini_row+1
@@ -471,7 +473,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         sheet['B'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
                                         sheet['C'+str(cnt_ini_row)]=str(item.coins).replace('\n','')
                                         sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
-                                        sheet['D'+str(cnt_ini_row)]=str(item.coins.value).replace('\n','')
+                                        sheet['D'+str(cnt_ini_row)]='{:,.2f}'.format(float(str(item.coins.value).replace('\n',''))).replace('.','-').replace(',','.').replace('-',',')
                                         sheet['D'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
                                         sheet['E'+str(cnt_ini_row)]=str(recovering[0].entity.name).replace('\n','')
                                         cnt_ini_row=cnt_ini_row+1
@@ -488,7 +490,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         sheet['B'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
                                         sheet['C'+str(cnt_ini_row)]=str(item.coins).replace('\n','')
                                         sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
-                                        sheet['D'+str(cnt_ini_row)]=str(item.coins.value).replace('\n','')
+                                        sheet['D'+str(cnt_ini_row)]='{:,.2f}'.format(float(str(item.coins.value).replace('\n',''))).replace('.','-').replace(',','.').replace('-',',')
                                         sheet['D'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
                                         sheet['E'+str(cnt_ini_row)]=str(recovering[0].entity.name).replace('\n','')
                                         cnt_ini_row=cnt_ini_row+1
@@ -501,7 +503,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     cnt_ini_row = col.row
                                     col.value=""
                                     sum_total=0
-                                    for i in range(len(funds)):
+                                    for i in range(len(claim_creditor)):
                                         sheet.insert_rows(cnt_ini_row)
                                     for item in funds:
                                         cnt_ini_row = cnt_ini_row + 1
@@ -581,58 +583,60 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     cnt_ini_row=cnt_ini_row+1
                                     sheet.insert_rows(cnt_ini_row)
                                     sheet['A'+str(cnt_ini_row)].font=font
-                                    sheet['A'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['A'+str(cnt_ini_row)].fill=grayFill1
                                     sheet['A'+str(cnt_ini_row)]='Conclusão AJ'
                                     sheet['B'+str(cnt_ini_row)].font=font
-                                    sheet['B'+str(cnt_ini_row)].fill=grayFill
-                                    sheet['B'+str(cnt_ini_row)]='Impugnação' if len(notice)==0 else 'Habilitação'
+                                    sheet['B'+str(cnt_ini_row)].fill=grayFill1
+                                    sheet['B'+str(cnt_ini_row)]=statement[0].get_conclusion_display()
                                     sheet['C'+str(cnt_ini_row)].font=font
-                                    sheet['C'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['C'+str(cnt_ini_row)].fill=grayFill1
                                     sheet['C'+str(cnt_ini_row)]=str(claim_creditor[0].coins)
                                     sheet['D'+str(cnt_ini_row)].font=font
-                                    sheet['D'+str(cnt_ini_row)].fill=grayFill
-                                    sheet['D'+str(cnt_ini_row)]=claim_creditor.aggregate(Sum('coins__value'))['coins__value__sum']
+                                    sheet['D'+str(cnt_ini_row)].fill=grayFill1
+                                    sheet['D'+str(cnt_ini_row)]='{:,.2f}'.format(statement[0].statementpf.total_conclusion).replace('.','-').replace(',','.').replace('-',',')
                                     sheet['E'+str(cnt_ini_row)].font=font
-                                    sheet['E'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['E'+str(cnt_ini_row)].fill=grayFill1
                                     sheet['E'+str(cnt_ini_row)]=str(recovering[0].entity.name)
                                     sheet.merge_cells('E'+str(cnt_ini_row)+':K'+str(cnt_ini_row))
-                                    cnt_ini_row=cnt_ini_row+1
-                                    sheet.insert_rows(cnt_ini_row)
-                                    sheet['A'+str(cnt_ini_row)].font=font
-                                    sheet['A'+str(cnt_ini_row)].fill=grayFill
-                                    sheet['A'+str(cnt_ini_row)]=''
-                                    sheet['B'+str(cnt_ini_row)].font=font
-                                    sheet['B'+str(cnt_ini_row)].fill=grayFill
-                                    sheet['B'+str(cnt_ini_row)]='Edital art. 7º § 2 - 11.101/2005'
-                                    sheet['C'+str(cnt_ini_row)].font=font
-                                    sheet['C'+str(cnt_ini_row)].fill=grayFill
-                                    sheet['C'+str(cnt_ini_row)]=str(notice[0].coins) if notice else '-'
-                                    sheet['D'+str(cnt_ini_row)].font=font
-                                    sheet['D'+str(cnt_ini_row)].fill=grayFill
-                                    sheet['D'+str(cnt_ini_row)]=notice.aggregate(Sum('coins__value'))['coins__value__sum']  if notice else '-'
-                                    sheet['E'+str(cnt_ini_row)].font=font
-                                    sheet['E'+str(cnt_ini_row)].fill=grayFill
-                                    sheet['E'+str(cnt_ini_row)]=str(recovering[0].entity.name) if notice else '-'
-                                    sheet.merge_cells('E'+str(cnt_ini_row)+':K'+str(cnt_ini_row))
-                                    for item in claim_creditor:
+                                    if calculation[0].has_edital:
                                         cnt_ini_row=cnt_ini_row+1
                                         sheet.insert_rows(cnt_ini_row)
                                         sheet['A'+str(cnt_ini_row)].font=font
-                                        sheet['A'+str(cnt_ini_row)].fill=grayFill
+                                        sheet['A'+str(cnt_ini_row)].fill=grayFill1
                                         sheet['A'+str(cnt_ini_row)]=''
                                         sheet['B'+str(cnt_ini_row)].font=font
-                                        sheet['B'+str(cnt_ini_row)].fill=grayFill
-                                        sheet['B'+str(cnt_ini_row)]=str(item.classes).replace('\n','')
+                                        sheet['B'+str(cnt_ini_row)].fill=grayFill1
+                                        sheet['B'+str(cnt_ini_row)]='Edital art. 7º § 2 - 11.101/2005'
                                         sheet['C'+str(cnt_ini_row)].font=font
-                                        sheet['C'+str(cnt_ini_row)].fill=grayFill
-                                        sheet['C'+str(cnt_ini_row)]=str(item.coins).replace('\n','')
+                                        sheet['C'+str(cnt_ini_row)].fill=grayFill1
+                                        sheet['C'+str(cnt_ini_row)]=str(notice[0].coins) if notice else '-'
                                         sheet['D'+str(cnt_ini_row)].font=font
-                                        sheet['D'+str(cnt_ini_row)].fill=grayFill
-                                        sheet['D'+str(cnt_ini_row)]=str(item.coins.value).replace('\n','')
+                                        sheet['D'+str(cnt_ini_row)].fill=grayFill1
+                                        sheet['D'+str(cnt_ini_row)]=notice.aggregate(Sum('coins__value'))['coins__value__sum']  if notice else '-'
                                         sheet['E'+str(cnt_ini_row)].font=font
-                                        sheet['E'+str(cnt_ini_row)].fill=grayFill
-                                        sheet['E'+str(cnt_ini_row)]=str(recovering[0].entity.name)
+                                        sheet['E'+str(cnt_ini_row)].fill=grayFill1
+                                        sheet['E'+str(cnt_ini_row)]=str(recovering[0].entity.name) if notice else '-'
                                         sheet.merge_cells('E'+str(cnt_ini_row)+':K'+str(cnt_ini_row))
+                                    for item in calculation[0].get_classes():
+                                        if item['total_calculated']>0:
+                                            cnt_ini_row=cnt_ini_row+1
+                                            sheet.insert_rows(cnt_ini_row)
+                                            sheet['A'+str(cnt_ini_row)].font=font
+                                            sheet['A'+str(cnt_ini_row)].fill=grayFill1
+                                            sheet['A'+str(cnt_ini_row)]=''
+                                            sheet['B'+str(cnt_ini_row)].font=font
+                                            sheet['B'+str(cnt_ini_row)].fill=grayFill1
+                                            sheet['B'+str(cnt_ini_row)]=str(item['classes_display']).replace('\n','')
+                                            sheet['C'+str(cnt_ini_row)].font=font
+                                            sheet['C'+str(cnt_ini_row)].fill=grayFill1
+                                            sheet['C'+str(cnt_ini_row)]=str(item['coin']).replace('\n','')
+                                            sheet['D'+str(cnt_ini_row)].font=font
+                                            sheet['D'+str(cnt_ini_row)].fill=grayFill1
+                                            sheet['D'+str(cnt_ini_row)]='{:,.2f}'.format(float(str(item['total_calculated']).replace('\n',''))).replace('.','-').replace(',','.').replace('-',',')
+                                            sheet['E'+str(cnt_ini_row)].font=font
+                                            sheet['E'+str(cnt_ini_row)].fill=grayFill1
+                                            sheet['E'+str(cnt_ini_row)]=str(recovering[0].entity.name)
+                                            sheet.merge_cells('E'+str(cnt_ini_row)+':K'+str(cnt_ini_row))
                                     cnt_ini_row=cnt_ini_row+1
                                     sheet.insert_rows(cnt_ini_row)
                                     cnt_ini_row=cnt_ini_row+1
@@ -914,7 +918,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         sheet['B'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
                                         sheet['C'+str(cnt_ini_row)]=str(item.coins).replace('\n','')
                                         sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
-                                        sheet['D'+str(cnt_ini_row)]=str(item.coins.value).replace('\n','')
+                                        sheet['D'+str(cnt_ini_row)]='{:,.2f}'.format(float(str(item.coins.value).replace('\n',''))).replace('.','-').replace(',','.').replace('-',',')
                                         sheet['D'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
                                         sheet['E'+str(cnt_ini_row)]=str(recovering[0].entity.name).replace('\n','')
                                         cnt_ini_row=cnt_ini_row+1
@@ -931,7 +935,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         sheet['B'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
                                         sheet['C'+str(cnt_ini_row)]=str(item.coins).replace('\n','')
                                         sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
-                                        sheet['D'+str(cnt_ini_row)]=str(item.coins.value).replace('\n','')
+                                        sheet['D'+str(cnt_ini_row)]='{:,.2f}'.format(float(str(item.coins.value).replace('\n',''))).replace('.','-').replace(',','.').replace('-',',')
                                         sheet['D'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
                                         sheet['E'+str(cnt_ini_row)]=str(recovering[0].entity.name).replace('\n','')
                                         cnt_ini_row=cnt_ini_row+1
@@ -948,7 +952,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         sheet['B'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
                                         sheet['C'+str(cnt_ini_row)]=str(item.coins).replace('\n','')
                                         sheet['C'+str(cnt_ini_row)].alignment = Alignment(horizontal="left")
-                                        sheet['D'+str(cnt_ini_row)]=str(item.coins.value).replace('\n','')
+                                        sheet['D'+str(cnt_ini_row)]='{:,.2f}'.format(float(str(item.coins.value).replace('\n',''))).replace('.','-').replace(',','.').replace('-',',')
                                         sheet['D'+str(cnt_ini_row)].alignment = Alignment(horizontal="right")
                                         sheet['E'+str(cnt_ini_row)]=str(recovering[0].entity.name).replace('\n','')
                                         cnt_ini_row=cnt_ini_row+1
@@ -964,7 +968,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     for item in notice:
                                         sheet[let_ini_col+str(cnt_ini_row)]=str(item.classes).replace('\n','')
                                         sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins).replace('\n','')
-                                        sheet[let_ini_col+str(cnt_ini_row+2)]=str(item.coins.value).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+2)]='{:,.2f}'.format(float(str(item.coins.value).replace('\n',''))).replace('.','-').replace(',','.').replace('-',',')
                                         let_ini_col=chr(ord(let_ini_col)+1)
                 for row in sheet.iter_rows():
                     for col in row:
@@ -977,7 +981,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     for item in claim_creditor:
                                         sheet[let_ini_col+str(cnt_ini_row)]=str(item.classes).replace('\n','')
                                         sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins).replace('\n','')
-                                        sheet[let_ini_col+str(cnt_ini_row+2)]=str(item.coins.value).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+2)]='{:,.2f}'.format(float(str(item.coins.value).replace('\n',''))).replace('.','-').replace(',','.').replace('-',',')
                                         let_ini_col=chr(ord(let_ini_col)+1)
                 for row in sheet.iter_rows():
                     for col in row:
@@ -989,7 +993,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     col.value=""
                                     for item in claim_lawyer:
                                         sheet[let_ini_col+str(cnt_ini_row)]=str(item.coins).replace('\n','')
-                                        sheet[let_ini_col+str(cnt_ini_row+1)]=str(item.coins.value).replace('\n','')
+                                        sheet[let_ini_col+str(cnt_ini_row+1)]='{:,.2f}'.format(float(str(item.coins.value).replace('\n',''))).replace('.','-').replace(',','.').replace('-',',')
                                         let_ini_col=chr(ord(let_ini_col)+1)
                 for row in sheet.iter_rows():
                     for col in row:
@@ -1084,63 +1088,65 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     cnt_ini_row=cnt_ini_row+1
                                     sheet.insert_rows(cnt_ini_row)
                                     sheet['A'+str(cnt_ini_row)].font=font
-                                    sheet['A'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['A'+str(cnt_ini_row)].fill=grayFill1
                                     sheet['A'+str(cnt_ini_row)]='Conclusão AJ'
                                     sheet['B'+str(cnt_ini_row)].font=font
-                                    sheet['B'+str(cnt_ini_row)].fill=grayFill
-                                    sheet['B'+str(cnt_ini_row)]='Impugnação' if len(notice)==0 else 'Habilitação'
+                                    sheet['B'+str(cnt_ini_row)].fill=grayFill1
+                                    sheet['B'+str(cnt_ini_row)]=statement[0].get_conclusion_display()
                                     sheet['C'+str(cnt_ini_row)].font=font
-                                    sheet['C'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['C'+str(cnt_ini_row)].fill=grayFill1
                                     sheet['C'+str(cnt_ini_row)]=str(claim_creditor[0].coins)
                                     sheet['D'+str(cnt_ini_row)].font=font
-                                    sheet['D'+str(cnt_ini_row)].fill=grayFill
-                                    sheet['D'+str(cnt_ini_row)]=claim_creditor.aggregate(Sum('coins__value'))['coins__value__sum']
+                                    sheet['D'+str(cnt_ini_row)].fill=grayFill1
+                                    sheet['D'+str(cnt_ini_row)]='{:,.2f}'.format(statement[0].statementpf.total_conclusion).replace('.','-').replace(',','.').replace('-',',')
                                     sheet['E'+str(cnt_ini_row)].font=font
-                                    sheet['E'+str(cnt_ini_row)].fill=grayFill
+                                    sheet['E'+str(cnt_ini_row)].fill=grayFill1
                                     sheet['E'+str(cnt_ini_row)]=str(recovering[0].entity.name)
                                     sheet.merge_cells('E'+str(cnt_ini_row)+':K'+str(cnt_ini_row))
-                                    cnt_ini_row=cnt_ini_row+1
-                                    sheet.insert_rows(cnt_ini_row)
-                                    sheet['A'+str(cnt_ini_row)].font=font
-                                    sheet['A'+str(cnt_ini_row)].fill=grayFill
-                                    sheet['A'+str(cnt_ini_row)]=''
-                                    sheet['B'+str(cnt_ini_row)].font=font
-                                    sheet['B'+str(cnt_ini_row)].fill=grayFill
-                                    sheet['B'+str(cnt_ini_row)]='Edital art. 7º § 2 - 11.101/2005'
-                                    sheet['C'+str(cnt_ini_row)].font=font
-                                    sheet['C'+str(cnt_ini_row)].fill=grayFill
-                                    sheet['C'+str(cnt_ini_row)]=str(notice[0].coins) if notice else '-'
-                                    sheet['D'+str(cnt_ini_row)].font=font
-                                    sheet['D'+str(cnt_ini_row)].fill=grayFill
-                                    sheet['D'+str(cnt_ini_row)]=notice.aggregate(Sum('coins__value'))['coins__value__sum']  if notice else '-'
-                                    sheet['E'+str(cnt_ini_row)].font=font
-                                    sheet['E'+str(cnt_ini_row)].fill=grayFill
-                                    sheet['E'+str(cnt_ini_row)]=str(recovering[0].entity.name) if notice else '-'
-                                    sheet.merge_cells('E'+str(cnt_ini_row)+':K'+str(cnt_ini_row))
-                                    for item in claim_creditor:
+                                    if calculation[0].has_edital:
                                         cnt_ini_row=cnt_ini_row+1
                                         sheet.insert_rows(cnt_ini_row)
                                         sheet['A'+str(cnt_ini_row)].font=font
-                                        sheet['A'+str(cnt_ini_row)].fill=grayFill
+                                        sheet['A'+str(cnt_ini_row)].fill=grayFill1
                                         sheet['A'+str(cnt_ini_row)]=''
                                         sheet['B'+str(cnt_ini_row)].font=font
-                                        sheet['B'+str(cnt_ini_row)].fill=grayFill
-                                        sheet['B'+str(cnt_ini_row)]=str(item.classes).replace('\n','')
+                                        sheet['B'+str(cnt_ini_row)].fill=grayFill1
+                                        sheet['B'+str(cnt_ini_row)]='Edital art. 7º § 2 - 11.101/2005'
                                         sheet['C'+str(cnt_ini_row)].font=font
                                         sheet['C'+str(cnt_ini_row)].fill=grayFill
-                                        sheet['C'+str(cnt_ini_row)]=str(item.coins).replace('\n','')
+                                        sheet['C'+str(cnt_ini_row)]=str(notice[0].coins) if notice else '-'
                                         sheet['D'+str(cnt_ini_row)].font=font
-                                        sheet['D'+str(cnt_ini_row)].fill=grayFill
-                                        sheet['D'+str(cnt_ini_row)]=str(item.coins.value).replace('\n','')
+                                        sheet['D'+str(cnt_ini_row)].fill=grayFill1
+                                        sheet['D'+str(cnt_ini_row)]=notice.aggregate(Sum('coins__value'))['coins__value__sum']  if notice else '-'
                                         sheet['E'+str(cnt_ini_row)].font=font
-                                        sheet['E'+str(cnt_ini_row)].fill=grayFill
-                                        sheet['E'+str(cnt_ini_row)]=str(recovering[0].entity.name)
+                                        sheet['E'+str(cnt_ini_row)].fill=grayFill1
+                                        sheet['E'+str(cnt_ini_row)]=str(recovering[0].entity.name) if notice else '-'
                                         sheet.merge_cells('E'+str(cnt_ini_row)+':K'+str(cnt_ini_row))
+                                    for item in calculation[0].get_classes():
+                                        if item['total_calculated']>0:
+                                            cnt_ini_row=cnt_ini_row+1
+                                            sheet.insert_rows(cnt_ini_row)
+                                            sheet['A'+str(cnt_ini_row)].font=font
+                                            sheet['A'+str(cnt_ini_row)].fill=grayFill1
+                                            sheet['A'+str(cnt_ini_row)]=''
+                                            sheet['B'+str(cnt_ini_row)].font=font
+                                            sheet['B'+str(cnt_ini_row)].fill=grayFill1
+                                            sheet['B'+str(cnt_ini_row)]=str(item['classes_display']).replace('\n','')
+                                            sheet['C'+str(cnt_ini_row)].font=font
+                                            sheet['C'+str(cnt_ini_row)].fill=grayFill1
+                                            sheet['C'+str(cnt_ini_row)]=str(item['coin']).replace('\n','')
+                                            sheet['D'+str(cnt_ini_row)].font=font
+                                            sheet['D'+str(cnt_ini_row)].fill=grayFill1
+                                            sheet['D'+str(cnt_ini_row)]='{:,.2f}'.format(float(str(item['total_calculated']).replace('\n',''))).replace('.','-').replace(',','.').replace('-',',')
+                                            sheet['E'+str(cnt_ini_row)].font=font
+                                            sheet['E'+str(cnt_ini_row)].fill=grayFill1
+                                            sheet['E'+str(cnt_ini_row)]=str(recovering[0].entity.name)
+                                            sheet.merge_cells('E'+str(cnt_ini_row)+':K'+str(cnt_ini_row))
                                     cnt_ini_row=cnt_ini_row+1
                                     sheet.insert_rows(cnt_ini_row)
                                     cnt_ini_row=cnt_ini_row+1
                                     sheet.insert_rows(cnt_ini_row)
-                                    sheet.merge_cells('A'+str(cnt_ini_row)+':K'+str(cnt_ini_row))
+                                    sheet.merge_cells('A'+str(cnt_ini_row)+':G'+str(cnt_ini_row))
                                     sheet['A'+str(cnt_ini_row)]="São Paulo, "+str(calculation[0].created_at.day)+" de "+("janeiro" if calculation[0].created_at.month == 1 else "fevereiro" if calculation[0].created_at.month == 2 else "março" if calculation[0].created_at.month == 3 else "abril" if calculation[0].created_at.month == 4 else "maio" if calculation[0].created_at.month == 5 else "junho" if calculation[0].created_at.month == 6 else "julho" if calculation[0].created_at.month == 7 else "agosto" if calculation[0].created_at.month == 8 else "setembro" if calculation[0].created_at.month == 9 else "outubro" if calculation[0].created_at.month == 10 else "novembro" if calculation[0].created_at.month == 11 else "dezembro") + " de "+str(calculation[0].created_at.year)
 
             archive_download.save(new_name_download)
