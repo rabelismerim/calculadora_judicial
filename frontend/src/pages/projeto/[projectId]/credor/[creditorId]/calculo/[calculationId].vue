@@ -389,8 +389,19 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
       :colors="stepColors"
       @reload-click="loadCalculation(true)"
     >
-      <Btn label="Alterar Status" outlined :disabled="!calculation?.id" @click="showChangeStatus = true" />
-      <Btn label="Novo Crédito" icon="i-carbon-add-filled" :disabled="!calculation?.id" @click="showNewCredit = true" />
+      <Btn
+        label="Alterar Status"
+        outlined
+        :disabled="!calculation?.id"
+        @click="showChangeStatus = true"
+      />
+      <Btn
+        v-if="hasPermissions(['add_calculation'])"
+        label="Novo Crédito"
+        icon="i-carbon-add-filled"
+        :disabled="!calculation?.id || ['A', 'B'].includes(calculation?.step)"
+        @click="showNewCredit = true"
+      />
     </CalculationHeader>
 
     <TabFilter
