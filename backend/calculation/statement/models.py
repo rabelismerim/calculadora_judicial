@@ -58,6 +58,18 @@ class Statement(AbstractModel):
             return self.totallawyer.value
         return 0
 
+    def get_lawyers_name(self) -> list:
+        """
+        Gets the values of the lawyers_name attribute of the object if it exists.
+
+        Returns:
+            - The values of the lawyers_name attribute of the object, if it exists.
+            - 0, otherwise.
+        """
+        if hasattr(self, 'totallawyer'):
+            return self.totallawyer.get_lawyers_name
+        return []
+
     def get_recurral_deposit(self) -> float:
         """
         Calls the get_recurral_deposit method of the object's statementpf attribute if it exists.
@@ -123,6 +135,11 @@ class TotalLawyer(AbstractModel):
         Returns a queryset of all the lawyers associated with this instance.
         """
         return self.lawyer_set.all()
+    def get_lawyers_name(self):
+        """
+        Returns a queryset of all the lawyers associated with this instance.
+        """
+        return self.lawyer_set.all().values_list('name', flat=True)
 
     def calcule_total(self):
         """
