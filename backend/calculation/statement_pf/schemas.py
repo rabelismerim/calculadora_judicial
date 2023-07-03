@@ -204,6 +204,8 @@ class StatementPFSchema(AbstractDescriptionSchema):
             "legend_monetary_correction_update": obj.legend_monetary_correction_update,
             "legend_date_rj_filing_citation": obj.legend_date_rj_filing_citation,
             "total": obj.total,
+            "recurral_deposit": obj.get_recurral_deposit(),
+            "total_conclusion": obj.total_conclusion,
         }
 
     class Meta:

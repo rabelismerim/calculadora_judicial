@@ -20,8 +20,8 @@ from calculation.comment.schemas import StepCommentSchema, CommentSchema
 from calculation.comparative.schemas import ComparativeSchema
 from calculation.criterion.schemas import CriterionSchema
 from calculation.funds.document.schemas import FundDocumentSchema
-from calculation.funds.irrf.schemas import FundIRRFSchema
-from calculation.funds.schemas import FundsSchema
+from calculation.funds.irrf.schemas import FundIRRFSchema, FundIRRFExcelSchema
+from calculation.funds.schemas import FundsSchema, FundsExcelSchema
 from calculation.premise.schemas import PremiseSchema
 from calculation.statement.schemas import StatementSchema
 from calculation.verdict.schemas import VerdictSchema
@@ -71,6 +71,7 @@ class ClassesSerializer(serializers.Serializer):
     percentage_value = serializers.FloatField()
     total_calculated = serializers.FloatField()
     percentage_calculated = serializers.FloatField()
+    coin = serializers.CharField()
 
     @staticmethod
     def get_classe_display(obj):
@@ -144,6 +145,32 @@ class CalculationAllFundsSchema(AbstractDescriptionSchema):  # V1
         model = Calculation
         fields = ('all_funds',)
 
+
+class CalculationExcelSchema(CalculationAllFundsSchema):  # V1
+    """
+    The CalculationSchema class is a serializer for the Calculation model fields. It inherits from the
+     AbstractModelSchema class. It includes the following fields:
+
+    creditor: a CreditorSchema instance that is read-only and not serialized.
+    creditor_id: a UUIDField instance that is write-only and serialized.
+    verdict: a VerdictSchema instance that represents a collection of verdicts related to the calculation.
+    criterion: a CriterionSchema instance that is read-only and not serialized.
+    funds: a FundsSchema instance that represents a collection of funds related to the calculation.
+    statement: a StatementSchema instance that is read-only and not serialized.
+    The Meta class is used to specify the Calculation model and all fields are serialized.
+    The validate method is overridden to handle the verdict_set and funds_set fields and returns the validated data.
+    """
+
+    funds = FundsExcelSchema(source='funds_set', many=True,
+                        required=False, exclude=('calculation_id',), read_only=True)
+    fund_irrf = FundIRRFExcelSchema(source='fundirrf_set', many=True,
+                               required=False, exclude=('calculation_id',), read_only=True)
+    fund_document = FundDocumentSchema(source='funddocument_set', many=True,
+                                       required=False, exclude=('calculation_id',), read_only=True)
+    class Meta:
+        model = Calculation
+        fields = '__all__'
+        read_only_fields = ('funds', 'fund_irrf', 'fund_document')
 
 class CalculationSchema(CalculationAllFundsSchema):  # V1
     """

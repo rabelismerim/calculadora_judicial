@@ -52,6 +52,7 @@ class StatementFundsSchema(AbstractDescriptionSchema):
     fund_id = serializers.UUIDField()
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     commit = serializers.BooleanField(write_only=True, required=False)
+
     class Meta:
         model = StatementFunds
         exclude = ('fund',)
@@ -101,6 +102,34 @@ class TotalValuesFundsSchema(AbstractDescriptionSchema):
     class Meta:
         model = TotalValuesFunds
         exclude = ('fund',)
+
+
+class FundsExcelSchema(AbstractClassesFundsSchema):
+    """
+    A schema for serializing and deserializing Funds instances.
+
+    Attributes: calculation_id (serializers.UUIDField): The UUID of the related calculation. statement_funds (
+    StatementFundsSchema): The schema for serializing and deserializing StatementFunds instances.
+    statement_integrations (StatementIntegrationsSchema): The schema for serializing and deserializing
+    StatementIntegrations instances. statement_irrf (StatementIRRFSchema): The schema for serializing and
+    deserializing StatementIRRF instances.
+    """
+    calculation_id = serializers.UUIDField()
+
+    statement_funds = StatementFundsSchema(
+        many=True, source='statementfunds_set', exclude=('fund_id', 'status'), write_only=True, required=False)
+
+    statement_integrations = StatementIntegrationsSchema(
+        many=True, source='statementintegrations_set', exclude=('fund_id', 'status'), write_only=True, required=False)
+    values_funds = TotalValuesFundsSchema(
+        source='totalvaluesfunds', read_only=True, exclude=('fund_id',))
+
+    values_funds_integrations = TotalValuesFundsIntegrationsSchema(
+        source='totalvaluesfundsintegrations', read_only=True, exclude=('fund_id',))
+
+    class Meta:
+        model = Funds
+        exclude = ('calculation',)
 
 
 class FundsSchema(AbstractClassesFundsSchema):

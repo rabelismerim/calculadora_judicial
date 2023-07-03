@@ -1,4 +1,4 @@
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from django.utils.timezone import now
 
 from dashboard.models import LoginRecord
@@ -27,12 +27,16 @@ class LoginMiddleware:
         """
         response = self.get_response(request)
         user = request.user
+
         if user.is_authenticated:
             today = now().date()
             with transaction.atomic():
-                record_exists_today = LoginRecord.objects.filter(user=user, login_time__date=today).exists()
+                record_exists_today = LoginRecord.objects.filter(user=user, login_date=today).exists()
 
                 if not record_exists_today:
-                    LoginRecord.objects.create(user=user)
+                    try:
+                        LoginRecord.objects.create(user=user)
+                    except IntegrityError:
+                        pass
 
         return response
