@@ -900,7 +900,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         sheet["C" + str(cnt_ini_row)] = (
                                             "{:,.2f}".format(
                                                 float(
-                                                    item.totalvaluesfunds.total_corrected
+                                                    item.totalvaluesfunds.total_corrected+item.totalvaluesfundsintegrations.total_corrected
                                                 )
                                             )
                                             .replace(".", "-")
@@ -918,7 +918,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         )
                                         cnt_ini_row = cnt_ini_row + 1
                                         sum_total += (
-                                            item.totalvaluesfunds.total_corrected
+                                            item.totalvaluesfunds.total_corrected+item.totalvaluesfundsintegrations.total_corrected
                                         )
                                     sheet["A" + str(cnt_ini_row)] = (
                                         "Total Atualizado:"
@@ -1360,7 +1360,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     try:
                                         sheet["D" + str(cnt_ini_row)] = (
                                             "{:,.2f}".format(
-                                                statement[0].total_conclusion
+                                                sum([item["total_calculated"] for item in calculation[0].get_classes()])
                                             )
                                             .replace(".", "-")
                                             .replace(",", ".")
@@ -2345,7 +2345,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         sheet["C" + str(cnt_ini_row)] = (
                                             "{:,.2f}".format(
                                                 float(
-                                                    item.totalvaluesfunds.total_corrected
+                                                    item.totalvaluesfunds.total_corrected+item.totalvaluesfundsintegrations.total_corrected
                                                 )
                                             )
                                             .replace(".", "-")
@@ -2362,7 +2362,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             + str(cnt_ini_row)
                                         )
                                         sum_total += (
-                                            item.totalvaluesfunds.total_corrected
+                                            item.totalvaluesfunds.total_corrected+item.totalvaluesfundsintegrations.total_corrected
                                         )
                                         cnt_ini_row = cnt_ini_row + 1
                                     sheet["A" + str(cnt_ini_row)] = (
@@ -2773,7 +2773,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     try:
                                         sheet["D" + str(cnt_ini_row)] = (
                                             "{:,.2f}".format(
-                                                statement[0].total_conclusion
+                                                sum([item["total_calculated"] for item in calculation[0].get_classes()])
                                             )
                                             .replace(".", "-")
                                             .replace(",", ".")
