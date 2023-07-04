@@ -76,7 +76,7 @@ urlpatterns = [
 
     # File
     path(f'{BASE_URL}base/', include("base.urls")),
-    path(f'{BASE_URL}file/', include("file.urls")),
+    # path(f'{BASE_URL}file/', include("file.urls")),
 
     # Calculation
     path(f'{BASE_URL}calculation/', include("calculation.urls.current")),
@@ -105,9 +105,9 @@ urlpatterns = [
 
     # VUE FRONTEND
     re_path(r'^(?!juca\/admin|juca\/api|simple|juca\/media).*$', frontend_index, name='frontend'),
-    re_path(f'{BASE_URL}logout/', post_logout, name='api-logout'),
+    # re_path(f'{BASE_URL}logout/', post_logout, name='api-logout'),
 
-    # re_path(f'{BASE_URL}logout/', LogoutView.as_view(), name='api-logout'),
+    re_path(f'{BASE_URL}logout/', LogoutView.as_view(), name='api-logout'),
     # path('juca/<path:resource>', frontend_index, name='frontend'),
 
     # Documentation
