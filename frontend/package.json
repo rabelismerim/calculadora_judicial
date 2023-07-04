@@ -2,7 +2,7 @@
   "name": "deloitte-juca",
   "description": "Sistema de Recuperação Financeira - Deloitte",
   "private": true,
-  "version": "1.0.5",
+  "version": "1.0.6",
   "type": "module",
   "scripts": {
     "dev": "vite --mode devremote",
