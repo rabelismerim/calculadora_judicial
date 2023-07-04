@@ -5,17 +5,6 @@ const getColor = (path: string) => route.path === path ? 'secondary' : 'white'
 const { hasPermissions } = $user
 
 const accessRequestsCount = $ref(0)
-// onMounted(async () => {
-//   try {
-//     if (hasPermissions(['view_user'])) {
-//       const users = await usersService.getUsers()
-//       accessRequestsCount = users.filter(({ status }: any) => status.toLowerCase() === 'p').length
-//     }
-//   }
-//   catch (error) {
-//     printError('ERROR ON LOAD DEFAULT LAYOUT OPTIONS:', error)
-//   }
-// })
 
 interface Link {
   label: string
@@ -40,7 +29,7 @@ const paths: Link[] = $ref([
     permissions: ['view_user'],
   },
 ])
-const filteredPaths = computed(() => paths.filter(({ permissions }: any) => hasPermissions(permissions)))
+const filteredPaths = computed(() => paths.filter(({ permissions = [] }: any) => hasPermissions(...permissions)))
 </script>
 
 <template>

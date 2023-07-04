@@ -1,6 +1,4 @@
 <script setup lang='ts'>
-import { QInput } from 'quasar'
-
 interface Creditor {
   name: string
   legalNumber: string
