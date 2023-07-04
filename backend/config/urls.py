@@ -26,7 +26,7 @@ from django.conf import settings
 from django.views.generic import TemplateView
 from rest_framework import permissions, status
 from rest_framework.schemas import get_schema_view
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.conf.urls.static import static
 from django.contrib.auth import views, logout
 from config.settings import BASE_URL, BASE_URL_AUTH
@@ -46,11 +46,16 @@ def frontend_index(request):
 
 
 class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         logout(request)
         return JsonResponse({}, status=status.HTTP_204_NO_CONTENT)
+
+@csrf_exempt
+def post_logout(request):
+    logout(request)
+    return JsonResponse({}, status=status.HTTP_204_NO_CONTENT)
 
 
 urlpatterns = [
@@ -100,8 +105,9 @@ urlpatterns = [
 
     # VUE FRONTEND
     re_path(r'^(?!juca\/admin|juca\/api|simple|juca\/media).*$', frontend_index, name='frontend'),
+    re_path(f'{BASE_URL}logout/', post_logout, name='frontend'),
 
-    re_path(f'{BASE_URL}logout/', LogoutView.as_view(), name='api-logout'),
+    # re_path(f'{BASE_URL}logout/', LogoutView.as_view(), name='api-logout'),
     # path('juca/<path:resource>', frontend_index, name='frontend'),
 
     # Documentation
