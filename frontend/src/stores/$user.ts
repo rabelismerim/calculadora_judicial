@@ -4,6 +4,7 @@ const userFallback = {
   name: '',
   fullName: '',
   pictureUrl: '',
+  userpicture: '',
   email: '',
   groups: [] as any[],
   permissions: [] as string[],
@@ -35,7 +36,7 @@ const logout = async () => {
 }
 const user = computed(() => store.value)
 const isActive = computed(() => store.value.isActive)
-const hasPermissions = (permissions: string[] = []) => permissions
+const hasPermissions = (...permissions: string[]) => permissions
   .every(permission => store.value.permissions.includes(permission))
 const hasProject = (id: string) => store.value.projects.includes(id)
 
