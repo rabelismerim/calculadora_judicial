@@ -17,19 +17,12 @@ const getMyProfile = () => api
   .then(async (user) => {
     if (!user?.authenticated && import.meta.env.PROD)
       redirectTo(`${window.location.origin}/juca/api/drfmsal_signin/juca/`)
-    try {
-      const permissions = await getPermissions()
-      const projects = await projectService.getUserProjects()
-  
-      return {
-        ...user,
-        ...permissions,
-        projects,
-      }
-    } catch(error) {
-      if (import.meta.env.PROD)
-        redirectTo(`${window.location.origin}/juca/api/drfmsal_signin/juca/`)
-      printError('ERROR ON GET USER PROFILE:', error)
+    const permissions = await getPermissions()
+    const projects = await projectService.getUserProjects()
+    return {
+      ...user,
+      ...permissions,
+      projects,
     }
   })
 
