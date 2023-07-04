@@ -45,6 +45,9 @@ const setPermission = ({ email, groups, role, status }: any) => api
   .post('user/authorize/', { email, groups, role, status })
   .then((result: any) => result?.user)
 
+const logout = () => api
+  .post('/v1/logout/')
+
 export default {
   getMyProfile,
   getPermissions,
@@ -52,4 +55,5 @@ export default {
   getUsers,
   sendmail,
   setPermission,
+  logout,
 }
