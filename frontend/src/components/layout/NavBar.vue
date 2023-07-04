@@ -39,7 +39,9 @@ const { user } = $user
           />
         </template>
         <template #label>
-          <div class="hidden sm:block">{{ user.fullName || 'sair' }}</div>
+          <div class="hidden sm:block">
+            {{ user.fullName || 'sair' }}
+          </div>
         </template>
       </Btn>
       <Img :src="`${baseUrl}/logo/app.svg`" :height="30" class="hidden md:block" />

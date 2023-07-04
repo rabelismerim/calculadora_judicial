@@ -95,6 +95,7 @@ onMounted(() => loadPage())
         ]"
       />
       <Btn
+        v-if="hasPermissions('can_authorize_users')"
         label="Solicitações"
         :icon="pendingUsersCount === 0 ? 'i-carbon-request-quote' : ''"
         @click="showingRequests = true"
@@ -132,7 +133,6 @@ onMounted(() => loadPage())
       />
 
       <RequestModal
-        v-if="hasPermissions('can_authorize_users')"
         v-model="showingRequests"
         :users="pendingUsers"
         @done="loadPage"

@@ -12,11 +12,12 @@ const emit = defineEmits(['update:tab', 'update:filter', 'editingUser'])
 
 const router = useRouter()
 
-const { hasProject, user } = $user
+const { hasProject, hasPermissions, user } = $user
 const showUserModal = $ref(false)
 const modalUser = $ref({ fullName: '' })
 const editUser = (evt: Event, user: any) => {
-  emit('editingUser', user)
+  if (hasPermissions('can_authorize_users'))
+    emit('editingUser', user)
 }
 
 const canGoTo = (project: any) => hasProject(project.id)
