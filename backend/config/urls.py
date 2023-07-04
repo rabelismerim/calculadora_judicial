@@ -15,17 +15,20 @@ Including another URLconf
 """
 import os
 from django.contrib import admin
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import include, path, re_path, reverse
 from django.shortcuts import render, redirect
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+
 from config.settings import ENABLE_SSO, IS_LOCALHOST, BASE_URL_NEXT
 from django.conf import settings
 from django.views.generic import TemplateView
-from rest_framework import permissions
+from rest_framework import permissions, status
 from rest_framework.schemas import get_schema_view
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.conf.urls.static import static
-from django.contrib.auth import views
+from django.contrib.auth import views, logout
 from config.settings import BASE_URL, BASE_URL_AUTH
 from rest_framework.authtoken import views as rest_views
 
@@ -40,6 +43,19 @@ def frontend_index(request):
         return HttpResponseRedirect("/")
     else:
         return render(request, template_name='index.html')
+
+
+class LogoutView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        logout(request)
+        return JsonResponse({}, status=status.HTTP_204_NO_CONTENT)
+
+@csrf_exempt
+def post_logout(request):
+    logout(request)
+    return JsonResponse({}, status=status.HTTP_204_NO_CONTENT)
 
 
 urlpatterns = [
@@ -58,8 +74,9 @@ urlpatterns = [
     # Creditors
     path(f'{BASE_URL}creditors/', include("creditors.urls")),
 
-    # # Base
+    # File
     path(f'{BASE_URL}base/', include("base.urls")),
+    # path(f'{BASE_URL}file/', include("file.urls")),
 
     # Calculation
     path(f'{BASE_URL}calculation/', include("calculation.urls.current")),
@@ -88,6 +105,9 @@ urlpatterns = [
 
     # VUE FRONTEND
     re_path(r'^(?!juca\/admin|juca\/api|simple|juca\/media).*$', frontend_index, name='frontend'),
+    # re_path(f'{BASE_URL}logout/', post_logout, name='api-logout'),
+
+    re_path(f'{BASE_URL}logout/', LogoutView.as_view(), name='api-logout'),
     # path('juca/<path:resource>', frontend_index, name='frontend'),
 
     # Documentation

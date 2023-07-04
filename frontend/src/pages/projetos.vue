@@ -159,7 +159,7 @@ const columns = [
   >
     <Header title="Projetos">
       <Btn
-        v-if="hasPermissions(['add_project'])"
+        v-if="hasPermissions('add_project')"
         label="Novo Projeto"
         @click="showNewProject = true"
       />

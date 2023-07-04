@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { rangeBetween } from '../../composables/utils'
-
 const props = withDefaults(defineProps<{
   values?: { label: string; count: number; color?: string }[]
   title?: string

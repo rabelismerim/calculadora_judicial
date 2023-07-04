@@ -120,7 +120,7 @@ const loadIncidents = async () => {
     printError('ERROR ON LOAD INCIDENSTS:', error)
   }
 }
-const options = $ref({
+const options: any = $ref({
   users: [],
   judges: [],
   lawyers: [],
@@ -186,7 +186,7 @@ onMounted(async () => {
         @click="showParticipants = true"
       />
       <Btn
-        v-if="hasPermissions(['change_project'])"
+        v-if="hasPermissions('change_project')"
         label="Editar"
         icon="i-carbon-edit"
         :disabled="!project.id || loading"
