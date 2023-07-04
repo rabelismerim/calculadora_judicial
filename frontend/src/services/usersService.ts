@@ -14,7 +14,7 @@ const getPermissions = () => api
 const logout = () => api
   .post('/v1/logout/')
 
-const getMyProfile = () => api
+const getMyProfile = async () => api
   .get('/drfmsal_signstatus/')
   .then((result: any) => result?.profile)
   .then(async (user) => {
@@ -25,7 +25,7 @@ const getMyProfile = () => api
       goToSignin()
 
     if (user?.authenticated && !user?.authorized) {
-      logout()
+      await logout()
       goToSignin()
     }
 
