@@ -1,6 +1,8 @@
 <script setup lang="ts">
 const router = useRouter()
 
+const { hasPermissions } = $user
+
 const tab = $ref('all')
 const filterBy = $ref('')
 let loading = $ref(false)
@@ -13,9 +15,10 @@ const mapProjects = computed(() => projects.map((project) => {
   const newProject = clone(project)
   const { id, description, projectUsers, status, statusDisplay } = newProject
   const filterBy = (toCompare: string) => ({ groups }: any) => groups?.findIndex(({ name }: any) => name === toCompare)
-  const mapUser = ({ firstName, lastName, pictureUrl, username, groups }: any) => ({
+  const mapUser = ({ firstName, lastName, pictureUrl, userpicture, username, groups }: any) => ({
     fullName: `${firstName} ${lastName}`,
     pictureUrl,
+    userpicture,
     email: `${username}@deloitte.com`,
     groups,
   })
@@ -92,6 +95,7 @@ onMounted(() => loadPage())
         ]"
       />
       <Btn
+        v-if="hasPermissions('can_authorize_users')"
         label="Solicitações"
         :icon="pendingUsersCount === 0 ? 'i-carbon-request-quote' : ''"
         @click="showingRequests = true"
@@ -131,7 +135,7 @@ onMounted(() => loadPage())
       <RequestModal
         v-model="showingRequests"
         :users="pendingUsers"
-        @done="loadPage"
+        @success="loadPage"
       />
     </template>
   </Page>

@@ -11,15 +11,27 @@ const getPermissions = () => api
     }
   })
 
+const logout = () => api
+  .post('/v1/logout/')
+
 const getMyProfile = () => api
   .get('/drfmsal_signstatus/')
   .then((result: any) => result?.profile)
   .then(async (user) => {
-    if (!user?.authenticated && import.meta.env.PROD)
+    const goToSignin = () =>
       redirectTo(`${window.location.origin}/juca/api/drfmsal_signin/juca/`)
 
-    const permissions = await getPermissions()
-    const projects = await projectService.getUserProjects()
+    if (!user?.authenticated && import.meta.env.PROD)
+      goToSignin()
+
+    if (user?.authenticated && !user?.authorized) {
+      logout()
+      goToSignin()
+    }
+
+    const isAuthorized = user?.authorized || import.meta.env.DEV
+    const permissions = isAuthorized ? await getPermissions() : []
+    const projects = isAuthorized ? await projectService.getUserProjects() : []
 
     return {
       ...user,
@@ -31,6 +43,7 @@ const getMyProfile = () => api
 const getUsers = () => api
   .get('/users/')
   .then((result: any) => result?.users || [])
+  .then((users: any[]) => users?.filter(({ role }: any) => !['R'].includes(role)))
 
 const getGroups = () => api
   .get('/groups/')
@@ -51,4 +64,5 @@ export default {
   getUsers,
   sendmail,
   setPermission,
+  logout,
 }

@@ -5,7 +5,9 @@ const props = withDefaults(defineProps<{
 }>(), {
   users: () => ([]),
 })
-const emit = defineEmits(['update:model-value', 'done'])
+const emit = defineEmits(['update:model-value', 'success'])
+
+const { hasPermissions } = $user
 
 const form = ref(null as any)
 
@@ -43,8 +45,10 @@ const onAuthorize = async () => {
   try {
     const result = await usersService.setPermission({ email, groups: [group], role, status: 'A' })
     const { status } = result
-    if (status)
+    if (status) {
       clear()
+      emit('success')
+    }
   }
   catch (error) {
     printError('ERROR ON ACCEPTING THE USER REQUEST:', error)
@@ -73,7 +77,8 @@ const onReject = async (user: any) => {
 }
 onMounted(async () => {
   try {
-    permissionOptions = await usersService.getGroups()
+    if (hasPermissions('can_authorize_users'))
+      permissionOptions = await usersService.getGroups()
   }
   catch (error) {
     printError('ERROR ON LOADING GROUPS:', error)

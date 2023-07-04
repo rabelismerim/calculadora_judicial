@@ -1,7 +1,4 @@
 <script setup lang='ts'>
-import { QInput } from 'quasar'
-import InputDate from '../inputs/InputDate.vue'
-
 const props = withDefaults(defineProps<{
   modelValue: boolean
   creditor: any

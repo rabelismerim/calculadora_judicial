@@ -1,6 +1,4 @@
 // BIG NUMBERS
-import { formatDay, formatMonth } from '../composables/utils'
-
 const mapProject = (project: any) => {
   const {
     isAdm,
@@ -52,11 +50,12 @@ const getProject = (id: string) => api
     }))
 
     const participants = projectUsers.reduce((acc: any, current: any) => {
-      const { id, idUser, firstName, lastName, username, pictureUrl, groups } = current
+      const { id, idUser, firstName, lastName, username, pictureUrl, userpicture, groups } = current
       const user = {
         id: idUser,
         idUser: id,
         pictureUrl,
+        userpicture,
         fullName: `${firstName} ${lastName}`,
         email: `${username}@deloitte.com`,
       }

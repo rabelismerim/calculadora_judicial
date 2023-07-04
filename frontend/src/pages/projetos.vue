@@ -1,8 +1,10 @@
 <script setup lang="ts">
 const router = useRouter()
 
+const { hasProject, updateProjectList } = $user
+
 let loading = $ref(false)
-const showNewProject = $ref(false)
+let showNewProject = $ref(false)
 const filterBy = $ref('')
 
 let projects = $ref([])
@@ -72,7 +74,24 @@ const loadProjects = async () => {
   }
 }
 
-const openProject = (_: Event, { id }: any) => router.push(`/projeto/${id}`)
+const redirectToProject = (_: any, row: any) => {
+  // if (!hasProject(row.id)) {
+  //   throwError({
+  //     id: 'not_in_project',
+  //     message: 'Você não está na equipe deste Projeto!',
+  //   })
+  //   return
+  // }
+  router.push(`/projeto/${row.id}`)
+}
+
+const onProjectCreated = async () => {
+  loading = true
+  showNewProject = false
+  await updateProjectList()
+  await loadProjects()
+  loading = false
+}
 
 let bigNumbers: any = $ref({})
 const loadBigNumbers = async () => {
@@ -159,7 +178,7 @@ const columns = [
   >
     <Header title="Projetos">
       <Btn
-        v-if="hasPermissions(['add_project'])"
+        v-if="hasPermissions('add_project')"
         label="Novo Projeto"
         @click="showNewProject = true"
       />
@@ -212,7 +231,7 @@ const columns = [
       row-key="id"
       flat
       bordered
-      @row-click="openProject"
+      @row-click="redirectToProject"
     >
       <template #body-cell-name="props">
         <QTd :props="props">
@@ -262,7 +281,7 @@ const columns = [
     <template #out>
       <newProject
         v-model="showNewProject"
-        @success="showNewProject = false; loadProjects()"
+        @success="onProjectCreated"
       />
     </template>
   </Page>
