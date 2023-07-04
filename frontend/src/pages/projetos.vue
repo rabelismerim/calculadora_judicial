@@ -1,6 +1,8 @@
 <script setup lang="ts">
 const router = useRouter()
 
+const { hasProject } = $user
+
 let loading = $ref(false)
 const showNewProject = $ref(false)
 const filterBy = $ref('')
@@ -72,7 +74,16 @@ const loadProjects = async () => {
   }
 }
 
-const openProject = (_: Event, { id }: any) => router.push(`/projeto/${id}`)
+const redirectToProject = (_: any, row: any) => {
+  if (!hasProject(row.id)) {
+    throwError({
+      id: 'not_in_project',
+      message: 'Você não está na equipe deste Projeto!',
+    })
+    return
+  }
+  router.push(`/projeto/${row.id}`)
+}
 
 let bigNumbers: any = $ref({})
 const loadBigNumbers = async () => {
@@ -212,7 +223,7 @@ const columns = [
       row-key="id"
       flat
       bordered
-      @row-click="openProject"
+      @row-click="redirectToProject"
     >
       <template #body-cell-name="props">
         <QTd :props="props">
