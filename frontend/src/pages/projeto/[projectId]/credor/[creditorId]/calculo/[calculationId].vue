@@ -396,7 +396,7 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
         @click="showChangeStatus = true"
       />
       <Btn
-        v-if="hasPermissions(['add_calculation'])"
+        v-if="hasPermissions('add_calculation')"
         label="Novo Crédito"
         icon="i-carbon-add-filled"
         :disabled="!calculation?.id || ['A', 'B'].includes(calculation?.step)"
@@ -463,7 +463,7 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
                   label="Excluir Crédito"
                   icon="i-carbon-trash-can"
                   transparent
-                  :disabled="!hasPermissions(['delete_calculation'])"
+                  :disabled="!hasPermissions('delete_calculation')"
                   @click.stop="removeCredit(credit)"
                 />
               </div>
@@ -520,7 +520,7 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
                           <button
                             v-if="column.name === 'delete'"
                             class="cursor-pointer bg--error h-10 w-10 rounded-.5 border-1 border-red-8 flex justify-center items-center"
-                            :disabled="['A', 'B'].includes(calculation?.step) || !hasPermissions(['delete_calculation'])"
+                            :disabled="['A', 'B'].includes(calculation?.step) || !hasPermissions('delete_calculation')"
                             @click.stop="removeCreditValue(table.values, props.row, props.rowIndex, table)"
                           >
                             <div class="i-carbon-trash-can bg-white" />
