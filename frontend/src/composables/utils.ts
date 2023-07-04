@@ -156,8 +156,6 @@ export const getValidDate = (value: string) => {
 }
 
 export const redirectTo = async (url: string) => {
-  console.warn('redirecionou...')
-  await delay(1)
   window.location.href = url
 }
 
