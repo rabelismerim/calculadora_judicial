@@ -31,6 +31,7 @@ const getMyProfile = () => api
 const getUsers = () => api
   .get('/users/')
   .then((result: any) => result?.users || [])
+  .then((users: any[]) => users?.filter(({ role }: any) => !['R'].includes(role)))
 
 const getGroups = () => api
   .get('/groups/')
