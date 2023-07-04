@@ -4,6 +4,7 @@ import base64
 import hashlib
 import uuid
 
+from django.contrib.sessions.models import Session
 from django.core.files.base import ContentFile
 
 from django.contrib.auth.models import AbstractBaseUser, Group, Permission, _user_get_permissions, _user_has_perm, \
@@ -338,3 +339,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     @staticmethod
     def get_status_pending():
         return 'P'
+
+    def invalidate_user_sessions(self):
+        # Filtra as sessões relacionadas ao usuário
+        Session.objects.filter(session_data__contains=self.id).delete()

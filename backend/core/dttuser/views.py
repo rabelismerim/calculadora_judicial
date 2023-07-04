@@ -4,11 +4,6 @@ It is extended from an AbstractViewApi class and includes a CheckHasPermission p
 Api's responds with JSON data and uses rest_framework.schemas.openapi.AutoSchema to generate the API documents.
 Api's classes use the DttUser model and schema DttUser to work with data.
 """
-import base64
-import hashlib
-import uuid
-
-from django.core.files.base import ContentFile
 from rest_framework.exceptions import PermissionDenied
 
 from config.settings import IS_LOCALHOST, DTT_EMAIL, ROLES
@@ -20,7 +15,7 @@ from django.core.mail import send_mail
 from rest_framework import status
 
 from core.permission.views import CheckHasPermission, CheckPermissions
-from utils import get_user_model, _, doc, log_info
+from utils import get_user_model, _, doc
 from rest_framework import permissions, serializers
 from django.contrib.auth.models import Group
 from core.dttuser.models import Subgroup
@@ -134,7 +129,7 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
         if role:
             user_approved.role = role
         user_approved.save()
-
+        user_approved.invalidate_user_sessions()
         return JsonResponse({'user': UserDttSchema(user_approved).data}, status=status.HTTP_201_CREATED)
 
 

@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_GET
 from rest_framework import permissions
 
-from rest_framework.authentication import SessionAuthentication
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from config.settings import ENABLE_SSO, DRFMSAL_IDENTITY_WEB
@@ -48,7 +48,10 @@ class SignStatusApi(AbstractViewApi):
     }
     serializer_class = SignStatusSerializer
     permission_classes = [AllowAny]
-    authentication_classes = [SessionAuthentication]
+    if ENABLE_SSO:
+        authentication_classes = [SessionAuthentication]
+    else:
+        authentication_classes = [SessionAuthentication, TokenAuthentication]
     allow_cache = False
     operation_id_base = 'Get Sign Status'
 
