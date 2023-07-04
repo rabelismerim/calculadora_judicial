@@ -155,7 +155,11 @@ export const getValidDate = (value: string) => {
   return `${year}-${(`${month}`).padStart(2, '0')}-${(`${day}`).padStart(2, '0')}`
 }
 
-export const redirectTo = (url: string) => window.location.replace(url)
+export const redirectTo = async (url: string) => {
+  console.warn('redirecionou...')
+  await delay(1)
+  window.location.href = url
+}
 
 export const clone = (object: any) => JSON.parse(JSON.stringify(object))
 
