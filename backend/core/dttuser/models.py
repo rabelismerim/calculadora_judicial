@@ -232,7 +232,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(_('last name'), max_length=150, blank=True)
     email = models.EmailField(_('email address'), blank=True)
     userpicture = models.TextField(_('user picture'), blank=True)
-    user_img = models.ImageField(_('User img'), upload_to='media/juca/profile/%Y/%m/%d/', blank=True, null=True)
+    user_img = models.ImageField(_('User img'), upload_to='juca/profile/%Y/%m/%d/', blank=True, null=True)
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
@@ -262,7 +262,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             image_data = base64.b64decode(self.userpicture)
             file_hash = hashlib.md5(image_data).hexdigest()
             file_name = f"{file_hash}.jpeg"
-            if self.user_img and str(self.user_img.name) in file_name is False:
+            if not self.user_img or str(self.user_img.name) in file_name is False:
                 self.user_img.save(file_name, data, save=True)  # image is User's model field
                 self.save()
         except Exception as e:
