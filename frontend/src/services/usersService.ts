@@ -15,6 +15,8 @@ const getMyProfile = () => api
   .get('/drfmsal_signstatus/')
   .then((result: any) => result?.profile)
   .then(async (user) => {
+    console.warn('ENVIROMENT:', import.meta.env.PROD)
+    console.warn('USER:', user)
     if (!user?.authenticated && import.meta.env.PROD)
       redirectTo(`${window.location.origin}/juca/api/drfmsal_signin/juca/`)
 
