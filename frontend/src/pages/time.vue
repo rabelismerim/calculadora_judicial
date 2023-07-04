@@ -135,7 +135,7 @@ onMounted(() => loadPage())
       <RequestModal
         v-model="showingRequests"
         :users="pendingUsers"
-        @done="loadPage"
+        @success="loadPage"
       />
     </template>
   </Page>
