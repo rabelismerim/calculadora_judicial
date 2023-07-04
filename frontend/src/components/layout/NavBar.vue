@@ -27,7 +27,6 @@ const { user } = $user
         transparent
         grow
         color="white"
-        :label="user.fullName || 'sair'"
         icon="i-carbon-logout"
         tooltip="Sair do Sitema!"
         @click="logout"
@@ -38,6 +37,9 @@ const { user } = $user
             class="h-8 w-8 rounded-full"
             initials-class="text-sm"
           />
+        </template>
+        <template #label>
+          <div class="hidden sm:block">{{ user.fullName || 'sair' }}</div>
         </template>
       </Btn>
       <Img :src="`${baseUrl}/logo/app.svg`" :height="30" class="hidden md:block" />

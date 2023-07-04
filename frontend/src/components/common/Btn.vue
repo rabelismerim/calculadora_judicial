@@ -54,7 +54,8 @@ const emit = defineEmits(['click', 'press'])
     </div>
     <div v-show="!loading" class="pointer-events-none flex items-center gap-2 no-wrap">
       <slot name="before" />
-      <span class="whitespace-nowrap">{{ label }}</span>
+      <slot name="label" v-if="$slots.label"/>
+      <span class="whitespace-nowrap" v-else>{{ label }}</span>
       <slot name="after" />
     </div>
     <div v-show="icon" :class="icon" class="tween pointer-events-none" />
