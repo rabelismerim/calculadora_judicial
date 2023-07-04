@@ -7,6 +7,8 @@ const props = withDefaults(defineProps<{
 })
 const emit = defineEmits(['update:model-value', 'done'])
 
+const { hasPermissions } = $user
+
 const form = ref(null as any)
 
 let loading = $ref(false)
@@ -73,7 +75,8 @@ const onReject = async (user: any) => {
 }
 onMounted(async () => {
   try {
-    permissionOptions = await usersService.getGroups()
+    if (hasPermissions('can_authorize_users'))
+      permissionOptions = await usersService.getGroups()
   }
   catch (error) {
     printError('ERROR ON LOADING GROUPS:', error)
