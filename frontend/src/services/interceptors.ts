@@ -27,7 +27,6 @@ export const errorHandlerInterceptor = async (error: any) => {
 
   const { errors: dataErrors } = parseToCamel(data || {})
   const errors = dataErrors ? dataErrors?.map(({ detail, attr }: any) => ({ message: detail, attr })) : data
-  console.log(response, status)
   printError('ON ERROR:', errors)
 
   if (errors?.length > 0) {
