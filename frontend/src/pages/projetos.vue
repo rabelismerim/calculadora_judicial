@@ -1,10 +1,10 @@
 <script setup lang="ts">
 const router = useRouter()
 
-const { hasProject } = $user
+const { hasProject, updateProjectList } = $user
 
 let loading = $ref(false)
-const showNewProject = $ref(false)
+let showNewProject = $ref(false)
 const filterBy = $ref('')
 
 let projects = $ref([])
@@ -75,14 +75,22 @@ const loadProjects = async () => {
 }
 
 const redirectToProject = (_: any, row: any) => {
-  if (!hasProject(row.id)) {
-    throwError({
-      id: 'not_in_project',
-      message: 'Você não está na equipe deste Projeto!',
-    })
-    return
-  }
+  // if (!hasProject(row.id)) {
+  //   throwError({
+  //     id: 'not_in_project',
+  //     message: 'Você não está na equipe deste Projeto!',
+  //   })
+  //   return
+  // }
   router.push(`/projeto/${row.id}`)
+}
+
+const onProjectCreated = async () => {
+  loading = true
+  showNewProject = false
+  await updateProjectList()
+  await loadProjects()
+  loading = false
 }
 
 let bigNumbers: any = $ref({})
@@ -273,7 +281,7 @@ const columns = [
     <template #out>
       <newProject
         v-model="showNewProject"
-        @success="showNewProject = false; loadProjects()"
+        @success="onProjectCreated"
       />
     </template>
   </Page>
