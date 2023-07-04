@@ -7,7 +7,7 @@ const { hasPermissions } = $user
 const accessRequestsCount = $ref(0)
 // onMounted(async () => {
 //   try {
-//     if (hasPermissions(['view_user'])) {
+//     if (hasPermissions('view_user')) {
 //       const users = await usersService.getUsers()
 //       accessRequestsCount = users.filter(({ status }: any) => status.toLowerCase() === 'p').length
 //     }
@@ -40,7 +40,7 @@ const paths: Link[] = $ref([
     permissions: ['view_user'],
   },
 ])
-const filteredPaths = computed(() => paths.filter(({ permissions }: any) => hasPermissions(permissions)))
+const filteredPaths = computed(() => paths.filter(({ permissions = [] }: any) => hasPermissions(...permissions)))
 </script>
 
 <template>
