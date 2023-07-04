@@ -87,7 +87,7 @@ const onSubmit = async () => {
 }
 
 // Options Helpers list
-let users = $ref([])
+let users = $ref([] as any[])
 const managers = computed(() => users
   .filter(({ groups }: any) => {
     const groupNames = groups.map(({ name }: any) => name)
@@ -106,13 +106,13 @@ const specialApprovers = computed(() => users
     return ['Gestor Jurídico', 'Gestor Cálculo', 'Gestor Financeiro', 'Sócio']
       .some((group: string) => groupNames.includes(group))
   }))
-let judges = $ref([])
+let judges = $ref([] as any[])
 const addJudge = async (description: string) => projectService.newJudge(description)
-let lawyers = $ref([])
+let lawyers = $ref([] as any[])
 const addLawyer = async (description: string) => projectService.newLawyer(description)
-let courts = $ref([])
+let courts = $ref([] as any[])
 const addCourt = async (description: string) => projectService.newCourt(description)
-let regions = $ref([])
+let regions = $ref([] as any[])
 const addRegion = async (description: string) => projectService.newRegion(description)
 onMounted(async () => {
   loadAll()
