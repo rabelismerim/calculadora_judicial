@@ -11,14 +11,28 @@ const getPermissions = () => api
     }
   })
 
+const logout = () => api
+  .post('/v1/logout/')
+
 const getMyProfile = () => api
   .get('/drfmsal_signstatus/')
   .then((result: any) => result?.profile)
   .then(async (user) => {
-    if (!user?.authenticated && import.meta.env.PROD)
+    const goToSignin = () =>
       redirectTo(`${window.location.origin}/juca/api/drfmsal_signin/juca/`)
-    const permissions = await getPermissions()
-    const projects = await projectService.getUserProjects()
+
+    if (!user?.authenticated && import.meta.env.PROD)
+      goToSignin()
+
+    if (user?.authenticated && !user?.authorized) {
+      logout()
+      goToSignin()
+    }
+
+    const isAuthorized = user?.authorized || import.meta.env.DEV
+    const permissions = isAuthorized ? await getPermissions() : []
+    const projects = isAuthorized ? await projectService.getUserProjects() : []
+
     return {
       ...user,
       ...permissions,
@@ -42,9 +56,6 @@ const sendmail = (email: string) => api
 const setPermission = ({ email, groups, role, status }: any) => api
   .post('user/authorize/', { email, groups, role, status })
   .then((result: any) => result?.user)
-
-const logout = () => api
-  .post('/v1/logout/')
 
 export default {
   getMyProfile,
