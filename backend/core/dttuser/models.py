@@ -24,6 +24,7 @@ ROLES_CHOICES = (
     ('D', _('Director')),
     ('A', _('Analyst')),
     ('C', _('Senior advisor')),
+    ('R', _('Robo')),
 )
 
 STATUS_CHOICES = (  # Status para o User DTT
