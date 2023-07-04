@@ -18,13 +18,13 @@ const getMyProfile = () => api
   .get('/drfmsal_signstatus/')
   .then((result: any) => result?.profile)
   .then(async (user) => {
-    const goToSignin = () => 
+    const goToSignin = () =>
       redirectTo(`${window.location.origin}/juca/api/drfmsal_signin/juca/`)
-      
+
     if (!user?.authenticated && import.meta.env.PROD)
       goToSignin()
 
-    if(user?.authenticated && !user?.authorized) {
+    if (user?.authenticated && !user?.authorized) {
       logout()
       goToSignin()
     }

@@ -49,7 +49,7 @@ const hasProject = (id: string) => store.value.projects.includes(id)
 
 const updateProjectList = async () => {
   store.value.projects = await projectService.getUserProjects()
-} 
+}
 
 export default {
   login,
@@ -58,5 +58,5 @@ export default {
   isActive,
   hasPermissions,
   hasProject,
-  updateProjectList
+  updateProjectList,
 }
