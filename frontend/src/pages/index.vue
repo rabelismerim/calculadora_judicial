@@ -16,14 +16,14 @@ const enter = async () => {
     const { authorized, isActive } = await login()
     if (authorized || (inDevelopment && isActive)) {
       router.push({ path: '/projetos' })
-      return
     }
-    requested = true
+    else {
+      requested = true
+      loading = false
+    }
   }
   catch (error) {
     printError('ERROR ON LOGIN:', error)
-  }
-  finally {
     loading = false
   }
 }
