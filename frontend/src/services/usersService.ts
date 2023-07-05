@@ -49,7 +49,7 @@ const sendmail = (email: string) => api
   .post('/user/sendmail/', { email })
 
 const setPermission = ({ email, groups, role, status }: any) => api
-  .post('user/authorize/', { email, groups, role, status })
+  .post('user/authorize/', { email, groups, role, status, isActive: status === 'A' })
   .then((result: any) => result?.user)
 
 export default {
