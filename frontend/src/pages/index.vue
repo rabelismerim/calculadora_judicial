@@ -1,13 +1,17 @@
 <script setup lang="ts">
 const router = useRouter()
 
+const { isAuthorized, login } = $user
+
+const inProduction = import.meta.env.PROD
+
 let loading = $ref(false)
 let requested = $ref(false)
 
 const enter = async () => {
   loading = true
   try {
-    const user = await $user.login()
+    const user = await login()
     if (user?.isActive)
       router.push({ path: '/projetos' })
     else
@@ -41,6 +45,15 @@ const enter = async () => {
         <div class="flex flex-wrap gap-3">
           <div>
             <Btn
+              v-if="!isAuthorized && inProduction"
+              label="Autenticar na Microsoft"
+              loading-label="Enviando para a Microsoft..."
+              :loading="loading"
+              :disabled="requested"
+              @click="enter"
+            />
+            <Btn
+              v-else
               :label="!requested ? 'Entrar' : 'Pedido de acesso solicitado'"
               loading-label="Processando seus dados..."
               :loading="loading"

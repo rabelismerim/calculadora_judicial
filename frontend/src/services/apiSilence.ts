@@ -2,7 +2,6 @@ import axios from 'axios'
 
 const headers: any = {
   // TODO: BRING TO USER PREFERENCES
-  // 'Accept-Language': 'pt-BR,pt;q=1',
   accept: 'application/json',
 }
 
@@ -19,6 +18,6 @@ const api = axios.create({
 })
 
 api.interceptors.request.use(requestInterceptor)
-api.interceptors.response.use(responseInterceptor, errorHandlerInterceptor)
+api.interceptors.response.use(responseInterceptor, errorSilenceHandlerInterceptor)
 
 export default api
