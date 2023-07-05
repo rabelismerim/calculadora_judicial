@@ -3,8 +3,8 @@ const router = useRouter()
 
 const { login } = $user
 
-const isAuthorized = getCookie('csrftoken')
 const inProduction = import.meta.env.PROD
+let isAuthorized = $ref(false)
 
 let loading = $ref(false)
 let requested = $ref(false)
@@ -25,6 +25,11 @@ const enter = async () => {
     loading = false
   }
 }
+
+onMounted(async () => {
+  const result = await usersService.verifyUser() || {}
+  isAuthorized = result?.authorized
+})
 </script>
 
 <template>
