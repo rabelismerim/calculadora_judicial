@@ -1,8 +1,9 @@
 <script setup lang="ts">
 const router = useRouter()
 
-const { isAuthorized, login } = $user
+const { login } = $user
 
+const isAuthorized = getCookie('csrftoken')
 const inProduction = import.meta.env.PROD
 
 let loading = $ref(false)
