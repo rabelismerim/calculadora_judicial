@@ -1,3 +1,7 @@
+const verifyUser = () => api
+  .get('/drfmsal_signstatus/')
+  .then((result: any) => result?.profile)
+
 const getPermissions = () => api
   .get('/user/detail/')
   .then((result: any) => result?.user || {})
@@ -14,9 +18,7 @@ const getPermissions = () => api
 const logout = () => api
   .post('/v1/logout/')
 
-const getMyProfile = async () => api
-  .get('/drfmsal_signstatus/')
-  .then((result: any) => result?.profile)
+const getMyProfile = async () => verifyUser()
   .then(async (user) => {
     const goToSignin = () =>
       redirectTo(`${window.location.origin}/juca/api/drfmsal_signin/juca/`)
@@ -59,5 +61,6 @@ export default {
   getUsers,
   sendmail,
   setPermission,
+  verifyUser,
   logout,
 }
