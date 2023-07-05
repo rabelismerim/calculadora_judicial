@@ -56,3 +56,13 @@ export const errorHandlerInterceptor = async (error: any) => {
     })
   }
 }
+
+export const errorSilenceHandlerInterceptor = (error: any) => {
+  const { response } = error
+  const data = response?.data?.data
+  const status = response?.status || 500
+
+  const { errors: dataErrors } = parseToCamel(data || {})
+  const errors = dataErrors ? dataErrors?.map(({ detail, attr }: any) => ({ message: detail, attr })) : data
+  printError('ON ERROR:', { status, errors })
+}
