@@ -5,6 +5,7 @@ const { login } = $user
 
 const inProduction = import.meta.env.PROD
 let isAuthenticated = $ref(false)
+let isActive = $ref(false)
 
 let loading = $ref(false)
 let requested = $ref(false)
@@ -13,7 +14,7 @@ const enter = async () => {
   loading = true
   try {
     const user = await login()
-    if (user?.isActive)
+    if (user?.authorized)
       router.push({ path: '/projetos' })
     else
       requested = true
@@ -27,8 +28,9 @@ const enter = async () => {
 }
 
 onMounted(async () => {
-  const result = await usersService.verifyUser() || {}
-  isAuthenticated = result?.authenticated
+  const { authenticated, isActive: active } = await usersService.verifyUser() || {}
+  isAuthenticated = authenticated
+  isActive = active
 })
 </script>
 
