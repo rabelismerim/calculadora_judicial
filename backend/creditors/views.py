@@ -15,8 +15,9 @@ from core.entity.models import Entity
 from core.entity.schemas import EntityCheckSchema
 from core.permission.views import CheckHasPermission, check_query_permission
 from creditors.notice.models import Notice, NoticeRecovering
-from creditors.schemas import CreditorCreateSchema, CreditorSchema, CreditorUpdateSchema
-from creditors.models import Creditor
+from creditors.schemas import CreditorCreateSchema, CreditorSchema, CreditorUpdateSchema, LegalPendenciesSchema, \
+    LegalPendenciesUpdateSchema
+from creditors.models import Creditor, LegalPendencies
 from utils import get_user_model, _, doc
 
 User = get_user_model()
@@ -215,6 +216,7 @@ class CreditorUpdateApi(AbstractCreditorApi):
     """HTTP methods for update creditor"""
     http_method_names = ['put']
     serializer_class = CreditorUpdateSchema
+
     docs = docs.copy()
     docs['put'] = _("""Method to change creditor information instance.
 
@@ -265,3 +267,35 @@ class CalcValidateApi(AbstractViewApi):
 
         invalids, valids = creditor.validate_calcs(calculations)
         return JsonResponse({'invalids': invalids, 'valids': valids}, status=status.HTTP_200_OK)
+
+
+class LegalPendenciesApi(AbstractViewApi):
+    """HTTP methods for creditor"""
+    serializer_class = LegalPendenciesSchema
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    model = LegalPendencies
+    docs = docs.copy()
+    http_method_names = ['post']
+
+
+class LegalPendenciesDetailApi(LegalPendenciesApi):
+    """HTTP methods for update creditor"""
+    http_method_names = ['put', 'get', 'delete']
+    serializer_class = LegalPendenciesUpdateSchema
+
+    layout_serializers = {
+        'default': LegalPendenciesSchema,
+        'get': LegalPendenciesSchema,
+        'put': LegalPendenciesUpdateSchema,
+        'delete': LegalPendenciesUpdateSchema,
+    }
+
+    docs = docs.copy()
+    docs['put'] = _("""Method to change creditor information instance.
+
+            Receives and validates JSON data with the fields `description`, `admission`, `dismissal`, 
+            `default_interest`, `fine` or `advocative_hours`.
+
+            Finds the Calculation instance based on the URL parameter id.
+            Returns a JSON response with the updated Creditor object.
+            """)

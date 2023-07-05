@@ -1,14 +1,19 @@
+import pickle
+
 from django.db import models
 from django.db.models import Count, Sum
 from numpy import number
 
-from base.models import AbstractDateRecovering, AbstractDescription
+from base.coins.models import COIN_CHOICES
+from base.models import AbstractDateRecovering, AbstractDescription, SELECT_CHOICES_REPRESENTATION_DOCUMENTATION, \
+    SELECT_CHOICES_CLAIM_TYPE
 from calculation.funds.document.models import FundDocument
 from calculation.funds.irrf.models import FundIRRF
 from calculation.funds.models import Funds
 from calculation.models import Calculation, CHOICES_STEP
 from creditors.classes.models import CLASSE_CHOICES
 from creditors.models import Creditor
+from file.tasks import ProcessExcelTask, SaveFileTask
 from projects.court.models import Court
 from projects.judge.models import Judge
 from projects.lawyer.models import Lawyer
@@ -195,3 +200,70 @@ class Project(AbstractDescription, AbstractDateRecovering):
                        'percentage_calculated': 0}
                 classes_list.append(obj)
         return classes_list
+
+    def get_valid_excels_headers(self):
+        return [
+            {'callback': self.process_json_to_model,
+             'headers': ["Credor", "Credor - CPF/CNPJ", "Credor - Classe", "Credor - Valor", "Credor - Moeda"]
+             }
+        ]
+
+    def parse_file(self, file_obj):
+        file_read, file_excel_headers = file_obj.get_excel_headers()
+        file_excel_headers = set(file_excel_headers)
+
+        headers_excels = self.get_valid_excels_headers()
+        callback = None
+        for excel in headers_excels:
+            if file_excel_headers == set(excel['headers']):
+                callback = excel['callback']
+        if callback:
+            funcao_serializada = pickle.dumps(callback)
+            task = ProcessExcelTask.delay('task-process-excel-to-json', file_read, funcao_serializada)
+            SaveFileTask.delay(task.id, file_obj.id)
+        # raise ValueError('Break execution')
+
+    def process_json_to_model(self, data: list):
+        # Creditor.objects.create
+        coin_dict = {choice[1]: choice[0].upper() for choice in COIN_CHOICES}
+        classes_dict = {choice[1].lower().replace('classe ', '').split('-')[0].strip(): choice[0] for choice in
+                        CLASSE_CHOICES}
+        representation_documentation_dict = {choice[0].lower(): choice[1] for choice in
+                                             SELECT_CHOICES_REPRESENTATION_DOCUMENTATION}
+        claim_type_dict = {choice[0]: choice[1] for choice in SELECT_CHOICES_CLAIM_TYPE}
+
+
+        print(data, 'data received\n\n')
+        for credor in data:
+                print(credor, 'new_keys_creditor')
+                # # Creditor.objects.create(**credor) # TODO: criar logica de criacao aqui
+                # credor = new_keys_creditor
+                # ab = credor['classeiiiquirografario']
+                coin = coin_dict.get(credor['credormoeda'].upper())
+                classes = classes_dict.get(credor['credorclasse'].lower().replace('classe',  '').split('-')[0].strip())
+                representation_documentation = representation_documentation_dict.get(credor['documentacaoderepresentacao'].lower())
+                claim_type = claim_type_dict.get(str(credor['tipo'])[0].upper())
+                new_credor = {
+                    "entity": {
+                        "name": credor['credor'],
+                        "legal_number": credor['credorcpfcnpjnaocolocarpontuacao']
+                    },
+                    "claim_creditor": [
+                        {
+                            "classes": {
+                                "classe": classes
+                            },
+                            "coins": {
+                                "coin": coin,
+                                "value": credor['credorvalor']
+                            },
+                            "archive_json": {}
+                        }
+                    ],
+                    "representation_documentation": representation_documentation,
+                    "claim_type": claim_type,
+                }
+
+                print(new_credor)
+
+                # TODO: subir credor inativo. Ter tela/endpoint pra aprovar credor

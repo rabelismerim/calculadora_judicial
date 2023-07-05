@@ -1,6 +1,4 @@
 import logging
-from django.shortcuts import redirect as django_redirect
-
 from .context import IdentityContextData
 
 
@@ -18,6 +16,7 @@ class DjangoContextAdapter:
         self.logger.debug("Getting identity_context from request/session")
         identity_context_data = getattr(self.request, IdentityContextData.SESSION_KEY, None)
         if not identity_context_data:
+
             identity_context_data = self._deserialize_identity_context_data_from_session()
             setattr(self.request, IdentityContextData.SESSION_KEY, identity_context_data)
         return identity_context_data
@@ -43,7 +42,6 @@ class DjangoContextAdapter:
         Also attaches the application logger."""
         aad_config = identity_web.aad_config
         config_key = aad_config.id_web_configs
-
         setattr(self.request, config_key, aad_config)
         
 

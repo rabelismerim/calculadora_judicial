@@ -136,7 +136,7 @@ class PremiseCreator:
         is_filing = self.__calculation.is_filing()
         default_interest = self.__calculation.get_default_interest()
 
-        if not date_rj_filing:
+        if not date_rj_filing or not date_rj_request:
             return
         elif is_ipca_e_selic and is_citation:
             comment = {

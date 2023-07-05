@@ -1,8 +1,10 @@
 from django.db import models
 from core.entity.models import Entity
 from recovering.models import Recovering
-from base.models import AbstractDateCreditor
+from base.models import AbstractDateCreditor, AbstractDescription
 from utils import _
+
+CHOICES_STATUS_LEGAL = (('U', _('Under review')), ('P', _('Pending')), ('C', _('Concluded')))
 
 
 class Creditor(AbstractDateCreditor):
@@ -83,3 +85,32 @@ class Creditor(AbstractDateCreditor):
         self.total, self.total_historical = self.get_total_validated()
         if commit:
             self.save()
+
+    def _get_project(self):
+        return self.recovering.project
+
+    def get_calculation_impediment_list(self):
+        impediment_list = self.legalpendencies_set.exclude(status='C')
+        impediment_list = [
+            _('Legal Pending: {}, has the status {}').format(impediment.description, impediment.get_status_display())
+            for impediment in impediment_list]
+
+        if self.representation_documentation != 'R':
+            impediment_list.append(_('The representation documents have the status {}').format(
+                self.get_representation_documentation_display()))
+        project = self._get_project()
+
+        date_rj_request = project.date_rj_request
+        if not date_rj_request:
+            impediment_list.append(_('Not found recovery request date'))
+
+        return impediment_list
+
+    def get_nature_description(self):
+        return self.nature.all().values_list('description', flat=True)
+
+
+class LegalPendencies(AbstractDescription):
+    creditor = models.ForeignKey(Creditor, on_delete=models.PROTECT)
+    status = models.CharField(_('Status'), max_length=1, choices=CHOICES_STATUS_LEGAL)
+    deadline = models.DateField(_('Response deadline'), null=True, blank=True)

@@ -14,7 +14,7 @@ class AbstractDescription(AbstractModel):
         ordering = ('-created_at', '-updated_at')
 
     def __str__(self):
-        return self.description
+        return str(self.description)
 
 
 class AbstractInfo(AbstractModel):
@@ -31,6 +31,22 @@ class AbstractInfo(AbstractModel):
 
 CHOICES_OCCURRENCE = (
     ('A', _('Labour Complaint Filing')), ('C', _('Citation')), ('S', _('Judgement')), ('O', _(' Other')))
+CHOICES_REPRESENTATION_DOCUMENTATION = (
+    ('R', _('Regular')), ('P', _('Pending')), ('I', _('Irregular')), ('A', _('AT')))
+SELECT_CHOICES_REPRESENTATION_DOCUMENTATION = (
+    (_('regular'), 'R'), (_('pendente'), 'P'), (_('irregular'), 'I'), (_('n/a'), 'A'))
+CHOICES_CLAIM_TYPE = (
+    ('Q', _('Qualification')), ('D', _('Divergence')), ('E', _('Exclusion')), ('A', _('Agreement')),
+    ('O', _('Office Analysis')), ('W', _('Ownership')), ('N', _('AT')))
+
+# Use first letter in portugues of word to get choice
+SELECT_CHOICES_CLAIM_TYPE = (
+    ('H', 'Q'), ('D', 'D'), ('E', 'E'), ('C', 'A'),
+    ('A', 'O'), ('T', 'W'), ('N', 'N'))
+
+"""Credor	Credor - CPF/CNPJ (não colocar pontuação)	Credor - Classe	Credor - Moeda	 Credor - Valor """
+class NatureChoice(AbstractDescription):
+    pass
 
 
 class AbstractDateCreditor(AbstractModel):
@@ -47,6 +63,11 @@ class AbstractDateCreditor(AbstractModel):
     advocative_hours = models.FloatField(_('Advocative hours'), default=0)
     occurrence = models.CharField(_('Occurrence'), max_length=1, choices=CHOICES_OCCURRENCE, default='O')
     physical_person = models.BooleanField(_('Are you an individual?'), default=True)
+    representation_documentation = models.CharField(_('Representation documentation'), max_length=1,
+                                                    choices=CHOICES_REPRESENTATION_DOCUMENTATION, default='R')
+
+    claim_type = models.CharField(_('Type'), max_length=1, choices=CHOICES_CLAIM_TYPE, default='A')
+    nature = models.ManyToManyField(NatureChoice, blank=True)
 
     class Meta:
         abstract = True

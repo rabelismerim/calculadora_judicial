@@ -1,7 +1,7 @@
 import re
 from base.claim.schemas import ClaimCreditorSchema, ClaimLawyerSchema
 from base.coins.models import COIN_CHOICES
-from base.models import CHOICES_OCCURRENCE
+from base.models import CHOICES_OCCURRENCE, CHOICES_REPRESENTATION_DOCUMENTATION, CHOICES_CLAIM_TYPE
 from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
 
@@ -11,10 +11,31 @@ from calculation.models import CHOICES_STEP
 from core.dttuser.models import ROLES_CHOICES, STATUS_CHOICES
 from core.entity.schemas import EntitySchema
 from creditors.classes.models import CLASSE_CHOICES
-from creditors.models import Creditor
+from creditors.models import Creditor, CHOICES_STATUS_LEGAL, LegalPendencies
 from creditors.notice.schemas import NoticeSchema, NoticeRecoveringSchema
 from rates.models import TYPE_CHOICES
 from utils import _
+
+
+class LegalPendenciesSchema(AbstractDescriptionSchema):
+    """Serializer LegalPendencies fields"""
+    creditor_id = serializers.UUIDField()
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+
+    class Meta:
+        model = LegalPendencies
+        exclude = ('creditor',)
+
+
+class LegalPendenciesUpdateSchema(AbstractDescriptionSchema):
+    """Serializer LegalPendencies fields"""
+    creditor_id = serializers.UUIDField(read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    non_required_fields = ['description', 'status']
+
+    class Meta:
+        model = LegalPendencies
+        exclude = ('creditor',)
 
 
 class CreditorSchema(AbstractDescriptionSchema):
@@ -35,6 +56,10 @@ class CreditorSchema(AbstractDescriptionSchema):
                                          allow_null=True, exclude=('creditor_id',))
     claim_lawyer = ClaimLawyerSchema(source='claimlawyer', many=False, read_only=False, required=False, allow_null=True,
                                      exclude=('creditor_id',))
+    legal_pendencies = LegalPendenciesSchema(source='legalpendencies_set', many=True, read_only=True)
+
+    calculation_impediment_list = serializers.ListField(source='get_calculation_impediment_list', read_only=True)
+    nature = serializers.ListField(source='get_nature_description')
 
     class Meta:
         model = Creditor
@@ -82,6 +107,9 @@ class CreditorCreateSchema(serializers.Serializer):
     step_calculation_options = AbstractChoicesSerializer(CHOICES_STEP, many=True)
     occurrence_options = AbstractChoicesSerializer(CHOICES_OCCURRENCE, many=True)
     status_irrf_options = AbstractChoicesSerializer(CHOICES_STATUS_IRRF, many=True)
+    status_legal_options = AbstractChoicesSerializer(CHOICES_STATUS_LEGAL, many=True)
+    representation_document_options = AbstractChoicesSerializer(CHOICES_REPRESENTATION_DOCUMENTATION, many=True)
+    claim_type_options = AbstractChoicesSerializer(CHOICES_CLAIM_TYPE, many=True)
 
     class Meta:
         fields = '__all__'
@@ -92,4 +120,57 @@ class CreditorUpdateSchema(AbstractDescriptionSchema):
 
     class Meta:
         model = Creditor
-        fields = ('description', 'admission', 'dismissal', 'default_interest', 'fine', 'advocative_hours', 'occurrence')
+        fields = ('description', 'admission', 'dismissal', 'default_interest', 'fine', 'advocative_hours', 'occurrence',
+                  'representation_documentation', 'claim_type', 'nature')
+
+{
+  "recovering_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "rate_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "notice_aj": [
+    {
+      "classes": {
+        "classe": "1"
+      },
+      "coins": {
+        "coin": "B",
+        "value": 0
+      },
+      "archive_json": {}
+    }
+  ],
+
+  "notice_recovering": [
+    {
+      "classes": {
+        "classe": "1"
+      },
+      "coins": {
+        "coin": "B",
+        "value": 0
+      },
+      "archive_json": {}
+    }
+  ],
+  "claim_lawyer": {
+    "coins": {
+      "coin": "B",
+      "value": 0
+    },
+    "archive_json": {}
+  },
+  "nature": [
+    "string"
+  ],
+  "admission": "2023-06-29",
+  "dismissal": "2023-06-29",
+  "dismissal_teste": "2023-06-29",
+  "default_interest": 0,
+  "fine": 0,
+  "advocative_hours": 0,
+  "occurrence": "A",
+  "physical_person": True,
+  "representation_documentation": "R",
+  "claim_type": "Q",
+  "description": "string",
+  "total_historical": 0
+}

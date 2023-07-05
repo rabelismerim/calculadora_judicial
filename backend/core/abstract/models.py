@@ -77,6 +77,9 @@ class AbstractModel(models.Model):
         return list(UpdateUser.objects.filter(object_id=self.id).exclude(
             Q(field_changed='update_user') | Q(current_value__regex=r'^[\w-]{36}$')).order_by('-created_at'))
 
+    def parse_file(self, parse_file):
+        return
+
 
 class UpdateUser(models.Model):
     """Model template to catch all updates made to the model"""

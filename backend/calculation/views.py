@@ -1,3 +1,5 @@
+import json
+
 from django.db import transaction
 from base.claim.models import Claim
 from calculation.comment.models import Comment, StepComment
@@ -11,9 +13,10 @@ from calculation.schemas import CalculationSchema, IncidentSchema, ChangeStepSer
 from calculation.verdict.models import TypeCalculation, Verdict
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
-from rest_framework import status
+from rest_framework import status, serializers
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission, CanChangeStep
+from creditors.models import Creditor
 from utils import _, doc
 
 docs = {
@@ -168,9 +171,19 @@ class CalculationApi(AbstractCalculationApi):
         """))
     def post(self, request, *args, **kwargs):  # Generate calculation
         with transaction.atomic():
+
+            # get_calculation_impediment_list
             serializer = self.serializer_class(data=request.data)
+
             serializer.is_valid(raise_exception=True)
             new_calculation = serializer.validated_data
+
+            # TODO: descomentar apos testes e implementacao de edicao no front end
+            # creditor = Creditor.objects.filter(id=new_calculation['creditor_id']).first()
+            # impediment_list = creditor.get_calculation_impediment_list()
+            # if impediment_list:
+            #     raise serializers.ValidationError(impediment_list)
+
             new_verdicts = new_calculation.pop('verdict', None)
             new_funds = new_calculation.pop('funds', None)
 
@@ -182,6 +195,7 @@ class CalculationApi(AbstractCalculationApi):
             project = creditor.recovering.project
             claims_creditor = creditor.get_claims_creditor()
             claim_lawyer = creditor.get_claim_lawyer()
+
             new_criterion = {
                 'calculation': calculation,
                 'rate': creditor.rate,
@@ -191,17 +205,23 @@ class CalculationApi(AbstractCalculationApi):
                 'fine': creditor.fine,
                 'advocative_hours': creditor.advocative_hours,
                 'occurrence': creditor.occurrence,
+                'representation_documentation': creditor.representation_documentation,
+                'claim_type': creditor.claim_type,
                 'physical_person': creditor.physical_person,
                 'date_rj_request': project.date_rj_request,
                 'date_rj_filing': project.date_rj_filing,
                 'date_citation': project.date_citation,
             }
 
+            nature_ids = creditor.nature.all().values_list('id', flat=True)
+
             if claim_lawyer:
                 new_criterion['claim_lawyer'] = Claim.objects.create(
                     classes=claim_lawyer.classes, coins=claim_lawyer.coins, archive_json=claim_lawyer.archive_json)
 
             criterion = Criterion.objects.create(**new_criterion)
+            criterion.nature.add(*nature_ids)
+            criterion.save()
 
             if claims_creditor:
                 for claim_creditor in claims_creditor:
