@@ -31,7 +31,13 @@ const filteredItems = computed(() => {
   if (props.tab === 'all')
     return props.items
   return props.items
-    .filter(({ groups }: any) => groups.some((group: any) => group.name?.toLowerCase()?.includes(props.tab)))
+    .filter(({ groups }: any) => groups
+      .some((group: any) => {
+        const groupName = group.name?.toLowerCase() || ''
+        if (props.tab !== 'gestor')
+          return groupName?.includes(props.tab)
+        return ['gestor', 'sócio'].some(item => groupName.includes(item))
+      }))
 })
 
 const filters = [
