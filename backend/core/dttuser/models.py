@@ -255,7 +255,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'email']
 
-    def create_photo(self, commit=True):
+    def create_photo(self):
         if not self.userpicture:
             return
         try:
@@ -342,4 +342,5 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def invalidate_user_sessions(self):
         # Filtra as sessões relacionadas ao usuário
+        return
         Session.objects.filter(session_data__contains=self.id).delete()
