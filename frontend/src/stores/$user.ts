@@ -43,6 +43,7 @@ const logout = async () => {
 
 const user = computed(() => store.value)
 const isActive = computed(() => store.value.isActive)
+const isAuthorized = computed(() => store.value.isActive)
 const hasPermissions = (...permissions: string[]) => permissions
   .every(permission => store.value.permissions.includes(permission))
 const hasProject = (id: string) => store.value.projects.includes(id)
@@ -56,6 +57,7 @@ export default {
   logout,
   user,
   isActive,
+  isAuthorized,
   hasPermissions,
   hasProject,
   updateProjectList,

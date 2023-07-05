@@ -24,11 +24,6 @@ const getMyProfile = async () => api
     if (!user?.authenticated && import.meta.env.PROD)
       goToSignin()
 
-    if (user?.authenticated && !user?.authorized) {
-      await logout()
-      goToSignin()
-    }
-
     const isAuthorized = user?.authorized || import.meta.env.DEV
     const permissions = isAuthorized ? await getPermissions() : []
     const projects = isAuthorized ? await projectService.getUserProjects() : []
