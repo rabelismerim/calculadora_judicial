@@ -1,4 +1,5 @@
 import pickle
+import xlsxwriter
 
 from django.db import models
 from django.db.models import Count, Sum
@@ -28,6 +29,13 @@ STATUS_CHOICES = (
     ('A', _('In progress')),
     ('F', _('Canceled')),
 )
+
+
+def get_first_value(choices, second_value):
+    for choice in choices:
+        if choice[1] == second_value:
+            return choice[0]
+    return None
 
 
 class Project(AbstractDescription, AbstractDateRecovering):
@@ -201,69 +209,121 @@ class Project(AbstractDescription, AbstractDateRecovering):
                 classes_list.append(obj)
         return classes_list
 
+    def get_excel_by_name(self, name):
+        for obj in self.get_valid_excels_headers():
+            if obj.get("name") == name:
+                return obj
+        return None
+
     def get_valid_excels_headers(self):
         return [
-            {'callback': self.process_json_to_model,
-             'headers': ["Credor", "Credor - CPF/CNPJ", "Credor - Classe", "Credor - Valor", "Credor - Moeda"]
-             }
+            ExcelHeader(callback=self.process_json_to_model,
+                        name='create_creditors_claim',
+                        columns=[
+                            {"title": "Credor", 'choice': None},
+                            {"title": "Credor - CPF/CNPJ", 'choice': None},
+                            {"title": "Credor - Classe", 'choice': CLASSE_CHOICES},
+                            {"title": "Credor - Valor", 'choice': None},
+                            {"title": "Credor - Moeda", 'choice': COIN_CHOICES},
+                        ]
+                        )
         ]
 
     def parse_file(self, file_obj):
         file_read, file_excel_headers = file_obj.get_excel_headers()
-        file_excel_headers = set(file_excel_headers)
-
         headers_excels = self.get_valid_excels_headers()
-        callback = None
+
         for excel in headers_excels:
-            if file_excel_headers == set(excel['headers']):
-                callback = excel['callback']
-        if callback:
-            funcao_serializada = pickle.dumps(callback)
-            task = ProcessExcelTask.delay('task-process-excel-to-json', file_read, funcao_serializada)
-            SaveFileTask.delay(task.id, file_obj.id)
-        # raise ValueError('Break execution')
+            equal_headers = excel.compare_headers(file_excel_headers)
+            print(equal_headers, 'equal_headers\n')
+            if equal_headers:
+                funcao_serializada = pickle.dumps(excel.get_callback())
+                task = ProcessExcelTask.delay('task-process-excel-to-json', file_read, funcao_serializada)
+                SaveFileTask.delay(task.id, file_obj.id)
+                break
+
+    def generate_excel_example_ok(self):
+        workbook = xlsxwriter.Workbook('planilha_excel.xlsx')
+        worksheet = workbook.add_worksheet()
+        headers = ["Credor", "Credor - CPF/CNPJ", "Credor - Classe", "Credor - Valor", "Credor - Moeda"]
+        min_row = 1
+        max_row = 1048575
+        for i, header in enumerate(headers):
+            worksheet.write(0, i, header)
+            if header == "Credor - Classe":
+                worksheet.data_validation(min_row, i, max_row, i,
+                                          {'validate': 'list',
+                                           'source': [choice[1] for choice in CLASSE_CHOICES],
+                                           'input_title': 'Selecione uma opção',
+                                           'input_message': 'Escolha uma opção da lista.'})
+        workbook.close()
 
     def process_json_to_model(self, data: list):
+        name = 'create_creditors_claim'
         # Creditor.objects.create
-        coin_dict = {choice[1]: choice[0].upper() for choice in COIN_CHOICES}
-        classes_dict = {choice[1].lower().replace('classe ', '').split('-')[0].strip(): choice[0] for choice in
-                        CLASSE_CHOICES}
-        representation_documentation_dict = {choice[0].lower(): choice[1] for choice in
-                                             SELECT_CHOICES_REPRESENTATION_DOCUMENTATION}
-        claim_type_dict = {choice[0]: choice[1] for choice in SELECT_CHOICES_CLAIM_TYPE}
-
-
         print(data, 'data received\n\n')
+        excel = self.get_excel_by_name(name)
+        data = excel.parse_list(data)
         for credor in data:
-                print(credor, 'new_keys_creditor')
-                # # Creditor.objects.create(**credor) # TODO: criar logica de criacao aqui
-                # credor = new_keys_creditor
-                # ab = credor['classeiiiquirografario']
-                coin = coin_dict.get(credor['credormoeda'].upper())
-                classes = classes_dict.get(credor['credorclasse'].lower().replace('classe',  '').split('-')[0].strip())
-                representation_documentation = representation_documentation_dict.get(credor['documentacaoderepresentacao'].lower())
-                claim_type = claim_type_dict.get(str(credor['tipo'])[0].upper())
-                new_credor = {
-                    "entity": {
-                        "name": credor['credor'],
-                        "legal_number": credor['credorcpfcnpjnaocolocarpontuacao']
-                    },
-                    "claim_creditor": [
-                        {
-                            "classes": {
-                                "classe": classes
-                            },
-                            "coins": {
-                                "coin": coin,
-                                "value": credor['credorvalor']
-                            },
-                            "archive_json": {}
-                        }
-                    ],
-                    "representation_documentation": representation_documentation,
-                    "claim_type": claim_type,
-                }
+            print(credor, 'new_keys_creditor')
+            # # Creditor.objects.create(**credor) # TODO: criar logica de criacao aqui
 
-                print(new_credor)
+            new_credor = {
+                "entity": {
+                    "name": credor['Credor'],
+                    "legal_number": credor['Credor - CPF/CNPJ']
+                },
+                "claim_creditor": [
+                    {
+                        "classes": {
+                            "classe": credor['Credor - Classe']
+                        },
+                        "coins": {
+                            "coin": credor['Credor - Moeda'],
+                            "value": credor['Credor - Valor']
+                        },
+                        "archive_json": {}
+                    }
+                ],
+            }
+            print(new_credor)
+            # TODO: subir credor inativo. Ter tela/endpoint pra aprovar credor
 
-                # TODO: subir credor inativo. Ter tela/endpoint pra aprovar credor
+
+class ExcelHeader:
+    def __init__(self, callback, name, columns):
+        self._callback = callback
+        self._name = name
+        self._columns = columns
+
+    def get_column_titles(self):
+        return [column["title"] for column in self._columns]
+
+    def compare_headers(self, excel_headers: list):
+        headers = set(self.get_column_titles())
+        return set(excel_headers) == headers
+
+    def get_callback(self):
+        return self._callback
+
+    def get_columns(self):
+        return self._columns
+
+    def parse_list(self, data):
+        new_data = []
+        for credor in data:
+            print(credor, 'new_keys_creditor')
+            columns = self.get_columns()
+            new_credor = {}
+            for column in columns:
+                choice = column.get('choice')
+                title = column.get('title')
+
+                if choice:
+                    new_credor[title] = get_first_value(choice, credor[title])
+                else:
+                    new_credor = credor[title]
+
+                new_data.append(new_credor)
+
+        return new_data
