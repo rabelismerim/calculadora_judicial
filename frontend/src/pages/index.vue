@@ -1,9 +1,10 @@
 <script setup lang="ts">
 const router = useRouter()
 
-const { isAuthorized, login } = $user
+const { login } = $user
 
 const inProduction = import.meta.env.PROD
+let isAuthenticated = $ref(false)
 
 let loading = $ref(false)
 let requested = $ref(false)
@@ -24,6 +25,11 @@ const enter = async () => {
     loading = false
   }
 }
+
+onMounted(async () => {
+  const result = await usersService.verifyUser() || {}
+  isAuthenticated = result?.authenticated
+})
 </script>
 
 <template>
@@ -45,7 +51,7 @@ const enter = async () => {
         <div class="flex flex-wrap gap-3">
           <div>
             <Btn
-              v-if="!isAuthorized && inProduction"
+              v-if="!isAuthenticated && inProduction"
               label="Autenticar na Microsoft"
               loading-label="Enviando para a Microsoft..."
               :loading="loading"
