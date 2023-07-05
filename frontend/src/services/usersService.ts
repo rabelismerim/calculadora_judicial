@@ -25,12 +25,15 @@ const getMyProfile = async () => verifyUser()
 
     const { authenticated, authorized, isActive } = user
 
-    if ((!authenticated && import.meta.env.PROD)
-      || (authenticated && isActive && !authorized && import.meta.env.PROD))
+    const inProduction = import.meta.env.PROD
+    const inDevelopment = import.meta.env.DEV
+
+    if ((!authenticated && inProduction)
+      || (authenticated && isActive && !authorized && inProduction))
       goToSignin()
 
-    const permissions = authorized ? await getPermissions() : []
-    const projects = authorized ? await projectService.getUserProjects() : []
+    const permissions = (authorized || inDevelopment) ? await getPermissions() : []
+    const projects = (authorized || inDevelopment) ? await projectService.getUserProjects() : []
 
     return {
       ...user,
