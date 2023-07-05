@@ -4,8 +4,8 @@ const router = useRouter()
 const { login } = $user
 
 const inProduction = import.meta.env.PROD
+const inDevelopment = import.meta.env.DEV
 let isAuthenticated = $ref(false)
-let isActive = $ref(false)
 
 let loading = $ref(false)
 let requested = $ref(false)
@@ -13,11 +13,12 @@ let requested = $ref(false)
 const enter = async () => {
   loading = true
   try {
-    const user = await login()
-    if (user?.authorized)
+    const { authorized, isActive } = await login()
+    if (authorized || (inDevelopment && isActive))
       router.push({ path: '/projetos' })
     else
       requested = true
+    loading = false
   }
   catch (error) {
     printError('ERROR ON LOGIN:', error)
@@ -28,9 +29,8 @@ const enter = async () => {
 }
 
 onMounted(async () => {
-  const { authenticated, isActive: active } = await usersService.verifyUser() || {}
+  const { authenticated } = await usersService.verifyUser() || {}
   isAuthenticated = authenticated
-  isActive = active
 })
 </script>
 
