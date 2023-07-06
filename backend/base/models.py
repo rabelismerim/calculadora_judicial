@@ -45,6 +45,24 @@ SELECT_CHOICES_CLAIM_TYPE = (
     ('A', 'O'), ('T', 'W'), ('N', 'N'))
 
 """Credor	Credor - CPF/CNPJ (não colocar pontuação)	Credor - Classe	Credor - Moeda	 Credor - Valor """
+
+NATURES = [
+    (_('Extrajudicial enforcement action'), _('Ação de execução de título extrajudicial')),
+    (_('Bank contract'), _('Contrato bancário')),
+    (_('Miscellaneous contracts'), _('Contratos diversos')),
+    (_('Advocative hours'), _('Honorários advocatícios')),
+    (_('Invoice'), _('Nota fiscal')),
+    (_('Rural producer contract'), _('Contrato de produtor rural')),
+    (_('Legal title'), _('Título judicial')),
+    (_('Labor'), _('Trabalhista')),
+    (_('Labor Union'), _('Trabalhista Sindicato')),
+    (_('Promissory note'), _('Nota promissória')),
+    (_('AT'), _('N/A')),
+]
+
+NATURE_CHOICES = [(nature[0], nature[0]) for nature in NATURES]
+
+
 class NatureChoice(AbstractDescription):
     pass
 

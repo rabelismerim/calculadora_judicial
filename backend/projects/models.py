@@ -7,7 +7,7 @@ from numpy import number
 
 from base.coins.models import COIN_CHOICES
 from base.models import AbstractDateRecovering, AbstractDescription, SELECT_CHOICES_REPRESENTATION_DOCUMENTATION, \
-    SELECT_CHOICES_CLAIM_TYPE
+    SELECT_CHOICES_CLAIM_TYPE, CHOICES_REPRESENTATION_DOCUMENTATION, CHOICES_CLAIM_TYPE, NATURE_CHOICES
 from calculation.funds.document.models import FundDocument
 from calculation.funds.irrf.models import FundIRRF
 from calculation.funds.models import Funds
@@ -211,7 +211,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
 
     def get_excel_by_name(self, name):
         for obj in self.get_valid_excels_headers():
-            if obj.get("name") == name:
+            if obj.get_name() == name:
                 return obj
         return None
 
@@ -225,6 +225,13 @@ class Project(AbstractDescription, AbstractDateRecovering):
                             {"title": "Credor - Classe", 'choice': CLASSE_CHOICES},
                             {"title": "Credor - Valor", 'choice': None},
                             {"title": "Credor - Moeda", 'choice': COIN_CHOICES},
+                            {"title": "Credor - Recuperanda CPF/CNPJ", 'choice': None},
+                            {"title": "Documentação de representação", 'choice': CHOICES_REPRESENTATION_DOCUMENTATION},
+                            {"title": "Tipo", 'choice': CHOICES_CLAIM_TYPE},
+                            {"title": "Natureza (NF, contrato, trabalhista etc)", 'choice': NATURE_CHOICES},
+                            {"title": "Descrição", 'choice': None},
+                            {"title": "Status", 'choice': SELECT_CHOICES_REPRESENTATION_DOCUMENTATION},
+                            {"title": "Prazo resposta", 'choice': None},
                         ]
                         )
         ]
@@ -282,7 +289,6 @@ class Project(AbstractDescription, AbstractDateRecovering):
                             "coin": credor['Credor - Moeda'],
                             "value": credor['Credor - Valor']
                         },
-                        "archive_json": {}
                     }
                 ],
             }
@@ -308,6 +314,9 @@ class ExcelHeader:
 
     def get_columns(self):
         return self._columns
+
+    def get_name(self):
+        return self._name
 
     def parse_list(self, data):
         new_data = []

@@ -9,20 +9,8 @@ class BaseConfig(AppConfig):
     name = 'base'
 
     def ready(self):
-        from base.models import NatureChoice
-        natures = [
-            (_('Extrajudicial enforcement action'), _('Ação de execução de título extrajudicial')),
-            (_('Bank contract'), _('Contrato bancário')),
-            (_('Miscellaneous contracts'), _('Contratos diversos')),
-            (_('Advocative hours'), _('Honorários advocatícios')),
-            (_('Invoice'), _('Nota fiscal')),
-            (_('Rural producer contract'), _('Contrato de produtor rural')),
-            (_('Legal title'), _('Título judicial')),
-            (_('Labor'), _('Trabalhista')),
-            (_('Labor Union'), _('Trabalhista Sindicato')),
-            (_('Promissory note'), _('Nota promissória')),
-            (_('AT'), _('N/A')),
-        ]
+        from base.models import NatureChoice, NATURES
+        natures = NATURES
         try:
             list_natures = NatureChoice.objects.all()
             natures_bulk = []

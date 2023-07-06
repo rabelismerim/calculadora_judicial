@@ -114,7 +114,7 @@ INSTALLED_APPS = [
     'modeltranslation',  # Custom field translation
     # 'debug_toolbar', # Debug query, views in realtime on navigation
     'django_apscheduler',  # Eventos crontab
-    'django_celery_results', # View results Tasks in admin
+    # 'django_celery_results', # View results Tasks in admin
 
     # Base
     'base',
