@@ -347,7 +347,12 @@ const statusColors: any = {
         Valor Total Validado:
         R$ {{ formatNumber(creditor.total, 2) }}
       </div>
-      <Btn v-if="validation === false" label="Validar Cálculos" @click="emit('update:validation', true)" />
+      <Btn
+        v-if="validation === false"
+        label="Validar Cálculos"
+        :disabled="modelValue?.filter(({ step }) => step === 'A').length === 0"
+        @click="emit('update:validation', true)"
+      />
       <div v-else class="flex gap-3">
         <Btn
           label="Cancelar"
