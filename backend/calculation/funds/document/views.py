@@ -12,7 +12,7 @@ from rest_framework.generics import get_object_or_404
 from base.coins.models import Coins
 from calculation.funds.document.models import FundDocument, StatementDocument
 from calculation.funds.document.schemas import FundDocumentSchema, FundDocumentUpdateSchema, FundDocumentGetSchema, \
-    TotalValuesDocumentSchema, TotalValuesDocumentDetailSchema
+    TotalValuesDocumentSchema, TotalValuesDocumentDetailSchema, StatementDocumentUpdateSchema
 from core.abstract.views import AbstractViewApi
 
 from rest_framework import permissions, status
@@ -227,9 +227,16 @@ class StatementFundsIRRFListApi(AbstractFundDocumentApi):
         ```
     """
     serializer_class = TotalValuesDocumentDetailSchema
-    http_method_names = ['get']
+    http_method_names = ['get', 'put']
     docs = docs.copy()
     model = FundDocument
+
+    layout_serializers = {
+        'default': TotalValuesDocumentDetailSchema,
+        'get': TotalValuesDocumentDetailSchema,
+        'put': StatementDocumentUpdateSchema,
+    }
+
     tags = [_('Cálculo - Verbas - Documentos - Valores das verbas')]
 
     @doc(_("""This method handles GET requests for the view. It retrieves the calculated fund total and a list of fund 
@@ -248,3 +255,24 @@ class StatementFundsIRRFListApi(AbstractFundDocumentApi):
             funds_data = self.serializer_class(fund, many=False).data
         return JsonResponse({'fund': funds_data})
 
+    def put(self, request, *args, **kwargs):
+        """
+        This method handles PUT requests for the view. It expects input data that conform to the serializer used by
+        the view class. It updates the approved_calculation or date object of a specific comparative object using the
+        given calculation_id from the query parameters and serializes the updated object in JSON format before
+        returning it as an HTTP response.
+
+        Parameters: request: The HTTP request object. args: Any additional positional arguments passed to the method.
+        kwargs: Any additional keyword arguments passed to the method, with calculation_id identifying the
+        comparative object to update. Returns: JsonResponse: An HTTP response containing the updated and serialized
+        comparative object data.
+        """
+        with transaction.atomic():
+            id_ = kwargs.get('fund_id')
+            serializer = self.get_serializer_class()
+            serializer = serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data_obj = dict(serializer.validated_data)
+            obj = get_object_or_404(StatementDocument, fund_id=id_)
+            obj.dict_update(**data_obj)
+        return JsonResponse({self.get_model_name(): self.serializer_class(obj, many=False).data})
