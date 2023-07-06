@@ -107,11 +107,13 @@ const loadCalculation = async (showLoading = false) => {
               align: (isEditable && typeDisplay !== 'boolean') ? 'left' : 'center',
             }))
           .sort(({ order: orderA }: any, { order: orderB }: any) => orderA < orderB ? -1 : 1)
-        columns.push({
-          name: 'delete',
-          field: 'delete',
-          label: 'Apagar',
-        })
+        if (many) {
+          columns.push({
+            name: 'delete',
+            field: 'delete',
+            label: 'Apagar',
+          })
+        }
         return { summary, columns, description, endPoint, id, many, linesToAdd: 1, values: [] }
       })
       credit.summary = credit?.template?.summary
@@ -486,7 +488,7 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
                 <div class="text-lg font-bold mb-2 flex justify-between items-center">
                   <div>{{ table.description }}</div>
                   <AddLines
-                    v-if="!['A', 'B'].includes(calculation?.step)"
+                    v-if="!['A', 'B'].includes(calculation?.step) && table.many"
                     v-model="table.linesToAdd"
                     @add-lines="addCreditValues(table, table.linesToAdd)"
                   />
@@ -518,7 +520,7 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
                           }"
                         >
                           <button
-                            v-if="column.name === 'delete'"
+                            v-if="column.name === 'delete' && table.many"
                             class="cursor-pointer bg--error h-10 w-10 rounded-.5 border-1 border-red-8 flex justify-center items-center"
                             :disabled="['A', 'B'].includes(calculation?.step) || !hasPermissions('delete_calculation')"
                             @click.stop="removeCreditValue(table.values, props.row, props.rowIndex, table)"
