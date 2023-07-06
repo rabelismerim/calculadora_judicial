@@ -9,7 +9,7 @@ from rates.models import Template, TemplateField, TemplateRate, TemplateMainFiel
 
 def create_templates():
     """Create templates to rates"""
-    fields_default_all = [{'label': 'Status', 'key': 'status_display', 'type': 'C', 'order': 10, 'is_editable': False,
+    fields_default_all = [{'label': 'Status', 'key': 'status_display', 'type': 'C', 'order': 15, 'is_editable': False,
                            'required': False},
                           ]
 
@@ -72,6 +72,30 @@ def create_templates():
                       'required': True},
                      ]
 
+    fields_verbas_docs = [
+        {'label': 'Data base', 'key': 'data_base', 'type': 'D', 'order': 2, 'is_editable': True,
+         'required': True},
+
+        {'label': 'Valor histórico', 'key': 'historical_value', 'type': 'F', 'order': 6,
+         'is_editable': True,
+         'required': True},
+        {'label': 'Índice na data base', 'key': 'monetary_correction.index_data_base', 'type': 'F',
+         'order': 7,
+
+         'is_editable': False, 'required': False},
+        {'label': 'Índice na recuperação', 'key': 'monetary_correction.index_recovering', 'type': 'F',
+         'order': 8,
+
+         'is_editable': False, 'required': False},
+        {'label': 'Valor corrigido', 'key': 'monetary_correction.corrected_value', 'type': 'F', 'order': 9,
+
+         'is_editable': False, 'required': False},
+        {'label': 'É extraconcursal', 'key': 'is_extraconcursal', 'type': 'B', 'order': 4,
+         'is_editable': True,
+         'default': False,
+         'required': True},
+    ]
+
     summary_fields_verbas = [{'label': 'Total: ', 'key': None, 'type': 'C', 'order': 2, 'is_editable': False,
                               'required': False},
                              {'label': '', 'key': 'total_historical', 'type': 'F', 'order': 6,
@@ -83,23 +107,44 @@ def create_templates():
                              ]
 
     fields_verbas_document = copy.deepcopy(fields_verbas)
-    fields_verbas_document.extend(
-        [
-            {'label': 'Documento', 'key': 'name', 'type': 'C', 'order': 0, 'is_editable': True,
-             'required': True},
-            {'label': 'Número', 'key': 'number', 'type': 'C', 'order': 1, 'is_editable': True,
-             'required': True},
-            {'label': 'Dias', 'key': 'days', 'type': 'I', 'order': 9, 'is_editable': False,
-             'required': False},
-            {'label': 'Juros', 'key': 'default_interest', 'type': 'F', 'order': 10, 'is_editable': False,
+    fields_verbas_document = [
+        {'label': 'Data base', 'key': 'data_base', 'type': 'D', 'order': 2, 'is_editable': True,
+         'required': True},
 
-             'required': False},
-            {'label': 'Multa', 'key': 'fine', 'type': 'F', 'order': 11, 'is_editable': False,
-             'required': False},
-            {'label': 'Total devido', 'key': 'total_due', 'type': 'F', 'order': 12, 'is_editable': False,
+        {'label': 'Valor histórico', 'key': 'historical_value', 'type': 'F', 'order': 6,
+         'is_editable': True,
+         'required': True},
+        {'label': 'Índice na data base', 'key': 'monetary_correction.index_data_base', 'type': 'F',
+         'order': 7,
 
-             'required': False},
-        ])
+         'is_editable': False, 'required': False},
+        {'label': 'Índice na recuperação', 'key': 'monetary_correction.index_recovering', 'type': 'F',
+         'order': 8,
+
+         'is_editable': False, 'required': False},
+        {'label': 'Valor corrigido', 'key': 'monetary_correction.corrected_value', 'type': 'F', 'order': 10,
+
+         'is_editable': False, 'required': False},
+        {'label': 'É extraconcursal', 'key': 'is_extraconcursal', 'type': 'B', 'order': 4,
+         'is_editable': True,
+         'default': False,
+         'required': True},
+
+        {'label': 'Documento', 'key': 'name', 'type': 'C', 'order': 0, 'is_editable': True,
+         'required': True},
+        {'label': 'Número', 'key': 'number', 'type': 'C', 'order': 1, 'is_editable': True,
+         'required': True},
+        {'label': 'Dias', 'key': 'total_days', 'type': 'I', 'order': 9, 'is_editable': False,
+         'required': False},
+        {'label': 'Juros', 'key': 'total_default_interest', 'type': 'F', 'order': 11, 'is_editable': False,
+
+         'required': False},
+        {'label': 'Multa', 'key': 'total_fine', 'type': 'F', 'order': 12, 'is_editable': False,
+         'required': False},
+        {'label': 'Total devido', 'key': 'total_due', 'type': 'F', 'order': 13, 'is_editable': False,
+
+         'required': False},
+    ]
 
     summary_fields_document = [{'label': 'Total: ', 'key': 'none', 'type': 'C', 'order': 0, 'is_editable': False,
                                 'required': False},
@@ -109,16 +154,17 @@ def create_templates():
                                {'label': '', 'key': 'total_corrected', 'type': 'F', 'order': 8,
                                 'is_editable': False,
                                 'required': False},
-                               {'label': '', 'key': 'total_days', 'type': 'F', 'order': 9,
+                               {'label': '', 'key': 'total_days', 'type': 'I', 'order': 9,
                                 'is_editable': False,
                                 'required': False},
-                               {'label': '', 'key': 'default_interest', 'type': 'F', 'order': 10,
+
+                               {'label': '', 'key': 'total_default_interest', 'type': 'F', 'order': 11,
                                 'is_editable': False,
                                 'required': False},
-                               {'label': '', 'key': 'total_fine', 'type': 'F', 'order': 11,
+                               {'label': '', 'key': 'total_fine', 'type': 'F', 'order': 12,
                                 'is_editable': False,
                                 'required': False},
-                               {'label': '', 'key': 'total_due', 'type': 'F', 'order': 11,
+                               {'label': '', 'key': 'total_due', 'type': 'F', 'order': 13,
                                 'is_editable': False,
                                 'required': False},
                                ]

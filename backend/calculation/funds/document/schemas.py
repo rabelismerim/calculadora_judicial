@@ -175,6 +175,7 @@ class TotalValuesDocumentDetailSchema(AbstractDescriptionSchema):
             'total_days': representation.get('total_days', 0),
             'total_fine': representation.get('total_fine', 0),
             'total_due': representation.get('total_due', 0),
+            'total_default_interest': representation.get('total_default_interest', 0),
         }
         statement_document = representation.pop('fund', {})
         for key, value in statement_document.items():
