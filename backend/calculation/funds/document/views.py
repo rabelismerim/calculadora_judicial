@@ -124,7 +124,6 @@ class FundDocumentApi(AbstractFundDocumentApi):
                 transaction.set_rollback(True)
         if commit is False:
             transaction.rollback()
-
         return JsonResponse({'fund_document': self.serializer_class(fund, many=False).data},
                             status=status.HTTP_201_CREATED)
 
