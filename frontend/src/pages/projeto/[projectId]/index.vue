@@ -194,12 +194,12 @@ onMounted(async () => {
       />
     </Header>
 
-    <div class="grid grid-cols-3 grid-rows-2 gap-6 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols2 md:grid-cols-2 lg:grid-cols-3 lg:grid-rows-2 gap-6 mb-8">
       <GraphGauge
         :values="bigNumbers?.byStep"
         title="Quantidade de Cálculos por Status"
         hint="Esse gráfico apresenta a quantidade de Cálculos para cada status."
-        class="row-span-2"
+        class="lg:row-span-2"
       />
       <GraphCard
         title="Quantidade Total de Credores"
