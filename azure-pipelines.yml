@@ -29,11 +29,11 @@ steps:
 - task: DownloadSecureFile@1
   name: Env
   inputs:
-    secureFile: '.env-dev'
+    secureFile: '.env'
 - task: DownloadSecureFile@1
   name: EnvFrontEnd
   inputs:
-    secureFile: '.env-frontend-dev'
+    secureFile: '.env-frontend'
 - script: |
     echo Installing $(Env.secureFilePath) to the path backend...
     copy $(Env.secureFilePath) $(Build.SourcesDirectory)\backend\.env
