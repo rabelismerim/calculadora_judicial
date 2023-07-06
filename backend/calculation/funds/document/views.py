@@ -114,6 +114,7 @@ class FundDocumentApi(AbstractFundDocumentApi):
             serializer = self.serializer_class(data=request.data)
             serializer.is_valid(raise_exception=True)
             new_funds = serializer.validated_data
+
             statement_document = new_funds.pop('statement_document')
             coins = new_funds.get('coins')
             new_funds['coins'] = Coins.objects.create(**coins)

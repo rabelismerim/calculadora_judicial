@@ -170,15 +170,20 @@ class TotalValuesDocumentDetailSchema(AbstractDescriptionSchema):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
+
+        new_fund = {}
         statement_document = representation.pop('fund', {})
         for key, value in statement_document.items():
-            representation[key] = value
+            new_fund[key] = value
+
         statement_document = representation.pop('data', {})
         for key, value in statement_document.items():
-            representation[key] = value
-        monetary_correction = representation.pop('monetary_correction', {})
+            new_fund[key] = value
+        monetary_correction = new_fund.get('monetary_correction', {})
         for key, value in monetary_correction.items():
-            representation[key] = value
+            new_fund[key] = value
+
+        representation['data'] = [new_fund]
         return representation
 
     class Meta:
@@ -221,6 +226,38 @@ class FundDocumentSchema(AbstractClassesFundsSchema):
     class Meta:
         model = FundDocument
         exclude = ('calculation',)
+
+    def validate(self, data):
+        """
+        Validate the given data for the Funds object and raise a `serializers.ValidationError` if any validation fails.
+
+        Args:
+            self: The object instance.
+            data: A dictionary containing the data to be validated.
+
+        Returns:
+            Returns the validated data if all validations pass.
+
+        Raises: serializers.ValidationError: If the validation fails due to any of the following reasons: - The FundIRRF
+        object with the given name and calculation_id already exists.
+        """
+        name = data.get('name')
+        data_base = data.get('data_base')
+        number = data.get('number')
+        historical_value = data.get('historical_value')
+        calculation_id = data.get('calculation_id')
+
+        if FundDocument.objects.filter(calculation_id=calculation_id, name=name, statementdocument__data_base=data_base,
+                                       statementdocument__number=number,
+                                       statementdocument__historical_value=historical_value).exists():
+            raise serializers.ValidationError([_('Document Fund already registered')])
+        data['statement_document'] = {}
+        for field_name in self.write_only_fields.keys():
+            if field_name == 'is_extraconcursal':
+                data['statement_document'][field_name] = data.pop(field_name, False)
+            else:
+                data['statement_document'][field_name] = data.pop(field_name)
+        return super(FundDocumentSchema, self).validate(data)
 
 
 class FundDocumentGetSchema(AbstractClassesFundsSchema):
