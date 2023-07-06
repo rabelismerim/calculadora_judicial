@@ -171,7 +171,11 @@ class TotalValuesDocumentDetailSchema(AbstractDescriptionSchema):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
 
-        new_fund = {}
+        new_fund = {
+            'total_days': representation.get('total_days', 0),
+            'total_fine': representation.get('total_fine', 0),
+            'total_due': representation.get('total_due', 0),
+        }
         statement_document = representation.pop('fund', {})
         for key, value in statement_document.items():
             new_fund[key] = value

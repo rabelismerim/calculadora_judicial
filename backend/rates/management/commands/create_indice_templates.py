@@ -85,7 +85,7 @@ def create_templates():
     fields_verbas_document = copy.deepcopy(fields_verbas)
     fields_verbas_document.extend(
         [
-            {'label': 'Documento', 'key': 'document', 'type': 'C', 'order': 0, 'is_editable': True,
+            {'label': 'Documento', 'key': 'name', 'type': 'C', 'order': 0, 'is_editable': True,
              'required': True},
             {'label': 'Número', 'key': 'number', 'type': 'C', 'order': 1, 'is_editable': True,
              'required': True},
