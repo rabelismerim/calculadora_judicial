@@ -17,10 +17,10 @@ const props = withDefaults(defineProps<{
 })
 
 const host = import.meta.env.VITE_API_HOST
-const userImage = props.modelValue?.pictureUrl
-  ? `${host}/juca${props.modelValue?.pictureUrl}`
-  : props.modelValue?.userpicture
-    ? `data:image/jpg;base64,${props.modelValue?.userpicture}`
+const userImage = props.modelValue?.userpicture
+  ? `data:image/jpg;base64,${props.modelValue?.userpicture}`
+  : props.modelValue?.pictureUrl
+    ? `${host}/juca${props.modelValue?.pictureUrl}`
     : undefined
 </script>
 

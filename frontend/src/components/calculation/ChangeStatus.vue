@@ -26,10 +26,10 @@ const getUser = (username: string) => props.options?.users
 const avatar = (username: string) => {
   const host = import.meta.env.VITE_API_HOST
   const { pictureUrl, userpicture } = getUser(username) || {}
-  const userImage = pictureUrl
-    ? `${host}/juca${pictureUrl}`
-    : userpicture
-      ? `data:image/jpg;base64,${userpicture}`
+  const userImage = userpicture
+    ? `data:image/jpg;base64,${userpicture}`
+    : pictureUrl
+      ? `${host}/juca${pictureUrl}`
       : undefined
   return userImage
 }

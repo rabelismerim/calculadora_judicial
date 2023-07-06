@@ -77,8 +77,9 @@ const onReject = async (user: any) => {
 }
 onMounted(async () => {
   try {
-    if (hasPermissions('can_authorize_users'))
-      permissionOptions = await usersService.getGroups()
+    if (!hasPermissions('can_authorize_users', 'view_group'))
+      return
+    permissionOptions = await usersService.getGroups()
   }
   catch (error) {
     printError('ERROR ON LOADING GROUPS:', error)

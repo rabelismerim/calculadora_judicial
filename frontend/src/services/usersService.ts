@@ -23,12 +23,17 @@ const getMyProfile = async () => verifyUser()
     const goToSignin = () =>
       redirectTo(`${window.location.origin}/juca/api/drfmsal_signin/juca/`)
 
-    if (!user?.authenticated && import.meta.env.PROD)
+    const { authenticated, authorized, isActive } = user
+
+    const inProduction = import.meta.env.PROD
+    const inDevelopment = import.meta.env.DEV
+
+    if ((!authenticated && inProduction)
+      || (authenticated && isActive && !authorized && inProduction))
       goToSignin()
 
-    const isAuthorized = user?.authorized || import.meta.env.DEV
-    const permissions = isAuthorized ? await getPermissions() : []
-    const projects = isAuthorized ? await projectService.getUserProjects() : []
+    const permissions = (authorized || inDevelopment) ? await getPermissions() : []
+    const projects = (authorized || inDevelopment) ? await projectService.getUserProjects() : []
 
     return {
       ...user,
