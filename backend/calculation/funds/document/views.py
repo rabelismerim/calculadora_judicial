@@ -12,7 +12,7 @@ from rest_framework.generics import get_object_or_404
 from base.coins.models import Coins
 from calculation.funds.document.models import FundDocument, StatementDocument
 from calculation.funds.document.schemas import FundDocumentSchema, FundDocumentUpdateSchema, FundDocumentGetSchema, \
-    TotalValuesDocumentSchema
+    TotalValuesDocumentSchema, TotalValuesDocumentDetailSchema
 from core.abstract.views import AbstractViewApi
 
 from rest_framework import permissions, status
@@ -226,7 +226,7 @@ class StatementFundsIRRFListApi(AbstractFundDocumentApi):
         GET /api/v1/calculation/funds/labor/integration/<uuid:fund_id>/
         ```
     """
-    serializer_class = TotalValuesDocumentSchema
+    serializer_class = TotalValuesDocumentDetailSchema
     http_method_names = ['get']
     docs = docs.copy()
     model = FundDocument
@@ -247,3 +247,4 @@ class StatementFundsIRRFListApi(AbstractFundDocumentApi):
         else:
             funds_data = self.serializer_class(fund, many=False).data
         return JsonResponse({'fund': funds_data})
+
