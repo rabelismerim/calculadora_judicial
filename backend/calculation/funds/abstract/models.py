@@ -244,6 +244,7 @@ class AbstractStatement(AbstractStatus):
                     [_('This is an extra-bankruptcy budget, it is necessary to flag the extra-bankruptcy budget')])
             self.status = 'I'
             self.delete_monetary_correction()
+            return
 
         super(AbstractStatement, self).save(*args, **kwargs)
 
