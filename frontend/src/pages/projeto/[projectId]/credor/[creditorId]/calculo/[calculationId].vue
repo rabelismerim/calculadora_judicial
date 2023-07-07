@@ -243,7 +243,7 @@ const calculateCredit = async (credit: any, creditIndex: number) => {
         table.values[lineIndex].loading = true
         const method = line.id ? 'PUT' : 'POST'
 
-        const result: any = await fetch(`${host}${table.endPoint}${method === 'PUT' ? 'detail/' : ''}${line.id ? `${line.id}/` : ''}`, {
+        const result: any = await fetch(`${host}${table.endPoint}${(method === 'PUT' && !table.endPoint.endsWith('/detail/')) ? 'detail/' : ''}${line.id ? `${line.id}/` : ''}`, {
           method,
           body: JSON.stringify({ ...line, fund_id: credit.id, calculation_id: attrs.calculationId }),
           headers,
@@ -612,6 +612,9 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
                                 get(getSummary(column.order, table.summary).key, table.data),
                                 getSummary(column.order, table.summary).decimals,
                               ) }}
+                            </span>
+                            <span v-if="getSummary(column.order, table.summary)?.typeDisplay === 'integer'">
+                              {{ get(getSummary(column.order, table.summary).key, table.data) }}
                             </span>
                           </span>
                         </div>
