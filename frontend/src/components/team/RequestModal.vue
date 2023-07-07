@@ -154,7 +154,14 @@ onMounted(async () => {
       <QTabPanels v-model="tab" animated class="shadow-2 rounded-borders">
         <QTabPanel name="pending">
           <div
+            v-if="pendingUsers.length === 0"
+            class="pa-4 text-center"
+          >
+            Sem Usuários Pendentes no momento...
+          </div>
+          <div
             v-for="(user, pendingIndex) in pendingUsers"
+            v-else
             :key="user.id"
             class="flex py-3"
             :class="{ 'border-b-1 border--black/12': pendingIndex < pendingUsers.length - 1 }"
@@ -178,7 +185,14 @@ onMounted(async () => {
 
         <QTabPanel name="rejected">
           <div
+            v-if="rejectedUsers.length === 0"
+            class="pa-4 text-center"
+          >
+            Sem Usuários Ignorados no momento...
+          </div>
+          <div
             v-for="(user, rejectedIndex) in rejectedUsers"
+            v-else
             :key="user.id"
             class="flex py-3"
             :class="{ 'border-b-1 border--black/12': rejectedIndex < rejectedUsers.length - 1 }"

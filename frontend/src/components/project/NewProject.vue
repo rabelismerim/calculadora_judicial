@@ -151,6 +151,7 @@ onMounted(async () => {
         keep-alive
         flat
         header-class="shadow-md"
+        class="small"
       >
         <QStep
           :name="1"
@@ -376,7 +377,7 @@ onMounted(async () => {
           title="Times e Papéis"
           icon="o_people"
           :error="hasError.at(4)"
-          class="relative overflow-y-auto max-h-[calc(100vh-326px)] min-h-87 pb-0 pt-6 px-6 overflow-x-hidden"
+          class="relative overflow-y-auto max-h-[calc(100vh-326px)] min-h-87 pb-0 md:pt-6 md:px-6 overflow-x-hidden"
         >
           <div
             class=""

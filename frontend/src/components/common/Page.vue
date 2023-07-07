@@ -62,9 +62,9 @@ const isOpen = $ref(false)
         </div>
 
         <div
-          class="px-8 py-8 lg:pl-8 max-h-[calc(100vh-96px)] overflow-y-auto overflow-x-hidden flex justify-center"
+          class="px-4 md:px-8 py-4 md:py-8 lg:pl-8 max-h-[calc(100vh-96px)] overflow-y-auto overflow-x-hidden flex justify-center"
           :class="{
-            'pl-16': $slots.menu,
+            'pl-12 md:pl-16': $slots.menu,
           }"
         >
           <div class="max-w-[min(1600px,100%)] w-full" :class="{ 'page-open': isOpen }">

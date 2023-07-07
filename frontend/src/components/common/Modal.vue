@@ -19,24 +19,23 @@ const close = () => {
 
 <template>
   <div
-    class="fixed inset-0 flex justify-center items-center bg-black/20 z-1000 tween"
+    class="fixed inset-0 flex justify-center items-end md:items-center bg-black/20 z-1000 tween"
     :class="{
       'opacity-100 pointer-events-auto': modelValue,
       'opacity-0 pointer-events-none': !modelValue,
     }"
   >
     <div
-      class="relative bg--base w-full m-4 max-h-[calc(100vh-32px)] rounded-.5 border-1 border-black/28 tween"
+      class="relative bg--base w-full m-0 md:m-4 max-h-[calc(100vh-32px)] rounded-.5 border-1 border-black/28 tween"
       :class="{
         'translate-y-10': !modelValue,
         'max-w-240': !modalClass,
         [modalClass]: modalClass,
       }"
     >
-      <div class="flex gap-2 p-4 pb-5 relative">
+      <div class="flex gap-2 p-4 sm:pb-5 relative">
         <div class="flex-1 flex items-center gap-3">
-          <span class="font-bold text-2xl">{{ title }}</span>
-          <Hint :value="hint" />
+          <span class="font-bold text-2xl">{{ title }}<Hint :value="hint" class="ml-2" /></span>
         </div>
         <button
           :disabled="closeDisabled"

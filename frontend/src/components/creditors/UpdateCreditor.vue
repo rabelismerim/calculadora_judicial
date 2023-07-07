@@ -91,10 +91,12 @@ const onSubmit = async () => {
           class="mb-5 col-span-2"
         />
         <InputDate
+          v-if="isValidCPF(editingCreditor.legalNumber)"
           v-model="editingCreditor.admission"
           label="Data de Admissão"
         />
         <InputDate
+          v-if="isValidCPF(editingCreditor.legalNumber)"
           v-model="editingCreditor.dismissal"
           label="Data de Demissão"
         />
