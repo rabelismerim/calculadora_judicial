@@ -16,11 +16,6 @@ strategy:
       PYTHON_VERSION: '3.11.10'
   maxParallel: 3
 steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '3.11'
-    allowUnstable: true
-    architecture: 'x64'
 - task: NodeTool@0
   inputs:
     versionSource: 'spec'
