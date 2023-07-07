@@ -329,6 +329,11 @@ class AbstractTotalValuesFunds(AbstractModel):
         statement_pfs = []
         statement_pfs_ids = []
 
+        if hasattr(self, 'fundsdocumentdescriptionpj'):
+            description = self.fundsdocumentdescriptionpj.statement_pj
+            self.fundsdocumentdescriptionpj.delete()
+            description.set_total()
+
         if hasattr(self, 'fundsdescription_set'):
             for description in self.fundsdescription_set.all():
                 statement_pf = description.statement_pf

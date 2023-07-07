@@ -247,13 +247,17 @@ class StatementFundsIRRFListApi(AbstractFundDocumentApi):
         JsonResponse: An HTTP response containing the serialized statement IRRF data retrieved.
     """))
     def get(self, request, *args, **kwargs):
+        funds_data = self.get_total_response(request, *args, **kwargs)
+        return JsonResponse({'fund': funds_data})
+
+    def get_total_response(self, request, *args, **kwargs):
         fund_id = kwargs.get('fund_id')
         fund = self.model.objects.filter(id=fund_id).first()
         if hasattr(fund, 'totalvaluesdocument'):
             funds_data = self.serializer_class(fund.totalvaluesdocument, many=False).data
         else:
             funds_data = self.serializer_class(fund, many=False).data
-        return JsonResponse({'fund': funds_data})
+        return funds_data
 
     def put(self, request, *args, **kwargs):
         """
@@ -275,4 +279,5 @@ class StatementFundsIRRFListApi(AbstractFundDocumentApi):
             data_obj = dict(serializer.validated_data)
             obj = get_object_or_404(StatementDocument, fund_id=id_)
             obj.dict_update(**data_obj)
-        return JsonResponse({self.get_model_name(): self.serializer_class(obj, many=False).data})
+        funds_data = self.get_total_response(request, *args, **kwargs)
+        return JsonResponse({'fund': funds_data.get('data')[0]})
