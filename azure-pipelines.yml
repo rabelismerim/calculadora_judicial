@@ -3,11 +3,11 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 trigger:
-- dev
+- hml
 pool: 
   name: TR
   demands:
-  - Agent.Name -equals TRDEV
+  - Agent.Name -equals TRHML
 variables:
   system.debug: 'true'
 strategy:
@@ -29,11 +29,11 @@ steps:
 - task: DownloadSecureFile@1
   name: Env
   inputs:
-    secureFile: '.env'
+    secureFile: '.env-hml'
 - task: DownloadSecureFile@1
   name: EnvFrontEnd
   inputs:
-    secureFile: '.env-frontend'
+    secureFile: '.env-frontend-hml'
 - script: |
     echo Installing $(Env.secureFilePath) to the path backend...
     copy $(Env.secureFilePath) $(Build.SourcesDirectory)\backend\.env
@@ -151,6 +151,6 @@ steps:
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)/backend'
     Contents: '**'
-    TargetFolder: 'D:\DJUD\'
+    TargetFolder: 'E:\inetpub\wwwroot\uat.fadigitallab.deloitte.com.br\juca\'
     OverWrite: true
     flattenFolders: false
