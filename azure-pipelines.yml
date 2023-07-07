@@ -7,7 +7,7 @@ trigger:
 pool: 
   name: TR
   demands:
-  - Agent.Name -equals TRHML
+  - Agent.Name -equals TR-HML
 variables:
   system.debug: 'true'
 strategy:
