@@ -6,7 +6,7 @@ const props = withDefaults(defineProps<{
 </script>
 
 <template>
-  <div v-if="value" class="cursor-help text-base">
+  <div v-if="value" class="cursor-help text-base inline-block">
     <div class="i-carbon-help-filled color-black/30 hover:color--primary tween" />
     <QTooltip>
       <div class="whitespace-pre">

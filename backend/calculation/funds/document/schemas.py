@@ -47,10 +47,15 @@ class StatementDocumentSchema(AbstractDescriptionSchema):
 
     fund_id = serializers.UUIDField()
     status_display = serializers.CharField(source='get_status_display', read_only=True)
+    historical_value = serializers.FloatField()
+    data_base = serializers.DateField()
+    is_extraconcursal = serializers.BooleanField()
+    number = serializers.CharField()
 
     class Meta:
         model = StatementDocument
         exclude = ('fund',)
+        # fields = '__all__'
         read_only_fields = ('status', 'status_display')
 
 
@@ -123,6 +128,75 @@ class TotalValuesDocumentSchema(AbstractDescriptionSchema):
         fields = '__all__'
 
 
+class FundDocumentDetailSchema(AbstractClassesFundsSchema):
+    """
+    A schema for serializing and deserializing Funds instances.
+
+    Attributes: calculation_id (serializers.UUIDField): The UUID of the related calculation. statement_funds (
+    StatementFundDocumentSchema): The schema for serializing and deserializing StatementFunds instances.
+    statement_integrations (StatementIntegrationsSchema): The schema for serializing and deserializing
+    StatementIntegrations instances. statement_irrf (StatementIRRFSchema): The schema for serializing and
+    deserializing StatementIRRF instances.
+    """
+    calculation_id = serializers.UUIDField()
+
+    class Meta:
+        model = FundDocument
+        exclude = ('calculation',)
+
+
+class TotalValuesDocumentDetailSchema(AbstractDescriptionSchema):
+    """
+    A schema for serializing and deserializing TotalValuesFunds instances.
+
+    Attributes:
+        fund_id (serializers.UUIDField): The UUID of the related fund.
+    """
+    fund_id = serializers.UUIDField(read_only=True)
+    data = StatementDocumentSchema(many=False, source='fund.statementdocument', exclude=('fund_id',), required=False)
+    total_days = serializers.IntegerField(read_only=True, source='fund.statementdocument.days')
+    fund = FundDocumentDetailSchema(many=False)
+
+    # def get_data(self, obj):
+    #     print(obj, 'obj\n' )
+    #     statement_document = obj.fund.statementdocument
+    #     return StatementDocumentSchema(instance=statement_document).data
+    #
+    # def to_representation(self, instance):
+    #     print(instance, 'instance\n')
+    #     representation = super().to_representation(instance)
+    #     representation.pop('fund_id', None)  # Remover a chave 'fund_id' do dicionário
+    #     return representation
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        new_fund = {
+            'total_days': representation.get('total_days', 0),
+            'total_fine': representation.get('total_fine', 0),
+            'total_due': representation.get('total_due', 0),
+            'total_default_interest': representation.get('total_default_interest', 0),
+        }
+        statement_document = representation.pop('fund', {})
+        for key, value in statement_document.items():
+            new_fund[key] = value
+
+        statement_document = representation.pop('data', {})
+        for key, value in statement_document.items():
+            new_fund[key] = value
+        monetary_correction = new_fund.get('monetary_correction', {})
+        for key, value in monetary_correction.items():
+            new_fund[key] = value
+
+        representation['data'] = [new_fund]
+        return representation
+
+    class Meta:
+        model = TotalValuesDocument
+        # exclude = ('id',)
+        fields = '__all__'
+
+
 class FundDocumentSchema(AbstractClassesFundsSchema):
     """
     A schema for serializing and deserializing Funds instances.
@@ -137,6 +211,7 @@ class FundDocumentSchema(AbstractClassesFundsSchema):
     total = TotalValuesDocumentSchema(source='totalvaluesdocument', read_only=True, exclude=('fund_id', 'statement'))
     statement = StatementDocumentSchema(source='statementdocument', exclude=('fund_id', 'status'), read_only=True)
     commit = serializers.BooleanField(write_only=True, required=False)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         statement_serializer = StatementDocumentSchema(exclude=('fund_id', 'status'))

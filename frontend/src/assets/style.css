@@ -146,6 +146,14 @@ div {
 .q-stepper.vertical .q-stepper__label::after {
   content: none;
 }
+.q-stepper.small .q-stepper__header {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+.q-stepper.small .q-stepper__header .q-stepper__tab {
+  padding: 0 1rem;
+  min-height: 52px;
+}
 
 .q-field__control::before {
   background-color: #fff;
