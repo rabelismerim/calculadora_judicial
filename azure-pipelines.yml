@@ -69,7 +69,7 @@ steps:
   displayName: 'Install and preparing python prerequisites'
 - script: |
     pip install virtualenv
-  failOnStderr: true
+  failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - script: |
