@@ -84,7 +84,7 @@ steps:
   displayName: 'Install and preparing python prerequisites'
 - script: |
     pip install --upgrade pip setuptools wheel
-  failOnStderr: true
+  failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - script: |
@@ -94,12 +94,12 @@ steps:
   displayName: 'Install and preparing python prerequisites'
 - script: |
     pip install unittest-xml-reporting
-  failOnStderr: true
+  failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - script: |
     python -m pip install fastcgi
-  failOnStderr: true
+  failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - script: |
