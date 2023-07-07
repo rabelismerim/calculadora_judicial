@@ -178,15 +178,23 @@ class TotalValuesDocumentDetailSchema(AbstractDescriptionSchema):
             'total_default_interest': representation.get('total_default_interest', 0),
         }
         statement_document = representation.pop('fund', {})
-        for key, value in statement_document.items():
-            new_fund[key] = value
 
-        statement_document = representation.pop('data', {})
-        for key, value in statement_document.items():
-            new_fund[key] = value
+        if statement_document:
+            for key, value in statement_document.items():
+                new_fund[key] = value
+
+        data = representation.pop('data', {})
+        if data:
+            for key, value in data.items():
+                if key == 'id':
+                    key = 'fund_id'
+                new_fund[key] = value
         monetary_correction = new_fund.get('monetary_correction', {})
-        for key, value in monetary_correction.items():
-            new_fund[key] = value
+        if monetary_correction:
+            for key, value in monetary_correction.items():
+                if key == 'id':
+                    key = 'monetary_correction_id'
+                new_fund[key] = value
 
         representation['data'] = [new_fund]
         return representation

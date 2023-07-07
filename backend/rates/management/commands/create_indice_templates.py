@@ -71,31 +71,6 @@ def create_templates():
                       'default': False,
                       'required': True},
                      ]
-
-    fields_verbas_docs = [
-        {'label': 'Data base', 'key': 'data_base', 'type': 'D', 'order': 2, 'is_editable': True,
-         'required': True},
-
-        {'label': 'Valor histórico', 'key': 'historical_value', 'type': 'F', 'order': 6,
-         'is_editable': True,
-         'required': True},
-        {'label': 'Índice na data base', 'key': 'monetary_correction.index_data_base', 'type': 'F',
-         'order': 7,
-
-         'is_editable': False, 'required': False},
-        {'label': 'Índice na recuperação', 'key': 'monetary_correction.index_recovering', 'type': 'F',
-         'order': 8,
-
-         'is_editable': False, 'required': False},
-        {'label': 'Valor corrigido', 'key': 'monetary_correction.corrected_value', 'type': 'F', 'order': 9,
-
-         'is_editable': False, 'required': False},
-        {'label': 'É extraconcursal', 'key': 'is_extraconcursal', 'type': 'B', 'order': 4,
-         'is_editable': True,
-         'default': False,
-         'required': True},
-    ]
-
     summary_fields_verbas = [{'label': 'Total: ', 'key': None, 'type': 'C', 'order': 2, 'is_editable': False,
                               'required': False},
                              {'label': '', 'key': 'total_historical', 'type': 'F', 'order': 6,
@@ -106,7 +81,6 @@ def create_templates():
                               'required': False}
                              ]
 
-    fields_verbas_document = copy.deepcopy(fields_verbas)
     fields_verbas_document = [
         {'label': 'Data base', 'key': 'data_base', 'type': 'D', 'order': 2, 'is_editable': True,
          'required': True},
@@ -151,7 +125,7 @@ def create_templates():
                                {'label': '', 'key': 'total_historical', 'type': 'F', 'order': 5,
                                 'is_editable': False,
                                 'required': False},
-                               {'label': '', 'key': 'total_corrected', 'type': 'F', 'order': 8,
+                               {'label': '', 'key': 'total_corrected', 'type': 'F', 'order': 10,
                                 'is_editable': False,
                                 'required': False},
                                {'label': '', 'key': 'total_days', 'type': 'I', 'order': 9,
@@ -337,6 +311,10 @@ def create_templates():
         ]
         templates.extend(template)
 
+
+    # ab = TemplateRate.objects.filter(end_point='/juca/api/v1/calculation/funds/documents/').update(end_point='/juca/api/v1/calculation/funds/documents/detail/')
+    # print(ab)
+    # return
     for template in templates:
         fields = template.pop('fields')
         name = template.pop('name')

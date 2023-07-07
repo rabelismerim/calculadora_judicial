@@ -2587,7 +2587,7 @@ msgstr "Analista"
 
 #: .\backend\core\dttuser\models.py:20
 msgid "Senior advisor"
-msgstr "Conselheiro Sênior"
+msgstr "Consultor Sênior"
 
 #: .\backend\core\dttuser\models.py:24
 msgid "Active"
