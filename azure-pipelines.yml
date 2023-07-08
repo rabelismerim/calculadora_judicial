@@ -68,7 +68,7 @@ steps:
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - script: |
-    pip install virtualenv
+    pip install --user virtualenv
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
@@ -83,22 +83,22 @@ steps:
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - script: |
-    pip install --upgrade pip setuptools wheel
+    pip install --upgrade --user pip setuptools wheel
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - script: |
-    pip install -r requirements.txt
+    pip install --user -r requirements.txt
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - script: |
-    pip install unittest-xml-reporting
+    pip install --user unittest-xml-reporting
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - script: |
-    python -m pip install fastcgi
+    python -m pip install --user fastcgi
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
