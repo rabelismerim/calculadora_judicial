@@ -217,6 +217,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
 
     def get_list_excels_name(self):
         names = []
+        print(names, 'names\n')
         for obj in self.get_valid_excels_headers():
             names.append(obj.get_name())
         return names
@@ -361,3 +362,24 @@ class ExcelHeader:
                 new_data.append(new_credor)
 
         return new_data
+
+    def generate_excel_example_ok(self):
+        # workbook = xlsxwriter.Workbook('planilha_excel.xlsx')
+        # worksheet = workbook.add_worksheet()
+        headers = ["Credor", "Credor - CPF/CNPJ", "Credor - Classe", "Credor - Valor", "Credor - Moeda"]
+        min_row = 1
+        max_row = 1048575
+
+        for c in self.get_columns():
+            print(c)
+
+        return []
+        for i, header in enumerate(headers):
+            worksheet.write(0, i, header)
+            if header == "Credor - Classe":
+                worksheet.data_validation(min_row, i, max_row, i,
+                                          {'validate': 'list',
+                                           'source': [choice[1] for choice in CLASSE_CHOICES],
+                                           'input_title': 'Selecione uma opção',
+                                           'input_message': 'Escolha uma opção da lista.'})
+        workbook.close()
