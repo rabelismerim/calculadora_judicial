@@ -140,3 +140,51 @@ class FileDetailApi(AbstractViewApi):
                         JsonResponse: An HTTP response containing the serialized File data retrieved.
                     """)
     }
+
+
+class FileExamplesApi(AbstractViewApi):
+    """Define the FileApi view class for handling HTTP methods related to File.
+
+    This view class extends the AbstractViewApi class, which provides a basic implementation
+    for common API actions. The FileApi supports HTTP POST and GET methods, and uses the FileSchema
+    serializer for input/output validation. The view requires authenticated users with appropriate
+    permissions to access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission
+    permission classes.
+
+    Attributes:
+        http_method_names (list): A list of HTTP methods supported by this view.
+        serializer_class (class): The serializer class for input/output validation.
+        permission_classes (list): A list of permission classes for user authentication and authorization.
+        model (class): The model class associated with this view.
+
+        query_params (list): A list of dictionaries, each specifying a query parameter for the API.
+
+    Examples:
+        To retrieve file with a matching description:
+        ```
+        GET /api/v1/file/?file=file_name
+        ```
+    """
+    http_method_names = ['get']
+    serializer_class = FileSchema
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    model = File
+    docs = {
+        'init': _("""Represents the entire File.
+                    """),
+        'get': _("""This method handles GET requests for the view. It retrieves a specific File object using the given
+                calculation_id from the query parameters and serializes the result into JSON format before returning it as
+                 an HTTP response.
+
+                    Returns:
+                        JsonResponse: An HTTP response containing the serialized File data retrieved.
+                    """)
+    }
+
+    def get(self, request, *args, **kwargs):
+        path = kwargs.get('path')
+        generic_path = GenericModelPath.objects.filter(path=path).first()
+        if not generic_path:
+            raise serializers.ValidationError(_('Path not found'))
+
+        JsonResponse({'names': generic_path().get_list_excels_name()})

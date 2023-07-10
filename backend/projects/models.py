@@ -215,6 +215,12 @@ class Project(AbstractDescription, AbstractDateRecovering):
                 return obj
         return None
 
+    def get_list_excels_name(self):
+        names = []
+        for obj in self.get_valid_excels_headers():
+            names.append(obj.get_name())
+        return names
+
     def get_valid_excels_headers(self):
         return [
             ExcelHeader(callback=self.process_json_to_model,
@@ -225,7 +231,13 @@ class Project(AbstractDescription, AbstractDateRecovering):
                             {"title": "Credor - Classe", 'choice': CLASSE_CHOICES},
                             {"title": "Credor - Valor", 'choice': None},
                             {"title": "Credor - Moeda", 'choice': COIN_CHOICES},
+
                             {"title": "Credor - Recuperanda CPF/CNPJ", 'choice': None},
+
+                            {"title": "Edital RJ - Classe", 'choice': CLASSE_CHOICES},
+                            {"title": "Edital RJ - Valor", 'choice': None},
+                            {"title": "Edital RJ - Moeda", 'choice': COIN_CHOICES},
+
                             {"title": "Documentação de representação", 'choice': CHOICES_REPRESENTATION_DOCUMENTATION},
                             {"title": "Tipo", 'choice': CHOICES_CLAIM_TYPE},
                             {"title": "Natureza (NF, contrato, trabalhista etc)", 'choice': NATURE_CHOICES},
@@ -274,7 +286,6 @@ class Project(AbstractDescription, AbstractDateRecovering):
         for credor in data:
             print(credor, 'new_keys_creditor')
             # # Creditor.objects.create(**credor) # TODO: criar logica de criacao aqui
-
             new_credor = {
                 "entity": {
                     "name": credor['Credor'],
@@ -291,6 +302,20 @@ class Project(AbstractDescription, AbstractDateRecovering):
                         },
                     }
                 ],
+                "notice_recovering": [
+                    {
+                        "classes": {
+                            "classe": credor['Edital RJ - Classe']
+                        },
+                        "coins": {
+                            "coin": credor['Edital RJ - Moeda'],
+                            "value": credor['Edital RJ - Valor']
+                        },
+                    }
+                ],
+                "occurrence": "A",
+                "representation_documentation": "R",
+                "claim_type": "Q",
             }
             print(new_credor)
             # TODO: subir credor inativo. Ter tela/endpoint pra aprovar credor

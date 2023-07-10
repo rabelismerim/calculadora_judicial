@@ -71,8 +71,8 @@ urlpatterns = [
     # path(f'{BASE_URL}recovering/', include("recovering.urls.current")),
     # path(f'{BASE_URL_NEXT}recovering/', include("recovering.urls.next")),
     #
-    # # Creditors
-    # path(f'{BASE_URL}creditors/', include("creditors.urls")),
+    # Creditors
+    path(f'{BASE_URL}creditors/', include("creditors.urls")),
 
     # File
     path(f'{BASE_URL}base/', include("base.urls")),

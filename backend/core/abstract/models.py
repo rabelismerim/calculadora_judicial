@@ -80,6 +80,15 @@ class AbstractModel(models.Model):
     def parse_file(self, parse_file):
         return
 
+    def get_list_excels_name(self):
+        names = []
+        for obj in self.get_valid_excels_headers():
+            names.append(obj.get_name())
+        return names
+
+    def get_valid_excels_headers(self):
+        raise NotImplementedError('Override this method')
+
 
 class UpdateUser(models.Model):
     """Model template to catch all updates made to the model"""
