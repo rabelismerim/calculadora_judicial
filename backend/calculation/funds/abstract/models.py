@@ -244,7 +244,6 @@ class AbstractStatement(AbstractStatus):
                     [_('This is an extra-bankruptcy budget, it is necessary to flag the extra-bankruptcy budget')])
             self.status = 'I'
             self.delete_monetary_correction()
-            return
 
         super(AbstractStatement, self).save(*args, **kwargs)
 
@@ -331,7 +330,8 @@ class AbstractTotalValuesFunds(AbstractModel):
 
         if hasattr(self, 'fundsdocumentdescriptionpj'):
             description = self.fundsdocumentdescriptionpj.statement_pj
-            self.fundsdocumentdescriptionpj.delete()
+            if self.fundsdocumentdescriptionpj.id:
+                self.fundsdocumentdescriptionpj.delete()
             description.set_total()
 
         if hasattr(self, 'fundsdescription_set'):
@@ -344,4 +344,5 @@ class AbstractTotalValuesFunds(AbstractModel):
 
             for statement in statement_pfs:
                 statement.calcule_total()
-        super(AbstractTotalValuesFunds, self).delete(*args, **kwargs)
+        if self.id:
+            return super(AbstractTotalValuesFunds, self).delete(*args, **kwargs)

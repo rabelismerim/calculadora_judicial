@@ -197,9 +197,10 @@ class FundDocumentDetailApi(AbstractFundDocumentApi):
                             JsonResponse: A JSON response containing the ok message.
                         """))
     def delete(self, request, *args, **kwargs):
-        fund_id = kwargs.get('id')
-        statement = get_object_or_404(StatementDocument, fund_id=fund_id)
-        statement.delete()
+        with transaction.atomic():
+            fund_id = kwargs.get('id')
+            document = get_object_or_404(FundDocument, id=fund_id)
+            document.delete()
         return JsonResponse({'data': _('Statement fund deleted')}, status=status.HTTP_200_OK)
 
 
