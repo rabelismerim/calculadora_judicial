@@ -118,17 +118,20 @@ class Project(AbstractDescription, AbstractDateRecovering):
 
     def total_classes_creditor(self):
         classes = [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
+                    'coin': fund.coins.get_coin_display(),
                     'total_historical': fund.get_total_historical_summed(),
                     'total_calculated': fund.get_total_summed()} for fund in
                    Funds.objects.filter(classes__classe__isnull=False, calculation__creditor__recovering__project=self,
                                         calculation__validated=True, calculation__step='A')]
         classes += [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
+                     'coin': fund.coins.get_coin_display(),
                      'total_historical': fund.get_total_historical_summed(),
                      'total_calculated': fund.get_total_summed()} for fund in
                     FundDocument.objects.filter(classes__classe__isnull=False, calculation__validated=True,
                                                 calculation__step='A',
                                                 calculation__creditor__recovering__project=self)]
         classes += [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
+                     'coin': fund.coins.get_coin_display(),
                      'total_historical': 0,
                      'total_calculated': fund.get_total_summed()} for fund in
                     FundIRRF.objects.filter(classes__classe__isnull=False, calculation__validated=True,
@@ -151,6 +154,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
             total_calculated_sum_historical += class_total_historical
             if class_name not in class_totals:
                 class_totals[class_name] = {'total_value': class_total_value,
+                                            'coin': class_dict['coin'],
                                             'total_calculated': class_total_calculated,
                                             'total_historical': class_total_historical,
                                             }
@@ -158,6 +162,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
                 class_totals[class_name]['total_value'] += class_total_value
                 class_totals[class_name]['total_calculated'] += class_total_calculated
                 class_totals[class_name]['total_historical'] += class_total_historical
+                class_totals[class_name]['coin'] = class_dict['coin']
         for class_dict in class_totals.values():
             total_calculated = class_dict['total_calculated']
             total_value = class_dict['total_value']
@@ -173,6 +178,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
             obj = {'classe': class_name, 'classes_display': classes_choices.get(class_name),
                    'total_value': total['total_value'], 'total_calculated': total['total_calculated'],
                    'total_historical': total['total_historical'],
+                   'coin': total.get('coin'),
                    'percentage_value': total.get('percentage_value', 0),
                    'quantity': quantity_by_classes.count(class_name),
                    'percentage_calculated': total.get('percentage_calculated', 0)}
@@ -185,6 +191,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
                        'percentage_value': 0,
                        'total_historical': 0,
                        'quantity': 0,
+                       'coin': '',
                        'percentage_calculated': 0}
                 classes_list.append(obj)
         return classes_list

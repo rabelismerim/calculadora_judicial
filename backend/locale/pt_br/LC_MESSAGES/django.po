@@ -2037,6 +2037,22 @@ msgstr "Legenda"
 msgid "Amount"
 msgstr "Valor"
 
+#: .\backend\calculation\statement_pf\models.py:141
+msgid "Citation date:"
+msgstr "Data da citação:"
+
+#: .\backend\calculation\statement_pf\models.py:142
+msgid "RT filing date:"
+msgstr "Data do ajuizamento da RT:"
+
+#: .\backend\calculation\statement_pf\models.py:352
+msgid "Update"
+msgstr "Atualização"
+
+#: .\backend\calculation\statement_pf\models.py:353
+msgid "Monetary correction:"
+msgstr "Correção monetária:"
+
 #: .\backend\calculation\statement_pf\models.py:582
 msgid "Need at least one rate or rate_integrations or rate_irrf."
 msgstr "Precisa de pelo menos uma taxa ou rate_integrations ou rate_irrf."
@@ -2571,7 +2587,7 @@ msgstr "Analista"
 
 #: .\backend\core\dttuser\models.py:20
 msgid "Senior advisor"
-msgstr "Conselheiro Sênior"
+msgstr "Consultor Sênior"
 
 #: .\backend\core\dttuser\models.py:24
 msgid "Active"

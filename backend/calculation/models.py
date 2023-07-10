@@ -104,9 +104,6 @@ class Calculation(AbstractModel):
     # Statement N10 - Há honorários advocatícios?
     has_advocative_hours = models.BooleanField(_('Are there fees in the approved calculation?'), default=False)
 
-    # TODO: definir como @property?
-    # True If edital AJ else False
-    # has_edital = models.BooleanField(_('Edital art. 7º § 2 - 11.101/2005'), default=False)
     @property
     def has_edital(self):
         return self.creditor.has_notice_aj()
@@ -504,13 +501,19 @@ class Calculation(AbstractModel):
         :return: List of dictionaries containing the class totals.
         :rtype: list
         """
-        classes = [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
+        classes = [{'classe': fund.classes.classe,
+                    'total_value': fund.coins.value,
+                    'coin': fund.coins.get_coin_display(),
                     'total_calculated': fund.get_total_summed()} for fund in
                    self.funds_set.filter(classes__classe__isnull=False)]
-        classes += [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
+        classes += [{'classe': fund.classes.classe,
+                     'total_value': fund.coins.value,
+                     'coin': fund.coins.get_coin_display(),
                      'total_calculated': fund.get_total_summed()} for fund in
                     self.funddocument_set.filter(classes__classe__isnull=False)]
-        classes += [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
+        classes += [{'classe': fund.classes.classe,
+                     'total_value': fund.coins.value,
+                     'coin': fund.coins.get_coin_display(),
                      'total_calculated': fund.get_total_summed()} for fund in
                     self.fundirrf_set.filter(classes__classe__isnull=False)]
         class_totals = {}
@@ -525,11 +528,14 @@ class Calculation(AbstractModel):
             total_value_sum += class_total_value
             total_calculated_sum += class_total_calculated
             if class_name not in class_totals:
-                class_totals[class_name] = {'total_value': class_total_value,
+                class_totals[class_name] = {
+                    'coin': class_dict['coin'],
+                    'total_value': class_total_value,
                                             'total_calculated': class_total_calculated}
             else:
                 class_totals[class_name]['total_value'] += class_total_value
                 class_totals[class_name]['total_calculated'] += class_total_calculated
+                class_totals[class_name]['coin'] = class_dict['coin']
         for class_dict in class_totals.values():
             total_calculated = class_dict['total_calculated']
             total_value = class_dict['total_value']
@@ -545,6 +551,7 @@ class Calculation(AbstractModel):
             obj = {'classe': class_name, 'classes_display': classes_choices.get(class_name),
                    'total_value': total['total_value'], 'total_calculated': total['total_calculated'],
                    'percentage_value': total.get('percentage_value', 0),
+                   'coin': total.get('coin'),
                    'quantity': quantity_by_classes.count(class_name),
                    'percentage_calculated': total.get('percentage_calculated', 0)}
             classes_list.append(obj)
@@ -555,6 +562,7 @@ class Calculation(AbstractModel):
                        'total_value': 0, 'total_calculated': 0,
                        'percentage_value': 0,
                        'quantity': 0,
+                       'coin': '',
                        'percentage_calculated': 0}
                 classes_list.append(obj)
         return classes_list

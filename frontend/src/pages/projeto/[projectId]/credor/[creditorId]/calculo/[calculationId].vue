@@ -107,11 +107,13 @@ const loadCalculation = async (showLoading = false) => {
               align: (isEditable && typeDisplay !== 'boolean') ? 'left' : 'center',
             }))
           .sort(({ order: orderA }: any, { order: orderB }: any) => orderA < orderB ? -1 : 1)
-        columns.push({
-          name: 'delete',
-          field: 'delete',
-          label: 'Apagar',
-        })
+        if (many) {
+          columns.push({
+            name: 'delete',
+            field: 'delete',
+            label: 'Apagar',
+          })
+        }
         return { summary, columns, description, endPoint, id, many, linesToAdd: 1, values: [] }
       })
       credit.summary = credit?.template?.summary
@@ -241,7 +243,7 @@ const calculateCredit = async (credit: any, creditIndex: number) => {
         table.values[lineIndex].loading = true
         const method = line.id ? 'PUT' : 'POST'
 
-        const result: any = await fetch(`${host}${table.endPoint}${method === 'PUT' ? 'detail/' : ''}${line.id ? `${line.id}/` : ''}`, {
+        const result: any = await fetch(`${host}${table.endPoint}${(method === 'PUT' && !table.endPoint.endsWith('/detail/')) ? 'detail/' : ''}${line.id ? `${line.id}/` : ''}`, {
           method,
           body: JSON.stringify({ ...line, fund_id: credit.id, calculation_id: attrs.calculationId }),
           headers,
@@ -389,8 +391,19 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
       :colors="stepColors"
       @reload-click="loadCalculation(true)"
     >
-      <Btn label="Alterar Status" outlined :disabled="!calculation?.id" @click="showChangeStatus = true" />
-      <Btn label="Novo Crédito" icon="i-carbon-add-filled" :disabled="!calculation?.id" @click="showNewCredit = true" />
+      <Btn
+        label="Alterar Status"
+        outlined
+        :disabled="!calculation?.id"
+        @click="showChangeStatus = true"
+      />
+      <Btn
+        v-if="hasPermissions('add_calculation')"
+        label="Novo Crédito"
+        icon="i-carbon-add-filled"
+        :disabled="!calculation?.id || ['A', 'B'].includes(calculation?.step)"
+        @click="showNewCredit = true"
+      />
     </CalculationHeader>
 
     <TabFilter
@@ -398,7 +411,7 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
       :items="tabFilters"
     />
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <GraphCard
         title="Quantidade de Créditos"
         hint="O Número total dos Créditos neste Cálculo."
@@ -416,7 +429,15 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
         </div>
       </GraphCard>
       <GraphCard
-        title="Total Geral de Créditos"
+        title="Total Histórico de Créditos"
+        hint="Somatório dos Créditos neste Cálculo."
+      >
+        <div class="font-bold text-5xl flex-1 flex items-center">
+          R$ {{ formatNumber(bigNumbers?.totalHistorical || 0, 2) }}
+        </div>
+      </GraphCard>
+      <GraphCard
+        title="Total Calculado de Créditos"
         hint="Somatório dos Créditos neste Cálculo."
       >
         <div class="font-bold text-5xl flex-1 flex items-center">
@@ -444,7 +465,7 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
                   label="Excluir Crédito"
                   icon="i-carbon-trash-can"
                   transparent
-                  :disabled="!hasPermissions(['delete_calculation'])"
+                  :disabled="!hasPermissions('delete_calculation')"
                   @click.stop="removeCredit(credit)"
                 />
               </div>
@@ -467,7 +488,7 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
                 <div class="text-lg font-bold mb-2 flex justify-between items-center">
                   <div>{{ table.description }}</div>
                   <AddLines
-                    v-if="!['A', 'B'].includes(calculation?.step)"
+                    v-if="!['A', 'B'].includes(calculation?.step) && table.many"
                     v-model="table.linesToAdd"
                     @add-lines="addCreditValues(table, table.linesToAdd)"
                   />
@@ -499,9 +520,9 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
                           }"
                         >
                           <button
-                            v-if="column.name === 'delete'"
+                            v-if="column.name === 'delete' && table.many"
                             class="cursor-pointer bg--error h-10 w-10 rounded-.5 border-1 border-red-8 flex justify-center items-center"
-                            :disabled="['A', 'B'].includes(calculation?.step) || !hasPermissions(['delete_calculation'])"
+                            :disabled="['A', 'B'].includes(calculation?.step) || !hasPermissions('delete_calculation')"
                             @click.stop="removeCreditValue(table.values, props.row, props.rowIndex, table)"
                           >
                             <div class="i-carbon-trash-can bg-white" />
@@ -591,6 +612,9 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
                                 get(getSummary(column.order, table.summary).key, table.data),
                                 getSummary(column.order, table.summary).decimals,
                               ) }}
+                            </span>
+                            <span v-if="getSummary(column.order, table.summary)?.typeDisplay === 'integer'">
+                              {{ get(getSummary(column.order, table.summary).key, table.data) }}
                             </span>
                           </span>
                         </div>

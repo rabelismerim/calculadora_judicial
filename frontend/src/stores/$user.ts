@@ -4,6 +4,7 @@ const userFallback = {
   name: '',
   fullName: '',
   pictureUrl: '',
+  userpicture: '',
   email: '',
   groups: [] as any[],
   permissions: [] as string[],
@@ -29,21 +30,35 @@ const login = async () => {
   }
 }
 const logout = async () => {
-  store.value = clone(userFallback)
-  await delay(2)
-  deleteAllCookies()
+  try {
+    await usersService.logout()
+    await delay(2)
+    store.value = clone(userFallback)
+    deleteAllCookies()
+  }
+  catch (error) {
+    printError('ERROR ON LOGOUT:', error)
+  }
 }
+
 const user = computed(() => store.value)
 const isActive = computed(() => store.value.isActive)
-const hasPermissions = (permissions: string[] = []) => permissions
+const isAuthorized = computed(() => store.value.isActive)
+const hasPermissions = (...permissions: string[]) => permissions
   .every(permission => store.value.permissions.includes(permission))
 const hasProject = (id: string) => store.value.projects.includes(id)
+
+const updateProjectList = async () => {
+  store.value.projects = await projectService.getUserProjects()
+}
 
 export default {
   login,
   logout,
   user,
   isActive,
+  isAuthorized,
   hasPermissions,
   hasProject,
+  updateProjectList,
 }

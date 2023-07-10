@@ -146,6 +146,14 @@ div {
 .q-stepper.vertical .q-stepper__label::after {
   content: none;
 }
+.q-stepper.small .q-stepper__header {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+.q-stepper.small .q-stepper__header .q-stepper__tab {
+  padding: 0 1rem;
+  min-height: 52px;
+}
 
 .q-field__control::before {
   background-color: #fff;
@@ -182,13 +190,13 @@ div {
     background-image: linear-gradient(135deg, #0000 60%, #0000 75%, #fff 80%, #0000 85%);
   }
   80% {
-    background-image: linear-gradient(135deg, var(--c) 70%, var(--c) 85%, #fff 90%, var(--c) 95%);
+    background-image: linear-gradient(135deg, #0000 70%, #0000 85%, #fff 90%, #0000 95%);
   }
   90% {
-    background-image: linear-gradient(135deg, var(--c) 80%, var(--c) 95%, #fff 100%, var(--c) 105%);
+    background-image: linear-gradient(135deg, #0000 80%, #0000 95%, #fff 100%, #0000 105%);
   }
   100% {
-    background-image: linear-gradient(135deg, var(--c) 90%, var(--c) 105%, #fff 50%, var(--c) 115%);
+    background-image: linear-gradient(135deg, #0000 90%, #0000 105%, #fff 50%, #0000 115%);
   }
 }
 

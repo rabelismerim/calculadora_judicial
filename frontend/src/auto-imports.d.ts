@@ -16,6 +16,8 @@ declare global {
   const EffectScope: typeof import('vue')['EffectScope']
   const animate: typeof import('animol')['css']
   const api: typeof import('./services/api')['default']
+  const apiCalculation: typeof import('./services/apiCalculation')['default']
+  const apiSilence: typeof import('./services/apiSilence')['default']
   const asyncComputed: typeof import('@vueuse/core')['asyncComputed']
   const autoResetRef: typeof import('@vueuse/core')['autoResetRef']
   const baseCoinService: typeof import('./services/baseCoinService')['default']
@@ -52,6 +54,8 @@ declare global {
   const ease: typeof import('animol')['ease']
   const easing: typeof import('animol')['Easing']
   const effectScope: typeof import('vue')['effectScope']
+  const errorHandlerInterceptor: typeof import('./services/interceptors')['errorHandlerInterceptor']
+  const errorSilenceHandlerInterceptor: typeof import('./services/interceptors')['errorSilenceHandlerInterceptor']
   const extendRef: typeof import('@vueuse/core')['extendRef']
   const flatten: typeof import('./composables/utils')['flatten']
   const formatDate: typeof import('./composables/utils')['formatDate']
@@ -132,9 +136,11 @@ declare global {
   const refThrottled: typeof import('@vueuse/core')['refThrottled']
   const refWithControl: typeof import('@vueuse/core')['refWithControl']
   const removeClass: typeof import('@jrnwn/utils')['removeClass']
+  const requestInterceptor: typeof import('./services/interceptors')['requestInterceptor']
   const resolveComponent: typeof import('vue')['resolveComponent']
   const resolveRef: typeof import('@vueuse/core')['resolveRef']
   const resolveUnref: typeof import('@vueuse/core')['resolveUnref']
+  const responseInterceptor: typeof import('./services/interceptors')['responseInterceptor']
   const router: typeof import('./router')['default']
   const set: typeof import('@jrnwn/utils')['set']
   const setClass: typeof import('@jrnwn/utils')['setClass']
@@ -369,6 +375,8 @@ declare module 'vue' {
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly animate: UnwrapRef<typeof import('animol')['css']>
     readonly api: UnwrapRef<typeof import('./services/api')['default']>
+    readonly apiCalculation: UnwrapRef<typeof import('./services/apiCalculation')['default']>
+    readonly apiSilence: UnwrapRef<typeof import('./services/apiSilence')['default']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
     readonly baseCoinService: UnwrapRef<typeof import('./services/baseCoinService')['default']>
@@ -405,6 +413,8 @@ declare module 'vue' {
     readonly ease: UnwrapRef<typeof import('animol')['ease']>
     readonly easing: UnwrapRef<typeof import('animol')['Easing']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
+    readonly errorHandlerInterceptor: UnwrapRef<typeof import('./services/interceptors')['errorHandlerInterceptor']>
+    readonly errorSilenceHandlerInterceptor: UnwrapRef<typeof import('./services/interceptors')['errorSilenceHandlerInterceptor']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
     readonly flatten: UnwrapRef<typeof import('./composables/utils')['flatten']>
     readonly formatDate: UnwrapRef<typeof import('./composables/utils')['formatDate']>
@@ -485,9 +495,11 @@ declare module 'vue' {
     readonly refThrottled: UnwrapRef<typeof import('@vueuse/core')['refThrottled']>
     readonly refWithControl: UnwrapRef<typeof import('@vueuse/core')['refWithControl']>
     readonly removeClass: UnwrapRef<typeof import('@jrnwn/utils')['removeClass']>
+    readonly requestInterceptor: UnwrapRef<typeof import('./services/interceptors')['requestInterceptor']>
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
     readonly resolveRef: UnwrapRef<typeof import('@vueuse/core')['resolveRef']>
     readonly resolveUnref: UnwrapRef<typeof import('@vueuse/core')['resolveUnref']>
+    readonly responseInterceptor: UnwrapRef<typeof import('./services/interceptors')['responseInterceptor']>
     readonly router: UnwrapRef<typeof import('./router')['default']>
     readonly set: UnwrapRef<typeof import('@jrnwn/utils')['set']>
     readonly setClass: UnwrapRef<typeof import('@jrnwn/utils')['setClass']>

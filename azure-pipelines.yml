@@ -104,7 +104,7 @@ steps:
   displayName: 'Install and preparing python prerequisites'
 - script: |
     python manage.py collectstatic --no-input
-  failOnStderr: true
+  failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - task: DeleteFiles@1

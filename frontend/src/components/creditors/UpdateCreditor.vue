@@ -1,7 +1,4 @@
 <script setup lang='ts'>
-import { QInput } from 'quasar'
-import InputDate from '../inputs/InputDate.vue'
-
 const props = withDefaults(defineProps<{
   modelValue: boolean
   creditor: any
@@ -94,10 +91,12 @@ const onSubmit = async () => {
           class="mb-5 col-span-2"
         />
         <InputDate
+          v-if="isValidCPF(editingCreditor.legalNumber)"
           v-model="editingCreditor.admission"
           label="Data de Admissão"
         />
         <InputDate
+          v-if="isValidCPF(editingCreditor.legalNumber)"
           v-model="editingCreditor.dismissal"
           label="Data de Demissão"
         />

@@ -1,5 +1,12 @@
 import itertools
 
+import base64
+import hashlib
+import uuid
+
+from django.contrib.sessions.models import Session
+from django.core.files.base import ContentFile
+
 from django.contrib.auth.models import AbstractBaseUser, Group, Permission, _user_get_permissions, _user_has_perm, \
     _user_has_module_perms
 from django.contrib.auth.validators import UnicodeUsernameValidator
@@ -18,6 +25,7 @@ ROLES_CHOICES = (
     ('D', _('Director')),
     ('A', _('Analyst')),
     ('C', _('Senior advisor')),
+    ('R', _('Robo')),
 )
 
 STATUS_CHOICES = (  # Status para o User DTT
@@ -226,6 +234,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), blank=True)
     userpicture = models.TextField(_('user picture'), blank=True)
     user_img = models.ImageField(_('User img'), upload_to='juca/profile/%Y/%m/%d/', blank=True, null=True)
+    login_date = models.DateField(_('Login today'), null=True, blank=True
+                                      )
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
@@ -246,6 +256,20 @@ class User(AbstractBaseUser, PermissionsMixin):
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'email']
+
+    def create_photo(self):
+        if not self.userpicture:
+            return
+        try:
+            data = ContentFile(base64.b64decode(self.userpicture))
+            image_data = base64.b64decode(self.userpicture)
+            file_hash = hashlib.md5(image_data).hexdigest()
+            file_name = f"{file_hash}.jpeg"
+            if not self.user_img or str(self.user_img.name) in file_name is False:
+                self.user_img.save(file_name, data, save=True)  # image is User's model field
+                self.save()
+        except Exception as e:
+            print(e, 'err save img in base64')
 
     @property
     def is_superuser(self):
@@ -317,3 +341,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     @staticmethod
     def get_status_pending():
         return 'P'
+
+    def invalidate_user_sessions(self):
+        # Filtra as sessões relacionadas ao usuário
+        return
+        Session.objects.filter(session_data__contains=self.id).delete()

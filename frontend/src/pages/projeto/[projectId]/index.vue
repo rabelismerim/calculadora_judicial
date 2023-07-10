@@ -120,7 +120,7 @@ const loadIncidents = async () => {
     printError('ERROR ON LOAD INCIDENSTS:', error)
   }
 }
-const options = $ref({
+const options: any = $ref({
   users: [],
   judges: [],
   lawyers: [],
@@ -186,7 +186,7 @@ onMounted(async () => {
         @click="showParticipants = true"
       />
       <Btn
-        v-if="hasPermissions(['change_project'])"
+        v-if="hasPermissions('change_project')"
         label="Editar"
         icon="i-carbon-edit"
         :disabled="!project.id || loading"
@@ -194,12 +194,12 @@ onMounted(async () => {
       />
     </Header>
 
-    <div class="grid grid-cols-3 grid-rows-2 gap-6 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols2 md:grid-cols-2 lg:grid-cols-3 lg:grid-rows-2 gap-6 mb-8">
       <GraphGauge
         :values="bigNumbers?.byStep"
         title="Quantidade de Cálculos por Status"
         hint="Esse gráfico apresenta a quantidade de Cálculos para cada status."
-        class="row-span-2"
+        class="lg:row-span-2"
       />
       <GraphCard
         title="Quantidade Total de Credores"
@@ -226,6 +226,7 @@ onMounted(async () => {
         :values="bigNumbers?.classesCalculationsTotal"
         title="Valores dos Cálculos por Classe (mil R$)"
         hint="Classes na Recuperação Judicial:\n  • Classe I - Créditos Trabalhistas\n  • Classe II - Créditos com Garantia Real\n  • Classe III - Créditos Quirográficos\n  • Classe IV - Créditos enquadrados como Microempresa ou Empresa de pequeno porte."
+        :value-keys="['hist', 'calc']"
       />
     </div>
 

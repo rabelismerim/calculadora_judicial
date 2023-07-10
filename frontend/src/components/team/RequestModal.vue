@@ -5,7 +5,9 @@ const props = withDefaults(defineProps<{
 }>(), {
   users: () => ([]),
 })
-const emit = defineEmits(['update:model-value', 'done'])
+const emit = defineEmits(['update:model-value', 'success'])
+
+const { hasPermissions } = $user
 
 const form = ref(null as any)
 
@@ -43,8 +45,10 @@ const onAuthorize = async () => {
   try {
     const result = await usersService.setPermission({ email, groups: [group], role, status: 'A' })
     const { status } = result
-    if (status)
+    if (status) {
       clear()
+      emit('success')
+    }
   }
   catch (error) {
     printError('ERROR ON ACCEPTING THE USER REQUEST:', error)
@@ -73,6 +77,8 @@ const onReject = async (user: any) => {
 }
 onMounted(async () => {
   try {
+    if (!hasPermissions('can_authorize_users', 'view_group'))
+      return
     permissionOptions = await usersService.getGroups()
   }
   catch (error) {
@@ -148,7 +154,14 @@ onMounted(async () => {
       <QTabPanels v-model="tab" animated class="shadow-2 rounded-borders">
         <QTabPanel name="pending">
           <div
+            v-if="pendingUsers.length === 0"
+            class="pa-4 text-center"
+          >
+            Sem Usuários Pendentes no momento...
+          </div>
+          <div
             v-for="(user, pendingIndex) in pendingUsers"
+            v-else
             :key="user.id"
             class="flex py-3"
             :class="{ 'border-b-1 border--black/12': pendingIndex < pendingUsers.length - 1 }"
@@ -172,7 +185,14 @@ onMounted(async () => {
 
         <QTabPanel name="rejected">
           <div
+            v-if="rejectedUsers.length === 0"
+            class="pa-4 text-center"
+          >
+            Sem Usuários Ignorados no momento...
+          </div>
+          <div
             v-for="(user, rejectedIndex) in rejectedUsers"
+            v-else
             :key="user.id"
             class="flex py-3"
             :class="{ 'border-b-1 border--black/12': rejectedIndex < rejectedUsers.length - 1 }"

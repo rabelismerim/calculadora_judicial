@@ -11,5 +11,5 @@
   "vite.devCommand": "pnpm run dev",
   "vite.https": true,
   "vite.notifyOnStarted": false,
-  "vite.vitepressAutoRouting": true,
+  "vite.vitepressAutoRouting": true
 }

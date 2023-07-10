@@ -1,14 +1,9 @@
-import base64
-import hashlib
-import uuid
-
-from django.core.files.base import ContentFile
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.decorators.http import require_GET
 from rest_framework import permissions
 
-from rest_framework.authentication import SessionAuthentication
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from config.settings import ENABLE_SSO, DRFMSAL_IDENTITY_WEB
@@ -53,7 +48,10 @@ class SignStatusApi(AbstractViewApi):
     }
     serializer_class = SignStatusSerializer
     permission_classes = [AllowAny]
-    authentication_classes = [SessionAuthentication]
+    if ENABLE_SSO:
+        authentication_classes = [SessionAuthentication]
+    else:
+        authentication_classes = [SessionAuthentication, TokenAuthentication]
     allow_cache = False
     operation_id_base = 'Get Sign Status'
 
@@ -82,21 +80,8 @@ class SignStatusApi(AbstractViewApi):
                         if item.userpicture != ms_identity_web.id_data.userpicture:
                             item.userpicture = ms_identity_web.id_data.userpicture
                             item.save()
+                            item.create_photo()
 
-                            data = ContentFile(base64.b64decode(ms_identity_web.id_data.userpicture))
-                            file_name = f"{uuid.uuid4()}.jpeg"
-                            item.user_img.save(file_name, data, save=True)  # image is User's model field
-
-                            try:
-                                data = ContentFile(base64.b64decode(item.userpicture))
-                                image_data = base64.b64decode(item.userpicture)
-                                file_hash = hashlib.md5(image_data).hexdigest()
-                                file_name = f"{file_hash}.jpeg"
-                                if item.user_img and str(item.user_img.name) in file_name is False:
-                                    item.user_img.save(file_name, data, save=True)  # image is User's model field
-                                    item.save()
-                            except Exception as e:
-                                print(e, 'err save img in base64')
         return Response()
 
 

@@ -12,6 +12,7 @@ from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.db.models import Count
 from django.db.models.functions import TruncDate, TruncMonth
+from django.utils import timezone
 from rest_framework import serializers
 
 from calculation.models import Calculation
@@ -57,7 +58,6 @@ QUERY_DASHBOARD = [
 
 
 class Query:
-    
 
     @staticmethod
     def __parse_date(date_string):
@@ -166,8 +166,8 @@ class Dashboard(AbstractModel, Query):
         end_date = min(end_date, datetime.today())
         datas = [start_date + timedelta(days=n) for n in range((end_date - start_date).days + 1)]
 
-        registros_by_range_days = LoginRecord.objects.filter(login_time__range=(start_date, end_date)) \
-            .annotate(day=TruncDate('login_time')) \
+        registros_by_range_days = LoginRecord.objects.filter(login_tm__range=(start_date, end_date)) \
+            .annotate(day=TruncDate('login_date')) \
             .values('day') \
             .annotate(total=Count('id')) \
             .order_by('day')
@@ -219,8 +219,8 @@ class Dashboard(AbstractModel, Query):
             end_month = datetime(month.year, month.month, monthrange(month.year, month.month)[1], 23, 59, 59, 999999)
             end_month = min(end_month, datetime.today())
 
-            records_by_month = LoginRecord.objects.filter(login_time__range=(start_month, end_month)) \
-                .annotate(month=TruncMonth('login_time')) \
+            records_by_month = LoginRecord.objects.filter(login_tm__range=(start_month, end_month)) \
+                .annotate(month=TruncMonth('login_date')) \
                 .values('month') \
                 .annotate(total=Count('id')) \
                 .order_by('month')
@@ -236,11 +236,19 @@ class Dashboard(AbstractModel, Query):
 
 
 class LoginRecord(models.Model):
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
-    login_time = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    login_date = models.DateField(auto_now_add=True)
+    login_tm = models.TimeField()
+
+    def save(self, *args, **kwargs):
+        if not self.login_tm:  # Verifica se é uma inserção (não atualização)
+            self.login_tm = timezone.localtime().time()
+
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name_plural = "Login Register"
+        unique_together = [['user', 'login_date']]
 
     def __str__(self):
-        return f"{self.user.username} {self.login_time}"
+        return f"{self.user.username} {self.login_date}:{self.login_tm}"

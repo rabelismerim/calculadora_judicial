@@ -44,13 +44,14 @@ class CreditorSchema(AbstractDescriptionSchema):
 
     def validate(self, data):
         recovering_id = data.get('recovering_id')
-        physical_person = data.get('physical_person', False)
+        physical_person = data.get('physical_person', True)
         data['notice_recovering'] = data.pop('noticerecovering_set', [])
         data['notice'] = data.pop('notice_set', [])
         data['claim_creditor'] = data.pop('claimcreditor_set', [])
         legal_number = data.get('entity').get('legal_number')
         legal_number = ''.join(re.findall(r'\d', str(legal_number)))
 
+        # TODO desbloqueio por classes diferentes
         if Creditor.objects.filter(recovering_id=recovering_id, entity__legal_number=legal_number,
                                    physical_person=physical_person).exists():
             raise serializers.ValidationError([_('Creditor already registered in this recovering')])

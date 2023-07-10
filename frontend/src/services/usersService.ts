@@ -1,3 +1,7 @@
+const verifyUser = () => api
+  .get('/drfmsal_signstatus/')
+  .then((result: any) => result?.profile)
+
 const getPermissions = () => api
   .get('/user/detail/')
   .then((result: any) => result?.user || {})
@@ -11,15 +15,25 @@ const getPermissions = () => api
     }
   })
 
-const getMyProfile = () => api
-  .get('/drfmsal_signstatus/')
-  .then((result: any) => result?.profile)
+const logout = () => api
+  .post('/v1/logout/')
+
+const getMyProfile = async () => verifyUser()
   .then(async (user) => {
-    if (!user?.authenticated && import.meta.env.PROD)
+    const goToSignin = () =>
       redirectTo(`${window.location.origin}/juca/api/drfmsal_signin/juca/`)
 
-    const permissions = await getPermissions()
-    const projects = await projectService.getUserProjects()
+    const { authenticated, authorized, isActive } = user
+
+    const inProduction = import.meta.env.PROD
+    const inDevelopment = import.meta.env.DEV
+
+    if ((!authenticated && inProduction)
+      || (authenticated && isActive && !authorized && inProduction))
+      goToSignin()
+
+    const permissions = (authorized || inDevelopment) ? await getPermissions() : []
+    const projects = (authorized || inDevelopment) ? await projectService.getUserProjects() : []
 
     return {
       ...user,
@@ -31,6 +45,7 @@ const getMyProfile = () => api
 const getUsers = () => api
   .get('/users/')
   .then((result: any) => result?.users || [])
+  .then((users: any[]) => users?.filter(({ role }: any) => !['R'].includes(role)))
 
 const getGroups = () => api
   .get('/groups/')
@@ -41,7 +56,7 @@ const sendmail = (email: string) => api
   .post('/user/sendmail/', { email })
 
 const setPermission = ({ email, groups, role, status }: any) => api
-  .post('user/authorize/', { email, groups, role, status })
+  .post('user/authorize/', { email, groups, role, status, isActive: status === 'A' })
   .then((result: any) => result?.user)
 
 export default {
@@ -51,4 +66,6 @@ export default {
   getUsers,
   sendmail,
   setPermission,
+  verifyUser,
+  logout,
 }

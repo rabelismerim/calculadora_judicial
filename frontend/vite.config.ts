@@ -1,6 +1,6 @@
 import path from 'path'
 import { defineConfig } from 'vitest/config'
-import vue from '@vitejs/plugin-vue'
+import Vue from '@vitejs/plugin-vue'
 
 import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
@@ -10,6 +10,7 @@ import Layouts from 'vite-plugin-vue-layouts'
 import mkcert from 'vite-plugin-mkcert'
 import { quasar } from '@quasar/vite-plugin'
 import { QuasarResolver } from 'unplugin-vue-components/resolvers'
+import VueMacros from 'unplugin-vue-macros/dist/vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -35,8 +36,11 @@ export default defineConfig({
   },
 
   plugins: [
-    vue({
-      reactivityTransform: true,
+    VueMacros({
+      plugins: {
+        vue: Vue(),
+        // vueJsx: VueJsx(), // if needed
+      },
     }),
 
     quasar({
