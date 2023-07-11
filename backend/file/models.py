@@ -13,6 +13,13 @@ from django_celery_results.models import TaskResult
 from core.abstract.models import AbstractModel
 from utils import _
 
+ERROR_STATUS_CHOICES = (
+    ('R', _('Registered')),
+    ('C', _('In correction')),
+    ('E', _('Resolved')),
+    ('P', _('Processing error')),
+)
+
 
 class GenericOneToOneField(models.OneToOneField):
     """A subclass of OneToOneField that sets the related model to `contenttypes.ContentType` by default.
@@ -60,8 +67,6 @@ class File(AbstractModel):
     object_id = models.UUIDField()
     content_object = GenericForeignKey('content_type', 'object_id')
 
-    def get_file_url(self):
-        return self.file.url
 
     def get_task_result(self):
         if self.task_result:
@@ -74,4 +79,15 @@ class File(AbstractModel):
             df = pd.read_excel(read)
             headers = df.columns.tolist()
 
-        return read, headers
+        return self.id, read, headers
+
+
+class ErrorFile(AbstractModel):
+    """
+    A class representing a FileError.
+
+    Attributes:
+    """
+    file = models.ForeignKey(File, on_delete=models.PROTECT)
+    error = models.TextField(_("Error"))
+    status = models.CharField(default="R", max_length=1, choices=ERROR_STATUS_CHOICES)

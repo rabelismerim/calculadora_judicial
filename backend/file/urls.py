@@ -14,11 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('file/', include('file.another_app.urls'))
 """
 from django.urls import path
-from .views import FileApi, FileDetailApi, FileExamplesApi, FileExampleDetailApi
+from .views import FileApi, FileDetailApi, FileExamplesApi, FileExampleDetailApi, FilePathsApi, FileErrorDetailApi, \
+    PathFileListApi
 
 urlpatterns = [
-    path('<str:path>/', FileApi.as_view(), name="file-create"),
+    path('create/<str:path>/', FileApi.as_view(), name="file-create"),
     path('detail/<uuid:id>/', FileDetailApi.as_view(), name="file-detail"),
-    path('examples/<str:path>/', FileExamplesApi.as_view(), name="file-detail"),
-    path('examples/<str:path>/<str:name>/', FileExampleDetailApi.as_view(), name="file-detail"),
+    path('detail/<str:path>/<uuid:object_id>/', PathFileListApi.as_view(), name="file-detail"),
+    path('error/detail/<uuid:id>/', FileErrorDetailApi.as_view(), name="file-detail"),
+    path('example/', FilePathsApi.as_view(), name="files-list"),
+    path('example/<str:path>/', FileExamplesApi.as_view(), name="file-path-detail"),
+    path('example/<str:path>/<str:name>/', FileExampleDetailApi.as_view(), name="file-name-detail"),
 ]

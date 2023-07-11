@@ -66,27 +66,27 @@ urlpatterns = [
     # # Projects
     path(f'{BASE_URL}projects/', include(("projects.urls.current", 'v1'), namespace='teste')),
     path(f'{BASE_URL_NEXT}projects/', include(("projects.urls.next", 'v2'), namespace='teste2')),
-    #
-    # # # Recovering
-    # path(f'{BASE_URL}recovering/', include("recovering.urls.current")),
-    # path(f'{BASE_URL_NEXT}recovering/', include("recovering.urls.next")),
-    #
+
+    # # Recovering
+    path(f'{BASE_URL}recovering/', include("recovering.urls.current")),
+    path(f'{BASE_URL_NEXT}recovering/', include("recovering.urls.next")),
+
     # Creditors
     path(f'{BASE_URL}creditors/', include("creditors.urls")),
 
     # File
     path(f'{BASE_URL}base/', include("base.urls")),
-    path(f'{BASE_URL}file/', include("file.urls")),
+    path(f'{BASE_URL}files/', include("file.urls")),
 
-    # # Calculation
-    # path(f'{BASE_URL}calculation/', include("calculation.urls.current")),
-    # path(f'{BASE_URL_NEXT}calculation/', include("calculation.urls.next")),
-    #
-    # # Rates
-    # path(f'{BASE_URL}rates/', include("rates.urls")),
-    #
-    # # Big Numbers
-    # path(f'{BASE_URL}big_number/', include("big_number.urls")),
+    # Calculation
+    path(f'{BASE_URL}calculation/', include("calculation.urls.current")),
+    path(f'{BASE_URL_NEXT}calculation/', include("calculation.urls.next")),
+
+    # Rates
+    path(f'{BASE_URL}rates/', include("rates.urls")),
+
+    # Big Numbers
+    path(f'{BASE_URL}big_number/', include("big_number.urls")),
 
     # CORE
     path(BASE_URL, include("core.dttuser.api.urls")),
@@ -105,10 +105,7 @@ urlpatterns = [
 
     # VUE FRONTEND
     re_path(r'^(?!juca\/admin|juca\/api|simple|juca\/media).*$', frontend_index, name='frontend'),
-    # re_path(f'{BASE_URL}logout/', post_logout, name='api-logout'),
-
     re_path(f'{BASE_URL}logout/', LogoutView.as_view(), name='api-logout'),
-    # path('juca/<path:resource>', frontend_index, name='frontend'),
 
     # Documentation
     path(f'{BASE_URL}docs/swagger/', TemplateView.as_view(template_name='api_docs.html',

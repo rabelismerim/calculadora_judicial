@@ -15,8 +15,8 @@ from django.contrib import admin
 admin.site.register(File)
 """
 from django.contrib import admin
-from file.models import File, GenericModelPath
-
+from file.models import File, GenericModelPath, ErrorFile
 
 admin.site.register(File)
 admin.site.register(GenericModelPath)
+admin.site.register(ErrorFile)

@@ -1,19 +1,25 @@
 import pickle
+import re
+from datetime import datetime
 import xlsxwriter
 
-from django.db import models
-from django.db.models import Count, Sum
+from django.db import models, transaction
+from django.db.models import Count, Sum, Q
+from django.http import HttpResponse
+from django.utils.translation import activate, deactivate
 from numpy import number
+from rest_framework import serializers
 
 from base.coins.models import COIN_CHOICES
-from base.models import AbstractDateRecovering, AbstractDescription, SELECT_CHOICES_REPRESENTATION_DOCUMENTATION, \
-    SELECT_CHOICES_CLAIM_TYPE, CHOICES_REPRESENTATION_DOCUMENTATION, CHOICES_CLAIM_TYPE, NATURE_CHOICES
+from base.models import AbstractDateRecovering, AbstractDescription, CHOICES_REPRESENTATION_DOCUMENTATION, \
+    CHOICES_CLAIM_TYPE, NATURE_CHOICES, NatureChoice
 from calculation.funds.document.models import FundDocument
 from calculation.funds.irrf.models import FundIRRF
 from calculation.funds.models import Funds
 from calculation.models import Calculation, CHOICES_STEP
 from creditors.classes.models import CLASSE_CHOICES
-from creditors.models import Creditor
+from creditors.models import Creditor, CHOICES_STATUS_LEGAL
+from file.models import ErrorFile
 from file.tasks import ProcessExcelTask, SaveFileTask
 from projects.court.models import Court
 from projects.judge.models import Judge
@@ -29,6 +35,8 @@ STATUS_CHOICES = (
     ('A', _('In progress')),
     ('F', _('Canceled')),
 )
+
+CHOICES_PHYSICAL_PERSON = (('verdadeiro', 'verdadeiro'), ('falso', 'falso'))
 
 
 def get_first_value(choices, second_value):
@@ -217,109 +225,156 @@ class Project(AbstractDescription, AbstractDateRecovering):
 
     def get_list_excels_name(self):
         names = []
-        print(names, 'names\n')
         for obj in self.get_valid_excels_headers():
             names.append(obj.get_name())
         return names
 
     def get_valid_excels_headers(self):
-        return [
+        # enabling translation to output only in a single language and not generate errors in different languages
+        activate('pt-br')
+        excels = [
             ExcelHeader(callback=self.process_json_to_model,
                         name='create_creditors_claim',
                         columns=[
-                            {"title": "Credor", 'choice': None},
-                            {"title": "Credor - CPF/CNPJ", 'choice': None},
-                            {"title": "Credor - Classe", 'choice': CLASSE_CHOICES},
-                            {"title": "Credor - Valor", 'choice': None},
-                            {"title": "Credor - Moeda", 'choice': COIN_CHOICES},
+                            {"title": "Credor", 'choice': None, 'default': None, 'type': 'str'},  # OK
+                            {"title": "Credor - CPF/CNPJ", 'choice': None, 'default': None, 'type': 'str'},  # OK
+                            {"title": "Credor - Classe", 'choice': CLASSE_CHOICES, 'default': None, 'type': 'str'},
+                            # OK
+                            {"title": "Credor - Valor", 'choice': None, 'default': None, 'type': 'float'},  # OK
+                            {"title": "Credor - Moeda", 'choice': COIN_CHOICES, 'default': None, 'type': 'str'},  # OK
 
-                            {"title": "Credor - Recuperanda CPF/CNPJ", 'choice': None},
+                            {"title": "Credor - Recuperanda CPF/CNPJ", 'choice': None, 'default': None, 'type': 'str'},
 
-                            {"title": "Edital RJ - Classe", 'choice': CLASSE_CHOICES},
-                            {"title": "Edital RJ - Valor", 'choice': None},
-                            {"title": "Edital RJ - Moeda", 'choice': COIN_CHOICES},
+                            {"title": "Edital RJ - Classe", 'choice': CLASSE_CHOICES, 'default': None, 'type': 'str'},
+                            # OK
+                            {"title": "Edital RJ - Valor", 'choice': None, 'default': None, 'type': 'float'},  # OK
+                            {"title": "Edital RJ - Moeda", 'choice': COIN_CHOICES, 'default': None, 'type': 'str'},
+                            # OK
 
-                            {"title": "Documentação de representação", 'choice': CHOICES_REPRESENTATION_DOCUMENTATION},
-                            {"title": "Tipo", 'choice': CHOICES_CLAIM_TYPE},
-                            {"title": "Natureza (NF, contrato, trabalhista etc)", 'choice': NATURE_CHOICES},
-                            {"title": "Descrição", 'choice': None},
-                            {"title": "Status", 'choice': SELECT_CHOICES_REPRESENTATION_DOCUMENTATION},
-                            {"title": "Prazo resposta", 'choice': None},
+                            {"title": "Documentação de representação", 'choice': CHOICES_REPRESENTATION_DOCUMENTATION,
+                             'default': None, 'type': 'str'},  # OK
+                            {"title": "Tipo", 'choice': CHOICES_CLAIM_TYPE, 'default': None, 'type': 'str'},  # OK
+                            {"title": "Natureza (NF, contrato, trabalhista etc)", 'choice': NATURE_CHOICES,
+                             'default': None, 'type': 'str'},  # OK
+                            {"title": "Descrição", 'choice': None, 'default': None, 'type': 'str'},  # OK
+                            {"title": "Status", 'choice': CHOICES_STATUS_LEGAL, 'default': None, 'type': 'str'},  # OK
+                            {"title": "Prazo resposta", 'choice': None, 'default': None, 'type': 'date'},  # OK
+                            {"title": "Pessoa Física", 'choice': CHOICES_PHYSICAL_PERSON, 'default': None,
+                             'type': 'str'},  # OK
                         ]
                         )
         ]
+        deactivate()
+        return excels
 
     def parse_file(self, file_obj):
-        file_read, file_excel_headers = file_obj.get_excel_headers()
-        headers_excels = self.get_valid_excels_headers()
+        file_id, file_read, file_excel_headers = file_obj.get_excel_headers()
 
+        headers_excels = self.get_valid_excels_headers()
+        has_excel = False
         for excel in headers_excels:
             equal_headers = excel.compare_headers(file_excel_headers)
-            print(equal_headers, 'equal_headers\n')
             if equal_headers:
                 funcao_serializada = pickle.dumps(excel.get_callback())
-                task = ProcessExcelTask.delay('task-process-excel-to-json', file_read, funcao_serializada)
+                task = ProcessExcelTask.delay('task-process-excel-to-json', file_read, funcao_serializada,
+                                              **{'file_id': file_id})
                 SaveFileTask.delay(task.id, file_obj.id)
+                has_excel = True
                 break
+        if not has_excel:
+            raise serializers.ValidationError(_('Excel is not in the correct format'))
 
-    def generate_excel_example_ok(self):
-        workbook = xlsxwriter.Workbook('planilha_excel.xlsx')
-        worksheet = workbook.add_worksheet()
-        headers = ["Credor", "Credor - CPF/CNPJ", "Credor - Classe", "Credor - Valor", "Credor - Moeda"]
-        min_row = 1
-        max_row = 1048575
-        for i, header in enumerate(headers):
-            worksheet.write(0, i, header)
-            if header == "Credor - Classe":
-                worksheet.data_validation(min_row, i, max_row, i,
-                                          {'validate': 'list',
-                                           'source': [choice[1] for choice in CLASSE_CHOICES],
-                                           'input_title': 'Selecione uma opção',
-                                           'input_message': 'Escolha uma opção da lista.'})
-        workbook.close()
-
-    def process_json_to_model(self, data: list):
+    def process_json_to_model(self, data: list, **kwargs):
         name = 'create_creditors_claim'
-        # Creditor.objects.create
-        print(data, 'data received\n\n')
         excel = self.get_excel_by_name(name)
         data = excel.parse_list(data)
+        all_natures = NatureChoice.objects.all()
+        file_id = kwargs.get('file_id')
+
+        if not data:
+            ErrorFile.objects.create(file_id=file_id, error='A lista de excel processada estava vazia')
+            return
         for credor in data:
-            print(credor, 'new_keys_creditor')
-            # # Creditor.objects.create(**credor) # TODO: criar logica de criacao aqui
-            new_credor = {
-                "entity": {
-                    "name": credor['Credor'],
-                    "legal_number": credor['Credor - CPF/CNPJ']
-                },
-                "claim_creditor": [
-                    {
-                        "classes": {
-                            "classe": credor['Credor - Classe']
+            try:
+                with transaction.atomic():
+                    natures = []
+                    nature = credor['Natureza (NF, contrato, trabalhista etc)']
+                    recovering_legal_number = ''.join(re.findall(r'\d', str(credor['Credor - Recuperanda CPF/CNPJ'])))
+                    print(recovering_legal_number, 'recovering_legal_number\n')
+                    recovering = self.recovering_set.filter(entity__legal_number=recovering_legal_number).values_list(
+                        'id', flat=True).first()
+                    # recovering = self.recovering_set.filter().values_list('id', flat=True).first()
+                    if not recovering:
+                        ErrorFile.objects.create(file_id=file_id,
+                                                 error=f'Linha: {credor["index"]}, Field recuperanda: Recuperanda não encontrada')
+                        continue
+                    nature_id = all_natures.filter(
+                        Q(description=nature) | Q(description_en=nature) | Q(description_pt_br=nature)).values_list(
+                        'id',
+                        flat=True).first()
+                    legal_pendencies = []
+
+                    if all([credor['Descrição'], credor['Status'], credor['Prazo resposta']]):
+                        legal_pendencies.append(
+                            {
+                                "description": credor['Descrição'],
+                                "status": credor['Status'],
+                                "deadline": datetime.strptime(str(credor['Prazo resposta']), "%d/%m/%Y").date()
+                            })
+
+                    if nature_id:
+                        natures.append(nature_id)
+                    new_credor = {
+                        "entity": {
+                            "name": credor['Credor'],
+                            "legal_number": credor['Credor - CPF/CNPJ']
                         },
-                        "coins": {
-                            "coin": credor['Credor - Moeda'],
-                            "value": credor['Credor - Valor']
-                        },
+                        "recovering_id": recovering,
+                        "claim_creditor": [
+                            {
+                                "classes": {
+                                    "classe": credor['Credor - Classe']
+                                },
+                                "coins": {
+                                    "coin": credor['Credor - Moeda'],
+                                    "value": credor['Credor - Valor']
+                                },
+                            }
+                        ],
+                        "notice_recovering": [
+                            {
+                                "classes": {
+                                    "classe": credor['Edital RJ - Classe']
+                                },
+                                "coins": {
+                                    "coin": credor['Edital RJ - Moeda'],
+                                    "value": credor['Edital RJ - Valor']
+                                },
+                            }
+                        ],
+                        "representation_documentation": credor['Documentação de representação'],
+                        "claim_type": credor['Tipo'],
+                        "physical_person": str(credor['Pessoa Física']).lower() in ['true', 'verdadeiro'],
+                        "natures": natures,
+                        "legal_pendencies": legal_pendencies,
+                        "is_active": False,
                     }
-                ],
-                "notice_recovering": [
-                    {
-                        "classes": {
-                            "classe": credor['Edital RJ - Classe']
-                        },
-                        "coins": {
-                            "coin": credor['Edital RJ - Moeda'],
-                            "value": credor['Edital RJ - Valor']
-                        },
-                    }
-                ],
-                "occurrence": "A",
-                "representation_documentation": "R",
-                "claim_type": "Q",
-            }
-            print(new_credor)
-            # TODO: subir credor inativo. Ter tela/endpoint pra aprovar credor
+                    from creditors.schemas import CreditorBulkSchema
+                    from creditors.views import CreateCreditor
+
+                    serializer = CreditorBulkSchema(data=new_credor)
+
+                    if serializer.is_valid(raise_exception=False):
+                        creditor = serializer.validated_data
+                        CreateCreditor().create_creditor(creditor)
+                    else:
+                        for field, error_messages in serializer.errors.items():
+                            for error_message in error_messages:
+                                ErrorFile.objects.create(file_id=file_id,
+                                                         error=f"Linha: {credor['index']}, Field {field}: {error_message}")
+
+            except Exception as e:
+                ErrorFile.objects.create(file_id=file_id, error=str(e), status='P')
 
 
 class ExcelHeader:
@@ -346,10 +401,12 @@ class ExcelHeader:
 
     def parse_list(self, data):
         new_data = []
+        # enabling translation to output only in a single language and not generate errors in different languages
+        activate('pt-br')
+        print(len(data), 'data len parse list\n')
         for credor in data:
-            print(credor, 'new_keys_creditor')
             columns = self.get_columns()
-            new_credor = {}
+            new_credor = {'index': credor['index']}
             for column in columns:
                 choice = column.get('choice')
                 title = column.get('title')
@@ -357,29 +414,49 @@ class ExcelHeader:
                 if choice:
                     new_credor[title] = get_first_value(choice, credor[title])
                 else:
-                    new_credor = credor[title]
+                    new_credor[title] = credor[title]
 
-                new_data.append(new_credor)
-
+            new_data.append(new_credor)
+        deactivate()
         return new_data
 
-    def generate_excel_example_ok(self):
-        # workbook = xlsxwriter.Workbook('planilha_excel.xlsx')
-        # worksheet = workbook.add_worksheet()
-        headers = ["Credor", "Credor - CPF/CNPJ", "Credor - Classe", "Credor - Valor", "Credor - Moeda"]
+    def generate_excel_example(self):
+        filename = self.get_name()
+        response = HttpResponse(content_type='application/ms-excel')
+        response['Content-Disposition'] = f'attachment; filename="{filename}.xlsx"'
+
+        workbook = xlsxwriter.Workbook(response)
+        # workbook = xlsxwriter.Workbook(f"{filename}.xlsx")
+        worksheet = workbook.add_worksheet()
+        headers = []
         min_row = 1
         max_row = 1048575
+        # enabling translation to output only in a single language and not generate errors in different languages
+        activate('pt-br')
 
-        for c in self.get_columns():
-            print(c)
+        for index, columns in enumerate(self.get_columns()):
+            title = columns['title']
+            choices = columns['choice']
+            defaults = columns['default']
+            type_ = columns['type']
+            headers.append(title)
 
-        return []
-        for i, header in enumerate(headers):
-            worksheet.write(0, i, header)
-            if header == "Credor - Classe":
-                worksheet.data_validation(min_row, i, max_row, i,
+            worksheet.write(0, index, title)
+            if choices:
+                worksheet.data_validation(min_row, index, max_row, index,
                                           {'validate': 'list',
-                                           'source': [choice[1] for choice in CLASSE_CHOICES],
-                                           'input_title': 'Selecione uma opção',
-                                           'input_message': 'Escolha uma opção da lista.'})
+                                           'source': [str(choice[1]) for choice in choices],
+                                           'input_message': 'Escolha uma opção da lista.'
+                                           })
+                worksheet.write(min_row, index, str(choices[0][1]))
+            if defaults:
+                worksheet.write(min_row, index, str(defaults))
+
+            if type_ == 'date':
+                date_format = workbook.add_format({'num_format': 'dd/mm/yyyy'})
+                worksheet.write(min_row, index, '01/01/2022', date_format)
+
+            worksheet.set_column(index, index, max(20, len(title)))
         workbook.close()
+        deactivate()
+        return response

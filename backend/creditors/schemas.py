@@ -1,4 +1,5 @@
 import re
+
 from base.claim.schemas import ClaimCreditorSchema, ClaimLawyerSchema
 from base.coins.models import COIN_CHOICES
 from base.models import CHOICES_OCCURRENCE, CHOICES_REPRESENTATION_DOCUMENTATION, CHOICES_CLAIM_TYPE
@@ -27,6 +28,16 @@ class LegalPendenciesSchema(AbstractDescriptionSchema):
         exclude = ('creditor',)
 
 
+class LegalPendenciesCreditorSchema(AbstractDescriptionSchema):
+    """Serializer LegalPendencies fields"""
+    creditor_id = serializers.UUIDField(read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+
+    class Meta:
+        model = LegalPendencies
+        exclude = ('creditor',)
+
+
 class LegalPendenciesUpdateSchema(AbstractDescriptionSchema):
     """Serializer LegalPendencies fields"""
     creditor_id = serializers.UUIDField(read_only=True)
@@ -38,7 +49,7 @@ class LegalPendenciesUpdateSchema(AbstractDescriptionSchema):
         exclude = ('creditor',)
 
 
-class CreditorSchema(AbstractDescriptionSchema):
+class AbstractCreditorSchema(AbstractDescriptionSchema):
     """Serializer Creditor fields"""
 
     entity = EntitySchema(many=False, read_only=False)
@@ -47,7 +58,6 @@ class CreditorSchema(AbstractDescriptionSchema):
     recovering_id = serializers.UUIDField()
 
     # rate = RateSchema(many=False, read_only=False, exclude=('rate_value', ))
-    rate_id = serializers.UUIDField()
     notice_aj = NoticeSchema(source='notice_set', many=True, read_only=False,
                              required=False, allow_null=True, exclude=('creditor_id',))
     notice_recovering = NoticeRecoveringSchema(source='noticerecovering_set', many=True, read_only=False,
@@ -56,10 +66,11 @@ class CreditorSchema(AbstractDescriptionSchema):
                                          allow_null=True, exclude=('creditor_id',))
     claim_lawyer = ClaimLawyerSchema(source='claimlawyer', many=False, read_only=False, required=False, allow_null=True,
                                      exclude=('creditor_id',))
-    legal_pendencies = LegalPendenciesSchema(source='legalpendencies_set', many=True, read_only=True)
+    legal_pendencies = LegalPendenciesCreditorSchema(source='legalpendencies_set', many=True)
 
     calculation_impediment_list = serializers.ListField(source='get_calculation_impediment_list', read_only=True)
-    nature = serializers.ListField(source='get_nature_description')
+    nature = serializers.ListField(source='get_nature_description', read_only=True)
+    natures = serializers.ListField(write_only=True, child=serializers.UUIDField(), required=False)
 
     class Meta:
         model = Creditor
@@ -73,6 +84,7 @@ class CreditorSchema(AbstractDescriptionSchema):
         data['notice_recovering'] = data.pop('noticerecovering_set', [])
         data['notice'] = data.pop('notice_set', [])
         data['claim_creditor'] = data.pop('claimcreditor_set', [])
+        data['legal_pendencies'] = data.pop('legalpendencies_set', [])
         legal_number = data.get('entity').get('legal_number')
         legal_number = ''.join(re.findall(r'\d', str(legal_number)))
 
@@ -80,7 +92,20 @@ class CreditorSchema(AbstractDescriptionSchema):
         if Creditor.objects.filter(recovering_id=recovering_id, entity__legal_number=legal_number,
                                    physical_person=physical_person).exists():
             raise serializers.ValidationError([_('Creditor already registered in this recovering')])
-        return super(CreditorSchema, self).validate(data)
+        if not data.get('rate_id') and data.get('is_active'):
+            raise serializers.ValidationError([_('Need a rate_id when activating the creditor')])
+        return super(AbstractCreditorSchema, self).validate(data)
+
+
+class CreditorSchema(AbstractCreditorSchema):
+    """Serializer Creditor fields to create unique Creditor"""
+    rate_id = serializers.UUIDField()
+
+
+class CreditorBulkSchema(AbstractCreditorSchema):
+    """Serializer Creditor fields to create bulk Creditor"""
+
+    rate_id = serializers.UUIDField(required=False)
 
 
 class AbstractChoicesSerializer(serializers.Serializer):
@@ -117,60 +142,9 @@ class CreditorCreateSchema(serializers.Serializer):
 
 class CreditorUpdateSchema(AbstractDescriptionSchema):
     """Serializer Creditor fields"""
+    rate_id = serializers.UUIDField(required=False)
 
     class Meta:
         model = Creditor
         fields = ('description', 'admission', 'dismissal', 'default_interest', 'fine', 'advocative_hours', 'occurrence',
-                  'representation_documentation', 'claim_type', 'nature')
-
-{
-  "recovering_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "rate_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "notice_aj": [
-    {
-      "classes": {
-        "classe": "1"
-      },
-      "coins": {
-        "coin": "B",
-        "value": 0
-      },
-      "archive_json": {}
-    }
-  ],
-
-  "notice_recovering": [
-    {
-      "classes": {
-        "classe": "1"
-      },
-      "coins": {
-        "coin": "B",
-        "value": 0
-      },
-      "archive_json": {}
-    }
-  ],
-  "claim_lawyer": {
-    "coins": {
-      "coin": "B",
-      "value": 0
-    },
-    "archive_json": {}
-  },
-  "nature": [
-    "string"
-  ],
-  "admission": "2023-06-29",
-  "dismissal": "2023-06-29",
-  "dismissal_teste": "2023-06-29",
-  "default_interest": 0,
-  "fine": 0,
-  "advocative_hours": 0,
-  "occurrence": "A",
-  "physical_person": True,
-  "representation_documentation": "R",
-  "claim_type": "Q",
-  "description": "string",
-  "total_historical": 0
-}
+                  'representation_documentation', 'claim_type', 'nature', 'is_active', 'rate_id')

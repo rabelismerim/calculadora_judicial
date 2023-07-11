@@ -114,7 +114,7 @@ INSTALLED_APPS = [
     'modeltranslation',  # Custom field translation
     # 'debug_toolbar', # Debug query, views in realtime on navigation
     'django_apscheduler',  # Eventos crontab
-    'django_celery_results', # View results Tasks in admin
+    'django_celery_results',  # View results Tasks in admin
 
     # Base
     'base',
@@ -496,7 +496,6 @@ if DEBUG is False:
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 # Setting media info for images
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -567,37 +566,54 @@ TOKEN_TEST = os.getenv('TOKEN_TEST')  # Token para a execução de teste em ambi
 INDEX_VARIATION_RJ = os.getenv('INDEX_VARIATION_RJ', '2022-06-01')
 INDEX_VARIATION_RJ = datetime.datetime.strptime(INDEX_VARIATION_RJ, '%Y-%m-%d').date()
 
-FERNET_KEY = os.getenv('FERNET_KEY').encode()  # Key to encrypt or decrypt text
+# Key to encrypt or decrypt text
+FERNET_KEY = os.getenv('FERNET_KEY').encode()
 
-accept_content = ['application/json']  # tipo de conteúdo aceito pelo worker, para ser usado no res de tarefas.
-task_serializer = 'json'  # formato de serialização a ser usado para as tarefas.
-result_serializer = 'json'  # formato de serialização a ser usado para os resultados das tarefas.
-worker_concurrency = 2  # número de processos em que o worker será executado simultaneamente.
-redis_max_connections = 18  # número máximo de conexões com o Redis permitido (quando usado como backend).
-broker_pool_limit = 18  # número máximo de conexões do pool do broker permitido.
-worker_lost_wait = 20  # tempo (em segundos) que um worker espera antes de considerar uma tarefa perdida e tentar executá-la novamente.
-worker_max_tasks_per_child = 6  # número máximo de tarefas que um processo do worker pode executar antes de ser reiniciado.
-celery_url = os.environ.get('REDIS_URL', 'redis://localhost:6379')  # : define a URL do Redis usada como back do Celery
-broker_url = celery_url  #: URL do broker usada pelo Celery.
-broker_connection_retry_on_startup = True  #: define se o broker deve tentar reconectar em caso de falha na inicialização.
-result_backend = 'django-db'  #: backend usado para armazenar os resultados das tarefas (neste caso, banco de dados do Django).
+# tipo de conteúdo aceito pelo worker, para ser usado no res de tarefas.
+accept_content = ['application/json']
+# formato de serialização a ser usado para as tarefas.
+task_serializer = 'json'
+# formato de serialização a ser usado para os resultados das tarefas.
+result_serializer = 'json'
+# número de processos em que o worker será executado simultaneamente.
+worker_concurrency = 2
+# número máximo de conexões com o Redis permitido (quando usado como backend).
+redis_max_connections = 18
+# número máximo de conexões do pool do broker permitido.
+broker_pool_limit = 18
+# tempo (em segundos) que um worker espera antes de considerar uma tarefa perdida e tentar executá-la novamente.
+worker_lost_wait = 20
+# número máximo de tarefas que um processo do worker pode executar antes de ser reiniciado.
+worker_max_tasks_per_child = 6
+# define a URL do Redis usada como back do Celery
+celery_url = os.environ.get('REDIS_URL', 'redis://127.0.0.1:6379')
+# URL do broker usada pelo Celery.
+broker_url = celery_url
+# define se o broker deve tentar reconectar em caso de falha na inicialização.
+broker_connection_retry_on_startup = True
+# backend usado para armazenar os resultados das tarefas (neste caso, banco de dados do Django).
+result_backend = 'django-db'
 # result_backend = celery_url
-task_default_queue = 'default'  #: fila padrão para as tarefas.
-result_extended = True  #: habilita recursos adicionais do resultado das tarefas (como hora de execução, tempo de início/fim etc.).
-cache_backend = 'redis'  #: backend de cache usado pelo Celery.
-#: troca padrão usada pelo Celery (uma Exchange chamada 'media', do tipo 'direto').
+# fila padrão para as tarefas.
+task_default_queue = 'default'
+# habilita recursos adicionais do resultado das tarefas (como hora de execução, tempo de início/fim etc.).
+result_extended = True
+# backend de cache usado pelo Celery.
+cache_backend = 'redis'
+# troca padrão usada pelo Celery (uma Exchange chamada 'media', do tipo 'direto').
 default_exchange = Exchange('media', type='direct')
 
-# ma tupla com todas as filas usadas pelo Celery. Neste caso, apenas uma fila chamada 'media_queue' é definida, com uma chave de roteamento ('routing_key') chamada 'video'.
+# tupla com todas as filas usadas pelo Celery. Neste caso, apenas uma fila chamada 'media_queue' é definida, com uma
+# chave de roteamento ('routing_key') chamada 'video'.
 task_queues = (Queue('media_queue', exchange=default_exchange, routing_key='video'),)
 
-CACHES["redis"] = {
-    "BACKEND": "django_redis.cache.RedisCache",
-    "LOCATION": celery_url,
-    "OPTIONS": {
-        "CLIENT_CLASS": "django_redis.client.DefaultClient"
-    }
-}
+# CACHES["redis"] = {
+#     "BACKEND": "django_redis.cache.RedisCache",
+#     "LOCATION": celery_url,
+#     "OPTIONS": {
+#         "CLIENT_CLASS": "django_redis.client.DefaultClient"
+#     }
+# }
 # os.environ.setdefault('FORKED_BY_MULTIPROCESSING', '1')
 # broker_url = celery_url
 # result_backend = 'rci://'
