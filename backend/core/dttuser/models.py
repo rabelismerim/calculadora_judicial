@@ -234,6 +234,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), blank=True)
     userpicture = models.TextField(_('user picture'), blank=True)
     user_img = models.ImageField(_('User img'), upload_to='juca/profile/%Y/%m/%d/', blank=True, null=True)
+    login_date = models.DateField(_('Login today'), null=True, blank=True
+                                      )
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,

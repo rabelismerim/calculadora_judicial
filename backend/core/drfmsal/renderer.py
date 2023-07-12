@@ -1,6 +1,9 @@
 from rest_framework.renderers import JSONRenderer
 
 from config.settings import ENABLE_SSO
+from utils import get_user_model
+
+User = get_user_model()
 
 
 class APIRendererInterceptor(JSONRenderer):
@@ -16,6 +19,7 @@ class APIRendererInterceptor(JSONRenderer):
                     'accept_token': True,
                     'profile': {
                         'authorized': is_authenticated,
+                        'is_active': request.user.is_active,
                         'authenticated': is_authenticated,
                         'user_fullname': request.user.get_full_name if is_authenticated else 'anonymous',
                         'user_picture': None,
@@ -23,13 +27,22 @@ class APIRendererInterceptor(JSONRenderer):
                 }
             else:
                 identity_context_data = request._request.identity_context_data
+                authorized = request.user.is_authenticated
+                is_active = request.user.is_active
+                authenticated = identity_context_data.authenticated
+
+                if authenticated and not is_active:
+                    user = User.objects.filter(email=identity_context_data.usermail).first()
+                    if user:
+                        is_active = user.is_active
                 data = {
                     'data': data,
                     'dttdjud': True,
                     'accept_token': False,
                     'profile': {
-                        'authorized': request.user.is_authenticated,
-                        'authenticated': identity_context_data.authenticated,
+                        'authorized':authorized,
+                        'is_active': is_active,
+                        'authenticated': authenticated,
                         'user_fullname': identity_context_data.username,
                         'user_picture': identity_context_data.userpicture,
                     }

@@ -30,7 +30,9 @@ class LoginMiddleware:
 
         if user.is_authenticated:
             today = now().date()
-            with transaction.atomic():
+            login_date = user.login_date
+
+            if not login_date or login_date != today:
                 record_exists_today = LoginRecord.objects.filter(user=user, login_date=today).exists()
 
                 if not record_exists_today:
@@ -38,5 +40,6 @@ class LoginMiddleware:
                         LoginRecord.objects.create(user=user)
                     except IntegrityError:
                         pass
-
+                user.login_date = today
+                user.save()
         return response

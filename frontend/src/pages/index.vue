@@ -1,9 +1,11 @@
 <script setup lang="ts">
 const router = useRouter()
 
-const { isAuthorized, login } = $user
+const { login } = $user
 
 const inProduction = import.meta.env.PROD
+const inDevelopment = import.meta.env.DEV
+let isAuthenticated = $ref(false)
 
 let loading = $ref(false)
 let requested = $ref(false)
@@ -11,24 +13,30 @@ let requested = $ref(false)
 const enter = async () => {
   loading = true
   try {
-    const user = await login()
-    if (user?.isActive)
+    const { authorized, isActive } = await login()
+    if (authorized || (inDevelopment && isActive)) {
       router.push({ path: '/projetos' })
-    else
+    }
+    else {
       requested = true
+      loading = false
+    }
   }
   catch (error) {
     printError('ERROR ON LOGIN:', error)
-  }
-  finally {
     loading = false
   }
 }
+
+onMounted(async () => {
+  const { authenticated } = await usersService.verifyUser() || {}
+  isAuthenticated = authenticated
+})
 </script>
 
 <template>
   <div class="bg--base flex flex-1">
-    <div class="grid sm:grid-cols-2 gap-16 max-w-[min(1200px,100vw)] px-6 flex-1 mx-auto">
+    <div class="flex flex-col-reverse pt-8 md:pt-0 pb-6 md:pb-0 md:grid md:grid-cols-2 md:gap-16 max-w-[min(1200px,100vw)] px-6 flex-1 mx-auto">
       <div class="flex flex-col justify-center gap-6">
         <h1 class="font-extrabold text-6xl mt-8">
           JUCA
@@ -37,7 +45,8 @@ const enter = async () => {
           Sistema de Administração Judicial
         </h2>
         <p>
-          <strong>JUCA</strong>, acrônimo de <strong>CÁ</strong>lculo <strong>JU</strong>dicial, é um sistema que simplifica os cálculos financeiros complexos no processo de administração judicial, fornecendo resultados precisos e confiáveis ao longo do tempo. Com sua interface amigável e algoritmos avançados, é a ferramenta ideal para advogados, analistas financeiros e demais profissionais envolvidos em processos de recuperação judicial e falência.
+          <strong>JUCA</strong>, acrônimo de <strong>CÁ</strong>lculo <strong>JU</strong>dicial, é um sistema que simplifica os cálculos financeiros complexos no processo de administração judicial, fornecendo resultados precisos e confiáveis ao longo do tempo.
+          <span class="hidden sm:block">Com sua interface amigável e algoritmos avançados, é a ferramenta ideal para advogados, analistas financeiros e demais profissionais envolvidos em processos de recuperação judicial e falência.</span>
         </p>
         <p>
           Para assitir o tutorial de uso da ferramenta <a href="https://becurious.edcast.eu/user/login" class="font-bold color--primary">Clique aqui</a>
@@ -45,7 +54,7 @@ const enter = async () => {
         <div class="flex flex-wrap gap-3">
           <div>
             <Btn
-              v-if="!isAuthorized && inProduction"
+              v-if="!isAuthenticated && inProduction"
               label="Autenticar na Microsoft"
               loading-label="Enviando para a Microsoft..."
               :loading="loading"
@@ -63,8 +72,8 @@ const enter = async () => {
           </div>
         </div>
       </div>
-      <div class="px-8">
-        <Img :src="`${baseUrl}/illustrations/splash-balance.svg`" class="h-full min-h-10" />
+      <div class="px-8 flex justify-center">
+        <Img :src="`${baseUrl}/illustrations/splash-balance.svg`" class="h-full min-h-10 min-w-50vw md:min-w-0" />
       </div>
     </div>
   </div>

@@ -27,12 +27,12 @@ class CustomUserAdmin(UserAdmin):
         (_('Permissions'), {
             'fields': ('is_active', 'is_staff', 'groups', 'subgroups', 'user_permissions'),
         }),
-        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+        (_('Important dates'), {'fields': ('last_login', 'date_joined', 'login_date')}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'first_name', 'last_name', 'email',),
+            'fields': ('username', 'first_name', 'last_name', 'email', 'login_date'),
         }),
     )
     list_filter = ('is_staff', 'is_active', 'groups', 'subgroups')

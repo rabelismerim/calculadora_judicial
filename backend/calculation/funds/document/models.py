@@ -23,14 +23,15 @@ class FundDocument(AbstractFunds):
     fine = models.FloatField(_('Fine'), default=0)
     has_custom_fine = models.BooleanField(_('Has custom fine invoices'), default=False)
 
-    def get_total_funds(self):
+    def get_total_funds(self, create=True):
         """
         This method returns the TotalValuesDocument object associated with the current fund object. If the object does
         not exist, it creates one and returns it.
         """
         if hasattr(self, 'totalvaluesdocument'):
             return self.totalvaluesdocument
-        return TotalValuesDocument.objects.get_or_create(fund=self)[0]
+        if create:
+            return TotalValuesDocument.objects.get_or_create(fund=self)[0]
 
     def get_fine(self) -> float:
         """
@@ -63,6 +64,28 @@ class FundDocument(AbstractFunds):
         if hasattr(self, 'totalvaluesdocument'):
             total += self.totalvaluesdocument.total_historical
         return total
+
+    def get_statement(self):
+        """
+        This method returns the TotalValuesDocument object associated with the current fund object. If the object does
+        not exist, it creates one and returns it.
+        """
+        if hasattr(self, 'statementdocument'):
+            return self.statementdocument
+
+    def delete(self, *args, **kwargs):
+        """
+        Deletes the StatementDocument object, FundDocument, MonetaryCorrection, FundsDocumentDescriptionPJ and
+        generates a new calculation of TotalValuesDocument and StatementPJ
+        """
+
+        statement = self.get_statement()
+        if statement:
+            statement.delete(delete_fund=False)
+        total_funds = self.get_total_funds(create=False)
+        if total_funds:
+            total_funds.delete()
+        super(FundDocument, self).delete(*args, **kwargs)
 
 
 class StatementDocument(AbstractStatement):
@@ -231,6 +254,11 @@ class StatementDocument(AbstractStatement):
         monetary = self.get_monetary_correction()
         if monetary:
             monetary.delete()
+        if self.is_extraconcursal:
+            total_funds = self.fund.get_total_funds(create=False)
+            if total_funds:
+                total_funds.set_total()
+                # TODO: apagar funds description
 
     def get_corrected_value(self) -> float:
         """Returns corrected value if the monetary correction exists for the statement, else 0"""
@@ -256,11 +284,13 @@ class StatementDocument(AbstractStatement):
         Args:
             send_signal_post_save (bool): Set to True to send a post-save signal. Default is True.
         """
-        super(StatementDocument, self).save(*args, **kwargs)
+        save = super(StatementDocument, self).save(*args, **kwargs)
         if send_signal_post_save and self.is_extraconcursal is False:
             gen_statement_documents.send(sender=self.__class__, instance=self)
 
-    def delete(self, *args, **kwargs):
+        return save
+
+    def delete(self, delete_fund=True, *args, **kwargs):
         """
         Deletes the StatementDocument object, FundDocument, MonetaryCorrection, FundsDocumentDescriptionPJ and
         generates a new calculation of TotalValuesDocument and StatementPJ
@@ -276,8 +306,11 @@ class StatementDocument(AbstractStatement):
             statement_pj = description_doc.statement_pj  # StatementPJ
             description_doc.delete()
             statement_pj.set_total()
-        total.delete()
-        fund.delete()
+
+        if total and total.id:
+            total.delete()
+        if delete_fund:
+            fund.delete()
 
 
 class MonetaryCorrectionDocument(AbstractMonetaryCorrection):
@@ -339,7 +372,7 @@ class TotalValuesDocument(AbstractTotalValuesFunds):
         the calculated statement.
         """
         statement = self.__get_calculated_statement()
-        if statement and statement.id:
+        if statement and statement.id and statement.is_extraconcursal is False:
             self.total_historical = statement.get_total_value()
             self.total_corrected = statement.get_corrected_value()
             self.total_default_interest = statement.get_default_interest()

@@ -7,6 +7,8 @@ const props = withDefaults(defineProps<{
 })
 const emit = defineEmits(['update:model-value', 'success'])
 
+const { hasPermissions } = $user
+
 const form = ref(null as any)
 
 let loading = $ref(false)
@@ -58,6 +60,8 @@ const onEdit = async () => {
 
 onMounted(async () => {
   try {
+    if (!hasPermissions('can_authorize_users', 'view_group'))
+      return
     permissionOptions = await usersService.getGroups()
     const options = await creditorsService.getOptions()
     statusOptions = options.userStatusOptions

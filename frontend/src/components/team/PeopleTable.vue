@@ -31,7 +31,13 @@ const filteredItems = computed(() => {
   if (props.tab === 'all')
     return props.items
   return props.items
-    .filter(({ groups }: any) => groups?.[0]?.name?.toLowerCase()?.includes(props.tab))
+    .filter(({ groups }: any) => groups
+      .some((group: any) => {
+        const groupName = group.name?.toLowerCase() || ''
+        if (props.tab !== 'gestor')
+          return groupName?.includes(props.tab)
+        return ['gestor', 'sócio'].some(item => groupName.includes(item))
+      }))
 })
 
 const filters = [
@@ -77,7 +83,7 @@ const columns = [
     field: 'groups',
     label: 'Permissão',
     align: 'left',
-    format: (value: any[]) => value.map(({ name }: any) => name),
+    format: (value: any[]) => value.map(({ name }: any) => name).join(' '),
     style: 'width: 100px',
     sortable: true,
   },
