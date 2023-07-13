@@ -149,4 +149,4 @@ steps:
     TargetFolder: 'E:\wwwroot\fadigitallab.deloitte.com.br\juca\'
     OverWrite: true
     flattenFolders: false
-  failOnStderr: false
+    ignoreMakeDirErrors: true
