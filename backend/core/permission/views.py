@@ -13,7 +13,7 @@ from calculation.funds.models import Funds
 from calculation.models import Calculation, CHOICES_STEP
 from calculation.schemas import ChangeStepSerializer
 from config.settings import GROUP_NAME_APPROVER, GROUP_NAME_REVIEWER, GROUP_NAME_EXECUTOR, GROUP_NAME_SPECIAL_APPROVE, \
-    SWAGGER_URL, BASE_URL
+    SWAGGER_URL, BASE_URL, ENABLE_SSO
 from projects.project_user.models import ProjectUser
 
 
@@ -399,7 +399,9 @@ class CheckAuthenticatedMFA(BasePermission):
 
     def has_permission(self, request, view):
         """This method checks if the user is authenticated in microsoft SSO."""
-        return request._request.identity_context_data
+        if ENABLE_SSO:
+            return request._request.identity_context_data
+        return request.user.is_authenticated
 
 
 class CheckFundsPjPfPermissions(BasePermission):
