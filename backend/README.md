@@ -34,9 +34,13 @@
     e "ENV='branch' para ativar o modo de desenvolvedor
 
 ### Configurando variáveis de ambiente
-> *  Para configurar variáveis de ambiente diferentes para cada ambiente, crie um arquivo `.env` separado para cada ambiente que você deseja configurar. Por exemplo: `.env.dev`, `.env.prod` e `.env.hml`. Cada arquivo `.env` deve conter apenas as variáveis de ambiente necessárias para esse ambiente específico.
-> *  Para executar determinado ambiente, use o comando `python manage.py <command> --env <ENV>` onde `<ENV>` significa o ambiente que você deseja. Use apenas o sufixo do ambiente `dev`, `prod` ou `hml`
-> *  Para usar o ambiente padrão, apenas use `python manage.py <command>` e será utilizado o arquivo padrão `.env`
+
+> * Para configurar variáveis de ambiente diferentes para cada ambiente, crie um arquivo `.env` separado para cada
+    ambiente que você deseja configurar. Por exemplo: `.env.dev`, `.env.prod` e `.env.hml`. Cada arquivo `.env` deve
+    conter apenas as variáveis de ambiente necessárias para esse ambiente específico.
+> * Para executar determinado ambiente, use o comando `python manage.py <command> --env <ENV>` onde `<ENV>` significa o
+    ambiente que você deseja. Use apenas o sufixo do ambiente `dev`, `prod` ou `hml`
+> * Para usar o ambiente padrão, apenas use `python manage.py <command>` e será utilizado o arquivo padrão `.env`
 
 ### Criação de grupo de permissões
 
@@ -50,7 +54,7 @@
     carregados para o banco de dados;
 > * O arquivo para rate file deve estar no formato xlsx e conter obrigatoriamente as colunas "mes" e "indice".
     Opcionalmente tem as colunas "acumulado" e "periodo" que são usadas em determinados indices, como o TST
-> * Há também os arquivos de backup no formato json, na pasta rates/indices. Para o cadastro em massa desses arquivos, 
+> * Há também os arquivos de backup no formato json, na pasta rates/indices. Para o cadastro em massa desses arquivos,
     utilize o comando `python manage.py create_indiceby_json`;
 
 ### Criação dos indices IRRF
@@ -106,7 +110,9 @@
     como são feitos os cálculos judicialmente.
 
 ### Como usar a classe SCHEDULER
+
 ###### A classe SCHEDULER é uma classe de agendamento, responsável por executar funções em intervalos determinados. Para usá-la, primeiro você precisa instanciar um objeto dessa classe e configurar o seu ambiente.
+
 > ### Instanciação e configuração
 > ###### Para instanciar a classe e fazer o agendamento de uma função, siga o código abaixo:
 > * `from schedule.views import SCHEDULER` <br/>

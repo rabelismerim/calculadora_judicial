@@ -7,7 +7,6 @@ from crum import get_current_request
 from django.db.models import Q
 from django.db.models.signals import pre_save, pre_delete
 from django.forms import model_to_dict
-from rest_framework.exceptions import ValidationError
 
 from utils import get_user_model, _
 
@@ -79,6 +78,12 @@ class AbstractModel(models.Model):
 
     def parse_file(self, parse_file):
         return
+
+    def get_excel_by_name(self, name):
+        for obj in self.get_valid_excels_headers():
+            if obj.get_name() == name:
+                return obj
+        return None
 
     def get_list_excels_name(self):
         names = []

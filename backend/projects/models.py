@@ -20,7 +20,7 @@ from calculation.models import Calculation, CHOICES_STEP
 from creditors.classes.models import CLASSE_CHOICES
 from creditors.models import Creditor, CHOICES_STATUS_LEGAL
 from file.models import ErrorFile
-from file.tasks import ProcessExcelTask, SaveFileTask
+from file.tasks import ProcessExcelTask
 from projects.court.models import Court
 from projects.judge.models import Judge
 from projects.lawyer.models import Lawyer
@@ -217,18 +217,6 @@ class Project(AbstractDescription, AbstractDateRecovering):
                 classes_list.append(obj)
         return classes_list
 
-    def get_excel_by_name(self, name):
-        for obj in self.get_valid_excels_headers():
-            if obj.get_name() == name:
-                return obj
-        return None
-
-    def get_list_excels_name(self):
-        names = []
-        for obj in self.get_valid_excels_headers():
-            names.append(obj.get_name())
-        return names
-
     def get_valid_excels_headers(self):
         # enabling translation to output only in a single language and not generate errors in different languages
         activate('pt-br')
@@ -278,7 +266,8 @@ class Project(AbstractDescription, AbstractDateRecovering):
                 funcao_serializada = pickle.dumps(excel.get_callback())
                 task = ProcessExcelTask.delay('task-process-excel-to-json', file_read, funcao_serializada,
                                               **{'file_id': file_id})
-                SaveFileTask.delay(task.id, file_obj.id)
+                file_obj.task_id = task.id
+                file_obj.save()
                 has_excel = True
                 break
         if not has_excel:
@@ -403,7 +392,6 @@ class ExcelHeader:
         new_data = []
         # enabling translation to output only in a single language and not generate errors in different languages
         activate('pt-br')
-        print(len(data), 'data len parse list\n')
         for credor in data:
             columns = self.get_columns()
             new_credor = {'index': credor['index']}

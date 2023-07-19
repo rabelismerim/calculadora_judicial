@@ -8,6 +8,8 @@ import pandas as pd
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.db.models import signals
+from django.dispatch import receiver
 from django_celery_results.models import TaskResult
 
 from core.abstract.models import AbstractModel
@@ -62,24 +64,26 @@ class File(AbstractModel):
     file = models.FileField(upload_to='juca/files/%Y/%m/%d/')
     generic_path = models.ForeignKey(GenericModelPath, on_delete=models.PROTECT)
     task_result = models.ForeignKey(TaskResult, on_delete=models.PROTECT, null=True, blank=True)
+    task_id = models.UUIDField(null=True, blank=True)
     content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
 
     object_id = models.UUIDField()
     content_object = GenericForeignKey('content_type', 'object_id')
-
 
     def get_task_result(self):
         if self.task_result:
             return self.task_result.get_status_display()
 
     def get_excel_headers(self) -> tuple:
-        # Ler o arquivo Excel usando pandas
         with self.file as file_obj:
             read = file_obj.read()
             df = pd.read_excel(read)
             headers = df.columns.tolist()
 
         return self.id, read, headers
+
+    def __str__(self):
+        return str(self.file)
 
 
 class ErrorFile(AbstractModel):
@@ -91,3 +95,18 @@ class ErrorFile(AbstractModel):
     file = models.ForeignKey(File, on_delete=models.PROTECT)
     error = models.TextField(_("Error"))
     status = models.CharField(default="R", max_length=1, choices=ERROR_STATUS_CHOICES)
+
+    def __str__(self):
+        return self.error
+
+
+@receiver(signals.post_save, sender=TaskResult)
+def save_task_result(sender, instance, **kwargs) -> None:
+    """
+    This method is a receiver for post_save signal and is triggered when a TaskResult object is saved. Saves the task
+    result in the file that was processed
+    """
+    file = File.objects.filter(task_id=instance.task_id).first()
+    if file:
+        file.task_result = instance
+        file.save()
