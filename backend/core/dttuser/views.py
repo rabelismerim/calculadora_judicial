@@ -226,8 +226,16 @@ class EmailListApi(AbstractViewApi):
     model = User
     http_method_names = ['get']
 
-    def get_queryset(self):
-        return {'role__in': ROLES_EMAIL, 'is_active': True}
+    has_perm = [f'add_{model.__name__.lower()}']
+
+    def get(self, request, *args, **kwargs):
+        perm = f'add_{self.model.__name__.lower()}'
+        serializer = self.get_serializer_class()
+        users = serializer(
+            self.model.objects.filter(Q(groups__permissions__codename=perm) | Q(user_permissions__codename=perm),
+                                      is_active=True).exclude(Q(email__isnull=True) | Q(email='')).distinct(),
+            many=True).data
+        return JsonResponse({'users': users})
 
 
 class SubgroupApi(AbstractViewApi):
