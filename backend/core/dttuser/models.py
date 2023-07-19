@@ -28,6 +28,8 @@ ROLES_CHOICES = (
     ('R', _('Robo')),
 )
 
+ROLES_EMAIL = ['G', 'D', 'C']  # Roles that can receive email to approve the user
+
 STATUS_CHOICES = (  # Status para o User DTT
     ('A', _('Active')),
     ('I', _('Inactive')),
@@ -235,7 +237,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     userpicture = models.TextField(_('user picture'), blank=True)
     user_img = models.ImageField(_('User img'), upload_to='juca/profile/%Y/%m/%d/', blank=True, null=True)
     login_date = models.DateField(_('Login today'), null=True, blank=True
-                                      )
+                                  )
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,

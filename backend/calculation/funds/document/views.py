@@ -51,6 +51,7 @@ class AbstractFundDocumentApi(AbstractViewApi):
     """
     serializer_class = FundDocumentSchema
     model = FundDocument
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     tags = [_('Cálculo - Verbas - Documentos')]
     query_params = [
         {

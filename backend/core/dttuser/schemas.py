@@ -19,11 +19,13 @@ serializer = StatementSchema()
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 from rest_framework import serializers, renderers
-from base.schemas import AbstractChoicesSerializer
+from base.schemas import AbstractChoicesSerializer, AbstractDescriptionSchema
 from utils import get_user_model, _
 from django.contrib.auth.models import Permission, Group
 from core.dttuser.models import Subgroup
 from core.dttuser.models import ROLES_CHOICES
+
+User = get_user_model()
 
 
 class PermissionSchema(serializers.ModelSerializer):
@@ -167,7 +169,7 @@ class UserDttSchema(serializers.ModelSerializer):
             return None
 
     class Meta:
-        model = get_user_model()
+        model = User
         fields = ['email', 'username', 'first_name', 'last_name', 'password', 'password_confirm', 'full_name',
                   'picture_url',
                   'userpicture', 'status', 'status_display', 'is_staff', 'user_permissions', 'date_joined', 'is_active',
@@ -241,7 +243,7 @@ class UserDttMFASchema(serializers.ModelSerializer):
     username = serializers.CharField()
 
     class Meta:
-        model = get_user_model()
+        model = User
         fields = ['email', 'username', 'first_name', 'last_name', 'userpicture']
         read_only_fields = ('is_active', 'is_staff')
 
@@ -284,13 +286,13 @@ class UserAuthorizeDttSchema(serializers.ModelSerializer):
     role = serializers.ChoiceField(ROLES_CHOICES, required=False)
 
     class Meta:
-        model = get_user_model()
+        model = User
         groups = GroupSchema(many=True, read_only=False, exclude=('permissions',))
         subgroups = SubgroupSchema(many=True, read_only=False, exclude=('permissions',))
         fields = ['email', 'status', 'groups', 'subgroups', 'role']
 
 
-class UserMailDttSchema(serializers.ModelSerializer):
+class UserMailDttSchema(AbstractDescriptionSchema):
     """
     Serializer for fields of the abstract model.
 
@@ -300,5 +302,5 @@ class UserMailDttSchema(serializers.ModelSerializer):
     renderer_classes = [renderers.JSONRenderer]
 
     class Meta:
-        model = get_user_model()
+        model = User
         fields = ['email']

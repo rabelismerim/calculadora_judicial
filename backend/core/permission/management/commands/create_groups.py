@@ -2,7 +2,8 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.apps import apps as default_apps
-from config.settings import INSTALLED_APPS, GROUP_NAME_PARTNER
+from config.settings import INSTALLED_APPS, GROUP_NAME_PARTNER, GROUP_NAME_FINANCIAL_MANAGER, \
+    GROUP_NAME_CALCULATION_MANAGER, GROUP_NAME_LEGAL_MANAGER
 from utils import _
 
 all_projects = {
@@ -39,7 +40,7 @@ for codename_, name_, content_ in special_approve:
     special_approve_perms_exclude.append(codename_)
 
 groups = [
-    {'name': 'Gestor Financeiro',
+    {'name': GROUP_NAME_FINANCIAL_MANAGER,
      'models': [
          {'name': 'project',
           'actions': ['view', 'add', 'change', 'delete'],
@@ -91,7 +92,7 @@ groups = [
      ],
      'custom_perms': special_approve_perms + special_approve_perms_calc
      },
-    {'name': 'Gestor Cálculo',
+    {'name': GROUP_NAME_CALCULATION_MANAGER,
      'models': [
          {'name': 'project',
           'actions': ['view', 'add', 'change', 'delete'],
@@ -117,7 +118,7 @@ groups = [
      ],
      'custom_perms': [all_projects, authorize_users]
      },
-    {'name': 'Gestor Jurídico',
+    {'name': GROUP_NAME_LEGAL_MANAGER,
      'models': [
          {'name': 'project',
           'actions': ['view', 'add', 'change', 'delete'],
