@@ -28,9 +28,17 @@ const enter = async () => {
   }
 }
 
+const emailManagers = $ref(['rosouza@deloitte.com','jwanderley@deloitte.com'])
+const mailto = computed(() => `mailto:${emailManagers.join(', ')}?subject=Pedido de Acesso - JUCA
+          &body=Olá, gostaria de solicitar acesso à aplicação JUCA. Por favor, conceda-me as permissões necessárias.`)
+
 onMounted(async () => {
-  const { authenticated } = await usersService.verifyUser() || {}
+  const { authenticated, isActive } = await usersService.verifyUser() || {}
+  // emailManagers = await usersService.getEmailManagers() || []
+
   isAuthenticated = authenticated
+  if (isActive || authenticated)
+    router.push('/projetos')
 })
 </script>
 
@@ -63,10 +71,12 @@ onMounted(async () => {
             />
             <Btn
               v-else
-              :label="!requested ? 'Entrar' : 'Pedido de acesso solicitado'"
+              tag="a"
+              :label="!requested ? 'Solicitar acesso' : 'Pedido de acesso solicitado'"
               loading-label="Processando seus dados..."
               :loading="loading"
               :disabled="requested"
+              :href="mailto"
               @click="enter"
             />
           </div>
