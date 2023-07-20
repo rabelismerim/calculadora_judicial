@@ -83,7 +83,7 @@ steps:
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - script: |
-    pip install --upgrade --user pip setuptools wheel
+    python -m pip install --upgrade --user pip setuptools wheel
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
