@@ -28,16 +28,22 @@ const enter = async () => {
   }
 }
 
-const emailManagers = $ref(['rosouza@deloitte.com','jwanderley@deloitte.com'])
+let emailManagers = $ref([])
 const mailto = computed(() => `mailto:${emailManagers.join(', ')}?subject=Pedido de Acesso - JUCA
-          &body=Olá, gostaria de solicitar acesso à aplicação JUCA. Por favor, conceda-me as permissões necessárias.`)
+          &body=Prezados, 
+          <p>Gostaria de solicitar formalmente acesso à aplicação JUCA. Por favor, conceda-me as permissões necessárias.</p>
+          <p>Agradeço antecipadamente pela sua atenção a esta solicitação.</p>
+          <br><br>
+          Atenciosamente
+
+Atenciosamente,`)
 
 onMounted(async () => {
   const { authenticated, isActive } = await usersService.verifyUser() || {}
-  // emailManagers = await usersService.getEmailManagers() || []
+  emailManagers = await usersService.getEmailManagers() || []
 
   isAuthenticated = authenticated
-  if (isActive || authenticated)
+  if ((isActive || authenticated) && inProduction)
     router.push('/projetos')
 })
 </script>
@@ -65,6 +71,14 @@ onMounted(async () => {
               v-if="!isAuthenticated && inProduction"
               label="Autenticar na Microsoft"
               loading-label="Enviando para a Microsoft..."
+              :loading="loading"
+              :disabled="requested"
+              @click="enter"
+            />
+            <Btn
+              v-if="isAuthenticated && !inProduction"
+              label="Entrar"
+              loading-label="Enviando para tela de Projetos..."
               :loading="loading"
               :disabled="requested"
               @click="enter"

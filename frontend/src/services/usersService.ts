@@ -59,12 +59,18 @@ const setPermission = ({ email, groups, role, status }: any) => api
   .post('user/authorize/', { email, groups, role, status, isActive: status === 'A' })
   .then((result: any) => result?.user)
 
+const getEmailManagers = () => api
+  .get('/emails/')
+  .then((result: any) => result?.emails
+    ?.map(({ email, id }: any) => ({ email, id })))
+
 export default {
   getMyProfile,
   getPermissions,
   getGroups,
   getUsers,
   sendmail,
+  getEmailManagers,
   setPermission,
   verifyUser,
   logout,
