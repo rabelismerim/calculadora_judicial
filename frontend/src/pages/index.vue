@@ -31,7 +31,6 @@ const enter = async () => {
 let emailManagers = $ref([])
 const mailto = computed(() => `mailto:${emailManagers.join(', ')}?subject=Pedido de Acesso - JUCA
           &body=Prezados,
-           
           Gostaria de solicitar formalmente acesso à aplicação JUCA. Por favor, conceda-me as permissões necessárias.
           Agradeço antecipadamente pela sua atenção a esta solicitação.
           

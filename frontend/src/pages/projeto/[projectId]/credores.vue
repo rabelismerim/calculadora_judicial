@@ -186,6 +186,18 @@ onMounted(() => {
         :title="creditor.name"
         :subtitle="formatLegalNumber(creditor.legalNumber)"
       >
+        <div class="grid grid-cols-1 sm:grid-cols-2 px-7 py-5 border-b-1">
+          <div><b>Nome:</b> {{ creditor.name }}</div>
+          <div><b>Multa:</b> {{ creditor.fine }}</div>
+          <div><b>Horários Advocatícios:</b> {{ creditor.advocativeHours }}</div>
+          <div><b>CPF/CNPJ:</b> {{ creditor.legalNumber }}</div>
+          <div><b>Juros Moratórios:</b> {{ creditor.defaultInterest }}</div>
+          <div><b>Ocorrência:</b> {{ creditorOptions.occurrenceOptions.legend }}</div>
+          <div class="sm:col-span-2">
+            <b>Descrição:</b> {{ creditor.description }}
+          </div>
+        </div>
+
         <template #header-left>
           <IconHint
             icon="i-carbon-identification"
