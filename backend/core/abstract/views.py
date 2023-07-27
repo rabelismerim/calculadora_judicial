@@ -17,6 +17,7 @@ from rest_framework import generics, serializers, status
 from rest_framework.filters import BaseFilterBackend
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.relations import ManyRelatedField
 from rest_framework.utils import formatting
 from rest_framework.schemas.openapi import AutoSchema
 
@@ -521,9 +522,19 @@ class AbstractViewApi(generics.GenericAPIView):
                 serializer = serializer(data=request.data, exclude=exclude)
             except ValueError:
                 serializer = serializer(data=request.data)
+
             serializer.is_valid(raise_exception=True)
-            data_obj = dict(serializer.validated_data)
+            data_obj = serializer.validated_data
             obj = get_object_or_404(self.model, id=id_)
+
+            for field_name in serializer.fields:
+                field = serializer.fields[field_name]
+                if isinstance(field, serializers.ManyRelatedField):
+                    values = data_obj.pop(field_name, False)
+                    if isinstance(values, list):
+                        attr = getattr(obj, field_name)
+                        attr.clear()
+                        attr.add(*values)
             obj.dict_update(**data_obj)
         return JsonResponse({self.get_model_name(): self.serializer_class(obj, many=False).data})
 

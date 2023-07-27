@@ -1,4 +1,4 @@
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, activate, deactivate
 from base.coins.models import Coins
 from creditors.classes.models import Classes
 from django.db import models
@@ -14,7 +14,7 @@ class AbstractDescription(AbstractModel):
         ordering = ('-created_at', '-updated_at')
 
     def __str__(self):
-        return self.description
+        return str(self.description)
 
 
 class AbstractInfo(AbstractModel):
@@ -31,6 +31,40 @@ class AbstractInfo(AbstractModel):
 
 CHOICES_OCCURRENCE = (
     ('A', _('Labour Complaint Filing')), ('C', _('Citation')), ('S', _('Judgement')), ('O', _(' Other')))
+CHOICES_REPRESENTATION_DOCUMENTATION = (
+    ('R', _('Regular')), ('P', _('Pending')), ('I', _('Irregular')), ('A', _('AT')))
+SELECT_CHOICES_REPRESENTATION_DOCUMENTATION = (
+    (_('regular'), 'R'), (_('pendente'), 'P'), (_('irregular'), 'I'), (_('n/a'), 'A'))
+CHOICES_CLAIM_TYPE = (
+    ('Q', _('Qualification')), ('D', _('Divergence')), ('E', _('Exclusion')), ('A', _('Agreement')),
+    ('O', _('Office Analysis')), ('W', _('Ownership')), ('N', _('AT')))
+
+# Use first letter in portugues of word to get choice
+SELECT_CHOICES_CLAIM_TYPE = (
+    ('H', 'Q'), ('D', 'D'), ('E', 'E'), ('C', 'A'),
+    ('A', 'O'), ('T', 'W'), ('N', 'N'))
+
+"""Credor	Credor - CPF/CNPJ (não colocar pontuação)	Credor - Classe	Credor - Moeda	 Credor - Valor """
+
+NATURES = [
+    (_('Extrajudicial enforcement action'), _('Ação de execução de título extrajudicial')),
+    (_('Bank contract'), _('Contrato bancário')),
+    (_('Miscellaneous contracts'), _('Contratos diversos')),
+    (_('Advocative hours'), _('Honorários advocatícios')),
+    (_('Invoice'), _('Nota fiscal')),
+    (_('Rural producer contract'), _('Contrato de produtor rural')),
+    (_('Legal title'), _('Título judicial')),
+    (_('Labor'), _('Trabalhista')),
+    (_('Labor Union'), _('Trabalhista Sindicato')),
+    (_('Promissory note'), _('Nota promissória')),
+    (_('AT'), _('N/A')),
+]
+
+NATURE_CHOICES = [(nature[0], nature[0]) for nature in NATURES]
+
+
+class NatureChoice(AbstractDescription):
+    pass
 
 
 class AbstractDateCreditor(AbstractModel):
@@ -41,12 +75,17 @@ class AbstractDateCreditor(AbstractModel):
     dismissal_teste = models.DateField(_("Resignation date"), blank=True, null=True, default=date.today)
 
     # TODO: Verificar se esses valores são para cada credor ou cada recuperanda
-    rate = models.ForeignKey(Rate, on_delete=models.PROTECT)
+    rate = models.ForeignKey(Rate, on_delete=models.PROTECT, null=True, blank=True)
     default_interest = models.FloatField(_('Default interest'), default=0)
     fine = models.FloatField(_('Fine'), default=0)
     advocative_hours = models.FloatField(_('Advocative hours'), default=0)
     occurrence = models.CharField(_('Occurrence'), max_length=1, choices=CHOICES_OCCURRENCE, default='O')
     physical_person = models.BooleanField(_('Are you an individual?'), default=True)
+    representation_documentation = models.CharField(_('Representation documentation'), max_length=1,
+                                                    choices=CHOICES_REPRESENTATION_DOCUMENTATION, default='R')
+
+    claim_type = models.CharField(_('Type'), max_length=1, choices=CHOICES_CLAIM_TYPE, default='A')
+    nature = models.ManyToManyField(NatureChoice, blank=True)
 
     class Meta:
         abstract = True

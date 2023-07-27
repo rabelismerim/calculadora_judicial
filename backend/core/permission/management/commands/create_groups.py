@@ -251,7 +251,7 @@ class Command(BaseCommand):
         Return the list of applications that start with the app_label parameter.
         """
         apps = INSTALLED_APPS.copy()
-        apps.append('dttuser.User')
+        apps.append('dttuser')
         return [app for app in apps if app.startswith(app_label)]
 
     def create_groups(self):
