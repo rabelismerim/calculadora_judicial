@@ -61,8 +61,8 @@ const setPermission = ({ email, groups, role, status }: any) => api
 
 const getEmailManagers = () => api
   .get('/emails/')
-  .then((result: any) => result?.emails
-    ?.map(({ email, id }: any) => ({ email, id })))
+  .then((result: any) => result?.users
+    ?.map(({ email }: any) => email))
 
 export default {
   getMyProfile,

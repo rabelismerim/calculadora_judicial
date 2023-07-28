@@ -27,20 +27,23 @@ const enter = async () => {
     loading = false
   }
 }
-
+let managersLoaded = $ref(false)
 let emailManagers = $ref([])
-const mailto = computed(() => `mailto:${emailManagers.join(', ')}?subject=Pedido de Acesso - JUCA
-          &body=Prezados,
-          Gostaria de solicitar formalmente acesso à aplicação JUCA. Por favor, conceda-me as permissões necessárias.
-          Agradeço antecipadamente pela sua atenção a esta solicitação.
-          
-          Atenciosamente
+const emailBody = `Prezados,
 
-Atenciosamente,`)
+Gostaria de solicitar formalmente acesso à aplicação JUCA. 
+Por favor, conceda-me as permissões necessárias.
+Agradeço antecipadamente pela sua atenção a esta solicitação.
+
+Atenciosamente,
+
+`.replaceAll('\n', '%0D%0A')
+const mailto = computed(() => `mailto:${emailManagers.join(',')}?subject=Pedido de Acesso - JUCA&body=${emailBody}`)
 
 onMounted(async () => {
   const { authenticated, isActive } = await usersService.verifyUser() || {}
   emailManagers = await usersService.getEmailManagers() || []
+  managersLoaded = true
 
   isAuthenticated = authenticated
   if ((isActive || authenticated) && inProduction)
@@ -84,7 +87,7 @@ onMounted(async () => {
               @click="enter"
             />
             <Btn
-              v-else
+              v-else-if="managersLoaded"
               tag="a"
               :label="!requested ? 'Solicitar acesso' : 'Pedido de acesso solicitado'"
               loading-label="Processando seus dados..."

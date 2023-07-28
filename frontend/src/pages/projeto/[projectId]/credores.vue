@@ -192,7 +192,7 @@ onMounted(() => {
           <div><b>Horários Advocatícios:</b> {{ creditor.advocativeHours }}</div>
           <div><b>CPF/CNPJ:</b> {{ creditor.legalNumber }}</div>
           <div><b>Juros Moratórios:</b> {{ creditor.defaultInterest }}</div>
-          <div><b>Ocorrência:</b> {{ creditorOptions.occurrenceOptions.legend }}</div>
+          <div><b>Ocorrência:</b> {{ creditor.occurrence }}</div>
           <div class="sm:col-span-2">
             <b>Descrição:</b> {{ creditor.description }}
           </div>
