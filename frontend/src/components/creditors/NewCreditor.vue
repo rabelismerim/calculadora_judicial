@@ -37,7 +37,7 @@ const freeRecoverings = computed(() => props.options.recoverings
 const addRecovering = () => {
   const { recoverings } = clone(creatingCreditor)
   if (!newRecovering.recoveringId || !newRecovering.rateId) {
-    throwError({ message: 'Você precisa adicionar uma recuperanda e uma taxa!', id: 'NEW_RECOVERING' })
+    throwError({ message: 'Você precisa adicionar uma recuperanda!', id: 'NEW_RECOVERING' })
     return
   }
   creatingCreditor.recoverings = [...recoverings, clone(newRecovering)]
