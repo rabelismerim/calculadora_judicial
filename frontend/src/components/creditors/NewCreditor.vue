@@ -43,8 +43,6 @@ const addRecovering = () => {
   creatingCreditor.recoverings = [...recoverings, clone(newRecovering)]
   newRecovering = clone(nullRecovering)
 }
-const rates = computed(() => props.options.rates
-  ?.map(({ id: value, index: label }) => ({ label, value })))
 
 const removeRecovering = (index: number) => {
   const newCreditor = clone(creatingCreditor)
@@ -132,23 +130,7 @@ const onSubmit = async () => {
                 </QItem>
               </template>
             </QSelect>
-            <QSelect
-              v-model="newRecovering.rateId"
-              label="Taxa"
-              outlined
-              emit-value
-              map-options
-              :options="rates"
-              class="flex-1"
-            >
-              <template #no-option>
-                <QItem>
-                  <QItemSection class="text-grey">
-                    Não existe Recuperanda Cadastrada
-                  </QItemSection>
-                </QItem>
-              </template>
-            </QSelect>
+
             <Btn
               label="Adicionar"
               icon="i-carbon-add-filled"
