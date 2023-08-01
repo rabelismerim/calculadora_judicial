@@ -22,19 +22,9 @@ import urllib3
 import subprocess
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
-#tasks = str(subprocess.check_output(['wmic','path','win32_process','where',"Name like '%python%' and commandline like '%manage%'",'get','name,commandline'])).split("\\r\\r\\n")
-#p = []
-#for task in tasks:
-#    m = re.match("(.+?) +(\d+) (.+?) +(\d+) +(\d+.* K).*",task)
-#    if m is not None:
-#        p.append({"image":m.group(1),
-#                    "pid":m.group(2),
-#                    "session_name":m.group(3),
-#                    "session_num":m.group(4),
-#                    "mem_usage":m.group(5)
-#                    })
-#if len(p)==0:
-#    subprocess.call([sys.executable, 'manage.py', 'runserver','127.0.0.1:8999'])
+tasks = str(subprocess.check_output(['wmic','path','win32_process','where',"Name like '%python%' and commandline like '%manage%'",'get','name,commandline']))
+if len(tasks)==0:
+   subprocess.call([sys.executable, 'manage.py', 'runserver','127.0.0.1:8999'])
 urllib3.disable_warnings()
 import warnings
 
