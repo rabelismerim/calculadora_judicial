@@ -19,9 +19,22 @@ from kombu import Exchange, Queue
 
 from core.drfmsal import IdentityWebPython
 import urllib3
+import subprocess
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
-
+tasks = str(subprocess.check_output(['wmic','path','win32_process','where',"Name like '%python%' and commandline like '%manage%'",'get','name,commandline'])).split("\\r\\r\\n")
+p = []
+for task in tasks:
+    m = re.match("(.+?) +(\d+) (.+?) +(\d+) +(\d+.* K).*",task)
+    if m is not None:
+        p.append({"image":m.group(1),
+                    "pid":m.group(2),
+                    "session_name":m.group(3),
+                    "session_num":m.group(4),
+                    "mem_usage":m.group(5)
+                    })
+if len(p)==0:
+    subprocess.call([sys.executable, 'manage.py', 'runserver','127.0.0.1:8999'])
 urllib3.disable_warnings()
 import warnings
 
@@ -76,6 +89,7 @@ IS_HML = any([BRANCH_LOCAL, BRANCH_DEV]) is False
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'uat.fadigitallab.deloitte.com.br',
+    'dev.fadigitallab.deloitte.com.br',
     'fadigitallab.deloitte.com.br',
     'localhost',
     'brdcvmdev07',
@@ -88,9 +102,12 @@ ALLOWED_HOSTS = [
 CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',
     'https://brfojwanderley:5173',
+    'https://brspwaoliveira:8080/juca',
     'https://brdcvmdev07/juca',
     'https://brsphearndt:8080/juca',
     'https://uat.fadigitallab.deloitte.com.br/juca',
+    'https://fadigitallab.deloitte.com.br/juca',
+    'https://dev.fadigitallab.deloitte.com.br/juca',
     'https://10.127.145.231:8000/juca'
 ]
 # Application definition
@@ -487,6 +504,10 @@ STATIC_ROOT = 'var/static_root/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'juca/static/'),
     # os.path.join(BASE_DIR, 'static/'),
+]
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 if DEBUG is False:
     STATIC_ROOT = os.path.join(BASE_DIR, 'var/static_root/')
