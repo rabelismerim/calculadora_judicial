@@ -922,8 +922,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         )
                                     sheet["A" + str(cnt_ini_row)] = (
                                         "Total Atualizado:"
-                                        if project[0].date_citation
-                                        < project[0].date_rj_request
+                                        if project[0].date_citation and project[0].date_rj_request  and 
+                                        project[0].date_citation < project[0].date_rj_request 
                                         else "Total Devido:"
                                     )
                                     sheet["C" + str(cnt_ini_row)] = (
@@ -940,7 +940,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     )
                                     cnt_ini_row = cnt_ini_row + 1
                                     if (
-                                        project[0].date_citation
+                                        project[0].date_citation and project[0].date_rj_request and project[0].date_citation
                                         >= project[0].date_rj_request
                                     ):
                                         sheet.move_range(
@@ -2318,6 +2318,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     col.value = ""
                                     sum_total = 0
                                     if (
+                                        project[0].date_citation and project[0].date_rj_request and
                                         project[0].date_citation
                                         >= project[0].date_rj_request
                                     ):
@@ -2367,7 +2368,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         cnt_ini_row = cnt_ini_row + 1
                                     sheet["A" + str(cnt_ini_row)] = (
                                         "Total Atualizado:"
-                                        if project[0].date_citation
+                                        if project[0].date_citation and project[0].date_rj_request and project[0].date_citation
                                         < project[0].date_rj_request
                                         else "Total Devido:"
                                     )
@@ -2385,7 +2386,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     )
                                     cnt_ini_row = cnt_ini_row + 1
                                     if (
-                                        project[0].date_citation
+                                        project[0].date_citation and project[0].date_rj_request and project[0].date_citation
                                         >= project[0].date_rj_request
                                     ):
                                         sheet[
