@@ -29,6 +29,7 @@ const onInput = (value: string | number | null) => {
   <QInput
     ref="input"
     :model-value="modelValue"
+    :style="{ 'text-transform': 'uppercase' }"
     :label="label"
     :rules="rules"
     :maxlength="maxlength"
