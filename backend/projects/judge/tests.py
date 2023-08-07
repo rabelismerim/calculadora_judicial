@@ -25,11 +25,11 @@ class RegionTest(AbstractTest):
         "description": generate_name()
     }
 
-    path = ['projects/region']
+    path = 'projects/region'
 
     def test_api_get(self):
         """Assert get courts detail"""
         response = super().test_api_get()
-        objs = response.content['judges']
+        objs = response.content['regions']
         self.assertGreaterEqual(len(objs), 1)
         return objs

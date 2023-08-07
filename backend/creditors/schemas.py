@@ -66,7 +66,7 @@ class AbstractCreditorSchema(AbstractDescriptionSchema):
                                          allow_null=True, exclude=('creditor_id',))
     claim_lawyer = ClaimLawyerSchema(source='claimlawyer', many=False, read_only=False, required=False, allow_null=True,
                                      exclude=('creditor_id',))
-    legal_pendencies = LegalPendenciesCreditorSchema(source='legalpendencies_set', many=True)
+    legal_pendencies = LegalPendenciesCreditorSchema(source='legalpendencies_set', many=True, required=False)
 
     calculation_impediment_list = serializers.ListField(source='get_calculation_impediment_list', read_only=True)
     nature = serializers.ListField(source='get_nature_description', read_only=True)
@@ -75,7 +75,7 @@ class AbstractCreditorSchema(AbstractDescriptionSchema):
     class Meta:
         model = Creditor
         # fields = '__all__'
-        exclude = ('recovering', 'rate')
+        exclude = ('recovering', )
         read_only_fields = ('total',)
 
     def validate(self, data):
@@ -92,20 +92,18 @@ class AbstractCreditorSchema(AbstractDescriptionSchema):
         if Creditor.objects.filter(recovering_id=recovering_id, entity__legal_number=legal_number,
                                    physical_person=physical_person).exists():
             raise serializers.ValidationError([_('Creditor already registered in this recovering')])
-        if not data.get('rate_id') and data.get('is_active'):
-            raise serializers.ValidationError([_('Need a rate_id when activating the creditor')])
         return super(AbstractCreditorSchema, self).validate(data)
 
 
 class CreditorSchema(AbstractCreditorSchema):
     """Serializer Creditor fields to create unique Creditor"""
-    rate_id = serializers.UUIDField()
+    # rate_id = serializers.UUIDField()
 
 
 class CreditorBulkSchema(AbstractCreditorSchema):
     """Serializer Creditor fields to create bulk Creditor"""
 
-    rate_id = serializers.UUIDField(required=False)
+    # rate_id = serializers.UUIDField(required=False)
 
 
 class AbstractChoicesSerializer(serializers.Serializer):
@@ -142,9 +140,9 @@ class CreditorCreateSchema(serializers.Serializer):
 
 class CreditorUpdateSchema(AbstractDescriptionSchema):
     """Serializer Creditor fields"""
-    rate_id = serializers.UUIDField(required=False)
+    # rate_id = serializers.UUIDField(required=False)
 
     class Meta:
         model = Creditor
         fields = ('description', 'admission', 'dismissal', 'default_interest', 'fine', 'advocative_hours', 'occurrence',
-                  'representation_documentation', 'claim_type', 'nature', 'is_active', 'rate_id')
+                  'representation_documentation', 'claim_type', 'nature', 'is_active')

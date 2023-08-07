@@ -30,6 +30,7 @@ from calculation.models import Calculation, Incident, CHOICES_STEP, SpecialAppro
 from creditors.classes.models import CLASSE_CHOICES
 from creditors.schemas import CreditorSchema
 from projects.project_user.schemas import ProjectUserProjectSchema
+from rates.schemas import RateSchema
 from utils import _
 
 
@@ -121,6 +122,8 @@ class CalculationAllFundsSchema(AbstractDescriptionSchema):  # V1
     """
 
     all_funds = serializers.SerializerMethodField()
+    rate_id = serializers.UUIDField(write_only=True)
+    rate = RateSchema(read_only=True)
 
     def get_all_funds(self, obj):
         """
@@ -143,7 +146,7 @@ class CalculationAllFundsSchema(AbstractDescriptionSchema):  # V1
 
     class Meta:
         model = Calculation
-        fields = ('all_funds',)
+        fields = ('all_funds', 'rate_id', 'rate')
 
 
 class CalculationExcelSchema(CalculationAllFundsSchema):  # V1
@@ -162,15 +165,17 @@ class CalculationExcelSchema(CalculationAllFundsSchema):  # V1
     """
 
     funds = FundsExcelSchema(source='funds_set', many=True,
-                        required=False, exclude=('calculation_id',), read_only=True)
+                             required=False, exclude=('calculation_id',), read_only=True)
     fund_irrf = FundIRRFExcelSchema(source='fundirrf_set', many=True,
-                               required=False, exclude=('calculation_id',), read_only=True)
+                                    required=False, exclude=('calculation_id',), read_only=True)
     fund_document = FundDocumentSchema(source='funddocument_set', many=True,
                                        required=False, exclude=('calculation_id',), read_only=True)
+
     class Meta:
         model = Calculation
         fields = '__all__'
         read_only_fields = ('funds', 'fund_irrf', 'fund_document')
+
 
 class CalculationSchema(CalculationAllFundsSchema):  # V1
     """
@@ -211,7 +216,7 @@ class CalculationSchema(CalculationAllFundsSchema):  # V1
     historical = serializers.SerializerMethodField(read_only=True)
 
     approver = ProjectUserProjectSchema(read_only=True, allow_null=True)
-    special_approvers = SpecialApproverSchema(source='special_approvers.all',read_only=True, many=True)
+    special_approvers = SpecialApproverSchema(source='special_approvers.all', read_only=True, many=True)
     # special_approver = ProjectUserProjectSchema(read_only=True, allow_null=True)
     executor = ProjectUserProjectSchema(read_only=True, allow_null=True)
     reviewer = ProjectUserProjectSchema(read_only=True, allow_null=True)
@@ -280,6 +285,7 @@ class CalculationV2Schema(AbstractDescriptionSchema):  # V2
     incident = IncidentSchema(many=False, read_only=True)
     incident_id = serializers.UUIDField(write_only=True)
     creditor_id = serializers.UUIDField(write_only=True)
+    rate_id = serializers.UUIDField()
 
     # verdict = VerdictSchema(source='verdict_set', many=True, required=False, exclude=('calculation_id',))
     # criterion = CriterionSchema(many=False, read_only=True)
@@ -358,7 +364,7 @@ class ChangeStepSerializer(serializers.Serializer):
     """
     next_step = serializers.ChoiceField(source='step', choices=CHOICES_STEP)
     comments = CommentSchema(many=True, write_only=True, required=False, exclude=('create_user', 'update_user',))
-    special_approvers = serializers.ListField(required=False, child=serializers.IntegerField(),)
+    special_approvers = serializers.ListField(required=False, child=serializers.IntegerField(), )
 
     def __init__(self, *args, **kwargs):
         fields = kwargs.pop('exclude', None)

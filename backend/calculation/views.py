@@ -16,7 +16,6 @@ from django.http import JsonResponse
 from rest_framework import status, serializers
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission, CanChangeStep
-from creditors.models import Creditor
 from utils import _, doc
 
 docs = {
@@ -198,7 +197,6 @@ class CalculationApi(AbstractCalculationApi):
 
             new_criterion = {
                 'calculation': calculation,
-                'rate': creditor.rate,
                 'admission': creditor.admission,
                 'dismissal': creditor.dismissal,
                 'default_interest': creditor.default_interest,

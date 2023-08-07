@@ -103,6 +103,7 @@ class Calculation(AbstractModel):
                                                     null=True, blank=True)
     # Statement N10 - Há honorários advocatícios?
     has_advocative_hours = models.BooleanField(_('Are there fees in the approved calculation?'), default=False)
+    rate = models.ForeignKey(Rate, on_delete=models.PROTECT, null=True, blank=True)
 
     @property
     def has_edital(self):
@@ -148,6 +149,10 @@ class Calculation(AbstractModel):
 
     def save(self, *args, **kwargs):
         super(Calculation, self).save(*args, **kwargs)
+
+        if not self.rate:
+            raise serializers.ValidationError([_('Need a rate')])
+
         if not self.id or not self.number:
             self.number = self._get_number()
             if not self.id:
@@ -159,7 +164,7 @@ class Calculation(AbstractModel):
 
         Get rate
         """
-        return self.criterion.rate
+        return self.rate
 
     def get_date_rj(self) -> datetime.date or None:
         """
@@ -531,7 +536,7 @@ class Calculation(AbstractModel):
                 class_totals[class_name] = {
                     'coin': class_dict['coin'],
                     'total_value': class_total_value,
-                                            'total_calculated': class_total_calculated}
+                    'total_calculated': class_total_calculated}
             else:
                 class_totals[class_name]['total_value'] += class_total_value
                 class_totals[class_name]['total_calculated'] += class_total_calculated
@@ -599,7 +604,7 @@ class Calculation(AbstractModel):
                    self.funds_set.filter(classes__classe__isnull=False)]
         classes += [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
                      'total_calculated': fund.get_total_summed(),
-                     'total_historical': fund.get_total_historical_summed(),} for fund in
+                     'total_historical': fund.get_total_historical_summed(), } for fund in
                     self.funddocument_set.filter(classes__classe__isnull=False)]
         classes += [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
                      'total_calculated': fund.get_total_summed(),

@@ -75,7 +75,6 @@ class AbstractDateCreditor(AbstractModel):
     dismissal_teste = models.DateField(_("Resignation date"), blank=True, null=True, default=date.today)
 
     # TODO: Verificar se esses valores são para cada credor ou cada recuperanda
-    rate = models.ForeignKey(Rate, on_delete=models.PROTECT, null=True, blank=True)
     default_interest = models.FloatField(_('Default interest'), default=0)
     fine = models.FloatField(_('Fine'), default=0)
     advocative_hours = models.FloatField(_('Advocative hours'), default=0)
