@@ -17,20 +17,20 @@ const getFileDetail = (id: string) => api
   .get(`/v1/files/detail/${id}/`)
   .then((result: any) => result?.filedetail)
 
-const getObjetcId = (objectId: string) => api
-  .get(`/v1/files/detail/{path}/${objectId}/`)
+const getObjetcId = (path: string, objectId: string) => api
+  .get(`/v1/files/detail/${path}/${objectId}/`)
   .then((result: any) => result?.objectId)
 
 const getFilesExample = () => api
   .get('/v1/files/example/')
   .then((result: any) => result?.filesExample)
 
-const getFilesExamplePath = () => api
-  .get('/v1/files/example/{path}/')
+const getFilesExamplePath = (path: string) => api
+  .get(`/v1/files/example/${path}/`)
   .then((result: any) => result?.filesExamplePath)
 
-const getFilesPathName = () => api
-  .get('/v1/files/example/{path}/{name}/')
+const getFilesPathName = (path: string, name: string) => api
+  .get(`/v1/files/example/${path}/${name}/`)
   .then((result: any) => result?.filesPathName)
 
 const newCreatePath = async (createPath: CreatePath) => {
@@ -38,7 +38,7 @@ const newCreatePath = async (createPath: CreatePath) => {
   const results = []
   try {
     const result = await api
-      .post('/v1/files/create/{path}/',
+      .post(`/v1/files/create/${path}/`,
         ({
           file,
           path,
@@ -54,26 +54,26 @@ const newCreatePath = async (createPath: CreatePath) => {
   }
 }
 
-const updateErrorDetail = async (updateerrordetail: ErrorDetail) => {
-  const { id, createAtMax, createAtMin, updateAtMax, updateAtMin } = updateerrordetail
+const setErrorDetail = async (seterrordetail: ErrorDetail) => {
+  const { id, createAtMax, createAtMin, updateAtMax, updateAtMin } = seterrordetail
+  const method = id ? 'put' : 'delete'
   const results = []
   try {
-    const result = await api
-      .post(`/v1/files/error/detail/${id}`,
-        ({
-          id,
-          createAtMax,
-          createAtMin,
-          updateAtMax,
-          updateAtMin,
-        }))
-      .then((result: any) => result.updateerrordetail)
+    const result = await api[method](`/v1/files/error/detail/${id}/`,
+      ({
+        id,
+        createAtMax,
+        createAtMin,
+        updateAtMax,
+        updateAtMin,
+      }))
+      .then((result: any) => result.seterrordetail)
     results.push(result)
 
     return results
   }
   catch (error) {
-    printError('ERROR ON UPDATE ERROR DETAIL', error)
+    printError('ERROR ON ERROR DETAIL', error)
   }
 }
 
@@ -84,5 +84,5 @@ export default {
   getFilesExamplePath,
   getFilesPathName,
   newCreatePath,
-  updateErrorDetail,
+  setErrorDetail,
 }
