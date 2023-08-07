@@ -377,6 +377,7 @@ onMounted(async () => {
               v-model="newCalculation.incidentId"
               v-model:options="incidents"
               label="Número de Incidente"
+              mask="#######-##.####.#.##.####"
               :to-add="addIncident"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :disable="loading"
