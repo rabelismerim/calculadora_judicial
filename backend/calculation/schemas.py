@@ -125,8 +125,9 @@ class CalculationAllFundsSchema(AbstractDescriptionSchema):  # V1
     """
 
     all_funds = serializers.SerializerMethodField()
-    rate_id = serializers.UUIDField(write_only=True)
-    rate = RateSchema(read_only=True)
+    # TODO: remover required False depois do front ter colocado a obrigatoriedade
+    rate_id = serializers.UUIDField(write_only=True, required=False)
+    rate = RateSchema(read_only=True, allow_null=True, exclude=('rate_values',))
 
     def get_all_funds(self, obj):
         """
@@ -292,7 +293,9 @@ class CalculationV2Schema(AbstractDescriptionSchema):  # V2
     incident = IncidentSchema(many=False, read_only=True)
     incident_id = serializers.UUIDField(write_only=True)
     creditor_id = serializers.UUIDField(write_only=True)
-    rate_id = serializers.UUIDField()
+    # TODO: remover required False depois do front ter colocado a obrigatoriedade
+    rate_id = serializers.UUIDField(write_only=True, required=False)
+    rate = RateSchema(read_only=True, allow_null=True, exclude=('rate_values',))
 
     # verdict = VerdictSchema(source='verdict_set', many=True, required=False, exclude=('calculation_id',))
     # criterion = CriterionSchema(many=False, read_only=True)
