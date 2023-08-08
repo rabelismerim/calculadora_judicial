@@ -1,7 +1,6 @@
 from django.db import models
-from rest_framework import serializers
-
 from core.entity.models import Entity
+from rates.models import Rate
 from recovering.models import Recovering
 from base.models import AbstractDateCreditor, AbstractDescription
 from utils import _
@@ -17,6 +16,7 @@ class Creditor(AbstractDateCreditor):
     total = models.FloatField(_('Total sum of valid amounts'), default=0)
     total_historical = models.FloatField(_('Total historical sum of valid amounts'), default=0)
     is_active = models.BooleanField(_('Is active'), default=True)
+    rate = models.ForeignKey(Rate, on_delete=models.PROTECT, null=True, blank=True)
 
     def get_total(self) -> float:
         return self.total

@@ -60,7 +60,7 @@ class GroupSchema(serializers.ModelSerializer):
         Args:
             data (dict): Data to validate.
 
-        Returns:
+        :return:
             errors (list): List of errors found in validations.
         """
         data = dict(data)
@@ -106,7 +106,7 @@ class SubgroupSchema(serializers.ModelSerializer):
         Args:
             data (dict): Data to validate.
 
-        Returns:
+        :return:
             errors (list): List of errors found in validations.
         """
         data = dict(data)
@@ -185,7 +185,7 @@ class UserDttSchema(serializers.ModelSerializer):
             password (str): Password to validate.
             password_confirm (str): Password confirmation.
 
-        Returns:
+        :return:
             errors (list): List of errors found in validations.
         """
         errors = []
@@ -266,7 +266,7 @@ class UserDttMFASchema(serializers.ModelSerializer):
         Args:
             data (dict): Data to validate.
 
-        Returns:
+        :return:
             errors (list): List of errors found in validations.
         """
         data['first_name'] = data['username'].split(' ')[0]

@@ -28,7 +28,7 @@ class Statement(AbstractModel):
         """
         Gets the statementpf attribute of the object if it exists.
 
-        Returns:
+        :return:
             - The statementpf attribute of the object, if it exists.
             - None, otherwise.
         """
@@ -39,7 +39,7 @@ class Statement(AbstractModel):
         """
         Gets the statementpj attribute of the object if it exists.
 
-        Returns:
+        :return:
             - The statementpj attribute of the object, if it exists.
             - None, otherwise.
         """
@@ -50,7 +50,7 @@ class Statement(AbstractModel):
         """
         Gets the value of the totallawyer attribute of the object if it exists.
 
-        Returns:
+        :return:
             - The value of the totallawyer attribute of the object, if it exists.
             - 0, otherwise.
         """
@@ -62,7 +62,7 @@ class Statement(AbstractModel):
         """
         Gets the values of the lawyers_name attribute of the object if it exists.
 
-        Returns:
+        :return:
             - The values of the lawyers_name attribute of the object, if it exists.
             - 0, otherwise.
         """
@@ -74,7 +74,7 @@ class Statement(AbstractModel):
         """
         Calls the get_recurral_deposit method of the object's statementpf attribute if it exists.
 
-        Returns:
+        :return:
             - The result of calling the get_recurral_deposit method of the object's statementpf attribute, if it exists.
             - 0, otherwise.
         """

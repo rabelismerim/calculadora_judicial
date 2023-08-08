@@ -1,5 +1,6 @@
 import pickle
 import re
+import traceback
 from datetime import datetime
 import xlsxwriter
 
@@ -97,7 +98,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
         associated with the `Creditor` objects associated with the `Recovering` objects
         that are associated with this `Project` object.
 
-        Returns:
+        :return:
             A list of dictionaries with the following keys:
                 - 'total': the count of `Calculation` objects in the given status step
                 - 'step': the status step
@@ -117,7 +118,6 @@ class Project(AbstractDescription, AbstractDateRecovering):
         missing_steps = all_steps - existing_steps
         for step in missing_steps:
             step_counts.append({'total': 0, 'step': step, 'step_display': dict(CHOICES_STEP)[step]})
-        print(step_counts, 'step counts\n')
         return step_counts
 
     def __init__(self, *args, **kwargs):
@@ -220,38 +220,52 @@ class Project(AbstractDescription, AbstractDateRecovering):
     def get_valid_excels_headers(self):
         # enabling translation to output only in a single language and not generate errors in different languages
         activate('pt-br')
-        excels = [
-            ExcelHeader(callback=self.process_json_to_model,
-                        name='create_creditors_claim',
-                        columns=[
-                            {"title": "Credor", 'choice': None, 'default': None, 'type': 'str'},  # OK
-                            {"title": "Credor - CPF/CNPJ", 'choice': None, 'default': None, 'type': 'str'},  # OK
-                            {"title": "Credor - Classe", 'choice': CLASSE_CHOICES, 'default': None, 'type': 'str'},
-                            # OK
-                            {"title": "Credor - Valor", 'choice': None, 'default': None, 'type': 'float'},  # OK
-                            {"title": "Credor - Moeda", 'choice': COIN_CHOICES, 'default': None, 'type': 'str'},  # OK
 
-                            {"title": "Credor - Recuperanda CPF/CNPJ", 'choice': None, 'default': None, 'type': 'str'},
+        default_columns = [
+            {"title": "Credor", 'choice': None, 'default': None, 'type': 'str'},
+            {"title": "Credor - CPF/CNPJ", 'choice': None, 'default': None, 'type': 'str'},
+            {"title": "Credor - Recuperanda CPF/CNPJ", 'choice': None, 'default': None, 'type': 'str'},
 
-                            {"title": "Edital RJ - Classe", 'choice': CLASSE_CHOICES, 'default': None, 'type': 'str'},
-                            # OK
-                            {"title": "Edital RJ - Valor", 'choice': None, 'default': None, 'type': 'float'},  # OK
-                            {"title": "Edital RJ - Moeda", 'choice': COIN_CHOICES, 'default': None, 'type': 'str'},
-                            # OK
-
-                            {"title": "Documentação de representação", 'choice': CHOICES_REPRESENTATION_DOCUMENTATION,
-                             'default': None, 'type': 'str'},  # OK
-                            {"title": "Tipo", 'choice': CHOICES_CLAIM_TYPE, 'default': None, 'type': 'str'},  # OK
-                            {"title": "Natureza (NF, contrato, trabalhista etc)", 'choice': NATURE_CHOICES,
-                             'default': None, 'type': 'str'},  # OK
-                            {"title": "Descrição", 'choice': None, 'default': None, 'type': 'str'},  # OK
-                            {"title": "Status", 'choice': CHOICES_STATUS_LEGAL, 'default': None, 'type': 'str'},  # OK
-                            {"title": "Prazo resposta", 'choice': None, 'default': None, 'type': 'date'},  # OK
-                            {"title": "Pessoa Física", 'choice': CHOICES_PHYSICAL_PERSON, 'default': None,
-                             'type': 'str'},  # OK
-                        ]
-                        )
+            {"title": "Documentação de representação", 'choice': CHOICES_REPRESENTATION_DOCUMENTATION,
+             'default': None, 'type': 'str'},
+            {"title": "Tipo", 'choice': CHOICES_CLAIM_TYPE, 'default': None, 'type': 'str'},
+            {"title": "Natureza (NF, contrato, trabalhista etc)", 'choice': NATURE_CHOICES,
+             'default': None, 'type': 'str'},
+            {"title": "Descrição", 'choice': None, 'default': None, 'type': 'str'},
+            {"title": "Status", 'choice': CHOICES_STATUS_LEGAL, 'default': None, 'type': 'str'},
+            {"title": "Prazo resposta", 'choice': None, 'default': None, 'type': 'date'},
+            {"title": "Pessoa Física", 'choice': CHOICES_PHYSICAL_PERSON, 'default': None,
+             'type': 'str'},
         ]
+
+        rj_columns = default_columns.copy()
+        rj_columns[3:3] = [
+            {"title": "Credor - Classe", 'choice': CLASSE_CHOICES, 'default': None, 'type': 'str'},
+            {"title": "Credor - Valor", 'choice': None, 'default': None, 'type': 'float'},
+            {"title": "Credor - Moeda", 'choice': COIN_CHOICES, 'default': None, 'type': 'str'},
+
+            {"title": "Edital RJ - Classe", 'choice': CLASSE_CHOICES, 'default': None, 'type': 'str'},
+            {"title": "Edital RJ - Valor", 'choice': None, 'default': None, 'type': 'float'},
+            {"title": "Edital RJ - Moeda", 'choice': COIN_CHOICES, 'default': None, 'type': 'str'},
+        ]
+
+        aj_columns = default_columns.copy()
+        aj_columns[3:3] = [
+            {"title": "Credor - Classe", 'choice': CLASSE_CHOICES, 'default': None, 'type': 'str'},
+            {"title": "Credor - Valor", 'choice': None, 'default': None, 'type': 'float'},
+            {"title": "Credor - Moeda", 'choice': COIN_CHOICES, 'default': None, 'type': 'str'},
+
+            {"title": "Edital AJ - Classe", 'choice': CLASSE_CHOICES, 'default': None, 'type': 'str'},
+            {"title": "Edital AJ - Valor", 'choice': None, 'default': None, 'type': 'float'},
+            {"title": "Edital AJ - Moeda", 'choice': COIN_CHOICES, 'default': None, 'type': 'str'},
+        ]
+
+        excels = [
+            ExcelHeader(callback=self.process_json_to_model, name='create_creditors', columns=default_columns),
+            ExcelHeader(callback=self.process_json_to_model, name='create_creditors_rj', columns=rj_columns),
+            ExcelHeader(callback=self.process_json_to_model, name='create_creditors_aj', columns=aj_columns),
+        ]
+
         deactivate()
         return excels
 
@@ -265,7 +279,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
             if equal_headers:
                 funcao_serializada = pickle.dumps(excel.get_callback())
                 task = ProcessExcelTask.delay('task-process-excel-to-json', file_read, funcao_serializada,
-                                              **{'file_id': file_id})
+                                              **{'file_id': file_id, 'name': excel.get_name()})
                 file_obj.task_id = task.id
                 file_obj.save()
                 has_excel = True
@@ -274,7 +288,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
             raise serializers.ValidationError(_('Excel is not in the correct format'))
 
     def process_json_to_model(self, data: list, **kwargs):
-        name = 'create_creditors_claim'
+        name = kwargs.get('name')
         excel = self.get_excel_by_name(name)
         data = excel.parse_list(data)
         all_natures = NatureChoice.objects.all()
@@ -289,7 +303,6 @@ class Project(AbstractDescription, AbstractDateRecovering):
                     natures = []
                     nature = credor['Natureza (NF, contrato, trabalhista etc)']
                     recovering_legal_number = ''.join(re.findall(r'\d', str(credor['Credor - Recuperanda CPF/CNPJ'])))
-                    print(recovering_legal_number, 'recovering_legal_number\n')
                     recovering = self.recovering_set.filter(entity__legal_number=recovering_legal_number).values_list(
                         'id', flat=True).first()
                     # recovering = self.recovering_set.filter().values_list('id', flat=True).first()
@@ -302,45 +315,76 @@ class Project(AbstractDescription, AbstractDateRecovering):
                         'id',
                         flat=True).first()
                     legal_pendencies = []
+                    credor_description = credor.get('Descrição')
+                    credor_description = credor_description if credor_description is not None \
+                                                               and str(credor_description).strip() != '' else None
 
-                    if all([credor['Descrição'], credor['Status'], credor['Prazo resposta']]):
+                    if all([credor_description, credor.get('Status'), credor.get('Prazo resposta')]):
                         legal_pendencies.append(
                             {
-                                "description": credor['Descrição'],
+                                "description": credor_description,
                                 "status": credor['Status'],
                                 "deadline": datetime.strptime(str(credor['Prazo resposta']), "%d/%m/%Y").date()
                             })
 
                     if nature_id:
                         natures.append(nature_id)
+
+                    claims_creditor = []
+                    notice_rj_creditor = []
+                    notice_aj_creditor = []
+
+                    claim_classe = credor.get('Credor - Classe')
+                    claim_coin = credor.get('Credor - Moeda')
+                    claim_value = credor.get('Credor - Valor')
+                    if all([claim_classe, claim_coin]) and claim_value is not None:
+                        claims_creditor.append({
+                            "classes": {
+                                "classe": claim_classe
+                            },
+                            "coins": {
+                                "coin": claim_coin,
+                                "value": claim_value
+                            },
+                        })
+
+                    notice_rj_classe = credor.get('Edital RJ - Classe')
+                    notice_rj_coin = credor.get('Edital RJ - Moeda')
+                    notice_rj_value = credor.get('Edital RJ - Valor')
+                    if all([notice_rj_classe, notice_rj_coin]) and notice_rj_value is not None:
+                        notice_rj_creditor.append({
+                            "classes": {
+                                "classe": notice_rj_classe
+                            },
+                            "coins": {
+                                "coin": notice_rj_coin,
+                                "value": notice_rj_value
+                            },
+                        })
+
+                    notice_aj_classe = credor.get('Edital AJ - Classe')
+                    notice_aj_coin = credor.get('Edital AJ - Moeda')
+                    notice_aj_value = credor.get('Edital AJ - Valor')
+                    if all([notice_aj_classe, notice_aj_coin]) and notice_aj_value is not None:
+                        notice_aj_creditor.append({
+                            "classes": {
+                                "classe": notice_aj_classe
+                            },
+                            "coins": {
+                                "coin": notice_aj_coin,
+                                "value": notice_aj_value
+                            },
+                        })
+
                     new_credor = {
                         "entity": {
                             "name": credor['Credor'],
                             "legal_number": credor['Credor - CPF/CNPJ']
                         },
                         "recovering_id": recovering,
-                        "claim_creditor": [
-                            {
-                                "classes": {
-                                    "classe": credor['Credor - Classe']
-                                },
-                                "coins": {
-                                    "coin": credor['Credor - Moeda'],
-                                    "value": credor['Credor - Valor']
-                                },
-                            }
-                        ],
-                        "notice_recovering": [
-                            {
-                                "classes": {
-                                    "classe": credor['Edital RJ - Classe']
-                                },
-                                "coins": {
-                                    "coin": credor['Edital RJ - Moeda'],
-                                    "value": credor['Edital RJ - Valor']
-                                },
-                            }
-                        ],
+                        "claim_creditor": claims_creditor,
+                        "notice_recovering": notice_rj_creditor,
+                        "notice_aj": notice_aj_creditor,
                         "representation_documentation": credor['Documentação de representação'],
                         "claim_type": credor['Tipo'],
                         "physical_person": str(credor['Pessoa Física']).lower() in ['true', 'verdadeiro'],
@@ -348,6 +392,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
                         "legal_pendencies": legal_pendencies,
                         "is_active": False,
                     }
+
                     from creditors.schemas import CreditorBulkSchema
                     from creditors.views import CreateCreditor
 
@@ -363,6 +408,8 @@ class Project(AbstractDescription, AbstractDateRecovering):
                                                          error=f"Linha: {credor['index']}, Field {field}: {error_message}")
 
             except Exception as e:
+                print(e, 'err proccess file\n')
+                traceback.print_exc()  # Imprime o traceback completo no console
                 ErrorFile.objects.create(file_id=file_id, error=str(e), status='P')
 
 

@@ -401,7 +401,7 @@ class Calculation(AbstractModel):
         Args:
             special_approvers (list): A list of Django User IDs representing the users to check.
 
-        Returns:
+        :return:
             QuerySet: A QuerySet of ProjectUser objects representing the special approvers in the project.
 
         Raises:
@@ -663,7 +663,7 @@ class Calculation(AbstractModel):
         """
         Gets the statement attribute of the object if it exists.
 
-        Returns:
+        :return:
             - The statement attribute of the object, if it exists.
             - None, otherwise.
         """

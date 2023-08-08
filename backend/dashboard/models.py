@@ -155,7 +155,7 @@ class Dashboard(AbstractModel, Query):
         Args:
             request: An object that contains information about the current request.
 
-        Returns:
+        :return:
             list: A list of dictionaries. Each dictionary contains the number of login records per day for a given time period.
         """
         query = self.get_query(request)
@@ -184,7 +184,7 @@ class Dashboard(AbstractModel, Query):
         Args:
             request: An object that contains information about the current request.
 
-        Returns:
+        :return:
             list: A list of dictionaries. Each dictionary contains the number of login records per month for a given time period.
         """
         query = self.get_query(request)

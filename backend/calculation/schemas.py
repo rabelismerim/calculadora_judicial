@@ -79,19 +79,22 @@ class ClassesSerializer(serializers.Serializer):
         """
         Return the display value of the 'classe' field in Classes model.
 
-        Parameters:
+        :params:
+
         obj: The Calculation model instance containing the foreign key to Classes model.
 
-        Returns:
-        The display value of the 'classe' field specified in the Classes model.
+        :return:
+            The display value of the 'classe' field specified in the Classes model.
         """
         display_dict = dict(CLASSE_CHOICES)
         return display_dict[obj['classe']]
 
 
 class HistoricalSchema(AbstractDescriptionSchema):
-    step = StepCommentSchema(source='stepcomment_set', many=True, required=False, read_only=True)
-    historical = UpdateUserSerializer(source='get_historical', many=True, read_only=True)
+    step = StepCommentSchema(source='stepcomment_set',
+                             many=True, required=False, read_only=True)
+    historical = UpdateUserSerializer(
+        source='get_historical', many=True, read_only=True)
 
     class Meta:
         model = Calculation
@@ -132,7 +135,7 @@ class CalculationAllFundsSchema(AbstractDescriptionSchema):  # V1
         Args:
             obj: An instance of the model associated with this serializer.
 
-        Returns:
+        :return:
             A list of dictionaries representing the serialized data. Each dictionary contains a `'data'` key, which contains the serialized data, and a `'type'` key, which indicates the type of data ('fund', 'irrf', or 'document').
         """
         return [
@@ -196,7 +199,8 @@ class CalculationSchema(CalculationAllFundsSchema):  # V1
     incident_id = serializers.UUIDField(write_only=True)
     creditor = CreditorSchema(many=False, read_only=True)
     creditor_id = serializers.UUIDField(write_only=True)
-    verdict = VerdictSchema(source='verdict_set', many=True, required=False, exclude=('calculation_id',))
+    verdict = VerdictSchema(source='verdict_set', many=True,
+                            required=False, exclude=('calculation_id',))
     criterion = CriterionSchema(many=False, read_only=True)
 
     # funds = FundsSchema(source='funds_set', many=True,
@@ -210,13 +214,16 @@ class CalculationSchema(CalculationAllFundsSchema):  # V1
 
     comparative = ComparativeSchema(read_only=True, exclude=('statement_id',))
 
-    step_display = serializers.CharField(source='get_step_display', read_only=True)
-    classes = ClassesSerializer(source='get_classes', read_only=True, many=True)
+    step_display = serializers.CharField(
+        source='get_step_display', read_only=True)
+    classes = ClassesSerializer(
+        source='get_classes', read_only=True, many=True)
     premises = PremiseSchema(many=True, read_only=True)
     historical = serializers.SerializerMethodField(read_only=True)
 
     approver = ProjectUserProjectSchema(read_only=True, allow_null=True)
-    special_approvers = SpecialApproverSchema(source='special_approvers.all', read_only=True, many=True)
+    special_approvers = SpecialApproverSchema(
+        source='special_approvers.all', read_only=True, many=True)
     # special_approver = ProjectUserProjectSchema(read_only=True, allow_null=True)
     executor = ProjectUserProjectSchema(read_only=True, allow_null=True)
     reviewer = ProjectUserProjectSchema(read_only=True, allow_null=True)
@@ -227,7 +234,8 @@ class CalculationSchema(CalculationAllFundsSchema):  # V1
     class Meta:
         model = Calculation
         fields = '__all__'
-        read_only_fields = ('step', 'number', 'approver', 'special_approvers', 'executor', 'reviewer')
+        read_only_fields = ('step', 'number', 'approver',
+                            'special_approvers', 'executor', 'reviewer')
 
     def validate(self, data):
         data['verdict'] = data.pop('verdict_set', None)
@@ -249,7 +257,6 @@ class CalculationSchema(CalculationAllFundsSchema):  # V1
             if isinstance(value, list) and key == "historical":
                 value = data.pop(key)
                 historical_values.extend(value)
-
 
             # Se o valor for um dicionário, chama recursivamente esta função para verificar se ele contém uma chave "historical"
             elif isinstance(value, dict):
@@ -299,13 +306,16 @@ class CalculationV2Schema(AbstractDescriptionSchema):  # V2
     # statement = StatementSchema(read_only=True, exclude=('calculation_id',))
     # comparative = ComparativeSchema(read_only=True, exclude=('statement_id',))
 
-    step_display = serializers.CharField(source='get_step_display', read_only=True)
-    classes = ClassesSerializer(source='get_classes', read_only=True, many=True)
+    step_display = serializers.CharField(
+        source='get_step_display', read_only=True)
+    classes = ClassesSerializer(
+        source='get_classes', read_only=True, many=True)
     premises = PremiseSchema(many=True, read_only=True)
     historical = serializers.SerializerMethodField(read_only=True)
 
     approver = ProjectUserProjectSchema(read_only=True, allow_null=True)
-    special_approver = ProjectUserProjectSchema(read_only=True, allow_null=True)
+    special_approver = ProjectUserProjectSchema(
+        read_only=True, allow_null=True)
     executor = ProjectUserProjectSchema(read_only=True, allow_null=True)
     reviewer = ProjectUserProjectSchema(read_only=True, allow_null=True)
 
@@ -315,7 +325,8 @@ class CalculationV2Schema(AbstractDescriptionSchema):  # V2
     class Meta:
         model = Calculation
         fields = '__all__'
-        read_only_fields = ('step', 'number', 'approver', 'special_approver', 'executor', 'reviewer')
+        read_only_fields = ('step', 'number', 'approver',
+                            'special_approver', 'executor', 'reviewer')
 
     def validate(self, data):
         data['verdict'] = data.pop('verdict_set', None)
@@ -337,7 +348,6 @@ class CalculationV2Schema(AbstractDescriptionSchema):  # V2
             if isinstance(value, list) and key == "historical":
                 value = data.pop(key)
                 historical_values.extend(value)
-
 
             # Se o valor for um dicionário, chama recursivamente esta função para verificar se ele contém uma chave "historical"
             elif isinstance(value, dict):
@@ -363,8 +373,10 @@ class ChangeStepSerializer(serializers.Serializer):
     serializer = ChangeStepSerializer
     """
     next_step = serializers.ChoiceField(source='step', choices=CHOICES_STEP)
-    comments = CommentSchema(many=True, write_only=True, required=False, exclude=('create_user', 'update_user',))
-    special_approvers = serializers.ListField(required=False, child=serializers.IntegerField(), )
+    comments = CommentSchema(many=True, write_only=True, required=False, exclude=(
+        'create_user', 'update_user',))
+    special_approvers = serializers.ListField(
+        required=False, child=serializers.IntegerField(), )
 
     def __init__(self, *args, **kwargs):
         fields = kwargs.pop('exclude', None)

@@ -22,7 +22,7 @@ class LoginMiddleware:
         Args:
             request: An object that contains information about the current request.
 
-        Returns:
+        :return:
             response: The response object from the next middleware or view in the process.
         """
         response = self.get_response(request)

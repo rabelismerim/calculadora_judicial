@@ -32,7 +32,7 @@ class BaseTests:
         Args:
             func (function): The function to be decorated.
 
-        Returns:
+        :return:
             The decorated function.
         """
         stdout = OutputWrapper(sys.stdout)

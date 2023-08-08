@@ -70,8 +70,8 @@ class FileApi(AbstractViewApi):
         representation of a model, such as: `dashboard`, `project` and `creditor`. The `object_id` refers to 
         which object will be related to the file.
         
-        Returns:
-            JsonResponse: A response containing the `file url` information and `task` to track data 
+        :return:
+        - JsonResponse: An HTTP response containing the `file url` information and `task` to track data 
             processing (if any)"""))
     def post(self, request, *args, **kwargs):
         path = kwargs.get('path')
@@ -133,8 +133,8 @@ class FilePathsApi(AbstractViewApi):
         'get': _("""This method handles GET requests for the view. It retrieves the list of available `paths` to get
          `excel names`.
 
-        Returns:
-        JsonResponse: An response containing the serialized File data retrieved.""")
+        :return:
+        - JsonResponse: An HTTP response containing the serialized File data retrieved.""")
     }
 
 
@@ -172,8 +172,8 @@ class FileDetailApi(AbstractViewApi):
         'get': _("""This method handles GET requests for the view. It retrieves a specific `file object` using the given 
         file `id`.
 
-        Returns:
-            JsonResponse: An response containing the serialized File data retrieved.""")
+        :return:
+        - JsonResponse: An HTTP response containing the serialized File data retrieved.""")
     }
 
 
@@ -209,8 +209,8 @@ class FileErrorDetailApi(AbstractViewApi):
         'get': _("""This method handles GET requests for the view. It retrieves a specific `file object` using the given 
         file `id`.
 
-        Returns:
-            JsonResponse: An response containing the serialized File data retrieved.""")
+        :return:
+        - JsonResponse: An HTTP response containing the serialized File data retrieved.""")
     }
 
 
@@ -249,15 +249,16 @@ class FileExamplesApi(AbstractViewApi):
     @doc(_("""This method handles the GET for the view. It retrieves a list of `excel file names` available for
          download, with the given `path`.
 
-        Returns:
-            JsonResponse: An response containing the serialized File data retrieved."""))
+        :return:
+        - JsonResponse: An HTTP response containing the serialized File data retrieved."""))
     def get(self, request, *args, **kwargs):
         path = kwargs.get('path')
         generic_path = GenericModelPath.objects.filter(path=path).first()
         if not generic_path:
             raise serializers.ValidationError(_('Path not found'))
         content_object = generic_path.content_object
-        related_model = apps.get_model(content_object.app_label, content_object.model)
+        related_model = apps.get_model(
+            content_object.app_label, content_object.model)
         return JsonResponse({'excel_names': related_model().get_list_excels_name()})
 
 
@@ -296,8 +297,8 @@ class FileExampleDetailApi(AbstractViewApi):
     @doc(_("""This method handles the GET for the view. It generates a downloadable excel file according to the
          provided file `path` and `name`.
 
-        Returns:
-            JsonResponse: An response containing the serialized File blob retrieved."""))
+        :return:
+        - JsonResponse: An HTTP response containing the serialized File blob retrieved."""))
     def get(self, request, *args, **kwargs):
         path = kwargs.get('path')
         excel_name = kwargs.get('name')
@@ -305,7 +306,8 @@ class FileExampleDetailApi(AbstractViewApi):
         if not generic_path:
             raise serializers.ValidationError(_('Path not found'))
         content_object = generic_path.content_object
-        related_model = apps.get_model(content_object.app_label, content_object.model)
+        related_model = apps.get_model(
+            content_object.app_label, content_object.model)
         excel = related_model().get_excel_by_name(name=excel_name)
         if not excel:
             raise serializers.ValidationError(_('Name not found'))
@@ -346,8 +348,8 @@ class PathFileListApi(AbstractViewApi):
     @doc(_("""This method handles the GET for the view. It takes the `path` and `object_id` and generates a 
         list of objects with related `file` and `id`
 
-        Returns:
-            JsonResponse: An response containing the serialized Files retrieved."""))
+        :return:
+        - JsonResponse: An HTTP response containing the serialized Files retrieved."""))
     def get(self, request, *args, **kwargs):
         path = kwargs.get('path')
         object_id = kwargs.get('object_id')
@@ -355,5 +357,6 @@ class PathFileListApi(AbstractViewApi):
         if not generic_path:
             raise serializers.ValidationError(_('Path not found'))
         serializer = self.get_serializer_class()
-        files = serializer(self.model.objects.filter(object_id=object_id), many=True).data
+        files = serializer(self.model.objects.filter(
+            object_id=object_id), many=True).data
         return JsonResponse({'files': files})

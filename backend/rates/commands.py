@@ -89,7 +89,7 @@ class BCB:
         Args:
             data (list): A list of rate data dictionaries, where each dictionary contains a "data" and "valor" key.
 
-        Returns:
+        :return:
             list: A new list of dictionaries where each dictionary contains a "date" and "value" key.
         """
         new_data = []
@@ -106,7 +106,7 @@ class BCB:
         Args:
             date (str): A date string to parse.
 
-        Returns:
+        :return:
             str or None: The parsed date in "YYYY-MM-DD" format, or None if it could not be parsed.
         """
         if '&ordm' in date:

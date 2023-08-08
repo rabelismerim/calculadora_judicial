@@ -52,8 +52,8 @@ class NoticeUpdateApi(AbstractViewApi):
         'get': _("""Get the entire list of notices, containing the classes and values.
         """),
         'delete': _("""Delete a specific Notice to the ID passed by the url
-                Returns:
-                    JsonResponse: A JSON response containing the ok message.
+                :return:
+                    - JsonResponse: An HTTP response containing the ok message.
                 """)
     }
 
@@ -121,8 +121,8 @@ class NoticeRecoveringUpdateApi(AbstractViewApi):
                 amounts.
                 """),
         'delete': _("""Delete a specific NoticeRecovering to the ID passed by the url
-            Returns:
-                JsonResponse: A JSON response containing the ok message.
+            :return:
+                - JsonResponse: An HTTP response containing the ok message.
             """)
     }
 

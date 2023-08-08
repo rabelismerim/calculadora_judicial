@@ -66,8 +66,8 @@ class TaskStatusApi(AbstractViewApi):
             calculation_id from the query parameters and serializes the result into JSON format before returning it as
              an HTTP response.
 
-                Returns:
-                    JsonResponse: An HTTP response containing the serialized File data retrieved.
+                :return:
+                    - JsonResponse: An HTTP response containing the serialized File data retrieved.
                 """)
     }
 

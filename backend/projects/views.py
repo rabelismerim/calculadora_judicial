@@ -90,8 +90,8 @@ class ProjectDetailApi(AbstractProjectApi):  # V1
 
     @doc(_("""Update the project and roles.
 
-        Returns:
-            The JSON response with Project detail.
+        :return:
+            - JsonResponse: An HTTP response containing with Project detail.
         """))
     def put(self, request, *args, **kwargs):
         serializer = self.get_serializer_class()
@@ -113,20 +113,32 @@ class ProjectDetailApi(AbstractProjectApi):  # V1
         project_engagement = project.engagement
         project_users = project.get_project_users()
 
-        group_executor, created = Group.objects.get_or_create(name=GROUP_NAME_EXECUTOR)
-        group_approver, created = Group.objects.get_or_create(name=GROUP_NAME_APPROVER)
-        group_special, created = Group.objects.get_or_create(name=GROUP_NAME_SPECIAL_APPROVE)
-        group_reviewer, created = Group.objects.get_or_create(name=GROUP_NAME_REVIEWER)
+        group_executor, created = Group.objects.get_or_create(
+            name=GROUP_NAME_EXECUTOR)
+        group_approver, created = Group.objects.get_or_create(
+            name=GROUP_NAME_APPROVER)
+        group_special, created = Group.objects.get_or_create(
+            name=GROUP_NAME_SPECIAL_APPROVE)
+        group_reviewer, created = Group.objects.get_or_create(
+            name=GROUP_NAME_REVIEWER)
 
-        old_executors_ids = list(project_users.filter(groups=group_executor).values_list('user_id', flat=True))
-        old_approver_ids = list(project_users.filter(groups=group_approver).values_list('user_id', flat=True))
-        old_special_ids = list(project_users.filter(groups=group_special).values_list('user_id', flat=True))
-        old_reviewer_ids = list(project_users.filter(groups=group_reviewer).values_list('user_id', flat=True))
+        old_executors_ids = list(project_users.filter(
+            groups=group_executor).values_list('user_id', flat=True))
+        old_approver_ids = list(project_users.filter(
+            groups=group_approver).values_list('user_id', flat=True))
+        old_special_ids = list(project_users.filter(
+            groups=group_special).values_list('user_id', flat=True))
+        old_reviewer_ids = list(project_users.filter(
+            groups=group_reviewer).values_list('user_id', flat=True))
 
-        executors_include = [val for val in executors if val not in old_executors_ids]
-        approver_include = [val for val in approver if val not in old_approver_ids]
-        special_include = [val for val in special_approvers if val not in old_special_ids]
-        reviewer_include = [val for val in reviewers if val not in old_reviewer_ids]
+        executors_include = [
+            val for val in executors if val not in old_executors_ids]
+        approver_include = [
+            val for val in approver if val not in old_approver_ids]
+        special_include = [
+            val for val in special_approvers if val not in old_special_ids]
+        reviewer_include = [
+            val for val in reviewers if val not in old_reviewer_ids]
 
         for user_django_id in executors_include:
             project_user = ProjectUser.objects.create(user_id=user_django_id)
@@ -152,32 +164,40 @@ class ProjectDetailApi(AbstractProjectApi):  # V1
             project_user.save()
             users.append(project_user.id)
 
-        executors_remove = [val for val in old_executors_ids if val not in executors]
-        approver_remove = [val for val in old_approver_ids if val not in approver]
-        special_remove = [val for val in old_special_ids if val not in special_approvers]
-        reviewers_remove = [val for val in old_reviewer_ids if val not in reviewers]
+        executors_remove = [
+            val for val in old_executors_ids if val not in executors]
+        approver_remove = [
+            val for val in old_approver_ids if val not in approver]
+        special_remove = [
+            val for val in old_special_ids if val not in special_approvers]
+        reviewers_remove = [
+            val for val in old_reviewer_ids if val not in reviewers]
 
         filters = {'projectengagement__project': project}
 
-        users_delete = ProjectUser.objects.filter(user_id__in=executors_remove, groups=group_executor, **filters)
+        users_delete = ProjectUser.objects.filter(
+            user_id__in=executors_remove, groups=group_executor, **filters)
         for user_delete in users_delete:
             try:
                 user_delete.delete()
             except ProtectedError:
                 project_engagement.users.remove(user_delete.id)
-        users_delete = ProjectUser.objects.filter(user_id__in=approver_remove, groups=group_approver, **filters)
+        users_delete = ProjectUser.objects.filter(
+            user_id__in=approver_remove, groups=group_approver, **filters)
         for user_delete in users_delete:
             try:
                 user_delete.delete()
             except ProtectedError:
                 project_engagement.users.remove(user_delete.id)
-        users_delete = ProjectUser.objects.filter(user_id__in=special_remove, groups=group_special, **filters)
+        users_delete = ProjectUser.objects.filter(
+            user_id__in=special_remove, groups=group_special, **filters)
         for user_delete in users_delete:
             try:
                 user_delete.delete()
             except ProtectedError:
                 project_engagement.users.remove(user_delete.id)
-        users_delete = ProjectUser.objects.filter(user_id__in=reviewers_remove, groups=group_reviewer, **filters)
+        users_delete = ProjectUser.objects.filter(
+            user_id__in=reviewers_remove, groups=group_reviewer, **filters)
         for user_delete in users_delete:
             try:
                 user_delete.delete()
@@ -227,28 +247,36 @@ class ProjectApi(AbstractProjectApi):
 
             users = []
 
-            group_executor, created = Group.objects.get_or_create(name=GROUP_NAME_EXECUTOR)
-            group_approver, created = Group.objects.get_or_create(name=GROUP_NAME_APPROVER)
-            group_special, created = Group.objects.get_or_create(name=GROUP_NAME_SPECIAL_APPROVE)
-            group_reviewer, created = Group.objects.get_or_create(name=GROUP_NAME_REVIEWER)
+            group_executor, created = Group.objects.get_or_create(
+                name=GROUP_NAME_EXECUTOR)
+            group_approver, created = Group.objects.get_or_create(
+                name=GROUP_NAME_APPROVER)
+            group_special, created = Group.objects.get_or_create(
+                name=GROUP_NAME_SPECIAL_APPROVE)
+            group_reviewer, created = Group.objects.get_or_create(
+                name=GROUP_NAME_REVIEWER)
 
             for user_django_id in executors:
-                project_user = ProjectUser.objects.create(user_id=user_django_id)
+                project_user = ProjectUser.objects.create(
+                    user_id=user_django_id)
                 project_user.groups.add(group_executor.id)
                 project_user.save()
                 users.append(project_user.id)
             for user_django_id in approvers:
-                project_user = ProjectUser.objects.create(user_id=user_django_id)
+                project_user = ProjectUser.objects.create(
+                    user_id=user_django_id)
                 project_user.groups.add(group_approver.id)
                 project_user.save()
                 users.append(project_user.id)
             for user_django_id in reviewers:
-                project_user = ProjectUser.objects.create(user_id=user_django_id)
+                project_user = ProjectUser.objects.create(
+                    user_id=user_django_id)
                 project_user.groups.add(group_reviewer.id)
                 project_user.save()
                 users.append(project_user.id)
             for user_django_id in special_approvers:
-                project_user = ProjectUser.objects.create(user_id=user_django_id)
+                project_user = ProjectUser.objects.create(
+                    user_id=user_django_id)
                 project_user.groups.add(group_special.id)
                 project_user.save()
                 users.append(project_user.id)
@@ -258,10 +286,12 @@ class ProjectApi(AbstractProjectApi):
             project_engagement.save()
 
             new_project['engagement_id'] = project_engagement.id
-            project = self.model.objects.create(**new_project)  # Create Project
+            project = self.model.objects.create(
+                **new_project)  # Create Project
 
             for number in engagements:  # Create Engagement Project number
-                Engagement.objects.create(**{'number': number, 'project_id': project_engagement.id})
+                Engagement.objects.create(
+                    **{'number': number, 'project_id': project_engagement.id})
 
             for recovering in recoverings:
                 entity = recovering.pop('entity')
