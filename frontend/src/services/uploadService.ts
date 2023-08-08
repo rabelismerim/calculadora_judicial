@@ -6,11 +6,12 @@ interface CreatePath {
 }
 
 interface ErrorDetail {
-  id: string
+  id: String
   createAtMin: Date
   createAtMax: Date
   updateAtMin: Date
   updateAtMax: Date
+  status: String
 }
 
 const getFileDetail = (id: string) => api
@@ -54,22 +55,30 @@ const newCreatePath = async (createPath: CreatePath) => {
   }
 }
 
-const setErrorDetail = async (seterrordetail: ErrorDetail) => {
-  const { id, createAtMax, createAtMin, updateAtMax, updateAtMin } = seterrordetail
-  const method = id ? 'put' : 'delete'
+const deleteErrorDetail = (errorId: string) => api
+
+  .delete(`/v1/files/error/detail/${errorId}/`)
+
+  .then(result => result?.data)
+
+const putErrorDetail = async (updateErrorDetail: ErrorDetail) => {
+  const { id, createAtMax, createAtMin, updateAtMax, updateAtMin, status } = updateErrorDetail
+  const method = 'put'
   const results = []
+
   try {
-    const result = await api[method](`/v1/files/error/detail/${id}/`,
-      ({
+    const result = await api[method](
+      `/v1/files/error/detail/${id}/`,
+      {
         id,
         createAtMax,
         createAtMin,
         updateAtMax,
         updateAtMin,
-      }))
-      .then((result: any) => result.seterrordetail)
-    results.push(result)
-
+        status,
+      },
+    )
+    results.push(result.data.updateErrorDetail)
     return results
   }
   catch (error) {
@@ -84,5 +93,6 @@ export default {
   getFilesExamplePath,
   getFilesPathName,
   newCreatePath,
-  setErrorDetail,
+  deleteErrorDetail,
+  putErrorDetail,
 }

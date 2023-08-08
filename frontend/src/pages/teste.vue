@@ -11,10 +11,10 @@ export default {
     {
       async fetchData() {
         try {
-          const objectId = '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+          const objectId = '3f51742d-c6b0-4637-9627-fa041c9eafa5'
           const path = 'project'
           const name = 'create_creditors_claim'
-          const response = await uploadService.getObjetcId(path, objectId)
+          const response = await uploadService.deleteErrorDetail()
           this.responseData = response
           this.error = null
         }
