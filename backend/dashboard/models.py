@@ -155,7 +155,7 @@ class Dashboard(AbstractModel, Query):
         Args:
             request: An object that contains information about the current request.
 
-        Returns:
+        :return:
             list: A list of dictionaries. Each dictionary contains the number of login records per day for a given time period.
         """
         query = self.get_query(request)
@@ -166,24 +166,16 @@ class Dashboard(AbstractModel, Query):
         end_date = min(end_date, datetime.today())
         datas = [start_date + timedelta(days=n) for n in range((end_date - start_date).days + 1)]
 
-        registros_by_range_days = LoginRecord.objects.filter(login_tm__range=(start_date, end_date)) \
-            .annotate(day=TruncDate('login_date')) \
-            .values('day') \
-            .annotate(total=Count('id')) \
-            .order_by('day')
+        registros_by_range_days = LoginRecord.objects.filter(login_date__range=(start_date.date(), end_date.date()),
+                                                             login_date__isnull=False) \
+            .order_by('login_date')
 
         registros_por_dia_list = []
         for dia in datas:
             dia_formatado = dia.strftime('%Y-%m-%d')
-            total_registros = 0
-            for registro in registros_by_range_days:
-
-                if registro['day'] == dia.date():
-                    total_registros = registro['total']
-                    break
+            total_registros = registros_by_range_days.filter(login_date=dia).count()
             registros_por_dia_list.append({'day': dia_formatado, 'total': total_registros})
-
-        return list(registros_por_dia_list)
+        return registros_por_dia_list
 
     def range_for_month(self, request):
         """
@@ -192,7 +184,7 @@ class Dashboard(AbstractModel, Query):
         Args:
             request: An object that contains information about the current request.
 
-        Returns:
+        :return:
             list: A list of dictionaries. Each dictionary contains the number of login records per month for a given time period.
         """
         query = self.get_query(request)
@@ -219,20 +211,13 @@ class Dashboard(AbstractModel, Query):
             end_month = datetime(month.year, month.month, monthrange(month.year, month.month)[1], 23, 59, 59, 999999)
             end_month = min(end_month, datetime.today())
 
-            records_by_month = LoginRecord.objects.filter(login_tm__range=(start_month, end_month)) \
-                .annotate(month=TruncMonth('login_date')) \
-                .values('month') \
-                .annotate(total=Count('id')) \
-                .order_by('month')
+            records_by_month = LoginRecord.objects.filter(login_date__range=(start_month.date(), end_month.date())) \
+                .order_by('login_date')
 
             month_str = "{}-{:02}".format(month.year, month.month)
-            for record_by_month in records_by_month:
-                if record_by_month['month'].strftime('%Y-%m') == month_str:
-                    records_by_month_list.append({'month': month_str, 'total': record_by_month['total']})
-                    break
-            else:
-                records_by_month_list.append({'month': month_str, 'total': 0})
-        return list(records_by_month_list)
+            total_registros = records_by_month.filter(login_date__month=month.month).count()
+            records_by_month_list.append({'month': month_str, 'total': total_registros})
+        return records_by_month_list
 
 
 class LoginRecord(models.Model):

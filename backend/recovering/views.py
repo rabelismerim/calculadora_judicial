@@ -23,7 +23,7 @@ docs = {
 }
 
 
-class RecoveringApi(AbstractViewApi): # V1
+class RecoveringApi(AbstractViewApi):  # V1
     """HTTP methods for recovering"""
 
     http_method_names = ['post', 'get']
@@ -70,7 +70,8 @@ class RecoveringApi(AbstractViewApi): # V1
         return JsonResponse({'recovering': self.serializer_class(new_recovering, many=False).data},
                             status=status.HTTP_201_CREATED)
 
-class RecoveringV2Api(AbstractViewApi): # V1
+
+class RecoveringV2Api(AbstractViewApi):  # V1
     """HTTP methods for recovering"""
 
     http_method_names = ['post', 'get']
@@ -129,8 +130,8 @@ class RecoveringCheckApi(AbstractViewApi):
 
     @doc(_("""Check the recovering to see if he exists in that project, based on his legal_number
 
-        Returns
-            an HTTP 200 if it does not exist, an exception is generated when it exists
+        :return:
+            - JsonResponse: An HTTP response 200 if it does not exist, an exception is generated when it exists
         """))
     def post(self, request, *args, **kwargs):
         project_id = kwargs.get('project_id')
@@ -138,5 +139,6 @@ class RecoveringCheckApi(AbstractViewApi):
         serializer.is_valid(raise_exception=True)
         legal_number = serializer.validated_data.get('legal_number')
         if Recovering.objects.filter(entity__legal_number=legal_number, project_id=project_id).exists():
-            raise serializers.ValidationError([_('Legal number already registered')])
+            raise serializers.ValidationError(
+                [_('Legal number already registered')])
         return JsonResponse({'message': 'Legal number unregistered'})

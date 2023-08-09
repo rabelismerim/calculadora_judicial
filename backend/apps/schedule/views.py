@@ -57,7 +57,7 @@ class SchedulerCommand(BaseCommand):
                 day_of_month (str): a string representation of days of the month, separated by commas. Default is '*'.
                 months (str): a string representation of months of the year, separated by commas. Default is '*'.
 
-            Returns:
+            :return:
                 None.
 
             Raises:
@@ -227,7 +227,7 @@ class SchedulerCommand(BaseCommand):
         Args:
             job: A job object containing a CronTrigger object.
 
-        Returns:
+        :return:
             A string describing the properties of the CronTrigger object in a human-readable way.
         """
         cron_trigger = job.trigger.fields

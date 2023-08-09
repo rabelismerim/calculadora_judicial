@@ -211,7 +211,7 @@ class AbstractStatement(AbstractStatus):
         Returns the data base based on the "summary" attribute.
         If "summary" is True, returns the data base increased by one month using relativedelta function.
         If "summary" is False, returns the current data base.
-        Returns:
+        :return:
             datetime object: The data base.
         """
         if hasattr(self, 'summary') and self.summary:

@@ -1,10 +1,6 @@
-import json
-import random
-
 from core.abstract.tests import AbstractTest, generate_name
 from projects.create_project import cpf_generator
 from projects.models import Project
-from rates.models import Rate
 from recovering.models import Recovering
 from utils import secret_number
 
@@ -13,7 +9,6 @@ class CreditorValues:
 
     def __get_creditor_by_rate(self, rate, physical_person: bool = True):
         _recovering = Recovering.objects.first()
-        _rate = Rate.objects.filter(index__icontains=rate).first()
 
         creditor = {
             "entity": {
@@ -22,7 +17,6 @@ class CreditorValues:
             },
             "physical_person": physical_person,
             "recovering_id": str(_recovering.id),
-            "rate_id": str(_rate.id),
             "notice_aj": [{
                 "classes": {
                     "classe": "1"

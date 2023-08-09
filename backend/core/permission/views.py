@@ -29,7 +29,7 @@ class CheckHasPermission(BasePermission):
                 request: the HTTP request object
                 view: the view being accessed
 
-            Returns:
+            :return:
                 True if the user has permission, False otherwise
     """
 
@@ -41,7 +41,7 @@ class CheckHasPermission(BasePermission):
             request: the HTTP request object
             view: the view being accessed
 
-        Returns:
+        :return:
             True if the user has permission, False otherwise
         """
         option = {
@@ -72,7 +72,7 @@ class PermissionsName:
             Args:
                 text: the permission code to check
 
-            Returns:
+            :return:
                 True if the permission code exists, False otherwise
     """
     _layout_perm = 'can_change_{}_to_{}'
@@ -133,7 +133,7 @@ class PermissionsName:
         Args:
            text: the permission code to check
 
-        Returns:
+        :return:
            True if the permission code exists, False otherwise
         """
         codenames = [self.executor, self.reviewer, self.approve, self.special_approve]

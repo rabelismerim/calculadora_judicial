@@ -13,6 +13,8 @@ object in the response data
 Attributes:
 - None
 """
+from django.db.models import Q
+
 from calculation.funds.integrations.models import StatementIntegrations
 from calculation.funds.models import Funds
 from core.abstract.tests import AbstractTest
@@ -20,7 +22,7 @@ from core.abstract.tests import AbstractTest
 
 class FundsIntegrationsTest(AbstractTest):
     """funds related tests"""
-    statement = StatementIntegrations.objects.first()
+    statement = StatementIntegrations.objects.filter(Q(fund__rate__index='TST') | Q(fund__calculation__rate__index='TST')).first()
     statement_id = statement.id if statement else None
     path = f'calculation/funds/labor/integrations/{statement_id}'
 
@@ -53,6 +55,7 @@ class FundsIntegrationsTest(AbstractTest):
         for statement, true_monetary_correction in statements:
             response = self.post('calculation/funds/labor/integrations', statement)
             new_statement = response.content['statement_fund_integration']
+
             monetary_correction = new_statement['monetary_correction']
             self.assertEqual(monetary_correction['corrected_value'], true_monetary_correction['corrected_value'])
             self.assertEqual(monetary_correction['index_data_base'], true_monetary_correction['index_data_base'])

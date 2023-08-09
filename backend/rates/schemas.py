@@ -76,7 +76,7 @@ class RateValuesCreateSchema(AbstractDescriptionSchema):
         Args:
             rate_value (dict): The dictionary containing the input data for creating a new RateValues object.
 
-        Returns:
+        :return:
             dict: The validated input data dictionary, with any necessary modifications applied.
         """
         accumulated = rate_value.get('get_accumulated', None)

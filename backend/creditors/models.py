@@ -1,7 +1,6 @@
 from django.db import models
-from rest_framework import serializers
-
 from core.entity.models import Entity
+from rates.models import Rate
 from recovering.models import Recovering
 from base.models import AbstractDateCreditor, AbstractDescription
 from utils import _
@@ -12,11 +11,12 @@ CHOICES_STATUS_LEGAL = (('U', _('Under review')), ('P', _('Pending')), ('C', _('
 class Creditor(AbstractDateCreditor):
     entity = models.ForeignKey(Entity, on_delete=models.PROTECT)
     recovering = models.ForeignKey(Recovering, on_delete=models.PROTECT)
-    description = models.CharField(_('Description'), max_length=255, null=True)
+    description = models.CharField(_('Description'), max_length=255, null=True, blank=True)
 
     total = models.FloatField(_('Total sum of valid amounts'), default=0)
     total_historical = models.FloatField(_('Total historical sum of valid amounts'), default=0)
     is_active = models.BooleanField(_('Is active'), default=True)
+    rate = models.ForeignKey(Rate, on_delete=models.PROTECT, null=True, blank=True)
 
     def get_total(self) -> float:
         return self.total
@@ -68,12 +68,6 @@ class Creditor(AbstractDateCreditor):
 
     def __str__(self):
         return f'{self.entity}'
-
-    def save(self, *args, **kwargs):
-        self.set_total(False)
-        if not self.rate and self.is_active:
-            raise serializers.ValidationError([_('Need a rate when activating the creditor')])
-        super().save(*args, **kwargs)
 
     def get_total_validated(self) -> tuple:
         calcs = self.calculation_set.filter(validated=True, step='A')

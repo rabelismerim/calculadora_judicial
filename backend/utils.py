@@ -60,7 +60,7 @@ def _(text):
     Args:
         text: A string to be translated.
 
-    Returns:
+    :return:
         A lazy translation object containing the translated string.
     """
     return gettext_lazy(text.lstrip())
@@ -76,7 +76,7 @@ def doc(docstring):
     Args:
         docstring: A docstring to be added to a function.
 
-    Returns:
+    :return:
         A decorator function that adds the input docstring to the decorated function.
     """
     def decorate(fn):
@@ -96,7 +96,7 @@ def parse_job_id(index):
     Args:
         index: A string used to generate a job ID.
 
-    Returns:
+    :return:
         A cleaned up string that can be used as a job ID.
     """
     if not index:

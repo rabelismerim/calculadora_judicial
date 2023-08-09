@@ -59,10 +59,8 @@ class CreditorDetailApi(AbstractCreditorApi):
         'get': _("""Retrieve a creditor by their given ID,
         serializes it and returns a JSON response with the serialized data.
 
-        Returns
-        -------
-        JsonResponse
-            A response with a JSON object containing a serialized creditor data object.""")
+        :return:
+            - JsonResponse: An HTTP response with a JSON object containing a serialized creditor data object.""")
     }
     init_docs.update(docs_get)
     docs = init_docs
@@ -101,7 +99,8 @@ class CreditorCreateApi(AbstractCreditorApi):
                 data[key] = list(field.data)
 
         if not option or option in 'nature_choices':
-            data['nature_choices'] = list(NatureChoice.objects.all().values_list('id', 'description'))
+            data['nature_choices'] = list(
+                NatureChoice.objects.all().values_list('id', 'description'))
         return JsonResponse({'options': data}, status=status.HTTP_200_OK)
 
 
@@ -124,10 +123,8 @@ class CreditorListApi(AbstractCreditorApi):
     @doc(_("""Retrieves a queryset of creditors related to a given project ID,
         serializes it and returns a JSON response with the serialized data.
 
-        Returns
-        -------
-        JsonResponse
-            A response with a JSON object containing a list of serialized creditor data.
+        :return:
+            - JsonResponse: An HTTP response with a JSON object containing a list of serialized creditor data.
         """))
     def get(self, request, *args, **kwargs):
         project_id = kwargs.get('project_id')
@@ -155,10 +152,9 @@ class CreditorInactiveListApi(AbstractCreditorApi):
     @doc(_("""Retrieves a queryset of creditors inactive related to a given project ID,
         serializes it and returns a JSON response with the serialized data.
 
-        Returns
-        -------
-        JsonResponse
-            A response with a JSON object containing a list of serialized creditor inactives data.
+        :return:
+            - JsonResponse: An HTTP response containing with a JSON object containing a list of serialized creditor
+             inactivities data.
         """))
     def get(self, request, *args, **kwargs):
         project_id = kwargs.get('project_id')
@@ -256,8 +252,8 @@ class CreditorCheckApi(AbstractViewApi):
 
     @doc(_("""Check the creditor to see if he exists in that recovering, based on his legal_number
         
-        Returns
-            an HTTP 200 if it does not exist, an exception is generated when it exists
+        :return:
+            - JsonResponse: An HTTP response 200 if it does not exist, an exception is generated when it exists
         """))
     def post(self, request, *args, **kwargs):
         recovering_id = kwargs.get('recovering_id')
@@ -265,7 +261,8 @@ class CreditorCheckApi(AbstractViewApi):
         serializer.is_valid(raise_exception=True)
         legal_number = serializer.validated_data.get('legal_number')
         if Creditor.objects.filter(entity__legal_number=legal_number, recovering_id=recovering_id).exists():
-            raise serializers.ValidationError([_('Legal number already registered')])
+            raise serializers.ValidationError(
+                [_('Legal number already registered')])
         return JsonResponse({'message': 'Legal number unregistered'})
 
 

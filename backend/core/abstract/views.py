@@ -91,7 +91,7 @@ class CustomSchema(AutoSchema):
         Args:
             serializer: The serializer mapping will be applied.
 
-        Returns:
+        :return:
             Fields with mapped dynamic methods.
         """
         fields = super().map_serializer(serializer)
@@ -278,7 +278,7 @@ class AbstractViewApi(generics.GenericAPIView):
         """
         Returns a list of dynamic methods to be added as properties to the serializer.
 
-        Returns:
+        :return:
             List of dynamic methods.
         """
         return []
@@ -287,7 +287,7 @@ class AbstractViewApi(generics.GenericAPIView):
         """
         Returns the appropriate serializer class based on the HTTP request method.
 
-        Returns:
+        :return:
             Serializer class.
         """
         if hasattr(self, 'layout_serializers'):
@@ -302,7 +302,7 @@ class AbstractViewApi(generics.GenericAPIView):
         Args:
             view: The view obtaining the query parameters.
 
-        Returns:
+        :return:
             Query parameters.
         """
         return view.query_params
@@ -509,9 +509,10 @@ class AbstractViewApi(generics.GenericAPIView):
         given calculation_id from the query parameters and serializes the updated object in JSON format before
         returning it as an HTTP response.
 
-        Parameters: request: The HTTP request object. args: Any additional positional arguments passed to the method.
+        :params:
+            request: The HTTP request object. args: Any additional positional arguments passed to the method.
         kwargs: Any additional keyword arguments passed to the method, with calculation_id identifying the
-        comparative object to update. Returns: JsonResponse: An HTTP response containing the updated and serialized
+        comparative object to update. :return: JsonResponse: An HTTP response containing the updated and serialized
         comparative object data.
         """
         with transaction.atomic():

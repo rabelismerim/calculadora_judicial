@@ -165,7 +165,7 @@ class StatementDocument(AbstractStatement):
            default_interest (float): The default interest rate.
            days (int): The number of days the debt is overdue.
 
-        Returns:
+        :return:
            float: The amount of default interest to be charged.
         """
         return (corrected_value * (default_interest / 30) * days) / 100
@@ -175,7 +175,7 @@ class StatementDocument(AbstractStatement):
         """
         Getter method for the default interest rate.
 
-        Returns:
+        :return:
             float: The default interest rate to be charged.
         """
         default_interest = self.fund.calculation.get_default_interest()
@@ -189,7 +189,7 @@ class StatementDocument(AbstractStatement):
         """
         Calculates the total amount due, which is the sum of the fine, default interest, and corrected value.
 
-        Returns:
+        :return:
             float: The total amount due.
         """
         return sum([self.get_fine(), self.get_default_interest(), self.get_corrected_value()])
@@ -204,7 +204,7 @@ class StatementDocument(AbstractStatement):
             fine (float): The fine rate.
             default_interest (float): The default interest rate.
 
-        Returns:
+        :return:
             float: The amount of fine to be charged.
         """
         return (corrected_value + default_interest * fine) / 100
@@ -214,7 +214,7 @@ class StatementDocument(AbstractStatement):
         """
         Getter method for the fine rate.
 
-        Returns:
+        :return:
             float: The fine rate to be charged.
         """
         fine = self.fund.get_fine()

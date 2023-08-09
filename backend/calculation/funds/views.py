@@ -93,8 +93,8 @@ class FundsApi(AbstractFundsApi):
         Args:
             request (HttpRequest): HTTP request object containing the POST data.
 
-        Returns:
-            JsonResponse: A JSON response containing the created Funds object detail.
+        :return:
+        - JsonResponse: An HTTP response containing the created Funds object detail.
 
         Raises:
             serializers.ValidationError: If the input data is invalid.
@@ -142,8 +142,8 @@ class FundsCalculationApi(AbstractViewApi):
             calculation_id from the query parameters and serializes the result into JSON format before returning it as an 
             HTTP response. 
 
-                Returns:
-                    JsonResponse: An HTTP response containing the serialized comparative data retrieved.
+                :return:
+                    - JsonResponse: An HTTP response containing the serialized comparative data retrieved.
                 """))
     def get(self, request, *args, **kwargs):
         calculation_id = kwargs.get('calculation_id')
@@ -183,7 +183,7 @@ class FundsDetailApi(AbstractFundsApi):
         object using the given id from the query parameters and serializes the result into JSON format before returning it
          as an HTTP response. 
 
-            Returns:
+            :return:
                 JsonResponse: An HTTP response containing the serialized fund data retrieved.
         """)
 
@@ -221,8 +221,8 @@ class CreateFunds:
         """
         Create Funds object with the validated input data.
 
-        Returns:
-            Funds: A Funds object detail.
+        :return:
+            - JsonResponse: An HTTP response containing Funds object detail.
         """
         new_funds = self.funds
         coins = new_funds.get('coins')
@@ -296,9 +296,8 @@ class StatementFundsApi(AbstractStatementFundsApi):
     back, effectively undoing any changes made to the database. This can be useful to get the `calculations`, 
     `results`, `indices`, `corrected value` and etc without saving the information in the database
     
-    Returns:
-        JsonResponse: A JSON response containing the created Funds
-         object detail.
+    :return:
+        - JsonResponse: An HTTP response containing the created Funds object detail.
     
     Raises:
         serializers.ValidationError: If the input data is invalid.
@@ -351,20 +350,20 @@ class StatementFundsDetailApi(AbstractStatementFundsApi):
     using the given id from the query parameters and serializes the result into JSON format before returning it as an 
     HTTP response. 
 
-            Returns:
+            :return:
                 JsonResponse: An HTTP response containing the serialized statement fund data retrieved.
         """)
     docs['put'] = _("""This method handles PUT requests for the view. It updates a specific statement fund 
         object using the given id from the query parameters and the serialized input data from the request body. 
 
-            Returns:
+            :return:
                 JsonResponse: An HTTP response containing the serialized statement fund data updated.
                 """)
 
     docs['delete'] = _("""Delete a specific statement fund according to the ID passed by the url
 
-            Returns:
-                JsonResponse: A JSON response containing the ok message.
+            :return:
+                - JsonResponse: An HTTP response containing the ok message.
             """)
 
 
@@ -400,14 +399,15 @@ class StatementFundsListApi(AbstractStatementFundsApi):
     statement objects using the received fund_id from the query parameters and serializes the result into JSON 
     format before returning it as an JSON response. 
 
-    Returns:
-        JsonResponse: An HTTP response containing the serialized statements data retrieved.
+    :return:
+        - JsonResponse: An HTTP response containing the serialized statements data retrieved.
     """))
     def get(self, request, *args, **kwargs):
         fund_id = kwargs.get('fund_id')
         fund = self.model.objects.filter(id=fund_id).first()
         if hasattr(fund, 'totalvaluesfunds'):
-            funds_data = self.serializer_class(fund.totalvaluesfunds, many=False).data
+            funds_data = self.serializer_class(
+                fund.totalvaluesfunds, many=False).data
         else:
             funds_data = self.serializer_class(fund, many=False).data
         return JsonResponse({'fund': funds_data})

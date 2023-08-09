@@ -16,7 +16,6 @@ from django.http import JsonResponse
 from rest_framework import status, serializers
 from rest_framework import permissions
 from core.permission.views import CheckHasPermission, CanChangeStep
-from creditors.models import Creditor
 from utils import _, doc
 
 docs = {
@@ -73,9 +72,8 @@ class IncidentApi(AbstractViewApi):
         `numbers of incidents`, and when doing the calculation, it is necessary to pass which number is related.
             """),
         'post': _("""Create Incident object from request data and return Incident detail.
-            Returns:
-                JsonResponse: A JSON response containing the created Funds
-                 object detail.
+            :return:
+                - JsonResponse: An HTTP response containing the created Funds object detail.
 
             Raises:
                 serializers.ValidationError: If the input data is invalid.
@@ -93,7 +91,7 @@ class CalculationDetailApi(AbstractCalculationApi):  # V1
     given id from the query parameters and serializes the result into JSON format before returning it as
                  an HTTP response.
 
-                    Returns:
+                    :return:
                         JsonResponse: An HTTP response containing the serialized Calculation data retrieved.
                     """)
 
@@ -110,7 +108,7 @@ class CalculationDetailV2Api(AbstractCalculationApi):  # V2
     given id from the query parameters and serializes the result into JSON format before returning it as
                  an HTTP response.
 
-                    Returns:
+                    :return:
                         JsonResponse: An HTTP response containing the serialized Calculation data retrieved.
                     """)
 
@@ -125,7 +123,7 @@ class CalculationListApi(AbstractCalculationApi):
                 creditor_id from the query parameters and serializes the result into JSON format before returning it as
                  anHTTP response.
 
-                    Returns:
+                    :return:
                         JsonResponse: An HTTP response containing the serialized Calculation data retrieved.
                     """))
     def get(self, request, *args, **kwargs):
@@ -146,8 +144,8 @@ class CalculationAllFundsDetailApi(AbstractCalculationApi):
     using the given id from the query parameters and serializes the result into JSON format before returning it as 
     an HTTP response.
 
-    Returns:
-        JsonResponse: An HTTP response containing the serialized Calculation data retrieved.
+    :return:
+        - JsonResponse: An HTTP response containing the serialized Calculation data retrieved.
     """)
 
 
@@ -166,8 +164,8 @@ class CalculationApi(AbstractCalculationApi):
          is returned upon successful completion.
 
 
-        Returns
-        A JsonResponse containing the serialized Calculation instance.
+        :return:
+            - JsonResponse: An HTTP response containing the serialized Calculation instance.
         """))
     def post(self, request, *args, **kwargs):  # Generate calculation
         with transaction.atomic():
@@ -198,7 +196,6 @@ class CalculationApi(AbstractCalculationApi):
 
             new_criterion = {
                 'calculation': calculation,
-                'rate': creditor.rate,
                 'admission': creditor.admission,
                 'dismissal': creditor.dismissal,
                 'default_interest': creditor.default_interest,
@@ -228,7 +225,8 @@ class CalculationApi(AbstractCalculationApi):
                     new_claim = Claim.objects.create(
                         classes=claim_creditor.classes, coins=claim_creditor.coins,
                         archive_json=claim_creditor.archive_json)
-                    CriterionClaimCredor.objects.create(claim_creditor=new_claim, criterion=criterion)
+                    CriterionClaimCredor.objects.create(
+                        claim_creditor=new_claim, criterion=criterion)
             if new_verdicts:
                 for new_verdict in new_verdicts:
                     new_verdict['calculation'] = calculation
@@ -274,7 +272,8 @@ class ChangeStepApi(AbstractViewApi):
     http_method_names = ['put']
 
     serializer_class = ChangeStepSerializer
-    permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CanChangeStep]
+    permission_classes = [permissions.IsAuthenticated,
+                          CheckHasPermission, CanChangeStep]
 
     model = Calculation
     docs = docs.copy()
@@ -300,7 +299,8 @@ class ChangeStepApi(AbstractViewApi):
         with transaction.atomic():
             calculation.set_step_by_char(new_calculation['next_step'], user=request.user,
                                          special_approvers=special_approvers)
-            calc_comment = StepComment.objects.create(calculation=calculation, step=calculation.step)
+            calc_comment = StepComment.objects.create(
+                calculation=calculation, step=calculation.step)
             for comment in comments:
                 new_comment = Comment.objects.create(**comment)
                 calc_comment.comments.add(new_comment.id)
@@ -330,7 +330,8 @@ class CheckStepApi(AbstractViewApi):
     http_method_names = ['put']
 
     serializer_class = CheckStepSerializer
-    permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CanChangeStep]
+    permission_classes = [permissions.IsAuthenticated,
+                          CheckHasPermission, CanChangeStep]
 
     model = Calculation
     docs = docs.copy()

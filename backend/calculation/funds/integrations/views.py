@@ -87,9 +87,8 @@ class StatementIntegrationsApi(AbstractStatementIntegrationsApi):
     back, effectively undoing any changes made to the database. This can be useful to get the `calculations`, 
     `results`, `indices`, `corrected value` and etc without saving the information in the database
     
-        Returns:
-            JsonResponse: A JSON response containing the created Funds
-             object detail.
+        :return:
+        - JsonResponse: An HTTP response containing the created Funds object detail.
 
         Raises:
             serializers.ValidationError: If the input data is invalid.
@@ -145,20 +144,20 @@ class StatementIntegrationsDetailApi(AbstractStatementIntegrationsApi):
     object using the given id from the query parameters and serializes the result into JSON format before returning it
      as an HTTP response. 
      
-        Returns:
-            JsonResponse: An HTTP response containing the serialized document fund data retrieved.
+        :return:
+            - JsonResponse: An HTTP response containing the serialized document fund data retrieved.
     """)
     docs['put'] = _("""This method handles PUT requests for the view. It updates a specific statement integration 
     object using the given id from the query parameters and the serialized input data from the request body. 
     
-        Returns:
-            JsonResponse: An HTTP response containing the serialized statement integration data updated.
+        :return:
+            - JsonResponse: An HTTP response containing the serialized statement integration data updated.
             """)
 
     @doc(_("""Delete a specific statement integrations according to the ID passed by the url
 
-                Returns:
-                    JsonResponse: A JSON response containing the ok message.
+                :return:
+                    - JsonResponse: An HTTP response containing the ok message.
                 """))
     def delete(self, request, *args, **kwargs):
         statement_id = kwargs.get('id')
@@ -199,14 +198,15 @@ class StatementFundsIntegrationListApi(AbstractStatementIntegrationsApi):
     statement integrations objects using the received fund_id from the query parameters and serializes the result into 
     JSON format before returning it as an JSON response. 
 
-    Returns:
-        JsonResponse: An HTTP response containing the serialized statements data retrieved.
+    :return:
+        - JsonResponse: An HTTP response containing the serialized statements data retrieved.
     """))
     def get(self, request, *args, **kwargs):
         fund_id = kwargs.get('fund_id')
         fund = self.model.objects.filter(id=fund_id).first()
         if hasattr(fund, 'totalvaluesfundsintegrations'):
-            funds_data = self.serializer_class(fund.totalvaluesfundsintegrations, many=False).data
+            funds_data = self.serializer_class(
+                fund.totalvaluesfundsintegrations, many=False).data
         else:
             funds_data = self.serializer_class(fund, many=False).data
         return JsonResponse({'fund': funds_data})
