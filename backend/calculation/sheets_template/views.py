@@ -11,7 +11,6 @@ from calculation.funds.models import Funds
 from creditors.models import Creditor
 from base.claim.models import ClaimCreditor, ClaimLawyer
 from recovering.models import Recovering
-
 from projects.models import Project
 from projects.court.models import Court
 from core.entity.models import Entity
@@ -24,8 +23,10 @@ from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 from utils import _, doc
 
+from aspose.cells import License,Workbook,FileFormatType
 import openpyxl as xl
 from openpyxl.styles import PatternFill, Alignment, Font
+from openpyxl.drawing.image import Image
 from os.path import exists
 from os import remove
 from datetime import datetime
@@ -59,7 +60,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                 calculation_id from the query parameters and serializes the result into JSON format before returning it
                  as an HTTP response. 
 
-                    Returns:
+                    :return:
                         JsonResponse: An HTTP response containing the serialized sheets file data retrieved.
                     """
         )
@@ -147,6 +148,10 @@ class SheetTemplateViewApi(AbstractViewApi):
             new_name_view = self.new_archive(
                 "uploads/"
                 + Template[0].file.name.upper().replace(".XLSX", "-VIEW.XLSX")
+            )
+            new_name_pdf = self.new_archive(
+                "uploads/"
+                + Template[0].file.name.upper().replace(".XLSX", ".PDF")
             )
             for sheet in archive_download:
                 if sheet.sheet_state == "hidden":
@@ -922,8 +927,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         )
                                     sheet["A" + str(cnt_ini_row)] = (
                                         "Total Atualizado:"
-                                        if project[0].date_citation
-                                        < project[0].date_rj_request
+                                        if project[0].date_citation and project[0].date_rj_request  and 
+                                        project[0].date_citation < project[0].date_rj_request 
                                         else "Total Devido:"
                                     )
                                     sheet["C" + str(cnt_ini_row)] = (
@@ -940,7 +945,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     )
                                     cnt_ini_row = cnt_ini_row + 1
                                     if (
-                                        project[0].date_citation
+                                        project[0].date_citation and project[0].date_rj_request and project[0].date_citation
                                         >= project[0].date_rj_request
                                     ):
                                         sheet.move_range(
@@ -2318,6 +2323,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     col.value = ""
                                     sum_total = 0
                                     if (
+                                        project[0].date_citation and project[0].date_rj_request and
                                         project[0].date_citation
                                         >= project[0].date_rj_request
                                     ):
@@ -2367,7 +2373,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         cnt_ini_row = cnt_ini_row + 1
                                     sheet["A" + str(cnt_ini_row)] = (
                                         "Total Atualizado:"
-                                        if project[0].date_citation
+                                        if project[0].date_citation and project[0].date_rj_request and project[0].date_citation
                                         < project[0].date_rj_request
                                         else "Total Devido:"
                                     )
@@ -2385,7 +2391,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     )
                                     cnt_ini_row = cnt_ini_row + 1
                                     if (
-                                        project[0].date_citation
+                                        project[0].date_citation and project[0].date_rj_request and project[0].date_citation
                                         >= project[0].date_rj_request
                                     ):
                                         sheet[
@@ -3041,6 +3047,7 @@ class SheetTemplateViewApi(AbstractViewApi):
             archive_download.save(new_name_download)
             archive_view.save(new_name_view)
 
+            #Create a HTML File
             with open(new_name_download, "rb") as archive_excel:
                 excel_file = archive_excel.read()
                 base64_encoded_data = base64.b64encode(excel_file)
@@ -3062,12 +3069,29 @@ class SheetTemplateViewApi(AbstractViewApi):
                 )
                 list_html[sheet._WorkbookChild__title] = result_html
 
+            #create a pdf file
+            wb = Workbook(new_name_download)
+            wb.save(new_name_pdf)
+
+            with open(new_name_pdf, "rb") as archive_pdf:
+                pdf_file = archive_pdf.read()
+                base64_encoded_data = base64.b64encode(pdf_file)
+                base64_message_pdf = base64_encoded_data.decode("latin-1")
+
             remove(new_name_download)
             remove(new_name_view)
-
-            return JsonResponse(
-                {"html": f'"{str(list_html)}"', "excel": f"{base64_message}"}
-            )
+            remove(new_name_pdf)
+            
+            data = {}
+            if export_type!='EXTRATOCONTABIL':
+                if export_type == "html":
+                    return JsonResponse({"html": f'"{str(list_html)}"'})
+                if export_type == "xlsx":
+                    return JsonResponse(data = { "excel": f"{base64_message}"})
+                if export_type == "pdf":
+                    return JsonResponse({"pdf": f"{base64_message_pdf}"})
+            else:
+                return JsonResponse({"html": f'"{str(list_html)}"', "excel": f"{base64_message}", "pdf": f"{base64_message_pdf}"})
 
         except BaseException as e:
             return JsonResponse({"errors": str(e)})

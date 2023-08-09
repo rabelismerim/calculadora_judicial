@@ -50,7 +50,16 @@ const projectsPerUser: any = computed(() => projects?.reduce((acc, project) => {
 }, {}))
 const mapUsers = computed(() => activeUsers.value.map((user) => {
   const { id } = user
-  user.projects = projectsPerUser.value[id] || []
+  const projects = projectsPerUser.value[id] || []
+  const uniqueProjects = projects.reduce((acc: any, project: any) => {
+    const { id } = project
+    if (!acc.ids.includes(id)) {
+      acc.ids.push(id)
+      acc.items.push(project)
+    }
+    return acc
+  }, { items: [], ids: [] })
+  user.projects = uniqueProjects.items
   return user
 }))
 

@@ -39,8 +39,9 @@ const responsibleList = computed(() => Object.entries(projects
   .reduce((acc: any, project) => {
     const { legalManager, legalPartner, financialManager, financialPartner, calculationManager } = project
     const responsibles = [legalManager, legalPartner, financialManager, financialPartner, calculationManager]
-      .map((responsible: any) => responsible?.fullName)
-    responsibles.forEach((responsible) => {
+    const uniqueResponsibles = [...new Set(responsibles.map((responsible: any) => responsible?.id))]
+      .map((responsibleId: number) => (responsibles.find(({ id }) => id === responsibleId) || { fullName: '' }).fullName)
+    uniqueResponsibles.forEach((responsible) => {
       if (!responsible)
         return acc
       if (!acc[responsible])

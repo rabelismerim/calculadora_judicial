@@ -2,11 +2,13 @@ from calculation.models import Incident, Calculation
 from core.abstract.tests import AbstractTest
 from creditors.models import Creditor
 from projects.create_project import generate_number
+from rates.models import Rate
 
 
 class CalculationValues:
     creditor = Creditor.objects.first()
     incident = Incident.objects.first()
+    _rate = Rate.objects.first()
     if not incident:
         incident = Incident.objects.create(number=generate_number())
     calculation = {
@@ -19,6 +21,7 @@ class CalculationValues:
         },
         "creditor_id": str(creditor.id),
         "incident_id": str(incident.id),
+        "rate_id": str(_rate.id),
         "verdict": [
             {
                 "type_calculation": {

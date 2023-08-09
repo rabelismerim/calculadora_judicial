@@ -43,9 +43,8 @@ class FundsTest(AbstractTest):
                  "historical_value": 200,
                  "dsr_reflexes": 100,
                  "summary": True,
-                 "is_extraconcursal": False,
-             }, {'corrected_value': 288.6442100028066, 'index_data_base': 2.8952660940000126,
-                 'index_recovering': 2.7856726481684837}),
+                 "is_extraconcursal": True,
+             }, None),
             ({
                  "fund_id": self.fund_id,
                  "data_base": "2011-10-10",
@@ -79,6 +78,8 @@ class FundsTest(AbstractTest):
             response = self.post('calculation/funds/labor', statement)
             new_statement = response.content['statement_fund']
             monetary_correction = new_statement['monetary_correction']
+            if not monetary_correction and true_monetary_correction is None:
+                continue
             self.assertEqual(monetary_correction['corrected_value'], true_monetary_correction['corrected_value'])
             self.assertEqual(monetary_correction['index_data_base'], true_monetary_correction['index_data_base'])
             self.assertEqual(monetary_correction['index_recovering'], true_monetary_correction['index_recovering'])

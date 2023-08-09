@@ -23,3 +23,11 @@ tests_loop.bat
 .env.prod
 .env.hml
 .env.azure
+venv10
+venv_linux
+development.db
+sqlite3.db
+requirements_linux.txt
+celerybeat-schedule.bak
+celerybeat-schedule.dat
+celerybeat-schedule.dir

@@ -175,7 +175,7 @@ class StatementFunds(AbstractStatement):
     def get_total_value(self) -> float:
         """Returns the total value of an asset by summing its historical value and the value of its DSR reflexes.
 
-        Returns:
+        :return:
             float: The total value of the asset.
         """
         # TODO: check if template has option dsr_reflexes checked

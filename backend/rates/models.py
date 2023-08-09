@@ -90,7 +90,7 @@ class Rate(AbstractModel):  # Indices
         This property returns the status of the associated scheduled job as a string indicating the next scheduled run time.
         If there is no job associated with the Rate object, it returns 'Inactive'.
 
-        Returns:
+        :return:
             str: The status of the associated scheduled job.
         """
 
@@ -107,7 +107,7 @@ class Rate(AbstractModel):  # Indices
 
         This property returns the description of the associated scheduled job if there is one, or '_' if there isn't.
 
-        Returns:
+        :return:
             str: The description of the associated scheduled job.
         """
         return self.job.description if self.job else '_'
@@ -135,7 +135,7 @@ class Rate(AbstractModel):  # Indices
 
         This method returns the ratefile associated with the Rate object if it exists, or None otherwise.
 
-        Returns:
+        :return:
             RateFile or None: The ratefile associated with the Rate object.
         """
         if hasattr(self, 'ratefile'):
@@ -151,7 +151,7 @@ class Rate(AbstractModel):  # Indices
         Args:
             date (datetime.date): The date to get the rate values for.
 
-        Returns:
+        :return:
             RateValues or None: The rate values associated with the Rate object for the given date, or None if no
             rate values are found.
         """
@@ -165,7 +165,7 @@ class Rate(AbstractModel):  # Indices
 
         This method returns the date of the last rate value associated with the Rate object.
 
-        Returns:
+        :return:
             RateValues or None: The latest rate values associated with the Rate object for the given date, or None if no
             rate values are found.
         """
@@ -178,7 +178,7 @@ class Rate(AbstractModel):  # Indices
 
         This method returns the date of the last rate value associated with the Rate object.
 
-        Returns:
+        :return:
             RateValues or None: The earliest rate values associated with the Rate object for the given date, or None if no
             rate values are found.
         """

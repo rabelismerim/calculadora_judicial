@@ -188,7 +188,7 @@ def get_verbas(comparatives, funds):
     - comparatives (QuerySet): A queryset including instances of the Comparative model.
     - funds (str): A string indicating which fund type the comparative instances belong to.
 
-    Returns:
+    :return:
     - formatted_html (django.utils.safestring.SafeText): a string of HTML-formatted text representing
       embedded hyperlinks to each Comparative model in the given queryset.
 
@@ -224,7 +224,7 @@ class ApprovedCalculationAdmin(AbstractCalculationAdmin):  # Calculo homologado
         Args:
         - model (ApprovedCalculation): An instance of the ApprovedCalculation model class.
 
-        Returns:
+        :return:
         - formatted_html (django.utils.safestring.SafeText): an HTML-formatted string representing links
           to each ComparativeFunds instance under this ApprovedCalculation instance.
 
@@ -246,7 +246,7 @@ class ApprovedCalculationAdmin(AbstractCalculationAdmin):  # Calculo homologado
         Args:
         - model (ApprovedCalculation): An instance of the ApprovedCalculation model class.
 
-        Returns:
+        :return:
         - formatted_html (django.utils.safestring.SafeText): an HTML-formatted string representing links
           to each ComparativeFundsIntegrations instance under this ApprovedCalculation instance.
 

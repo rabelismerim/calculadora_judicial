@@ -4,9 +4,11 @@ It is extended from an AbstractViewApi class and includes a CheckHasPermission p
 Api's responds with JSON data and uses rest_framework.schemas.openapi.AutoSchema to generate the API documents.
 Api's classes use the DttUser model and schema DttUser to work with data.
 """
+from django.db.models import Q
 from rest_framework.exceptions import PermissionDenied
 
-from config.settings import IS_LOCALHOST, DTT_EMAIL, ROLES
+from config.settings import IS_LOCALHOST, DTT_EMAIL, ROLES, GROUP_NAME_FINANCIAL_MANAGER, \
+    GROUP_NAME_CALCULATION_MANAGER, GROUP_NAME_LEGAL_MANAGER, GROUP_NAME_PARTNER
 from core.abstract.views import AbstractViewApi
 from core.dttuser.schemas import UserDttSchema, UserAuthorizeDttSchema, GroupSchema, SubgroupSchema, UserMailDttSchema
 from django.contrib.auth import authenticate, login
@@ -14,11 +16,11 @@ from django.http import JsonResponse
 from django.core.mail import send_mail
 from rest_framework import status
 
-from core.permission.views import CheckHasPermission, CheckPermissions
+from core.permission.views import CheckHasPermission, CheckPermissions, CheckAuthenticatedMFA
 from utils import get_user_model, _, doc
 from rest_framework import permissions, serializers
 from django.contrib.auth.models import Group
-from core.dttuser.models import Subgroup
+from core.dttuser.models import Subgroup, ROLES_EMAIL
 
 User = get_user_model()
 
@@ -201,6 +203,39 @@ class GroupApi(AbstractViewApi):
 
     def get_exclude_queryset(self):
         return {'name__in': ROLES}
+
+
+class EmailListApi(AbstractViewApi):
+    """
+    View API for Groups that contains a name and a list of permissions
+    and defines what permissions the user has and what he can do within the system.
+
+    Methods:
+    - get: Returns a list of groups with their names and permissions.
+    """
+    allow_cache = False
+    serializer_class = UserMailDttSchema
+    docs = docs.copy()
+
+    docs['get'] = _("""Get the email list of users able to approve a request for access to the platform. 
+    The list is displayed only for users authenticated in SSO
+    
+    """)
+
+    permission_classes = [CheckAuthenticatedMFA]
+    model = User
+    http_method_names = ['get']
+
+    has_perm = [f'add_{model.__name__.lower()}']
+
+    def get(self, request, *args, **kwargs):
+        perm = f'add_{self.model.__name__.lower()}'
+        serializer = self.get_serializer_class()
+        users = serializer(
+            self.model.objects.filter(Q(groups__permissions__codename=perm) | Q(user_permissions__codename=perm),
+                                      is_active=True).exclude(Q(email__isnull=True) | Q(email='')).distinct(),
+            many=True).data
+        return JsonResponse({'users': users})
 
 
 class SubgroupApi(AbstractViewApi):

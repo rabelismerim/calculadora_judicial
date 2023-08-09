@@ -51,6 +51,7 @@ class AbstractFundDocumentApi(AbstractViewApi):
     """
     serializer_class = FundDocumentSchema
     model = FundDocument
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     tags = [_('Cálculo - Verbas - Documentos')]
     query_params = [
         {
@@ -89,7 +90,8 @@ class FundDocumentApi(AbstractFundDocumentApi):
     """
     http_method_names = ['post']
     docs = docs.copy()
-    permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CheckHasFundRegisteredPermissions]
+    permission_classes = [permissions.IsAuthenticated,
+                          CheckHasPermission, CheckHasFundRegisteredPermissions]
 
     @doc(_("""Create Document Fund object from request data and return Document Fund detail.
         The 'has_custom_fine' field controls whether the fine entered in the document will be used, or the standard 
@@ -102,8 +104,8 @@ class FundDocumentApi(AbstractFundDocumentApi):
     back, effectively undoing any changes made to the database. This can be useful to get the `calculations`, 
     `results`, `indices`, `corrected value` and etc without saving the information in the database
 
-        Returns:
-            JsonResponse: A JSON response containing the created Funds object detail.
+        :return:
+        - JsonResponse: An HTTP response containing the created Funds object detail.
 
         Raises:
             serializers.ValidationError: If the input data is invalid.
@@ -158,7 +160,7 @@ class FundDocumentDetailApi(AbstractFundDocumentApi):
     using the given  id from the query parameters and serializes the result into JSON format before returning it as an 
         HTTP response. 
 
-            Returns:
+            :return:
                 JsonResponse: An HTTP response containing the serialized document fund data retrieved.
             """)
     http_method_names = ['get', 'put', 'delete']
@@ -172,8 +174,8 @@ class FundDocumentDetailApi(AbstractFundDocumentApi):
     @doc(_("""This method handles PUT requests for the view. It updates a specific document fund object using the given id 
     from the query parameters and the serialized input data from the request body. 
     
-        Returns:
-            JsonResponse: An HTTP response containing the serialized document fund data updated.
+        :return:
+            - JsonResponse: An HTTP response containing the serialized document fund data updated.
             """))
     def put(self, request, *args, **kwargs):
         id_ = kwargs.get('id')
@@ -193,13 +195,14 @@ class FundDocumentDetailApi(AbstractFundDocumentApi):
 
     @doc(_("""Delete a specific statement document according to the ID passed by the url
 
-                        Returns:
+                        :return:
                             JsonResponse: A JSON response containing the ok message.
                         """))
     def delete(self, request, *args, **kwargs):
-        fund_id = kwargs.get('id')
-        statement = get_object_or_404(StatementDocument, fund_id=fund_id)
-        statement.delete()
+        with transaction.atomic():
+            fund_id = kwargs.get('id')
+            document = get_object_or_404(FundDocument, id=fund_id)
+            document.delete()
         return JsonResponse({'data': _('Statement fund deleted')}, status=status.HTTP_200_OK)
 
 
@@ -243,8 +246,8 @@ class StatementFundsIRRFListApi(AbstractFundDocumentApi):
     IRRF objects using the received fund_id from the query parameters and serializes the result into 
     JSON format before returning it as an JSON response. 
 
-    Returns:
-        JsonResponse: An HTTP response containing the serialized statement IRRF data retrieved.
+    :return:
+        - JsonResponse: An HTTP response containing the serialized statement IRRF data retrieved.
     """))
     def get(self, request, *args, **kwargs):
         funds_data = self.get_total_response(request, *args, **kwargs)
@@ -254,7 +257,8 @@ class StatementFundsIRRFListApi(AbstractFundDocumentApi):
         fund_id = kwargs.get('fund_id')
         fund = self.model.objects.filter(id=fund_id).first()
         if hasattr(fund, 'totalvaluesdocument'):
-            funds_data = self.serializer_class(fund.totalvaluesdocument, many=False).data
+            funds_data = self.serializer_class(
+                fund.totalvaluesdocument, many=False).data
         else:
             funds_data = self.serializer_class(fund, many=False).data
         return funds_data
@@ -266,10 +270,11 @@ class StatementFundsIRRFListApi(AbstractFundDocumentApi):
         given calculation_id from the query parameters and serializes the updated object in JSON format before
         returning it as an HTTP response.
 
-        Parameters: request: The HTTP request object. args: Any additional positional arguments passed to the method.
-        kwargs: Any additional keyword arguments passed to the method, with calculation_id identifying the
-        comparative object to update. Returns: JsonResponse: An HTTP response containing the updated and serialized
-        comparative object data.
+        :params:
+            request: The HTTP request object. args: Any additional positional arguments passed to the method.
+            kwargs: Any additional keyword arguments passed to the method, with calculation_id identifying the
+            comparative object to update. :return: JsonResponse: An HTTP response containing the updated and serialized
+            comparative object data.
         """
         with transaction.atomic():
             id_ = kwargs.get('fund_id')

@@ -13,16 +13,13 @@ from calculation.funds.models import Funds
 from calculation.models import Calculation, CHOICES_STEP
 from calculation.schemas import ChangeStepSerializer
 from config.settings import GROUP_NAME_APPROVER, GROUP_NAME_REVIEWER, GROUP_NAME_EXECUTOR, GROUP_NAME_SPECIAL_APPROVE, \
-    IS_LOCALHOST, SWAGGER_URL, BASE_URL
+    SWAGGER_URL, BASE_URL, ENABLE_SSO
 from projects.project_user.models import ProjectUser
 
 
 class CheckHasPermission(BasePermission):
     """
     Check if the user has the correct permission to access the requested view.
-
-    Attributes:
-        None
 
     Methods:
         has_permission(request, view):
@@ -32,7 +29,7 @@ class CheckHasPermission(BasePermission):
                 request: the HTTP request object
                 view: the view being accessed
 
-            Returns:
+            :return:
                 True if the user has permission, False otherwise
     """
 
@@ -44,7 +41,7 @@ class CheckHasPermission(BasePermission):
             request: the HTTP request object
             view: the view being accessed
 
-        Returns:
+        :return:
             True if the user has permission, False otherwise
         """
         option = {
@@ -63,7 +60,6 @@ class PermissionsName:
 
     Attributes:
         _layout_perm: a string format for change permission codes
-        _layout_request: a string format for request permission codes
         executor: a list of tuples containing executor permission codes
         reviewer: a list of tuples containing reviewer permission codes
         approve: a list of tuples containing approve permission codes
@@ -76,13 +72,11 @@ class PermissionsName:
             Args:
                 text: the permission code to check
 
-            Returns:
+            :return:
                 True if the permission code exists, False otherwise
     """
     _layout_perm = 'can_change_{}_to_{}'
 
-    # TODO: Review permissions T&R
-    # TODO: Block the edition of funds from what moment? step(A, B etc)
     executor = [
         (_layout_perm.format('r', 's'), _('Can Change failed Calculation to calculate'), 'calculation'),
         (_layout_perm.format('s', 'c'), _('Can Execute Calculation to Review'), 'calculation')
@@ -100,7 +94,8 @@ class PermissionsName:
         # (_layout_perm.format('e', 'r'), _('Can Disapprove Revised Calculation to Failed'), 'calculation'),
 
         (_layout_perm.format('e', 'b'), _('Can Approve Revised Calculation to Approve special'), 'calculation'),
-        (_layout_perm.format('b', 'b'), _('Can Edit Approve Special Calculation to Approve special'), 'calculation'), # Edit list Special Approvers
+        (_layout_perm.format('b', 'b'), _('Can Edit Approve Special Calculation to Approve special'), 'calculation'),
+        # Edit list Special Approvers
     ]
 
     special_approve = [
@@ -138,7 +133,7 @@ class PermissionsName:
         Args:
            text: the permission code to check
 
-        Returns:
+        :return:
            True if the permission code exists, False otherwise
         """
         codenames = [self.executor, self.reviewer, self.approve, self.special_approve]
@@ -391,6 +386,22 @@ class CheckPermissions(BasePermission):
             raise AttributeError(_('Need to add "perms: list" attribute to use CheckPermissions class'))
         perms = view.perms
         return request.user.has_permission(perms)
+
+
+class CheckAuthenticatedMFA(BasePermission):
+    """
+    Permission check if the user is authenticated in microsoft SSO.
+
+    Methods:
+        - has_permission(self, request, view): Checks if the user is authenticated in microsoft SSO.
+    """
+    message = _('You do not have permission. Contact admin')
+
+    def has_permission(self, request, view):
+        """This method checks if the user is authenticated in microsoft SSO."""
+        if ENABLE_SSO:
+            return request._request.identity_context_data
+        return request.user.is_authenticated
 
 
 class CheckFundsPjPfPermissions(BasePermission):

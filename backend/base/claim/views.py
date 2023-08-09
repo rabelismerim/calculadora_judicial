@@ -25,7 +25,7 @@ class ClaimCreditorApi(AbstractViewApi):
     serializer_class = ClaimCreditorSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = ClaimCreditor
-    
+
     http_method_names = ['post']
     docs = docs.copy()
 
@@ -56,12 +56,12 @@ class ClaimCreditorUpdateApi(AbstractViewApi):
     serializer_class = ClaimCreditorUpdateSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = ClaimCreditor
-    
+
     http_method_names = ['put', 'delete']
     docs = docs.copy()
     docs['delete'] = _("""Delete a specific Claim Creditor to the ID passed by the url
-    Returns:
-        JsonResponse: A JSON response containing the ok message.
+    :return:
+        - JsonResponse: An HTTP response containing the ok message.
     """)
 
     @doc(_("""Method to update existing claim for a creditor.
@@ -118,9 +118,11 @@ class ClaimLawyerApi(AbstractViewApi):
 
         if not claim:
             if not coins:
-                raise serializers.ValidationError([_('Need to inform the coins')])
+                raise serializers.ValidationError(
+                    [_('Need to inform the coins')])
             if not classes:
-                raise serializers.ValidationError([_('Need to inform the class')])
+                raise serializers.ValidationError(
+                    [_('Need to inform the class')])
             new_claim['coins'] = Coins.objects.create(**coins)
             new_claim['creditor'] = creditor
             self.model.objects.create(classes_id=classes.id, **new_claim)
@@ -128,6 +130,7 @@ class ClaimLawyerApi(AbstractViewApi):
             claim.coins.dict_update(**coins)
 
         return JsonResponse({'creditor': CreditorSchema(creditor).data}, status=status.HTTP_201_CREATED)
+
 
 class ClaimLawyerDeleteApi(AbstractViewApi):
     """This class provides basic HTTP methods for managing Calculation Objects.
@@ -140,6 +143,6 @@ class ClaimLawyerDeleteApi(AbstractViewApi):
     http_method_names = ['delete']
     docs = docs.copy()
     docs['delete'] = _("""Delete a specific Claim Lawyer to the ID passed by the url
-            Returns:
-                JsonResponse: A JSON response containing the ok message.
+            :return:
+                - JsonResponse: An HTTP response containing the ok message.
             """)

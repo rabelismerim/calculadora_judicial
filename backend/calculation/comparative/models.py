@@ -217,7 +217,7 @@ class ApprovedCalculation(AbstractDescription):  # Calculo homologado
     def total_due_creditor(self) -> float:  # C12 = C10 + C11 V
         """Returns the total dues owed to the creditor. 
 
-        Returns:
+        :return:
             float: Total dues owed to creditor, including value claim, default interest, and advocative hours.
         """
         return self.total_updated.creditor + self.default_interest.creditor + self.get_total_advocative_hours_creditor()
@@ -226,7 +226,7 @@ class ApprovedCalculation(AbstractDescription):  # Calculo homologado
     def total_due_dtt(self) -> float:  # D12 = D10 + D11 V
         """Returns the total dues owed to DTT.
 
-        Returns:
+        :return:
             float: Total dues owed to DTT, including value claim, default interest, and advocative hours.
         """
         return self.total_updated.dtt + self.default_interest.dtt + self.get_total_advocative_hours_dtt()
@@ -235,7 +235,7 @@ class ApprovedCalculation(AbstractDescription):  # Calculo homologado
     def total_due_difference(self) -> float:  # E12 = C12 + D12 V
         """Returns the difference between the total amount owed to the creditor and the total amount owed to DTT.
 
-        Returns:
+        :return:
             float: The difference between the total amount owed to the creditor and the total amount owed to DTT.
         """
         return self.total_due_dtt - self.total_due_creditor
@@ -305,8 +305,8 @@ class ApprovedCalculation(AbstractDescription):  # Calculo homologado
         """ 
         Returns all associated ComparativeFund objects related to this approved calculation.
 
-        Returns:
-        list | QuerySet: List of comparative fund objects generated from given query.
+        :return:
+            list | QuerySet: List of comparative fund objects generated from given query.
         """
         return self.comparativefunds_set.all()
 
@@ -314,8 +314,8 @@ class ApprovedCalculation(AbstractDescription):  # Calculo homologado
         """ 
         Returns all associated ComparativeFundIntegrations objects related to this approved calculation.
 
-        Returns:
-        list | QuerySet: List of comparative fund integration objects generated from given query.
+        :return:
+            list | QuerySet: List of comparative fund integration objects generated from given query.
         """
         return self.comparativefundsintegrations_set.all()
 

@@ -60,7 +60,7 @@ class StatementApi(AbstractViewApi):
         calculation_id from the query parameters and serializes the result into JSON format before returning it as an 
         HTTP response. 
 
-            Returns:
+            :return:
                 JsonResponse: An HTTP response containing the serialized statement data retrieved.
             """))
     def get(self, request, *args, **kwargs):
