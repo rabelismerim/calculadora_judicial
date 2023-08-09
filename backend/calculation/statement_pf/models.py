@@ -24,8 +24,10 @@ from rates.models import Rate
 from utils import days360
 
 CHOICES_TOTAL_PF = (('A', _('Updated total')), ('D', _('Total due')))
-CHOICES_TAX_DAYS = (('T', _('SELIC rate in the period')), ('D', _('Delayed days')))
-CHOICES_DEFAULT_INTEREST_DUE = (('T', _('Total after default interest')), ('D', _('Total due')))
+CHOICES_TAX_DAYS = (('T', _('SELIC rate in the period')),
+                    ('D', _('Delayed days')))
+CHOICES_DEFAULT_INTEREST_DUE = (
+    ('T', _('Total after default interest')), ('D', _('Total due')))
 
 
 class StatementPF(AbstractStatus):
@@ -74,7 +76,8 @@ class StatementPF(AbstractStatus):
         save: Overrides the base class's save method to carry out additional calculations and set the status of the
         statement.
     """
-    description = models.CharField(_('Legend'), max_length=1, choices=CHOICES_TOTAL_PF, default='A')
+    description = models.CharField(
+        _('Legend'), max_length=1, choices=CHOICES_TOTAL_PF, default='A')
     total = models.FloatField(_('Amount'), default=0)
     statement = models.OneToOneField(Statement, on_delete=models.PROTECT)
 
@@ -393,7 +396,8 @@ class StatementPF(AbstractStatus):
             self._delete_tax_days()
             return
         filters = {'statement_pf_id': self.id}
-        default = {'statement_pf_id': self.id, 'description': choice, 'value': value}
+        default = {'statement_pf_id': self.id,
+                   'description': choice, 'value': value}
         TaxDays.objects.update_or_create(defaults=default, **filters)
 
     def _delete_tax_days(self):
@@ -408,7 +412,8 @@ class StatementPF(AbstractStatus):
         """
         Deletes the DefaultInterestDue object if it exists
         """
-        default_interest_due = DefaultInterestDue.objects.filter(statement_pf_id=self.id).first()
+        default_interest_due = DefaultInterestDue.objects.filter(
+            statement_pf_id=self.id).first()
         if default_interest_due:
             default_interest_due.delete()
 
@@ -418,7 +423,7 @@ class StatementPF(AbstractStatus):
 
         Verify if there is default interest to be calculated.
 
-        Returns:
+        :return:
             bool: True, if there is default interest to be calculated; False, otherwise.
         """
         return self._has_tax()
@@ -429,7 +434,7 @@ class StatementPF(AbstractStatus):
 
         Calculate the monetary value of the default interest.
 
-        Returns:
+        :return:
             float: The monetary value of the default interest.
         """
         days_in_arrears = self._get_taxdays_value()
@@ -442,7 +447,8 @@ class StatementPF(AbstractStatus):
 
     def _delete_default_interest(self):
         """Delete the default interest from the database."""
-        default = DefaultInterest.objects.filter(statement_pf_id=self.id).first()
+        default = DefaultInterest.objects.filter(
+            statement_pf_id=self.id).first()
         if default:
             default.delete()
 
@@ -456,7 +462,8 @@ class StatementPF(AbstractStatus):
             value = self._calcule_default_interest()
             filters = {'statement_pf_id': self.id}
             default = {'statement_pf_id': self.id, 'value': value}
-            DefaultInterest.objects.update_or_create(defaults=default, **filters)
+            DefaultInterest.objects.update_or_create(
+                defaults=default, **filters)
         else:
             self._delete_default_interest()
 
@@ -466,7 +473,7 @@ class StatementPF(AbstractStatus):
 
         Calculate the total value due, including default interest.
 
-        Returns:
+        :return:
             float or None: The total value due, including default interest, if any; None otherwise.
         """
         if self._calcule_get_default_interest_due_description():
@@ -482,7 +489,7 @@ class StatementPF(AbstractStatus):
 
         Calculate the description of the value due, including default interest.
 
-        Returns:
+        :return:
             str or None: The description of the value due, including default interest, if any; None otherwise.
         """
         date_rj_filing = self._get_date_rj_filing()
@@ -506,8 +513,10 @@ class StatementPF(AbstractStatus):
             self._delete_default_interest_due()
             return
         filters = {'statement_pf_id': self.id}
-        default = {'statement_pf_id': self.id, 'description': choice, 'value': value}
-        DefaultInterestDue.objects.update_or_create(defaults=default, **filters)
+        default = {'statement_pf_id': self.id,
+                   'description': choice, 'value': value}
+        DefaultInterestDue.objects.update_or_create(
+            defaults=default, **filters)
 
     def save(self, send_signal_post_save=True, *args, **kwargs):
         """Save the object and perform calculations and updates before saving.
@@ -561,7 +570,8 @@ class TaxDays(AbstractValue):
     specific fields as needed and include a field description for the value type.
     """
     # Taxa SELIC no período, dias em atraso ou EXCLUIR LINHA
-    description = models.CharField(_('Legend'), max_length=1, choices=CHOICES_TAX_DAYS)
+    description = models.CharField(
+        _('Legend'), max_length=1, choices=CHOICES_TAX_DAYS)
 
 
 class DefaultInterest(AbstractValue):
@@ -582,7 +592,8 @@ class DefaultInterestDue(AbstractValue):
     specific fields as needed and include a field description for the value type.
     """
     # Total após juros de mora, Total devido ou EXCLUIR LINHA
-    description = models.CharField('Legenda', max_length=1, choices=CHOICES_DEFAULT_INTEREST_DUE)
+    description = models.CharField(
+        'Legenda', max_length=1, choices=CHOICES_DEFAULT_INTEREST_DUE)
 
 
 class FundsDescription(AbstractModel):
@@ -597,16 +608,22 @@ class FundsDescription(AbstractModel):
         description belongs.
     """
     statement_pf = models.ForeignKey(StatementPF, on_delete=models.PROTECT)
-    rate = models.ForeignKey(TotalValuesFunds, on_delete=models.PROTECT, null=True, blank=True)
-    rate_integrations = models.ForeignKey(TotalValuesFundsIntegrations, on_delete=models.PROTECT, null=True, blank=True)
-    rate_irrf = models.ForeignKey(TotalValuesIRRF, on_delete=models.PROTECT, null=True, blank=True)
+    rate = models.ForeignKey(
+        TotalValuesFunds, on_delete=models.PROTECT, null=True, blank=True)
+    rate_integrations = models.ForeignKey(
+        TotalValuesFundsIntegrations, on_delete=models.PROTECT, null=True, blank=True)
+    rate_irrf = models.ForeignKey(
+        TotalValuesIRRF, on_delete=models.PROTECT, null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        has_rates = [self.rate is None, self.rate_integrations is None, self.rate_irrf is None]
+        has_rates = [self.rate is None,
+                     self.rate_integrations is None, self.rate_irrf is None]
         if has_rates.count(False) == 0:
-            raise AttributeError(_('Need at least one rate or rate_integrations or rate_irrf.'))
+            raise AttributeError(
+                _('Need at least one rate or rate_integrations or rate_irrf.'))
         elif has_rates.count(False) > 1:
-            raise AttributeError(_('Not allowed to save more than one rate or rate_integrations or rate_irrf.'))
+            raise AttributeError(
+                _('Not allowed to save more than one rate or rate_integrations or rate_irrf.'))
         super().save(*args, **kwargs)
 
     def _get_rate(self):
@@ -615,7 +632,7 @@ class FundsDescription(AbstractModel):
         self.rate attribute or the self.rate_integrations if the former is None.
         Raises an AttributeError if none of the attributes are set.
 
-        Returns:
+        :return:
             Union[Rate, None]: The Rate instance linked to this object or None
         """
         if self.rate:
@@ -631,7 +648,7 @@ class FundsDescription(AbstractModel):
         """
         Property that returns the total corrected value of the rate linked to this instance.
 
-        Returns:
+        :return:
             float: The total corrected value of the Rate instance linked to this object
         """
         return self._get_rate().total_corrected
@@ -641,7 +658,7 @@ class FundsDescription(AbstractModel):
         """
         Property that returns the description of the rate linked to this instance.
 
-        Returns:
+        :return:
             str: The description of the Rate instance linked to this object
         """
         return self._get_rate().get_description()
@@ -651,14 +668,16 @@ def get_create_statement_pf_by_calculation(calculation):
     """
     Returns or creates a StatementPF object related to the given Calculation.
 
-    Parameters:
+    :params:
         calculation (Calculation): Calculation object to get or create a StatementPF for.
 
-    Returns:
+    :return:
         StatementPF: The related StatementPF object.
     """
-    statement, created = Statement.objects.get_or_create(calculation_id=calculation.id)
-    statement_pf, created = StatementPF.objects.get_or_create(statement_id=statement.id)
+    statement, created = Statement.objects.get_or_create(
+        calculation_id=calculation.id)
+    statement_pf, created = StatementPF.objects.get_or_create(
+        statement_id=statement.id)
     return statement_pf
 
 
@@ -667,12 +686,12 @@ def new_calculation(sender, instance, **kwargs) -> None:
     """
     Receives the new_calc signal and creates a StatementPF object for the received Calculation.
 
-    Parameters:
+    :params:
         sender: Sender of the signal.
         instance (Calculation): Calculation object received in the signal.
         kwargs: Additional keyword arguments.
 
-    Returns:
+    :return:
         None.
     """
     print('Signal gerar novo calculo em statement')
@@ -685,17 +704,18 @@ def new_total_funds_rate(sender, instance, **kwargs) -> None:
     Receives the post_save signal from TotalValuesFunds model and creates a FundsDescription object related to a
     StatementPF object based on the instance's Calculation, and updates the relevant StatementPF total.
 
-    Parameters:
+    :params:
         sender: Sender of the signal.
         instance (TotalValuesFunds): TotalValuesFunds object received in the signal.
         kwargs: Additional keyword arguments.
 
-    Returns:
+    :return:
         None.
     """
     print('Signal total values funds')
 
-    statement_pf = get_create_statement_pf_by_calculation(instance.get_calculation())
+    statement_pf = get_create_statement_pf_by_calculation(
+        instance.get_calculation())
     defaults = {'statement_pf_id': statement_pf.id, 'rate_id': instance.id}
     filters = {'statement_pf_id': statement_pf.id}
     FundsDescription.objects.get_or_create(defaults=defaults, **filters)
@@ -709,17 +729,19 @@ def new_total_funds_rate_integrations(sender, instance, **kwargs) -> None:
     Receives the post_save signal from TotalValuesFundsIntegrations model and creates a FundsDescription object
     related to a StatementPF object based on the instance's Calculation, and updates the relevant StatementPF total.
 
-    Parameters:
+    :params:
         sender: Sender of the signal.
         instance (TotalValuesFundsIntegrations): TotalValuesFundsIntegrations object received in the signal.
         kwargs: Additional keyword arguments.
 
-    Returns:
+    :return:
         None.
     """
     print('Signal total values funds integrations')
-    statement_pf = get_create_statement_pf_by_calculation(instance.get_calculation())
-    defaults = {'statement_pf_id': statement_pf.id, 'rate_integrations_id': instance.id}
+    statement_pf = get_create_statement_pf_by_calculation(
+        instance.get_calculation())
+    defaults = {'statement_pf_id': statement_pf.id,
+                'rate_integrations_id': instance.id}
     filters = {'statement_pf_id': statement_pf.id}
     FundsDescription.objects.get_or_create(defaults=defaults, **filters)
     statement_pf.calcule_total()

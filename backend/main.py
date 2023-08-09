@@ -26,6 +26,7 @@ identify and fix problems with your application.
 In summary, Locust's interface allows controlling and monitoring the execution of load tests, as well as viewing
 detailed information about the performance of the tested application.
 """
+import logging
 import os
 #
 
@@ -46,6 +47,7 @@ import django
 
 django.setup()
 
+logging.basicConfig(filename='locust.log', level=logging.INFO)
 
 def _get_classes(filepath):
     """

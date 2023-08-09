@@ -32,5 +32,13 @@ class Command(BaseCommand):
             except Exception as e:
                 self.print(e)
 
+    def delete_user(self):
+        user = User.objects.filter(email__icontains='').first()
+        print(user)
+        if user:
+            user.projectuser_set.all().delete()
+            user.loginrecord_set.all().delete()
+            user.delete()
+
     def handle(self, *args, **options):
         self.create_user()

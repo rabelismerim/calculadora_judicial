@@ -7,7 +7,6 @@ from crum import get_current_request
 from django.db.models import Q
 from django.db.models.signals import pre_save, pre_delete
 from django.forms import model_to_dict
-from rest_framework.exceptions import ValidationError
 
 from utils import get_user_model, _
 
@@ -76,6 +75,24 @@ class AbstractModel(models.Model):
     def get_historical(self):
         return list(UpdateUser.objects.filter(object_id=self.id).exclude(
             Q(field_changed='update_user') | Q(current_value__regex=r'^[\w-]{36}$')).order_by('-created_at'))
+
+    def parse_file(self, parse_file):
+        return
+
+    def get_excel_by_name(self, name):
+        for obj in self.get_valid_excels_headers():
+            if obj.get_name() == name:
+                return obj
+        return None
+
+    def get_list_excels_name(self):
+        names = []
+        for obj in self.get_valid_excels_headers():
+            names.append(obj.get_name())
+        return names
+
+    def get_valid_excels_headers(self):
+        raise NotImplementedError('Override this method')
 
 
 class UpdateUser(models.Model):

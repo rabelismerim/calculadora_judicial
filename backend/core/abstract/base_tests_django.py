@@ -86,8 +86,9 @@ class BaseTestsDjango(BaseTests, TransactionTestCase):
                 raise ValueError('Parametro nao encontrado')
             response = self.get(path)
             if response.status_code == 404:
-                self.print('\n\n')
+                self.print('get')
                 self.print(self.path)
+                self.print(response.url)
                 self.print('\n\n')
 
             if DEBUG:
@@ -186,9 +187,11 @@ class BaseTestsDjango(BaseTests, TransactionTestCase):
         if is_json:
             keys = list(data['content'].keys())
             key = keys[0]
-            values = [dict(data['content'][key])]
-            self._write_html(values, key)
-
+            try:
+                values = [dict(data['content'][key])]
+                self._write_html(values, key)
+            except ValueError:
+                pass
         dt = {
             'sent': obj,
             'received': data['content'],
@@ -202,7 +205,7 @@ class BaseTestsDjango(BaseTests, TransactionTestCase):
         'status_code' and 'content'.
         """
         response = self.client.get(self.__format_url(path), headers=self.get_headers(), content_type="application/json")
-        data = {'status_code': response.status_code, 'content': response.content}
+        data = {'status_code': response.status_code, 'content': response.content, 'url': self.__format_url(path)}
         try:
             data['content'] = response.json()
             is_json = True

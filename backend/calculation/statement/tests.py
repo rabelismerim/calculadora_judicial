@@ -24,7 +24,7 @@ from utils import _
 class StatementTest(AbstractTest):
     """Represents tests related to statement calculations and correction"""
 
-    path = f'calculation/statement/{Calculation.objects.filter(statement__isnull=False).first().id}/'
+    path = f'calculation/statement/{Calculation.objects.filter(statement__isnull=False, rate__index="TST").first().id}/'
 
     def _new_project(self, date_request, date_filling, date_citation, rate):
         """Creates a new project with specified dates and interest rate"""
@@ -158,16 +158,15 @@ class StatementTest(AbstractTest):
                  "historical_value": 200,
                  "dsr_reflexes": 100,
                  "summary": True,
-                "is_extraconcursal": False,
-             }, {'corrected_value': 288.6442100028066, 'index_data_base': 2.8952660940000126,
-                 'index_recovering': 2.7856726481684837}),
+                 "is_extraconcursal": True,
+             }, None),
             ({
                  "fund_id": str(fund.id),
                  "data_base": "2011-10-10",
                  "historical_value": 555.94,
                  "dsr_reflexes": 188.94,
                  "summary": True,
-                "is_extraconcursal": False,
+                 "is_extraconcursal": False,
              }, {'corrected_value': 759.773709479113,
                  'index_data_base': 2.7310656005592993,
                  'index_recovering': 2.7856726481684837}),
@@ -184,7 +183,7 @@ class StatementTest(AbstractTest):
                  "data_base": "2011-08-10",
                  "historical_value": 2300,
                  "summary": True,
-                "is_extraconcursal": False,
+                 "is_extraconcursal": False,
              }, {'corrected_value': 2349.6542360353938, 'index_data_base': 2.726804221883394,
                  'index_recovering': 2.7856726481684837}),
 
@@ -198,23 +197,23 @@ class StatementTest(AbstractTest):
                         "description": "D"
                     },
                     "default_interest": {
-                        "value": 2011.2315165497669
+                        "value": 1850.071832631533
                     },
                     "default_interest_due": {
                         "description_display": _("Total after default interest"),
-                        "value": 5613.437217832931,
+                        "value": 5163.63332391189,
                         "description": "T"
                     },
                     "funds_description": [
                         {
-                            "total": 3602.205701283164,
+                            "total": 3313.5614912803576,
                         }
                     ],
                     "description_display": _("Updated total"),
                     "status_display": _("Concluded"),
                     "status": "C",
                     "description": "A",
-                    "total": 3602.205701283164
+                    "total": 3313.5614912803576
                 },
             },
             "statement_pj": None,
@@ -244,6 +243,8 @@ class StatementTest(AbstractTest):
             response = self.post('calculation/funds/labor', statement)
             new_statement = response.content['statement_fund']
             monetary_correction = new_statement['monetary_correction']
+            if not monetary_correction and true_monetary_correction is None:
+                continue
             self.assertEqual(monetary_correction['corrected_value'], true_monetary_correction['corrected_value'])
             self.assertEqual(monetary_correction['index_data_base'], true_monetary_correction['index_data_base'])
             self.assertEqual(monetary_correction['index_recovering'], true_monetary_correction['index_recovering'])

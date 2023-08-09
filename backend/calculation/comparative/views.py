@@ -53,13 +53,14 @@ class ComparativeDetailApi(AbstractViewApi):
     calculation_id from the query parameters and serializes the result into JSON format before returning it as an 
     HTTP response. 
 
-        Returns:
-            JsonResponse: An HTTP response containing the serialized comparative data retrieved.
+        :return:
+            - JsonResponse: An HTTP response containing the serialized comparative data retrieved.
         """))
     def get(self, request, *args, **kwargs):
 
         calculation_id = kwargs.get('calculation_id')
-        comparative = self.model.objects.filter(calculation_id=calculation_id).first()
+        comparative = self.model.objects.filter(
+            calculation_id=calculation_id).first()
         comparative_data = self.serializer_class(comparative, many=False).data
         return JsonResponse({'comparative': comparative_data})
 
@@ -68,13 +69,13 @@ class ComparativeDetailApi(AbstractViewApi):
     given calculation_id from the query parameters and serializes the updated object in JSON format before 
     returning it as an HTTP response. 
 
-    Parameters:
+    :params:
         request: The HTTP request object.
         args: Any additional positional arguments passed to the method.
         kwargs: Any additional keyword arguments passed to the method, with calculation_id identifying the 
         comparative object to update.
-    Returns:
-        JsonResponse: An HTTP response containing the updated and serialized comparative object data.
+    :return:
+        - JsonResponse: An HTTP response containing the updated and serialized comparative object data.
     """))
     def put(self, request, *args, **kwargs):
         calculation_id = kwargs.get('calculation_id')
@@ -82,17 +83,21 @@ class ComparativeDetailApi(AbstractViewApi):
         serializer.is_valid(raise_exception=True)
         update_comparative = dict(serializer.validated_data)
 
-        comparative = self.model.objects.filter(calculation_id=calculation_id).first()
+        comparative = self.model.objects.filter(
+            calculation_id=calculation_id).first()
 
         approved_calculation = comparative.get_create_approved_calculation()
 
-        update_approved_calculation = update_comparative.pop('approved_calculation', None)
+        update_approved_calculation = update_comparative.pop(
+            'approved_calculation', None)
         update_date = update_comparative.pop('date', None)
 
         if update_approved_calculation:
             description = update_approved_calculation.pop('description', None)
-            funds_comparatives = update_approved_calculation.pop('funds_comparatives', [])
-            funds_comparatives_integrations = update_approved_calculation.pop('funds_comparatives_integrations', [])
+            funds_comparatives = update_approved_calculation.pop(
+                'funds_comparatives', [])
+            funds_comparatives_integrations = update_approved_calculation.pop(
+                'funds_comparatives_integrations', [])
 
             for key, value in update_approved_calculation.items():  # Update creditor value
                 attribute = getattr(approved_calculation, key)

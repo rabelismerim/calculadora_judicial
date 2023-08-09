@@ -14,6 +14,7 @@ from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 from utils import _
 
+
 class CommentApi(AbstractViewApi):
     """Define the CommentApi view class for handling HTTP methods related to Comment.
 
@@ -49,8 +50,8 @@ class CommentApi(AbstractViewApi):
             calculation_id from the query parameters and serializes the result into JSON format before returning it as
              an HTTP response.
 
-                Returns:
-                    JsonResponse: An HTTP response containing the serialized Comment data retrieved.
+                :return:
+                    - JsonResponse: An HTTP response containing the serialized Comment data retrieved.
                 """)
     }
 

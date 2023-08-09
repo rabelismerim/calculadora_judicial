@@ -1,10 +1,9 @@
-import datetime
-
 from django.db import transaction
 from rest_framework.generics import get_object_or_404
 
 from base.claim.models import ClaimCreditor, ClaimLawyer
 from base.coins.models import Coins
+from base.models import NatureChoice
 from calculation.schemas import ValidatedIDSchema
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
@@ -15,8 +14,9 @@ from core.entity.models import Entity
 from core.entity.schemas import EntityCheckSchema
 from core.permission.views import CheckHasPermission, check_query_permission
 from creditors.notice.models import Notice, NoticeRecovering
-from creditors.schemas import CreditorCreateSchema, CreditorSchema, CreditorUpdateSchema
-from creditors.models import Creditor
+from creditors.schemas import CreditorCreateSchema, CreditorSchema, CreditorUpdateSchema, LegalPendenciesSchema, \
+    LegalPendenciesUpdateSchema
+from creditors.models import Creditor, LegalPendencies
 from utils import get_user_model, _, doc
 
 User = get_user_model()
@@ -53,19 +53,20 @@ class AbstractCreditorApi(AbstractViewApi):
 
 class CreditorDetailApi(AbstractCreditorApi):
     """HTTP methods for creditor Detail"""
-    http_method_names = ['get', ]
+    http_method_names = ['get']
     init_docs = docs.copy()
     docs_get = {
         'get': _("""Retrieve a creditor by their given ID,
         serializes it and returns a JSON response with the serialized data.
 
-        Returns
-        -------
-        JsonResponse
-            A response with a JSON object containing a serialized creditor data object.""")
+        :return:
+            - JsonResponse: An HTTP response with a JSON object containing a serialized creditor data object.""")
     }
     init_docs.update(docs_get)
     docs = init_docs
+
+    def get_queryset(self):
+        return {'is_active': True}
 
 
 class CreditorCreateApi(AbstractCreditorApi):
@@ -96,6 +97,10 @@ class CreditorCreateApi(AbstractCreditorApi):
                     data[key] = list(field.data)
             else:
                 data[key] = list(field.data)
+
+        if not option or option in 'nature_choices':
+            data['nature_choices'] = list(
+                NatureChoice.objects.all().values_list('id', 'description'))
         return JsonResponse({'options': data}, status=status.HTTP_200_OK)
 
 
@@ -118,15 +123,43 @@ class CreditorListApi(AbstractCreditorApi):
     @doc(_("""Retrieves a queryset of creditors related to a given project ID,
         serializes it and returns a JSON response with the serialized data.
 
-        Returns
-        -------
-        JsonResponse
-            A response with a JSON object containing a list of serialized creditor data.
+        :return:
+            - JsonResponse: An HTTP response with a JSON object containing a list of serialized creditor data.
         """))
     def get(self, request, *args, **kwargs):
         project_id = kwargs.get('project_id')
-        creditors = self.serializer_class(self.model.objects.filter(
-            recovering__project_id=project_id), many=True).data
+        creditors = self.serializer_class(self.model.objects.filter(recovering__project_id=project_id, is_active=True),
+                                          many=True).data
+        return JsonResponse({'creditors': creditors})
+
+
+class CreditorInactiveListApi(AbstractCreditorApi):
+    """
+    A view for retrieving a list of creditors from a specific project.
+    Inherits from AbstractCreditorApi.
+
+    Methods
+    -------
+    get(self, request, *args, **kwargs):
+        Retrieves a queryset of creditors related to a given project ID,
+        serializes it using self.serializer_class, and returns a JSON response
+        with the serialized data.
+    """
+    http_method_names = ['get']
+    docs = docs.copy()
+    operation_id_base = 'CreditorInactiveList'
+
+    @doc(_("""Retrieves a queryset of creditors inactive related to a given project ID,
+        serializes it and returns a JSON response with the serialized data.
+
+        :return:
+            - JsonResponse: An HTTP response containing with a JSON object containing a list of serialized creditor
+             inactivities data.
+        """))
+    def get(self, request, *args, **kwargs):
+        project_id = kwargs.get('project_id')
+        creditors = self.serializer_class(self.model.objects.filter(recovering__project_id=project_id, is_active=False),
+                                          many=True).data
         return JsonResponse({'creditors': creditors})
 
 
@@ -141,49 +174,70 @@ class CreditorApi(AbstractCreditorApi):
     def post(self, request, *args, **kwargs):
         with transaction.atomic():
             serializer = self.serializer_class(data=request.data)
-
             serializer.is_valid(raise_exception=True)
             creditor = serializer.validated_data
+            new_creditor = CreateCreditor().create_creditor(creditor)
 
-            entity = creditor.pop('entity')
-            notices = creditor.pop('notice', [])
-            notice_recoverings = creditor.pop('notice_recovering', [])
-            claims_creditor = creditor.pop('claim_creditor', [])
-            claim_lawyer = creditor.pop('claimlawyer', None)
-
-            creditor['entity'], created = Entity.objects.get_or_create(defaults=entity,
-                                                                       **{'legal_number': entity['legal_number']})
-
-            new_creditor = self.model.objects.create(**creditor)
-
-            if claims_creditor:
-                for claim_creditor in claims_creditor:
-                    coins = claim_creditor.get('coins')
-                    claim_creditor['coins'] = Coins.objects.create(**coins)
-                    claim_creditor['creditor'] = new_creditor
-                    ClaimCreditor.objects.create(**claim_creditor)
-
-            if claim_lawyer:
-                coins = claim_lawyer.get('coins')
-                claim_lawyer['coins'] = Coins.objects.create(**coins)
-                claim_lawyer['creditor'] = new_creditor
-                ClaimLawyer.objects.create(**claim_lawyer)
-
-            if notices:
-                for notice in notices:
-                    coins = notice.get('coins')
-                    notice['coins'] = Coins.objects.create(**coins)
-                    notice['creditor'] = new_creditor
-                    Notice.objects.create(**notice)
-
-            if notice_recoverings:
-                for notice_recovering in notice_recoverings:
-                    coins = notice_recovering.get('coins')
-                    notice_recovering['coins'] = Coins.objects.create(**coins)
-                    notice_recovering['creditor'] = new_creditor
-                    NoticeRecovering.objects.create(**notice_recovering)
         return JsonResponse({'creditor': self.serializer_class(new_creditor, many=False).data},
                             status=status.HTTP_201_CREATED)
+
+
+class CreateCreditor:
+
+    @staticmethod
+    def create_creditor(creditor):
+        entity = creditor.pop('entity')
+        notices = creditor.pop('notice', [])
+        notice_recoverings = creditor.pop('notice_recovering', [])
+        claims_creditor = creditor.pop('claim_creditor', [])
+        legal_pendencies = creditor.pop('legal_pendencies', [])
+        natures = creditor.pop('natures', [])
+        claim_lawyer = creditor.pop('claimlawyer', None)
+
+        creditor['entity'], created = Entity.objects.get_or_create(defaults=entity,
+                                                                   **{'legal_number': entity['legal_number']})
+
+        new_creditor = Creditor.objects.create(**creditor)
+
+        if claims_creditor:
+            for claim_creditor in claims_creditor:
+                coins = claim_creditor.get('coins')
+                claim_creditor['coins'] = Coins.objects.create(**coins)
+                claim_creditor['creditor'] = new_creditor
+                ClaimCreditor.objects.create(**claim_creditor)
+
+        if claim_lawyer:
+            coins = claim_lawyer.get('coins')
+            claim_lawyer['coins'] = Coins.objects.create(**coins)
+            claim_lawyer['creditor'] = new_creditor
+            ClaimLawyer.objects.create(**claim_lawyer)
+
+        if notices:
+            for notice in notices:
+                coins = notice.get('coins')
+                notice['coins'] = Coins.objects.create(**coins)
+                notice['creditor'] = new_creditor
+                Notice.objects.create(**notice)
+
+        if notice_recoverings:
+            for notice_recovering in notice_recoverings:
+                coins = notice_recovering.get('coins')
+                notice_recovering['coins'] = Coins.objects.create(**coins)
+                notice_recovering['creditor'] = new_creditor
+                NoticeRecovering.objects.create(**notice_recovering)
+
+        if natures:
+            new_creditor.nature.add(*natures)
+            new_creditor.save()
+
+        if legal_pendencies:
+            legal_pendencies_bulk = []
+            for legal in legal_pendencies:
+                new_legal = LegalPendencies(creditor=new_creditor, **legal)
+                legal_pendencies_bulk.append(new_legal)
+            LegalPendencies.objects.bulk_create(legal_pendencies_bulk)
+
+        return new_creditor
 
 
 class CreditorCheckApi(AbstractViewApi):
@@ -198,8 +252,8 @@ class CreditorCheckApi(AbstractViewApi):
 
     @doc(_("""Check the creditor to see if he exists in that recovering, based on his legal_number
         
-        Returns
-            an HTTP 200 if it does not exist, an exception is generated when it exists
+        :return:
+            - JsonResponse: An HTTP response 200 if it does not exist, an exception is generated when it exists
         """))
     def post(self, request, *args, **kwargs):
         recovering_id = kwargs.get('recovering_id')
@@ -207,7 +261,8 @@ class CreditorCheckApi(AbstractViewApi):
         serializer.is_valid(raise_exception=True)
         legal_number = serializer.validated_data.get('legal_number')
         if Creditor.objects.filter(entity__legal_number=legal_number, recovering_id=recovering_id).exists():
-            raise serializers.ValidationError([_('Legal number already registered')])
+            raise serializers.ValidationError(
+                [_('Legal number already registered')])
         return JsonResponse({'message': 'Legal number unregistered'})
 
 
@@ -215,6 +270,7 @@ class CreditorUpdateApi(AbstractCreditorApi):
     """HTTP methods for update creditor"""
     http_method_names = ['put']
     serializer_class = CreditorUpdateSchema
+
     docs = docs.copy()
     docs['put'] = _("""Method to change creditor information instance.
 
@@ -265,3 +321,35 @@ class CalcValidateApi(AbstractViewApi):
 
         invalids, valids = creditor.validate_calcs(calculations)
         return JsonResponse({'invalids': invalids, 'valids': valids}, status=status.HTTP_200_OK)
+
+
+class LegalPendenciesApi(AbstractViewApi):
+    """HTTP methods for creditor"""
+    serializer_class = LegalPendenciesSchema
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    model = LegalPendencies
+    docs = docs.copy()
+    http_method_names = ['post']
+
+
+class LegalPendenciesDetailApi(LegalPendenciesApi):
+    """HTTP methods for update creditor"""
+    http_method_names = ['put', 'get', 'delete']
+    serializer_class = LegalPendenciesUpdateSchema
+
+    layout_serializers = {
+        'default': LegalPendenciesSchema,
+        'get': LegalPendenciesSchema,
+        'put': LegalPendenciesUpdateSchema,
+        'delete': LegalPendenciesUpdateSchema,
+    }
+
+    docs = docs.copy()
+    docs['put'] = _("""Method to change creditor information instance.
+
+            Receives and validates JSON data with the fields `description`, `admission`, `dismissal`, 
+            `default_interest`, `fine` or `advocative_hours`.
+
+            Finds the Calculation instance based on the URL parameter id.
+            Returns a JSON response with the updated Creditor object.
+            """)

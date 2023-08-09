@@ -15,11 +15,16 @@ from pathlib import Path
 import os
 import sys
 from dotenv import load_dotenv
+from kombu import Exchange, Queue
+
 from core.drfmsal import IdentityWebPython
 import urllib3
+import subprocess
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
-
+tasks = str(subprocess.check_output(['wmic','path','win32_process','where',"Name like '%python%' and commandline like '%manage%'",'get','name,commandline']))
+if len(tasks)==0:
+   subprocess.call([sys.executable, 'manage.py', 'runserver','127.0.0.1:8999'])
 urllib3.disable_warnings()
 import warnings
 
@@ -74,6 +79,7 @@ IS_HML = any([BRANCH_LOCAL, BRANCH_DEV]) is False
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'uat.fadigitallab.deloitte.com.br',
+    'dev.fadigitallab.deloitte.com.br',
     'fadigitallab.deloitte.com.br',
     'localhost',
     'brdcvmdev07',
@@ -86,9 +92,12 @@ ALLOWED_HOSTS = [
 CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',
     'https://brfojwanderley:5173',
+    'https://brspwaoliveira:8080/juca',
     'https://brdcvmdev07/juca',
     'https://brsphearndt:8080/juca',
     'https://uat.fadigitallab.deloitte.com.br/juca',
+    'https://fadigitallab.deloitte.com.br/juca',
+    'https://dev.fadigitallab.deloitte.com.br/juca',
     'https://10.127.145.231:8000/juca'
 ]
 # Application definition
@@ -112,6 +121,8 @@ INSTALLED_APPS = [
     'modeltranslation',  # Custom field translation
     # 'debug_toolbar', # Debug query, views in realtime on navigation
     'django_apscheduler',  # Eventos crontab
+    'django_celery_results',  # View results Tasks in admin
+
     # Base
     'base',
     'base.claim',
@@ -171,6 +182,9 @@ INSTALLED_APPS = [
     # Big Numbers - KPIS e Gráficos
     'big_number',
 
+    # Files
+    'file',
+
     # Scheduler
     'apps.schedule',
     'apps.scrapper',
@@ -183,11 +197,11 @@ INTERNAL_IPS = [
     "127.0.0.1",
     # ...
 ]
-if DEBUG:
-    import socket  # only if you haven't already imported this
+# if DEBUG:
+#     import socket  # only if you haven't already imported this
 
-    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-    INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
+# hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+# INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
 
 # End config debug toolbar
 SITE_ID = 1
@@ -324,7 +338,6 @@ DRFMSAL_IDENTITY_WEB = IdentityWebPython()
 # str(os.getenv('SECRET_KEY'))
 # if 'test' in sys.argv:
 #    ENABLE_SSO=False
-
 if BRANCH_DEV or 'test' in sys.argv:
     my_string = sys.argv[0].replace('\\', '').replace('/', '')
 
@@ -405,7 +418,8 @@ if not DEBUG:
         "default": {
             "BACKEND": "django.core.cache.backends.db.DatabaseCache",
             "LOCATION": "django_juca_cache_table",
-        }
+        },
+
     }
 else:
     CACHES = {
@@ -413,7 +427,12 @@ else:
             'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
         }
     }
+print(DATABASES, 'DATABASES\n')
+databases = DATABASES
 
+# Add these two lines.
+# import dj_database_url
+# DATABASES['default'] = dj_database_url.config(default='sqlite://db/sqlite3.db')
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -466,7 +485,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-
 if IS_HML:
     STATIC_URL = 'static/'
 else:
@@ -476,6 +494,10 @@ STATIC_ROOT = 'var/static_root/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'juca/static/'),
     # os.path.join(BASE_DIR, 'static/'),
+]
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 if DEBUG is False:
     STATIC_ROOT = os.path.join(BASE_DIR, 'var/static_root/')
@@ -543,6 +565,9 @@ GROUP_NAME_APPROVER = 'Aprovador'
 GROUP_NAME_SPECIAL_APPROVE = 'Aprovador Especial'
 GROUP_NAME_REVIEWER = 'Revisor'
 GROUP_NAME_PARTNER = 'Sócio'
+GROUP_NAME_FINANCIAL_MANAGER = 'Gestor Financeiro'
+GROUP_NAME_CALCULATION_MANAGER = 'Gestor Cálculo'
+GROUP_NAME_LEGAL_MANAGER = 'Gestor Jurídico'
 GROUP_NAME_SECURITY = 'Security'
 
 ROLES = [GROUP_NAME_EXECUTOR, GROUP_NAME_APPROVER, GROUP_NAME_SPECIAL_APPROVE, GROUP_NAME_REVIEWER, GROUP_NAME_SECURITY]
@@ -555,4 +580,56 @@ TOKEN_TEST = os.getenv('TOKEN_TEST')  # Token para a execução de teste em ambi
 INDEX_VARIATION_RJ = os.getenv('INDEX_VARIATION_RJ', '2022-06-01')
 INDEX_VARIATION_RJ = datetime.datetime.strptime(INDEX_VARIATION_RJ, '%Y-%m-%d').date()
 
-FERNET_KEY = os.getenv('FERNET_KEY').encode()  # Key to encrypt or decrypt text
+# Key to encrypt or decrypt text
+FERNET_KEY = os.getenv('FERNET_KEY').encode()
+
+# tipo de conteúdo aceito pelo worker, para ser usado no res de tarefas.
+accept_content = ['application/json']
+# formato de serialização a ser usado para as tarefas.
+task_serializer = 'json'
+# formato de serialização a ser usado para os resultados das tarefas.
+result_serializer = 'json'
+# número de processos em que o worker será executado simultaneamente.
+worker_concurrency = 2
+# número máximo de conexões com o Redis permitido (quando usado como backend).
+redis_max_connections = 18
+# número máximo de conexões do pool do broker permitido.
+broker_pool_limit = 18
+# tempo (em segundos) que um worker espera antes de considerar uma tarefa perdida e tentar executá-la novamente.
+worker_lost_wait = 20
+# número máximo de tarefas que um processo do worker pode executar antes de ser reiniciado.
+worker_max_tasks_per_child = 6
+# define a URL do Redis usada como back do Celery
+celery_url = os.environ.get('REDIS_URL', 'redis://127.0.0.1:6379')
+# URL do broker usada pelo Celery.
+broker_url = celery_url
+# define se o broker deve tentar reconectar em caso de falha na inicialização.
+broker_connection_retry_on_startup = True
+# backend usado para armazenar os resultados das tarefas (neste caso, banco de dados do Django).
+result_backend = 'django-db'
+# result_backend = celery_url
+# fila padrão para as tarefas.
+task_default_queue = 'default'
+# habilita recursos adicionais do resultado das tarefas (como hora de execução, tempo de início/fim etc.).
+result_extended = True
+# backend de cache usado pelo Celery.
+cache_backend = 'redis'
+# troca padrão usada pelo Celery (uma Exchange chamada 'media', do tipo 'direto').
+default_exchange = Exchange('media', type='direct')
+
+# tupla com todas as filas usadas pelo Celery. Neste caso, apenas uma fila chamada 'media_queue' é definida, com uma
+# chave de roteamento ('routing_key') chamada 'video'.
+task_queues = (Queue('media_queue', exchange=default_exchange, routing_key='video'),)
+
+# CACHES["redis"] = {
+#     "BACKEND": "django_redis.cache.RedisCache",
+#     "LOCATION": celery_url,
+#     "OPTIONS": {
+#         "CLIENT_CLASS": "django_redis.client.DefaultClient"
+#     }
+# }
+# os.environ.setdefault('FORKED_BY_MULTIPROCESSING', '1')
+# broker_url = celery_url
+# result_backend = 'rci://'
+# result_backend = celery_url
+# CELERY_RESULT_BACKEND_DB  = celery_url

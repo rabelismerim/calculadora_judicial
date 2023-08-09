@@ -59,7 +59,7 @@ class AbstractFundIRRFApi(AbstractViewApi):
     serializer_class = FundIRRFSchema
     physical_person = True
     model = FundIRRF
-    
+
     tags = [_('Cálculo - Verbas - IRRF')]
 
 
@@ -95,8 +95,8 @@ class FundIRRFApi(AbstractFundIRRFApi):
         Args:
             request (HttpRequest): HTTP request object containing the POST data.
 
-        Returns:
-            JsonResponse: A JSON response containing the created FundIRRF object detail.
+        :return:
+        - JsonResponse: An HTTP response containing the created FundIRRF object detail.
 
         Raises:
             serializers.ValidationError: If the input data is invalid.
@@ -142,13 +142,14 @@ class FundIRRFCalculationApi(AbstractFundIRRFApi):
                 calculation_id from the query parameters and serializes the result into JSON format before returning it as an 
                 HTTP response. 
 
-                    Returns:
+                    :return:
                         JsonResponse: An HTTP response containing the serialized comparative data retrieved.
                     """))
     def get(self, request, *args, **kwargs):
         calculation_id = kwargs.get('calculation_id')
         print(calculation_id, 'id\n\n')
-        funds = self.model.objects.filter(calculation_id=calculation_id).first()
+        funds = self.model.objects.filter(
+            calculation_id=calculation_id).first()
         funds_data = self.serializer_class(funds, many=False).data
         return JsonResponse({'funds': funds_data})
 
@@ -183,7 +184,7 @@ class FundIRRFDetailApi(AbstractFundIRRFApi):
         object using the given id from the query parameters and serializes the result into JSON format before returning
          it as an HTTP response. 
 
-            Returns:
+            :return:
                 JsonResponse: An HTTP response containing the serialized document fund data retrieved.
         """)
 
@@ -213,7 +214,7 @@ class AbstractStatementIRRFApi(AbstractViewApi):
     serializer_class = StatementIRRFSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = StatementIRRF
-    
+
     tags = [_('Cálculo - Verbas - IRRF - Valores das verbas')]
 
 
@@ -242,9 +243,8 @@ class StatementIRRFApi(AbstractStatementIRRFApi):
     http_method_names = ['post']
     docs = docs.copy()
     docs['post'] = _("""Create Statement IRRF object from request data and return Statement IRRF detail.
-        Returns:
-            JsonResponse: A JSON response containing the created Funds
-             object detail.
+        :return:
+        - JsonResponse: An HTTP response containing the created Funds object detail.
 
         Raises:
             serializers.ValidationError: If the input data is invalid.
@@ -282,19 +282,19 @@ class StatementIRRFDetailApi(AbstractStatementIRRFApi):
         object using the given id from the query parameters and serializes the result into JSON format before returning
          it as an HTTP response. 
 
-            Returns:
+            :return:
                 JsonResponse: An HTTP response containing the serialized document fund data retrieved.
         """)
     docs['put'] = _("""This method handles PUT requests for the view. It updates a specific statement IRRF 
         object using the given id from the query parameters and the serialized input data from the request body. 
 
-            Returns:
+            :return:
                 JsonResponse: An HTTP response containing the serialized statement IRRF data updated.
                 """)
 
     @doc(_("""Delete a specific statement IRRF according to the ID passed by the url
 
-                    Returns:
+                    :return:
                         JsonResponse: A JSON response containing the ok message.
                     """))
     def delete(self, request, *args, **kwargs):
@@ -337,14 +337,15 @@ class StatementFundsIRRFListApi(AbstractStatementIRRFApi):
     IRRF objects using the received fund_id from the query parameters and serializes the result into 
     JSON format before returning it as an JSON response. 
 
-    Returns:
-        JsonResponse: An HTTP response containing the serialized statement IRRF data retrieved.
+    :return:
+        - JsonResponse: An HTTP response containing the serialized statement IRRF data retrieved.
     """))
     def get(self, request, *args, **kwargs):
         fund_id = kwargs.get('fund_id')
         fund = self.model.objects.filter(id=fund_id).first()
         if hasattr(fund, 'totalvaluesirrf'):
-            funds_data = self.serializer_class(fund.totalvaluesirrf, many=False).data
+            funds_data = self.serializer_class(
+                fund.totalvaluesirrf, many=False).data
         else:
             funds_data = self.serializer_class(fund, many=False).data
         return JsonResponse({'fund': funds_data})

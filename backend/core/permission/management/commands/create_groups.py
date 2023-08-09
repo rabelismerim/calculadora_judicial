@@ -2,7 +2,8 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.apps import apps as default_apps
-from config.settings import INSTALLED_APPS, GROUP_NAME_PARTNER
+from config.settings import INSTALLED_APPS, GROUP_NAME_PARTNER, GROUP_NAME_FINANCIAL_MANAGER, \
+    GROUP_NAME_CALCULATION_MANAGER, GROUP_NAME_LEGAL_MANAGER
 from utils import _
 
 all_projects = {
@@ -23,8 +24,10 @@ view_code = {
 layout_perm = 'can_change_{}_to_{}'
 special_approve = [
     (layout_perm.format('b', 'a'), _('Can Approve Special Calculation'), 'calculation'),
-    (layout_perm.format('b', 'c'), _('Can Disapprove Special Calculation to Review'), 'calculation'),
-    (layout_perm.format('b', 'r'), _('Can Disapprove Special Calculation to Failed'), 'calculation')
+    (layout_perm.format('b', 'c'), _(
+        'Can Disapprove Special Calculation to Review'), 'calculation'),
+    (layout_perm.format('b', 'r'), _(
+        'Can Disapprove Special Calculation to Failed'), 'calculation')
 ]
 
 special_approve_perms = [all_projects, authorize_users]
@@ -39,7 +42,7 @@ for codename_, name_, content_ in special_approve:
     special_approve_perms_exclude.append(codename_)
 
 groups = [
-    {'name': 'Gestor Financeiro',
+    {'name': GROUP_NAME_FINANCIAL_MANAGER,
      'models': [
          {'name': 'project',
           'actions': ['view', 'add', 'change', 'delete'],
@@ -91,7 +94,7 @@ groups = [
      ],
      'custom_perms': special_approve_perms + special_approve_perms_calc
      },
-    {'name': 'Gestor Cálculo',
+    {'name': GROUP_NAME_CALCULATION_MANAGER,
      'models': [
          {'name': 'project',
           'actions': ['view', 'add', 'change', 'delete'],
@@ -117,7 +120,7 @@ groups = [
      ],
      'custom_perms': [all_projects, authorize_users]
      },
-    {'name': 'Gestor Jurídico',
+    {'name': GROUP_NAME_LEGAL_MANAGER,
      'models': [
          {'name': 'project',
           'actions': ['view', 'add', 'change', 'delete'],
@@ -250,7 +253,7 @@ class Command(BaseCommand):
         Return the list of applications that start with the app_label parameter.
         """
         apps = INSTALLED_APPS.copy()
-        apps.append('dttuser.User')
+        apps.append('dttuser')
         return [app for app in apps if app.startswith(app_label)]
 
     def create_groups(self):
@@ -259,13 +262,15 @@ class Command(BaseCommand):
         based on the parameters of the classes and actions.
         """
         for group in groups:
-            group_object, created = Group.objects.get_or_create(name=group['name'])
+            group_object, created = Group.objects.get_or_create(
+                name=group['name'])
             perms = []
             for model in group['models']:
                 apps = self.__get_apps(model['name'])
                 for app in apps:
                     app_name = app.split('.')
-                    model_name = app_name[-1] if len(app_name) > 1 else app_name[0]
+                    model_name = app_name[-1] if len(
+                        app_name) > 1 else app_name[0]
                     app_models = default_apps.all_models[model_name]
 
                     for action in model['actions']:
@@ -284,9 +289,11 @@ class Command(BaseCommand):
                 content = custom_perm.get('content_type')
                 codename = custom_perm.get('codename')
                 name = custom_perm.get('name')
-                content_type = ContentType.objects.filter(app_label__icontains=content).first()
+                content_type = ContentType.objects.filter(
+                    app_label__icontains=content).first()
                 if not content_type:
-                    print(f'Content type to app detail: {name}, codename: {codename}, content: {content} not found')
+                    print(
+                        f'Content type to app detail: {name}, codename: {codename}, content: {content} not found')
                     continue
 
                 permission, created = Permission.objects.get_or_create(content_type=content_type, codename=codename,
@@ -297,7 +304,8 @@ class Command(BaseCommand):
             self.print_start(
                 f'Successfully {"created" if created else "altered"} group {group["name"]}\nNumber of permissions: '
                 f'{len(perms)}')
-        group_object, created = Group.objects.get_or_create(name='Administrador')
+        group_object, created = Group.objects.get_or_create(
+            name='Administrador')
         perms = list(
             Permission.objects.exclude(content_type__app_label__in=['authtoken', 'admin', 'auth', 'contenttypes',
                                                                     'sessions', 'sites']).values_list('id', flat=True))

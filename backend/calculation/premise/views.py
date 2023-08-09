@@ -25,13 +25,12 @@ docs = {
             calculation_id from the query parameters and serializes the result into JSON format before returning it as
              an HTTP response.
 
-                Returns:
-                    JsonResponse: An HTTP response containing the serialized Premise data retrieved.
+                :return:
+                    - JsonResponse: An HTTP response containing the serialized Premise data retrieved.
                 """),
     'post': _("""Create Premise object from request data and return Premise detail.
-                Returns:
-                    JsonResponse: A JSON response containing the created Funds
-                     object detail.
+                :return:
+                    - JsonResponse: An HTTP response containing the created Funds object detail.
 
                 Raises:
                     serializers.ValidationError: If the input data is invalid.
@@ -136,7 +135,7 @@ class PremiseCreator:
         is_filing = self.__calculation.is_filing()
         default_interest = self.__calculation.get_default_interest()
 
-        if not date_rj_filing:
+        if not date_rj_filing or not date_rj_request:
             return
         elif is_ipca_e_selic and is_citation:
             comment = {
@@ -162,7 +161,8 @@ class PremiseCreator:
                                "ajuizamento da Reclamação Trabalhista até a data do pedido de RJ."
                 .format(default_interest),
                 'description_en': "There was arrears interest of {}% per month, from the filing date of the Labor "
-                                  "Complaint to the date of RJ's request.".format(default_interest),
+                                  "Complaint to the date of RJ's request.".format(
+                                      default_interest),
                 'description_pt_br': "Houve incidência de juros moratórios de {}% ao mês, desde a data de "
                                      "ajuizamento da Reclamação Trabalhista até a data do pedido de RJ."
                 .format(default_interest)
@@ -235,10 +235,12 @@ class PremiseCreator:
                                ".".format(date_approved_calculation),
                 'description_en': "Considering that the TST index has not changed since September/2017 and that the "
                                   "calculation approved has been updated to {}, we use the value of the approved "
-                                  "principal.".format(date_approved_calculation),
+                                  "principal.".format(
+                                      date_approved_calculation),
                 'description_pt_br': "Considerando que o índice do TST não teve variação desde setembro/2017 e que o "
                                      "cálculo homologado foi atualizado até {}, utilizamos o valor do principal "
-                                     "homologado .".format(date_approved_calculation),
+                                     "homologado .".format(
+                                         date_approved_calculation),
             }
         else:
             comment = {
@@ -318,11 +320,14 @@ class PremiseCreator:
             else:
                 comment = {
                     'description': "O valor de depósito recursal descontado no cálculo foi informado às fls.{} da "
-                                   "Reclamação Trabalhista.".format(num_pag_fls_appeal_deposit),
+                                   "Reclamação Trabalhista.".format(
+                                       num_pag_fls_appeal_deposit),
                     'description_en': "The appeal deposit amount discounted in the calculation was informed on pages"
-                                      " {} of Labour Complaint.".format(num_pag_fls_appeal_deposit),
+                                      " {} of Labour Complaint.".format(
+                                          num_pag_fls_appeal_deposit),
                     'description_pt_br': "O valor de depósito recursal descontado no cálculo foi informado às fls.{} "
-                                         "da Reclamação Trabalhista.".format(num_pag_fls_appeal_deposit),
+                                         "da Reclamação Trabalhista.".format(
+                                             num_pag_fls_appeal_deposit),
                 }
             self.__create_new_premise(comment)
 
@@ -377,11 +382,14 @@ class PremiseCreator:
         elif advocative_hours > 0:
             comment = {
                 'description': "A Administradora Judicial considerou honorários advocatícios de {}% sobre o crédito "
-                               "em favor do Patrono {}.".format(advocative_hours, lawyer),
+                               "em favor do Patrono {}.".format(
+                                   advocative_hours, lawyer),
                 'description_en': "The Trustee considered attorney fees of {}% on the claim "
-                                  "in favor of Patron {}.".format(advocative_hours, lawyer),
+                                  "in favor of Patron {}.".format(
+                                      advocative_hours, lawyer),
                 'description_pt_br': "A Administradora Judicial considerou honorários advocatícios de {}% sobre o "
-                                     "crédito em favor do Patrono {}.".format(advocative_hours, lawyer),
+                                     "crédito em favor do Patrono {}.".format(
+                                         advocative_hours, lawyer),
             }
         else:
             comment = {

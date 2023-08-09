@@ -42,14 +42,13 @@ class ScrapperApi(AbstractViewApi):
     model = Scrapper
 
     docs = {
-        'init': _("""Represents the entire Scrapper.
-                """),
+        'init': _("""Represents the entire Scrapper."""),
         'get': _("""This method handles GET requests for the view. It retrieves a specific Scrapper object using the given
             calculation_id from the query parameters and serializes the result into JSON format before returning it as
              an HTTP response.
 
-                Returns:
-                    JsonResponse: An HTTP response containing the serialized Scrapper data retrieved.
+                :return:
+                    - JsonResponse: An HTTP response containing the serialized Scrapper data retrieved.
                 """)
     }
 

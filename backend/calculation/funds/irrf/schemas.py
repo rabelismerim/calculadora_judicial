@@ -122,7 +122,7 @@ class FundIRRFSchema(AbstractClassesFundsSchema):
             self: The object instance.
             data: A dictionary containing the data to be validated.
 
-        Returns:
+        :return:
             Returns the validated data if all validations pass.
 
         Raises: serializers.ValidationError: If the validation fails due to any of the following reasons: - The FundIRRF
