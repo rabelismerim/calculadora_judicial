@@ -267,7 +267,7 @@ const calculateCredit = async (credit: any, creditIndex: number) => {
   })
 }
 
-const isRequired = ({ required }: any) => required && [(value: any) => !!value || 'Campo obrigatório!']
+const isRequired = ({ required }: any) => required && [(value: any) => value !== undefined || 'Campo obrigatório!']
 
 onMounted(async () => {
   loading = true
