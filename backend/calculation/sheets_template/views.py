@@ -958,11 +958,10 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             item.totalvaluesfunds.total_corrected +
                                             item.totalvaluesfundsintegrations.total_corrected
                                         )
-                                    # TODO: alterar date_citation no project para o calculo
                                     sheet["A" + str(cnt_ini_row)] = (
                                         "Total Atualizado:"
-                                        if project[0].date_citation and project[0].date_rj_request and
-                                        project[0].date_citation < project[0].date_rj_request
+                                        if calculation[0].date_citation and project[0].date_rj_request and
+                                        calculation[0].date_citation < project[0].date_rj_request
                                         else "Total Devido:"
                                     )
                                     sheet["C" + str(cnt_ini_row)] = (
@@ -981,8 +980,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     cnt_ini_row = cnt_ini_row + 1
                                     # TODO: alterar date_citation no project para o calculo
                                     if (
-                                        project[0].date_citation and project[0].date_rj_request and project[0].date_citation
-                                        >= project[0].date_rj_request
+                                        calculation[0].date_citation and project[0].date_rj_request and 
+                                        calculation[0].date_citation >= project[0].date_rj_request
                                     ):
                                         sheet.move_range(
                                             "A"
@@ -1624,29 +1623,6 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             + ":K"
                                             + str(cnt_ini_row)
                                         )
-                                        # cnt_ini_row = cnt_ini_row + 1
-                                        # sheet.move_range(
-                                        #     "A"
-                                        #     + str(cnt_ini_row-1)
-                                        #     + ":K"
-                                        #     + str(sheet.max_row),
-                                        #     rows=1,
-                                        #     cols=0,
-                                        # )
-                                        # sheet["A" + str(cnt_ini_row)].font = font
-                                        # sheet["A" + str(cnt_ini_row)].fill = grayFill1
-                                        # sheet["A" + str(cnt_ini_row)] = ""
-                                        # sheet["B" + str(cnt_ini_row)].font = font
-                                        # sheet["B" + str(cnt_ini_row)].fill = grayFill1
-                                        # sheet[
-                                        #     "B" + str(cnt_ini_row)
-                                        # ] = str(item.lawyer_name)
-                                        # sheet.merge_cells(
-                                        #     "B"
-                                        #     + str(cnt_ini_row)
-                                        #     + ":K"
-                                        #     + str(cnt_ini_row)
-                                        # )
                                         first = False
                                     cnt_ini_row = cnt_ini_row + 1
                                     sheet.move_range(
@@ -2424,7 +2400,6 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     )
                                     col.value = ""
                                     sum_total = 0
-                                    # TODO: alterar date_citation no project para o calculo
                                     if (
                                         project[0].date_citation and project[0].date_rj_request and
                                         project[0].date_citation
