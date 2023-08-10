@@ -11,6 +11,7 @@ const form = ref(null as any)
 
 const modalValue = ref(false)
 const selectedTab = ref('carregamento')
+const filterBy = $ref('')
 
 const closeModal = () => {
   modalValue.value = false
@@ -27,8 +28,8 @@ const closeModal = () => {
     <div id="q-app" style="min-height: 100vh;">
       <div class="q-pa-md">
         <div class="q-gutter-y-md">
-          <q-card>
-            <q-tabs
+          <QCard>
+            <QTabs
               v-model="selectedTab"
               dense
               class="text-grey"
@@ -37,18 +38,18 @@ const closeModal = () => {
               align="justify"
               narrow-indicator
             >
-              <q-tab name="carregamento" label="Carregamento" />
-              <q-tab name="historico" label="Histórico" />
-            </q-tabs>
+              <QTab name="carregamento" label="Carregamento" />
+              <QTab name="historico" label="Histórico" />
+            </QTabs>
 
-            <q-separator />
+            <QSeparator />
 
             <QTabPanels v-model="selectedTab">
               <QTabPanel name="carregamento">
                 <div class="text-h9" style="font-weight: bold">
                   Download do template
                 </div>
-                ARQUIVOS AQUI
+                Templates para download
                 <div class="text-h9" style="font-weight: bold">
                   Upload dos arquivos preenchidos
                 </div>
@@ -57,13 +58,14 @@ const closeModal = () => {
               <QTabPanel name="historico">
                 <div class="text-h9" style="font-weight: bold">
                   Histórico de arquivos carregados no sistema
+                  <SearchFilter v-model="filterBy" />
                 </div>
                 Histórico de arquivos aqui
               </QTabPanel>
             </QTabPanels>
-          </q-card>
+          </QCard>
           <Btn
-            class="flex justify-end gap-4 p-4 border-1 border-t-black/12"
+            class="q-mb-md"
             label="Fechar"
             color="primary"
             @click="closeModal"
