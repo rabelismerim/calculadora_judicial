@@ -146,7 +146,7 @@ class PremiseCreator:
                 'description_pt_br': "Houve incidência de juros moratórios através da taxa SELIC, desde a data da "
                                      "citação até a data do pedido de RJ."
             }
-        elif is_ipca_e_selic and is_filing == "ajuizamento da Reclamação Trabalhista":
+        elif is_ipca_e_selic and is_filing:
             comment = {
                 'description': "Houve incidência de juros moratórios através da taxa SELIC, desde a data do "
                                "ajuizamento da Reclamação Trabalhista até a data do pedido de RJ.",

@@ -31,9 +31,11 @@ from os import remove
 from datetime import datetime
 import base64
 
-grayFill = PatternFill(start_color="00C0C0C0", end_color="00C0C0C0", fill_type="solid")
+grayFill = PatternFill(start_color="00C0C0C0",
+                       end_color="00C0C0C0", fill_type="solid")
 
-grayFill1 = PatternFill(start_color="00D9D9D9", end_color="00D9D9D9", fill_type="solid")
+grayFill1 = PatternFill(start_color="00D9D9D9",
+                        end_color="00D9D9D9", fill_type="solid")
 
 font = Font(bold=True)
 
@@ -64,7 +66,6 @@ class SheetTemplateViewApi(AbstractViewApi):
                     """
         )
     )
-
     # This function changing the new output file name as report
     def new_archive(self, filename):
         sequence = 0
@@ -95,13 +96,15 @@ class SheetTemplateViewApi(AbstractViewApi):
                 return JsonResponse({"errors": "Calculation not found."})
             creditor = Creditor.objects.filter(id=calculation[0].creditor_id)
             statement = Statement.objects.filter(calculation_id=calculation_id)
-            comparative = Comparative.objects.filter(calculation_id=calculation_id)
+            comparative = Comparative.objects.filter(
+                calculation_id=calculation_id)
             comparativecalculation = ComparativeCalculation.objects.filter(
                 id=calculation_id
             )
             funds = Funds.objects.filter(calculation_id=calculation_id)
             premises = Premise.objects.filter(calculation=calculation[0])
-            fund_document = FundDocument.objects.filter(calculation_id=calculation_id)
+            fund_document = FundDocument.objects.filter(
+                calculation_id=calculation_id)
             if len(fund_document) > 0:
                 statement_document = StatementDocument.objects.filter(
                     fund_id=fund_document[0].id
@@ -117,9 +120,11 @@ class SheetTemplateViewApi(AbstractViewApi):
                 claim_lawyer = ClaimLawyer.objects.filter(
                     creditor_id=creditor[0].id
                 ).order_by("classes__classe")
-                recovering = Recovering.objects.filter(id=creditor[0].recovering_id)
+                recovering = Recovering.objects.filter(
+                    id=creditor[0].recovering_id)
                 if len(recovering) > 0:
-                    project = Project.objects.filter(id=recovering[0].project_id)
+                    project = Project.objects.filter(
+                        id=recovering[0].project_id)
                 entity = Entity.objects.filter(id=creditor[0].entity_id)
                 if len(entity) > 0:
                     calculations_sheet = Calculation.objects.filter(
@@ -143,7 +148,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                 + Template[0].file.name.upper().replace(".XLSX", "-VIEW.XLSX"),
                 read_only=False,
             )
-            new_name_download = self.new_archive("uploads/" + Template[0].file.name)
+            new_name_download = self.new_archive(
+                "uploads/" + Template[0].file.name)
             new_name_view = self.new_archive(
                 "uploads/"
                 + Template[0].file.name.upper().replace(".XLSX", "-VIEW.XLSX")
@@ -162,14 +168,16 @@ class SheetTemplateViewApi(AbstractViewApi):
                             plan_build = item.get_all_statement_funds_integrations()
                             if plan_build and len(plan_build) > 0:
                                 ws["A" + str(cnt_row)] = (
-                                    "Crédito " + plan_build[0].fund.template.name
+                                    "Crédito " +
+                                    plan_build[0].fund.template.name
                                 )
                                 ws["A" + str(cnt_row)].font = font
                                 ws["A" + str(cnt_row + 2)] = "Integrações sobre " + str(
                                     plan_build[0].fund.template.name
                                 )
                                 ws["A" + str(cnt_row + 2)].font = font
-                                ws["A" + str(cnt_row + 3)] = plan_build[0].fund.name
+                                ws["A" + str(cnt_row + 3)
+                                   ] = plan_build[0].fund.name
                                 ws["A" + str(cnt_row + 3)].font = font
                                 ws["A" + str(cnt_row + 4)] = str(
                                     plan_build[0].fund.classes
@@ -202,10 +210,12 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 ws["E" + str(cnt_row + 5)] = "Valor histórico"
                                 ws["E" + str(cnt_row + 5)].font = font
                                 ws["E" + str(cnt_row + 5)].fill = grayFill
-                                ws["F" + str(cnt_row + 5)] = "Indíce na data base"
+                                ws["F" + str(cnt_row + 5)
+                                   ] = "Indíce na data base"
                                 ws["F" + str(cnt_row + 5)].font = font
                                 ws["F" + str(cnt_row + 5)].fill = grayFill
-                                ws["G" + str(cnt_row + 5)] = "Indíce na recuperação"
+                                ws["G" + str(cnt_row + 5)
+                                   ] = "Indíce na recuperação"
                                 ws["G" + str(cnt_row + 5)].font = font
                                 ws["G" + str(cnt_row + 5)].fill = grayFill
                                 ws["H" + str(cnt_row + 5)] = "Valor corrigido"
@@ -380,7 +390,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 )
                                 cnt_row = cnt_row + 1
                             else:
-                                ws["A" + str(cnt_row)] = "Crédito " + item.template.name
+                                ws["A" + str(cnt_row)] = "Crédito " + \
+                                    item.template.name
                                 ws["A" + str(cnt_row)].font = font
                                 ws["A" + str(cnt_row + 2)] = "Integrações sobre " + str(
                                     item.template.name
@@ -405,10 +416,12 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 ws["E" + str(cnt_row + 5)] = "Valor histórico"
                                 ws["E" + str(cnt_row + 5)].font = font
                                 ws["E" + str(cnt_row + 5)].fill = grayFill
-                                ws["F" + str(cnt_row + 5)] = "Indíce na data base"
+                                ws["F" + str(cnt_row + 5)
+                                   ] = "Indíce na data base"
                                 ws["F" + str(cnt_row + 5)].font = font
                                 ws["F" + str(cnt_row + 5)].fill = grayFill
-                                ws["G" + str(cnt_row + 5)] = "Indíce na recuperação"
+                                ws["G" + str(cnt_row + 5)
+                                   ] = "Indíce na recuperação"
                                 ws["G" + str(cnt_row + 5)].font = font
                                 ws["G" + str(cnt_row + 5)].fill = grayFill
                                 ws["H" + str(cnt_row + 5)] = "Valor corrigido"
@@ -418,7 +431,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                             cnt_row = cnt_row + 2
                             plan_build1 = item.get_all_statement_funds()
                             if plan_build1 and len(plan_build1) > 0:
-                                ws["A" + str(cnt_row)] = str(item.template.name)
+                                ws["A" + str(cnt_row)
+                                   ] = str(item.template.name)
                                 ws["A" + str(cnt_row)].font = font
                                 ws["A" + str(cnt_row + 1)] = "Data base"
                                 ws["A" + str(cnt_row + 1)].font = font
@@ -432,10 +446,12 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 ws["D" + str(cnt_row + 1)] = "Valor histórico"
                                 ws["D" + str(cnt_row + 1)].font = font
                                 ws["D" + str(cnt_row + 1)].fill = grayFill
-                                ws["E" + str(cnt_row + 1)] = "Indíce na data base"
+                                ws["E" + str(cnt_row + 1)
+                                   ] = "Indíce na data base"
                                 ws["E" + str(cnt_row + 1)].font = font
                                 ws["E" + str(cnt_row + 1)].fill = grayFill
-                                ws["F" + str(cnt_row + 1)] = "Indíce na recuperação"
+                                ws["F" + str(cnt_row + 1)
+                                   ] = "Indíce na recuperação"
                                 ws["F" + str(cnt_row + 1)].font = font
                                 ws["F" + str(cnt_row + 1)].fill = grayFill
                                 ws["G" + str(cnt_row + 1)] = "Valor corrigido"
@@ -480,7 +496,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         )
                                         ws["E" + str(cnt_row)] = (
                                             "{:,.5f}".format(
-                                                float(value_index.index_data_base)
+                                                float(
+                                                    value_index.index_data_base)
                                             )
                                             .replace(".", "-")
                                             .replace(",", ".")
@@ -495,7 +512,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         )
                                         ws["F" + str(cnt_row)] = (
                                             "{:,.5f}".format(
-                                                float(value_index.index_recovering)
+                                                float(
+                                                    value_index.index_recovering)
                                             )
                                             .replace(".", "-")
                                             .replace(",", ".")
@@ -510,7 +528,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         )
                                         ws["G" + str(cnt_row)] = (
                                             "{:,.2f}".format(
-                                                float(str(value_index).split(" - ")[2])
+                                                float(
+                                                    str(value_index).split(" - ")[2])
                                             )
                                             .replace(".", "-")
                                             .replace(",", ".")
@@ -519,13 +538,15 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             else ""
                                         )
                                         sum_total += (
-                                            float(float(str(item2.historical_value)))
+                                            float(
+                                                float(str(item2.historical_value)))
                                             if item2.historical_value
                                             else 0
                                         )
                                         sum_total1 += (
                                             float(
-                                                float(str(value_index).split(" - ")[2])
+                                                float(
+                                                    str(value_index).split(" - ")[2])
                                             )
                                             if value_index
                                             else 0
@@ -549,7 +570,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 )
                                 cnt_row = cnt_row + 1
                             else:
-                                ws["A" + str(cnt_row)] = str(item.template.name)
+                                ws["A" + str(cnt_row)
+                                   ] = str(item.template.name)
                                 ws["A" + str(cnt_row)].font = font
                                 ws["A" + str(cnt_row + 1)] = "Data base"
                                 ws["A" + str(cnt_row + 1)].font = font
@@ -563,10 +585,12 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 ws["E" + str(cnt_row + 1)] = "Valor histórico"
                                 ws["E" + str(cnt_row + 1)].font = font
                                 ws["E" + str(cnt_row + 1)].fill = grayFill
-                                ws["F" + str(cnt_row + 1)] = "Indíce na data base"
+                                ws["F" + str(cnt_row + 1)
+                                   ] = "Indíce na data base"
                                 ws["F" + str(cnt_row + 1)].font = font
                                 ws["F" + str(cnt_row + 1)].fill = grayFill
-                                ws["G" + str(cnt_row + 1)] = "Indíce na recuperação"
+                                ws["G" + str(cnt_row + 1)
+                                   ] = "Indíce na recuperação"
                                 ws["G" + str(cnt_row + 1)].font = font
                                 ws["G" + str(cnt_row + 1)].fill = grayFill
                                 ws["H" + str(cnt_row + 1)] = "Valor corrigido"
@@ -578,7 +602,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                     continue
                 cnt_calc = 0
                 if type(sheet.title) == str and sheet.title.find("JUCA=") >= 0:
-                    archive_download.remove_sheet(archive_download[sheet.title])
+                    archive_download.remove_sheet(
+                        archive_download[sheet.title])
                 sheet.title = sheet.title.replace(" Copy", "")
                 for row in sheet.iter_rows():
                     for col in row:
@@ -591,7 +616,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     col.value = str(eval(str(col.value)[8:]))
                                     col.alignment = Alignment(wrapText=False)
                                     sheet.merge_cells(
-                                        "A" + str(col.row) + ":K" + str(col.row)
+                                        "A" + str(col.row) + ":K" +
+                                        str(col.row)
                                     )
                                 except:
                                     col.value = str("Erro Formula!!!")
@@ -605,7 +631,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         wrapText=False, horizontal="center"
                                     )
                                     sheet.merge_cells(
-                                        "A" + str(col.row) + ":B" + str(col.row)
+                                        "A" + str(col.row) + ":B" +
+                                        str(col.row)
                                     )
                                 except:
                                     col.value = str("Erro Formula!!!")
@@ -616,7 +643,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 try:
                                     try:
                                         sheet.unmerge_cells(
-                                            "A" + str(col.row) + ":K" + str(col.row)
+                                            "A" + str(col.row) +
+                                            ":K" + str(col.row)
                                         )
                                     except:
                                         pass
@@ -626,7 +654,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                             if type(col.value) == str and col.value.find("JUCA=") >= 0:
                                 try:
                                     col.value = str(eval(str(col.value)[5:]))
-                                    col.alignment = col.alignment.copy(wrapText=False)
+                                    col.alignment = col.alignment.copy(
+                                        wrapText=False)
                                 except:
                                     col.value = str("Erro Formula!!!")
                         else:
@@ -724,7 +753,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                             ):
                                 if str(col.value)[8:] == "NoticeAJ_Vert":
                                     cnt_ini_row = col.row
-                                    sheet["A" + str(cnt_ini_row)].value = "Edital"
+                                    sheet["A" + str(cnt_ini_row)
+                                          ].value = "Edital"
                                     sheet["A" + str(cnt_ini_row)].font = font
                                     if len(notice) > 0:
                                         sheet.move_range(
@@ -896,11 +926,13 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     )
                                     for item in funds:
                                         cnt_ini_row = cnt_ini_row + 1
-                                        sheet["A" + str(cnt_ini_row)] = str(item.name)
+                                        sheet["A" + str(cnt_ini_row)
+                                              ] = str(item.name)
                                         sheet["C" + str(cnt_ini_row)] = (
                                             "{:,.2f}".format(
                                                 float(
-                                                    item.totalvaluesfunds.total_corrected+item.totalvaluesfundsintegrations.total_corrected
+                                                    item.totalvaluesfunds.total_corrected +
+                                                    item.totalvaluesfundsintegrations.total_corrected
                                                 )
                                             )
                                             .replace(".", "-")
@@ -918,12 +950,14 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         )
                                         cnt_ini_row = cnt_ini_row + 1
                                         sum_total += (
-                                            item.totalvaluesfunds.total_corrected+item.totalvaluesfundsintegrations.total_corrected
+                                            item.totalvaluesfunds.total_corrected +
+                                            item.totalvaluesfundsintegrations.total_corrected
                                         )
+                                    # TODO: alterar date_citation no project para o calculo
                                     sheet["A" + str(cnt_ini_row)] = (
                                         "Total Atualizado:"
-                                        if project[0].date_citation and project[0].date_rj_request  and 
-                                        project[0].date_citation < project[0].date_rj_request 
+                                        if project[0].date_citation and project[0].date_rj_request and
+                                        project[0].date_citation < project[0].date_rj_request
                                         else "Total Devido:"
                                     )
                                     sheet["C" + str(cnt_ini_row)] = (
@@ -936,9 +970,11 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         horizontal="right"
                                     )
                                     sheet.merge_cells(
-                                        "A" + str(cnt_ini_row) + ":B" + str(cnt_ini_row)
+                                        "A" + str(cnt_ini_row) +
+                                        ":B" + str(cnt_ini_row)
                                     )
                                     cnt_ini_row = cnt_ini_row + 1
+                                    # TODO: alterar date_citation no project para o calculo
                                     if (
                                         project[0].date_citation and project[0].date_rj_request and project[0].date_citation
                                         >= project[0].date_rj_request
@@ -1120,7 +1156,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             ].alignment = Alignment(horizontal="right")
                                             sheet["D" + str(cnt_ini_row)] = (
                                                 "{:,.2f}".format(
-                                                    float(item1.historical_value)
+                                                    float(
+                                                        item1.historical_value)
                                                 )
                                                 .strip()
                                                 .replace(".", "-")
@@ -1191,7 +1228,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             ].alignment = Alignment(horizontal="right")
                                             sheet["I" + str(cnt_ini_row)] = (
                                                 "{:,.2f}".format(
-                                                    float(item1.default_interest)
+                                                    float(
+                                                        item1.default_interest)
                                                 )
                                                 .strip()
                                                 .replace(".", "-")
@@ -1202,7 +1240,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                                 "J" + str(cnt_ini_row)
                                             ].alignment = Alignment(horizontal="right")
                                             sheet["J" + str(cnt_ini_row)] = (
-                                                "{:,.2f}".format(float(item1.fine))
+                                                "{:,.2f}".format(
+                                                    float(item1.fine))
                                                 .strip()
                                                 .replace(".", "-")
                                                 .replace(",", ".")
@@ -1229,7 +1268,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             sum_total1 += float(
                                                 item1.monetarycorrectiondocument.corrected_value
                                             )
-                                            sum_total2 += float(item1.default_interest)
+                                            sum_total2 += float(
+                                                item1.default_interest)
                                             sum_total3 += float(item1.fine)
                                             sum_total4 += float(
                                                 item1.monetarycorrectiondocument.corrected_value
@@ -1238,39 +1278,45 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             )
                                     if len(fund_document) > 0:
                                         sheet["A" + str(cnt_ini_row)] = "Total"
-                                        sheet["A" + str(cnt_ini_row)].font = font
+                                        sheet["A" +
+                                              str(cnt_ini_row)].font = font
                                         sheet[
                                             "D" + str(cnt_ini_row)
                                         ] = "{:,.2f}".format(sum_total).strip()
-                                        sheet["D" + str(cnt_ini_row)].font = font
+                                        sheet["D" +
+                                              str(cnt_ini_row)].font = font
                                         sheet[
                                             "D" + str(cnt_ini_row)
                                         ].alignment = Alignment(horizontal="right")
                                         sheet[
                                             "G" + str(cnt_ini_row)
                                         ] = "{:,.2f}".format(sum_total1).strip()
-                                        sheet["G" + str(cnt_ini_row)].font = font
+                                        sheet["G" +
+                                              str(cnt_ini_row)].font = font
                                         sheet[
                                             "G" + str(cnt_ini_row)
                                         ].alignment = Alignment(horizontal="right")
                                         sheet[
                                             "I" + str(cnt_ini_row)
                                         ] = "{:,.2f}".format(sum_total2).strip()
-                                        sheet["I" + str(cnt_ini_row)].font = font
+                                        sheet["I" +
+                                              str(cnt_ini_row)].font = font
                                         sheet[
                                             "I" + str(cnt_ini_row)
                                         ].alignment = Alignment(horizontal="right")
                                         sheet[
                                             "J" + str(cnt_ini_row)
                                         ] = "{:,.2f}".format(sum_total3).strip()
-                                        sheet["J" + str(cnt_ini_row)].font = font
+                                        sheet["J" +
+                                              str(cnt_ini_row)].font = font
                                         sheet[
                                             "J" + str(cnt_ini_row)
                                         ].alignment = Alignment(horizontal="right")
                                         sheet[
                                             "K" + str(cnt_ini_row)
                                         ] = "{:,.2f}".format(sum_total4).strip()
-                                        sheet["K" + str(cnt_ini_row)].font = font
+                                        sheet["K" +
+                                              str(cnt_ini_row)].font = font
                                         sheet[
                                             "K" + str(cnt_ini_row)
                                         ].alignment = Alignment(horizontal="right")
@@ -1323,11 +1369,13 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     )
                                     col.value = "A Administradora Judicial opina pelo valor e classe indicados abaixo:"
                                     sheet.merge_cells(
-                                        "A" + str(cnt_ini_row) + ":K" + str(cnt_ini_row)
+                                        "A" + str(cnt_ini_row) +
+                                        ":K" + str(cnt_ini_row)
                                     )
                                     cnt_ini_row += 1
                                     sheet.merge_cells(
-                                        "A" + str(cnt_ini_row) + ":K" + str(cnt_ini_row)
+                                        "A" + str(cnt_ini_row) +
+                                        ":K" + str(cnt_ini_row)
                                     )
                                     cnt_ini_row = cnt_ini_row + 1
                                     sheet.move_range(
@@ -1339,28 +1387,34 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         cols=0,
                                     )
                                     sheet["A" + str(cnt_ini_row)].font = font
-                                    sheet["A" + str(cnt_ini_row)].fill = grayFill1
-                                    sheet["A" + str(cnt_ini_row)] = "Conclusão AJ"
+                                    sheet["A" + str(cnt_ini_row)
+                                          ].fill = grayFill1
+                                    sheet["A" + str(cnt_ini_row)
+                                          ] = "Conclusão AJ"
                                     sheet["B" + str(cnt_ini_row)].font = font
-                                    sheet["B" + str(cnt_ini_row)].fill = grayFill1
+                                    sheet["B" + str(cnt_ini_row)
+                                          ].fill = grayFill1
                                     sheet["B" + str(cnt_ini_row)] = (
                                         statement[0].get_conclusion_display()
                                         if len(statement) > 0
                                         else ""
                                     )
                                     sheet["C" + str(cnt_ini_row)].font = font
-                                    sheet["C" + str(cnt_ini_row)].fill = grayFill1
+                                    sheet["C" + str(cnt_ini_row)
+                                          ].fill = grayFill1
                                     sheet["C" + str(cnt_ini_row)] = (
                                         str(claim_creditor[0].coins)
                                         if claim_creditor
                                         else ""
                                     )
                                     sheet["D" + str(cnt_ini_row)].font = font
-                                    sheet["D" + str(cnt_ini_row)].fill = grayFill1
+                                    sheet["D" + str(cnt_ini_row)
+                                          ].fill = grayFill1
                                     try:
                                         sheet["D" + str(cnt_ini_row)] = (
                                             "{:,.2f}".format(
-                                                sum([item["total_calculated"] for item in calculation[0].get_classes()])
+                                                sum([item["total_calculated"]
+                                                    for item in calculation[0].get_classes()])
                                             )
                                             .replace(".", "-")
                                             .replace(",", ".")
@@ -1377,12 +1431,14 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             .replace("-", ",")
                                         )
                                     sheet["E" + str(cnt_ini_row)].font = font
-                                    sheet["E" + str(cnt_ini_row)].fill = grayFill1
+                                    sheet["E" + str(cnt_ini_row)
+                                          ].fill = grayFill1
                                     sheet["E" + str(cnt_ini_row)] = str(
                                         recovering[0].entity.name
                                     )
                                     sheet.merge_cells(
-                                        "E" + str(cnt_ini_row) + ":K" + str(cnt_ini_row)
+                                        "E" + str(cnt_ini_row) +
+                                        ":K" + str(cnt_ini_row)
                                     )
                                     if calculation[0].has_edital:
                                         cnt_ini_row = cnt_ini_row + 1
@@ -1394,21 +1450,29 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             rows=1,
                                             cols=0,
                                         )
-                                        sheet["A" + str(cnt_ini_row)].font = font
-                                        sheet["A" + str(cnt_ini_row)].fill = grayFill1
+                                        sheet["A" +
+                                              str(cnt_ini_row)].font = font
+                                        sheet["A" + str(cnt_ini_row)
+                                              ].fill = grayFill1
                                         sheet["A" + str(cnt_ini_row)] = ""
-                                        sheet["B" + str(cnt_ini_row)].font = font
-                                        sheet["B" + str(cnt_ini_row)].fill = grayFill1
+                                        sheet["B" +
+                                              str(cnt_ini_row)].font = font
+                                        sheet["B" + str(cnt_ini_row)
+                                              ].fill = grayFill1
                                         sheet[
                                             "B" + str(cnt_ini_row)
                                         ] = "Edital art. 7º § 2 - 11.101/2005"
-                                        sheet["C" + str(cnt_ini_row)].font = font
-                                        sheet["C" + str(cnt_ini_row)].fill = grayFill1
+                                        sheet["C" +
+                                              str(cnt_ini_row)].font = font
+                                        sheet["C" + str(cnt_ini_row)
+                                              ].fill = grayFill1
                                         sheet["C" + str(cnt_ini_row)] = (
                                             str(notice[0].coins) if notice else "-"
                                         )
-                                        sheet["D" + str(cnt_ini_row)].font = font
-                                        sheet["D" + str(cnt_ini_row)].fill = grayFill1
+                                        sheet["D" +
+                                              str(cnt_ini_row)].font = font
+                                        sheet["D" + str(cnt_ini_row)
+                                              ].fill = grayFill1
                                         sheet["D" + str(cnt_ini_row)] = (
                                             "{:,.2f}".format(
                                                 notice.aggregate(Sum("coins__value"))[
@@ -1421,8 +1485,10 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             if notice
                                             else "-"
                                         )
-                                        sheet["E" + str(cnt_ini_row)].font = font
-                                        sheet["E" + str(cnt_ini_row)].fill = grayFill1
+                                        sheet["E" +
+                                              str(cnt_ini_row)].font = font
+                                        sheet["E" + str(cnt_ini_row)
+                                              ].fill = grayFill1
                                         sheet["E" + str(cnt_ini_row)] = (
                                             str(recovering[0].entity.name)
                                             if notice
@@ -1445,26 +1511,30 @@ class SheetTemplateViewApi(AbstractViewApi):
                                                 rows=1,
                                                 cols=0,
                                             )
-                                            sheet["A" + str(cnt_ini_row)].font = font
+                                            sheet["A" +
+                                                  str(cnt_ini_row)].font = font
                                             sheet[
                                                 "A" + str(cnt_ini_row)
                                             ].fill = grayFill1
                                             sheet["A" + str(cnt_ini_row)] = ""
-                                            sheet["B" + str(cnt_ini_row)].font = font
+                                            sheet["B" +
+                                                  str(cnt_ini_row)].font = font
                                             sheet[
                                                 "B" + str(cnt_ini_row)
                                             ].fill = grayFill1
                                             sheet["B" + str(cnt_ini_row)] = str(
                                                 item["classes_display"]
                                             ).replace("\n", "")
-                                            sheet["C" + str(cnt_ini_row)].font = font
+                                            sheet["C" +
+                                                  str(cnt_ini_row)].font = font
                                             sheet[
                                                 "C" + str(cnt_ini_row)
                                             ].fill = grayFill1
                                             sheet["C" + str(cnt_ini_row)] = str(
                                                 item["coin"]
                                             ).replace("\n", "")
-                                            sheet["D" + str(cnt_ini_row)].font = font
+                                            sheet["D" +
+                                                  str(cnt_ini_row)].font = font
                                             sheet[
                                                 "D" + str(cnt_ini_row)
                                             ].fill = grayFill1
@@ -1480,7 +1550,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                                 .replace(",", ".")
                                                 .replace("-", ",")
                                             )
-                                            sheet["E" + str(cnt_ini_row)].font = font
+                                            sheet["E" +
+                                                  str(cnt_ini_row)].font = font
                                             sheet[
                                                 "E" + str(cnt_ini_row)
                                             ].fill = grayFill1
@@ -1505,29 +1576,40 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             rows=1,
                                             cols=0,
                                         )
-                                        sheet["A" + str(cnt_ini_row)].font = font
-                                        sheet["A" + str(cnt_ini_row)].fill = grayFill1
+                                        sheet["A" +
+                                              str(cnt_ini_row)].font = font
+                                        sheet["A" + str(cnt_ini_row)
+                                              ].fill = grayFill1
                                         sheet["A" + str(cnt_ini_row)] = (
                                             "Conclusão AJ" if first else ""
                                         )
-                                        sheet["B" + str(cnt_ini_row)].font = font
-                                        sheet["B" + str(cnt_ini_row)].fill = grayFill1
+                                        sheet["B" +
+                                              str(cnt_ini_row)].font = font
+                                        sheet["B" + str(cnt_ini_row)
+                                              ].fill = grayFill1
                                         sheet["B" + str(cnt_ini_row)] = str(
                                             item.classes.get_classe_display()
                                         )
-                                        sheet["C" + str(cnt_ini_row)].font = font
-                                        sheet["C" + str(cnt_ini_row)].fill = grayFill1
-                                        sheet["C" + str(cnt_ini_row)] = str(item.coins)
-                                        sheet["D" + str(cnt_ini_row)].font = font
-                                        sheet["D" + str(cnt_ini_row)].fill = grayFill1
+                                        sheet["C" +
+                                              str(cnt_ini_row)].font = font
+                                        sheet["C" + str(cnt_ini_row)
+                                              ].fill = grayFill1
+                                        sheet["C" + str(cnt_ini_row)
+                                              ] = str(item.coins)
+                                        sheet["D" +
+                                              str(cnt_ini_row)].font = font
+                                        sheet["D" + str(cnt_ini_row)
+                                              ].fill = grayFill1
                                         sheet["D" + str(cnt_ini_row)] = (
                                             "{:,.2f}".format(item.coins.value)
                                             .replace(".", "-")
                                             .replace(",", ".")
                                             .replace("-", ",")
                                         )
-                                        sheet["E" + str(cnt_ini_row)].font = font
-                                        sheet["E" + str(cnt_ini_row)].fill = grayFill1
+                                        sheet["E" +
+                                              str(cnt_ini_row)].font = font
+                                        sheet["E" + str(cnt_ini_row)
+                                              ].fill = grayFill1
                                         sheet["E" + str(cnt_ini_row)] = str(
                                             recovering[0].entity.name
                                         )
@@ -1580,7 +1662,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         cols=0,
                                     )
                                     sheet.merge_cells(
-                                        "A" + str(cnt_ini_row) + ":G" + str(cnt_ini_row)
+                                        "A" + str(cnt_ini_row) +
+                                        ":G" + str(cnt_ini_row)
                                     )
                                     sheet["A" + str(cnt_ini_row)] = (
                                         "São Paulo, "
@@ -1630,14 +1713,16 @@ class SheetTemplateViewApi(AbstractViewApi):
                             plan_build = item.get_all_statement_funds_integrations()
                             if plan_build and len(plan_build) > 0:
                                 ws["D" + str(cnt_row)] = (
-                                    "Crédito " + plan_build[0].fund.template.name
+                                    "Crédito " +
+                                    plan_build[0].fund.template.name
                                 )
                                 ws["D" + str(cnt_row)].font = font
                                 ws["D" + str(cnt_row + 2)] = "Integrações sobre " + str(
                                     plan_build[0].fund.template.name
                                 )
                                 ws["D" + str(cnt_row + 2)].font = font
-                                ws["D" + str(cnt_row + 3)] = plan_build[0].fund.name
+                                ws["D" + str(cnt_row + 3)
+                                   ] = plan_build[0].fund.name
                                 ws["D" + str(cnt_row + 3)].font = font
                                 ws["D" + str(cnt_row + 4)] = str(
                                     plan_build[0].fund.classes
@@ -1670,10 +1755,12 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 ws["H" + str(cnt_row + 5)] = "Valor histórico"
                                 ws["H" + str(cnt_row + 5)].font = font
                                 ws["H" + str(cnt_row + 5)].fill = grayFill
-                                ws["I" + str(cnt_row + 5)] = "Indíce na data base"
+                                ws["I" + str(cnt_row + 5)
+                                   ] = "Indíce na data base"
                                 ws["I" + str(cnt_row + 5)].font = font
                                 ws["I" + str(cnt_row + 5)].fill = grayFill
-                                ws["J" + str(cnt_row + 5)] = "Indíce na recuperação"
+                                ws["J" + str(cnt_row + 5)
+                                   ] = "Indíce na recuperação"
                                 ws["J" + str(cnt_row + 5)].font = font
                                 ws["J" + str(cnt_row + 5)].fill = grayFill
                                 ws["K" + str(cnt_row + 5)] = "Valor corrigido"
@@ -1848,7 +1935,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 )
                                 cnt_row = cnt_row + 1
                             else:
-                                ws["D" + str(cnt_row)] = "Crédito " + item.template.name
+                                ws["D" + str(cnt_row)] = "Crédito " + \
+                                    item.template.name
                                 ws["D" + str(cnt_row)].font = font
                                 ws["D" + str(cnt_row + 2)] = "Integrações sobre " + str(
                                     item.template.name
@@ -1873,10 +1961,12 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 ws["H" + str(cnt_row + 5)] = "Valor histórico"
                                 ws["H" + str(cnt_row + 5)].font = font
                                 ws["H" + str(cnt_row + 5)].fill = grayFill
-                                ws["I" + str(cnt_row + 5)] = "Indíce na data base"
+                                ws["I" + str(cnt_row + 5)
+                                   ] = "Indíce na data base"
                                 ws["I" + str(cnt_row + 5)].font = font
                                 ws["I" + str(cnt_row + 5)].fill = grayFill
-                                ws["J" + str(cnt_row + 5)] = "Indíce na recuperação"
+                                ws["J" + str(cnt_row + 5)
+                                   ] = "Indíce na recuperação"
                                 ws["J" + str(cnt_row + 5)].font = font
                                 ws["J" + str(cnt_row + 5)].fill = grayFill
                                 ws["K" + str(cnt_row + 5)] = "Valor corrigido"
@@ -1886,7 +1976,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                             cnt_row = cnt_row + 2
                             plan_build1 = item.get_all_statement_funds()
                             if plan_build1 and len(plan_build1) > 0:
-                                ws["D" + str(cnt_row)] = str(item.template.name)
+                                ws["D" + str(cnt_row)
+                                   ] = str(item.template.name)
                                 ws["D" + str(cnt_row)].font = font
                                 ws["D" + str(cnt_row + 1)] = "Data base"
                                 ws["D" + str(cnt_row + 1)].font = font
@@ -1900,10 +1991,12 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 ws["G" + str(cnt_row + 1)] = "Valor histórico"
                                 ws["G" + str(cnt_row + 1)].font = font
                                 ws["G" + str(cnt_row + 1)].fill = grayFill
-                                ws["H" + str(cnt_row + 1)] = "Indíce na data base"
+                                ws["H" + str(cnt_row + 1)
+                                   ] = "Indíce na data base"
                                 ws["H" + str(cnt_row + 1)].font = font
                                 ws["H" + str(cnt_row + 1)].fill = grayFill
-                                ws["I" + str(cnt_row + 1)] = "Indíce na recuperação"
+                                ws["I" + str(cnt_row + 1)
+                                   ] = "Indíce na recuperação"
                                 ws["I" + str(cnt_row + 1)].font = font
                                 ws["I" + str(cnt_row + 1)].fill = grayFill
                                 ws["J" + str(cnt_row + 1)] = "Valor corrigido"
@@ -1948,7 +2041,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         )
                                         ws["H" + str(cnt_row)] = (
                                             "{:,.5f}".format(
-                                                float(value_index.index_data_base)
+                                                float(
+                                                    value_index.index_data_base)
                                             )
                                             .replace(".", "-")
                                             .replace(",", ".")
@@ -1963,7 +2057,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         )
                                         ws["I" + str(cnt_row)] = (
                                             "{:,.5f}".format(
-                                                float(value_index.index_recovering)
+                                                float(
+                                                    value_index.index_recovering)
                                             )
                                             .replace(".", "-")
                                             .replace(",", ".")
@@ -1978,7 +2073,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         )
                                         ws["J" + str(cnt_row)] = (
                                             "{:,.2f}".format(
-                                                float(str(value_index).split(" - ")[2])
+                                                float(
+                                                    str(value_index).split(" - ")[2])
                                             )
                                             .replace(".", "-")
                                             .replace(",", ".")
@@ -1987,13 +2083,15 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             else ""
                                         )
                                         sum_total += (
-                                            float(float(str(item2.historical_value)))
+                                            float(
+                                                float(str(item2.historical_value)))
                                             if item2.historical_value
                                             else 0
                                         )
                                         sum_total1 += (
                                             float(
-                                                float(str(value_index).split(" - ")[2])
+                                                float(
+                                                    str(value_index).split(" - ")[2])
                                             )
                                             if value_index
                                             else 0
@@ -2017,7 +2115,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 )
                                 cnt_row = cnt_row + 1
                             else:
-                                ws["D" + str(cnt_row)] = str(item.template.name)
+                                ws["D" + str(cnt_row)
+                                   ] = str(item.template.name)
                                 ws["D" + str(cnt_row)].font = font
                                 ws["D" + str(cnt_row + 1)] = "Data base"
                                 ws["D" + str(cnt_row + 1)].font = font
@@ -2031,10 +2130,12 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 ws["G" + str(cnt_row + 1)] = "Valor histórico"
                                 ws["G" + str(cnt_row + 1)].font = font
                                 ws["G" + str(cnt_row + 1)].fill = grayFill
-                                ws["H" + str(cnt_row + 1)] = "Indíce na data base"
+                                ws["H" + str(cnt_row + 1)
+                                   ] = "Indíce na data base"
                                 ws["H" + str(cnt_row + 1)].font = font
                                 ws["H" + str(cnt_row + 1)].fill = grayFill
-                                ws["I" + str(cnt_row + 1)] = "Indíce na recuperação"
+                                ws["I" + str(cnt_row + 1)
+                                   ] = "Indíce na recuperação"
                                 ws["I" + str(cnt_row + 1)].font = font
                                 ws["I" + str(cnt_row + 1)].fill = grayFill
                                 ws["J" + str(cnt_row + 1)] = "Valor corrigido"
@@ -2059,7 +2160,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                             ):
                                 if str(col.value)[8:] == "NoticeAJ_Vert":
                                     cnt_ini_row = col.row
-                                    sheet["A" + str(cnt_ini_row)].value = "Edital:"
+                                    sheet["A" + str(cnt_ini_row)
+                                          ].value = "Edital:"
                                     sheet["A" + str(cnt_ini_row)].font = font
                                     if len(notice) > 0:
                                         sheet.move_range(
@@ -2317,6 +2419,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     )
                                     col.value = ""
                                     sum_total = 0
+                                    # TODO: alterar date_citation no project para o calculo
                                     if (
                                         project[0].date_citation and project[0].date_rj_request and
                                         project[0].date_citation
@@ -2342,11 +2445,13 @@ class SheetTemplateViewApi(AbstractViewApi):
                                                 cols=0,
                                             )
                                     for item in funds:
-                                        sheet["A" + str(cnt_ini_row)] = str(item.name)
+                                        sheet["A" + str(cnt_ini_row)
+                                              ] = str(item.name)
                                         sheet["C" + str(cnt_ini_row)] = (
                                             "{:,.2f}".format(
                                                 float(
-                                                    item.totalvaluesfunds.total_corrected+item.totalvaluesfundsintegrations.total_corrected
+                                                    item.totalvaluesfunds.total_corrected +
+                                                    item.totalvaluesfundsintegrations.total_corrected
                                                 )
                                             )
                                             .replace(".", "-")
@@ -2363,9 +2468,11 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             + str(cnt_ini_row)
                                         )
                                         sum_total += (
-                                            item.totalvaluesfunds.total_corrected+item.totalvaluesfundsintegrations.total_corrected
+                                            item.totalvaluesfunds.total_corrected +
+                                            item.totalvaluesfundsintegrations.total_corrected
                                         )
                                         cnt_ini_row = cnt_ini_row + 1
+                                    # TODO: alterar date_citation no project para o calculo
                                     sheet["A" + str(cnt_ini_row)] = (
                                         "Total Atualizado:"
                                         if project[0].date_citation and project[0].date_rj_request and project[0].date_citation
@@ -2382,9 +2489,11 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         horizontal="right"
                                     )
                                     sheet.merge_cells(
-                                        "A" + str(cnt_ini_row) + ":B" + str(cnt_ini_row)
+                                        "A" + str(cnt_ini_row) +
+                                        ":B" + str(cnt_ini_row)
                                     )
                                     cnt_ini_row = cnt_ini_row + 1
+                                    # TODO: alterar date_citation no project para o calculo
                                     if (
                                         project[0].date_citation and project[0].date_rj_request and project[0].date_citation
                                         >= project[0].date_rj_request
@@ -2542,7 +2651,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             ].alignment = Alignment(horizontal="right")
                                             sheet["D" + str(cnt_ini_row)] = (
                                                 "{:,.2f}".format(
-                                                    float(item1.historical_value)
+                                                    float(
+                                                        item1.historical_value)
                                                 )
                                                 .strip()
                                                 .replace(".", "-")
@@ -2613,7 +2723,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             ].alignment = Alignment(horizontal="right")
                                             sheet["I" + str(cnt_ini_row)] = (
                                                 "{:,.2f}".format(
-                                                    float(item1.default_interest)
+                                                    float(
+                                                        item1.default_interest)
                                                 )
                                                 .strip()
                                                 .replace(".", "-")
@@ -2624,7 +2735,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                                 "J" + str(cnt_ini_row)
                                             ].alignment = Alignment(horizontal="right")
                                             sheet["J" + str(cnt_ini_row)] = (
-                                                "{:,.2f}".format(float(item1.fine))
+                                                "{:,.2f}".format(
+                                                    float(item1.fine))
                                                 .strip()
                                                 .replace(".", "-")
                                                 .replace(",", ".")
@@ -2651,7 +2763,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             sum_total1 += float(
                                                 item1.monetarycorrectiondocument.corrected_value
                                             )
-                                            sum_total2 += float(item1.default_interest)
+                                            sum_total2 += float(
+                                                item1.default_interest)
                                             sum_total3 += float(item1.fine)
                                             sum_total4 += float(
                                                 item1.monetarycorrectiondocument.corrected_value
@@ -2660,39 +2773,45 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             )
                                     if len(fund_document) > 0:
                                         sheet["A" + str(cnt_ini_row)] = "Total"
-                                        sheet["A" + str(cnt_ini_row)].font = font
+                                        sheet["A" +
+                                              str(cnt_ini_row)].font = font
                                         sheet[
                                             "D" + str(cnt_ini_row)
                                         ] = "{:,.2f}".format(sum_total).strip()
-                                        sheet["D" + str(cnt_ini_row)].font = font
+                                        sheet["D" +
+                                              str(cnt_ini_row)].font = font
                                         sheet[
                                             "D" + str(cnt_ini_row)
                                         ].alignment = Alignment(horizontal="right")
                                         sheet[
                                             "G" + str(cnt_ini_row)
                                         ] = "{:,.2f}".format(sum_total1).strip()
-                                        sheet["G" + str(cnt_ini_row)].font = font
+                                        sheet["G" +
+                                              str(cnt_ini_row)].font = font
                                         sheet[
                                             "G" + str(cnt_ini_row)
                                         ].alignment = Alignment(horizontal="right")
                                         sheet[
                                             "I" + str(cnt_ini_row)
                                         ] = "{:,.2f}".format(sum_total2).strip()
-                                        sheet["I" + str(cnt_ini_row)].font = font
+                                        sheet["I" +
+                                              str(cnt_ini_row)].font = font
                                         sheet[
                                             "I" + str(cnt_ini_row)
                                         ].alignment = Alignment(horizontal="right")
                                         sheet[
                                             "J" + str(cnt_ini_row)
                                         ] = "{:,.2f}".format(sum_total3).strip()
-                                        sheet["J" + str(cnt_ini_row)].font = font
+                                        sheet["J" +
+                                              str(cnt_ini_row)].font = font
                                         sheet[
                                             "J" + str(cnt_ini_row)
                                         ].alignment = Alignment(horizontal="right")
                                         sheet[
                                             "K" + str(cnt_ini_row)
                                         ] = "{:,.2f}".format(sum_total4).strip()
-                                        sheet["K" + str(cnt_ini_row)].font = font
+                                        sheet["K" +
+                                              str(cnt_ini_row)].font = font
                                         sheet[
                                             "K" + str(cnt_ini_row)
                                         ].alignment = Alignment(horizontal="right")
@@ -2737,11 +2856,13 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     cnt_ini_row = col.row
                                     col.value = "A Administradora Judicial opina pelo valor e classe indicados abaixo:"
                                     sheet.merge_cells(
-                                        "A" + str(cnt_ini_row) + ":K" + str(cnt_ini_row)
+                                        "A" + str(cnt_ini_row) +
+                                        ":K" + str(cnt_ini_row)
                                     )
                                     cnt_ini_row += 1
                                     sheet.merge_cells(
-                                        "A" + str(cnt_ini_row) + ":K" + str(cnt_ini_row)
+                                        "A" + str(cnt_ini_row) +
+                                        ":K" + str(cnt_ini_row)
                                     )
                                     cnt_ini_row = cnt_ini_row + 1
                                     sheet.move_range(
@@ -2753,28 +2874,34 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         cols=0,
                                     )
                                     sheet["A" + str(cnt_ini_row)].font = font
-                                    sheet["A" + str(cnt_ini_row)].fill = grayFill1
-                                    sheet["A" + str(cnt_ini_row)] = "Conclusão AJ"
+                                    sheet["A" + str(cnt_ini_row)
+                                          ].fill = grayFill1
+                                    sheet["A" + str(cnt_ini_row)
+                                          ] = "Conclusão AJ"
                                     sheet["B" + str(cnt_ini_row)].font = font
-                                    sheet["B" + str(cnt_ini_row)].fill = grayFill1
+                                    sheet["B" + str(cnt_ini_row)
+                                          ].fill = grayFill1
                                     sheet["B" + str(cnt_ini_row)] = (
                                         statement[0].get_conclusion_display()
                                         if len(statement) > 0
                                         else ""
                                     )
                                     sheet["C" + str(cnt_ini_row)].font = font
-                                    sheet["C" + str(cnt_ini_row)].fill = grayFill1
+                                    sheet["C" + str(cnt_ini_row)
+                                          ].fill = grayFill1
                                     sheet["C" + str(cnt_ini_row)] = (
                                         str(claim_creditor[0].coins)
                                         if claim_creditor
                                         else ""
                                     )
                                     sheet["D" + str(cnt_ini_row)].font = font
-                                    sheet["D" + str(cnt_ini_row)].fill = grayFill1
+                                    sheet["D" + str(cnt_ini_row)
+                                          ].fill = grayFill1
                                     try:
                                         sheet["D" + str(cnt_ini_row)] = (
                                             "{:,.2f}".format(
-                                                sum([item["total_calculated"] for item in calculation[0].get_classes()])
+                                                sum([item["total_calculated"]
+                                                    for item in calculation[0].get_classes()])
                                             )
                                             .replace(".", "-")
                                             .replace(",", ".")
@@ -2788,12 +2915,14 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             .replace("-", ",")
                                         )
                                     sheet["E" + str(cnt_ini_row)].font = font
-                                    sheet["E" + str(cnt_ini_row)].fill = grayFill1
+                                    sheet["E" + str(cnt_ini_row)
+                                          ].fill = grayFill1
                                     sheet["E" + str(cnt_ini_row)] = str(
                                         recovering[0].entity.name
                                     )
                                     sheet.merge_cells(
-                                        "E" + str(cnt_ini_row) + ":K" + str(cnt_ini_row)
+                                        "E" + str(cnt_ini_row) +
+                                        ":K" + str(cnt_ini_row)
                                     )
                                     if calculation[0].has_edital:
                                         cnt_ini_row = cnt_ini_row + 1
@@ -2805,21 +2934,29 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             rows=1,
                                             cols=0,
                                         )
-                                        sheet["A" + str(cnt_ini_row)].font = font
-                                        sheet["A" + str(cnt_ini_row)].fill = grayFill1
+                                        sheet["A" +
+                                              str(cnt_ini_row)].font = font
+                                        sheet["A" + str(cnt_ini_row)
+                                              ].fill = grayFill1
                                         sheet["A" + str(cnt_ini_row)] = ""
-                                        sheet["B" + str(cnt_ini_row)].font = font
-                                        sheet["B" + str(cnt_ini_row)].fill = grayFill1
+                                        sheet["B" +
+                                              str(cnt_ini_row)].font = font
+                                        sheet["B" + str(cnt_ini_row)
+                                              ].fill = grayFill1
                                         sheet[
                                             "B" + str(cnt_ini_row)
                                         ] = "Edital art. 7º § 2 - 11.101/2005"
-                                        sheet["C" + str(cnt_ini_row)].font = font
-                                        sheet["C" + str(cnt_ini_row)].fill = grayFill1
+                                        sheet["C" +
+                                              str(cnt_ini_row)].font = font
+                                        sheet["C" + str(cnt_ini_row)
+                                              ].fill = grayFill1
                                         sheet["C" + str(cnt_ini_row)] = (
                                             str(notice[0].coins) if notice else "-"
                                         )
-                                        sheet["D" + str(cnt_ini_row)].font = font
-                                        sheet["D" + str(cnt_ini_row)].fill = grayFill1
+                                        sheet["D" +
+                                              str(cnt_ini_row)].font = font
+                                        sheet["D" + str(cnt_ini_row)
+                                              ].fill = grayFill1
                                         sheet["D" + str(cnt_ini_row)] = (
                                             "{:,.2f}".format(
                                                 notice.aggregate(Sum("coins__value"))[
@@ -2832,8 +2969,10 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             if notice
                                             else "-"
                                         )
-                                        sheet["E" + str(cnt_ini_row)].font = font
-                                        sheet["E" + str(cnt_ini_row)].fill = grayFill1
+                                        sheet["E" +
+                                              str(cnt_ini_row)].font = font
+                                        sheet["E" + str(cnt_ini_row)
+                                              ].fill = grayFill1
                                         sheet["E" + str(cnt_ini_row)] = (
                                             str(recovering[0].entity.name)
                                             if notice
@@ -2856,26 +2995,30 @@ class SheetTemplateViewApi(AbstractViewApi):
                                                 rows=1,
                                                 cols=0,
                                             )
-                                            sheet["A" + str(cnt_ini_row)].font = font
+                                            sheet["A" +
+                                                  str(cnt_ini_row)].font = font
                                             sheet[
                                                 "A" + str(cnt_ini_row)
                                             ].fill = grayFill1
                                             sheet["A" + str(cnt_ini_row)] = ""
-                                            sheet["B" + str(cnt_ini_row)].font = font
+                                            sheet["B" +
+                                                  str(cnt_ini_row)].font = font
                                             sheet[
                                                 "B" + str(cnt_ini_row)
                                             ].fill = grayFill1
                                             sheet["B" + str(cnt_ini_row)] = str(
                                                 item["classes_display"]
                                             ).replace("\n", "")
-                                            sheet["C" + str(cnt_ini_row)].font = font
+                                            sheet["C" +
+                                                  str(cnt_ini_row)].font = font
                                             sheet[
                                                 "C" + str(cnt_ini_row)
                                             ].fill = grayFill1
                                             sheet["C" + str(cnt_ini_row)] = str(
                                                 item["coin"]
                                             ).replace("\n", "")
-                                            sheet["D" + str(cnt_ini_row)].font = font
+                                            sheet["D" +
+                                                  str(cnt_ini_row)].font = font
                                             sheet[
                                                 "D" + str(cnt_ini_row)
                                             ].fill = grayFill1
@@ -2891,7 +3034,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                                 .replace(",", ".")
                                                 .replace("-", ",")
                                             )
-                                            sheet["E" + str(cnt_ini_row)].font = font
+                                            sheet["E" +
+                                                  str(cnt_ini_row)].font = font
                                             sheet[
                                                 "E" + str(cnt_ini_row)
                                             ].fill = grayFill1
@@ -2916,29 +3060,40 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             rows=1,
                                             cols=0,
                                         )
-                                        sheet["A" + str(cnt_ini_row)].font = font
-                                        sheet["A" + str(cnt_ini_row)].fill = grayFill1
+                                        sheet["A" +
+                                              str(cnt_ini_row)].font = font
+                                        sheet["A" + str(cnt_ini_row)
+                                              ].fill = grayFill1
                                         sheet["A" + str(cnt_ini_row)] = (
                                             "Conclusão AJ" if first else ""
                                         )
-                                        sheet["B" + str(cnt_ini_row)].font = font
-                                        sheet["B" + str(cnt_ini_row)].fill = grayFill1
+                                        sheet["B" +
+                                              str(cnt_ini_row)].font = font
+                                        sheet["B" + str(cnt_ini_row)
+                                              ].fill = grayFill1
                                         sheet["B" + str(cnt_ini_row)] = str(
                                             item.classes.get_classe_display()
                                         )
-                                        sheet["C" + str(cnt_ini_row)].font = font
-                                        sheet["C" + str(cnt_ini_row)].fill = grayFill1
-                                        sheet["C" + str(cnt_ini_row)] = str(item.coins)
-                                        sheet["D" + str(cnt_ini_row)].font = font
-                                        sheet["D" + str(cnt_ini_row)].fill = grayFill1
+                                        sheet["C" +
+                                              str(cnt_ini_row)].font = font
+                                        sheet["C" + str(cnt_ini_row)
+                                              ].fill = grayFill1
+                                        sheet["C" + str(cnt_ini_row)
+                                              ] = str(item.coins)
+                                        sheet["D" +
+                                              str(cnt_ini_row)].font = font
+                                        sheet["D" + str(cnt_ini_row)
+                                              ].fill = grayFill1
                                         sheet["D" + str(cnt_ini_row)] = (
                                             "{:,.2f}".format(item.coins.value)
                                             .replace(".", "-")
                                             .replace(",", ".")
                                             .replace("-", ",")
                                         )
-                                        sheet["E" + str(cnt_ini_row)].font = font
-                                        sheet["E" + str(cnt_ini_row)].fill = grayFill1
+                                        sheet["E" +
+                                              str(cnt_ini_row)].font = font
+                                        sheet["E" + str(cnt_ini_row)
+                                              ].fill = grayFill1
                                         sheet["E" + str(cnt_ini_row)] = str(
                                             recovering[0].entity.name
                                         )
@@ -2953,7 +3108,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     sheet.insert_rows(cnt_ini_row)
                                     sheet.insert_rows(cnt_ini_row)
                                     sheet.merge_cells(
-                                        "A" + str(cnt_ini_row) + ":G" + str(cnt_ini_row)
+                                        "A" + str(cnt_ini_row) +
+                                        ":G" + str(cnt_ini_row)
                                     )
                                     sheet["A" + str(cnt_ini_row)] = (
                                         "São Paulo, "
@@ -2999,7 +3155,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                     col.value = str(eval(str(col.value)[8:]))
                                     col.alignment = Alignment(wrapText=False)
                                     sheet.merge_cells(
-                                        "A" + str(col.row) + ":K" + str(col.row)
+                                        "A" + str(col.row) + ":K" +
+                                        str(col.row)
                                     )
                                 except:
                                     col.value = str("Erro Formula!!!")
@@ -3013,7 +3170,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         wrapText=False, horizontal="center"
                                     )
                                     sheet.merge_cells(
-                                        "A" + str(col.row) + ":B" + str(col.row)
+                                        "A" + str(col.row) + ":B" +
+                                        str(col.row)
                                     )
                                 except:
                                     col.value = str("Erro Formula!!!")
@@ -3024,7 +3182,8 @@ class SheetTemplateViewApi(AbstractViewApi):
                                 try:
                                     try:
                                         sheet.unmerge_cells(
-                                            "A" + str(col.row) + ":K" + str(col.row)
+                                            "A" + str(col.row) +
+                                            ":K" + str(col.row)
                                         )
                                     except:
                                         pass
