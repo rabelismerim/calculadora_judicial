@@ -52,6 +52,7 @@ declare module '@vue/runtime-core' {
     ProjectDescription: typeof import('./components/project/ProjectDescription.vue')['default']
     ProjectDetailCell: typeof import('./components/project/ProjectDetailCell.vue')['default']
     QCard: typeof import('quasar')['QCard']
+    QInput: typeof import('quasar')['QInput']
     QSeparator: typeof import('quasar')['QSeparator']
     QTab: typeof import('quasar')['QTab']
     QTabPanel: typeof import('quasar')['QTabPanel']
