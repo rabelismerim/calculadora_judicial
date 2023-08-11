@@ -74,12 +74,12 @@ steps:
   displayName: 'Install and preparing python prerequisites'
 - script: |
     virtualenv venv
-  failOnStderr: true
+  failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - script: |
     .\venv\Scripts\activate
-  failOnStderr: true
+  failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - script: |
