@@ -13,9 +13,22 @@ const modalValue = ref(false)
 const selectedTab = ref('carregamento')
 const filterBy = $ref('')
 
+const tabs = [
+  { label: 'Carregamento', value: 'carregamento' },
+  { label: 'Histórico', value: 'historico' },
+]
+
 const closeModal = () => {
   modalValue.value = false
 }
+
+const files: any = $ref(null)
+
+const fileNames = $ref([
+  'create_creditors',
+  'create_creditors_rj',
+  'create_creditors_aj',
+])
 </script>
 
 <template>
@@ -25,52 +38,72 @@ const closeModal = () => {
     modal-class="max-w-300"
     @update:model-value="(value: any) => emit('update:modelValue', value)"
   >
-    <div id="q-app" style="min-height: 100vh;">
-      <div class="q-pa-md">
-        <div class="q-gutter-y-md">
-          <QCard>
-            <QTabs
-              v-model="selectedTab"
-              dense
-              class="text-grey"
-              active-color="primary"
-              indicator-color="primary"
-              align="justify"
-              narrow-indicator
-            >
-              <QTab name="carregamento" label="Carregamento" />
-              <QTab name="historico" label="Histórico" />
-            </QTabs>
-
-            <QSeparator />
-
-            <QTabPanels v-model="selectedTab">
-              <QTabPanel name="carregamento">
-                <div class="text-h9" style="font-weight: bold">
-                  Download do template
+    <div>
+      <TabFilter
+        v-model="selectedTab"
+        :items="tabs"
+        class="mb-0!"
+      />
+      <QTabPanels
+        v-model="selectedTab"
+      >
+        <QTabPanel
+          name="carregamento"
+          class="px-4 bg-slate-1"
+        >
+          <div class="mb-3">
+            <div class="font-bold mb-2">
+              Download do template
+            </div>
+            <div>
+              <div
+                v-for="(name, index) in fileNames"
+                :key="name"
+                class="p-2 border-black/12 bg--base font-bold text--primary flex justify-between cursor-pointer hover:bg--secondary/10 tween"
+                :class="{
+                  'border-1': index === 0,
+                  'border-x-1 border-b-1': index > 0,
+                }"
+              >
+                <div class="flex gap-2 items-center">
+                  <div class="i-carbon-xls" />
+                  {{ name }}
                 </div>
-                Templates para download
-                <div class="text-h9" style="font-weight: bold">
-                  Upload dos arquivos preenchidos
-                </div>
-              </QTabPanel>
+                <div class="i-carbon-document-download" />
+              </div>
+            </div>
+          </div>
 
-              <QTabPanel name="historico">
-                <div class="text-h9" style="font-weight: bold">
-                  Histórico de arquivos carregados no sistema
-                  <SearchFilter v-model="filterBy" />
-                </div>
-                Histórico de arquivos aqui
-              </QTabPanel>
-            </QTabPanels>
-          </QCard>
-          <Btn
-            class="q-mb-md"
-            label="Fechar"
-            color="primary"
-            @click="closeModal"
-          />
-        </div>
+          <div class="text-h9" style="font-weight: bold">
+            <QInput
+              :model-value="files"
+              multiple
+              filled
+              type="file"
+              hint=""
+              @update:model-value="val => { files = val }"
+            />
+          </div>
+        </QTabPanel>
+
+        <QTabPanel
+          name="historico"
+          class="px-4 bg-slate-1"
+        >
+          <div class="mb-3">
+            <div class="font-bold mb-2">
+              Histórico de arquivos carregados no sistema
+            </div>
+          </div>
+          Histórico de arquivos aqui
+        </QTabPanel>
+      </QTabPanels>
+      <div class="p-4 flex justify-end border-t-1 boder-black/12">
+        <Btn
+          label="Fechar"
+          color="primary"
+          @click="closeModal"
+        />
       </div>
     </div>
   </Modal>
