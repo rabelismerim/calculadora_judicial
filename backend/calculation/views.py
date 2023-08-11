@@ -201,13 +201,13 @@ class CalculationApi(AbstractCalculationApi):
                 'default_interest': creditor.default_interest,
                 'fine': creditor.fine,
                 'advocative_hours': creditor.advocative_hours,
-                'occurrence': creditor.occurrence,
+                # 'occurrence': creditor.occurrence,
                 'representation_documentation': creditor.representation_documentation,
                 'claim_type': creditor.claim_type,
                 'physical_person': creditor.physical_person,
                 'date_rj_request': project.date_rj_request,
-                'date_rj_filing': project.date_rj_filing,
-                'date_citation': project.date_citation,
+                # 'date_rj_filing': project.date_rj_filing,
+                # 'date_citation': project.date_citation,
             }
 
             nature_ids = creditor.nature.all().values_list('id', flat=True)

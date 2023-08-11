@@ -430,8 +430,7 @@ class AbstractTemplateField(AbstractModel):
     """
     label = models.CharField(_('Field name'), max_length=150)
     key = models.CharField(_('Field key'), max_length=150, null=True, blank=True)
-    type = models.CharField(
-        _('Field type'), choices=TYPE_CHOICES, max_length=1)
+    type = models.CharField(_('Field type'), choices=TYPE_CHOICES, max_length=1)
     order = models.PositiveIntegerField(_('Order'))
     is_editable = models.BooleanField(_('Is editable?'))
     required = models.BooleanField(_('Required?'))
@@ -444,6 +443,9 @@ class AbstractTemplateField(AbstractModel):
             return 6 if self.key in ['monetary_correction.index_recovering',
                                      'monetary_correction.index_data_base'] else 2
         return 0
+
+    class Meta:
+        ordering = ('created_at',)
 
 
 class TemplateMainField(AbstractTemplateField):
@@ -509,6 +511,9 @@ class AbstractDefault(AbstractModel):
 
     def set_value(self):
         self.value = json.dumps({'data': self.label})
+
+    class Meta:
+        ordering = ('created_at',)
 
 
 class TemplateMainFieldDefault(AbstractDefault):

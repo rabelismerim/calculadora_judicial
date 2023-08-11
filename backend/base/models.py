@@ -78,6 +78,8 @@ class AbstractDateCreditor(AbstractModel):
     default_interest = models.FloatField(_('Default interest'), default=0)
     fine = models.FloatField(_('Fine'), default=0)
     advocative_hours = models.FloatField(_('Advocative hours'), default=0)
+
+    # TODO: remover apos o front ter atualizado os calculos
     occurrence = models.CharField(_('Occurrence'), max_length=1, choices=CHOICES_OCCURRENCE, default='O')
     physical_person = models.BooleanField(_('Are you an individual?'), default=True)
     representation_documentation = models.CharField(_('Representation documentation'), max_length=1,
@@ -104,6 +106,8 @@ class AbstractDateCreditor(AbstractModel):
 
 class AbstractDateRecovering(AbstractModel):
     date_rj_request = models.DateField(_("RJ order date"), blank=True, null=True)
+
+    # TODO: remover apos o front ter atualizado os calculos
     date_rj_filing = models.DateField(_("RJ filing date"), blank=True, null=True)
     date_citation = models.DateField(_("Citation Date"), blank=True, null=True)
 
@@ -112,8 +116,7 @@ class AbstractDateRecovering(AbstractModel):
         ordering = ('-created_at', '-updated_at')
 
     def __str__(self):
-        return _('Request RJ: {} | Filing RJ: {} | Citation: {}').format(self.date_rj_request, self.date_rj_filing,
-                                                                         self.date_citation)
+        return _('Request RJ: {}').format(self.date_rj_request)
 
 
 class AbstractCredit(AbstractModel):

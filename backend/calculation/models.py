@@ -11,6 +11,7 @@ from django.db.models import F
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
+from base.models import CHOICES_OCCURRENCE
 from calculation.comparative.signals import new_calc
 from calculation.premise.models import Premise
 from config.settings import GROUP_NAME_EXECUTOR, GROUP_NAME_REVIEWER, GROUP_NAME_APPROVER, GROUP_NAME_SPECIAL_APPROVE
@@ -103,7 +104,11 @@ class Calculation(AbstractModel):
                                                     null=True, blank=True)
     # Statement N10 - Há honorários advocatícios?
     has_advocative_hours = models.BooleanField(_('Are there fees in the approved calculation?'), default=False)
+
     rate = models.ForeignKey(Rate, on_delete=models.PROTECT, null=True, blank=True)
+    date_rj_filing = models.DateField(_("RJ filing date"), blank=True, null=True)
+    date_citation = models.DateField(_("Citation Date"), blank=True, null=True)
+    occurrence = models.CharField(_('Occurrence'), max_length=1, choices=CHOICES_OCCURRENCE, default='O')
 
     @property
     def has_edital(self):
@@ -139,11 +144,11 @@ class Calculation(AbstractModel):
         return f'{self.creditor.entity.name} || {self.number} || {self.get_step_display()}'
 
     def _get_number(self) -> str:
-        """Returns the number of calculations for the creditor."""
+        """:return: the number of calculations for the creditor."""
         return f'{self._get_count_process_calculation() + 1} - {self.creditor.get_count_calculations() + 1}'
 
     def _get_count_process_calculation(self) -> int:
-        """Returns the count of Calculation objects for the creditor's project"""
+        """:return: the count of Calculation objects for the creditor's project"""
         return Calculation.objects.filter(creditor__recovering__project=self.creditor.recovering.project).exclude(
             number__isnull=True).count()
 
@@ -262,7 +267,7 @@ class Calculation(AbstractModel):
 
     def get_project_user(self, user, codename):
         """
-        Returns a ProjectUser object that represents the given user assigned to a group with a specific permission codename.
+        :return: a ProjectUser object that represents the given user assigned to a group with a specific permission codename.
 
         :param user: User instance for which a ProjectUser object will be retrieved.
         :param codename: The codename of the permission that the group must have.
@@ -274,7 +279,7 @@ class Calculation(AbstractModel):
 
     def get_complete_project_user(self, user, codename):
         """
-        Returns a ProjectUser object that represents the given user assigned to a group with a specific permission codename.
+        :return: a ProjectUser object that represents the given user assigned to a group with a specific permission codename.
 
         :param user: User instance for which a ProjectUser object will be retrieved.
         :param codename: The codename of the permission that the group must have.
@@ -499,7 +504,7 @@ class Calculation(AbstractModel):
         Groups the Funds, Fund Documents, and FundIRRF by class and calculates the total value and total calculated
         amount for each class.
 
-        Returns a list of dictionaries containing the class name, total value, total calculated amount, percentage of
+        :return: a list of dictionaries containing the class name, total value, total calculated amount, percentage of
         total value, and percentage of total calculated amount for each class. Only classes where at least one fund,
         fund document, or fund IRRF exists are included in the results.
 
@@ -624,23 +629,31 @@ class Calculation(AbstractModel):
         Excel Analysis sheet B19
 
         =IF('Ficha de Análise'!$F$66='citação';'Ficha de Análise'!D64;'Ficha de Análise'!D63)
-        Returns the 'date_rj_filing' value from criteria if occurrence is 'C',
+        :return: the 'date_rj_filing' value from criteria if occurrence is 'C',
         otherwise returns the 'date_citation' value from criteria
 
         If either date_rj_filing or date_citation does not exist, sets an error value and returns None
         """
         if self.is_citation():
-            date_citation = self.criterion.date_citation
+            date_citation = self.get_date_citation()
         else:
-            date_citation = self.criterion.date_rj_filing
+            date_citation = self.get_rj_filling()
         return date_citation
+
+    def get_rj_filling(self):
+        """:return: 'date_rj_filing' from calculation"""
+        return self.date_rj_filing
+
+    def get_date_citation(self) -> datetime.date or None:
+        """:return: 'date_citation' from calculation"""
+        return self.date_citation
 
     def get_date_rj_request(self) -> datetime.date or None:
         """
         Excel Analysis sheet B18
 
-        Returns 'date_rj_request' from statement criteria
-        If date_rj_request does not exist, sets an error value and returns None
+        :return: 'date_rj_request' from statement criteria If date_rj_request does not exist, sets an error value and
+        returns None
         """
         return self.criterion.date_rj_request
 
@@ -650,14 +663,14 @@ class Calculation(AbstractModel):
 
         Get if the occurrence in criterion is of type citation
         """
-        return self.criterion.is_citation()
+        return self.occurrence == 'C'
 
     def is_filing(self) -> bool:
         """
         Excel analysis sheet C64
 
         Get if the occurrence in criterion is of type filing"""
-        return self.criterion.is_filing()
+        return self.occurrence == 'A'
 
     def get_statement(self):
         """

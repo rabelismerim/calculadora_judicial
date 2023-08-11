@@ -3,6 +3,9 @@ import json
 
 from django.core.management.base import BaseCommand
 
+from calculation.funds.document.models import FundDocument
+from calculation.funds.irrf.models import FundIRRF
+from calculation.funds.models import Funds
 from rates.models import Template, TemplateField, TemplateRate, TemplateMainField, TemplateSummaryField, \
     TemplateMainSummaryField, TemplateMainFieldDefault, TemplateFieldDefault
 
@@ -245,7 +248,8 @@ def create_templates():
                   'summary_main_fields': summary_main_fields_docs,
                   'fields': fields_verbas_document}
                  ]
-    verbas = ['TST', 'TST.IPCA-E', 'IPCA-E', 'SELIC', 'IGP-M', 'INPC', 'IPCA', 'IGP-DI', 'IPC-FIPE', 'TJSP']
+    # verbas = ['TST', 'TST.IPCA-E', 'IPCA-E', 'SELIC', 'IGP-M', 'INPC', 'IPCA', 'IGP-DI', 'IPC-FIPE', 'TJSP']
+    verbas = ['Verbas']
 
     for verba in verbas:
         template = [
@@ -287,7 +291,7 @@ def create_templates():
              'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
              'fields': fields_verbas_integrations},
 
-            {'name': f'{verba} rescisórias', 'description': f'Verbas rescisórias {verba}',
+            {'name': f'{verba} rescisórias', 'description': f'{verba} rescisórias',
              'end_point': '/juca/api/v1/calculation/funds/labor/',
              'fund_main': fund_labor,
              'end_point_main': '/juca/api/v1/calculation/funds/',
@@ -297,7 +301,7 @@ def create_templates():
              'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
              'fields': fields_verbas},
 
-            {'name': f'IRRF - {verba}', 'description': f'Base de cálculo',
+            {'name': f'IRRF', 'description': f'Base de cálculo',
              'end_point_main': '/juca/api/v1/calculation/funds/irrf/',
              'is_horizontal': False,
              'fund_main': fund_irrf,
@@ -310,7 +314,6 @@ def create_templates():
 
         ]
         templates.extend(template)
-
 
     # ab = TemplateRate.objects.filter(end_point='/juca/api/v1/calculation/funds/documents/').update(end_point='/juca/api/v1/calculation/funds/documents/detail/')
     # print(ab)
@@ -377,6 +380,24 @@ def create_templates():
             TemplateSummaryField.objects.get_or_create(defaults=defaults, **defaults)
 
 
+def delete_verbas():
+    templates = Template.objects.all()
+
+    for x in templates:
+        try:
+            x.delete()
+        except:
+            pass
+
+
+def correct_verbas():
+    old_id = ['8503cfdb-d36d-45b8-a5fd-aefd330961e4']
+    new_id = '48ed463e-8b3a-4029-b394-29e13f7dc951'
+    Funds.objects.filter(template_id__in=old_id).update(template_id=new_id)
+    FundDocument.objects.filter(template_id__in=old_id).update(template_id=new_id)
+    FundIRRF.objects.filter(template_id__in=old_id).update(template_id=new_id)
+
+
 class Command(BaseCommand):
     """
     This class creates templates to rates.
@@ -388,3 +409,5 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         create_templates()
+        # correct_verbas()
+        # delete_verbas()
