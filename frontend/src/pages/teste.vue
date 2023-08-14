@@ -23,22 +23,29 @@ export default {
           this.responseData = null
         }
       },
+      log: data => console.warn({ data }),
     },
 }
 </script>
 
 <template>
-  <h1>TESTE UPLOAD ENDPOINTS</h1>
-  <br>
-  <div>
-    <Btn @click="fetchData" />
-    <div v-if="responseData">
-      <pre>{{ responseData }}</pre>
-    </div>
+  <div class="p-4">
+    <h1>TESTE UPLOAD ENDPOINTS</h1>
+    <br>
+    <div>
+      <Btn @click="fetchData" />
+      <div v-if="responseData">
+        <pre>{{ responseData }}</pre>
+      </div>
 
-    <div v-if="error">
-      <p>{{ error }}</p>
+      <div v-if="error">
+        <p>{{ error }}</p>
+      </div>
     </div>
+    <DropZone
+      :types="['xls', 'xlsx']"
+      @drop="log"
+    />
   </div>
 </template>
 
