@@ -135,7 +135,7 @@ const downloadPDF = async () => {
   isDownloading = true
 
   try {
-    const result = await calculationService.getAccountingStatementXLSX(calculationId)
+    const result = await calculationService.getAccountingStatementPDF(calculationId)
 
     if (result.errors) {
       throwError({ id: 'ACCOUNTING_STATEMENT', message: result.errors })
@@ -166,25 +166,31 @@ onMounted(() => {
   <TabFilter v-model="contentSelected" :items="tabs">
     <template #side>
       <div>
-        <Acoordion
-          label="Baixar Extrato Contábil"
-        >
-          <Btn
-            label="Baixar XLSX"
-            :loading="isDownloading"
-            :disabled="isDownloading"
-            loading-label="Baixando Extrato Contábil..."
-            @click="downloadXLSX"
-          />
-
-          <Btn
-            label="Baixar PDF"
-            :loading="isDownloading"
-            :disabled="isDownloading"
-            loading-label="Baixando Extrato Contábil..."
-            @click="downloadPDF"
-          />
-        </Acoordion>
+        <Btn label="Baixar Extrato Contábil">
+          <QMenu>
+            <QList>
+              <q-item
+                v-close-popup clickable
+                :loading="isDownloading"
+                loading-label="Baixando Extrato Contábil..."
+                class="font-bold color--primary"
+                @click="downloadXLSX"
+              >
+                Baixar XLSX
+              </q-item>
+              <q-item
+                v-close-popup clickable
+                label="Baixar PDF"
+                :loading="isDownloading"
+                loading-label="Baixando Extrato Contábil..."
+                class="font-bold color--primary"
+                @click="downloadPDF"
+              >
+                Baixar PDF
+              </q-item>
+            </QList>
+          </QMenu>
+        </Btn>
       </div>
     </template>
   </TabFilter>
