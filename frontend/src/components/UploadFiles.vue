@@ -23,11 +23,18 @@ const closeModal = () => {
 }
 
 const files: any = $ref(null)
+const erros: any = $ref(null)
 
 const fileNames = $ref([
   'create_creditors',
   'create_creditors_rj',
   'create_creditors_aj',
+])
+
+const errorFiles = $ref([
+  'Credor já cadastrado no sistema - Linha 2, Coluna K',
+  'Credor já cadastrado no sistema - Linha 44, Coluna A',
+  'Credor já cadastrado no sistema - Linha 204, Coluna R',
 ])
 </script>
 
@@ -92,10 +99,42 @@ const fileNames = $ref([
         >
           <div class="mb-3">
             <div class="font-bold mb-2">
-              Histórico de arquivos carregados no sistema
+              Histórico de arquivos carregados no sistema ({{ fileNames.length }})
+            </div>
+            <div>
+              <div
+                v-for="(name, index) in fileNames"
+                :key="name"
+                class="p-2 border-black/12 bg--base font-bold flex justify-between"
+                :class="{
+                  'border-1': index === 0,
+                  'border-x-1 border-b-1': index > 0,
+                }"
+              >
+                <div class="flex gap-2 items-center">
+                  <div class="i-carbon-xls" />
+                  {{ name }}.xls
+                </div>
+              </div>
+            </div>
+            <div>
+              <div
+                v-for="(name, index) in errorFiles"
+                :key="name"
+                class="p-2 flex justify-between"
+                :class="{
+                  'border-1': index === 0,
+                  'border-x-1 border-b-1': index > 0,
+                }"
+              >
+                <div class="flex gap-2 items-center">
+                  <div class="flex gap-2 items-center font-bold text-red-500">
+                    Erro {{ index + 1 }}:
+                  </div> {{ name }}
+                </div>
+              </div>
             </div>
           </div>
-          Histórico de arquivos aqui
         </QTabPanel>
       </QTabPanels>
       <div class="p-4 flex justify-end border-t-1 boder-black/12">
