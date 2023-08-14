@@ -6,7 +6,7 @@ const show = $ref(true)
   <Page>
     <h1>TESTE</h1>
     <template #out>
-      <UploadFiles v-model="show" />
+      <UploadCreditors v-model="show" />
     </template>
   </Page>
 </template>
