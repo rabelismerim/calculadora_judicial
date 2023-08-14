@@ -17,20 +17,16 @@ const props = withDefaults(defineProps<{
 })
 
 const host = import.meta.env.VITE_API_HOST
-const userImage = props.modelValue?.userpicture
-  ? `data:image/jpg;base64,${props.modelValue?.userpicture}`
-  : props.modelValue?.pictureUrl
-    ? `${host}/juca${props.modelValue?.pictureUrl}`
-    : undefined
+const userImage = computed(() => `${host}/juca${props.modelValue?.pictureUrl}`)
 </script>
 
 <template>
   <div class="rounded-1 overflow-hidden">
     <Img
-      v-if="modelValue?.pictureUrl || modelValue?.userpicture"
-      :src="userImage"
-      :error-image="`${baseUrl}/fallback/user.svg`"
+      v-if="modelValue?.pictureUrl"
+      :src="`${host}/juca${props.modelValue?.pictureUrl}`"
       class="w-full h-full object-cover"
+      :error-image="`${baseUrl}/fallback/user.svg`"
     />
     <div
       v-else

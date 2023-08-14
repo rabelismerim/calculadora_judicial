@@ -16,9 +16,6 @@ const emit = defineEmits(['update:modelValue', 'update:creditor', 'success', 'cl
 let loading = $ref(false)
 const form = ref(null as any)
 
-const rates = computed(() => props.options?.rates
-  ?.map(({ id: value, index: label }) => ({ label, value })))
-
 const nullCreditor: any = {
   name: '',
   legalNumber: '',
