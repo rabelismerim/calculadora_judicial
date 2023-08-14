@@ -58,11 +58,7 @@ const historicFiles: any[] = $ref([
   },
 ])
 
-const errorFiles = $ref([
-  'Credor já cadastrado no sistema - Linha 2, Coluna K',
-  'Credor já cadastrado no sistema - Linha 44, Coluna A',
-  'Credor já cadastrado no sistema - Linha 204, Coluna R',
-])
+const log = (data: string) => console.warn({ data })
 </script>
 
 <template>
@@ -109,13 +105,10 @@ const errorFiles = $ref([
           </div>
 
           <div class="text-h9" style="font-weight: bold">
-            <QInput
-              :model-value="files"
-              multiple
-              filled
-              type="file"
-              hint=""
-              @update:model-value="val => { files = val }"
+            <DropZone
+              :types="['xls', 'xlsx']"
+              @update:model-value="(val: any) => { files = val }"
+              @drop="log"
             />
           </div>
         </QTabPanel>
