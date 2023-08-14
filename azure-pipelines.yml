@@ -68,7 +68,7 @@ steps:
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - script: |
-    pip install --user virtualenv
+    pip install virtualenv
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
