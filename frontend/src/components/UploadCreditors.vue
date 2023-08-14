@@ -1,10 +1,12 @@
 <script setup lang='ts'>
 const props = withDefaults(defineProps<{
   modelValue?: boolean
+  tab: string
+  filter: string
 }>(), {
   modelValue: false,
 })
-const emit = defineEmits(['update:modelValue', 'update:uploadFiles', 'success'])
+const emit = defineEmits(['update:modelValue', 'update:uploadFiles', 'success', 'update:tab', 'update:filter'])
 
 const loading = $ref(false)
 const form = ref(null as any)
@@ -57,6 +59,21 @@ const historicFiles: any[] = $ref([
     errors: [],
   },
 ])
+
+const filters = [
+  { label: 'Em Andamento', value: 'a' },
+  { label: 'Aguardando', value: 'a' },
+  { label: 'Processado', value: 'P' },
+  { label: 'Não Processado', value: 'e' },
+]
+
+const statusColors: any = {
+  P: '#c4d600', // Em Preparação
+  E: '#c4d600', // Em Preparação
+  C: '#86bc25', // Concluído
+  A: '#007cb0', // Em Andamento
+  F: '#cccccc', // Cancelado
+}
 
 const log = (data: string) => console.warn({ data })
 </script>
@@ -133,6 +150,10 @@ const log = (data: string) => console.warn({ data })
                     <div class="flex items-center gap-2">
                       <div class="i-carbon-xls" />
                       <div>{{ file.name }}</div>
+                      <StatusTag
+                        :label="filters.values"
+                        :color="statusColors"
+                      />
                     </div>
                   </template>
                   <div
