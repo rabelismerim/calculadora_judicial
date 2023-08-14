@@ -296,6 +296,14 @@ const getAccountingStatementXLSX = (calculationId: string) => api
     return result?.excel
   })
 
+const getAccountingStatementPDF = (calculationId: string) => api
+  .get(`/v1/calculation/export/${calculationId}/EXTRATOCONTABIL/`)
+  .then((result: any) => {
+    if (result.errors)
+      return result
+    return result?.pdf
+  })
+
 const deleteCredit = ({ type, id }: any) => {
   const types: any = {
     fund: '/v1/calculation/funds/',
@@ -340,6 +348,7 @@ export default {
   getSheetsTemplate,
   getAccountingStatement,
   getAccountingStatementXLSX,
+  getAccountingStatementPDF,
   getCalculationBigNumbers,
   deleteCredit,
   checkStep,
