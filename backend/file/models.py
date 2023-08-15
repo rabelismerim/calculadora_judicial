@@ -11,6 +11,7 @@ from django.db import models
 from django.db.models import signals
 from django.dispatch import receiver
 from django_celery_results.models import TaskResult
+from celery.states import PENDING
 
 from core.abstract.models import AbstractModel
 from utils import _
@@ -69,6 +70,12 @@ class File(AbstractModel):
 
     object_id = models.UUIDField()
     content_object = GenericForeignKey('content_type', 'object_id')
+
+    def get_status_pending_task(self):
+        return {
+            "task_id": self.task_id,
+            "status": PENDING
+        }
 
     def get_task_result(self):
         if self.task_result:

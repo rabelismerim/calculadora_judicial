@@ -17,6 +17,12 @@ admin.site.register(File)
 from django.contrib import admin
 from file.models import File, GenericModelPath, ErrorFile
 
-admin.site.register(File)
 admin.site.register(GenericModelPath)
 admin.site.register(ErrorFile)
+
+
+class FileModelAdmin(admin.ModelAdmin):
+    list_display = ('id', 'task_result', 'content_type')
+
+
+admin.site.register(File, FileModelAdmin)

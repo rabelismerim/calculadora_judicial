@@ -427,7 +427,6 @@ else:
             'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
         }
     }
-print(DATABASES, 'DATABASES\n')
 databases = DATABASES
 
 # Add these two lines.
