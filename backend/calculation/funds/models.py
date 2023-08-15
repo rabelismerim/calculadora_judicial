@@ -8,45 +8,48 @@ with fields for a Data base date, historical value, and a foreign key to Funds.
 StatementFunds class extends AbstractStatement to represent a statement related to funds.
 StatementIntegrations extends AbstractStatement and includes a description field.
 """
-import datetime
-
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models import FloatField, signals
 from django.dispatch import receiver
+from django.utils.translation import gettext_lazy as _
 
-from calculation.comparative.signals import gen_total_statement_funds
-from calculation.models import Calculation
-from core.abstract.models import AbstractModel
-from dateutil.relativedelta import relativedelta
+from base.views import ExtractFormula
+from calculation.comparative.signals import gen_statement_funds, gen_total_funds
+from calculation.funds.abstract.models import AbstractFunds, AbstractStatement, AbstractMonetaryCorrection, \
+    AbstractTotalValuesFunds
+from calculation.funds.integrations.models import TotalValuesFundsIntegrations
+from rates.models import Rate
 
 
-class Funds(AbstractModel):
+#
+# class FundsManager(models.Manager):
+#     def get_total_summed(self):
+#         # código para calcular o total somado
+#         pass
+#
+class Funds(AbstractFunds):
     """
-    A model class that represents Funds.
-
-    This class inherits from the AbstractModel class and represents a fund with a name and a foreign key relationship
-    to a Calculation object. The 'name' attribute is a character field with a maximum length of 50, and represents
-    the name of the fund. The 'calculation' attribute is a foreign key relationship to a Calculation object and
-    ensures that the relationship is protected upon deletion.
-
-    In <<Excel>>, it refers to the budget sheets (tst, irrf, moral damages, etc.)
-
-    Attributes: name (CharField): Represents the name of the fund. calculation (ForeignKey):
-    Represents a foreign key relationship to a Calculation object.
+    This class defines methods for generating total statements and fetching the TotalValuesFunds and
+    TotalValuesFundsIntegrations objects associated with a fund. These objects store the total values and
+    integrations for the fund respectively.
 
     Methods:
-    This class does not define any methods.
-    """
+        get_total_funds(): Returns the TotalValuesFunds object associated with the current fund object. If the
+                           object does not exist, it creates one and returns it.
 
-    name = models.CharField('Nome da verba', max_length=50)
-    calculation = models.ForeignKey(Calculation, on_delete=models.PROTECT)
+        get_total_integrations(): Rerturns the TotalValuesFundsIntegrations object associated with the current
+                                 fund object. If the object does not exist, it creates one and returns it.
+
+        gen_total_statements(): Generates total statements for the current fund by calling the set_total() method
+                                of the TotalValuesFunds object associated with it.
+
+        gen_total_integrations(): Generates total statements for the current fund by calling the set_total() method
+                                  of the TotalValuesFundsIntegrations object associated with it.
+    """
 
     class Meta:
         verbose_name = 'Fund'
         verbose_name_plural = 'Funds'
-
-    def __str__(self):
-        return self.name
 
     def get_total_funds(self):
         """
@@ -66,6 +69,20 @@ class Funds(AbstractModel):
             return self.totalvaluesfundsintegrations
         return TotalValuesFundsIntegrations.objects.get_or_create(fund=self)[0]
 
+    def get_all_statement_funds(self) -> list:
+        """
+        This method returns the TotalValuesFundsIntegrations object associated with the current fund object. If the
+        object does not exist, it creates one and returns it.
+        """
+        return self.statementfunds_set.all()
+
+    def get_all_statement_funds_integrations(self) -> list:
+        """
+        This method returns the TotalValuesFundsIntegrations object associated with the current fund object. If the
+        object does not exist, it creates one and returns it.
+        """
+        return self.statementintegrations_set.all()
+
     def gen_total_statements(self):
         """
         This method generates the total statements for the current fund by calling the set_total() method of the
@@ -82,125 +99,42 @@ class Funds(AbstractModel):
         total_funds = self.get_total_integrations()
         total_funds.set_total()
 
+    def __delete_total_funds(self):
+        if hasattr(self, 'totalvaluesfunds'):
+            self.totalvaluesfunds.delete()
+        if hasattr(self, 'totalvaluesfundsintegrations'):
+            self.totalvaluesfundsintegrations.delete()
 
-CHOICES_STATUS_FUND = (('S', 'Solicitado'), ('C', 'Concluído'), ('E', 'Em Progresso'),
-                       ('F', 'Falha no cálculo - índice não encontrado'), ('R', 'Falha no cálculo - sem data RJ'))
-
-
-class AbstractStatement(AbstractModel):
-    """
-    The `AbstractStatement` class represents an abstract financial statement model with features such as `data_base`
-    field that represents the date of the statement, `historical_value` field that represents the historical value of
-    the statement, and `fund` field that is a foreign key to a `Funds` object. This is an abstract class and inherits
-    from `AbstractModel`.
-
-    Attributes:
-    - `data_base` (DateField): Represents the date of the financial statement.
-    - `historical_value` (FloatField): Represents the historical value of the statement.
-    - `funds` (ForeignKey): Represents a foreign key relationship to a `Funds` object.
-
-    Methods:
-    - `set_in_progress()` sets the status of the calculation to 'E'.
-    - `set_error_rj()` sets the status of the calculation to 'R'.
-    - `set_error_indice()` sets the status of the calculation to 'F'.
-    - `set_calculation_done()` sets the status of the calculation to 'C'.
-    - `_check_status_choice(value: str)` checks if the status value provided is valid.
-    - `_set_status(value: str)` sets the status of the calculation.
-    - `_get_monetary_correction()` returns the monetary correction based on `data_base`, `date_rj`, and `rate` fields.
-    - `get_data_base()` returns the `data_base` attribute with or without a summary applied.
-    - `get_historical_value()` returns the `historical_value` attribute value.
-    """
-    data_base = models.DateField('Data base')
-    historical_value = models.FloatField('Valor histórico')
-
-    # Sumula 381 se refere a cálculos trabalhistas em que o pagamento de salário se dá no mês subsequente ao trabalhado.
-    # Sendo necessário adicionar um mês na hora de calcular o valor
-    # TODO: Verificar automaticamente se é ou não verba para aplicar a sumula
-    summary = models.BooleanField('Aplicar súmula 381?', default=False)
-    fund = models.ForeignKey(Funds, on_delete=models.PROTECT)
-    status = models.CharField('Status do cálculo', max_length=1, choices=CHOICES_STATUS_FUND, default='S')
-
-    def set_in_progress(self):
-        """Sets the status of the calculation to 'E'."""
-        self._set_status('E')
-
-    def set_error_rj(self):
-        """Sets the status of the calculation to 'R'."""
-        self._set_status('R')
-
-    def set_error_indice(self):
-        """Sets the status of the calculation to 'F'."""
-        self._set_status('F')
-
-    def set_calculation_done(self):
-        """Sets the status of the calculation to 'C'."""
-        self._set_status('C')
-
-    @staticmethod
-    def _check_status_choice(value: str):
-        """Checks if the status value provided is valid"""
-        has_value = False
-        for string, legend in CHOICES_STATUS_FUND:
-            if value == string:
-                has_value = True
-                break
-        if not has_value:
-            raise ValueError(f'O status {value} não corresponde a nenhum status válido')
-
-    def _set_status(self, value: str):
-        """Sets the status of the calculation"""
-        # override method in inheritance
-        raise NotImplementedError('override method in inheritance')
-
-    def _get_monetary_correction(self) -> dict or None:
-        """Retrieves the monetary correction from a financial statement. It gets the calculation, data and rate
-        information and then validates the date and rate. The index_data_base and index_recovering are returned as a
-        dictionary. """
-        statement = self
-        calculation = statement.fund.calculation
-        statement.set_in_progress()
-        data_base = statement.get_data_base()
-        date_rj = calculation.get_date_rj()
-        rate = calculation.get_rate()
-
-        if not date_rj:
-            statement.set_error_rj()
-            return None
-
-        rate_data_base = rate.get_rate_by_date(data_base)
-        rate_date_rj = rate.get_rate_by_date(date_rj)
-
-        if not rate_date_rj or not rate_data_base:
-            statement.set_error_indice()
-            return None
-
-        data = {
-            'index_data_base': rate_data_base.value,
-            'index_recovering': rate_date_rj.value,
-        }
-        return data
-
-    def get_data_base(self):
+    def delete(self, *args, **kwargs):
         """
-        Returns the data base based on the "summary" attribute.
-        If "summary" is True, returns the data base increased by one month using relativedelta function.
-        If "summary" is False, returns the current data base.
-        Returns:
-            datetime object: The data base.
+        Deletes the Funds object, TotalValuesFunds and TotalValuesFundsIntegrations
         """
-        if self.summary:
-            return self.data_base + relativedelta(months=1)
-        return self.data_base
+        for fund in self.get_all_statement_funds():
+            fund.delete(delete_total=False)
+        for fund in self.get_all_statement_funds_integrations():
+            fund.delete(delete_total=False)
+        self.__delete_total_funds()
+        super(Funds, self).delete(*args, **kwargs)
 
-    def get_historical_value(self):
-        """Returns the `historical_value` attribute value"""
-        return self.historical_value
+    def get_total_historical_summed(self):
+        """Get the corrected value of the sum of calculated sums"""
+        total: float = 0
+        if hasattr(self, 'totalvaluesfunds'):
+            total += self.totalvaluesfunds.total_historical
 
-    class Meta:
-        abstract = True
+        if hasattr(self, 'totalvaluesfundsintegrations'):
+            total += self.totalvaluesfundsintegrations.total_historical
+        return total
 
-    def __str__(self):
-        return f'{self.data_base} - {self.historical_value}'
+    def get_total_summed(self):
+        """Get the corrected value of the sum of calculated sums"""
+        total: float = 0
+        if hasattr(self, 'totalvaluesfunds'):
+            total += self.totalvaluesfunds.total_corrected
+
+        if hasattr(self, 'totalvaluesfundsintegrations'):
+            total += self.totalvaluesfundsintegrations.total_corrected
+        return total
 
 
 class StatementFunds(AbstractStatement):
@@ -215,182 +149,100 @@ class StatementFunds(AbstractStatement):
     database in the budget sheets, including tst, moral damages, etc.
 
     Attributes:
-    Same as in the AbstractStatement class.
+        Same as in the AbstractStatement class.
+        dsr_reflexes (FloatField): The dsr reflexes for this statement.
+
 
     Methods:
-    - has_monetary_correction(self) -> bool: Returns True if the monetary correction exists for the statement.
-    - _set_status(self, value: str): Sets the status of the statement with the given value.
-    - calcule_monetary_correction(self): Calculates the monetary correction for the statement if it exists.
-    - get_corrected_value(self) -> float: Retrieves the corrected value of the statement if the monetary correction
-      exists, or else returns 0.
+        - has_monetary_correction(self) -> bool: Returns True if the monetary correction exists for the statement.
+        - _set_status(self, value: str): Sets the status of the statement with the given value.
+        - calcule_monetary_correction(self): Calculates the monetary correction for the statement if it exists.
+        - get_corrected_value(self) -> float: Retrieves the corrected value of the statement if the monetary correction
+          exists, or else returns 0.
 
     Note:
-    The 'calcule_monetary_correction()' method uses the '_get_monetary_correction()' method, which should be defined
+    The 'calcule_monetary_correction()' method uses the '_get_index_monetary_correction()' method, which should be defined
     in the class that inherits or implements the 'AbstractStatement' class.
     """
+    dsr_reflexes = models.FloatField(
+        _('DSR Reflexes'), default=0)  # DRS - Descanso semanal remunerado
+    summary = models.BooleanField(_('Apply Precedent 381?'), default=False)
+
+    class Meta:
+        verbose_name = 'Statement Fund'
+        verbose_name_plural = 'Statement Funds'
+
+    def get_total_value(self) -> float:
+        """Returns the total value of an asset by summing its historical value and the value of its DSR reflexes.
+
+        :return:
+            float: The total value of the asset.
+        """
+        # TODO: check if template has option dsr_reflexes checked
+        return self.historical_value + self.dsr_reflexes
+
+    def get_dsr_reflexes(self) -> FloatField:
+        """Returns the `dsr_reflexes` attribute value"""
+        return self.dsr_reflexes
+
+    def save(self, send_signal_post_save=True, *args, **kwargs):
+        """
+        Save the StatementFunds object and send a post-save signal.
+        The signal is issued to calculate the monetary correction and sum the total in TotalFunds
+        Args:
+            send_signal_post_save (bool): Set to True to send a post-save signal. Default is True.
+
+        """
+        super(StatementFunds, self).save(*args, **kwargs)
+        if send_signal_post_save and self.is_extraconcursal is False:
+            gen_statement_funds.send(sender=self.__class__, instance=self)
+
+    def delete(self, delete_total=True, *args, **kwargs):
+        """
+        Deletes the StatementFunds object, MonetaryCorrection and generates a new calculation of TotalValuesFunds
+        """
+        fund = self.fund
+        self.delete_monetary_correction()
+        super(StatementFunds, self).delete(*args, **kwargs)
+        if delete_total:
+            fund.gen_total_statements()
 
     def has_monetary_correction(self) -> bool:
         """Returns True if the monetary correction exists for the statement."""
         return hasattr(self, 'monetarycorrection')
 
-    def _set_status(self, value: str):
-        """Sets the status of the statement with the given value."""
-        self._check_status_choice(value)
-        StatementFunds.objects.filter(id=self.id).update(status=value)
+    def get_monetary_correction(self):
+        """Returns the `monetarycorrection` object"""
+        if self.has_monetary_correction():
+            return self.monetarycorrection
+
+    def delete_monetary_correction(self):
+        """Delete the MonetaryCorrection object if exists"""
+        monetary = self.get_monetary_correction()
+        if monetary:
+            monetary.delete()
+
+    def create_monetary_correction(self, data: dict):
+        """Create or update the MonetaryCorrection object"""
+        money, c = MonetaryCorrection.objects.update_or_create(defaults=data, **{'statement': self})
 
     def calcule_monetary_correction(self):
-        """Retrieves the corrected value of the statement if the monetary correction exists, or else returns 0."""
-        data = self._get_monetary_correction()
+        """
+        Calculate the monetary correction and create the MonetaryCorrection object. If there is an error in the
+        calculation, the MonetaryCorrection is excluded.
+        """
+        data: dict or None = self._get_index_monetary_correction()
         if data:
-            if self.has_monetary_correction():
-                self.monetarycorrection.dict_update(data)
-            else:
-                data['statement'] = self
-                MonetaryCorrection.objects.get_or_create(defaults=data, **{'statement': self})
+            self.create_monetary_correction(data)
             self.set_calculation_done()
+        else:
+            self.delete_monetary_correction()
 
     def get_corrected_value(self) -> float:
         """Returns corrected value if the monetary correction exists for the statement, else 0"""
         if self.has_monetary_correction():
             return self.monetarycorrection.corrected_value
         return 0
-
-
-class StatementIntegrations(AbstractStatement):
-    """
-    A model class representing a financial statement for a fund.
-
-    This class inherits from the AbstractStatement class and extends it to represent a financial statement
-    for a fund. It includes attributes such as a 'database date', historical value, and a foreign key relationship
-    to a 'Funds' object.
-
-    In the Excel sheet, Statement Funds refers to each piece of data that can be inserted in the table of funds
-    database in the budget sheets, including tst, moral damages, etc.
-
-    Attributes:
-    Same as in the AbstractStatement class.
-
-    Methods:
-    - has_monetary_correction(self) -> bool: Returns True if the monetary correction exists for the statement.
-    - _set_status(self, value: str): Sets the status of the statement with the given value.
-    - calcule_monetary_correction(self): Calculates the monetary correction for the statement if it exists.
-    - get_corrected_value(self) -> float: Retrieves the corrected value of the statement if the monetary correction
-      exists, or else returns 0.
-
-    Note:
-    The 'calcule_monetary_correction()' method uses the '_get_monetary_correction()' method, which should be defined
-    in the class that inherits or implements the 'AbstractStatement' class.
-    """
-    description = models.CharField('Descrição da verba', max_length=150)
-
-    def has_monetary_correction(self) -> bool:
-        """Returns True if the monetary correction exists for the statement."""
-        return hasattr(self, 'monetarycorrectionintegrations')
-
-    def _set_status(self, value: str):
-        """Sets the status of the statement with the given value."""
-        self._check_status_choice(value)
-        StatementIntegrations.objects.filter(id=self.id).update(status=value)
-
-    def calcule_monetary_correction(self):
-        """Retrieves the corrected value of the statement if the monetary correction exists, or else returns 0."""
-        data = self._get_monetary_correction()
-        if data:
-            if self.has_monetary_correction():
-                self.monetarycorrectionintegrations.dict_update(data)
-            else:
-                data['statement'] = self
-                MonetaryCorrectionIntegrations.objects.get_or_create(defaults=data, **{'statement': self})
-            self.set_calculation_done()
-
-    def get_corrected_value(self) -> float:
-        """Returns corrected value if the monetary correction exists for the statement, else 0"""
-        if self.has_monetary_correction():
-            return self.monetarycorrectionintegrations.corrected_value
-        return 0
-
-
-class StatementIRRF(AbstractModel):
-    """
-    This class represents a statement of taxable amounts for a given fund, used to calculate the Income Tax
-    Withholding at Source (IRRF - Imposto de Renda Retido na Fonte in Portuguese) in Brazil. It is a subclass of
-    AbstractStatement.
-
-    In <Excel>, it refers to each piece of data that can be inserted in the base budget table for calculating budget
-    sheets (irrf)
-
-    Attributes:
-    fund (ForeignKey): The foreign key to the Fund model, representing the fund associated with this statement.
-    fund_name (CharField): The name of the fund associated with this statement.
-    taxable_amounts (FloatField): The taxable amounts for this statement, used to calculate the IRFF.
-    """
-    fund = models.ForeignKey(Funds, on_delete=models.PROTECT)
-    fund_name = models.CharField('Verbas', max_length=150)
-    taxable_amounts = models.FloatField('Valores tributáveis')
-
-
-class StatementDocuments(AbstractStatement):
-    """
-    A model class that represents a financial statement for a fund.
-
-    This class inherits from the AbstractStatement class and represents a financial statement for a fund. It has the
-    same attributes as the AbstractStatement class, which include a Data base date, historical value, and a foreign
-    key relationship to a Funds object.
-
-    In <Excel>, it refers to each data that can be inserted in the document table on the accounting statement sheets (
-    document)
-
-    Attributes:
-    This class has the same attributes as the AbstractStatement class.
-
-    Methods:
-    This class does not define any methods.
-    """
-    number = models.CharField('Número do documento', max_length=100)
-    data_base = models.DateField('Data base')
-    historical_value = models.FloatField('Valor histórico')
-    fund = models.OneToOneField(Funds, on_delete=models.PROTECT)
-
-    def __str__(self):
-        return f'{self.data_base} - {self.historical_value}'
-
-
-class AbstractMonetaryCorrection(AbstractModel):
-    """
-    The AbstractMonetaryCorrection class is an abstract base class that defines the common attributes and methods for
-    monetary corrections.
-
-    Attributes:
-        index_data_base (float): The index value at the reference date for the correction.
-        index_recovering (float): The index value at the recovery date for the correction.
-        corrected_value (float): The corrected value obtained by applying the correction factors.
-    Methods:
-        __get_statement: Return statement object associated with the current fund object
-        """
-    index_data_base = models.FloatField('Índice na Data base')
-    index_recovering = models.FloatField('Índice na recuperação')
-
-    def __get_statement(self):
-        """
-        This method returns the statement object associated with the current fund object. If the
-        object does not exist, it raize implemented error.
-        """
-        if hasattr(self, 'statement') is False or self.statement is None:
-            raise NotImplementedError('Necessário o relacionamento OneToOneField para o StatementFunds')
-        return self.statement
-
-    @property
-    def corrected_value(self) -> float:
-        """Returns corrected value calculated"""
-        historical_value = self.__get_statement().historical_value
-        corrected_value = self.index_recovering / self.index_data_base * historical_value if historical_value > 0 else 0
-        return corrected_value
-
-    class Meta:
-        abstract = True
-
-    def __str__(self):
-        return f'{self.index_data_base} - {self.index_recovering} - {self.corrected_value}'
 
 
 class MonetaryCorrection(AbstractMonetaryCorrection):
@@ -400,159 +252,10 @@ class MonetaryCorrection(AbstractMonetaryCorrection):
     In <Excel>, it refers to each piece of data that can be inserted in the table of funds, monetary correction in the
     rates sheets (tst, moral damages, etc.)
 
-    Attributes:
-    statement (StatementFunds): The statement of funds to which the monetary correction applies.
+    Attributes:ø
+        statement (StatementFunds): The statement of funds to which the monetary correction applies.
     """
     statement = models.OneToOneField(StatementFunds, on_delete=models.PROTECT)
-
-
-class MonetaryCorrectionIntegrations(AbstractMonetaryCorrection):
-    """
-    A class that represents a monetary correction for a statement of integrations.
-
-    In <Excel>, it refers to each piece of data that can be inserted in the table of integral funds,
-    monetary correction in the sum sheets (tst, moral damages, etc.)
-
-    Attributes:
-    statement (StatementIntegrations): The statement of integrations to which the monetary correction applies.
-    """
-    statement = models.OneToOneField(
-        StatementIntegrations, on_delete=models.PROTECT)
-
-
-class MonetaryCorrectionDocuments(AbstractMonetaryCorrection):
-    """
-    A class that represents a monetary correction for a statement of integrations.
-
-    In <Excel>, it refers to each piece of data that can be inserted in the document table on the accounting statement
-    sheets (document)
-
-    Attributes:
-    statement (StatementIntegrations): The statement of integrations to which the monetary correction applies.
-    """
-    statement = models.OneToOneField(
-        StatementDocuments, on_delete=models.PROTECT)
-
-
-class ArrearsCharges(AbstractModel):  # Encargos moratórios
-    """
-    A class that represents a monetary correction for a statement of integrations.
-
-    In <Excel>, it refers to each data that can be inserted in the documents table in the extract accounting sheets
-
-    Attributes:
-    statement (StatementIntegrations): The statement of integrations to which the monetary correction applies.
-    """
-    statement = models.OneToOneField(
-        StatementDocuments, on_delete=models.PROTECT)
-
-
-class AbstractValue(AbstractModel):
-    """
-    Defines an abstract model for a value associated with a StatementPF object. Inherits from the AbstractModel
-    class, which provides common fields such as id, created_at, and updated_at. Contains a value field
-    for the associated value, as well as a OneToOneField to a StatementPF object. This class is meant to be
-    subclassed to create specific value types associated with a StatementPF object, such as TaxDays,
-    RecurralDeposit, DefaultInterest, DefaultInterestDue, TotalDue, and TotalLawyer. The abstract flag
-    in the Meta class indicates that this model should not be instantiated directly.
-    """
-    value = models.FloatField('Valor')
-    arrears_charges = models.OneToOneField(
-        ArrearsCharges, on_delete=models.PROTECT)
-
-    class Meta:
-        abstract = True
-
-
-class Days(AbstractValue):
-    """
-    Defines an abstract model for a value associated with a ArrearsCharges object. Inherits from the AbstractModel
-    class, which provides common fields such as id, created_at, and updated_at. Contains a value field
-    for the associated value, as well as a OneToOneField to a ArrearsCharges object. Subclass this model to add
-    specific fields as needed and include a field description for the value type.
-    """
-
-
-class Interest(AbstractValue):
-    """
-    Defines an abstract model for a value associated with a ArrearsCharges object. Inherits from the AbstractModel
-    class, which provides common fields such as id, created_at, and updated_at. Contains a value field
-    for the associated value, as well as a OneToOneField to a ArrearsCharges object. Subclass this model to add
-    specific fields as needed and include a field description for the value type.
-    """
-
-
-class Fine(AbstractValue):
-    """
-    Defines an abstract model for a value associated with a ArrearsCharges object. Inherits from the AbstractModel
-    class, which provides common fields such as id, created_at, and updated_at. Contains a value field
-    for the associated value, as well as a OneToOneField to a ArrearsCharges object. Subclass this model to add
-    specific fields as needed and include a field description for the value type.
-    """
-
-
-class AmountDue(AbstractModel):
-    """
-    Defines an abstract model for a value associated with a StatementDocuments object. Inherits from the AbstractModel
-    class, which provides common fields such as id, created_at, and updated_at. Contains a value field
-    for the associated value, as well as a OneToOneField to a StatementDocuments object. Subclass this model to add
-    specific fields as needed and include a field description for the value type.
-    """
-    value = models.FloatField('Valor')
-    statement_document = models.OneToOneField(
-        StatementDocuments, on_delete=models.PROTECT)
-
-
-class TotalValuesIRRF(AbstractModel):
-    """
-    A class that represents the total values of IRRF (Income Tax on Individuals) for a fund.
-
-    Attributes:
-    taxable_amount (float): The taxable amount of the IRRF.
-    months_period (int): The number of months in the period for the IRRF calculation.
-    taxable_portion (float): The taxable portion of the IRRF.
-    aliquot (float): The aliquot of the IRRF.
-    installment_deducted (float): The installment deducted from the IRRF.
-    irrf_per_month (float): The value of the IRRF per month.
-    irrf_per_period (float): The value of the IRRF for the entire period.
-    fund (Funds): The fund to which the IRRF applies.
-    """
-    taxable_amount = models.FloatField('Valor tributável', default=0)
-    months_period = models.PositiveIntegerField('Meses no período')
-    taxable_portion = models.FloatField('Parcela tributável', default=0)
-    aliquot = models.FloatField('Alíquota', default=0)
-    installment_deducted = models.FloatField('Parcela a deduzir', default=0)
-    irrf_per_month = models.FloatField('Valor IRRF por mês', default=0)
-    irrf_per_period = models.FloatField('Valor do IRRF no período', default=0)
-    fund = models.OneToOneField(Funds, on_delete=models.PROTECT)
-
-    # TODO: somar todas as StatementIRRF. Calcular no evento signals.post.save ou em Procedure
-    total = models.FloatField('Total da soma dos valores', default=0)
-
-    def __str__(self):
-        return f'{self.fund} - {self.taxable_amount}'
-
-
-class AbstractTotalValuesFunds(AbstractModel):
-    """
-    A class that represents the total values of a fund, which is an abstract model.
-
-    Attributes:
-    total_historical (float): The historical value of the fund.
-    total_corrected (float): The corrected value of the fund.
-    fund (Funds): The fund to which the values apply.
-    """
-    fund = models.OneToOneField(Funds, on_delete=models.PROTECT)
-
-    # TODO: somar todas as StatementFunds or StatementFundsIntegrations. Calcular no evento signals.post.save
-    total_historical = models.FloatField('Total valor histórico', default=0)
-    total_corrected = models.FloatField('Total valor corrigido', default=0)
-
-    def __str__(self):
-        return f'{self.fund} - {self.total_historical} - {self.total_corrected}'
-
-    class Meta:
-        abstract = True
 
 
 class TotalValuesFunds(AbstractTotalValuesFunds):
@@ -562,16 +265,23 @@ class TotalValuesFunds(AbstractTotalValuesFunds):
     Attributes:
         total_historical (float): The historical value of the fund.
         total_corrected (float): The corrected value of the fund.
+        total_dsr_reflexes (float): The drs reflexes value of the fund.
+        total_accurate (float): The total accurate value of the fund.
         fund (Funds): The fund to which the values apply.
 
     Methods:
         get_calculated_statement(): Returns the calculated statement of the fund.
-        set_total(): Calculates and sets the total corrected and historical values of the fund based on the calculated statement.
+        set_total(): Calculates and sets the total corrected and historical values of the fund based on the calculated
+         statement.
     """
+    total_dsr_reflexes = models.FloatField(
+        _('Total value DSR reflexes'), default=0)
+    total_accurate = models.FloatField(_('Total accurate'), default=0)
+    fund = models.OneToOneField(Funds, on_delete=models.PROTECT)
 
     def get_calculated_statement(self):
         """Returns the calculated statement of the fund."""
-        return self.fund.statementfunds_set.filter(status='C')
+        return self.fund.statementfunds_set.filter(status='C', is_extraconcursal=False)
 
     def set_total(self):
         """
@@ -579,69 +289,63 @@ class TotalValuesFunds(AbstractTotalValuesFunds):
         statement.
         """
         statements = self.get_calculated_statement()
+
         total_corrected_value = 0
         total_historical_value = 0
+        total_dsr_reflexes = 0
+        total_accurate = 0
+
         for statement in statements:
             total_corrected_value += statement.get_corrected_value()
             total_historical_value += statement.get_historical_value()
-        self.total_historical = total_corrected_value
-        self.total_corrected = total_historical_value
+            total_dsr_reflexes += statement.get_dsr_reflexes()
+            total_accurate += statement.get_total_value()
+
+        self.total_historical = total_historical_value
+        self.total_corrected = total_corrected_value
+        self.total_dsr_reflexes = total_dsr_reflexes
+        self.total_accurate = total_accurate
         self.save()
 
+    class Meta:
+        verbose_name = 'Total values fund'
+        verbose_name_plural = 'Total values funds'
 
-class TotalValuesFundsIntegrations(AbstractTotalValuesFunds):
+
+@receiver(gen_statement_funds, sender=StatementFunds)
+def save_statement(sender, instance, **kwargs) -> None:
     """
-    A class that represents the total values of a fund, which is a concrete implementation of AbstractTotalValuesFunds.
+    This method is a receiver for post_save signal and is triggered when a StatementFunds object is saved. It
+    calculates the monetary correction for the instance and generates the total statements of the related fund. It
+    takes the sender and instance as arguments.
 
-    Attributes:
-        total_historical (float): The historical value of the fund.
-        total_corrected (float): The corrected value of the fund.
-        fund (Funds): The fund to which the values apply.
-
-    Methods:
-        get_calculated_statement(): Returns the calculated statement of the fund.
-        set_total(): Calculates and sets the total corrected and historical values of the fund based on the calculated statement.
+    Triggers the creation of the formulas used at the end of the calculation
     """
+    print('Signal gerar linha extrato verbas\n')
 
-    def get_calculated_statement(self):
-        """Returns the calculated statement of the fund."""
-        return self.fund.statementintegrations_set.filter(status='C')
+    instance.calcule_monetary_correction()
+    instance.fund.gen_total_statements()
 
-    def set_total(self):
-        """
-        Calculates and sets the total corrected and historical values of the fund based on the calculated
-        statement.
-        """
-        statements = self.get_calculated_statement()
-        total_corrected_value = 0
-        total_historical_value = 0
-        for statement in statements:
-            total_corrected_value += statement.get_corrected_value()
-            total_historical_value += statement.get_historical_value()
-        self.total_historical = total_corrected_value
-        self.total_corrected = total_historical_value
-        self.save()
+    statement_methods = ['get_total_value', 'get_dsr_reflexes', 'get_monetary_correction',
+                         'calcule_monetary_correction', 'get_rate_by_date',
+                         '_get_index_monetary_correction', 'get_corrected_value', 'get_data_base', 'get_total_value',
+                         'get_historical_value', 'get_rate', 'save_total_funds', 'monetarycorrection', 'set_total',
+                         '_calc_corrected_value', 'has_monetary_correction', '_calc_corrected_value', 'corrected_value']
+
+    ExtractFormula(instance, instance.fund.calculation, statement_methods).get_methods(
+        [StatementFunds, MonetaryCorrection, Rate, TotalValuesFunds, save_statement])
+    instance.fund.calculation.invalidate_calculation()
 
 
-@receiver(post_save, sender=StatementFunds)
-def get_save_rate(sender, instance, **kwargs) -> None:
+@receiver(gen_total_funds, sender=Funds)
+def save_total_funds(sender, instance, **kwargs) -> None:
     """
     This method is a receiver for post_save signal and is triggered when a StatementFunds object is saved. It
     calculates the monetary correction for the instance and generates the total statements of the related fund. It
     takes the sender and instance as arguments
     """
-    instance.calcule_monetary_correction()
-    instance.fund.gen_total_statements()
-    return
+    print('Signal somar todas as linhas de extrato verbas\n\n')
+    instance.gen_total_statements()
+    instance.gen_total_integrations()
 
-
-@receiver(post_save, sender=StatementIntegrations)
-def get_save_rate_integrations(sender, instance, **kwargs) -> None:
-    """
-    This method is a receiver for post_save signal and is triggered when a StatementIntegrations object is saved. It
-    calculates the monetary correction for the instance and generates the total integrations of the related fund. It
-    takes the sender and instance as arguments
-    """
-    instance.calcule_monetary_correction()
-    instance.fund.gen_total_integrations()
-    return
+    instance.calculation.invalidate_calculation()

@@ -16,7 +16,6 @@ Including another URLconf
 from django.urls import path
 from .views import StatementPFApi
 
-
 urlpatterns = [
-    path('', StatementPFApi.as_view(), name="statement_pf-list-create"),
+    path('<uuid:calculation_id>/', StatementPFApi.as_view(), name="statement_pf-list-create"),
 ]

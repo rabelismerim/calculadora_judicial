@@ -83,7 +83,7 @@ class ComparativeFundsSchema(AbstractComparativeFundsSchema):
 
 class ComparativeFundsIntegrationsSchema(AbstractComparativeFundsSchema):
     """
-    A schema that serializes/deserializes ComparativeFundsIntegraions objects
+    A schema that serializes/deserializes ComparativeFundsIntegrations objects
     """
     class Meta:
         model = ComparativeFundsIntegrations

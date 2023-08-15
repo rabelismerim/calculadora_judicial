@@ -5,12 +5,12 @@ from base.models import AbstractCredit
 
 
 class ClaimCreditor(AbstractCredit):  # Pleito do credor
+    creditor = models.ForeignKey(Creditor, on_delete=models.PROTECT)
+
+
+class ClaimLawyer(AbstractCredit):  # Pleito advocatícios
     creditor = models.OneToOneField(Creditor, on_delete=models.PROTECT)
 
 
-class ClaimLawyer(AbstractCredit):  # Pleito advocaticios
-    creditor = models.OneToOneField(Creditor, on_delete=models.PROTECT)
-
-
-class Claim(AbstractCredit):  # Pleito para críterios
+class Claim(AbstractCredit):  # Pleito para crítérios
     pass

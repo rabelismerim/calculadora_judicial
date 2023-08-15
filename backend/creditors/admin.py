@@ -14,8 +14,25 @@ from django.contrib import admin
 
 admin.site.register(Creditor)
 """
-
+from django import forms
 from django.contrib import admin
-from creditors.models import Creditor
+from creditors.models import Creditor, LegalPendencies
 
-admin.site.register(Creditor)
+
+class CreditorForm(forms.ModelForm):
+    class Meta:
+        model = Creditor
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['rate'].queryset = self.fields['rate'].queryset.filter(is_active=True)
+
+
+class CreditorModelAdmin(admin.ModelAdmin):
+    list_display = ('total', 'total_historical')
+    form = CreditorForm
+
+
+admin.site.register(LegalPendencies)
+admin.site.register(Creditor, CreditorModelAdmin)

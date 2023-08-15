@@ -16,6 +16,7 @@ admin.site.register(Criterion)
 """
 
 from django.contrib import admin
-from calculation.criterion.models import Criterion
+from calculation.criterion.models import Criterion, CriterionClaimCredor
 
 admin.site.register(Criterion)
+admin.site.register(CriterionClaimCredor)

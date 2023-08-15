@@ -4,5 +4,5 @@ from calculation.criterion.views import CriterionApi
 
 
 urlpatterns = [
-    path('', CriterionApi.as_view(), name="criterion-list-create"),
+    path('<uuid:calculation_id>/', CriterionApi.as_view(), name="criterion-list-create"),
 ]

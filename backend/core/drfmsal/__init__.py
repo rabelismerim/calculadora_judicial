@@ -1,3 +1,6 @@
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
+from django.urls import reverse
 from msal import ConfidentialClientApplication
 
 from base64 import b64encode
@@ -10,7 +13,8 @@ from .adapter import DjangoContextAdapter
 from .constants import *
 from .errors import *
 
-# TODO: 
+
+# TODO:
 #  ##### IMPORTANT #####
 # features:
 # - do configurations work on multi-threaded flask environment? if not, attach them to current_app. configurations aren't stateful so this may be a moot point?
@@ -37,9 +41,9 @@ def build_add_config():
     def dict_to_namespace(d):
         ns = SimpleNamespace()
         for k, v in d.items():
-            setattr(ns, k, dict_to_namespace(v) if isinstance(v, dict) else v) 
+            setattr(ns, k, dict_to_namespace(v) if isinstance(v, dict) else v)
         return ns
-    
+
     def sanity_check_configs(parsed_config):
         required = ['id_web_configs', 'graph_url', 'client', 'auth_request']
         for req in required: assert hasattr(parsed_config, req)
@@ -49,7 +53,7 @@ def build_add_config():
 
         required = ['scopes', 'response_type']
         for req in required: assert hasattr(parsed_config.auth_request, req)
-    
+
     parsed_config = dict_to_namespace(settings.DRFMSAL_CONFIG)
     sanity_check_configs(parsed_config)
 
@@ -61,13 +65,15 @@ def require_context_adapter(f):
     def assert_adapter(self, *args, **kwargs):
         if not isinstance(self._adapter, DjangoContextAdapter):
             if self._logger:
-                self._logger.info(f"{self.__class__.__name__}.{f.__name__}: invalid adapter or no request context, aborting")
+                self._logger.info(
+                    f"{self.__class__.__name__}.{f.__name__}: invalid adapter or no request context, aborting")
             else:
                 print(f"{self.__class__.__name__}.{f.__name__}: invalid adapter or no request context, aborting")
         return f(self, *args, **kwargs)
+
     return assert_adapter
 
-        
+
 class IdentityWebPython(object):
 
     def __init__(self, adapter=None, logger=None):
@@ -75,15 +81,15 @@ class IdentityWebPython(object):
         self._adapter = None
         self.aad_config = build_add_config()
         if adapter is not None:
-             self.set_adapter(adapter)
+            self.set_adapter(adapter)
 
     @property
     @require_context_adapter
     def id_data(self):
         return self._adapter.identity_context_data
-    
+
     # TODO: make the call from the adapter to this and reverse the config process?
-    def set_adapter(self, adapter):  
+    def set_adapter(self, adapter):
         self._adapter = adapter
         adapter.attach_identity_web_util(self)
 
@@ -91,13 +97,13 @@ class IdentityWebPython(object):
         self._logger = logger
 
     def _client_factory(self, token_cache=None, **msal_client_kwargs):
-        client_config = self.aad_config.client.__dict__.copy() # need to make a copy since contents must be mutated
+        client_config = self.aad_config.client.__dict__.copy()  # need to make a copy since contents must be mutated
         client_config['authority'] = f'{self.aad_config.client.authority}'
         if token_cache:
             client_config['token_cache'] = token_cache
         client_config.update(**msal_client_kwargs)
 
-        return ConfidentialClientApplication(**client_config)        
+        return ConfidentialClientApplication(**client_config)
 
     @require_context_adapter
     def get_auth_url(self, redirect_uri, **msal_auth_url_kwargs):
@@ -114,23 +120,24 @@ class IdentityWebPython(object):
 
     @require_context_adapter
     def process_auth_redirect(self, request, redirect_uri, response_type=None):
-        req_params = self._adapter.get_request_params_as_dict() # grab the incoming request params
+        req_params = self._adapter.get_request_params_as_dict()  # grab the incoming request params
         try:
             # CSRF protection: make sure to check that state matches the one placed in the session in the previous step.
             # This check ensures this app + this same user session made the /authorize request that resulted in this redirect
             # This should always be the first thing verified on redirect.
             self._verify_state(req_params)
-            
+
             self._logger.info("process_auth_redirect: state matches. continuing.")
             self._parse_redirect_errors(req_params)
             self._logger.info("process_auth_redirect: no errors found in request params. continuing.")
-            
+
             # get the response_type that was requested, and extract the payload:
             resp_type = response_type or self.aad_config.auth_request.response_type or str(ResponseType.CODE)
             payload = self._extract_auth_response_payload(req_params, resp_type)
             cache = self._adapter.identity_context_data.token_cache
 
-            if resp_type == str(ResponseType.CODE): # code request is default for msal-python if there is no response type specified
+            if resp_type == str(
+                    ResponseType.CODE):  # code request is default for msal-python if there is no response type specified
                 # we should have a code. Now we must exchange the code for tokens.
                 result = self._x_change_auth_code_for_token(payload, cache, redirect_uri)
             else:
@@ -153,8 +160,8 @@ class IdentityWebPython(object):
             self.remove_user(request)
             self._logger.error(f"process_auth_redirect: unknown error{other.args}")
             raise other
-        
-        #TODO: GET /auth/redirect?error=interaction_required&error_description=AADB2C90077%3a+User+does+not+have+an+existing+session+and+request+prompt+parameter+has+a+value+of+%27None%27.
+
+        # TODO: GET /auth/redirect?error=interaction_required&error_description=AADB2C90077%3a+User+does+not+have+an+existing+session+and+request+prompt+parameter+has+a+value+of+%27None%27.
         # self._logger.info("process_auth_redirect: exiting auth code method. redirecting... ")
         # return self._adapter.redirect_to_absolute_url(afterwards_go_to_url)
 
@@ -163,10 +170,10 @@ class IdentityWebPython(object):
         # use the same policy that got us here: depending on /authorize request initiation
         id_context = self._adapter.identity_context_data
         client = self._client_factory(token_cache=token_cache)
-        return client.acquire_token_by_authorization_code(code, 
-                                                   self.aad_config.auth_request.scopes,
-                                                   redirect_uri,
-                                                   id_context.nonce)
+        return client.acquire_token_by_authorization_code(code,
+                                                          self.aad_config.auth_request.scopes,
+                                                          redirect_uri,
+                                                          id_context.nonce)
 
     @require_context_adapter
     def acquire_token_silently(self, request, scopes=None, account=None, authority=None, token_cache=None, **kwargs):
@@ -175,7 +182,7 @@ class IdentityWebPython(object):
         token_cache = token_cache or id_data.token_cache
         client = self._client_factory(token_cache=token_cache)
 
-        silent_opts = { **kwargs }
+        silent_opts = {**kwargs}
         silent_opts['scopes'] = scopes or self.aad_config.auth_request.scopes
         silent_opts['account'] = account or client.get_accounts()[0]
 
@@ -192,7 +199,8 @@ class IdentityWebPython(object):
             id_context = self._adapter.identity_context_data
             id_context.authenticated = True
             if 'id_token_claims' in result:
-                id_context._id_token_claims = result['id_token_claims'] # TODO: if this is to stay in ctxt, use proper getter/setter
+                id_context._id_token_claims = result[
+                    'id_token_claims']  # TODO: if this is to stay in ctxt, use proper getter/setter
                 username = id_context._id_token_claims.get('name', 'anonymous')
                 if ', ' in username:
                     username_temp = username.split(', ')
@@ -203,13 +211,14 @@ class IdentityWebPython(object):
             if 'access_token' in result:
                 id_context._access_token = result['access_token']
                 id_context.userpicture = self._get_userpicture(result['access_token'])
-            id_context.has_changed = True       #TODO: update id_context to automatically do this when _id_token and accesstoken is assigned!!!!
+            id_context.has_changed = True  # TODO: update id_context to automatically do this when _id_token and accesstoken is assigned!!!!
             id_context.token_cache = token_cache
 
             self._handle_django_login(request)
+
         else:
             raise TokenExchangeError("_process_result: auth failed: token request resulted in error\n"
-                                        f"{result['error']}: {result.get('error_description', None)}")
+                                     f"{result['error']}: {result.get('error_description', None)}")
 
     def _get_userpicture(self, access_token):
         graph_url = f'{self.aad_config.graph_url.rstrip("/")}/me/photos/48x48/$value'
@@ -238,9 +247,9 @@ class IdentityWebPython(object):
         if redirect_uri:
             sign_out_url = f'{sign_out_url}?{SignOut.REDIRECT_PARAM_KEY.value}={redirect_uri}'
         return sign_out_url
-    
+
     @require_context_adapter
-    def remove_user(self, request): #TODO: complete this so it doesn't just clear the session but removes user
+    def remove_user(self, request):  # TODO: complete this so it doesn't just clear the session but removes user
         self._handle_django_logout(request)
         self._adapter.clear_session()
         # TODO e.g. if active username in id_context_'s username is not anonymous, remove it
@@ -248,14 +257,14 @@ class IdentityWebPython(object):
         # remote AT
         # remove token_cache
         # TODO: set auth_state_changed flag here
-    
+
     @require_context_adapter
     def _generate_and_append_state_to_context_and_request(self, req_param_dict):
         state = str(uuid4())
         req_param_dict[RequestParameter.STATE.value] = state
         self._adapter.identity_context_data.state = state
         return state
-    
+
     @require_context_adapter
     def _verify_state(self, req_params):
         state = req_params.get('state', None)
@@ -265,7 +274,7 @@ class IdentityWebPython(object):
         # reject states that don't match
         if state is None or session_state != state:
             raise AuthSecurityError("Failed to match request state with session state")
-    
+
     @require_context_adapter
     def _generate_and_append_nonce_to_context_and_request(self, req_param_dict):
         nonce = str(uuid4())
@@ -286,7 +295,7 @@ class IdentityWebPython(object):
     # TODO: enforce ID token expiry.
     # @decorator to ensure the user is authenticated
     # wrap this around your route    
-    def login_required(self,f):
+    def login_required(self, f):
         @wraps(f)
         def assert_login(*args, **kwargs):
             if not self._adapter.identity_context_data.authenticated:
@@ -296,24 +305,36 @@ class IdentityWebPython(object):
             # TODO: upon returning from re-auth, user should get back to
             # where they were trying to go.
             return f(*args, **kwargs)
+
         return assert_login
 
-    
     # Django iterface - DigitalLAB: Ewerson Silva
     def _handle_django_login(self, request):
         if not request.user.is_authenticated:
-            if request.identity_context_data.usermail is not None:
+            id_data = request.identity_context_data
+            if id_data.usermail is not None:
                 from django.apps import apps
                 from django.conf import settings
-                django_user = (
-                    apps.get_model(settings.AUTH_USER_MODEL)
-                        .objects.filter(is_active=True, email=request.identity_context_data.usermail)
-                        .first()
-                )
+
+                User = apps.get_model(settings.AUTH_USER_MODEL)
+                user_view = User.objects.filter(email=id_data.usermail)
+
+                if not user_view:
+                    user = User()
+                    user.email = id_data.usermail
+                    user.username = id_data.username.replace(' ', '_')
+                    user.first_name = id_data.username.split()[0]
+                    user.last_name = id_data.username.split()[-1]
+                    user.is_active = False
+                    user.userpicture = id_data.userpicture
+                    user.is_staff = False
+                    user.save()
+                    user.create_photo()
+                django_user = user_view.filter(is_active=True).first()
                 if django_user:
                     from django.contrib.auth import login
                     login(request, django_user)
-    
+
     def _handle_django_logout(self, request):
         if request.user.is_authenticated:
             from django.contrib.auth import logout

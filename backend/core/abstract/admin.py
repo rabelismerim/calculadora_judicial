@@ -14,9 +14,13 @@ from django.contrib import admin
 
 admin.site.register(UpdateUser)
 """
-
 from django.contrib import admin
+
 from core.abstract.models import UpdateUser
 
 
-admin.site.register(UpdateUser)
+class AbstractModelAdmin(admin.ModelAdmin):
+    list_display = ('id', 'created_at', 'content_type')
+
+
+admin.site.register(UpdateUser, AbstractModelAdmin)
