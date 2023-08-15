@@ -20,7 +20,7 @@ from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 from utils import _, doc
 
-from aspose.cells import Workbook
+from aspose.cells import License, Workbook
 import openpyxl as xl
 from openpyxl.styles import PatternFill, Alignment, Font
 from os.path import exists
@@ -1654,6 +1654,12 @@ class SheetTemplateViewApi(AbstractViewApi):
                     .replace('\\"', '"')
                 )
                 list_html[sheet._WorkbookChild__title] = result_html
+                
+            #adjust layout from download
+            #for sheet in archive_view:
+            #    if sheet['A1'].value == None:
+            #        sheet.delete_cols(0,1)
+            #archive_view.save(new_name_view)
 
             #create a pdf file
             wb = Workbook(new_name_view)
