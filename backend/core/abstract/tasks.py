@@ -1,5 +1,7 @@
 import json
 import logging
+import os.path
+import tempfile
 from time import sleep
 
 from celery import Task
@@ -10,12 +12,21 @@ from config.celery import redis_conn
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-file_handler = logging.FileHandler('log_file_celery.txt')
+
+# Obter o diretório temporário do sistema
+tmp_dir = tempfile.gettempdir()
+
+# Construir o caminho completo do arquivo de log
+log_file_path = os.path.join(tmp_dir, 'juca', 'log_file_celery.txt')
+os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
+
+file_handler = logging.FileHandler(log_file_path)
 file_handler.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
+logger.info(tmp_dir)
 
 class AbstractTask(Task):
     __redis_conn = redis_conn
