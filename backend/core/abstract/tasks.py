@@ -28,6 +28,7 @@ logger.addHandler(file_handler)
 
 logger.info(tmp_dir)
 
+
 class AbstractTask(Task):
     __redis_conn = redis_conn
     __security = Security()
