@@ -76,7 +76,7 @@ class FileSchema(AbstractDescriptionSchema):
 
     def get_task(self, obj):
         if obj.task_result:
-            return TaskResultSerializer(source='task_result').data
+            return TaskResultSerializer(obj.task_result).data
         return obj.get_status_pending_task()
 
 
