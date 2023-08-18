@@ -1,8 +1,6 @@
 <script setup lang='ts'>
 const props = withDefaults(defineProps<{
   modelValue?: boolean
-  tab: string
-  filter: string
 }>(), {
   modelValue: false,
 })
@@ -25,7 +23,26 @@ const closeModal = () => {
 }
 
 const files: any = $ref(null)
-const erros: any = $ref(null)
+let fileExample: any = $ref({})
+let examplePath: any = $ref({})
+
+const loadExamples = async () => {
+  try {
+    fileExample = await uploadService.getFilesExample()
+  }
+  catch (error) {
+    printError('ERROR ON LOADING FILE EXAMPLE:', error)
+  }
+}
+
+const loadExamplesPath = async () => {
+  try {
+    examplePath = await uploadService.getFilesExamplePath('project')
+  }
+  catch (error) {
+    printError('ERROR ON LOADING FILE EXAMPLE:', error)
+  }
+}
 
 const fileNames = $ref([
   'create_creditors',
@@ -35,44 +52,90 @@ const fileNames = $ref([
 
 const historicFiles: any[] = $ref([
   {
-    id: 'db7511f2-3862-4e7d-85d8-8801f5c0349d',
-    file: '/media/juca/files/2023/08/14/create_creditors_claim.xlsx',
-    name: 'create_creditors_claim.xlsx',
-    task: null,
-    object_id: '3f51742d-c6b0-4637-9627-fa041c9eafa5',
-    errors: [],
+    id: '82e19e69-baf9-44a9-89b5-224a5410a441',
+    file: '/media/juca/files/2023/08/14/create_creditors_claim_-_Copy.xlsx',
+    name: 'create_creditors_claim_-_Copy.xlsx',
+    task: {
+      taskId: '8da67f99-ec1a-4ec9-8393-a534d9d9daea',
+      status: 'SUCCESS',
+    },
+    objectId: '3f51742d-c6b0-4637-9627-fa041c9eafa5',
+    errors: [
+      {
+        error: 'Linha: 1, Field recuperanda: Recuperanda não encontrada',
+        status: 'R',
+        statusDisplay: 'Registrado',
+      },
+      {
+        error: 'Linha: 2, Field recuperanda: Recuperanda não encontrada',
+        status: 'R',
+        statusDisplay: 'Registrado',
+      },
+    ],
   },
   {
     id: 'd0035e4e-fc69-4254-b078-7a44566ed6a8',
     file: '/media/juca/files/2023/08/07/create_creditors_claim.xlsx',
     name: 'create_creditors_claim.xlsx',
-    task: null,
-    object_id: '3f51742d-c6b0-4637-9627-fa041c9eafa5',
+    task: {
+      taskId: '7ff040c2-aef2-422d-a9fc-ac109eb93053',
+      status: 'FAILURE',
+    },
+    objectId: '3f51742d-c6b0-4637-9627-fa041c9eafa5',
     errors: [],
   },
   {
     id: '82e19e69-baf9-44a9-89b5-224a5410a441',
     file: '/media/juca/files/2023/08/14/create_creditors_claim_-_Copy.xlsx',
     name: 'create_creditors_claim_-_Copy.xlsx',
-    task: null,
-    object_id: '3f51742d-c6b0-4637-9627-fa041c9eafa5',
-    errors: [],
+    task: {
+      taskId: '8da67f99-ec1a-4ec9-8393-a534d9d9daea',
+      status: 'SUCCESS',
+    },
+    objectId: '3f51742d-c6b0-4637-9627-fa041c9eafa5',
+    errors: [
+      {
+        error: 'Linha: 1, Field recuperanda: Recuperanda não encontrada',
+        status: 'R',
+        statusDisplay: 'Registrado',
+      },
+    ],
   },
 ])
 
-const filters = [
-  { label: 'Em Andamento', value: 'a' },
-  { label: 'Aguardando', value: 'a' },
-  { label: 'Processado', value: 'P' },
-  { label: 'Não Processado', value: 'e' },
+// examplesPath
+// examplesPathName
+// createPath
+// filesDetailId
+
+// let fileDetail: any = $ref({})
+
+// const loadFileDetail = async () => {
+//   try {
+//     fileDetail = await uploadService.getFileDetail()
+//   }
+//   catch (error) {
+//     printError('ERROR ON LOADING FILE DETAIL:', error)
+//   }
+// }
+
+const fileStatuses = [
+
+  { label: 'Pendente', value: 'PENDING', color: '#c4d600' },
+  { label: 'Recebido', value: 'RECEIVED', color: '#007cb0' },
+  { label: 'Iniciado', value: 'STARTED', color: '#007cb0' },
+  { label: 'Processado', value: 'SUCCESS', color: '#86bc25' },
+  { label: 'Falhou', value: 'FAILURE', color: '#d9291c' },
+  { label: 'Revogado', value: 'REVOKED', color: '#cccccc' },
+  { label: 'Rejeitado', value: 'REJECTED', color: '#cccccc' },
+  { label: 'Reprocessando', value: 'RETRY', color: '#c4d600' },
+  { label: 'Ignorado', value: 'IGNORED', color: '#cccccc' },
 ]
 
-const statusColors: any = {
-  P: '#c4d600', // Em Preparação
-  E: '#c4d600', // Em Preparação
-  C: '#86bc25', // Concluído
-  A: '#007cb0', // Em Andamento
-  F: '#cccccc', // Cancelado
+const getStatus = (statusName: string) => {
+  const status = fileStatuses
+    .find(status => status.value === statusName)
+  return status
 }
 
 const log = (data: string) => console.warn({ data })
@@ -141,37 +204,41 @@ const log = (data: string) => console.warn({ data })
             <div>
               <div>
                 <Accordion
-                  v-for="(file, index) in historicFiles"
+                  v-for="(file) in historicFiles"
                   :key="file.id"
                   class="border-black/12 bg--base font-bold flex justify-between mb-2"
                   summary-class="px-2! py-1!"
                 >
                   <template #title>
-                    <div class="flex items-center gap-2">
-                      <div class="i-carbon-xls" />
-                      <div>{{ file.name }}</div>
+                    <div class="flex items-center gap-2 justify-between flex-1">
+                      <div class="flex gap-2 items-center">
+                        <div class="i-carbon-xls" />
+                        <div>{{ file.name }}</div>
+                      </div>
                       <StatusTag
-                        :label="filters.values"
-                        :color="statusColors"
+                        :label="getStatus(file.task?.status)?.label"
+                        :color="getStatus(file.task?.status)?.color"
                       />
                     </div>
                   </template>
                   <div
                     v-if="file.errors.length > 0"
-                    class="flex gap-2 items-center"
+                    class="p-2"
                   >
                     <div
-                      v-for="error in file.errors"
-                      :key="error"
+                      v-for="({ error, statusDisplay }, index) in file.errors"
+                      :key="index"
                       class="p-2 flex justify-between"
                       :class="{
-                        'border-1': index === 0,
-                        'border-x-1 border-b-1': index > 0,
+                        'border-t-1': index > 0,
                       }"
                     >
                       <div class="flex gap-2 items-center">
                         <div class="flex gap-2 items-center font-bold text-red-500">
                           Erro {{ index + 1 }}:
+                        </div>
+                        <div>
+                          {{ error }} - {{ statusDisplay }}
                         </div>
                       </div>
                     </div>
