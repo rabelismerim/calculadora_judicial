@@ -207,7 +207,13 @@ const log = (data: string) => console.warn({ data })
                   <div class="i-carbon-xls" />
                   {{ name }}
                 </div>
-                <div class="i-carbon-document-download" />
+                <div
+                  v-close-popup
+                  class="i-carbon-document-download" clickable
+                  :loading="isDownloading"
+                  loading-label="Baixando Template..."
+                  @click="downloadTemplate"
+                />
               </div>
             </div>
           </div>
