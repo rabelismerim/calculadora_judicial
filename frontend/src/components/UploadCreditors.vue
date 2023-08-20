@@ -13,6 +13,36 @@ const modalValue = ref(false)
 const selectedTab = ref('carregamento')
 const filterBy = $ref('')
 
+let isDownloading = $ref(false)
+
+const downloadTemplate = async () => {
+  const template = props.modelValue
+  if (!template)
+    return
+  isDownloading = true
+  try {
+    const result = await uploadService.getFilesExample()
+    if (result.errors) {
+      throwError({ id: 'UPLOAD TEMPLATE', message: result.errors })
+      return
+    }
+    const date = new Date()
+    const [day, month, year] = date
+      .toLocaleDateString('en')
+      .padStart(10, '0')
+      .split('/')
+    const fileName = `${fileNames}.xlsx`
+
+    downloadFile(result, fileName)
+  }
+  catch (error) {
+    printError('ERROR ON LOAD ACCOUNTING STATEMENT', error)
+  }
+  finally {
+    isDownloading = false
+  }
+}
+
 const tabs = [
   { label: 'Carregamento', value: 'carregamento' },
   { label: 'Histórico', value: 'historico' },
@@ -45,9 +75,7 @@ const loadExamplesPath = async () => {
 }
 
 const fileNames = $ref([
-  'create_creditors',
-  'create_creditors_rj',
-  'create_creditors_aj',
+  uploadService.getFilesExamplePath('project'),
 ])
 
 const historicFiles: any[] = $ref([
