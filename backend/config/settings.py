@@ -22,12 +22,12 @@ import urllib3
 import subprocess
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
-tasks = str(subprocess.check_output(['wmic','path','win32_process','where',"Name like '%python%' and commandline like '%manage%'",'get','name,commandline']))
-if len(tasks)==0:
-   subprocess.call([sys.executable, 'manage.py', 'runserver','127.0.0.1:8999'])
-tasks = str(subprocess.check_output(['wmic','path','win32_process','where',"Name like '%python%' and commandline like '%celery%'",'get','name,commandline']))
-if len(tasks)==0:
-    subprocess.call([sys.executable, '-m', 'celery','-A','config','worker','--pool=eventlet','--loglevel=DEBUG','-Q','default,save-file'])
+# tasks = str(subprocess.check_output(['wmic','path','win32_process','where',"Name like '%python%' and commandline like '%manage%'",'get','name,commandline']))
+# if len(tasks)==0:
+#    subprocess.call([sys.executable, 'manage.py', 'runserver','127.0.0.1:8999'])
+# tasks = str(subprocess.check_output(['wmic','path','win32_process','where',"Name like '%python%' and commandline like '%celery%'",'get','name,commandline']))
+# if len(tasks)==0:
+#     subprocess.call([sys.executable, '-m', 'celery','-A','config','worker','--pool=eventlet','--loglevel=DEBUG','-Q','default,save-file'])
 urllib3.disable_warnings()
 import warnings
 
