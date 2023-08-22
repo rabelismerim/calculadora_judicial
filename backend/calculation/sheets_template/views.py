@@ -82,7 +82,7 @@ class SheetTemplateViewApi(AbstractViewApi):
     def get(self, request, *args, **kwargs):
         try:
             calculation_id = kwargs.get("calculation_id")
-            name_report = kwargs.get("export_type")
+            name_report = kwargs.get("export_type").split(';')[0] if len(kwargs.get("export_type").split(';'))>1 else kwargs.get("export_type")
             export_type = kwargs.get("export_type").split(';')[1] if len(kwargs.get("export_type").split(';'))>1 else None
             Template = SheetsTemplate.objects.filter(name=name_report)
             if len(Template) <= 0:
