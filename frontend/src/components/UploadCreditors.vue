@@ -39,7 +39,6 @@ const downloadTemplate = async (fileName: string) => {
   try {
     const result: Blob = await uploadService.getFilesPathName('project', fileName)
     const file = `${fileName}.xlsx`
-    console.log({ result, file })
     downloadFile(result, file)
   }
   catch (error) {
@@ -50,13 +49,18 @@ const downloadTemplate = async (fileName: string) => {
   }
 }
 
-const files = $ref([] as File[])
+let files = $ref([] as File[])
 
 const historicFiles: any = $ref([])
 const loadHistoricFiles = async (id: string) => {
   try {
-    const filesData = await uploadService.getFileDetail(id)
-    historicFiles.value = filesData
+    files = []
+    const filesData = await uploadService.getObjetcId('project', id)
+    for (const file of filesData) {
+      const result = await uploadService.getFileDetail(file.id)
+      files.push(result)
+    }
+    historicFiles.value = files
   }
   catch (error) {
     printError('ERROR ON LOADING HISTORIC FILES:', error)
@@ -84,7 +88,7 @@ const getStatus = (statusName: string) => {
 
 onMounted(() => {
   loadTemplateNames()
-  loadHistoricFiles('')
+  loadHistoricFiles()
 })
 </script>
 
