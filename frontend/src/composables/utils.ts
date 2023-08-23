@@ -275,28 +275,45 @@ export const parseToSnake = (data: any) => unflatten(Object
     }),
   ))
 
-export const downloadFile = (textToWrite: string, fileNameToSaveAs: string, contentType = 'application/xlsx') => {
-  const byteCharacters = atob(textToWrite)
-  const byteNumbers = byteCharacters
-    .split('')
-    .map((_, index) => byteCharacters.charCodeAt(index))
-  const byteArray = new Uint8Array(byteNumbers)
-  const blob = new Blob([byteArray], { type: contentType })
+export const s2ab = (s: string) => {
+  const buf = new ArrayBuffer(s.length)
+  const view = new Uint8Array(buf)
+  for (let i = 0; i !== s.length; ++i)
+    view[i] = s.charCodeAt(i) & 0xFF
+  return buf
+}
+
+export const downloadFile = (content: any, fileNameToSaveAs: string, contentType = 'application/xlsx') => {
+  if (!content)
+    return
+  if (typeOf(content) === 'String') {
+    const byteCharacters = atob(content as string)
+    const byteNumbers = byteCharacters
+      .split('')
+      .map((_, index) => byteCharacters.charCodeAt(index))
+    const byteArray = new Uint8Array(byteNumbers)
+    content = new Blob([byteArray], { type: contentType })
+  }
+  else {
+    content = content.arrayBuffer
+  }
+
   const downloadLink = document.createElement('a')
   downloadLink.download = fileNameToSaveAs
   downloadLink.innerHTML = 'Download File'
-  if (window.webkitURL != null) {
-    downloadLink.href = window.webkitURL.createObjectURL(blob)
+  console.log({ content })
+  if (window.webkitURL !== null) {
+    downloadLink.href = window.webkitURL.createObjectURL(content as Blob)
   }
   else {
-    downloadLink.href = window.URL.createObjectURL(blob)
+    downloadLink.href = window.URL.createObjectURL(content as Blob)
     downloadLink.onclick = () => {
       document.body.removeChild(downloadLink)
+      downloadLink.style.display = 'none'
+      document.body.appendChild(downloadLink)
     }
-    downloadLink.style.display = 'none'
-    document.body.appendChild(downloadLink)
+    downloadLink.click()
   }
-  downloadLink.click()
 }
 
 export const deleteAllCookies = () => {
