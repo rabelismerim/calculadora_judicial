@@ -289,7 +289,7 @@ const getAccountingStatement = (calculationId: string) => {
 }
 
 const getAccountingStatementXLSX = (calculationId: string) => api
-  .get(`/v1/calculation/export/${calculationId}/xlsx/`)
+  .get(`/v1/calculation/export/${calculationId}/EXTRATOCONTABIL;xlsx/`)
   .then((result: any) => {
     if (result.errors)
       return result
@@ -297,7 +297,7 @@ const getAccountingStatementXLSX = (calculationId: string) => api
   })
 
 const getAccountingStatementPDF = (calculationId: string) => api
-  .get(`/v1/calculation/export/${calculationId}/pdf/`)
+  .get(`/v1/calculation/export/${calculationId}/EXTRATOCONTABIL;pdf/`)
   .then((result: any) => {
     if (result.errors)
       return result
