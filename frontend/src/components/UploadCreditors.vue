@@ -88,7 +88,7 @@ const getStatus = (statusName: string) => {
 
 onMounted(() => {
   loadTemplateNames()
-  loadHistoricFiles()
+  loadHistoricFiles(historicFiles.value)
 })
 </script>
 
