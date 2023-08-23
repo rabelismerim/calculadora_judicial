@@ -9,39 +9,7 @@ const emit = defineEmits(['update:modelValue', 'update:uploadFiles', 'success', 
 const loading = $ref(false)
 const form = ref(null as any)
 
-const modalValue = ref(false)
 const selectedTab = ref('carregamento')
-const filterBy = $ref('')
-
-let isDownloading = $ref(false)
-
-const downloadTemplate = async () => {
-  const template = props.modelValue
-  if (!template)
-    return
-  isDownloading = true
-  try {
-    const result = await uploadService.getFilesExample()
-    if (result.errors) {
-      throwError({ id: 'UPLOAD TEMPLATE', message: result.errors })
-      return
-    }
-    const date = new Date()
-    const [day, month, year] = date
-      .toLocaleDateString('en')
-      .padStart(10, '0')
-      .split('/')
-    const fileName = `${fileNames}.xlsx`
-
-    downloadFile(result, fileName)
-  }
-  catch (error) {
-    printError('ERROR ON LOAD ACCOUNTING STATEMENT', error)
-  }
-  finally {
-    isDownloading = false
-  }
-}
 
 const tabs = [
   { label: 'Carregamento', value: 'carregamento' },
@@ -49,103 +17,51 @@ const tabs = [
 ]
 
 const closeModal = () => {
-  modalValue.value = false
+  emit('update:modelValue', false)
 }
 
-const files: any = $ref(null)
-let fileExample: any = $ref({})
-let examplePath: any = $ref({})
+let templateNames: any = $ref([])
 
-const loadExamples = async () => {
+const loadTemplateNames = async () => {
   try {
-    fileExample = await uploadService.getFilesExample()
+    templateNames = await uploadService.getFilesExamplePath('project')
   }
   catch (error) {
     printError('ERROR ON LOADING FILE EXAMPLE:', error)
   }
 }
 
-const loadExamplesPath = async () => {
+let isDownloading = $ref(false)
+const downloadTemplate = async (fileName: string) => {
+  if (!fileName)
+    return
+  isDownloading = true
   try {
-    examplePath = await uploadService.getFilesExamplePath('project')
+    const result: Blob = await uploadService.getFilesPathName('project', fileName)
+    const file = `${fileName}.xlsx`
+    console.log({ result, file })
+    downloadFile(result, file)
   }
   catch (error) {
-    printError('ERROR ON LOADING FILE EXAMPLE:', error)
+    printError('ERROR ON DOWNLOAD TEMPLATE', error)
+  }
+  finally {
+    isDownloading = false
   }
 }
 
-const fileNames = $ref([
-  uploadService.getFilesExamplePath('project'),
-])
+const files = $ref([] as File[])
 
-const historicFiles: any[] = $ref([
-  {
-    id: '82e19e69-baf9-44a9-89b5-224a5410a441',
-    file: '/media/juca/files/2023/08/14/create_creditors_claim_-_Copy.xlsx',
-    name: 'create_creditors_claim_-_Copy.xlsx',
-    task: {
-      taskId: '8da67f99-ec1a-4ec9-8393-a534d9d9daea',
-      status: 'SUCCESS',
-    },
-    objectId: '3f51742d-c6b0-4637-9627-fa041c9eafa5',
-    errors: [
-      {
-        error: 'Linha: 1, Field recuperanda: Recuperanda não encontrada',
-        status: 'R',
-        statusDisplay: 'Registrado',
-      },
-      {
-        error: 'Linha: 2, Field recuperanda: Recuperanda não encontrada',
-        status: 'R',
-        statusDisplay: 'Registrado',
-      },
-    ],
-  },
-  {
-    id: 'd0035e4e-fc69-4254-b078-7a44566ed6a8',
-    file: '/media/juca/files/2023/08/07/create_creditors_claim.xlsx',
-    name: 'create_creditors_claim.xlsx',
-    task: {
-      taskId: '7ff040c2-aef2-422d-a9fc-ac109eb93053',
-      status: 'FAILURE',
-    },
-    objectId: '3f51742d-c6b0-4637-9627-fa041c9eafa5',
-    errors: [],
-  },
-  {
-    id: '82e19e69-baf9-44a9-89b5-224a5410a441',
-    file: '/media/juca/files/2023/08/14/create_creditors_claim_-_Copy.xlsx',
-    name: 'create_creditors_claim_-_Copy.xlsx',
-    task: {
-      taskId: '8da67f99-ec1a-4ec9-8393-a534d9d9daea',
-      status: 'SUCCESS',
-    },
-    objectId: '3f51742d-c6b0-4637-9627-fa041c9eafa5',
-    errors: [
-      {
-        error: 'Linha: 1, Field recuperanda: Recuperanda não encontrada',
-        status: 'R',
-        statusDisplay: 'Registrado',
-      },
-    ],
-  },
-])
-
-// examplesPath
-// examplesPathName
-// createPath
-// filesDetailId
-
-// let fileDetail: any = $ref({})
-
-// const loadFileDetail = async () => {
-//   try {
-//     fileDetail = await uploadService.getFileDetail()
-//   }
-//   catch (error) {
-//     printError('ERROR ON LOADING FILE DETAIL:', error)
-//   }
-// }
+const historicFiles: any = $ref([])
+const loadHistoricFiles = async (id: string) => {
+  try {
+    const filesData = await uploadService.getFileDetail(id)
+    historicFiles.value = filesData
+  }
+  catch (error) {
+    printError('ERROR ON LOADING HISTORIC FILES:', error)
+  }
+}
 
 const fileStatuses = [
 
@@ -166,7 +82,10 @@ const getStatus = (statusName: string) => {
   return status
 }
 
-const log = (data: string) => console.warn({ data })
+onMounted(() => {
+  loadTemplateNames()
+  loadHistoricFiles('')
+})
 </script>
 
 <template>
@@ -195,24 +114,21 @@ const log = (data: string) => console.warn({ data })
             </div>
             <div>
               <div
-                v-for="(name, index) in fileNames"
+                v-for="(name, index) in templateNames"
                 :key="name"
                 class="p-2 border-black/12 bg--base font-bold text--primary flex justify-between cursor-pointer hover:bg--secondary/10 tween"
                 :class="{
                   'border-1': index === 0,
                   'border-x-1 border-b-1': index > 0,
                 }"
+                @click="downloadTemplate(name)"
               >
                 <div class="flex gap-2 items-center">
                   <div class="i-carbon-xls" />
                   {{ name }}
                 </div>
                 <div
-                  v-close-popup
-                  class="i-carbon-document-download" clickable
-                  :loading="isDownloading"
-                  loading-label="Baixando Template..."
-                  @click="downloadTemplate"
+                  class="i-carbon-document-download"
                 />
               </div>
             </div>
@@ -221,8 +137,7 @@ const log = (data: string) => console.warn({ data })
           <div class="text-h9" style="font-weight: bold">
             <DropZone
               :types="['xls', 'xlsx']"
-              @update:model-value="(val: any) => { files = val }"
-              @drop="log"
+              @drop="(val: File[]) => files = val "
             />
           </div>
         </QTabPanel>
@@ -233,7 +148,7 @@ const log = (data: string) => console.warn({ data })
         >
           <div class="mb-3">
             <div class="font-bold mb-2">
-              Histórico de arquivos carregados no sistema ({{ fileNames.length }})
+              Histórico de arquivos carregados no sistema ({{ historicFiles.length }})
             </div>
             <div>
               <div>
