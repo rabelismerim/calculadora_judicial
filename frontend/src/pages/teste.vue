@@ -11,7 +11,10 @@ const log = data => console.warn({ data })
       @drop="log"
     />
     <template #out>
-      <UploadCreditors v-model="show" />
+      <UploadCreditors
+        v-model="show"
+        project-id="34d7ee0e-3a3f-4b7b-98d0-e27a388b7491"
+      />
     </template>
   </Page>
 </template>
