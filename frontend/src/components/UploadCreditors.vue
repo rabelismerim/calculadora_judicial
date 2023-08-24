@@ -1,6 +1,7 @@
 <script setup lang='ts'>
 const props = withDefaults(defineProps<{
   modelValue?: boolean
+  projectId: string
 }>(), {
   modelValue: false,
 })
@@ -51,16 +52,18 @@ const downloadTemplate = async (fileName: string) => {
 
 let files = $ref([] as File[])
 
-const historicFiles: any = $ref([])
-const loadHistoricFiles = async (id: string) => {
+let historicFiles: any = $ref([])
+const loadHistoricFiles = async () => {
   try {
     files = []
-    const filesData = await uploadService.getObjetcId('project', id)
+    const filesData = await uploadService.getObjetcId('project', props.projectId)
     for (const file of filesData) {
       const result = await uploadService.getFileDetail(file.id)
+      result.name = result.file.split('/').at(-1)
+
       files.push(result)
     }
-    historicFiles.value = files
+    historicFiles = files
   }
   catch (error) {
     printError('ERROR ON LOADING HISTORIC FILES:', error)
@@ -88,7 +91,7 @@ const getStatus = (statusName: string) => {
 
 onMounted(() => {
   loadTemplateNames()
-  loadHistoricFiles(historicFiles.value)
+  loadHistoricFiles()
 })
 </script>
 
