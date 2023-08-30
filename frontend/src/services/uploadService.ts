@@ -30,7 +30,7 @@ const getFilesExamplePath = (path: string) => api
   .get(`/v1/files/example/${path}/`)
   .then((result: any) => result?.excelNames)
 
-const getFilesPathName = (path: string, name: string) => api
+const getFilesPathName = (path: string, name: string) => apiFiles
   .get(`/v1/files/example/${path}/${name}/`, { responseType: 'blob' })
 
 const newCreatePath = async (createPath: CreatePath) => {

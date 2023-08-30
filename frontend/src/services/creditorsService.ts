@@ -40,7 +40,7 @@ const newCreditors = async (creditor: Creditor) => {
   if (!recoverings)
     return
   try {
-    for (const { recoveringId, rateId } of recoverings) {
+    for (const recoveringId of recoverings) {
       const result = await api.post('/v1/creditors/',
         ({
           ...creditor,
@@ -49,7 +49,6 @@ const newCreditors = async (creditor: Creditor) => {
             legalNumber,
           },
           recoveringId,
-          rateId,
         }))
         .then((result: any) => result?.creditor)
       results.push(result)

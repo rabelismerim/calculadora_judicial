@@ -115,9 +115,9 @@ const downloadXLSX = async () => {
       .toLocaleDateString('en')
       .padStart(10, '0')
       .split('/')
-    const fileName = `Calc_${props?.calculationNumber?.replaceAll(' ', '')}_${toKebab(props.recovering?.entity?.name)}_${toKebab(props.creditor?.entity?.name)}_${year}-${month}-${day}.xlsx`
+    const fileName = `Calc_${props?.calculationNumber?.replaceAll(' ', '')}_${toKebab(props.recovering?.entity?.name)}_${toKebab(props.creditor?.entity?.name)}_${year}-${month}-${day}`
 
-    downloadFile(result, fileName)
+    saveFile(result, fileName, 'xlsx')
   }
   catch (error) {
     printError('ERROR ON LOAD ACCOUNTING STATEMENT', error)

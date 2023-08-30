@@ -275,29 +275,52 @@ export const parseToSnake = (data: any) => unflatten(Object
     }),
   ))
 
-export const s2ab = (s: string) => {
-  const buf = new ArrayBuffer(s.length)
-  const view = new Uint8Array(buf)
-  for (let i = 0; i !== s.length; ++i)
-    view[i] = s.charCodeAt(i) & 0xFF
-  return buf
+export const saveFile = (data: any, fileName = 'download', fileExtension = 'txt') => {
+  const getType = () => {
+    if (['jpg', 'jpeg'].includes(fileExtension))
+      return 'image/jpeg'
+    if (['png', 'apng'].includes(fileExtension))
+      return 'image/png'
+    if (['gif'].includes(fileExtension))
+      return 'image/gif'
+    if (['pdf'].includes(fileExtension))
+      return 'application/pdf'
+    if (['xlsx'].includes(fileExtension))
+      return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    if (['html'].includes(fileExtension))
+      return 'text/html'
+    return 'text/plain'
+  }
+
+  const blob = (() => {
+    if (data instanceof Blob)
+      return data
+    if (fileExtension === 'csv')
+      return new Blob([new Uint8Array([239, 187, 191]), 'Text', data], { type: 'text/plain;charset=utf-8' })
+    return new Blob([data], { type: getType() })
+  })()
+
+  const link = document.createElement('a')
+  const url = window.webkitURL != null
+    ? window.webkitURL.createObjectURL(blob)
+    : window.URL.createObjectURL(blob)
+
+  document.body.appendChild(link)
+  link.style.display = 'none'
+  link.href = url
+  link.download = `${fileName}.${fileExtension}`
+  link.click()
+  window.URL.revokeObjectURL(url)
+  document.body.removeChild(link)
 }
 
-export const downloadFile = (content: any, fileNameToSaveAs: string, contentType = 'application/xlsx') => {
-  if (!content)
-    return
-  if (typeOf(content) === 'String') {
-    const byteCharacters = atob(content as string)
-    const byteNumbers = byteCharacters
-      .split('')
-      .map((_, index) => byteCharacters.charCodeAt(index))
-    const byteArray = new Uint8Array(byteNumbers)
-    content = new Blob([byteArray], { type: contentType })
-  }
-  else {
-    content = content.arrayBuffer
-  }
-
+export const downloadFile = (textToWrite: string, fileNameToSaveAs: string, contentType = 'application/xlsx') => {
+  const byteCharacters = atob(textToWrite)
+  const byteNumbers = byteCharacters
+    .split('')
+    .map((_, index) => byteCharacters.charCodeAt(index))
+  const byteArray = new Uint8Array(byteNumbers)
+  const blob = new Blob([byteArray], { type: contentType })
   const downloadLink = document.createElement('a')
   downloadLink.download = fileNameToSaveAs
   downloadLink.innerHTML = 'Download File'

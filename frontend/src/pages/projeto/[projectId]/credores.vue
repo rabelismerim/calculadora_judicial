@@ -245,11 +245,20 @@ onMounted(() => {
               flat
               class="vertical border--primary border-1 mb-4 mr-3"
             >
+              <CreditorData
+                :model-value="creditor"
+                :creditor-id="recovering.creditorId"
+                :options="creditorOptions"
+                :name="1"
+                title="Dados do Credor"
+                icon="o_request_page"
+                @save="loadCreditors"
+              />
               <RecoveringNotice
                 v-model="recovering.noticeRecovering"
                 :creditor-id="recovering.creditorId"
                 :options="creditorOptions"
-                :name="4"
+                :name="2"
                 title="Edital Recuperanda"
                 icon="o_request_page"
                 @save="loadCreditors"
@@ -267,7 +276,7 @@ onMounted(() => {
                 v-model="recovering.claimCreditor"
                 :creditor-id="recovering.creditorId"
                 :options="creditorOptions"
-                :name="1"
+                :name="4"
                 title="Pleito Credor"
                 icon="o_attach_money"
                 @save="loadCreditors"
@@ -276,7 +285,7 @@ onMounted(() => {
                 v-model="recovering.claimLawyer"
                 :creditor-id="recovering.creditorId"
                 :options="creditorOptions"
-                :name="2"
+                :name="5"
                 title="Pleito Advocatício"
                 icon="o_attach_money"
                 @save="loadCreditors"
