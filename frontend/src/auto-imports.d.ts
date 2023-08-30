@@ -17,6 +17,7 @@ declare global {
   const animate: typeof import('animol')['css']
   const api: typeof import('./services/api')['default']
   const apiCalculation: typeof import('./services/apiCalculation')['default']
+  const apiFiles: typeof import('./services/apiFiles')['default']
   const apiSilence: typeof import('./services/apiSilence')['default']
   const asyncComputed: typeof import('@vueuse/core')['asyncComputed']
   const autoResetRef: typeof import('@vueuse/core')['autoResetRef']
@@ -142,6 +143,7 @@ declare global {
   const resolveUnref: typeof import('@vueuse/core')['resolveUnref']
   const responseInterceptor: typeof import('./services/interceptors')['responseInterceptor']
   const router: typeof import('./router')['default']
+  const saveFile: typeof import('./composables/utils')['saveFile']
   const set: typeof import('@jrnwn/utils')['set']
   const setClass: typeof import('@jrnwn/utils')['setClass']
   const setCookie: typeof import('@jrnwn/utils')['setCookie']
@@ -378,6 +380,7 @@ declare module 'vue' {
     readonly animate: UnwrapRef<typeof import('animol')['css']>
     readonly api: UnwrapRef<typeof import('./services/api')['default']>
     readonly apiCalculation: UnwrapRef<typeof import('./services/apiCalculation')['default']>
+    readonly apiFiles: UnwrapRef<typeof import('./services/apiFiles')['default']>
     readonly apiSilence: UnwrapRef<typeof import('./services/apiSilence')['default']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
@@ -503,6 +506,7 @@ declare module 'vue' {
     readonly resolveUnref: UnwrapRef<typeof import('@vueuse/core')['resolveUnref']>
     readonly responseInterceptor: UnwrapRef<typeof import('./services/interceptors')['responseInterceptor']>
     readonly router: UnwrapRef<typeof import('./router')['default']>
+    readonly saveFile: UnwrapRef<typeof import('./composables/utils')['saveFile']>
     readonly set: UnwrapRef<typeof import('@jrnwn/utils')['set']>
     readonly setClass: UnwrapRef<typeof import('@jrnwn/utils')['setClass']>
     readonly setCookie: UnwrapRef<typeof import('@jrnwn/utils')['setCookie']>
