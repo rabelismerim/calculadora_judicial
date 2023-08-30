@@ -1,60 +1,25 @@
-<script>
-export default {
-  name: 'Test',
-  data() {
-    return {
-      responseData: null,
-      error: null,
-    }
-  },
-  methods:
-    {
-      async fetchData() {
-        try {
-          const objectId = '3f51742d-c6b0-4637-9627-fa041c9eafa5'
-          const path = 'project'
-          const name = 'create_creditors_claim'
-          const response = await uploadService.putErrorDetail()
-          this.responseData = response
-          this.error = null
-        }
-        catch (error) {
-          this.error = `Erro ao buscar os dados:${error.message}`
-          this.responseData = null
-        }
-      },
-      log: data => console.warn({ data }),
-    },
+<script setup lang="ts">
+let files = $ref([] as File[])
+const log = (newFiles: File[]) => files = newFiles
+
+const download = async () => {
+  const result = await uploadService.getFilesPathName('project', 'create_creditors')
+  saveFile(result, 'download', 'xlsx')
 }
 </script>
 
 <template>
   <div class="p-4">
-    <h1>TESTE UPLOAD ENDPOINTS</h1>
-    <br>
-    <div>
-      <Btn @click="fetchData" />
-      <div v-if="responseData">
-        <pre>{{ responseData }}</pre>
-      </div>
-
-      <div v-if="error">
-        <p>{{ error }}</p>
-      </div>
-    </div>
+    <h1>TESTE</h1>
+    <Btn label="Dowload" @click="download" />
     <DropZone
       :types="['xls', 'xlsx']"
       @drop="log"
     />
+    <FilesUploader
+      v-model="files"
+      path="project"
+      object-id="db559f9b-e678-4066-9f7d-e9404345814f"
+    />
   </div>
 </template>
-
-<!-- <div v-if="responseData">
-  <p>ID: {{ responseData.id }}</p>
-  <p>created_at_min: {{ responseData.createAtMin }}</p>
-  <p>created_at_max: {{ responseData.createAtMax }}</p>
-  <p>update_at_min: {{ responseData.updateAtMin }}</p>
-  <p>update_at__max: {{ responseData.updateAtMax }}</p>
-</div>
-<div v-if="error">
-  <p>Error: {{ error }}</p> -->
