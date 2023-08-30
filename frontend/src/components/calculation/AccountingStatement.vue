@@ -147,7 +147,7 @@ const downloadPDF = async () => {
 
     const fileName = `Calc_${props?.calculationNumber?.replaceAll(' ', '')}_${toKebab(props.recovering?.entity?.name)}_${toKebab(props.creditor?.entity?.name)}_${year}-${month}-${day}.pdf`
 
-    downloadFile(result, fileName)
+    saveFile(result, fileName, 'pdf')
   }
   catch (error) {
     printError('ERROR ON LOAD ACCOUNTING STATEMENT', error)
