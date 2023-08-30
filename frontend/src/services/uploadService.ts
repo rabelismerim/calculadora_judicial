@@ -30,9 +30,8 @@ const getFilesExamplePath = (path: string) => api
   .get(`/v1/files/example/${path}/`)
   .then((result: any) => result?.filesExamplePath)
 
-const getFilesPathName = (path: string, name: string) => api
-  .get(`/v1/files/example/${path}/${name}/`)
-  .then((result: any) => result?.filesPathName)
+const getFilesPathName = (path: string, name: string) => apiFiles
+  .get(`/v1/files/example/${path}/${name}/`, { responseType: 'blob' })
 
 const newCreatePath = async (createPath: CreatePath) => {
   const { file, path, objectId } = createPath
