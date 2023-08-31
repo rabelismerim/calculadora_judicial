@@ -3624,7 +3624,11 @@ msgstr ""
 msgid "Processing error"
 msgstr "Número do processo"
 
-#: .\backend\file\models.py:96
+#: .\backend\file\models.py:91
+msgid "Excel is not in a readable format"
+msgstr "O Excel não está num formato legível"
+
+#: .\backend\file\models.py:108
 msgid "Error"
 msgstr ""
 

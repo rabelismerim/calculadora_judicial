@@ -147,7 +147,7 @@ def create_templates():
                                ]
 
     fields_verbas.append({'label': 'Súmula 381', 'key': 'summary', 'type': 'B', 'order': 3, 'is_editable': True,
-                          'default': False,
+                          'default': True,
                           'required': True})
     summary_fields_verbas_integrations = copy.deepcopy(summary_fields_verbas)
     fields_verbas_reflexos = copy.deepcopy(fields_verbas)

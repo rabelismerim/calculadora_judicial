@@ -12,6 +12,7 @@ from django.db.models import signals
 from django.dispatch import receiver
 from django_celery_results.models import TaskResult
 from celery.states import PENDING
+from rest_framework.exceptions import ValidationError
 
 from core.abstract.models import AbstractModel
 from utils import _
@@ -84,7 +85,11 @@ class File(AbstractModel):
     def get_excel_headers(self) -> tuple:
         with self.file as file_obj:
             read = file_obj.read()
-            df = pd.read_excel(read)
+            try:
+                df = pd.read_excel(read)
+            except ValueError:
+                msg = _('Excel is not in a readable format')
+                raise ValidationError(_(msg))
             headers = df.columns.tolist()
 
         return self.id, read, headers

@@ -23,6 +23,7 @@ tests_loop.bat
 .env.prod
 .env.hml
 .env.azure
+.env_bk
 venv10
 venv_linux
 development.db
@@ -31,3 +32,4 @@ requirements_linux.txt
 celerybeat-schedule.bak
 celerybeat-schedule.dat
 celerybeat-schedule.dir
+.history
