@@ -151,6 +151,6 @@ steps:
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)/backend'
     Contents: '**'
-    TargetFolder: 'D:\DJUD\'
+    TargetFolder: 'c:\inetpub\wwwroot\juca\'
     OverWrite: true
     flattenFolders: false
