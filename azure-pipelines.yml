@@ -134,7 +134,12 @@ steps:
   displayName: 'Install and preparing python prerequisites'
 - script: |
     del .env
-  failOnStderr: true
+  failOnStderr: false
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install and preparing python prerequisites'
+- script: |
+    del .env.example
+  failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - task: DeleteFiles@1
