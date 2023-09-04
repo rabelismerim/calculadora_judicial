@@ -297,6 +297,14 @@ export const saveFile = (data: any, fileName = 'download', fileExtension = 'txt'
       return data
     if (fileExtension === 'csv')
       return new Blob([new Uint8Array([239, 187, 191]), 'Text', data], { type: 'text/plain;charset=utf-8' })
+    if (['pdf', 'xlsx'].includes(fileExtension)) {
+      const byteCharacters = atob(data)
+      const byteNumbers = byteCharacters
+        .split('')
+        .map((_, index) => byteCharacters.charCodeAt(index))
+      const byteArray = new Uint8Array(byteNumbers)
+      return new Blob([byteArray], { type: getType() })
+    }
     return new Blob([data], { type: getType() })
   })()
 
@@ -312,31 +320,6 @@ export const saveFile = (data: any, fileName = 'download', fileExtension = 'txt'
   link.click()
   window.URL.revokeObjectURL(url)
   document.body.removeChild(link)
-}
-
-export const downloadFile = (textToWrite: string, fileNameToSaveAs: string, contentType = 'application/xlsx') => {
-  const byteCharacters = atob(textToWrite)
-  const byteNumbers = byteCharacters
-    .split('')
-    .map((_, index) => byteCharacters.charCodeAt(index))
-  const byteArray = new Uint8Array(byteNumbers)
-  const blob = new Blob([byteArray], { type: contentType })
-  const downloadLink = document.createElement('a')
-  downloadLink.download = fileNameToSaveAs
-  downloadLink.innerHTML = 'Download File'
-  console.log({ content })
-  if (window.webkitURL !== null) {
-    downloadLink.href = window.webkitURL.createObjectURL(content as Blob)
-  }
-  else {
-    downloadLink.href = window.URL.createObjectURL(content as Blob)
-    downloadLink.onclick = () => {
-      document.body.removeChild(downloadLink)
-      downloadLink.style.display = 'none'
-      document.body.appendChild(downloadLink)
-    }
-    downloadLink.click()
-  }
 }
 
 export const deleteAllCookies = () => {
