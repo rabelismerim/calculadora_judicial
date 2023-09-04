@@ -32,6 +32,7 @@ const getFilesExamplePath = (path: string) => api
 
 const getFilesPathName = (path: string, name: string) => apiFiles
   .get(`/v1/files/example/${path}/${name}/`, { responseType: 'blob' })
+  .then(result => result as unknown as Blob)
 
 const newCreatePath = async (createPath: CreatePath) => {
   const { file, path, objectId } = createPath
