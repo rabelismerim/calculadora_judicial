@@ -21,11 +21,11 @@ const closeModal = () => {
   emit('update:modelValue', false)
 }
 
-let templateNames: any = $ref([])
+let templateFiles: any = $ref([])
 
 const loadTemplateNames = async () => {
   try {
-    templateNames = await uploadService.getFilesExamplePath('project')
+    templateFiles = await uploadService.getFilesExamplePath('project')
   }
   catch (error) {
     printError('ERROR ON LOADING FILE EXAMPLE:', error)
@@ -39,8 +39,7 @@ const downloadTemplate = async (fileName: string) => {
   isDownloading = true
   try {
     const result: Blob = await uploadService.getFilesPathName('project', fileName)
-    const file = `${fileName}.xlsx`
-    downloadFile(result, file)
+    saveFile(result, fileName, 'xlsx')
   }
   catch (error) {
     printError('ERROR ON DOWNLOAD TEMPLATE', error)
@@ -50,12 +49,10 @@ const downloadTemplate = async (fileName: string) => {
   }
 }
 
-let files = $ref([] as File[])
-
 let historicFiles: any = $ref([])
 const loadHistoricFiles = async () => {
   try {
-    files = []
+    const files = []
     const filesData = await uploadService.getObjetcId('project', props.projectId)
     for (const file of filesData) {
       const result = await uploadService.getFileDetail(file.id)
@@ -93,6 +90,9 @@ onMounted(() => {
   loadTemplateNames()
   loadHistoricFiles()
 })
+
+let uploadFiles = $ref([] as File[])
+const updateFiles = (newFiles: File[]) => uploadFiles = newFiles
 </script>
 
 <template>
@@ -121,7 +121,7 @@ onMounted(() => {
             </div>
             <div>
               <div
-                v-for="(name, index) in templateNames"
+                v-for="(name, index) in templateFiles"
                 :key="name"
                 class="p-2 border-black/12 bg--base font-bold text--primary flex justify-between cursor-pointer hover:bg--secondary/10 tween"
                 :class="{
@@ -144,7 +144,12 @@ onMounted(() => {
           <div class="text-h9" style="font-weight: bold">
             <DropZone
               :types="['xls', 'xlsx']"
-              @drop="(val: File[]) => files = val "
+              @drop="updateFiles"
+            />
+            <FilesUploader
+              v-model="uploadFiles"
+              path="project"
+              :object-id="projectId"
             />
           </div>
         </QTabPanel>
