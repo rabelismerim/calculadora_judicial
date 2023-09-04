@@ -145,7 +145,7 @@ const downloadPDF = async () => {
     const date = new Date()
     const [day, month, year] = date.toLocaleDateString('en').padStart(10, '0').split('/')
 
-    const fileName = `Calc_${props?.calculationNumber?.replaceAll(' ', '')}_${toKebab(props.recovering?.entity?.name)}_${toKebab(props.creditor?.entity?.name)}_${year}-${month}-${day}.pdf`
+    const fileName = `Calc_${props?.calculationNumber?.replaceAll(' ', '')}_${toKebab(props.recovering?.entity?.name)}_${toKebab(props.creditor?.entity?.name)}_${year}-${month}-${day}`
 
     saveFile(result, fileName, 'pdf')
   }
