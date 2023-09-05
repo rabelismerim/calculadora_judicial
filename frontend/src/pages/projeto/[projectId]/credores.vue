@@ -1,4 +1,10 @@
 <script setup lang='ts'>
+const props = withDefaults(defineProps<{
+  modelValue?: boolean
+  projectId: string
+}>(), {
+  modelValue: false,
+})
 const attrs = useAttrs() as any
 
 const showCreateCreditor = $ref(false)
@@ -7,10 +13,19 @@ let showUpdateCreditor = $ref(false)
 let loading = $ref(false)
 let project = $ref({} as any)
 let creditors = $ref([] as any[])
-let inactiveCreditors = $ref([] as any[])
 let rates = $ref([])
 let creditorOptions = $ref({} as any)
 const filterBy = $ref('')
+let inactiveCreditors = $ref([] as any[])
+const loadCreditorsInactive = async () => {
+  try {
+    inactiveCreditors = await validationService.getInactive(props.projectId)
+    console.log('RETORNO:', { inactiveCreditors })
+  }
+  catch (error) {
+    printError('ERROR ON LOADING CREDITORS INACTIVE:', error)
+  }
+}
 
 const selectedTab = ref('ativos')
 const tabs = $computed(() => [
@@ -53,6 +68,39 @@ const filteredCreditors = computed((): any[] => {
           ...newCreditor,
           legalNumber,
           recoverings: creditors
+            .filter(({ recovering }: any) => recovering.creditorLegalNumber === legalNumber)
+            .map(({ recovering }: any) => recovering),
+        }
+      }
+      return accumulator
+    }, {}))
+})
+
+const filteredInactiveCreditors = computed((): any[] => {
+  const filtered: any[] = (!filterBy)
+    ? inactiveCreditors
+    : inactiveCreditors.filter((inactiveCreditors: any) => {
+      const {
+        name,
+        legalNumber,
+        recovering: { name: recoveringName, legalNumber: recoveringLegalNuber } = {} as any,
+      } = inactiveCreditors
+      const toCompare = [name, legalNumber, recoveringName, recoveringLegalNuber]
+      return toCompare.some(item => item.toLocaleLowerCase().includes(filterBy.toLocaleLowerCase()))
+    })
+  return Object.values(filtered
+    .reduce((accumulator: any, inactiveCreditors: any) => {
+      const newCreditor = clone(inactiveCreditors)
+      const { legalNumber } = inactiveCreditors
+      if (!newCreditor?.recoverings) {
+        newCreditor.recoverings = []
+        delete newCreditor.recovering
+      }
+      if (!accumulator[legalNumber]) {
+        accumulator[legalNumber] = {
+          ...newCreditor,
+          legalNumber,
+          recoverings: inactiveCreditors
             .filter(({ recovering }: any) => recovering.creditorLegalNumber === legalNumber)
             .map(({ recovering }: any) => recovering),
         }
@@ -212,6 +260,7 @@ const newCreditorOptions = computed(() => ({
 onMounted(() => {
   loadOptions()
   loadCreditors()
+  loadCreditorsInactive()
 })
 </script>
 
@@ -260,9 +309,6 @@ onMounted(() => {
           v-if="filteredCreditors.length > 0"
           class="grid gap-3"
         >
-          <!-- <div v-for="creditor in filteredCreditors as any[]" :key="creditor.legalNumber">
-            {{ creditor.name }} = {{ creditor.legalNumber }}
-          </div> -->
           <Accordion
             v-for="creditor in filteredCreditors"
             :key="creditor.legalManager + creditor.name"
@@ -389,7 +435,29 @@ onMounted(() => {
         name="inativos"
         class="px-4 bg--background"
       >
-        <div>Lista Inativos</div>
+        <div
+          v-if="inactiveCreditors && inactiveCreditors.length > 0"
+          class="grid gap-3"
+        >
+          <div>
+            <div v-for="inactiveCreditor in inactiveCreditors" :key="inactiveCreditor.id">
+              <div class="grid grid-cols-1 sm:grid-cols-2 px-7 py-5 border-b-1">
+                <div><b>Nome:</b> {{ inactiveCreditor.name }}</div>
+                <div><b>Multa:</b> {{ inactiveCreditor.fine }}</div>
+                <div><b>Horários Advocatícios:</b> {{ inactiveCreditor.advocativeHours }}</div>
+                <div><b>CPF/CNPJ:</b> {{ inactiveCreditor.legalNumber }}</div>
+                <div><b>Juros Moratórios:</b> {{ inactiveCreditor.defaultInterest }}</div>
+                <div><b>Ocorrência:</b> {{ inactiveCreditor.occurrence }}</div>
+                <div class="sm:col-span-2">
+                  <b>Descrição:</b> {{ inactiveCreditor.description }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-else class="p-6 text-center">
+          Nenhum credor inativo encontrado
+        </div>
       </QTabPanel>
     </QTabPanels>
 
