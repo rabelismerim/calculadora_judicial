@@ -5,19 +5,19 @@ import creditorsService from '../services/creditorsService'
 const props = withDefaults(defineProps<{
   modelValue?: boolean
   projectId: string
-  creditorId: string
 }>(), {
   modelValue: false,
 })
 
 const emit = defineEmits(['update:modelValue', 'success', 'update:tab'])
 
-let creditorsInactive: any[] = $ref([])
-let creditorsActive: any[] = $ref([])
+let creditorsInactive = $ref([])
+let creditorsActive = $ref([])
 
 const loadCreditorsInactive = async () => {
   try {
     creditorsInactive = await validationService.getInactive(props.projectId)
+    console.log('RETORNO:', { creditorsInactive })
   }
   catch (error) {
     printError('ERROR ON LOADING CREDITORS INACTIVE:', error)
@@ -26,7 +26,8 @@ const loadCreditorsInactive = async () => {
 
 const loadCreditorsActive = async () => {
   try {
-    creditorsActive = await creditorsService.getCreditor(props.creditorId)
+    creditorsActive = await creditorsService.getCreditors(props.projectId)
+    console.log('RETORNO:', { creditorsActive })
   }
   catch (error) {
     printError('ERROR ON LOADING CREDITORS ACTIVE', error)
@@ -64,7 +65,7 @@ onMounted(() => {
       >
         <div class="mb-3">
           <div class="font-bold mb-2">
-            Listagem de Credores Ativos ({{ creditorsActive.length }})
+            Listagem de Credores Ativos ({{ creditorsActive?.length }})
           </div>
         </div>
       </QTabPanel>
@@ -74,7 +75,7 @@ onMounted(() => {
       >
         <div class="mb-3">
           <div class="font-bold mb-2">
-            Listagem de Credores Inativos ({{ creditorsInactive.length }})
+            Listagem de Credores Inativos ({{ creditorsInactive?.length }})
           </div>
         </div>
       </QTabPanel>
