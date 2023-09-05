@@ -1,28 +1,22 @@
 <script setup lang="ts">
-import FilesUploader from '../components/common/FilesUploader.vue'
+import TesteList from '../components/TestList.vue'
 
-let files = $ref([] as File[])
-const showModal = $ref(true)
-const updateFiles = (newFiles: File[]) => files = newFiles
+// let files = $ref([] as File[])
+// const showModal = $ref(true)
+// const updateFiles = (newFiles: File[]) => files = newFiles
 
-const download = async () => {
-  const result = await uploadService.getFilesPathName('project', 'create_creditors')
-  saveFile(result, 'download', 'xlsx')
-}
-
-const InactiveCreditors = async () => {
-  const result = await validationService.getInactive('db559f9b-e678-4066-9f7d-e9404345814f')
-  return result
-}
+// const download = async () => {
+//   const result = await uploadService.getFilesPathName('project', 'create_creditors')
+//   saveFile(result, 'download', 'xlsx')
+// }
 </script>
 
 <template>
   <div class="p-4">
     <h1>TESTE</h1>
-    <Btn label="Dowload" @click="download" />
 
-    <Btn label="Lista de Credores Inativos" @click="InactiveCreditors" />
-    <DropZone
+    <TesteList project-id="db559f9b-e678-4066-9f7d-e9404345814f" creditor-id="bce5b96d-23c9-4b93-b7c6-9501771cee2b" />
+    <!-- <DropZone
       :types="['xls', 'xlsx']"
       @drop="updateFiles"
     />
@@ -34,6 +28,6 @@ const InactiveCreditors = async () => {
     <UploadCreditors
       v-model="showModal"
       project-id="db559f9b-e678-4066-9f7d-e9404345814f"
-    />
+    /> -->
   </div>
 </template>
