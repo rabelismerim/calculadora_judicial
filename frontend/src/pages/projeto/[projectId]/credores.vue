@@ -435,12 +435,9 @@ onMounted(() => {
         name="inativos"
         class="px-4 bg--background"
       >
-        <div
-          v-if="inactiveCreditors && inactiveCreditors.length > 0"
-          class="grid gap-3"
-        >
-          <div>
-            <div v-for="inactiveCreditor in inactiveCreditors" :key="inactiveCreditor.id">
+        <div v-if="inactiveCreditors && inactiveCreditors.length > 0" class="grid gap-3">
+          <div v-for="inactiveCreditor in inactiveCreditors" :key="inactiveCreditor.id">
+            <Accordion :title="inactiveCreditor.name" :subtitle="formatLegalNumber(inactiveCreditor.legalNumber)">
               <div class="grid grid-cols-1 sm:grid-cols-2 px-7 py-5 border-b-1">
                 <div><b>Nome:</b> {{ inactiveCreditor.name }}</div>
                 <div><b>Multa:</b> {{ inactiveCreditor.fine }}</div>
@@ -452,11 +449,11 @@ onMounted(() => {
                   <b>Descrição:</b> {{ inactiveCreditor.description }}
                 </div>
               </div>
-            </div>
+            </Accordion>
           </div>
         </div>
-        <div v-else class="p-6 text-center">
-          Nenhum credor inativo encontrado
+        <div v-else>
+          <p>Nenhum credor inativo encontrado.</p>
         </div>
       </QTabPanel>
     </QTabPanels>
