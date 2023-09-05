@@ -14,8 +14,9 @@ import TesteList from '../components/TestList.vue'
 <template>
   <div class="p-4">
     <h1>TESTE</h1>
+    <!-- f9cb545d-1330-4781-9390-33c165cb604d -->
+    <TesteList project-id="f9cb545d-1330-4781-9390-33c165cb604d" />
 
-    <TesteList project-id="db559f9b-e678-4066-9f7d-e9404345814f" creditor-id="bce5b96d-23c9-4b93-b7c6-9501771cee2b" />
     <!-- <DropZone
       :types="['xls', 'xlsx']"
       @drop="updateFiles"
