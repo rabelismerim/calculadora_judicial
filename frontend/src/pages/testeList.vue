@@ -9,7 +9,7 @@ const InactiveCreditors = async () => {
 }
 
 let creditorsInactive: any = $ref([])
-const creditorsActive: any = $ref([])
+let creditorsActive: any = $ref([])
 
 const loadCreditorsInactive = async () => {
   try {
@@ -22,7 +22,7 @@ const loadCreditorsInactive = async () => {
 
 const loadCreditorsActive = async () => {
   try {
-    creditorsInactive = await creditorsService.getCreditor('')
+    creditorsActive = await creditorsService.getCreditor('')
   }
   catch (error) {
     printError('ERROR ON LOADING CREDITORS ACTIVE', error)
@@ -55,7 +55,7 @@ const tabs = [
       >
         <div class="mb-3">
           <div class="font-bold mb-2">
-            Listagem de Credores Ativos ({{ loadCreditorsActive.length }})
+            Listagem de Credores Ativos ({{ creditorsActive.length }})
           </div>
         </div>
       </QTabPanel>
@@ -65,7 +65,7 @@ const tabs = [
       >
         <div class="mb-3">
           <div class="font-bold mb-2">
-            Listagem de Credores Inativos ({{ loadCreditorsInactive.length }})
+            Listagem de Credores Inativos ({{ creditorsInactive.length }})
           </div>
         </div>
       </QTabPanel>
