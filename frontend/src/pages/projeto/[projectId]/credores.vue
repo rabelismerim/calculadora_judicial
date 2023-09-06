@@ -464,8 +464,7 @@ onMounted(() => {
                   <template #header-right>
                     <div class="flex-1 flex items-center pl-8" />
                   </template>
-                </Accordion>
-                <!-- <QStepper
+                  <QStepper
                     ref="stepper"
                     v-model="recovering.step"
                     color="primary"
@@ -526,10 +525,6 @@ onMounted(() => {
                 Nenhuma Recuperanda para esse Credor
               </div>
             </Accordion>
-          </div>
-        </div> -->
-              </div>
-            </accordion>
           </div>
         </div>
       </QTabPanel>
