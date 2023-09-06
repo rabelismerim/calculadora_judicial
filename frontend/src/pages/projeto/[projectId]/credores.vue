@@ -480,7 +480,7 @@ onMounted(() => {
                       :name="1"
                       title="Dados do Credor"
                       icon="o_request_page"
-                      @save="loadCreditors"
+                      @save="loadInactiveCreditors"
                     />
                     <RecoveringNotice
                       v-model="recovering.noticeRecovering"
@@ -489,7 +489,7 @@ onMounted(() => {
                       :name="2"
                       title="Edital Recuperanda"
                       icon="o_request_page"
-                      @save="loadCreditors"
+                      @save="loadInactiveCreditors"
                     />
                     <AJNotice
                       v-model="recovering.noticeAj"
@@ -498,7 +498,7 @@ onMounted(() => {
                       :name="3"
                       title="Edital AJ"
                       icon="o_request_page"
-                      @save="loadCreditors"
+                      @save="loadInactiveCreditors"
                     />
                     <CreditorClaim
                       v-model="recovering.claimCreditor"
@@ -507,7 +507,7 @@ onMounted(() => {
                       :name="4"
                       title="Pleito Credor"
                       icon="o_attach_money"
-                      @save="loadCreditors"
+                      @save="loadInactiveCreditors"
                     />
                     <LawyerClaim
                       v-model="recovering.claimLawyer"
@@ -516,7 +516,7 @@ onMounted(() => {
                       :name="5"
                       title="Pleito Advocatício"
                       icon="o_attach_money"
-                      @save="loadCreditors"
+                      @save="loadInactiveCreditors"
                     />
                   </QStepper>
                 </Accordion>
