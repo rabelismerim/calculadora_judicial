@@ -437,7 +437,7 @@ onMounted(() => {
                 <div class="flex-1 flex gap-2 justify-end items-center pl-8 pr-4">
                   <Btn
                     label="Validar Credor"
-                    icon="i-carbon-edit"
+                    icon="i-carbon-checkmark"
                     transparent
                     @click.stop="validateCreditor(creditor)"
                   />
