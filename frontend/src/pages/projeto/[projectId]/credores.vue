@@ -412,120 +412,126 @@ onMounted(() => {
         name="inativos"
         class="px-4 bg--background"
       >
-        <div v-if="inactiveCreditors?.length > 0" class="grid gap-3">
-          <div v-for="creditor in filteredInactiveCreditors" :key="creditor.id">
-            <Accordion :title="creditor.entity.name" :subtitle="formatLegalNumber(creditor.entity.legalNumber)">
-              <div class="grid grid-cols-1 sm:grid-cols-2 px-7 py-5 border-b-1">
-                <div><b>Nome:</b> {{ creditor?.entity?.name }}</div>
-                <div><b>Multa:</b> {{ creditor.fine }}</div>
-                <div><b>Horários Advocatícios:</b> {{ creditor.advocativeHours }}</div>
-                <div><b>CPF/CNPJ:</b> {{ creditor?.entity?.legalNumber }}</div>
-                <div><b>Juros Moratórios:</b> {{ creditor.defaultInterest }}</div>
-                <div><b>Ocorrência:</b> {{ creditor.occurrence }}</div>
-                <div class="sm:col-span-2">
-                  <b>Descrição:</b> {{ creditor.description }}
-                </div>
+        <div
+          v-if="inactiveCreditors?.length > 0"
+          class="grid gap-3"
+        >
+          <Accordion
+            v-for="creditor in filteredInactiveCreditors"
+            :key="creditor.id"
+            :title="creditor.entity.name"
+            :subtitle="formatLegalNumber(creditor.entity.legalNumber)"
+          >
+            <div class="grid grid-cols-1 sm:grid-cols-2 px-7 py-5 border-b-1">
+              <div><b>Nome:</b> {{ creditor?.entity?.name }}</div>
+              <div><b>Multa:</b> {{ creditor.fine }}</div>
+              <div><b>Horários Advocatícios:</b> {{ creditor.advocativeHours }}</div>
+              <div><b>CPF/CNPJ:</b> {{ creditor?.entity?.legalNumber }}</div>
+              <div><b>Juros Moratórios:</b> {{ creditor.defaultInterest }}</div>
+              <div><b>Ocorrência:</b> {{ creditor.occurrence }}</div>
+              <div class="sm:col-span-2">
+                <b>Descrição:</b> {{ creditor.description }}
               </div>
-              <template #header-left>
-                <IconHint
-                  icon="i-carbon-identification"
-                  hint="Este ícone indica que este\nitem é um Credor!"
-                  class="self-center"
+            </div>
+            <template #header-left>
+              <IconHint
+                icon="i-carbon-identification"
+                hint="Este ícone indica que este\nitem é um Credor!"
+                class="self-center"
+              />
+            </template>
+            <template #header-right>
+              <div class="flex-1 flex gap-2 justify-end items-center pl-8 pr-4">
+                <Btn
+                  label="Validar Credor"
+                  icon="i-carbon-checkmark"
+                  transparent
+                  @click.stop="validateCreditor(creditor)"
                 />
-              </template>
-              <template #header-right>
-                <div class="flex-1 flex gap-2 justify-end items-center pl-8 pr-4">
-                  <Btn
-                    label="Validar Credor"
-                    icon="i-carbon-checkmark"
-                    transparent
-                    @click.stop="validateCreditor(creditor)"
+              </div>
+            </template>
+            <div v-if="inactiveCreditors?.length > 0">
+              <Accordion
+                v-for="(recovering, index) in creditor.recoverings as any[]"
+                :key="recovering.id"
+                v-model="recovering.open"
+                :title="recovering.name"
+                :subtitle="formatLegalNumber(recovering.legalNumber)"
+                class="pl-6 border-x-0 border-b-0 rounded-0"
+                :class="{ 'border-t-0': index === 0 }"
+              >
+                <template #header-left>
+                  <IconHint
+                    icon="i-carbon-enterprise"
+                    hint="Este ícone indica que este\nitem é uma Recuperanda!"
+                    dark
+                    class="self-center"
                   />
-                </div>
-              </template>
-              <div v-if="inactiveCreditors?.length > 0">
-                <Accordion
-                  v-for="(recovering, index) in creditor.recoverings as any[]"
-                  :key="recovering.id"
-                  v-model="recovering.open"
-                  :title="recovering.name"
-                  :subtitle="formatLegalNumber(recovering.legalNumber)"
-                  class="pl-6 border-x-0 border-b-0 rounded-0"
-                  :class="{ 'border-t-0': index === 0 }"
+                </template>
+                <template #header-right>
+                  <div class="flex-1 flex items-center pl-8" />
+                </template>
+                <QStepper
+                  ref="stepper"
+                  v-model="recovering.step"
+                  color="primary"
+                  animated
+                  header-nav
+                  flat
+                  class="vertical border--primary border-1 mb-4 mr-3"
                 >
-                  <template #header-left>
-                    <IconHint
-                      icon="i-carbon-enterprise"
-                      hint="Este ícone indica que este\nitem é uma Recuperanda!"
-                      dark
-                      class="self-center"
-                    />
-                  </template>
-                  <template #header-right>
-                    <div class="flex-1 flex items-center pl-8" />
-                  </template>
-                  <QStepper
-                    ref="stepper"
-                    v-model="recovering.step"
-                    color="primary"
-                    animated
-                    header-nav
-                    flat
-                    class="vertical border--primary border-1 mb-4 mr-3"
-                  >
-                    <CreditorData
-                      :model-value="creditor"
-                      :creditor-id="recovering.creditorId"
-                      :options="creditorOptions"
-                      :name="1"
-                      title="Dados do Credor"
-                      icon="o_request_page"
-                      @save="loadInactiveCreditors"
-                    />
-                    <RecoveringNotice
-                      v-model="recovering.noticeRecovering"
-                      :creditor-id="recovering.creditorId"
-                      :options="creditorOptions"
-                      :name="2"
-                      title="Edital Recuperanda"
-                      icon="o_request_page"
-                      @save="loadInactiveCreditors"
-                    />
-                    <AJNotice
-                      v-model="recovering.noticeAj"
-                      :creditor-id="recovering.creditorId"
-                      :options="creditorOptions"
-                      :name="3"
-                      title="Edital AJ"
-                      icon="o_request_page"
-                      @save="loadInactiveCreditors"
-                    />
-                    <CreditorClaim
-                      v-model="recovering.claimCreditor"
-                      :creditor-id="recovering.creditorId"
-                      :options="creditorOptions"
-                      :name="4"
-                      title="Pleito Credor"
-                      icon="o_attach_money"
-                      @save="loadInactiveCreditors"
-                    />
-                    <LawyerClaim
-                      v-model="recovering.claimLawyer"
-                      :creditor-id="recovering.creditorId"
-                      :options="creditorOptions"
-                      :name="5"
-                      title="Pleito Advocatício"
-                      icon="o_attach_money"
-                      @save="loadInactiveCreditors"
-                    />
-                  </QStepper>
-                </Accordion>
-              </div>
-              <div v-else class="p-6 text-center">
-                Nenhuma Recuperanda para esse Credor
-              </div>
-            </Accordion>
-          </div>
+                  <CreditorData
+                    :model-value="creditor"
+                    :creditor-id="recovering.creditorId"
+                    :options="creditorOptions"
+                    :name="1"
+                    title="Dados do Credor"
+                    icon="o_request_page"
+                    @save="loadInactiveCreditors"
+                  />
+                  <RecoveringNotice
+                    v-model="recovering.noticeRecovering"
+                    :creditor-id="recovering.creditorId"
+                    :options="creditorOptions"
+                    :name="2"
+                    title="Edital Recuperanda"
+                    icon="o_request_page"
+                    @save="loadInactiveCreditors"
+                  />
+                  <AJNotice
+                    v-model="recovering.noticeAj"
+                    :creditor-id="recovering.creditorId"
+                    :options="creditorOptions"
+                    :name="3"
+                    title="Edital AJ"
+                    icon="o_request_page"
+                    @save="loadInactiveCreditors"
+                  />
+                  <CreditorClaim
+                    v-model="recovering.claimCreditor"
+                    :creditor-id="recovering.creditorId"
+                    :options="creditorOptions"
+                    :name="4"
+                    title="Pleito Credor"
+                    icon="o_attach_money"
+                    @save="loadInactiveCreditors"
+                  />
+                  <LawyerClaim
+                    v-model="recovering.claimLawyer"
+                    :creditor-id="recovering.creditorId"
+                    :options="creditorOptions"
+                    :name="5"
+                    title="Pleito Advocatício"
+                    icon="o_attach_money"
+                    @save="loadInactiveCreditors"
+                  />
+                </QStepper>
+              </Accordion>
+            </div>
+            <div v-else class="p-6 text-center">
+              Nenhuma Recuperanda para esse Credor
+            </div>
+          </Accordion>
         </div>
       </QTabPanel>
     </QTabPanels>
