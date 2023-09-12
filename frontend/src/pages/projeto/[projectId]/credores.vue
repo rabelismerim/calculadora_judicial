@@ -66,14 +66,6 @@ const filteredInactiveCreditors = computed((): any[] =>
     .includes(filterBy.toLowerCase()),
   ),
 )
-const loadCreditorsInactive = async () => {
-  try {
-    inactiveCreditors = await validationService.getInactive(attrs.projectId)
-  }
-  catch (error) {
-    printError('ERROR ON LOADING CREDITORS INACTIVE:', error)
-  }
-}
 
 const creditorsCount = computed(() => filteredCreditors.value.length)
 const loadCreditors = async () => {
@@ -137,6 +129,11 @@ const loadCreditors = async () => {
   }
 }
 
+const newCreditorOptions = computed(() => ({
+  ocurrences: creditorOptions?.occurrenceOptions || [],
+  recoverings: project?.recoverings || [],
+  rates,
+}))
 const loadInactiveCreditors = async () => {
   loading = true
   try {
@@ -145,48 +142,13 @@ const loadInactiveCreditors = async () => {
     inactiveCreditors = inactiveCreditorsResult
       .map((creditor: any) => {
         const {
-          id,
           recoveringId,
-          description,
-          admission,
-          dismissal,
-          advocativeHours,
-          fine,
-          defaultInterest,
-          occurrence,
-          noticeAj,
-          noticeRecovering,
-          claimCreditor,
-          claimLawyer,
-          entity: { legalNumber, name },
         } = creditor
-        const {
-          entity: { name: recoveringName, legalNumber: recoveringLegalNuber },
-        } = project?.recoverings?.find(({ id }: any) => recoveringId === id)
+        const recovering = newCreditorOptions.value?.recoverings?.find(({ id }: any) => recoveringId === id)
         return {
-          id,
-          name,
-          legalNumber,
-          description,
-          admission,
-          dismissal,
-          advocativeHours,
-          fine,
-          defaultInterest,
-          occurrence,
-          recovering: {
-            id: recoveringId,
-            step: 1,
-            open: false,
-            name: recoveringName,
-            legalNumber: recoveringLegalNuber,
-            creditorLegalNumber: legalNumber,
-            creditorId: id,
-            noticeAj,
-            noticeRecovering,
-            claimCreditor,
-            claimLawyer,
-          },
+          ...creditor,
+          recoveringName: recovering?.entity?.name,
+          recoveringLegalNumber: recovering?.entity?.legalNumber,
         }
       })
   }
@@ -209,16 +171,30 @@ const editCreditor = (creditor: any) => {
   showUpdateCreditor = true
 }
 
-const validateCreditor = (creditor: any) => {
-  const newCreditor = clone(creditor)
-  const { legalNumber, recoverings } = newCreditor
-  editingCreditor = {
-    ...newCreditor,
-    legalNumber: `${formatLegalNumber(legalNumber)} `,
-    creditorsIds: recoverings.map(({ creditorId }: any) => creditorId),
+const validateCreditor = async (creditor: any) => {
+  if (creditor) {
+    const newCreditor = clone(creditor)
+    const { legalNumber, recoverings } = newCreditor
+    editingCreditor = {
+      ...newCreditor,
+      legalNumber: `${formatLegalNumber(legalNumber)} `,
+      creditorsIds: recoverings?.map(({ creditorId }: any) => creditorId),
+    }
+    try {
+      await creditorsService.updateCreditor(newCreditor, true)
+
+      inactiveCreditors = inactiveCreditors.filter(c => c.id !== newCreditor.id)
+
+      creditors.push(newCreditor)
+    }
+    catch (error) {
+      console.error('ERROR ON VALIDATE CREDITOR:', error)
+    }
   }
+
   showUpdateCreditor = true
 }
+
 const loadOptions = async () => {
   try {
     rates = await ratesService.getRates()
@@ -229,15 +205,10 @@ const loadOptions = async () => {
   }
 }
 
-const newCreditorOptions = computed(() => ({
-  ocurrences: creditorOptions?.occurrenceOptions || [],
-  recoverings: project?.recoverings || [],
-  rates,
-}))
 onMounted(() => {
   loadOptions()
   loadCreditors()
-  loadCreditorsInactive()
+  loadInactiveCreditors()
 })
 </script>
 
@@ -452,11 +423,11 @@ onMounted(() => {
             </template>
             <div v-if="inactiveCreditors?.length > 0">
               <Accordion
-                v-for="(recovering, index) in creditor.recoverings as any[]"
-                :key="recovering.id"
-                v-model="recovering.open"
-                :title="recovering.name"
-                :subtitle="formatLegalNumber(recovering.legalNumber)"
+                v-for="(creditor, index) in inactiveCreditors as any[]"
+                :key="creditor.id"
+
+                :title="creditor.recoveringName"
+                :subtitle="formatLegalNumber(creditor.recoveringLegalNumber)"
                 class="pl-6 border-x-0 border-b-0 rounded-0"
                 :class="{ 'border-t-0': index === 0 }"
               >
@@ -468,64 +439,6 @@ onMounted(() => {
                     class="self-center"
                   />
                 </template>
-                <template #header-right>
-                  <div class="flex-1 flex items-center pl-8" />
-                </template>
-                <QStepper
-                  ref="stepper"
-                  v-model="recovering.step"
-                  color="primary"
-                  animated
-                  header-nav
-                  flat
-                  class="vertical border--primary border-1 mb-4 mr-3"
-                >
-                  <CreditorData
-                    :model-value="creditor"
-                    :creditor-id="recovering.creditorId"
-                    :options="creditorOptions"
-                    :name="1"
-                    title="Dados do Credor"
-                    icon="o_request_page"
-                    @save="loadInactiveCreditors"
-                  />
-                  <RecoveringNotice
-                    v-model="recovering.noticeRecovering"
-                    :creditor-id="recovering.creditorId"
-                    :options="creditorOptions"
-                    :name="2"
-                    title="Edital Recuperanda"
-                    icon="o_request_page"
-                    @save="loadInactiveCreditors"
-                  />
-                  <AJNotice
-                    v-model="recovering.noticeAj"
-                    :creditor-id="recovering.creditorId"
-                    :options="creditorOptions"
-                    :name="3"
-                    title="Edital AJ"
-                    icon="o_request_page"
-                    @save="loadInactiveCreditors"
-                  />
-                  <CreditorClaim
-                    v-model="recovering.claimCreditor"
-                    :creditor-id="recovering.creditorId"
-                    :options="creditorOptions"
-                    :name="4"
-                    title="Pleito Credor"
-                    icon="o_attach_money"
-                    @save="loadInactiveCreditors"
-                  />
-                  <LawyerClaim
-                    v-model="recovering.claimLawyer"
-                    :creditor-id="recovering.creditorId"
-                    :options="creditorOptions"
-                    :name="5"
-                    title="Pleito Advocatício"
-                    icon="o_attach_money"
-                    @save="loadInactiveCreditors"
-                  />
-                </QStepper>
               </Accordion>
             </div>
             <div v-else class="p-6 text-center">
