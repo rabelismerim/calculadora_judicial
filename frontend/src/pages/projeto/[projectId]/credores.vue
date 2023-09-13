@@ -1,10 +1,8 @@
 <script setup lang='ts'>
-import ValidateCreditor from './ValidateCreditor.vue'
 const attrs = useAttrs() as any
 
 const showCreateCreditor = $ref(false)
 let showUpdateCreditor = $ref(false)
-let showValidateCreditor = $ref(false)
 
 let loading = $ref(false)
 let project = $ref({} as any)
@@ -25,19 +23,9 @@ const nullCreditor = {
   recoverings: [],
 }
 
-const creditorValidate = {
-  name: '',
-  legalNumber: '',
-  description: '',
-  recoverings: [],
-}
 let editingCreditor = $ref(clone(nullCreditor))
 const clearCreditor = () => {
   editingCreditor = clone(nullCreditor)
-}
-let creditorsIds = $ref(clone(creditorValidate))
-const clearInactive = () => {
-  creditorsIds = clone(creditorValidate)
 }
 
 const filteredCreditors = computed((): any[] => {
@@ -184,41 +172,24 @@ const editCreditor = (creditor: any) => {
   showUpdateCreditor = true
 }
 
-const validateInactive = (creditor: any) => {
-  if (creditor && creditor.recoverings && Array.isArray(creditor.recoverings)) {
-    const newCreditor = clone(creditor)
-    const { legalNumber, recoverings } = newCreditor
-    creditorsIds = {
-      ...newCreditor,
-      legalNumber: `${formatLegalNumber(legalNumber)} `,
-      creditorsIds: recoverings.map(({ creditorId }: any) => creditorId),
-    }
-    showValidateCreditor = true
-  }
-}
-
 const validateCreditor = async (creditor: any) => {
   if (creditor) {
-    const newCreditor = clone(creditor)
-    const { legalNumber, recoverings } = newCreditor
-    creditorsIds = {
-      ...newCreditor,
-      legalNumber: `${formatLegalNumber(legalNumber)} `,
-      creditorsIds: recoverings?.map(({ creditorId }: any) => creditorId),
-    }
     try {
-      await creditorsService.updateCreditor(newCreditor, true)
+      const updatedCreditor = {
+        ...creditor,
+        is_active: true,
+      }
 
-      inactiveCreditors = inactiveCreditors.filter(c => c.id !== newCreditor)
+      await creditorsService.updateCreditor(updatedCreditor)
 
-      creditors.push(newCreditor)
+      inactiveCreditors = inactiveCreditors.filter(c => c.id !== creditor.id)
+
+      creditors.push(updatedCreditor)
     }
     catch (error) {
       console.error('ERROR ON VALIDATE CREDITOR:', error)
     }
   }
-
-  showUpdateCreditor = true
 }
 
 const loadOptions = async () => {
@@ -443,7 +414,7 @@ onMounted(() => {
                   label="Validar Credor"
                   icon="i-carbon-checkmark"
                   transparent
-                  @click.stop="validateInactive(creditor)"
+                  @click.stop="validateCreditor(creditor)"
                 />
               </div>
             </template>
@@ -487,13 +458,6 @@ onMounted(() => {
         :options="newCreditorOptions"
         @success="loadCreditors"
         @clear="clearCreditor"
-      />
-
-      <ValidateCreditor
-        v-model="showValidateCreditor"
-        v-model:creditor="creditorValidate"
-        @success="loadInactiveCreditors"
-        @clear="clearInactive"
       />
     </template>
   </Page>

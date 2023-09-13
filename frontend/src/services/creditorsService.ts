@@ -59,8 +59,8 @@ const newCreditors = async (creditor: Creditor) => {
     printError('ERROR ON NEW CREDITORS', error)
   }
 }
-const updateCreditor = async (creditor: Creditor, isActive: any) => api
-  .put(`/v1/creditors/${creditor.id}/`, creditor, isActive)
+const updateCreditor = async (creditor: Creditor) => api
+  .put(`/v1/creditors/${creditor.id}/`, creditor)
   .then((result: any) => result?.creditor)
 
 interface Notice {
