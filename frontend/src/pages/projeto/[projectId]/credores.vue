@@ -172,8 +172,17 @@ const editCreditor = (creditor: any) => {
   showUpdateCreditor = true
 }
 
+const { dialog } = useQuasar()
 const validateCreditor = async (creditor: any) => {
-  if (creditor) {
+  if (!creditor)
+    return
+  dialog({
+    title: 'Validando Credor',
+    message: 'Você tem certeza que deseja validar este credor?',
+    cancel: true,
+    persistent: true,
+  }).onOk(async () => {
+    loading = true
     try {
       const updatedCreditor = {
         ...creditor,
@@ -182,13 +191,16 @@ const validateCreditor = async (creditor: any) => {
 
       await creditorsService.updateCreditor(updatedCreditor)
 
-      loadInactiveCreditors()
-      loadCreditors()
+      await loadInactiveCreditors()
+      await loadCreditors()
     }
     catch (error) {
-      console.error('ERROR ON VALIDATE CREDITOR:', error)
+      printError('ERROR ON VALIDATE CREDITOR:', error)
     }
-  }
+    finally {
+      loading = false
+    }
+  })
 }
 
 const loadOptions = async () => {
