@@ -182,10 +182,8 @@ const validateCreditor = async (creditor: any) => {
 
       await creditorsService.updateCreditor(updatedCreditor)
 
-      inactiveCreditors = inactiveCreditors.filter(c => c.id !== creditor.id)
-
-      creditors.push(updatedCreditor)
-      location.reload()
+      loadInactiveCreditors()
+      loadCreditors()
     }
     catch (error) {
       console.error('ERROR ON VALIDATE CREDITOR:', error)
