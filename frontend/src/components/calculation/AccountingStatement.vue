@@ -127,6 +127,36 @@ const downloadXLSX = async () => {
   }
 }
 
+const downloadPDF = async () => {
+  const calculationId = props.modelValue
+  if (!calculationId)
+    return
+
+  isDownloading = true
+
+  try {
+    const result = await calculationService.getAccountingStatementPDF(calculationId)
+
+    if (result.errors) {
+      throwError({ id: 'ACCOUNTING_STATEMENT', message: result.errors })
+      return
+    }
+
+    const date = new Date()
+    const [day, month, year] = date.toLocaleDateString('en').padStart(10, '0').split('/')
+
+    const fileName = `Calc_${props?.calculationNumber?.replaceAll(' ', '')}_${toKebab(props.recovering?.entity?.name)}_${toKebab(props.creditor?.entity?.name)}_${year}-${month}-${day}`
+
+    saveFile(result, fileName, 'pdf')
+  }
+  catch (error) {
+    printError('ERROR ON LOAD ACCOUNTING STATEMENT', error)
+  }
+  finally {
+    isDownloading = false
+  }
+}
+
 onMounted(() => {
   loadStatement()
 })
@@ -135,13 +165,33 @@ onMounted(() => {
 <template>
   <TabFilter v-model="contentSelected" :items="tabs">
     <template #side>
-      <Btn
-        label="Baixar Extrato Contábil"
-        :loading="isDownloading"
-        :disabled="isDownloading"
-        loading-label="Baixando Extrato Contábil..."
-        @click="downloadXLSX"
-      />
+      <div>
+        <Btn label="Baixar Extrato Contábil">
+          <QMenu>
+            <QList>
+              <q-item
+                v-close-popup clickable
+                :loading="isDownloading"
+                loading-label="Baixando Extrato Contábil..."
+                class="font-bold color--primary"
+                @click="downloadXLSX"
+              >
+                Baixar XLSX
+              </q-item>
+              <q-item
+                v-close-popup clickable
+                label="Baixar PDF"
+                :loading="isDownloading"
+                loading-label="Baixando Extrato Contábil..."
+                class="font-bold color--primary"
+                @click="downloadPDF"
+              >
+                Baixar PDF
+              </q-item>
+            </QList>
+          </QMenu>
+        </Btn>
+      </div>
     </template>
   </TabFilter>
   <div class="relative">
