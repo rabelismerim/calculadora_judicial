@@ -1,33 +1,21 @@
 <script setup lang="ts">
 const router = useRouter()
 
-const { login } = $user
+const { login, user } = $user
 
 const inProduction = import.meta.env.PROD
 const inDevelopment = import.meta.env.DEV
 let isAuthenticated = $ref(false)
 
 let loading = $ref(false)
-let requested = $ref(false)
+const requested = $ref(false)
 
 const enter = async () => {
-  loading = true
-  try {
-    const { authorized, isActive } = await login()
-    if (authorized || (inDevelopment && isActive)) {
-      router.push({ path: '/projetos' })
-    }
-    else {
-      requested = true
-      loading = false
-    }
-  }
-  catch (error) {
-    printError('ERROR ON LOGIN:', error)
-    loading = false
-  }
+  const { authenticated, authorized, isActive } = user.value
+  if ((authenticated && authorized && isActive) || (inDevelopment && isActive))
+    router.push({ path: '/projetos' })
 }
-let managersLoaded = $ref(false)
+
 let emailManagers = $ref([])
 const emailBody = `Prezados,
 
@@ -41,13 +29,21 @@ Atenciosamente,
 const mailto = computed(() => `mailto:${emailManagers.join(',')}?subject=Pedido de Acesso - JUCA&body=${emailBody}`)
 
 onMounted(async () => {
-  const { authenticated, isActive } = await usersService.verifyUser() || {}
-  emailManagers = await usersService.getEmailManagers() || []
-  managersLoaded = true
+  loading = true
+  try {
+    const { authenticated, isActive } = await login() || {}
+    emailManagers = await usersService.getEmailManagers() || []
 
-  isAuthenticated = authenticated
-  if ((isActive || authenticated) && inProduction)
-    router.push('/projetos')
+    isAuthenticated = authenticated
+    if ((isActive || authenticated) && inProduction)
+      router.push('/projetos')
+  }
+  catch (error) {
+    printError('ERROR ON LOGIN USER', error)
+  }
+  finally {
+    loading = false
+  }
 })
 </script>
 
@@ -71,30 +67,18 @@ onMounted(async () => {
         <div class="flex flex-wrap gap-3">
           <div>
             <Btn
-              v-if="!isAuthenticated && inProduction"
-              label="Autenticar na Microsoft"
-              loading-label="Enviando para a Microsoft..."
-              :loading="loading"
-              :disabled="requested"
-              @click="enter"
-            />
-            <Btn
-              v-if="isAuthenticated && !inProduction"
+              v-if="isAuthenticated && inDevelopment"
               label="Entrar"
               loading-label="Enviando para tela de Projetos..."
               :loading="loading"
-              :disabled="requested"
               @click="enter"
             />
             <Btn
-              v-else-if="managersLoaded"
+              v-if="!user.isActive && inProduction"
               tag="a"
               :label="!requested ? 'Solicitar acesso' : 'Pedido de acesso solicitado'"
-              loading-label="Processando seus dados..."
-              :loading="loading"
-              :disabled="requested"
               :href="mailto"
-              @click="enter"
+              @click="requested = true"
             />
           </div>
         </div>
