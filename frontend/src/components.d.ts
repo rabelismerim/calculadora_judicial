@@ -70,7 +70,7 @@ declare module '@vue/runtime-core' {
     TimeoutBar: typeof import('./components/common/TimeoutBar.vue')['default']
     UpdateCreditor: typeof import('./components/creditors/UpdateCreditor.vue')['default']
     UpdateProject: typeof import('./components/project/UpdateProject.vue')['default']
-    UploadCreditors: typeof import('./components/UploadCreditors.vue')['default']
+    UploadCreditors: typeof import('./components/creditors/UploadCreditors.vue')['default']
     UserCell: typeof import('./components/common/UserCell.vue')['default']
     UserPicture: typeof import('./components/common/UserPicture.vue')['default']
     UserTag: typeof import('./components/common/UserTag.vue')['default']
