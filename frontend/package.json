@@ -10,6 +10,7 @@
     "build:prod": "vue-tsc && vite build --mode production --base=/juca/static/src/vue/dist/ --emptyOutDir",
     "build:hml": "vue-tsc && vite build --mode homolog --base=/juca/static/src/vue/dist/ --emptyOutDir",
     "test": "vitest --ui --mode devremote",
+    "ts": "vue-tsc --noEmit",
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"

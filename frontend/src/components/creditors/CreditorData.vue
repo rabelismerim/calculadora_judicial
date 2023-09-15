@@ -20,7 +20,7 @@ let editingCreditor = $ref({
   defaultInterest: null,
   advocativeHours: null,
   occurrence: null,
-})
+} as any)
 
 watchEffect(() => editingCreditor = clone(props.modelValue))
 const onReset = () => {
