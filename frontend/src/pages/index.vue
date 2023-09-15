@@ -64,8 +64,6 @@ onMounted(async () => {
             <Btn
               v-if="user.authenticated"
               label="Entrar"
-              loading-label="Enviando para tela de Projetos..."
-              :loading="loading"
               @click="enter"
             />
             <Btn
