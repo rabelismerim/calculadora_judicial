@@ -6,7 +6,7 @@ const { login, user } = $user
 const inProduction = import.meta.env.PROD
 const inDevelopment = import.meta.env.DEV
 
-let loading = $ref(false)
+let isLoading = $ref(false)
 const requested = $ref(false)
 
 const enter = async () => {
@@ -28,7 +28,7 @@ Atenciosamente,
 const mailto = computed(() => `mailto:${emailManagers.join(',')}?subject=Pedido de Acesso - JUCA&body=${emailBody}`)
 
 onMounted(async () => {
-  loading = true
+  isLoading = true
   try {
     await login()
     emailManagers = await usersService.getEmailManagers() || []
@@ -37,13 +37,20 @@ onMounted(async () => {
     printError('ERROR ON LOGIN USER', error)
   }
   finally {
-    loading = false
+    isLoading = false
   }
 })
 </script>
 
 <template>
-  <div class="bg--base flex flex-1">
+  <div class="relative bg--base flex flex-1">
+    <QLinearProgress
+      v-if="isLoading"
+      indeterminate
+      color="secondary"
+      class="absolute top-0 left-0"
+      size="md"
+    />
     <div class="flex flex-col-reverse pt-8 md:pt-0 pb-6 md:pb-0 md:grid md:grid-cols-2 md:gap-16 max-w-[min(1200px,100vw)] px-6 flex-1 mx-auto">
       <div class="flex flex-col justify-center gap-6">
         <h1 class="font-extrabold text-6xl mt-8">
@@ -62,12 +69,12 @@ onMounted(async () => {
         <div class="flex flex-wrap gap-3">
           <div>
             <Btn
-              v-if="user.authenticated"
+              v-if="!isLoading && user.authenticated"
               label="Entrar"
               @click="enter"
             />
             <Btn
-              v-if="!user.isActive && inProduction"
+              v-if="!isLoading && !user.isActive && inProduction"
               tag="a"
               :label="!requested ? 'Solicitar acesso' : 'Pedido de acesso solicitado'"
               :href="mailto"
