@@ -2,14 +2,8 @@
 const props = withDefaults(defineProps<{
   modelValue: boolean
   creditor: any
-  options?: {
-    recoverings: any[]
-    ocurrences: any[]
-    rates: any[]
-  }
 }>(), {
   modelValue: false,
-  options: () => ({ recoverings: [], rates: [], ocurrences: [] }),
 })
 const emit = defineEmits(['update:modelValue', 'update:creditor', 'success', 'clear'])
 

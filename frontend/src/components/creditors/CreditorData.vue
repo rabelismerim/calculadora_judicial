@@ -84,7 +84,7 @@ const onSubmit = async () => {
         <QSelect
           v-model="editingCreditor.occurrence"
           label="Ocorrência"
-          :options="props.options.ocurrences"
+          :options="options.occurrenceOptions"
           dense
           outlined
           map-options
