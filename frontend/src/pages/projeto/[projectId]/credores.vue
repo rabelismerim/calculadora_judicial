@@ -54,6 +54,7 @@ const filteredCreditors = computed((): any[] => {
           ...newCreditor,
           legalNumber,
           recoverings: creditors
+            .map((creditor: any) => ({ ...creditor, recovering: { ...creditor.recovering, creditor } }))
             .filter(({ recovering }: any) => recovering.creditorLegalNumber === legalNumber)
             .map(({ recovering }: any) => recovering),
         }
@@ -282,14 +283,8 @@ onMounted(() => {
             :subtitle="formatLegalNumber(creditor.legalNumber)"
           >
             <div class="grid grid-cols-1 sm:grid-cols-2 px-7 py-5 border-b-1">
-              <div><b>Nome:</b> {{ creditor.name }}</div>
-              <div><b>Multa:</b> {{ creditor.fine }}</div>
-              <div><b>Horários Advocatícios:</b> {{ creditor.advocativeHours }}</div>
-              <div><b>CPF/CNPJ:</b> {{ creditor.legalNumber }}</div>
-              <div><b>Juros Moratórios:</b> {{ creditor.defaultInterest }}</div>
-              <div><b>Ocorrência:</b> {{ getOcurrence(creditor.occurrence) }}</div>
               <div class="sm:col-span-2">
-                <b>Descrição:</b> {{ creditor.description }}
+                <b>Descrição:</b> {{ creditor.description || '-' }}
               </div>
             </div>
 
@@ -328,9 +323,6 @@ onMounted(() => {
                     class="self-center"
                   />
                 </template>
-                <template #header-right>
-                  <div class="flex-1 flex items-center pl-8" />
-                </template>
                 <QStepper
                   ref="stepper"
                   v-model="recovering.step"
@@ -341,7 +333,7 @@ onMounted(() => {
                   class="vertical border--primary border-1 mb-4 mr-3"
                 >
                   <CreditorData
-                    :model-value="creditor"
+                    :model-value="recovering.creditor"
                     :creditor-id="recovering.creditorId"
                     :options="creditorOptions"
                     :name="1"
@@ -413,9 +405,15 @@ onMounted(() => {
           >
             <div class="grid grid-cols-1 sm:grid-cols-2 px-7 py-5 border-b-1">
               <div><b>Nome:</b> {{ creditor?.entity?.name }}</div>
+              <div v-if="isValidCPF(creditor?.legalNumber)">
+                <b>Data de Admissão:</b> {{ formatDateFromBackend(creditor?.admission || '') || '-' }}
+              </div>
+              <div v-if="isValidCPF(creditor?.legalNumber)">
+                <b>Data de Demissão:</b> {{ formatDateFromBackend(creditor?.dismissal || '') || '-' }}
+              </div>
               <div><b>Multa:</b> {{ creditor.fine }}</div>
               <div><b>Horários Advocatícios:</b> {{ creditor.advocativeHours }}</div>
-              <div><b>CPF/CNPJ:</b> {{ creditor?.entity?.legalNumber }}</div>
+              <div><b>CPF/CNPJ:</b> {{ formatLegalNumber(creditor?.entity?.legalNumber || '') }}</div>
               <div><b>Juros Moratórios:</b> {{ creditor.defaultInterest }}</div>
               <div><b>Ocorrência:</b> {{ getOcurrence(creditor.occurrence) }}</div>
               <div class="sm:col-span-2">
@@ -463,6 +461,9 @@ onMounted(() => {
               Nenhuma Recuperanda para esse Credor
             </div>
           </Accordion>
+        </div>
+        <div v-else class="pt-5 text-center">
+          Parece que não existe nenhum usuário inativo no momento...
         </div>
       </QTabPanel>
     </QTabPanels>
