@@ -66,7 +66,6 @@ declare module '@vue/runtime-core' {
     TabFilter: typeof import('./components/common/TabFilter.vue')['default']
     TeamProjectsModal: typeof import('./components/team/TeamProjectsModal.vue')['default']
     TeamProjectsTable: typeof import('./components/team/TeamProjectsTable.vue')['default']
-    TestList: typeof import('./components/TestList.vue')['default']
     TimeoutBar: typeof import('./components/common/TimeoutBar.vue')['default']
     UpdateCreditor: typeof import('./components/creditors/UpdateCreditor.vue')['default']
     UpdateProject: typeof import('./components/project/UpdateProject.vue')['default']
