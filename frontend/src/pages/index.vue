@@ -43,6 +43,13 @@ onMounted(async () => {
 </script>
 
 <template>
+  <QLinearProgress
+    v-if="loading"
+    indeterminate
+    color="secondary"
+    class="absolute top-0 left-0"
+    size="xs"
+  />
   <div class="bg--base flex flex-1">
     <div class="flex flex-col-reverse pt-8 md:pt-0 pb-6 md:pb-0 md:grid md:grid-cols-2 md:gap-16 max-w-[min(1200px,100vw)] px-6 flex-1 mx-auto">
       <div class="flex flex-col justify-center gap-6">
