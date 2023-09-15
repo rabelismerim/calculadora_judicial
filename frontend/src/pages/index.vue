@@ -5,14 +5,13 @@ const { login, user } = $user
 
 const inProduction = import.meta.env.PROD
 const inDevelopment = import.meta.env.DEV
-let isAuthenticated = $ref(false)
 
 let loading = $ref(false)
 const requested = $ref(false)
 
 const enter = async () => {
   const { authenticated, authorized, isActive } = user.value
-  if ((authenticated && authorized && isActive) || (inDevelopment && isActive))
+  if ((inProduction && authenticated && authorized && isActive) || (inDevelopment && isActive))
     router.push({ path: '/projetos' })
 }
 
@@ -31,12 +30,8 @@ const mailto = computed(() => `mailto:${emailManagers.join(',')}?subject=Pedido 
 onMounted(async () => {
   loading = true
   try {
-    const { authenticated, isActive } = await login() || {}
+    await login()
     emailManagers = await usersService.getEmailManagers() || []
-
-    isAuthenticated = authenticated
-    if ((isActive || authenticated) && inProduction)
-      router.push('/projetos')
   }
   catch (error) {
     printError('ERROR ON LOGIN USER', error)
@@ -67,10 +62,8 @@ onMounted(async () => {
         <div class="flex flex-wrap gap-3">
           <div>
             <Btn
-              v-if="isAuthenticated && inDevelopment"
+              v-if="user.authenticated"
               label="Entrar"
-              loading-label="Enviando para tela de Projetos..."
-              :loading="loading"
               @click="enter"
             />
             <Btn
