@@ -59,7 +59,7 @@ const newCreditors = async (creditor: Creditor) => {
     printError('ERROR ON NEW CREDITORS', error)
   }
 }
-const updateCreditor = async (creditor: Creditor) => api
+const updateCreditor = async (creditor: any) => api
   .put(`/v1/creditors/${creditor.id}/`, creditor)
   .then((result: any) => result?.creditor)
 
