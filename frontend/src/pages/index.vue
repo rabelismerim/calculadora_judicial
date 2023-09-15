@@ -27,10 +27,27 @@ const enter = async () => {
     loading = false
   }
 }
+let managersLoaded = $ref(false)
+let emailManagers = $ref([])
+const emailBody = `Prezados,
+
+Gostaria de solicitar formalmente acesso à aplicação JUCA. 
+Por favor, conceda-me as permissões necessárias.
+Agradeço antecipadamente pela sua atenção a esta solicitação.
+
+Atenciosamente,
+
+`.replaceAll('\n', '%0D%0A')
+const mailto = computed(() => `mailto:${emailManagers.join(',')}?subject=Pedido de Acesso - JUCA&body=${emailBody}`)
 
 onMounted(async () => {
-  const { authenticated } = await usersService.verifyUser() || {}
+  const { authenticated, isActive } = await usersService.verifyUser() || {}
+  emailManagers = await usersService.getEmailManagers() || []
+  managersLoaded = true
+
   isAuthenticated = authenticated
+  if ((isActive || authenticated) && inProduction)
+    router.push('/projetos')
 })
 </script>
 
@@ -48,9 +65,9 @@ onMounted(async () => {
           <strong>JUCA</strong>, acrônimo de <strong>CÁ</strong>lculo <strong>JU</strong>dicial, é um sistema que simplifica os cálculos financeiros complexos no processo de administração judicial, fornecendo resultados precisos e confiáveis ao longo do tempo.
           <span class="hidden sm:block">Com sua interface amigável e algoritmos avançados, é a ferramenta ideal para advogados, analistas financeiros e demais profissionais envolvidos em processos de recuperação judicial e falência.</span>
         </p>
-        <p>
+        <!-- <p>
           Para assitir o tutorial de uso da ferramenta <a href="https://becurious.edcast.eu/user/login" class="font-bold color--primary">Clique aqui</a>
-        </p>
+        </p> -->
         <div class="flex flex-wrap gap-3">
           <div>
             <Btn
@@ -62,11 +79,21 @@ onMounted(async () => {
               @click="enter"
             />
             <Btn
-              v-else
-              :label="!requested ? 'Entrar' : 'Pedido de acesso solicitado'"
+              v-if="isAuthenticated && !inProduction"
+              label="Entrar"
+              loading-label="Enviando para tela de Projetos..."
+              :loading="loading"
+              :disabled="requested"
+              @click="enter"
+            />
+            <Btn
+              v-else-if="managersLoaded"
+              tag="a"
+              :label="!requested ? 'Solicitar acesso' : 'Pedido de acesso solicitado'"
               loading-label="Processando seus dados..."
               :loading="loading"
               :disabled="requested"
+              :href="mailto"
               @click="enter"
             />
           </div>

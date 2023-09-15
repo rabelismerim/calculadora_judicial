@@ -2,22 +2,13 @@
 const props = withDefaults(defineProps<{
   modelValue: boolean
   creditor: any
-  options?: {
-    recoverings: any[]
-    ocurrences: any[]
-    rates: any[]
-  }
 }>(), {
   modelValue: false,
-  options: () => ({ recoverings: [], rates: [], ocurrences: [] }),
 })
 const emit = defineEmits(['update:modelValue', 'update:creditor', 'success', 'clear'])
 
 let loading = $ref(false)
 const form = ref(null as any)
-
-const rates = computed(() => props.options?.rates
-  ?.map(({ id: value, index: label }) => ({ label, value })))
 
 const nullCreditor: any = {
   name: '',
@@ -80,6 +71,7 @@ const onSubmit = async () => {
         <InputLegal
           v-model="editingCreditor.legalNumber"
           :rules="[(value: any) => !!value || 'Este é um campo obrigatório!']"
+          disable
           grow
         />
         <QInput
@@ -89,39 +81,6 @@ const onSubmit = async () => {
           type="textarea"
           rows="3"
           class="mb-5 col-span-2"
-        />
-        <InputDate
-          v-if="isValidCPF(editingCreditor.legalNumber)"
-          v-model="editingCreditor.admission"
-          label="Data de Admissão"
-        />
-        <InputDate
-          v-if="isValidCPF(editingCreditor.legalNumber)"
-          v-model="editingCreditor.dismissal"
-          label="Data de Demissão"
-        />
-        <InputNumber
-          v-model="editingCreditor.fine"
-          label="Multa"
-        />
-        <InputNumber
-          v-model="editingCreditor.defaultInterest"
-          label="Juros Moratórios"
-        />
-        <InputNumber
-          v-model="editingCreditor.advocativeHours"
-          label="Horários Advocatícios"
-        />
-        <QSelect
-          v-model="editingCreditor.occurrence"
-          label="Ocorrência"
-          :options="props.options.ocurrences"
-          dense
-          outlined
-          map-options
-          emit-value
-          option-label="legend"
-          option-value="id"
         />
       </div>
       <div class="relative flex justify-end gap-2 p-3 border-t-1 ">

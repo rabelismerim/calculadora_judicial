@@ -30,6 +30,11 @@ export default defineConfig({
     [/^ring--([\w-]+)\/(\d+)$/, ([, w, d]) => ({ '--un-ring-color': `hsla(var(--${w},0,0%,0%),${+d / 100})` })],
     ['ring-inner', { 'box-shadow': 'inset var(--un-ring-offset-shadow),inset var(--un-ring-shadow), var(--un-shadow) !important' }],
     ['text-vertical', { 'writing-mode': 'vertical-lr' }],
+    [/^m-([\.\d]+)\!$/, ([_, num]) => ({ margin: `${num}px !important` })],
+    [/^mb-([\.\d]+)\!$/, ([_, num]) => ({ 'margin-botton': `${num}px !important` })],
+    [/^mt-([\.\d]+)\!$/, ([_, num]) => ({ 'margin-top': `${num}px !important` })],
+    [/^mr-([\.\d]+)\!$/, ([_, num]) => ({ 'margin-rigth': `${num}px !important` })],
+    [/^ml-([\.\d]+)\!$/, ([_, num]) => ({ 'margin-left': `${num}px !important` })],
   ],
   shortcuts: [
     { tween: 'transition ease-in-out duration-300' },
