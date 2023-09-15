@@ -1,4 +1,6 @@
 <script setup lang='ts'>
+import ReloadBtn from '../common/ReloadBtn.vue'
+
 const props = withDefaults(defineProps<{
   modelValue?: boolean
   projectId: string
@@ -7,11 +9,9 @@ const props = withDefaults(defineProps<{
 })
 const emit = defineEmits(['update:modelValue', 'update:uploadFiles', 'success', 'update:tab', 'update:filter'])
 
-const loading = $ref(false)
-const form = ref(null as any)
+let isLoading = $ref(false)
 
 const selectedTab = ref('carregamento')
-
 const tabs = [
   { label: 'Carregamento', value: 'carregamento' },
   { label: 'Histórico', value: 'historico' },
@@ -32,11 +32,10 @@ const loadTemplateNames = async () => {
   }
 }
 
-let isDownloading = $ref(false)
 const downloadTemplate = async (fileName: string) => {
   if (!fileName)
     return
-  isDownloading = true
+  isLoading = true
   try {
     const result: Blob = await uploadService.getFilesPathName('project', fileName)
     saveFile(result, fileName, 'xlsx')
@@ -45,12 +44,13 @@ const downloadTemplate = async (fileName: string) => {
     printError('ERROR ON DOWNLOAD TEMPLATE', error)
   }
   finally {
-    isDownloading = false
+    isLoading = false
   }
 }
 
 let historicFiles: any = $ref([])
-const loadHistoricFiles = async () => {
+const loadHistoricFiles = async (useLoading = false) => {
+  isLoading = useLoading && true
   try {
     const files = []
     const filesData = await uploadService.getObjetcId('project', props.projectId)
@@ -64,6 +64,9 @@ const loadHistoricFiles = async () => {
   }
   catch (error) {
     printError('ERROR ON LOADING HISTORIC FILES:', error)
+  }
+  finally {
+    isLoading = useLoading && false
   }
 }
 
@@ -100,6 +103,7 @@ const updateFiles = (newFiles: File[]) => uploadFiles = newFiles
     :model-value="modelValue"
     title="Carregamento em massa de credores"
     modal-class="max-w-300"
+    :loading="isLoading"
     @update:model-value="(value: any) => emit('update:modelValue', value)"
   >
     <div>
@@ -159,8 +163,11 @@ const updateFiles = (newFiles: File[]) => uploadFiles = newFiles
           class="px-4 bg-slate-1"
         >
           <div class="mb-3">
-            <div class="font-bold mb-2">
-              Histórico de arquivos carregados no sistema ({{ historicFiles.length }})
+            <div class="mb-2 flex items-center gap-4">
+              <div class="font-bold text-xl">
+                Histórico de arquivos carregados no sistema ({{ historicFiles.length }})
+              </div>
+              <ReloadBtn @click="loadHistoricFiles(true)" />
             </div>
             <div>
               <div>

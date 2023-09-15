@@ -184,7 +184,7 @@ const updateOption = (key: string, value: any) => {
             />
             <InputDate
               v-model="editingProject.projectStart"
-              label="Data de Início do Projeto"
+              label="Data do Termo de Compromisso"
               :rules="[
                 (value: any) => !!value || 'É um campo obrigatório',
                 (value: any) => value.length === 10 || 'Precisa preencher o padrão ##/##/####',
