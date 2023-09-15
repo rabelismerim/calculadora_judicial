@@ -135,6 +135,9 @@ const newCreditorOptions = computed(() => ({
   recoverings: project?.recoverings || [],
   rates,
 }))
+
+const getOcurrence = (occurrenceId: string) => newCreditorOptions.value.ocurrences
+  .find(({ id }: any) => id === occurrenceId)?.legend ?? occurrenceId
 const loadInactiveCreditors = async () => {
   loading = true
   try {
@@ -277,7 +280,7 @@ onMounted(() => {
               <div><b>Horários Advocatícios:</b> {{ creditor.advocativeHours }}</div>
               <div><b>CPF/CNPJ:</b> {{ creditor.legalNumber }}</div>
               <div><b>Juros Moratórios:</b> {{ creditor.defaultInterest }}</div>
-              <div><b>Ocorrência:</b> {{ creditor.occurrence }}</div>
+              <div><b>Ocorrência:</b> {{ getOcurrence(creditor.occurrence) }}</div>
               <div class="sm:col-span-2">
                 <b>Descrição:</b> {{ creditor.description }}
               </div>
@@ -407,7 +410,7 @@ onMounted(() => {
               <div><b>Horários Advocatícios:</b> {{ creditor.advocativeHours }}</div>
               <div><b>CPF/CNPJ:</b> {{ creditor?.entity?.legalNumber }}</div>
               <div><b>Juros Moratórios:</b> {{ creditor.defaultInterest }}</div>
-              <div><b>Ocorrência:</b> {{ creditor.occurrence }}</div>
+              <div><b>Ocorrência:</b> {{ getOcurrence(creditor.occurrence) }}</div>
               <div class="sm:col-span-2">
                 <b>Descrição:</b> {{ creditor.description }}
               </div>
