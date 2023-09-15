@@ -167,13 +167,13 @@ onMounted(() => {
     <template #side>
       <div>
         <Btn label="Baixar Extrato Contábil">
-          <QMenu>
+          <QMenu fit>
             <QList>
               <q-item
                 v-close-popup clickable
                 :loading="isDownloading"
                 loading-label="Baixando Extrato Contábil..."
-                class="font-bold color--primary"
+                class="font-bold color--primary flex justify-center items-center"
                 @click="downloadXLSX"
               >
                 Baixar XLSX
@@ -183,7 +183,7 @@ onMounted(() => {
                 label="Baixar PDF"
                 :loading="isDownloading"
                 loading-label="Baixando Extrato Contábil..."
-                class="font-bold color--primary"
+                class="font-bold color--primary flex justify-center items-center"
                 @click="downloadPDF"
               >
                 Baixar PDF
