@@ -1,6 +1,7 @@
 <script setup lang='ts'>
 const attrs = useAttrs() as any
 
+const showUploadCreditors = $ref(false)
 const showCreateCreditor = $ref(false)
 let showUpdateCreditor = $ref(false)
 
@@ -233,7 +234,13 @@ onMounted(() => {
     ]"
   >
     <template #header>
-      <div class="flex-1 flex justify-end">
+      <div class="flex-1 flex justify-end gap-4">
+        <Btn
+          label="Carregar Credores"
+          icon="i-carbon-upload"
+          outlined
+          @click="showUploadCreditors = true"
+        />
         <Btn
           label="Novo Credor"
           icon="i-carbon-add-filled"
@@ -472,6 +479,10 @@ onMounted(() => {
         :options="newCreditorOptions"
         @success="loadCreditors"
         @clear="clearCreditor"
+      />
+      <UploadCreditors
+        v-model="showUploadCreditors"
+        :project-id="attrs.projectId"
       />
     </template>
   </Page>
