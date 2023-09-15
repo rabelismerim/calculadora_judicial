@@ -22,16 +22,15 @@ let editingCreditor = $ref({
   occurrence: null,
 })
 
+watchEffect(() => editingCreditor = clone(props.modelValue))
 const onReset = () => {
   editingCreditor = clone(props.modelValue)
 }
 
-watchEffect(() => editingCreditor = clone(props.modelValue))
-
 const onSubmit = async () => {
   isLoading = true
   try {
-    // const result = await creditorsService.setCreditorClaim(payload)
+    await creditorsService.updateCreditor(editingCreditor)
     isEditing = false
     emit('save')
   }
@@ -62,23 +61,28 @@ const onSubmit = async () => {
         <InputDate
           v-if="isValidCPF(editingCreditor.legalNumber)"
           v-model="editingCreditor.admission"
+          :disable="!isEditing"
           label="Data de Admissão"
         />
         <InputDate
           v-if="isValidCPF(editingCreditor.legalNumber)"
           v-model="editingCreditor.dismissal"
+          :disable="!isEditing"
           label="Data de Demissão"
         />
         <InputNumber
           v-model="editingCreditor.fine"
+          :disable="!isEditing"
           label="Multa"
         />
         <InputNumber
           v-model="editingCreditor.defaultInterest"
+          :disable="!isEditing"
           label="Juros Moratórios"
         />
         <InputNumber
           v-model="editingCreditor.advocativeHours"
+          :disable="!isEditing"
           label="Horários Advocatícios"
         />
         <QSelect
@@ -91,6 +95,7 @@ const onSubmit = async () => {
           emit-value
           option-label="legend"
           option-value="id"
+          :disable="!isEditing"
         />
       </div>
     </div>
