@@ -17,6 +17,7 @@ declare global {
   const animate: typeof import('animol')['css']
   const api: typeof import('./services/api')['default']
   const apiCalculation: typeof import('./services/apiCalculation')['default']
+  const apiFiles: typeof import('./services/apiFiles')['default']
   const apiSilence: typeof import('./services/apiSilence')['default']
   const asyncComputed: typeof import('@vueuse/core')['asyncComputed']
   const autoResetRef: typeof import('@vueuse/core')['autoResetRef']
@@ -49,7 +50,6 @@ declare global {
   const delay: typeof import('./composables/utils')['delay']
   const deleteAllCookies: typeof import('./composables/utils')['deleteAllCookies']
   const deleteCookie: typeof import('@jrnwn/utils')['deleteCookie']
-  const downloadFile: typeof import('./composables/utils')['downloadFile']
   const eagerComputed: typeof import('@vueuse/core')['eagerComputed']
   const ease: typeof import('animol')['ease']
   const easing: typeof import('animol')['Easing']
@@ -142,6 +142,7 @@ declare global {
   const resolveUnref: typeof import('@vueuse/core')['resolveUnref']
   const responseInterceptor: typeof import('./services/interceptors')['responseInterceptor']
   const router: typeof import('./router')['default']
+  const saveFile: typeof import('./composables/utils')['saveFile']
   const set: typeof import('@jrnwn/utils')['set']
   const setClass: typeof import('@jrnwn/utils')['setClass']
   const setCookie: typeof import('@jrnwn/utils')['setCookie']
@@ -152,7 +153,6 @@ declare global {
   const syncRef: typeof import('@vueuse/core')['syncRef']
   const syncRefs: typeof import('@vueuse/core')['syncRefs']
   const templateRef: typeof import('@vueuse/core')['templateRef']
-  const testService: typeof import('./services/testService')['testService']
   const throttledRef: typeof import('@vueuse/core')['throttledRef']
   const throttledWatch: typeof import('@vueuse/core')['throttledWatch']
   const throwError: typeof import('./stores/$Notification')['throwError']
@@ -340,6 +340,7 @@ declare global {
   const useWindowSize: typeof import('@vueuse/core')['useWindowSize']
   const usersService: typeof import('./services/usersService')['default']
   const vResize: typeof import('./directives/vResize')['default']
+  const validationService: typeof import('./services/validationService')['default']
   const viteEnvD: typeof import('./vite-env.d')['default']
   const watch: typeof import('vue')['watch']
   const watchArray: typeof import('@vueuse/core')['watchArray']
@@ -378,6 +379,7 @@ declare module 'vue' {
     readonly animate: UnwrapRef<typeof import('animol')['css']>
     readonly api: UnwrapRef<typeof import('./services/api')['default']>
     readonly apiCalculation: UnwrapRef<typeof import('./services/apiCalculation')['default']>
+    readonly apiFiles: UnwrapRef<typeof import('./services/apiFiles')['default']>
     readonly apiSilence: UnwrapRef<typeof import('./services/apiSilence')['default']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
@@ -410,7 +412,6 @@ declare module 'vue' {
     readonly delay: UnwrapRef<typeof import('./composables/utils')['delay']>
     readonly deleteAllCookies: UnwrapRef<typeof import('./composables/utils')['deleteAllCookies']>
     readonly deleteCookie: UnwrapRef<typeof import('@jrnwn/utils')['deleteCookie']>
-    readonly downloadFile: UnwrapRef<typeof import('./composables/utils')['downloadFile']>
     readonly eagerComputed: UnwrapRef<typeof import('@vueuse/core')['eagerComputed']>
     readonly ease: UnwrapRef<typeof import('animol')['ease']>
     readonly easing: UnwrapRef<typeof import('animol')['Easing']>
@@ -503,6 +504,7 @@ declare module 'vue' {
     readonly resolveUnref: UnwrapRef<typeof import('@vueuse/core')['resolveUnref']>
     readonly responseInterceptor: UnwrapRef<typeof import('./services/interceptors')['responseInterceptor']>
     readonly router: UnwrapRef<typeof import('./router')['default']>
+    readonly saveFile: UnwrapRef<typeof import('./composables/utils')['saveFile']>
     readonly set: UnwrapRef<typeof import('@jrnwn/utils')['set']>
     readonly setClass: UnwrapRef<typeof import('@jrnwn/utils')['setClass']>
     readonly setCookie: UnwrapRef<typeof import('@jrnwn/utils')['setCookie']>
@@ -513,7 +515,6 @@ declare module 'vue' {
     readonly syncRef: UnwrapRef<typeof import('@vueuse/core')['syncRef']>
     readonly syncRefs: UnwrapRef<typeof import('@vueuse/core')['syncRefs']>
     readonly templateRef: UnwrapRef<typeof import('@vueuse/core')['templateRef']>
-    readonly testService: UnwrapRef<typeof import('./services/testService')['testService']>
     readonly throttledRef: UnwrapRef<typeof import('@vueuse/core')['throttledRef']>
     readonly throttledWatch: UnwrapRef<typeof import('@vueuse/core')['throttledWatch']>
     readonly throwError: UnwrapRef<typeof import('./stores/$Notification')['throwError']>
@@ -701,6 +702,7 @@ declare module 'vue' {
     readonly useWindowSize: UnwrapRef<typeof import('@vueuse/core')['useWindowSize']>
     readonly usersService: UnwrapRef<typeof import('./services/usersService')['default']>
     readonly vResize: UnwrapRef<typeof import('./directives/vResize')['default']>
+    readonly validationService: UnwrapRef<typeof import('./services/validationService')['default']>
     readonly viteEnvD: UnwrapRef<typeof import('./vite-env.d')['default']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>
     readonly watchArray: UnwrapRef<typeof import('@vueuse/core')['watchArray']>

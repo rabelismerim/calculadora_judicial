@@ -289,11 +289,19 @@ const getAccountingStatement = (calculationId: string) => {
 }
 
 const getAccountingStatementXLSX = (calculationId: string) => api
-  .get(`/v1/calculation/export/${calculationId}/EXTRATOCONTABIL/`)
+  .get(`/v1/calculation/export/${calculationId}/EXTRATOCONTABIL;xlsx/`)
   .then((result: any) => {
     if (result.errors)
       return result
     return result?.excel
+  })
+
+const getAccountingStatementPDF = (calculationId: string) => api
+  .get(`/v1/calculation/export/${calculationId}/EXTRATOCONTABIL;pdf/`)
+  .then((result: any) => {
+    if (result.errors)
+      return result
+    return result?.pdf
   })
 
 const deleteCredit = ({ type, id }: any) => {
@@ -340,6 +348,7 @@ export default {
   getSheetsTemplate,
   getAccountingStatement,
   getAccountingStatementXLSX,
+  getAccountingStatementPDF,
   getCalculationBigNumbers,
   deleteCredit,
   checkStep,

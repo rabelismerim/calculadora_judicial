@@ -16,11 +16,11 @@ interface ErrorDetail {
 
 const getFileDetail = (id: string) => api
   .get(`/v1/files/detail/${id}/`)
-  .then((result: any) => result?.filedetail)
+  .then((result: any) => result?.file)
 
 const getObjetcId = (path: string, objectId: string) => api
   .get(`/v1/files/detail/${path}/${objectId}/`)
-  .then((result: any) => result?.objectId)
+  .then((result: any) => result?.files)
 
 const getFilesExample = () => api
   .get('/v1/files/example/')
@@ -28,11 +28,11 @@ const getFilesExample = () => api
 
 const getFilesExamplePath = (path: string) => api
   .get(`/v1/files/example/${path}/`)
-  .then((result: any) => result?.filesExamplePath)
+  .then((result: any) => result?.excelNames)
 
-const getFilesPathName = (path: string, name: string) => api
-  .get(`/v1/files/example/${path}/${name}/`)
-  .then((result: any) => result?.filesPathName)
+const getFilesPathName = (path: string, name: string) => apiFiles
+  .get(`/v1/files/example/${path}/${name}/`, { responseType: 'blob' })
+  .then(result => result as unknown as Blob)
 
 const newCreatePath = async (createPath: CreatePath) => {
   const { file, path, objectId } = createPath
