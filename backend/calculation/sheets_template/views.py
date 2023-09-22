@@ -884,8 +884,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         sheet["C" + str(cnt_ini_row)] = (
                                             "{:,.2f}".format(
                                                 float(
-                                                    item.totalvaluesfunds.total_corrected +
-                                                    item.totalvaluesfundsintegrations.total_corrected
+                                                    item.get_total_summed()
                                                 )
                                             )
                                             .replace(".", "-")
@@ -902,8 +901,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             + str(cnt_ini_row)
                                         )
                                         sum_total += (
-                                            item.totalvaluesfunds.total_corrected +
-                                            item.totalvaluesfundsintegrations.total_corrected
+                                            item.get_total_summed()
                                         )
                                         cnt_ini_row = cnt_ini_row + 1
                                     # TODO: alterar date_citation no project para o calculo
