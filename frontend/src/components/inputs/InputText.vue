@@ -21,7 +21,7 @@ const { clearError } = useBackendErrors(toRef(props, 'errorMessages'))
 const onInput = (value: string | number | null) => {
   if (props.errorKey)
     clearError(props.errorKey)
-  emit('update:modelValue', value)
+  emit('update:modelValue', typeof value === 'string' ? value?.toUpperCase() : value)
 }
 </script>
 

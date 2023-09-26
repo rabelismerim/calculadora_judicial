@@ -207,18 +207,8 @@ onMounted(async () => {
               error-key="date_rj_filling"
             />
             <InputDate
-              v-model="newProject.dateCitation"
-              label="Data da Citação"
-              :rules="[
-                (value: any) => value.length === 0 || value.length === 10 || 'Precisa preencher o padrão ##/##/####',
-                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Precisa ser uma data válida!',
-              ]"
-              :error-messages="errorMessages"
-              error-key="date_citation"
-            />
-            <InputDate
               v-model="newProject.projectStart"
-              label="Data de Início do Projeto"
+              label="Data do Termo de Compromisso"
               :rules="[
                 (value: any) => !!value || 'É um campo obrigatório',
                 (value: any) => value.length === 10 || 'Precisa preencher o padrão ##/##/####',

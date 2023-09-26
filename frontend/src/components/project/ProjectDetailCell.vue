@@ -10,7 +10,7 @@ const props = withDefaults(defineProps<{
   <div class="mb-5">
     <h3
       v-if="label"
-      class="font-bold text--secondary text-uppercase leading-5 py-1"
+      class="font-bold text--secondary uppercase leading-5 py-1"
     >
       {{ label }}
     </h3>

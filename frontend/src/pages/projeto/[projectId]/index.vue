@@ -157,10 +157,16 @@ const loadTotalValues = async () => {
   }
 }
 
+let rates = $ref([] as any[])
+const loadRates = async () => {
+  rates = await ratesService.getRates()
+}
+
 onMounted(async () => {
   loadBigNumbers()
   loadIncidents()
   loadOptions()
+  loadRates()
   await loadProject()
   await loadTotalValues()
 })
@@ -372,16 +378,39 @@ onMounted(async () => {
           ref="calculationForm"
           @submit="createNewCalculation"
         >
-          <div class="px-4">
+          <div class="px-4 grid grid-cols-2 gap-x-4">
             <InputSelect
               v-model="newCalculation.incidentId"
               v-model:options="incidents"
               label="Número de Incidente"
+              mask="#######-##.####.#.##.####"
               :to-add="addIncident"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :disable="loading"
+              class="col-span-2"
             />
-            <label class="flex gap-4 items-center mb-4">
+            <QSelect
+              v-model="newCalculation.rateId"
+              :options="rates"
+              label="Taxa"
+              outlined
+              emit-value
+              map-options
+              option-value="id"
+              option-label="index"
+              :disable="loading"
+              :rules="[(value: string) => !!value || 'Este Campo é obrigatório!']"
+              dense
+            />
+            <InputDate
+              v-model="newCalculation.dateCitation"
+              label="Data da Citação"
+              :rules="[
+                (value: any) => value.length === 0 || value.length === 10 || 'Precisa preencher o padrão ##/##/####',
+                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Precisa ser uma data válida!',
+              ]"
+            />
+            <label class="flex gap-4 items-center mb-4 col-span-2">
               <div class="font-bold color-gray-8 text-md">Fase do Cálculo</div>
               <BtnToggle
                 v-model="newCalculation.isAdm"
