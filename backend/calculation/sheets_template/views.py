@@ -20,7 +20,7 @@ from rest_framework import permissions
 from core.permission.views import CheckHasPermission
 from utils import _, doc
 
-from aspose.cells import Workbook
+import pdfkit
 import openpyxl as xl
 from openpyxl.styles import PatternFill, Alignment, Font
 from os.path import exists
@@ -82,8 +82,9 @@ class SheetTemplateViewApi(AbstractViewApi):
     def get(self, request, *args, **kwargs):
         try:
             calculation_id = kwargs.get("calculation_id")
-            export_type = kwargs.get("export_type")
-            Template = SheetsTemplate.objects.filter(name=export_type)
+            name_report = kwargs.get("export_type").split(';')[0] if len(kwargs.get("export_type").split(';'))>1 else kwargs.get("export_type")
+            export_type = kwargs.get("export_type").split(';')[1] if len(kwargs.get("export_type").split(';'))>1 else None
+            Template = SheetsTemplate.objects.filter(name=name_report)
             if len(Template) <= 0:
                 return JsonResponse({"errors": "Template not found."})
 
@@ -883,8 +884,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                         sheet["C" + str(cnt_ini_row)] = (
                                             "{:,.2f}".format(
                                                 float(
-                                                    item.totalvaluesfunds.total_corrected +
-                                                    item.totalvaluesfundsintegrations.total_corrected
+                                                    item.get_total_summed()
                                                 )
                                             )
                                             .replace(".", "-")
@@ -901,8 +901,7 @@ class SheetTemplateViewApi(AbstractViewApi):
                                             + str(cnt_ini_row)
                                         )
                                         sum_total += (
-                                            item.totalvaluesfunds.total_corrected +
-                                            item.totalvaluesfundsintegrations.total_corrected
+                                            item.get_total_summed()
                                         )
                                         cnt_ini_row = cnt_ini_row + 1
                                     # TODO: alterar date_citation no project para o calculo
@@ -1633,13 +1632,8 @@ class SheetTemplateViewApi(AbstractViewApi):
 
             archive_view.save(new_name_view)
 
-            #Create a HTML File
-            with open(new_name_view, "rb") as archive_excel:
-                excel_file = archive_excel.read()
-                base64_encoded_data = base64.b64encode(excel_file)
-                base64_message = base64_encoded_data.decode("latin-1")
-
             list_html = {}
+            list_pdf = []
             for sheet in archive_view:
                 if sheet.sheet_state == "hidden":
                     continue
@@ -1654,11 +1648,25 @@ class SheetTemplateViewApi(AbstractViewApi):
                     .replace('\\"', '"')
                 )
                 list_html[sheet._WorkbookChild__title] = result_html
+                list_pdf.append(result_html)
+                
+            #adjust layout from download
+            #for sheet in archive_view:
+            #    if sheet['A1'].value == None:
+            #        sheet.delete_cols(0)
+            #    if sheet['A1'].value == None and sheet['B1'].value and sheet['C1'].value:
+            #        sheet.delete_cols(1,3)
+            #archive_view.save(new_name_view)
+
+            #Create a HTML File
+            with open(new_name_view, "rb") as archive_excel:
+                excel_file = archive_excel.read()
+                base64_encoded_data = base64.b64encode(excel_file)
+                base64_message = base64_encoded_data.decode("latin-1")
 
             #create a pdf file
-            wb = Workbook(new_name_view)
-            wb.save(new_name_pdf)
-
+            pdfkit.from_string('\n'.join(list_pdf),new_name_pdf)
+            
             with open(new_name_pdf, "rb") as archive_pdf:
                 pdf_file = archive_pdf.read()
                 base64_encoded_data = base64.b64encode(pdf_file)
@@ -1667,13 +1675,12 @@ class SheetTemplateViewApi(AbstractViewApi):
             remove(new_name_view)
             remove(new_name_pdf)
             
-            if export_type!='EXTRATOCONTABIL':
-                if export_type == "html":
-                    return JsonResponse({"html": f'"{str(list_html)}"'})
-                if export_type == "xlsx":
-                    return JsonResponse(data = { "excel": f"{base64_message}"})
-                if export_type == "pdf":
-                    return JsonResponse({"pdf": f"{base64_message_pdf}"})
+            if export_type == "html":
+                return JsonResponse({"html": f'"{str(list_html)}"'})
+            if export_type == "xlsx":
+                return JsonResponse(data = { "excel": f"{base64_message}"})
+            if export_type == "pdf":
+                return JsonResponse({"pdf": f"{base64_message_pdf}"})
             else:
                 return JsonResponse({"html": f'"{str(list_html)}"', "excel": f"{base64_message}", "pdf": f"{base64_message_pdf}"})
 
