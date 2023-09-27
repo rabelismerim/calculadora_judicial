@@ -1,6 +1,8 @@
 <script setup lang='ts'>
 const attrs = useAttrs() as any
 
+const { hasPermissions } = $user
+
 const showUploadCreditors = $ref(false)
 const showCreateCreditor = $ref(false)
 let showUpdateCreditor = $ref(false)
@@ -236,12 +238,14 @@ onMounted(() => {
     <template #header>
       <div class="flex-1 flex justify-end gap-4">
         <Btn
+          v-if="hasPermissions('add_creditor')"
           label="Carregar Credores"
           icon="i-carbon-upload"
           outlined
           @click="showUploadCreditors = true"
         />
         <Btn
+          v-if="hasPermissions('add_creditor')"
           label="Novo Credor"
           icon="i-carbon-add-filled"
           @click="showCreateCreditor = true"
@@ -297,6 +301,7 @@ onMounted(() => {
             <template #header-right>
               <div class="flex-1 flex gap-2 justify-end items-center pl-8 pr-4">
                 <Btn
+                  v-if="hasPermissions('change_creditor')"
                   label="Editar Credor"
                   icon="i-carbon-edit"
                   transparent
@@ -468,11 +473,13 @@ onMounted(() => {
 
     <template #out>
       <NewCreditor
+        v-if="hasPermissions('add_creditor')"
         v-model="showCreateCreditor"
         :options="newCreditorOptions"
         @success="loadCreditors"
       />
       <UpdateCreditor
+        v-if="hasPermissions('change_creditor')"
         v-model="showUpdateCreditor"
         v-model:creditor="editingCreditor"
         :options="newCreditorOptions"
@@ -480,6 +487,7 @@ onMounted(() => {
         @clear="clearCreditor"
       />
       <UploadCreditors
+        v-if="hasPermissions('add_creditor')"
         v-model="showUploadCreditors"
         :project-id="attrs.projectId"
       />
