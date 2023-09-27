@@ -54,7 +54,6 @@ const filteredCreditors = computed((): any[] => {
           ...newCreditor,
           legalNumber,
           recoverings: creditors
-            .map((creditor: any) => ({ ...creditor, recovering: { ...creditor.recovering, creditor } }))
             .filter(({ recovering }: any) => recovering.creditorLegalNumber === legalNumber)
             .map(({ recovering }: any) => recovering),
         }
@@ -70,7 +69,6 @@ const filteredInactiveCreditors = computed((): any[] =>
   ),
 )
 
-const creditorsCount = computed(() => filteredCreditors.value.length)
 const loadCreditors = async () => {
   loading = true
   try {
@@ -115,6 +113,7 @@ const loadCreditors = async () => {
             name: recoveringName,
             legalNumber: recoveringLegalNuber,
             creditorLegalNumber: legalNumber,
+            creditor: { ...creditor, legalNumber },
             creditorId: id,
             noticeAj,
             noticeRecovering,
@@ -333,7 +332,7 @@ onMounted(() => {
                   class="vertical border--primary border-1 mb-4 mr-3"
                 >
                   <CreditorData
-                    :model-value="recovering.creditor"
+                    v-model="recovering.creditor"
                     :creditor-id="recovering.creditorId"
                     :options="creditorOptions"
                     :name="1"
@@ -441,7 +440,6 @@ onMounted(() => {
               <Accordion
                 v-for="(creditor, index) in inactiveCreditors as any[]"
                 :key="creditor.id"
-
                 :title="creditor.recoveringName"
                 :subtitle="formatLegalNumber(creditor.recoveringLegalNumber)"
                 class="pl-6 border-x-0 border-b-0 rounded-0"
