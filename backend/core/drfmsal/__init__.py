@@ -317,7 +317,7 @@ class IdentityWebPython(object):
                 from django.conf import settings
 
                 User = apps.get_model(settings.AUTH_USER_MODEL)
-                email = str(id_data.usermail)
+                email = str(id_data.usermail).lower()
                 user_view = User.objects.filter(email=email)
 
                 if not user_view:
