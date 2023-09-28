@@ -9,15 +9,18 @@ const props = withDefaults(defineProps<{
   modelValue: boolean
   options: {
     recoverings: any[]
-    rates: any[]
   }
 }>(), {
   modelValue: false,
+  options: () => ({ recoverings: [] }),
 })
 const emit = defineEmits(['update:modelValue', 'update:creditor', 'success'])
 
 let loading = $ref(false)
 const form = ref(null as any)
+
+const mappedRecoverings = $computed(() => props.options.recoverings
+  .map(({ id, entity: { name } }: any) => ({ name, id })))
 
 const nullCreditor: Creditor = {
   name: '',
@@ -27,30 +30,6 @@ const nullCreditor: Creditor = {
 }
 let creatingCreditor: Creditor = $ref(clone(nullCreditor))
 
-const nullRecovering = { recoveringId: null, rateId: null }
-let newRecovering = $ref(clone(nullRecovering))
-
-const freeRecoverings = computed(() => props.options.recoverings
-  ?.filter(({ id }: any) => !creatingCreditor?.recoverings
-    ?.map(({ recoveringId }: any) => recoveringId)?.includes(id))
-  ?.map(({ id: value, entity: { name: label } }) => ({ label, value })))
-const addRecovering = () => {
-  const { recoverings } = clone(creatingCreditor)
-  if (!newRecovering.recoveringId || !newRecovering.rateId) {
-    throwError({ message: 'Você precisa adicionar uma recuperanda e uma taxa!', id: 'NEW_RECOVERING' })
-    return
-  }
-  creatingCreditor.recoverings = [...recoverings, clone(newRecovering)]
-  newRecovering = clone(nullRecovering)
-}
-const rates = computed(() => props.options.rates
-  ?.map(({ id: value, index: label }) => ({ label, value })))
-
-const removeRecovering = (index: number) => {
-  const newCreditor = clone(creatingCreditor)
-  newCreditor.recoverings.splice(index, 1)
-  creatingCreditor = newCreditor
-}
 const clear = async () => {
   creatingCreditor = clone(nullCreditor)
   await delay(0.1)
@@ -116,12 +95,15 @@ const onSubmit = async () => {
         <div class="col-span-2">
           <div class="flex gap-4 mb-4">
             <QSelect
-              v-model="newRecovering.recoveringId"
-              label="Recuperanda"
+              v-model="creatingCreditor.recoverings"
+              label="Recuperandas"
               outlined
               emit-value
               map-options
-              :options="freeRecoverings"
+              option-label="name"
+              option-value="id"
+              multiple
+              :options="mappedRecoverings"
               class="flex-1"
             >
               <template #no-option>
@@ -132,45 +114,6 @@ const onSubmit = async () => {
                 </QItem>
               </template>
             </QSelect>
-            <QSelect
-              v-model="newRecovering.rateId"
-              label="Taxa"
-              outlined
-              emit-value
-              map-options
-              :options="rates"
-              class="flex-1"
-            >
-              <template #no-option>
-                <QItem>
-                  <QItemSection class="text-grey">
-                    Não existe Recuperanda Cadastrada
-                  </QItemSection>
-                </QItem>
-              </template>
-            </QSelect>
-            <Btn
-              label="Adicionar"
-              icon="i-carbon-add-filled"
-              type="button"
-              @click="addRecovering"
-            />
-          </div>
-          <div v-if="creatingCreditor.recoverings.length > 0" class="font-bold text-lg">
-            Recuperandas Selecionadas
-          </div>
-          <div
-            v-for="({ recoveringId, rateId }, index) in creatingCreditor.recoverings as any[]"
-            :key="recoveringId"
-            class="flex gap-4 py-1 items-center"
-          >
-            <div>
-              {{ options.recoverings?.find(({ id }) => id === recoveringId)?.entity?.name }}
-              - {{ options.rates?.find(({ id }) => id === rateId)?.index }}
-            </div>
-            <button type="button" class="color--error hover:bg--error/12 rounded p-2" @click="removeRecovering(index)">
-              <div class="i-carbon-trash-can" />
-            </button>
           </div>
         </div>
       </div>
