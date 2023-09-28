@@ -32,6 +32,7 @@ onMounted(async () => {
   try {
     await login()
     emailManagers = await usersService.getEmailManagers() || []
+    await delay(3)
   }
   catch (error) {
     printError('ERROR ON LOGIN USER', error)
@@ -69,7 +70,7 @@ onMounted(async () => {
         <div class="flex flex-wrap gap-3">
           <div>
             <Btn
-              v-if="!isLoading && user.authenticated"
+              v-if="!isLoading && user.authenticated && user.authorized && user.isActive"
               label="Entrar"
               @click="enter"
             />
