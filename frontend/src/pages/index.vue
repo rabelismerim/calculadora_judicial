@@ -31,8 +31,8 @@ onMounted(async () => {
   isLoading = true
   try {
     await login()
-    emailManagers = await usersService.getEmailManagers() || []
     await delay(3)
+    emailManagers = await usersService.getEmailManagers() || []
   }
   catch (error) {
     printError('ERROR ON LOGIN USER', error)
