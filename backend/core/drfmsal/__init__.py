@@ -320,7 +320,7 @@ class IdentityWebPython(object):
                 email = str(id_data.usermail).lower()
                 user_view = User.objects.filter(email=email)
 
-                if not user_view:
+                if not user_view and id_data.usermail is not None:
                     user = User()
                     user.email = email
                     user.username = email.split('@')[0]
