@@ -54,7 +54,6 @@ declare module '@vue/runtime-core' {
     ProgressList: typeof import('./components/graph/ProgressList.vue')['default']
     ProjectDescription: typeof import('./components/project/ProjectDescription.vue')['default']
     ProjectDetailCell: typeof import('./components/project/ProjectDetailCell.vue')['default']
-    QItem: typeof import('quasar')['QItem']
     RecoveringNotice: typeof import('./components/creditors/RecoveringNotice.vue')['default']
     ReloadBtn: typeof import('./components/common/ReloadBtn.vue')['default']
     RequestModal: typeof import('./components/team/RequestModal.vue')['default']
