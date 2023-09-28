@@ -1,6 +1,8 @@
 <script setup lang='ts'>
 const attrs = useAttrs() as any
 
+const { hasPermissions } = $user
+
 const showUploadCreditors = $ref(false)
 const showCreateCreditor = $ref(false)
 let showUpdateCreditor = $ref(false)
@@ -54,7 +56,6 @@ const filteredCreditors = computed((): any[] => {
           ...newCreditor,
           legalNumber,
           recoverings: creditors
-            .map((creditor: any) => ({ ...creditor, recovering: { ...creditor.recovering, creditor } }))
             .filter(({ recovering }: any) => recovering.creditorLegalNumber === legalNumber)
             .map(({ recovering }: any) => recovering),
         }
@@ -70,7 +71,6 @@ const filteredInactiveCreditors = computed((): any[] =>
   ),
 )
 
-const creditorsCount = computed(() => filteredCreditors.value.length)
 const loadCreditors = async () => {
   loading = true
   try {
@@ -115,6 +115,7 @@ const loadCreditors = async () => {
             name: recoveringName,
             legalNumber: recoveringLegalNuber,
             creditorLegalNumber: legalNumber,
+            creditor: { ...creditor, legalNumber },
             creditorId: id,
             noticeAj,
             noticeRecovering,
@@ -237,12 +238,14 @@ onMounted(() => {
     <template #header>
       <div class="flex-1 flex justify-end gap-4">
         <Btn
+          v-if="hasPermissions('add_creditor')"
           label="Carregar Credores"
           icon="i-carbon-upload"
           outlined
           @click="showUploadCreditors = true"
         />
         <Btn
+          v-if="hasPermissions('add_creditor')"
           label="Novo Credor"
           icon="i-carbon-add-filled"
           @click="showCreateCreditor = true"
@@ -298,6 +301,7 @@ onMounted(() => {
             <template #header-right>
               <div class="flex-1 flex gap-2 justify-end items-center pl-8 pr-4">
                 <Btn
+                  v-if="hasPermissions('change_creditor')"
                   label="Editar Credor"
                   icon="i-carbon-edit"
                   transparent
@@ -333,7 +337,7 @@ onMounted(() => {
                   class="vertical border--primary border-1 mb-4 mr-3"
                 >
                   <CreditorData
-                    :model-value="recovering.creditor"
+                    v-model="recovering.creditor"
                     :creditor-id="recovering.creditorId"
                     :options="creditorOptions"
                     :name="1"
@@ -441,7 +445,6 @@ onMounted(() => {
               <Accordion
                 v-for="(creditor, index) in inactiveCreditors as any[]"
                 :key="creditor.id"
-
                 :title="creditor.recoveringName"
                 :subtitle="formatLegalNumber(creditor.recoveringLegalNumber)"
                 class="pl-6 border-x-0 border-b-0 rounded-0"
@@ -470,11 +473,13 @@ onMounted(() => {
 
     <template #out>
       <NewCreditor
+        v-if="hasPermissions('add_creditor')"
         v-model="showCreateCreditor"
         :options="newCreditorOptions"
         @success="loadCreditors"
       />
       <UpdateCreditor
+        v-if="hasPermissions('change_creditor')"
         v-model="showUpdateCreditor"
         v-model:creditor="editingCreditor"
         :options="newCreditorOptions"
@@ -482,6 +487,7 @@ onMounted(() => {
         @clear="clearCreditor"
       />
       <UploadCreditors
+        v-if="hasPermissions('add_creditor')"
         v-model="showUploadCreditors"
         :project-id="attrs.projectId"
       />
