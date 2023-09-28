@@ -60,7 +60,7 @@ class SignStatusApi(AbstractViewApi):
         """))
     def get(self, request, *args, **kwargs):
         if ENABLE_SSO and ms_identity_web.id_data:
-            email = str(ms_identity_web.id_data.usermail).lower().strip()
+            email = str(ms_identity_web.id_data.usermail).lower()
             user_view = User.objects.filter(email=email)
             if ms_identity_web.id_data.usermail is not None:
                 if user_view.count() == 0:
