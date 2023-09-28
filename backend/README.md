@@ -22,12 +22,14 @@
 
 > * `pip install -r requirements.txt` para instalar as dependências necessárias para o projeto;
 
-### USO LOCAL
+### USO
 
 > * `python manage.py makemigrations` para analisar as mudanças feitas nos modelos e gerar as migrações para o banco de
     dados
 > * `python manage.py migrate` para aplicar as migrações feitas no makemigrations
 > * `python manage.py runserver` para inicializar o servidor
+> * `celery -A config worker --pool=eventlet --loglevel=DEBUG -Q default,save-file -E` para rodar o serviço de
+    mensageria
 > * Acesse a documentação na url http://127.0.0.1:8000/juca/api/v1/docs/swagger/ (consultar versão atual dá api em
     config.settings)
 > * Na raiz do projeto crie um arquivo com o nome ".env". Dentro dele coloque o texto "DEBUG=True", "IS_LOCALHOST=True"

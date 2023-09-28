@@ -365,7 +365,7 @@ class StatementPF(AbstractStatus):
         Calculates and returns the tax days value based on the rate, 'date_rj_filing', and 'date_rj_request'
         """
         rate = self._get_rate()
-        date_rj_filing = self._get_date_rj_filing()
+        date_rj_filing = self._get_date_rj_filing()  # Ajuizamento
         date_rj_request = self._get_date_rj_request()
         choice = self._calcule_get_tax_days_description()
         if not choice:
@@ -374,6 +374,8 @@ class StatementPF(AbstractStatus):
             """=IF('Ficha de Análise'!D65="ipca-E/SELIC";VLOOKUP(DATE(YEAR('Extrato Contábil'!$B$18);MONTH('Extrato 
             Contábil'!$B$18);1);SELIC!C4!A:D;4;FALSE)/VLOOKUP(DATE(YEAR('Extrato Contábil'!B19);MONTH('Extrato 
             Contábil'!B19);1);SELIC!A:D;4;FALSE)-1 """
+            # Todo: pegar apenas o acumulado a partir da data do ajuizamento
+            # Todo: Fixar indice selic
             rate_rj_request = rate.get_rate_by_date(date_rj_request)
             rate_rj_filing = rate.get_rate_by_date(date_rj_filing)
             return (rate_rj_request.get_accumulated / rate_rj_filing.get_accumulated - 1) * 100

@@ -317,12 +317,13 @@ class IdentityWebPython(object):
                 from django.conf import settings
 
                 User = apps.get_model(settings.AUTH_USER_MODEL)
-                user_view = User.objects.filter(email=id_data.usermail)
+                email = str(id_data.usermail)
+                user_view = User.objects.filter(email=email)
 
                 if not user_view:
                     user = User()
-                    user.email = id_data.usermail
-                    user.username = id_data.username.replace(' ', '_')
+                    user.email = email
+                    user.username = email.split('@')[0]
                     user.first_name = id_data.username.split()[0]
                     user.last_name = id_data.username.split()[-1]
                     user.is_active = False

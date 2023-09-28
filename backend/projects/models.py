@@ -4,11 +4,10 @@ import traceback
 from datetime import datetime
 import xlsxwriter
 
-from django.db import models, transaction
+from django.db import models
 from django.db.models import Count, Sum, Q
 from django.http import HttpResponse
 from django.utils.translation import activate, deactivate
-from numpy import number
 from rest_framework import serializers
 
 from base.coins.models import COIN_CHOICES
