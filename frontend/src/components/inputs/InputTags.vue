@@ -13,18 +13,29 @@ const props = withDefaults(defineProps<{
 })
 const emit = defineEmits(['update:modelValue'])
 
+const input = ref(null as any)
 const inputcontent = ref(null as any)
 const inputvalue = ref(null as any)
-const input = ref(null as any)
+
+let localValue: string[] = $ref([])
+watchEffect(() => {
+  localValue = props.modelValue
+})
+
 const hasError = computed(() => input.value.hasError)
 const { clearError } = useBackendErrors(toRef(props, 'errorMessages'))
 const clearErrors = () => {
   if (props.errorKey)
     clearError(props.errorKey)
 }
-const onInput = (value: string | number | null) => {
+
+const updateValue = () => {
   clearErrors()
-  emit('update:modelValue', value)
+  emit('update:modelValue', clone(localValue))
+}
+const clear = () => {
+  clearErrors()
+  emit('update:modelValue', [])
 }
 
 let inputValue = $ref('')
@@ -38,39 +49,30 @@ const editTag = async (index: number) => {
 const add = () => {
   if (!inputValue)
     return
-  clearErrors()
-  const items = [...props.modelValue]
-  items.push(inputValue)
+  localValue.push(inputValue)
   inputValue = ''
-  emit('update:modelValue', items)
+  updateValue()
 }
 const remove = (index: number) => {
-  clearErrors()
-  const items = [...props.modelValue]
-  items.splice(index, 1)
-  emit('update:modelValue', items)
-}
-const clear = () => {
-  clearErrors()
-  emit('update:modelValue', [])
+  localValue.splice(index, 1)
+  updateValue()
 }
 const updateItem = (event: Event, index: number) => {
-  clearErrors()
   const target = event.target as HTMLInputElement
-  const items = [...props.modelValue]
-  items[index] = target?.value || ''
-  emit('update:modelValue', items)
+  localValue[index] = target?.value || ''
+  updateValue()
 }
 
 const onFocus = () => {
   nextTick(() => inputvalue.value.focus())
 }
 const onBlur = () => {
+  if (inputValue)
+    localValue.push(inputValue.toUpperCase())
   inputValue = ''
   itemEditing = -1
 }
 
-const content = ref(null as any)
 const getContentSize = (content: string) => {
   const div = createEl('span')
   div.innerText = content
@@ -87,7 +89,7 @@ const getContentSize = (content: string) => {
 <template>
   <QField
     ref="input"
-    :model-value="modelValue"
+    :model-value="localValue"
     :label="label"
     :rules="rules"
     :error="!!errorMessages[errorKey]"
@@ -95,14 +97,14 @@ const getContentSize = (content: string) => {
     dense
     outlined
     tabindex="0"
-    @update:model-value="onInput"
+    @update:model-value="updateValue"
     @blur="onBlur"
     @focus="onFocus"
   >
     <template #control="{ id, floatingLabel }">
       <div class="flex gap-1 w-full pt-1.5 pb-1 pr-8">
         <div
-          v-for="(item, index) in modelValue"
+          v-for="(item, index) in localValue"
           :key="index"
           class="max-w-fill flex items-center no-wrap gap-2 rounded-full pl-3 pr-1 py-1 border-1 border--primary/12 whitespace-nowrap max-w-fill tween cursor-pointer"
           :class="{
@@ -114,11 +116,12 @@ const getContentSize = (content: string) => {
           <input
             v-if="itemEditing === index"
             ref="inputcontent"
-            :value="modelValue[index]"
+            :value="localValue[index]"
             class="bg-transparent outline-none max-w-fill"
             :style="{
-              width: `${getContentSize(modelValue[index])}px`,
+              width: `${getContentSize(localValue[index])}px`,
             }"
+            oninput="this.value = this.value.toUpperCase()"
             @input="updateItem($event, index)"
             @blur="itemEditing = -1"
           >
@@ -141,6 +144,7 @@ const getContentSize = (content: string) => {
           ref="inputvalue"
           v-model="inputValue"
           class="bg-transparent outline-none flex-1 min-w-8"
+          oninput="this.value = this.value.toUpperCase()"
           @keyup.enter="add"
           @focus="inputValue = ''; itemEditing = -1"
         >

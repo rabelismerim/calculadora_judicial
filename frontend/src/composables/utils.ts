@@ -275,28 +275,51 @@ export const parseToSnake = (data: any) => unflatten(Object
     }),
   ))
 
-export const downloadFile = (textToWrite: string, fileNameToSaveAs: string, contentType = 'application/xlsx') => {
-  const byteCharacters = atob(textToWrite)
-  const byteNumbers = byteCharacters
-    .split('')
-    .map((_, index) => byteCharacters.charCodeAt(index))
-  const byteArray = new Uint8Array(byteNumbers)
-  const blob = new Blob([byteArray], { type: contentType })
-  const downloadLink = document.createElement('a')
-  downloadLink.download = fileNameToSaveAs
-  downloadLink.innerHTML = 'Download File'
-  if (window.webkitURL != null) {
-    downloadLink.href = window.webkitURL.createObjectURL(blob)
+export const saveFile = (data: any, fileName = 'download', fileExtension = 'txt') => {
+  const getType = () => {
+    if (['jpg', 'jpeg'].includes(fileExtension))
+      return 'image/jpeg'
+    if (['png', 'apng'].includes(fileExtension))
+      return 'image/png'
+    if (['gif'].includes(fileExtension))
+      return 'image/gif'
+    if (['pdf'].includes(fileExtension))
+      return 'application/pdf'
+    if (['xlsx'].includes(fileExtension))
+      return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    if (['html'].includes(fileExtension))
+      return 'text/html'
+    return 'text/plain'
   }
-  else {
-    downloadLink.href = window.URL.createObjectURL(blob)
-    downloadLink.onclick = () => {
-      document.body.removeChild(downloadLink)
+
+  const blob = (() => {
+    if (data instanceof Blob)
+      return data
+    if (fileExtension === 'csv')
+      return new Blob([new Uint8Array([239, 187, 191]), 'Text', data], { type: 'text/plain;charset=utf-8' })
+    if (['pdf', 'xlsx'].includes(fileExtension)) {
+      const byteCharacters = atob(data)
+      const byteNumbers = byteCharacters
+        .split('')
+        .map((_, index) => byteCharacters.charCodeAt(index))
+      const byteArray = new Uint8Array(byteNumbers)
+      return new Blob([byteArray], { type: getType() })
     }
-    downloadLink.style.display = 'none'
-    document.body.appendChild(downloadLink)
-  }
-  downloadLink.click()
+    return new Blob([data], { type: getType() })
+  })()
+
+  const link = document.createElement('a')
+  const url = window.webkitURL != null
+    ? window.webkitURL.createObjectURL(blob)
+    : window.URL.createObjectURL(blob)
+
+  document.body.appendChild(link)
+  link.style.display = 'none'
+  link.href = url
+  link.download = `${fileName}.${fileExtension}`
+  link.click()
+  window.URL.revokeObjectURL(url)
+  document.body.removeChild(link)
 }
 
 export const deleteAllCookies = () => {

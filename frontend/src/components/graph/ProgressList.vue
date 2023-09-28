@@ -47,8 +47,8 @@ const biggestCaractersCount = computed(() => biggestValue.value.toFixed(2).lengt
           <template v-if="valueKeys.length > 1">
             <div />
             <div />
-            <div v-for="key in valueKeys" :key="key" class="font-bold text-xs text-center">
-              {{ key.toUpperCase() }}
+            <div v-for="key in valueKeys" :key="key" class="font-bold text-xs text-center uppercase">
+              {{ key }}
             </div>
           </template>
           <template

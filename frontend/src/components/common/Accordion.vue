@@ -76,7 +76,14 @@ const onToggle = () => {
         </div>
       </div>
       <slot name="header-left" />
-      <div class="flex flex-col w-50 whitespace-nowrap">
+      <slot
+        v-if="$slots.title"
+        name="title"
+      />
+      <div
+        v-else
+        class="flex flex-col w-50 whitespace-nowrap"
+      >
         <div v-if="title" class="font-bold text-xl overflow-hidden text-ellipsis w-full">
           {{ title }}
         </div>
