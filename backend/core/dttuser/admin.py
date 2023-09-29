@@ -23,7 +23,8 @@ class CustomUserAdmin(UserAdmin):
     add_form = UserCreationForm
     fieldsets = (
         (None, {'fields': ('username',)}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'role', 'status', 'userpicture', 'user_img')}),
+        (_('Personal info'),
+         {'fields': ('first_name', 'last_name', 'email', 'role', 'status', 'userpicture', 'user_img')}),
         (_('Permissions'), {
             'fields': ('is_active', 'is_staff', 'groups', 'subgroups', 'user_permissions'),
         }),
@@ -36,6 +37,16 @@ class CustomUserAdmin(UserAdmin):
         }),
     )
     list_filter = ('is_staff', 'is_active', 'groups', 'subgroups')
+
+    actions = ['reprocess_photos']
+
+    def reprocess_photos(self, request, queryset):
+        for item in queryset:
+            item.create_photo(force=True)
+
+        self.message_user(request, _('Fotos atualizadas'))
+
+    reprocess_photos.short_description = _('Reprocessar foto dos users selecionados')
 
 
 admin.site.register(User, CustomUserAdmin)
