@@ -12,6 +12,8 @@ Modules:
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from .models import User, Subgroup
@@ -39,6 +41,15 @@ class CustomUserAdmin(UserAdmin):
     list_filter = ('is_staff', 'is_active', 'groups', 'subgroups')
 
     actions = ['reprocess_photos']
+    list_display = ('show_image', 'id', 'username', 'first_name', 'last_name', 'email', 'is_staff')
+    readonly_fields = ('show_image',)
+
+    def show_image(self, obj):
+        image_url = obj.image_url or '/static/src/vue/dist/icon-app.svg'
+        return mark_safe(f'<img src="/juca{image_url}" width="25" height="25" />')
+
+    show_image.allow_tags = True
+    show_image.short_description = _('Image')
 
     def reprocess_photos(self, request, queryset):
         for item in queryset:

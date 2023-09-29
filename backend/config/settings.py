@@ -19,7 +19,7 @@ from kombu import Exchange, Queue
 
 from core.drfmsal import IdentityWebPython
 import urllib3
-import subprocess
+from decouple import config
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 # tasks = str(subprocess.check_output(['wmic','path','win32_process','where',"Name like '%python%' and commandline like '%manage%'",'get','name,commandline']))
@@ -334,7 +334,10 @@ DRFMSAL_CONFIG = {
         'response_type': 'code'
     },
 }
-DRFMSAL_IDENTITY_WEB = IdentityWebPython()
+
+GRAPH_IMG_WIDTH = config('GRAPH_IMG_WIDTH', cast=str, default='240x240')
+
+DRFMSAL_IDENTITY_WEB = IdentityWebPython(resolution=GRAPH_IMG_WIDTH)
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
