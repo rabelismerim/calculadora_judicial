@@ -259,7 +259,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'email']
 
-    def create_photo(self):
+    def create_photo(self, force=False):
         if not self.userpicture:
             return
         try:
@@ -267,7 +267,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             image_data = base64.b64decode(self.userpicture)
             file_hash = hashlib.md5(image_data).hexdigest()
             file_name = f"{file_hash}.jpeg"
-            if not self.user_img or str(self.user_img.name) in file_name is False:
+            if (not self.user_img or str(self.user_img.name) in file_name is False) or force:
                 self.user_img.save(file_name, data, save=True)  # image is User's model field
                 self.save()
         except Exception as e:

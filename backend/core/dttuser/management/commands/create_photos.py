@@ -13,7 +13,7 @@ class Command(BaseCommand):
 
         users = User.objects.all()
         for item in users:
-            item.create_photo()
+            item.create_photo(force=True)
 
     def handle(self, *args, **options):
         self.create_photo()
