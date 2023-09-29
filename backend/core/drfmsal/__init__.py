@@ -1,6 +1,3 @@
-from django.http import HttpResponseRedirect
-from django.shortcuts import redirect
-from django.urls import reverse
 from msal import ConfidentialClientApplication
 
 from base64 import b64encode
@@ -76,10 +73,11 @@ def require_context_adapter(f):
 
 class IdentityWebPython(object):
 
-    def __init__(self, adapter=None, logger=None):
+    def __init__(self, adapter=None, logger=None, resolution='240x240'):
         self._logger = logger or Logger('IdentityWebPython')
         self._adapter = None
         self.aad_config = build_add_config()
+        self.resolution = resolution
         if adapter is not None:
             self.set_adapter(adapter)
 
@@ -221,11 +219,14 @@ class IdentityWebPython(object):
                                      f"{result['error']}: {result.get('error_description', None)}")
 
     def _get_userpicture(self, access_token):
-        graph_url = f'{self.aad_config.graph_url.rstrip("/")}/me/photos/48x48/$value'
+        graph_url = f'{self.aad_config.graph_url.rstrip("/")}/me/photos/{self.resolution}/$value'
         auth_z = f'Bearer {access_token}'
-        picture_reponse = get(graph_url, headers={'Authorization': auth_z}, stream=True, verify=False)
-        picture = picture_reponse.ok and picture_reponse.raw.read() or ''
-        return picture and b64encode(picture).decode('ascii') or None
+        picture_response = get(graph_url, headers={'Authorization': auth_z}, stream=True, verify=False)
+        picture = picture_response.raw.read() or picture_response.content or ''
+        try:
+            return b64encode(picture).decode('ascii') if picture_response.ok and picture else None
+        except (KeyError, ValueError, TypeError):
+            pass
 
     def _parse_redirect_errors(self, req_params):
         # TODO implement all errors which affect program behaviour
@@ -317,7 +318,7 @@ class IdentityWebPython(object):
                 from django.conf import settings
 
                 User = apps.get_model(settings.AUTH_USER_MODEL)
-                email = str(id_data.usermail).lower().strip()
+                email = str(id_data.usermail).lower()
                 user_view = User.objects.filter(email=email)
 
                 if not user_view and id_data.usermail is not None:
@@ -332,6 +333,12 @@ class IdentityWebPython(object):
                     user.save()
                     user.create_photo()
                 django_user = user_view.filter(is_active=True).first()
+
+                for item in user_view:
+                    if item.userpicture != id_data.userpicture or not item.user_img:
+                        item.userpicture = id_data.userpicture
+                        item.save()
+                        item.create_photo(force=True)
                 if django_user:
                     from django.contrib.auth import login
                     login(request, django_user)

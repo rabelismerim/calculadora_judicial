@@ -60,7 +60,7 @@ class SignStatusApi(AbstractViewApi):
         """))
     def get(self, request, *args, **kwargs):
         if ENABLE_SSO and ms_identity_web.id_data:
-            email = str(ms_identity_web.id_data.usermail).lower().strip()
+            email = str(ms_identity_web.id_data.usermail).lower()
             user_view = User.objects.filter(email=email)
             if ms_identity_web.id_data.usermail is not None:
                 if user_view.count() == 0:
@@ -77,10 +77,10 @@ class SignStatusApi(AbstractViewApi):
                 elif len(user_view) > 0:
                     for item in user_view:
                         # TODO salvar foto recebida em base64 para img Field e passar a url para o front
-                        if item.userpicture != ms_identity_web.id_data.userpicture:
+                        if item.userpicture != ms_identity_web.id_data.userpicture or not item.user_img:
                             item.userpicture = ms_identity_web.id_data.userpicture
                             item.save()
-                            item.create_photo()
+                            item.create_photo(force=True)
 
         return Response()
 
