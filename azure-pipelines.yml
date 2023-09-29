@@ -155,3 +155,4 @@ steps:
     OverWrite: true
     flattenFolders: false
     ignoreMakeDirErrors: true
+    ignoreErrors: true
