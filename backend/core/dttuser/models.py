@@ -274,6 +274,11 @@ class User(AbstractBaseUser, PermissionsMixin):
             print(e, 'err save img in base64')
 
     @property
+    def image_url(self):
+        if self.user_img:
+            return self.user_img.url
+
+    @property
     def is_superuser(self):
         return self.is_active and self.is_staff
 
