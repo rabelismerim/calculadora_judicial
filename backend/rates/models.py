@@ -37,6 +37,9 @@ class Source(AbstractModel):  # Indices
     description = models.CharField(_('Description'), max_length=150)
 
 
+RATE_SELIC_NAME = 'SELIC'
+
+
 class Rate(AbstractModel):  # Indices
     """
     Model for representing rates.

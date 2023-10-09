@@ -1,9 +1,8 @@
-from django.utils.translation import gettext_lazy as _, activate, deactivate
+from django.utils.translation import gettext_lazy as _
 from base.coins.models import Coins
 from creditors.classes.models import Classes
 from django.db import models
 from core.abstract.models import AbstractModel
-from rates.models import Rate
 
 
 class AbstractDescription(AbstractModel):
@@ -123,6 +122,7 @@ class AbstractCredit(AbstractModel):
     classes = models.ForeignKey(Classes, on_delete=models.PROTECT, null=True)
     coins = models.ForeignKey(Coins, on_delete=models.PROTECT, null=True)
     archive_json = models.TextField(blank=True, null=True)
+    incident = models.ForeignKey('calculation.Incident', on_delete=models.PROTECT, null=True, blank=True)
 
     class Meta:
         abstract = True

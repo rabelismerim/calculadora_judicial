@@ -21,7 +21,7 @@ from calculation.statement.models import Statement
 from calculation.statement_pj.models import FundsDocumentDescriptionPJ
 from core.abstract.models import AbstractModel
 from rates.models import Rate
-from utils import days360
+from utils import days360, get_rate_selic
 
 CHOICES_TOTAL_PF = (('A', _('Updated total')), ('D', _('Total due')))
 CHOICES_TAX_DAYS = (('T', _('SELIC rate in the period')),
@@ -114,6 +114,7 @@ class StatementPF(AbstractStatus):
         'total' field of all 'FundsDescription' objects
         """
         # TODO ver com stackholders se o valor de IRRF, INSS entra nesse primeiro total
+        # TODO somar apenas verbas antes da data do pedido se for IPCA/SELIC?
         return sum(fd.total for fd in self.fundsdescription_set.all())
 
     def _get_date_rj_filing(self) -> datetime.date or None:  # B19
@@ -376,8 +377,13 @@ class StatementPF(AbstractStatus):
             Contábil'!B19);1);SELIC!A:D;4;FALSE)-1 """
             # Todo: pegar apenas o acumulado a partir da data do ajuizamento
             # Todo: Fixar indice selic
-            rate_rj_request = rate.get_rate_by_date(date_rj_request)
-            rate_rj_filing = rate.get_rate_by_date(date_rj_filing)
+            rate_selic = get_rate_selic()
+
+            if not rate_selic:
+                self.set_selic_not_found()
+                return None
+            rate_rj_request = rate_selic.get_rate_by_date(date_rj_request)
+            rate_rj_filing = rate_selic.get_rate_by_date(date_rj_filing)
             return (rate_rj_request.get_accumulated / rate_rj_filing.get_accumulated - 1) * 100
         return max(0, days360(date_rj_filing, date_rj_request))
 
