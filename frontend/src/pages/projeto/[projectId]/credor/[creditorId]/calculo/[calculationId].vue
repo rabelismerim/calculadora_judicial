@@ -568,6 +568,7 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
                             class="flex-1"
                             :disabled="['A', 'B'].includes(calculation?.step)"
                             @paste.prevent="onPaste($event, table.values, column.field, column.type, props.rowIndex)"
+                            @update:model-value="props.row.is_extraconcursal = false"
                           />
                           <div v-else-if="column.type === 'boolean'" class="row justify-center">
                             <div
