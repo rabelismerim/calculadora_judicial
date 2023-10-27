@@ -1,5 +1,6 @@
 import datetime
 import csv
+import decimal
 import json
 import time
 
@@ -230,7 +231,6 @@ class AutomaticUpdateRates:
         If there are any new rate values, they are added to the database using the bulk_create() method.
         Finally, it updates the last_update field of the Rate object and saves it to the database.
         """
-
         rate = Rate.objects.filter(id=self.rate_id).first()
         if self.force:
             last_rate = None
@@ -240,6 +240,12 @@ class AutomaticUpdateRates:
         codes = bcb.get(rate.code, start=last_rate)
         rate_values_bulk = []
         rate_values = rate.ratevalues_set.all()
+        rate_values_ids = rate_values.values_list('id', flat=True)
+        Period.objects.filter(rate__id__in=rate_values_ids).delete()
+        Accumulated.objects.filter(rate__id__in=rate_values_ids).delete()
+        rate.ratevalues_set.all().delete()
+        rate_values = rate.ratevalues_set.all()
+
         for code in codes:
             if not rate_values.filter(date=code['date']).exists():
                 new_rate_values = RateValues(rate=rate, date=code['date'], value=code['value'])
@@ -248,6 +254,8 @@ class AutomaticUpdateRates:
         rate.last_update = datetime.datetime.now()
         rate.save()
         SetAccumulated(rate_id=rate.id).update_rate()
+        with open(f'{rate.code}_code.json', 'w', encoding='utf-8') as f:
+            f.write(json.dumps(codes, default=str))
 
 
 class SetAccumulated:
@@ -282,17 +290,20 @@ class SetAccumulated:
         if accumulated is None:
             return
 
-        for rate_value in rate_values:
+        first_rate = rate_values.first()
+
+        period = 1 + first_rate.value / 100
+
+        Accumulated.objects.update_or_create(rate=first_rate, defaults={'value': accumulated})
+        Period.objects.update_or_create(rate=first_rate, defaults={'value': period})
+
+        for rate_value in rate_values[1:]:
             value = rate_value.value
             period = 1 + value / 100
 
+            accumulated = period * accumulated
             Accumulated.objects.update_or_create(rate=rate_value, defaults={'value': accumulated})
             Period.objects.update_or_create(rate=rate_value, defaults={'value': period})
-
-            print(
-                f'data: {rate_value.date}--valor: {rate_value.value}--period: {round(period, 4)}--acumulado: {float(accumulated)}')
-
-            accumulated = Decimal(period) * Decimal(accumulated)
 
 # if __name__ == '__main__':
 #     # bcb_ = BCB()

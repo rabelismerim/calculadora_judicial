@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from rates.commands import SetAccumulated
+from rates.commands import SetAccumulated, AutomaticUpdateRates
 from rates.models import Rate
 
 
