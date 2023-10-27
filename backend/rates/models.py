@@ -74,6 +74,7 @@ class Rate(AbstractModel):  # Indices
     start_date = models.DateField(_('Fee start date'), null=True, blank=True)
     end_date = models.DateField(_('Fee end date'), null=True, blank=True)
     source = models.ForeignKey(Source, on_delete=models.PROTECT, null=True, blank=True)
+    initial_accumulated = models.DecimalField(max_digits=20, decimal_places=20, null=True, blank=True, default=None)
 
     def __init__(self, *args, **kwargs):
         """
@@ -84,6 +85,10 @@ class Rate(AbstractModel):  # Indices
         """
         super().__init__(*args, **kwargs)
         self.job = SCHEDULER.get_job(parse_job_id(self.index))
+
+    @property
+    def total_rate_values(self):
+        return self.ratevalues_set.all().count()
 
     @property
     def scheduler_status(self):

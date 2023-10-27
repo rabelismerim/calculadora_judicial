@@ -105,7 +105,7 @@ class Calculation(AbstractModel):
     # Statement N10 - Há honorários advocatícios?
     has_advocative_hours = models.BooleanField(_('Are there fees in the approved calculation?'), default=False)
 
-    rate = models.ForeignKey(Rate, on_delete=models.PROTECT, null=True, blank=True)
+    rate = models.ForeignKey(Rate, on_delete=models.PROTECT, null=True, blank=True, editable=False)
     date_rj_filing = models.DateField(_("RJ filing date"), blank=True, null=True)
     date_citation = models.DateField(_("Citation Date"), blank=True, null=True)
     occurrence = models.CharField(_('Occurrence'), max_length=1, choices=CHOICES_OCCURRENCE, default='O')

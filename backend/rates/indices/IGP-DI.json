@@ -1,6 +1,8 @@
 {
   "is_per_day": false,
   "index": "IGP-DI",
+  "initial_accumulated": 8.371376e-14,
+  "code": 190,
   "values": [
     {
       "accumulated": null,

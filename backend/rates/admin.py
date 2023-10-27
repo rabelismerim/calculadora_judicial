@@ -15,7 +15,7 @@ Modules:
 from django.contrib import admin, messages
 
 from apps.schedule.views import SCHEDULER
-from rates.commands import AutomaticUpdateRates
+from rates.commands import AutomaticUpdateRates, SetAccumulated
 from rates.models import Accumulated, Period, Rate, RateValues, RateFile, IndiceIRRF, Template, TemplateRate, \
     TemplateField, TemplateMainField, TemplateMainSummaryField, TemplateSummaryField, TemplateMainFieldDefault, \
     TemplateFieldDefault, Source, Unit
@@ -164,6 +164,72 @@ def resume_scheduler_rates(modeladmin, request, queryset):
             _('The rate {} has been successfully scheduled. Next run at {}').format(obj.index, job.next_run_time))
 
 
+def set_accumulated_rates(modeladmin, request, queryset):
+    """
+    Custom admin action to set accumulated rates for selected objects.
+
+    Args:
+        modeladmin: The ModelAdmin instance.
+        request: The HTTP request.
+        queryset: A QuerySet containing the selected objects.
+
+    This function iterates through the selected objects in the `queryset` and sets the accumulated and period rates
+    using the SetAccumulated class.
+
+    Example usage in the admin panel:
+
+    1. Select one or more objects in the admin panel.
+    2. Choose the "Set Accumulated Rates" action from the action dropdown.
+    3. Click "Go" to apply the action, which will call this function for the selected objects.
+    """
+    for obj in queryset:
+        SetAccumulated(rate_id=obj.id).update_rate()
+
+
+def update_rates(modeladmin, request, queryset):
+    """
+    Custom admin action to update missing index dates for selected rates objects.
+
+    Args:
+        modeladmin: The ModelAdmin instance.
+        request: The HTTP request.
+        queryset: A QuerySet containing the selected objects.
+
+    This function iterates through the selected objects in the `queryset` and sets the missing index dates
+    using the AutomaticUpdateRates class.
+
+    Example usage in the admin panel:
+
+    1. Select one or more objects in the admin panel.
+    2. Choose the "Set Accumulated Rates" action from the action dropdown.
+    3. Click "Go" to apply the action, which will call this function for the selected objects.
+    """
+    for obj in queryset:
+        AutomaticUpdateRates(rate_id=obj.id).update_rate()
+
+
+def force_update_rates(modeladmin, request, queryset):
+    """
+    Custom admin action to update all available dates for selected rates objects.
+
+    Args:
+        modeladmin: The ModelAdmin instance.
+        request: The HTTP request.
+        queryset: A QuerySet containing the selected objects.
+
+    This function iterates through the selected objects in the `queryset` and sets all available dates
+    using the AutomaticUpdateRates class.
+
+    Example usage in the admin panel:
+
+    1. Select one or more objects in the admin panel.
+    2. Choose the "Set Accumulated Rates" action from the action dropdown.
+    3. Click "Go" to apply the action, which will call this function for the selected objects.
+    """
+    for obj in queryset:
+        AutomaticUpdateRates(rate_id=obj.id, force=True).update_rate()
+
+
 def pause_scheduler_rates(modeladmin, request, queryset):
     """
     Pause scheduled rate updates for selected Rate objects.
@@ -247,10 +313,12 @@ class AdminRate(admin.ModelAdmin):
     selected Rate objects. It also provides search fields and list display options for easy browsing of rates.
     """
     actions = [scheduler_rates, resume_scheduler_rates, pause_scheduler_rates, remove_scheduler_rates, inactive_rates,
-               active_rates]
+               active_rates, set_accumulated_rates, update_rates, force_update_rates]
     search_fields = ('date', 'index', 'value')
-    list_display = ('scheduler_status', 'scheduler_description', 'get_periodicity_display', 'is_active')
-    readonly_fields = ('unit', 'source')
+    list_display = (
+        'code', 'scheduler_status', 'scheduler_description', 'get_periodicity_display', 'is_active',
+        'total_rate_values', 'initial_accumulated')
+    readonly_fields = ('unit', 'source', 'total_rate_values')
 
 
 class AdminRateValues(admin.ModelAdmin):

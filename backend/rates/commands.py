@@ -1,12 +1,15 @@
 import datetime
 import csv
 import json
+import time
+
 import requests
 from dateutil import parser
 from requests import JSONDecodeError
+from decimal import Decimal
 from unidecode import unidecode
 
-from rates.models import Rate, RateValues
+from rates.models import Rate, RateValues, Period, Accumulated
 
 
 class Date:
@@ -212,6 +215,52 @@ class AutomaticUpdateRates:
     Attributes:
         rate_id (int): The id of the Rate object to be updated.
     """
+
+    def __init__(self, rate_id, force=False):
+        self.rate_id = rate_id
+        self.force = force
+
+    def update_rate(self):
+        """
+        Update the associated Rate object with the latest values from the BCB API.
+
+        This method fetches the latest rate values from the BCB API and adds them to the associated Rate object.
+        It uses the get_last_date() method to determine the date of the most recent rate value and fetches data from
+        that date onwards.
+        If there are any new rate values, they are added to the database using the bulk_create() method.
+        Finally, it updates the last_update field of the Rate object and saves it to the database.
+        """
+
+        rate = Rate.objects.filter(id=self.rate_id).first()
+        if self.force:
+            last_rate = None
+        else:
+            last_rate = rate.get_last_date()
+        bcb = BCB()
+        codes = bcb.get(rate.code, start=last_rate)
+        rate_values_bulk = []
+        rate_values = rate.ratevalues_set.all()
+        for code in codes:
+            if not rate_values.filter(date=code['date']).exists():
+                new_rate_values = RateValues(rate=rate, date=code['date'], value=code['value'])
+                rate_values_bulk.append(new_rate_values)
+        RateValues.objects.bulk_create(rate_values_bulk)
+        rate.last_update = datetime.datetime.now()
+        rate.save()
+        SetAccumulated(rate_id=rate.id).update_rate()
+
+
+class SetAccumulated:
+    """
+    Class for handling automatic rate updates.
+
+    This class provides a mechanism for updating rates automatically at regular intervals.
+    It contains an update_rate() method that fetches the latest rates from the BCB API and adds them to the database if they don't already exist.
+
+    Attributes:
+        rate_id (int): The id of the Rate object to be updated.
+    """
+
     def __init__(self, rate_id):
         self.rate_id = rate_id
 
@@ -227,21 +276,29 @@ class AutomaticUpdateRates:
         """
 
         rate = Rate.objects.filter(id=self.rate_id).first()
+        rate_values = rate.ratevalues_set.all().order_by('date')
+        accumulated = rate.initial_accumulated
 
-        last_rate = rate.get_last_date()
-        bcb = BCB()
-        codes = bcb.get(rate.code, start=last_rate)
-        rate_values_bulk = []
-        rate_values = rate.ratevalues_set.all()
-        for code in codes:
-            if not rate_values.filter(date=code['date']).exists():
-                new_rate_values = RateValues(rate=rate, date=code['date'], value=code['value'])
-                rate_values_bulk.append(new_rate_values)
-        RateValues.objects.bulk_create(rate_values_bulk)
-        rate.last_update = datetime.datetime.now()
-        rate.save()
+        if accumulated is None:
+            return
 
+        for rate_value in rate_values:
+            value = rate_value.value
+            period = 1 + value / 100
+
+            Accumulated.objects.update_or_create(rate=rate_value, defaults={'value': accumulated})
+            Period.objects.update_or_create(rate=rate_value, defaults={'value': period})
+
+            print(
+                f'data: {rate_value.date}--valor: {rate_value.value}--period: {round(period, 4)}--acumulado: {float(accumulated)}')
+
+            accumulated = Decimal(period) * Decimal(accumulated)
 
 # if __name__ == '__main__':
-#     bcb_ = BCB()
-    # bcb_.get(433, start='2020-01-30', end='2020-06-01')
+#     # bcb_ = BCB()
+#     # bcb_.get(10764, start='1992-01-01', end='1992-01-30')
+#
+#     data = '01/01/1992'
+#     value = 25.60
+#     period = 1 + value / 100
+#     print(period)

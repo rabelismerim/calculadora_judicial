@@ -235,6 +235,7 @@ class StatementFunds(AbstractStatement):
         if data:
             self.create_monetary_correction(data)
             self.set_calculation_done()
+
         else:
             self.delete_monetary_correction()
 

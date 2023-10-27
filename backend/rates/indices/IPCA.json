@@ -1,6 +1,8 @@
 {
   "is_per_day": false,
   "index": "IPCA",
+  "initial_accumulated": 0.0000000076183,
+  "code": 433,
   "values": [
     {
       "accumulated": null,

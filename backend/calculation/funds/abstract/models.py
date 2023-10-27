@@ -205,11 +205,29 @@ class AbstractStatement(AbstractStatus):
             statement.set_error_indice_data_base()
             return None
 
-        data = {
+        # TODO: Alterado o valor do indice para o get acumulado ou valor
+
+        if rate_data_base.rate.initial_accumulated:  # Calculo feito pelo acumulado
+            rate_data_base_accumulated = rate_data_base.get_accumulated
+
+            if not rate_data_base_accumulated:
+                statement.set_error_indice_rj()
+                return None
+
+            rate_date_rj_accumulated = rate_date_rj.get_accumulated
+            if not rate_date_rj_accumulated:
+                statement.set_error_indice_data_base()
+                return None
+
+            return {
+                'index_data_base': rate_data_base_accumulated,
+                'index_recovering': rate_date_rj_accumulated,
+            }
+
+        return {  # Calculo feito pelo indice
             'index_data_base': rate_data_base.value,
             'index_recovering': rate_date_rj.value,
         }
-        return data
 
     def get_data_base(self):
         """

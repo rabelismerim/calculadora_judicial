@@ -1,6 +1,8 @@
 {
   "is_per_day": false,
   "index": "IPC-FIPE (SP)",
+  "initial_accumulated": 9.93910633508613e-14,
+  "code": 193,
   "values": [
     {
       "accumulated": null,
