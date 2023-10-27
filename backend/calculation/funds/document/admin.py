@@ -37,7 +37,29 @@ class StatementDocumentsAdmin(AbstractStatementFundsAdmin):
         return _('Agreement') if obj.fund.calculation.creditor.physical_person else _('Document')
 
 
-admin.site.register(FundDocument)
+class FundDocumentAdmin(admin.ModelAdmin):
+    """
+    A ModelAdmin class containing the definition of fields displayed in the
+    admin interface for the Comparative instance.
+    """
+
+    def get_form(self, request, obj=None, **kwargs):
+        """
+        Customize the form used for the Admin in the Django admin.
+
+        This method filters the 'rate' field queryset based is_active rate.
+
+        Args:
+            request (HttpRequest): The current HTTP request object.
+            obj (object): The object being edited or None for new objects.
+            **kwargs: Additional keyword arguments.
+        """
+        form = super(FundDocumentAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['rate'].queryset = form.base_fields['rate'].queryset.filter(is_active=True).filter()
+        return form
+
+
+admin.site.register(FundDocument, FundDocumentAdmin)
 admin.site.register(TotalValuesDocument)
 admin.site.register(StatementDocument, StatementDocumentsAdmin)
 admin.site.register(MonetaryCorrectionDocument)

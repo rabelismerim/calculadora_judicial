@@ -19,7 +19,30 @@ from django.contrib import admin
 
 from calculation.funds.irrf.models import StatementIRRF, TotalValuesIRRF, FundIRRF
 
-admin.site.register(FundIRRF)
+
+class FundIRRFAdmin(admin.ModelAdmin):
+    """
+    A ModelAdmin class containing the definition of fields displayed in the
+    admin interface for the Comparative instance.
+    """
+
+    def get_form(self, request, obj=None, **kwargs):
+        """
+        Customize the form used for the Admin in the Django admin.
+
+        This method filters the 'rate' field queryset based is_active rate.
+
+        Args:
+            request (HttpRequest): The current HTTP request object.
+            obj (object): The object being edited or None for new objects.
+            **kwargs: Additional keyword arguments.
+        """
+        form = super(FundIRRFAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['rate'].queryset = form.base_fields['rate'].queryset.filter(is_active=True).filter()
+        return form
+
+
+admin.site.register(FundIRRF, FundIRRFAdmin)
 admin.site.register(StatementIRRF)
 
 
