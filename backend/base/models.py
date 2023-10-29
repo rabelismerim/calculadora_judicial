@@ -18,7 +18,7 @@ class AbstractDescription(AbstractModel):
 
 class AbstractInfo(AbstractModel):
     name = EncryptedTextField(_('Description'), max_length=150)
-    legal_number = EncryptedTextField('CPF/CNPJ', max_length=18, unique=True)
+    legal_number = EncryptedTextField('CPF/CNPJ', max_length=150, unique=True)
 
     class Meta:
         abstract = True
