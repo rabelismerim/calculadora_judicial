@@ -638,3 +638,5 @@ task_queues = (Queue('media_queue', exchange=default_exchange, routing_key='vide
 # result_backend = 'rci://'
 # result_backend = celery_url
 # CELERY_RESULT_BACKEND_DB  = celery_url
+
+SALT_KEY = '0123456789abcdefghijklmnopqrstuvwxyz'

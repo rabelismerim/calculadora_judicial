@@ -3,8 +3,8 @@ from base.coins.models import Coins
 from creditors.classes.models import Classes
 from django.db import models
 from core.abstract.models import AbstractModel
-
-
+from rates.models import Rate
+from encrypted_fields.fields import EncryptedTextField
 class AbstractDescription(AbstractModel):
     description = models.CharField(_('Description'), max_length=150)
 
@@ -17,8 +17,8 @@ class AbstractDescription(AbstractModel):
 
 
 class AbstractInfo(AbstractModel):
-    name = models.CharField(_('Description'), max_length=150)
-    legal_number = models.CharField('CPF/CNPJ', max_length=18, unique=True)
+    name = EncryptedTextField(_('Description'), max_length=150)
+    legal_number = EncryptedTextField('CPF/CNPJ', max_length=150, unique=True)
 
     class Meta:
         abstract = True
