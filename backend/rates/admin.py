@@ -304,6 +304,19 @@ def active_rates(modeladmin, request, queryset):
     queryset.update(is_active=True)
 
 
+def delete_rate_values(modeladmin, request, queryset):
+    """
+    Remove all rate values associate a rate
+
+    Args:
+        modeladmin: The model admin instance.
+        request: The request object.
+        queryset: A queryset containing the selected Rate objects.
+    """
+    for rate in queryset:
+        rate.ratevalues_set.all().delete()
+
+
 class AdminRate(admin.ModelAdmin):
     """
     Model admin class for the Rate model.
@@ -313,7 +326,7 @@ class AdminRate(admin.ModelAdmin):
     selected Rate objects. It also provides search fields and list display options for easy browsing of rates.
     """
     actions = [scheduler_rates, resume_scheduler_rates, pause_scheduler_rates, remove_scheduler_rates, inactive_rates,
-               active_rates, set_accumulated_rates, update_rates, force_update_rates]
+               active_rates, set_accumulated_rates, update_rates, force_update_rates, delete_rate_values]
     search_fields = ('date', 'index', 'value')
     list_display = (
         'code', 'scheduler_status', 'scheduler_description', 'get_periodicity_display', 'is_active',

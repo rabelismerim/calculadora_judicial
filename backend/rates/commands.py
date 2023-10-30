@@ -6,6 +6,7 @@ import time
 
 import requests
 from dateutil import parser
+from django.db.models import Avg, F
 from requests import JSONDecodeError
 from decimal import Decimal
 from unidecode import unidecode
@@ -74,6 +75,9 @@ class BCB:
         :return: A JSON object with the retrieved data.
         :raises Exception: If the request returns an error status.
         """
+
+        if not code or int(code) < 1:
+            print('Código do Bacen não informado')
         payload = self._get_payload(start, end)
         res = requests.get(self.__base_url.format(code), params=payload)
         if res.status_code != 200:
@@ -291,6 +295,9 @@ class SetAccumulated:
             return
 
         first_rate = rate_values.first()
+        if not first_rate:
+            print('Rate values não cadastrado')
+            return
 
         period = 1 + first_rate.value / 100
 
@@ -305,11 +312,67 @@ class SetAccumulated:
             Accumulated.objects.update_or_create(rate=rate_value, defaults={'value': accumulated})
             Period.objects.update_or_create(rate=rate_value, defaults={'value': period})
 
-# if __name__ == '__main__':
-#     # bcb_ = BCB()
-#     # bcb_.get(10764, start='1992-01-01', end='1992-01-30')
-#
-#     data = '01/01/1992'
-#     value = 25.60
-#     period = 1 + value / 100
-#     print(period)
+        self.update_average()
+
+    def update_average(self):
+        """
+        Update the average values of a Rate instance.
+
+        This method calculates and updates the average values for a Rate instance. It first retrieves the Rate
+        object based on the provided `rate_id`, and then calculates the average values for the specified time period.
+
+        The algorithm follows these steps:
+        1. Retrieve the Rate object based on `rate_id`.
+        2. Delete all existing rate values associated with the Rate instance.
+        3. Retrieve the initial accumulated value from the Rate object.
+        4. If there's no initial accumulated value, the method returns without updating.
+        5. Get a list of media rates associated with the Rate.
+        6. If there are fewer than 2 media rates, the method returns without updating.
+        7. Retrieve rate values for the specified time period from the media rates.
+        8. Calculate average values and periods for these rate values.
+        9. Create or update the first rate value with the calculated average value and accumulated value.
+        10. Update the associated accumulated and period values for the first rate value.
+        11. Loop through the remaining rate values, updating them with average values and updating accumulated and
+        period values.
+
+        This method is designed to maintain the average values for a Rate object based on its related media rates.
+
+        Note: Make sure to pass the `rate_id` when calling this method to update the correct Rate object.
+        """
+
+        rate = Rate.objects.filter(id=self.rate_id).first()
+        accumulated = rate.initial_accumulated
+
+        if not accumulated:
+            return
+
+        media_rates_ids = rate.average.all().values_list('id', flat=True)
+
+        if len(media_rates_ids) < 2:
+            return
+
+        rate.ratevalues_set.all().delete()
+
+        rate_values = RateValues.objects.filter(rate__id__in=media_rates_ids, date__gte=rate.start_indice)
+        rate_values_with_average = rate_values.values('date').order_by('date').annotate(
+            average_period=Avg(F('period__value')), average_value=Avg(F('value'))).filter(average_period__isnull=False)
+
+        first_rate = rate_values_with_average.first()
+        first_rate_average_value = first_rate['average_value']
+        first_rate_average_period = first_rate['average_period']
+
+        new_rate_value, created = RateValues.objects.update_or_create(rate=rate, date=first_rate["date"],
+                                                                      defaults={'value': first_rate_average_value})
+        Accumulated.objects.update_or_create(rate=new_rate_value, defaults={'value': accumulated})
+        Period.objects.update_or_create(rate=new_rate_value, defaults={'value': first_rate_average_period})
+
+        for rate_value in rate_values_with_average[1:]:
+            average_value = rate_value["average_value"]
+            average_period = rate_value["average_period"]
+            rate_date = rate_value["date"]
+            accumulated = average_period * accumulated
+
+            new_rate_value, created = RateValues.objects.update_or_create(rate=rate, date=rate_date,
+                                                                          defaults={'value': average_value})
+            Accumulated.objects.update_or_create(rate=new_rate_value, defaults={'value': accumulated})
+            Period.objects.update_or_create(rate=new_rate_value, defaults={'value': average_period})

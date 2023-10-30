@@ -207,7 +207,7 @@ class AbstractStatement(AbstractStatus):
 
         # TODO: Alterado o valor do indice para o get acumulado ou valor
 
-        if rate_data_base.rate.initial_accumulated:  # Calculo feito pelo acumulado
+        if rate_data_base.rate.initial_accumulated or rate_data_base.rate.start_indice:  # Calculo feito pelo acumulado
             rate_data_base_accumulated = rate_data_base.get_accumulated
 
             if not rate_data_base_accumulated:
