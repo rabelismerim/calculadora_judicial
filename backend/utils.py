@@ -79,6 +79,7 @@ def doc(docstring):
     :return:
         A decorator function that adds the input docstring to the decorated function.
     """
+
     def decorate(fn):
         fn.__doc__ = _(docstring.lstrip())
         return fn
@@ -132,3 +133,8 @@ def log_info(*args):
     logger.addHandler(console_handler)
     for arg in args:
         logger.info(arg)
+
+
+def get_rate_selic():
+    from rates.models import RATE_SELIC_NAME, Rate
+    return Rate.objects.filter(index=RATE_SELIC_NAME).first()

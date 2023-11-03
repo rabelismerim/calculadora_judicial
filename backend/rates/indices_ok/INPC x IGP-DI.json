@@ -1,0 +1,19 @@
+{
+  "is_per_day": false,
+  "index": "INPC x IGP-DI",
+  "initial_accumulated": 1,
+  "average": [
+    "INPC",
+    "IGP-DI"
+  ],
+  "start_indice": "1994-07-01",
+  "code": 0,
+  "values": [
+    {
+      "accumulated": 1,
+      "period": 1.0661,
+      "date": "1994-07-01",
+      "value": 6.609999999999999
+    }
+  ]
+}

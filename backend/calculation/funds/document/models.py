@@ -285,7 +285,7 @@ class StatementDocument(AbstractStatement):
             send_signal_post_save (bool): Set to True to send a post-save signal. Default is True.
         """
         save = super(StatementDocument, self).save(*args, **kwargs)
-        if send_signal_post_save and self.is_extraconcursal is False:
+        if send_signal_post_save:
             gen_statement_documents.send(sender=self.__class__, instance=self)
 
         return save

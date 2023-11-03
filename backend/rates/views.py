@@ -86,9 +86,6 @@ class AbstractRateApi(AbstractViewApi):
         'get': _("""Returns the rate and its accumulated values, period and date""")
     }
 
-    def get_queryset(self):
-        return {'is_active': True}
-
 
 class RateApi(AbstractRateApi):
     """HTTP methods for Rate"""
@@ -109,6 +106,9 @@ class RateApi(AbstractRateApi):
         new_rate = serializer.validated_data
         return JsonResponse({'rate': self.serializer_class(new_rate, many=False).data}, status=status.HTTP_201_CREATED)
 
+    def get_queryset(self):
+        return {'is_active': True}
+
 
 class RateAdminApi(AbstractViewApi):
     """HTTP methods for Rate"""
@@ -128,6 +128,9 @@ class RateAdminApi(AbstractViewApi):
 
     query_params = query_params
 
+    def get_queryset(self):
+        return {'is_active': True}
+
 
 class RateDetailApi(AbstractRateApi):
     """HTTP methods for Rate detail"""
@@ -137,6 +140,9 @@ class RateDetailApi(AbstractRateApi):
         'get': RateSchema,
         'put': RateUpdateSchema,
     }
+
+    def get_queryset(self):
+        return {'is_active': True}
 
 
 class RateValueDetailApi(AbstractRateApi):

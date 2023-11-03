@@ -214,6 +214,7 @@ class CalculationApi(AbstractCalculationApi):
 
             if claim_lawyer:
                 new_criterion['claim_lawyer'] = Claim.objects.create(
+                    incident=claim_lawyer.incident,
                     classes=claim_lawyer.classes, coins=claim_lawyer.coins, archive_json=claim_lawyer.archive_json)
 
             criterion = Criterion.objects.create(**new_criterion)
@@ -223,6 +224,7 @@ class CalculationApi(AbstractCalculationApi):
             if claims_creditor:
                 for claim_creditor in claims_creditor:
                     new_claim = Claim.objects.create(
+                        incident=claim_creditor.incident,
                         classes=claim_creditor.classes, coins=claim_creditor.coins,
                         archive_json=claim_creditor.archive_json)
                     CriterionClaimCredor.objects.create(

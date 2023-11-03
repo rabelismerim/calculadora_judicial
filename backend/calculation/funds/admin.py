@@ -20,7 +20,6 @@ from django.contrib import admin
 
 from calculation.funds.models import Funds, StatementFunds, MonetaryCorrection, TotalValuesFunds
 
-
 readonly_fields = ['corrected_value', 'index_data_base', 'index_recovering']
 
 
@@ -29,7 +28,22 @@ class FundsAdmin(admin.ModelAdmin):
     A ModelAdmin class containing the definition of fields displayed in the
     admin interface for the Comparative instance.
     """
-    readonly_fields = ['rate']
+
+    def get_form(self, request, obj=None, **kwargs):
+        """
+        Customize the form used for the Admin in the Django admin.
+
+        This method filters the 'rate' field queryset based is_active rate.
+
+        Args:
+            request (HttpRequest): The current HTTP request object.
+            obj (object): The object being edited or None for new objects.
+            **kwargs: Additional keyword arguments.
+        """
+        form = super(FundsAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['rate'].queryset = form.base_fields['rate'].queryset.filter(is_active=True).filter()
+        return form
+
 
 class AbstractStatementFundsAdmin(admin.ModelAdmin):
     """

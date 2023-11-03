@@ -45,19 +45,8 @@ class CustomUserAdmin(UserAdmin):
     readonly_fields = ('show_image',)
 
     def show_image(self, obj):
-        default_image_url = '/static/src/vue/dist/icon-app.svg'
-
-        onerror_script = (
-            "if (!this.getAttribute('data-default-tried')) {"
-            "    this.setAttribute('data-default-tried', 'true');"
-            f"    this.src = '/juca{default_image_url}';"
-            "}"
-        )
-        if obj.image_url:
-            return mark_safe(
-                f'<img src="/juca{obj.image_url}" width="25" height="25" onerror="{onerror_script}" />')
-
-        return mark_safe(f'<img src="/juca{default_image_url}" width="25" height="25" />')
+        image_url = obj.image_url or '/static/src/vue/dist/icon-app.svg'
+        return mark_safe(f'<img src="/juca{image_url}" width="25" height="25" />')
 
     show_image.allow_tags = True
     show_image.short_description = _('Image')

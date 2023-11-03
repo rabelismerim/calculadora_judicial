@@ -40,6 +40,8 @@ class AbstractClassesFundsSchema(AbstractDescriptionSchema):
     template_id = serializers.UUIDField(required=True, write_only=True)
     template = TemplateSchema(read_only=True)
     total = serializers.FloatField(source='get_total_summed', read_only=True)
+    incident = serializers.CharField(source='incident__number', read_only=True)
+    incident_id = serializers.UUIDField(write_only=True, required=False, allow_null=True)
 
 
 class AbstractClassesUpdateSchema(AbstractDescriptionSchema):

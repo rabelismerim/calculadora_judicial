@@ -39,10 +39,7 @@ admin.site.site_url = '/juca/admin/login'
 
 @ensure_csrf_cookie
 def frontend_index(request):
-    if request.META.get('REQUEST_URI', 'none')[:5].upper() == '/juca':
-        return HttpResponseRedirect("/")
-    else:
-        return render(request, template_name='index.html')
+    return render(request, template_name='index.html')
 
 
 class LogoutView(APIView):
