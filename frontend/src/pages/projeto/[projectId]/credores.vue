@@ -119,7 +119,7 @@ const loadCreditors = async () => {
             creditorId: id,
             noticeAj,
             noticeRecovering,
-            claimCreditor,
+            claimCreditor: claimCreditor.map((creditor: any) => ({ ...creditor, incidentId: creditor?.incident?.id })),
             claimLawyer,
           },
         }
