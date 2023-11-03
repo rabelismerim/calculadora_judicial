@@ -62,6 +62,7 @@ CHOICES_STATUS_FUND = (('S', _('Requested')), ('C', _('Concluded')), ('E', _('In
                        ('D', _('Calculation failed - no date Citation')),
                        ('B', _('Calculation failed - in exclusion')),
                        ('I', _('Registered')),
+                       ('J', _('Calculation failed - Rate SELIC not found')),
                        )
 
 
@@ -112,6 +113,10 @@ class AbstractStatus(AbstractModel):
     def set_calculation_registered(self):
         """Sets the status of the calculation to 'I'. Calculation registered"""
         self._set_status('I')
+
+    def set_selic_not_found(self):
+        """Sets the status of the calculation to 'J'. Rate SELIC not found"""
+        self._set_status('J')
 
     @staticmethod
     def _check_status_choice(value: str):
@@ -200,11 +205,29 @@ class AbstractStatement(AbstractStatus):
             statement.set_error_indice_data_base()
             return None
 
-        data = {
+        # TODO: Alterado o valor do indice para o get acumulado ou valor
+
+        if rate_data_base.rate.initial_accumulated or rate_data_base.rate.start_indice:  # Calculo feito pelo acumulado
+            rate_data_base_accumulated = rate_data_base.get_accumulated
+
+            if not rate_data_base_accumulated:
+                statement.set_error_indice_rj()
+                return None
+
+            rate_date_rj_accumulated = rate_date_rj.get_accumulated
+            if not rate_date_rj_accumulated:
+                statement.set_error_indice_data_base()
+                return None
+
+            return {
+                'index_data_base': rate_data_base_accumulated,
+                'index_recovering': rate_date_rj_accumulated,
+            }
+
+        return {  # Calculo feito pelo indice
             'index_data_base': rate_data_base.value,
             'index_recovering': rate_date_rj.value,
         }
-        return data
 
     def get_data_base(self):
         """

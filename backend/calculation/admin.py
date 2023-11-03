@@ -22,7 +22,23 @@ admin.site.register(SpecialApprover)
 
 
 class CalculationModelAdmin(admin.ModelAdmin):
-    readonly_fields = ('premises', 'approver', 'special_approvers', 'executor', 'reviewer', 'get_classes', 'get_total_funds')
+    readonly_fields = (
+        'premises', 'approver', 'special_approvers', 'executor', 'reviewer', 'get_classes', 'get_total_funds')
+
+    def get_form(self, request, obj=None, **kwargs):
+        """
+        Customize the form used for the Admin in the Django admin.
+
+        This method filters the 'rate' field queryset based is_active rate.
+
+        Args:
+            request (HttpRequest): The current HTTP request object.
+            obj (object): The object being edited or None for new objects.
+            **kwargs: Additional keyword arguments.
+        """
+        form = super(CalculationModelAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['rate'].queryset = form.base_fields['rate'].queryset.filter(is_active=True).filter()
+        return form
 
 
 admin.site.register(Calculation, CalculationModelAdmin)

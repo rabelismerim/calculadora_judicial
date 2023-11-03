@@ -1,6 +1,6 @@
 {
   "is_per_day": false,
-  "index": "IPCA-E",
+  "index": "IPCA-E/SELIC",
   "values": [
     {
       "accumulated": 1.0,

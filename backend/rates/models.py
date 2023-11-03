@@ -37,6 +37,9 @@ class Source(AbstractModel):  # Indices
     description = models.CharField(_('Description'), max_length=150)
 
 
+RATE_SELIC_NAME = 'SELIC'
+
+
 class Rate(AbstractModel):  # Indices
     """
     Model for representing rates.
@@ -71,6 +74,12 @@ class Rate(AbstractModel):  # Indices
     start_date = models.DateField(_('Fee start date'), null=True, blank=True)
     end_date = models.DateField(_('Fee end date'), null=True, blank=True)
     source = models.ForeignKey(Source, on_delete=models.PROTECT, null=True, blank=True)
+    # initial_accumulated = models.DecimalField(max_digits=30, decimal_places=30, null=True, blank=True, default=None)
+    initial_accumulated = models.FloatField(null=True, blank=True, default=None)
+
+    average = models.ManyToManyField('self', blank=True)  # Usado para calcular a media entre indices
+    start_indice = models.DateField("Data de inicio das medias", null=True,
+                                    blank=True)  # A data inicial para calcular a media
 
     def __init__(self, *args, **kwargs):
         """
@@ -81,6 +90,10 @@ class Rate(AbstractModel):  # Indices
         """
         super().__init__(*args, **kwargs)
         self.job = SCHEDULER.get_job(parse_job_id(self.index))
+
+    @property
+    def total_rate_values(self):
+        return self.ratevalues_set.all().count()
 
     @property
     def scheduler_status(self):
@@ -204,7 +217,7 @@ class RateValues(AbstractModel):  # Indices
     __str__() -> str
         Returns a string representation of the object.
     """
-    rate = models.ForeignKey(Rate, on_delete=models.PROTECT)
+    rate = models.ForeignKey(Rate, on_delete=models.CASCADE)
     date = models.DateField(_('Rate date'))
     value = models.FloatField(_('Rate value'))
 
@@ -265,7 +278,7 @@ class Period(AbstractCalcule):
     --------
     (inherited from the AbstractCalcule class)
     """
-    rate = models.OneToOneField(RateValues, on_delete=models.PROTECT)
+    rate = models.OneToOneField(RateValues, on_delete=models.CASCADE)
 
 
 class Accumulated(AbstractCalcule):
@@ -281,7 +294,7 @@ class Accumulated(AbstractCalcule):
     --------
     (inherited from the AbstractCalcule class)
     """
-    rate = models.OneToOneField(RateValues, on_delete=models.PROTECT)
+    rate = models.OneToOneField(RateValues, on_delete=models.CASCADE)
 
 
 class RateFile(AbstractModel):
@@ -297,9 +310,8 @@ class RateFile(AbstractModel):
     --------
     (inherited from the AbstractCalcule class)
     """
-    rate = models.OneToOneField(Rate, on_delete=models.PROTECT)
-    file = models.FileField(
-        _('Rate file'), upload_to=f'juca/indices/%Y-%m-%d/')
+    rate = models.OneToOneField(Rate, on_delete=models.CASCADE)
+    file = models.FileField(_('Rate file'), upload_to=f'juca/indices/%Y-%m-%d/')
 
     def __str__(self):
         return str(_("rate: {} | file: {}").format(self.rate, self.file.name))
