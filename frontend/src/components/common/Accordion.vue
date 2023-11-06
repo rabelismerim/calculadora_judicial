@@ -82,10 +82,11 @@ const onToggle = () => {
       />
       <div
         v-else
-        class="flex flex-col w-50 whitespace-nowrap"
+        class="flex flex-col whitespace-nowrap"
       >
         <div v-if="title" class="font-bold text-xl overflow-hidden text-ellipsis w-full">
           {{ title }}
+          <QTooltip>{{ title }}</QTooltip>
         </div>
         <div v-if="subtitle" class="overflow-hidden text-ellipsis w-full">
           {{ subtitle }}
