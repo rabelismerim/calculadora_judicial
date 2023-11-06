@@ -453,12 +453,21 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
             v-for="(credit, creditIndex) in calculation?.credits as any[]"
             :key="creditIndex"
             v-model="credit.isOpen"
-            :title="`Crédito ${credit?.template?.name}`"
+            :title="`Crédito ${credit?.template?.name} - ${credit?.rate?.index}`"
             :subtitle="credit.name"
             class="rounded-0"
             @open="openCredit(credit)"
           >
             <template #header-right>
+              <div class="self-center flex-1 flex justify-end text-lg flex gap-3">
+                <div class="color-gray-9">
+                  {{ credit.classes.classeDisplay }}
+                </div>
+                <div class="font-bold">
+                  Total R$
+                  {{ formatNumber((typeof credit?.total === 'number' ? credit?.total : credit?.total?.totalCorrected) || 0, 2) }}
+                </div>
+              </div>
               <div class="flex gap-2 self-center">
                 <Btn
                   v-if="!['A', 'B'].includes(calculation?.step)"
@@ -468,15 +477,6 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
                   :disabled="!hasPermissions('delete_calculation')"
                   @click.stop="removeCredit(credit)"
                 />
-              </div>
-              <div class="self-center flex-1 flex justify-end text-lg flex gap-3">
-                <div class="color-gray-9">
-                  {{ credit.classes.classeDisplay }}
-                </div>
-                <div class="font-bold">
-                  Total R$
-                  {{ formatNumber((typeof credit?.total === 'number' ? credit?.total : credit?.total?.totalCorrected) || 0, 2) }}
-                </div>
               </div>
             </template>
             <QForm ref="forms" @submit.prevent>
