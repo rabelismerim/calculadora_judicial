@@ -65,7 +65,7 @@ class FileSchema(AbstractDescriptionSchema):
     Usage example:
     serializer = FileSchema()
     """
-    task = serializers.SerializerMethodField(read_only=True)
+    task = TaskResultSerializer(source='task_result', read_only=True)
     errors = ErrorFileSchema(source='errorfile_set', read_only=True, many=True)
 
     class Meta:
@@ -73,11 +73,6 @@ class FileSchema(AbstractDescriptionSchema):
         fields = ('id', 'file', 'task', 'object_id', 'errors')
         read_only_fields = ('id', 'task_result', 'task_id', 'errors')
         write_only_fields = ('file',)
-
-    def get_task(self, obj):
-        if obj.task_result:
-            return TaskResultSerializer(obj.task_result).data
-        return obj.get_status_pending_task()
 
 
 class FileListSchema(AbstractDescriptionSchema):

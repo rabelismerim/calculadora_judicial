@@ -102,8 +102,7 @@ class CustomSchema(AutoSchema):
             example = {}
             dynamic_methods = big.bignumbermethod_set.all()
             for method in dynamic_methods:
-                new_field = getattr(
-                    serializers, method.get_field_type_display())()
+                new_field = getattr(serializers, method.get_field_type_display())()
                 big_field_type = self.map_field(new_field)['type']
                 example[method.name] = big_field_type
 
@@ -111,8 +110,7 @@ class CustomSchema(AutoSchema):
                     method_fields = method.get_fields()
                     new_example = {}
                     for method_field in method_fields:
-                        field_schema = self.map_field(
-                            getattr(serializers, method_field.get_field_type_display())())
+                        field_schema = self.map_field(getattr(serializers, method_field.get_field_type_display())())
                         field_type = field_schema['type']
                         format_ = field_schema.get('format')
                         if format_:
@@ -140,8 +138,7 @@ class CustomSchema(AutoSchema):
         Modifies the operation to include parameter descriptions.
         """
         op = super(CustomSchema, self).get_operation(path, method)
-        op['parameters'] = list(
-            map(lambda x: {**x, 'description': str(x['description'])}, op['parameters']))
+        op['parameters'] = list(map(lambda x: {**x, 'description': str(x['description'])}, op['parameters']))
         if len(op['parameters']) > 1:
             for x in op['parameters']:
                 if x['required']:
@@ -160,8 +157,7 @@ class CustomSchema(AutoSchema):
         if hasattr(view, 'tags') and isinstance(view.tags, list):
             return list(map(str, view.tags))
         if view.model:
-            app_label = str(
-                view.model._meta.app_config.verbose_name.split('.')[0].capitalize())
+            app_label = str(view.model._meta.app_config.verbose_name.split('.')[0].capitalize())
             app = get_app_label_from_model(view.model)
             if app.lower() in app_label.lower():
                 return ['{}'.format(app)]
@@ -371,8 +367,7 @@ class AbstractViewApi(generics.GenericAPIView):
 
         serializer = self.get_serializer_class()
         if id_:
-            obj = self.model.objects.exclude(
-                **query_exclude).filter(id=id_, **query, **kwargs).first()
+            obj = self.model.objects.exclude(**query_exclude).filter(id=id_, **query, **kwargs).first()
             if not obj:
                 raise Http404
             return serializer(obj, many=False, exclude=exclude).data
@@ -476,15 +471,13 @@ class AbstractViewApi(generics.GenericAPIView):
         response = super().dispatch(request, *args, **kwargs)
         if response.status_code in [200, 201] and request.method == 'GET':
             try:
-                self.__set_key(cache_key, fernet.encrypt(
-                    response.content.decode()))
+                self.__set_key(cache_key, fernet.encrypt(response.content.decode()))
             except ContentNotRenderedError:
                 pass
 
         if request.method != 'GET':
             self.delete_cache_from_app(self.model)
-            related_serializers = find_related_serializers(
-                self.get_serializer_class())
+            related_serializers = find_related_serializers(self.get_serializer_class())
             for serializer_cls in related_serializers:
                 model_class = serializer_cls.Meta.model
                 self.delete_cache_from_app(model_class)
@@ -496,8 +489,7 @@ class AbstractViewApi(generics.GenericAPIView):
         query = self.get_query(id_=id_)
         if self.pagination_class:
             return self.get_paginated_response(self.paginate_queryset(query))
-        model_name = self.model._meta.verbose_name_plural.lower(
-        ) if not id_ else self.get_model_name()
+        model_name = self.model._meta.verbose_name_plural.lower() if not id_ else self.get_model_name()
         return JsonResponse({model_name.replace(' ', '_'): query})
 
     def post(self, request, *args, **kwargs):

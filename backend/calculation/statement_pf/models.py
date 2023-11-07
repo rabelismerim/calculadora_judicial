@@ -366,7 +366,7 @@ class StatementPF(AbstractStatus):
         Calculates and returns the tax days value based on the rate, 'date_rj_filing', and 'date_rj_request'
         """
         rate = self._get_rate()
-        date_rj_filing = self._get_date_rj_filing()  # Ajuizamento
+        date_rj_filing = self._get_date_rj_filing()
         date_rj_request = self._get_date_rj_request()
         choice = self._calcule_get_tax_days_description()
         if not choice:

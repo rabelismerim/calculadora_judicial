@@ -11,8 +11,6 @@ from django.db import models
 from django.db.models import signals
 from django.dispatch import receiver
 from django_celery_results.models import TaskResult
-from celery.states import PENDING
-from rest_framework.exceptions import ValidationError
 
 from core.abstract.models import AbstractModel
 from utils import _
@@ -72,12 +70,6 @@ class File(AbstractModel):
     object_id = models.UUIDField()
     content_object = GenericForeignKey('content_type', 'object_id')
 
-    def get_status_pending_task(self):
-        return {
-            "task_id": self.task_id,
-            "status": PENDING
-        }
-
     def get_task_result(self):
         if self.task_result:
             return self.task_result.get_status_display()
@@ -85,11 +77,7 @@ class File(AbstractModel):
     def get_excel_headers(self) -> tuple:
         with self.file as file_obj:
             read = file_obj.read()
-            try:
-                df = pd.read_excel(read)
-            except ValueError:
-                msg = _('Excel is not in a readable format')
-                raise ValidationError(_(msg))
+            df = pd.read_excel(read)
             headers = df.columns.tolist()
 
         return self.id, read, headers
