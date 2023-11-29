@@ -196,7 +196,11 @@ class AbstractStatement(AbstractStatus):
             return None
 
         rate_data_base = rate.get_rate_by_date(data_base)
-        rate_date_rj = rate.get_rate_by_date(date_rj)
+
+        if rate.is_ipca_e_selic():  # IPCA-E/SELIC usa a data de ajuizamento para os calculos
+            rate_date_rj = rate.get_rate_by_date(calculation.get_date_rj_filing())
+        else:
+            rate_date_rj = rate.get_rate_by_date(date_rj)
 
         if not rate_date_rj:
             statement.set_error_indice_rj()
@@ -205,9 +209,15 @@ class AbstractStatement(AbstractStatus):
             statement.set_error_indice_data_base()
             return None
 
-        # TODO: Alterado o valor do indice para o get acumulado ou valor
+        # Taxa como IPCA-SELIC pode ser calculada sem o index
+        if hasattr(self.fund, 'apply_monetary_correction') and not self.fund.apply_monetary_correction:
+            return {
+                'index_data_base': 1,
+                'index_recovering': 1,
+            }
 
         if rate_data_base.rate.initial_accumulated or rate_data_base.rate.start_indice:  # Calculo feito pelo acumulado
+
             rate_data_base_accumulated = rate_data_base.get_accumulated
 
             if not rate_data_base_accumulated:
@@ -300,7 +310,7 @@ class AbstractMonetaryCorrection(AbstractModel):
 
     @staticmethod
     def _calc_corrected_value(index_recovering: float, index_data_base: float, total_value: float) -> float:
-        return index_recovering / index_data_base * total_value
+        return index_data_base / index_recovering * total_value
 
     @property
     def corrected_value(self) -> float:

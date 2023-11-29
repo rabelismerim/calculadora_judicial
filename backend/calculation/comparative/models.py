@@ -278,10 +278,8 @@ class ApprovedCalculation(AbstractDescription):  # Calculo homologado
 
     def get_default_interest_dtt(self) -> float:
         """Returns float: The default interest value from the associated CalculationStatement object."""
-        try:
-            return self.comparative.calculation.statement.get_default_interest()
-        except:
-            return 0
+        return self.comparative.calculation.statement.get_default_interest_value()
+
 
     def get_advocative_hours_dtt(self) -> float:
         """Returns float: The total credited advocative hours value from the associated CalculationStatement object."""

@@ -3,7 +3,7 @@
 ### O QUE É
 
 > * Sistema que integra as equipes jurídica, de cálculo e financeira do RJ /Processos de falência (acompanhamento de
-    passivos)
+    passivos), fornecendo módulos de cálculos, gerenciamento de credores e equipes.
 
 ### A QUEM SE DESTINA / OBJETIVO
 

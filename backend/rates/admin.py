@@ -29,11 +29,15 @@ admin.site.register(IndiceIRRF)
 admin.site.register(Template)
 admin.site.register(TemplateRate)
 admin.site.register(TemplateField)
-admin.site.register(TemplateMainField)
 admin.site.register(TemplateSummaryField)
 admin.site.register(TemplateFieldDefault)
 admin.site.register(TemplateMainFieldDefault)
 admin.site.register(TemplateMainSummaryField)
+
+
+@admin.register(TemplateMainField)
+class TemplateMainFieldAdmin(admin.ModelAdmin):
+    readonly_fields = ('default',)
 
 
 def load_files(modeladmin, request, queryset):

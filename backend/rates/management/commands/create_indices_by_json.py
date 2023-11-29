@@ -15,6 +15,7 @@ def create_indices():
 
         with open(f'{base}/{file}', 'r', encoding='utf-8') as f:
             index = json.loads(f.read())
+
         index_name = index.get('index')
         is_per_day = index.get('is_per_day')
         rows = index.get('values')
@@ -23,6 +24,9 @@ def create_indices():
         start_indice = index.get('start_indice')
         average = index.get('average', [])
 
+        if index_name != 'IPCA-E/SELIC':
+            continue
+        print(index_name, 'index_name\n\n')
         cont = 0
 
         if code:

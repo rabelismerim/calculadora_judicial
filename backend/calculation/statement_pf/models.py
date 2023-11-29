@@ -20,14 +20,14 @@ from calculation.models import Calculation
 from calculation.statement.models import Statement
 from calculation.statement_pj.models import FundsDocumentDescriptionPJ
 from core.abstract.models import AbstractModel
-from rates.models import Rate
+from rates.models import Rate, CalculeRate
 from utils import days360, get_rate_selic
 
 CHOICES_TOTAL_PF = (('A', _('Updated total')), ('D', _('Total due')))
 CHOICES_TAX_DAYS = (('T', _('SELIC rate in the period')),
                     ('D', _('Delayed days')))
 CHOICES_DEFAULT_INTEREST_DUE = (
-    ('T', _('Total after default interest')), ('D', _('Total due')))
+    ('T', _('Total após juros de mora')), ('D', _('Total devido')))
 
 
 class StatementPF(AbstractStatus):
@@ -59,7 +59,7 @@ class StatementPF(AbstractStatus):
         _get_rate: Gets the rate.
         total_conclusion: Calculates the total conclusion.
         _has_tax: Determines if a statement has tax.
-        _get_appeal_deposit: Gets the appeal deposit for a statement.
+        get_is_appeal_deposit: Gets the appeal deposit for a statement.
         _calcule_get_description: Calculates the description for a statement.
         _calcule_get_tax_days_description: Calculates the tax day description.
         _calcule_get_tax_days_value: Calculates the tax day value.
@@ -93,28 +93,34 @@ class StatementPF(AbstractStatus):
         """
         return self.statement.calculation.recurral_deposit
 
-    def get_default_interest(self) -> float:
+    def get_default_interest_value(self) -> float:
         """Returns the value of the default interest due if it exists, otherwise returns None"""
         if hasattr(self, 'defaultinterest'):
             return self.defaultinterest.value
         return 0
 
-    def get_default_interest_due(self) -> float or None:
+    def get_default_interest_due_value(self) -> float or None:
+        """
+        Excel C38
+        Returns the value of the default interest due if it exists, otherwise returns None
+        """
+        get_default_interest_due = self.get_default_interest_due()
+        if get_default_interest_due:
+            return get_default_interest_due.value
+
+    def get_default_interest_due(self):
         """
         Excel C38
         Returns the value of the default interest due if it exists, otherwise returns None
         """
         if hasattr(self, 'defaultinterestdue'):
-            return self.defaultinterestdue.value
-        return None
+            return self.defaultinterestdue
 
     def _get_calculate_total_value(self) -> float:
         """
         Calculates and returns the total value by summing the
         'total' field of all 'FundsDescription' objects
         """
-        # TODO ver com stackholders se o valor de IRRF, INSS entra nesse primeiro total
-        # TODO somar apenas verbas antes da data do pedido se for IPCA/SELIC?
         return sum(fd.total for fd in self.fundsdescription_set.all())
 
     def _get_date_rj_filing(self) -> datetime.date or None:  # B19
@@ -192,7 +198,7 @@ class StatementPF(AbstractStatus):
 
         If either 'date_rj_filing' or ' date_rj_request' does not exist, returns None
         """
-        if self._get_appeal_deposit():
+        if self.get_is_appeal_deposit():
             date_rj_filing = self._get_date_rj_filing()
             date_rj_request = self._get_date_rj_request()
             recurral_deposit = self.get_recurral_deposit()
@@ -200,8 +206,10 @@ class StatementPF(AbstractStatus):
                 return None
             if date_rj_filing >= date_rj_request:
                 return self._get_total() + recurral_deposit
-            if self.get_default_interest_due():
-                return self.get_default_interest_due() + recurral_deposit
+
+            default_interest_due_value = self.get_default_interest_due_value()
+            if default_interest_due_value:
+                return default_interest_due_value + recurral_deposit
             return recurral_deposit
 
     def _get_creditor_default_interest(self) -> float:
@@ -224,12 +232,17 @@ class StatementPF(AbstractStatus):
         """
         self.save()
 
+    def get_tax_days(self):
+        if hasattr(self, 'taxdays'):
+            return self.taxdays
+
     def _get_taxdays_value(self) -> float:
         """
         Returns the value of 'taxdays' if it exists, otherwise returns 0
         """
-        if hasattr(self, 'taxdays'):
-            return self.taxdays.value
+        tax_days = self.get_tax_days()
+        if tax_days:
+            return tax_days.value
         return 0
 
     def _get_defaultinterest_value(self) -> float:
@@ -270,11 +283,11 @@ class StatementPF(AbstractStatus):
 
         If either 'date_rj_filing' or ' date_rj_request' does not exist, returns None
         """
-        appeal_deposit = self._get_appeal_deposit()
+        appeal_deposit = self.get_is_appeal_deposit()
         date_rj_filing = self._get_date_rj_filing()
         date_rj_request = self._get_date_rj_request()
 
-        default_interest_due = self.get_default_interest_due()
+        default_interest_due = self.get_default_interest_due_value()
         if not date_rj_filing or not date_rj_request:
             return None
         if appeal_deposit:
@@ -304,20 +317,34 @@ class StatementPF(AbstractStatus):
         """
         date_rj_filing = self._get_date_rj_filing()
         date_rj_request = self._get_date_rj_request()
+
         if not date_rj_filing or (date_rj_filing >= date_rj_request):
             return False  # EXCLUIR LINHA
         return True
 
-    def _get_appeal_deposit(self):
+    def get_is_appeal_deposit(self) -> bool:
         """
-        Excel N7
+        Extrato Contábil N7
+        $N$7="Sim"
 
         Returns the value of 'appeal_deposit' from the statement calculation
         """
         return self.statement.calculation.get_appeal_deposit()
 
+    def get_appeal_deposit_legend(self) -> str or None:
+        """
+        Extrato Contábil A39
+        =SE($N$7="Sim";"Depósito recursal liberado";"EXCLUIR LINHA")
+
+        Returns the legend of appeal deposit
+        """
+
+        if self.statement.calculation.get_appeal_deposit():
+            return "Depósito recursal liberado"
+
     def _calcule_get_description(self) -> str:
         """
+        Extrato Contábil A35
         =IF(OR(AND($B$19<$B$18;B19<>0);$N$7="Sim");"Total atualizado";"Total devido")
 
         Determines and returns the description based on the values of 'date_rj_filing', 'date_rj_request',
@@ -325,7 +352,7 @@ class StatementPF(AbstractStatus):
         """
         date_rj_filing = self._get_date_rj_filing()
         date_rj_request = self._get_date_rj_request()
-        appeal_deposit = self._get_appeal_deposit()
+        appeal_deposit = self.get_is_appeal_deposit()
         if (date_rj_filing and date_rj_filing < date_rj_request) or appeal_deposit:
             return 'A'  # Total atualizado
         return 'D'  # Total devido
@@ -375,16 +402,17 @@ class StatementPF(AbstractStatus):
             """=IF('Ficha de Análise'!D65="ipca-E/SELIC";VLOOKUP(DATE(YEAR('Extrato Contábil'!$B$18);MONTH('Extrato 
             Contábil'!$B$18);1);SELIC!C4!A:D;4;FALSE)/VLOOKUP(DATE(YEAR('Extrato Contábil'!B19);MONTH('Extrato 
             Contábil'!B19);1);SELIC!A:D;4;FALSE)-1 """
-            # Todo: pegar apenas o acumulado a partir da data do ajuizamento
-            # Todo: Fixar indice selic
             rate_selic = get_rate_selic()
 
             if not rate_selic:
                 self.set_selic_not_found()
                 return None
-            rate_rj_request = rate_selic.get_rate_by_date(date_rj_request)
-            rate_rj_filing = rate_selic.get_rate_by_date(date_rj_filing)
-            return (rate_rj_request.get_accumulated / rate_rj_filing.get_accumulated - 1) * 100
+
+            selic = Rate.objects.filter(code=4390).first()
+            filling_date = self._get_date_rj_filing()
+            data_rj = self._get_date_rj_request()
+            accumulated = CalculeRate(filling_date=filling_date, data_rj=data_rj, rate_selic=selic).calcule()
+            return accumulated * 100
         return max(0, days360(date_rj_filing, date_rj_request))
 
     def _calcule_set_tax_days(self):
@@ -436,7 +464,7 @@ class StatementPF(AbstractStatus):
         """
         return self._has_tax()
 
-    def _calcule_default_interest(self) -> float:
+    def calcule_default_interest(self) -> float:
         """
         IF('Ficha de Análise'!D65="IPCA-E/SELIC";'Extrato Contábil'!C36*'Extrato Contábil'!C35;C35*($B$21/30)*C36)
 
@@ -467,7 +495,7 @@ class StatementPF(AbstractStatus):
         Calculate and save the default interest value in the database.
         """
         if self._calcule_has_default_interest():
-            value = self._calcule_default_interest()
+            value = self.calcule_default_interest()
             filters = {'statement_pf_id': self.id}
             default = {'statement_pf_id': self.id, 'value': value}
             DefaultInterest.objects.update_or_create(
@@ -502,7 +530,7 @@ class StatementPF(AbstractStatus):
         """
         date_rj_filing = self._get_date_rj_filing()
         date_rj_request = self._get_date_rj_request()
-        appeal_deposit = self._get_appeal_deposit()
+        appeal_deposit = self.get_is_appeal_deposit()
         if not self._has_tax():
             return None  # EXCLUIR LINHA
         elif date_rj_filing < date_rj_request and appeal_deposit:
@@ -525,6 +553,17 @@ class StatementPF(AbstractStatus):
                    'description': choice, 'value': value}
         DefaultInterestDue.objects.update_or_create(
             defaults=default, **filters)
+
+    def get_default_interest(self):
+        if hasattr(self, 'defaultinterest'):
+            return self.defaultinterest
+
+    @property
+    def default_interest_legend(self):
+        get_default_interest = self.get_default_interest()
+        if get_default_interest:
+            return "Juros SELIC" if self._get_rate().is_ipca_e_selic() else "Juros moratórios:"
+        return ''
 
     def save(self, send_signal_post_save=True, *args, **kwargs):
         """Save the object and perform calculations and updates before saving.
@@ -725,7 +764,7 @@ def new_total_funds_rate(sender, instance, **kwargs) -> None:
     statement_pf = get_create_statement_pf_by_calculation(
         instance.get_calculation())
     defaults = {'statement_pf_id': statement_pf.id, 'rate_id': instance.id}
-    filters = {'statement_pf_id': statement_pf.id}
+    filters = {'statement_pf_id': statement_pf.id, 'rate_id': instance.id}
     FundsDescription.objects.get_or_create(defaults=defaults, **filters)
     statement_pf.calcule_total()
     extract_formula(instance)
@@ -762,7 +801,7 @@ def extract_formula(instance):
                          '_get_calculate_total_value', '_get_date_rj_filing', '_get_date_rj_request', '_set_total',
                          '_get_total', 'total_due', '_get_creditor_default_interest', '_calcule_set_description',
                          'calcule_total', '_get_taxdays_value', '_get_defaultinterest_value', '_get_rate',
-                         'total_conclusion', '_has_tax', '_get_appeal_deposit', '_calcule_get_description',
+                         'total_conclusion', '_has_tax', 'get_is_appeal_deposit', '_calcule_get_description',
                          '_calcule_get_tax_days_description', '_calcule_get_tax_days_value', '_calcule_set_tax_days',
                          '_delete_tax_days', '_delete_default_interest_due', '_calcule_has_default_interest',
                          '_calcule_default_interest', '_delete_default_interest', '_calcule_set_default_interest',

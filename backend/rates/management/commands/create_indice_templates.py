@@ -9,6 +9,8 @@ from calculation.funds.models import Funds
 from rates.models import Template, TemplateField, TemplateRate, TemplateMainField, TemplateSummaryField, \
     TemplateMainSummaryField, TemplateMainFieldDefault, TemplateFieldDefault
 
+TEMPLATE_INSS = 'INSS'
+
 
 def create_templates():
     """Create templates to rates"""
@@ -17,7 +19,10 @@ def create_templates():
                           ]
 
     fund_labor = [{'label': 'Nome da verba', 'key': 'name', 'type': 'C', 'order': 0, 'is_editable': True,
-                   'required': True}]
+                   'required': True},
+                  {'label': 'Aplicar correção monetária?', 'key': 'apply_monetary_correction', 'type': 'B', 'order': 1,
+                   'default': True, 'is_editable': True,
+                   'required': False}]
     fund_document = [{'label': 'Nome da verba', 'key': 'name', 'type': 'C', 'order': 0, 'is_editable': True,
                       'required': True},
                      {'label': 'Número do documento', 'key': 'number', 'type': 'C', 'order': 1,
@@ -253,16 +258,7 @@ def create_templates():
 
     for verba in verbas:
         template = [
-            {'name': f'{verba}', 'description': f'{verba}',
-             'end_point': '/juca/api/v1/calculation/funds/labor/',
-             'fund_main': fund_labor,
-             'end_point_main': '/juca/api/v1/calculation/funds/',
-             'many': True,
-             'has_commit': True,
-             'summary_fields': summary_fields_verbas,
-             'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
-             'fields': fields_verbas},
-            {'name': f'{verba}', 'description': f'Integrações sobre {verba}',
+            {'name': verba, 'description': f'Integrações sobre {verba}',
              'end_point': '/juca/api/v1/calculation/funds/labor/integrations/',
              'fund_main': fund_labor,
              'end_point_main': '/juca/api/v1/calculation/funds/',
@@ -271,7 +267,15 @@ def create_templates():
              'summary_fields': summary_fields_verbas_integrations,
              'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
              'fields': fields_verbas_integrations},
-
+            {'name': verba, 'description': verba,
+             'end_point': '/juca/api/v1/calculation/funds/labor/',
+             'fund_main': fund_labor,
+             'end_point_main': '/juca/api/v1/calculation/funds/',
+             'many': True,
+             'has_commit': True,
+             'summary_fields': summary_fields_verbas,
+             'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
+             'fields': fields_verbas},
             {'name': f'{verba} + Reflexos', 'description': f'{verba} + Reflexos',
              'end_point': '/juca/api/v1/calculation/funds/labor/',
              'fund_main': fund_labor,
@@ -315,9 +319,20 @@ def create_templates():
         ]
         templates.extend(template)
 
-    # ab = TemplateRate.objects.filter(end_point='/juca/api/v1/calculation/funds/documents/').update(end_point='/juca/api/v1/calculation/funds/documents/detail/')
-    # print(ab)
-    # return
+    template_inss = {'name': TEMPLATE_INSS, 'description': 'INSS',
+                     'end_point': '/juca/api/v1/calculation/funds/labor/',
+                     'fund_main': fund_labor,
+                     'end_point_main': '/juca/api/v1/calculation/funds/',
+                     'many': True,
+                     'has_commit': True,
+                     'summary_fields': summary_fields_verbas,
+                     'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
+                     'fields': fields_verbas}
+    # TODO: ver a necessidade de criar um template especifico, ou deixar apenas que insira valores negativos
+    # templates.append(template_inss)
+
+    # ab = TemplateRate.objects.filter(end_point='/juca/api/v1/calculation/funds/documents/').update(
+    # end_point='/juca/api/v1/calculation/funds/documents/detail/') print(ab) return
     for template in templates:
         fields = template.pop('fields')
         name = template.pop('name')
@@ -337,13 +352,13 @@ def create_templates():
         for fund_ in fund_main:
             fund = fund_.copy()
             field_default = fund.pop('default', None)
-            main, created = TemplateMainField.objects.get_or_create(template=new_template, **fund)
+            main, created = TemplateMainField.objects.update_or_create(template=new_template, **fund)
+
             if field_default is not None:
-                has_default = TemplateMainFieldDefault.objects.filter(field=main, label=field_default).exists()
-                if not has_default:
-                    default_obj = TemplateMainFieldDefault(field_id=main.id, label=str(field_default),
-                                                           value=json.dumps({'data': field_default}))
-                    default_obj.save()
+                TemplateMainFieldDefault.objects.update_or_create(field=main, defaults={
+                    'label': str(field_default), "value": json.dumps({'data': field_default})
+                })
+
         for fund in summary_main_fields:
             defaults = fund.copy()
             defaults['template'] = new_template

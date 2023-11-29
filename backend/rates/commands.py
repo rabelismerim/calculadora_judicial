@@ -303,6 +303,8 @@ class SetAccumulated:
 
         Accumulated.objects.update_or_create(rate=first_rate, defaults={'value': accumulated})
         Period.objects.update_or_create(rate=first_rate, defaults={'value': period})
+        print(
+            f'data: {first_rate.date}--valor: {first_rate.value}--period: {round(period, 4)}--acumulado: {float(accumulated)}')
 
         for rate_value in rate_values[1:]:
             value = rate_value.value
@@ -312,8 +314,8 @@ class SetAccumulated:
             Accumulated.objects.update_or_create(rate=rate_value, defaults={'value': accumulated})
             Period.objects.update_or_create(rate=rate_value, defaults={'value': period})
 
-            # print(
-            #     f'data: {rate_value.date}--valor: {rate_value.value}--period: {round(period, 4)}--acumulado: {float(accumulated)}')
+            print(
+                f'data: {rate_value.date}--valor: {rate_value.value}--period: {round(period, 4)}--acumulado: {float(accumulated)}')
         self.update_average()
 
     def update_average(self):

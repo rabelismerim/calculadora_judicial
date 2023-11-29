@@ -86,7 +86,7 @@ class Statement(AbstractModel):
     def get_default_interest(self) -> float:
         statement_pf = self.get_statement_pf()
         if statement_pf:
-            return statement_pf.get_default_interest()
+            return statement_pf.get_default_interest_value()
         return 0
 
     @property

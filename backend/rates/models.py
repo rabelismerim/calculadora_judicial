@@ -1,9 +1,11 @@
+import calendar
 import datetime
 import json
 
 import pandas as pd
 from django.core.validators import MinLengthValidator
 from django.db import models
+from django.db.models import Sum
 from rest_framework.exceptions import ValidationError
 
 from apps.schedule.views import SCHEDULER
@@ -197,6 +199,22 @@ class Rate(AbstractModel):  # Indices
         """
         if self.ratevalues_set.exists():
             return self.ratevalues_set.earliest('date').date
+
+    def get_rate_by_range_dates(self, start_date, end_date):
+        """
+        Retrieve rate values within a specified range of dates.
+
+        Args:
+        - start_date (datetime): The start date of the range.
+        - end_date (datetime): The end date of the range.
+
+        Returns:
+        - QuerySet: Rate values within the specified date range.
+        """
+        start_date = start_date.replace(day=1) + datetime.timedelta(days=32)
+        start_date = start_date.replace(day=1)
+        end_date = end_date.replace(day=1) - datetime.timedelta(days=1)
+        return self.ratevalues_set.filter(date__range=[start_date, end_date])
 
 
 class RateValues(AbstractModel):  # Indices
@@ -407,7 +425,7 @@ class TemplateRate(AbstractModel):
         end_point (str): The endpoint where the data can be accessed.
         many (bool): Whether there can be multiple instances of the template.
     """
-    template = models.ForeignKey(Template, on_delete=models.PROTECT)
+    template = models.ForeignKey(Template, on_delete=models.CASCADE)
     description = models.CharField('Description', max_length=150)
     end_point = models.CharField(_('End Point'), max_length=150)
     is_horizontal = models.BooleanField(_('Is Horizontal'), default=True)
@@ -473,11 +491,15 @@ class TemplateMainField(AbstractTemplateField):
         is_editable (bool): Whether the field is editable.
         required (bool): Whether the field is required.
     """
-    template = models.ForeignKey(Template, on_delete=models.PROTECT, null=True)
+    template = models.ForeignKey(Template, on_delete=models.CASCADE, null=True)
 
     def get_default(self, *args, **kwargs):
         if hasattr(self, 'templatemainfielddefault'):
             return self.templatemainfielddefault.get_value()
+
+    @property
+    def default(self):
+        return self.get_default()
 
     def __str__(self):
         return f'{self.label} | {self.template.name}'
@@ -496,7 +518,7 @@ class TemplateField(AbstractTemplateField):
         is_editable (bool): Whether the field is editable.
         required (bool): Whether the field is required.
     """
-    rate = models.ForeignKey(TemplateRate, on_delete=models.PROTECT, null=True)
+    rate = models.ForeignKey(TemplateRate, on_delete=models.CASCADE, null=True)
 
     def get_default(self, *args, **kwargs):
         if hasattr(self, 'templatefielddefault'):
@@ -518,6 +540,9 @@ class AbstractDefault(AbstractModel):
     label = models.CharField(_('Original value'), max_length=150)
     value = models.TextField(null=True, blank=True)
 
+    def __str__(self):
+        return f'{self.label} - {self.value}'
+
     def get_value(self):
         return json.loads(self.value).get('data')
 
@@ -535,7 +560,7 @@ class TemplateMainFieldDefault(AbstractDefault):
     Attributes:
         field (TemplateField): The TemplateField the field belongs to.
     """
-    field = models.OneToOneField(TemplateMainField, on_delete=models.PROTECT)
+    field = models.OneToOneField(TemplateMainField, on_delete=models.CASCADE)
 
 
 class TemplateFieldDefault(AbstractDefault):
@@ -545,7 +570,7 @@ class TemplateFieldDefault(AbstractDefault):
     Attributes:
         field (TemplateField): The TemplateField the field belongs to.
     """
-    field = models.OneToOneField(TemplateField, on_delete=models.PROTECT)
+    field = models.OneToOneField(TemplateField, on_delete=models.CASCADE)
 
 
 class TemplateMainSummaryField(AbstractTemplateField):
@@ -561,7 +586,7 @@ class TemplateMainSummaryField(AbstractTemplateField):
         is_editable (bool): Whether the field is editable.
         required (bool): Whether the field is required.
     """
-    template = models.ForeignKey(Template, on_delete=models.PROTECT, null=True)
+    template = models.ForeignKey(Template, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f'{self.label} | {self.template.name}'
@@ -580,7 +605,53 @@ class TemplateSummaryField(AbstractTemplateField):
         is_editable (bool): Whether the field is editable.
         required (bool): Whether the field is required.
     """
-    rate = models.ForeignKey(TemplateRate, on_delete=models.PROTECT, null=True)
+    rate = models.ForeignKey(TemplateRate, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f'{self.label} | {self.rate.description} | {self.rate.template.name}'
+
+
+class CalculeRate:
+
+    def __init__(self, filling_date: str or datetime.date, data_rj, rate_selic):
+        if isinstance(filling_date, str):
+            filling_date = datetime.datetime.strptime(filling_date, '%Y-%m-%d')
+        if isinstance(data_rj, str):
+            data_rj = datetime.datetime.strptime(data_rj, '%Y-%m-%d')
+
+        self.filling_date: datetime.date = filling_date
+        self.data_rj: datetime.date = data_rj
+        self.rate_selic: Rate = rate_selic
+
+    def calcule(self):
+        # Converting string dates to datetime objects
+
+        last_day_month_filling_date = calendar.monthrange(self.filling_date.year, self.filling_date.month)[1]
+        # Getting the accumulated rate for the filling_date from the Rate object
+        accumulated_filling_date = self.rate_selic.get_rate_by_date(self.filling_date).value
+
+        # Calculating the accumulated rate between filling_date and the end of the month
+        accumulated_interval_filling_rj = (accumulated_filling_date / 100) / last_day_month_filling_date * (
+                last_day_month_filling_date - self.filling_date.day)
+
+        # Calculating the accumulated rate within the given period (filling_date to data_rj)
+        range_rates = self.rate_selic.get_rate_by_range_dates(self.filling_date, self.data_rj)
+
+        accumulated_in_period = \
+            (range_rates.order_by('date').aggregate(
+                total=Sum('value'))['total'] or 0) / 100
+
+        # Calculating the final SELIC rate for the period
+        rate_selic_in_period = (accumulated_in_period + accumulated_interval_filling_rj)
+        print(rate_selic_in_period, 'taxa_selic_no_periodo antes da porcentagem')
+
+        # aplicar 1% referente a regra de no mês da RJ ser 1%
+        # TODO: ver inde é aplicado o 1%
+        # rate_selic_in_period = rate_selic_in_period + (rate_selic_in_period * (1 / 100))
+        rate_selic_in_period = rate_selic_in_period + (1 / 100)
+
+        # Printing the SELIC rate for the period
+        print(rate_selic_in_period, 'taxa_selic_no_periodo')
+        print(accumulated_in_period, 'accumulated_in_period')
+        print(accumulated_interval_filling_rj, 'accumulated_interval_filling_rj')
+        return rate_selic_in_period

@@ -16,6 +16,7 @@ def create_indices():
         with open(f'{base}/{file}', 'r', encoding='utf-8') as f:
             index = json.loads(f.read())
         index_name = index.get('index')
+
         is_per_day = index.get('is_per_day')
         initial_accumulated = index.get('initial_accumulated')
         code = index.get('code')
@@ -25,10 +26,9 @@ def create_indices():
         cont = 0
 
         if code:
-            new_rate, created = Rate.objects.update_or_create(code=code, defaults={
+            new_rate, created = Rate.objects.update_or_create(code=code, index=index_name, defaults={
                 'is_per_day': is_per_day,
                 'initial_accumulated': initial_accumulated,
-                'index': index_name,
                 'start_indice': start_indice
             })
         else:

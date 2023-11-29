@@ -47,6 +47,9 @@ class Funds(AbstractFunds):
                                   of the TotalValuesFundsIntegrations object associated with it.
     """
 
+    # A aplicação da correção monetária pode ser opcional caso seja um indice IPCA-E/SELIC
+    apply_monetary_correction = models.BooleanField(_('Aplicar Taxa?'), default=True)
+
     class Meta:
         verbose_name = 'Fund'
         verbose_name_plural = 'Funds'

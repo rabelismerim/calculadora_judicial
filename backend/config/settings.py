@@ -299,18 +299,30 @@ if IS_HML:
         },
     }
 
+    ALLOWED_HOSTS = [
+        'uat.fadigitallab.deloitte.com.br',
+        'dev.fadigitallab.deloitte.com.br',
+        'fadigitallab.deloitte.com.br',
+        'brdcvmdev07',
+        'brfojwanderley',
+        'brsphearndt',
+        'brspwaoliveira',
+    ]
+
+
 
 # Enable Cors to dev mode or local mode
 else:
     MIDDLEWARE.append("corsheaders.middleware.CorsMiddleware")
     INSTALLED_APPS.append('corsheaders')
     CORS_ALLOWED_ORIGINS = [
-        "http://localhost:8080",
-        "https://0.0.0.0:5173",
-        'https://localhost:5173'
+        'https://*',
+        'http://*',
     ]
     CORS_ALLOW_ALL_ORIGINS = True
     CORS_ALLOW_CREDENTIALS = True
+
+    ALLOWED_HOSTS = ['*']
 
 # Enable Login SSO
 if ENABLE_SSO:
