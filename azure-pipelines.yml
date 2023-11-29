@@ -152,7 +152,7 @@ steps:
     SourceFolder: '$(Build.SourcesDirectory)/backend'
     Contents: |
       **/*
-      !__pycache__/**/*
+      !**/__pycache__/**
     TargetFolder: 'E:\wwwroot\fadigitallab.deloitte.com.br\juca\'
     OverWrite: true
     flattenFolders: false
