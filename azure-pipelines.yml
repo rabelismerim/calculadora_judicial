@@ -54,7 +54,7 @@ steps:
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
 - script: |
     npm install
-  failOnStderr: true
+  failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/frontend
   displayName: 'Install node prerequisites'
 - script: |
