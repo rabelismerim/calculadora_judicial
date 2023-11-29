@@ -8,7 +8,7 @@ from rates.models import Rate
 
 def create_indices():
     """Create Index by files"""
-    base = 'rates/indices_ok'
+    base = 'rates/indices_bacen'
 
     averages = []
     for file in os.listdir(base):

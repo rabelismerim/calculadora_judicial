@@ -24,9 +24,6 @@ def create_indices():
         start_indice = index.get('start_indice')
         average = index.get('average', [])
 
-        if index_name != 'IPCA-E/SELIC':
-            continue
-        print(index_name, 'index_name\n\n')
         cont = 0
 
         if code:
