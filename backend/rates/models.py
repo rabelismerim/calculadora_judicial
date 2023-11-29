@@ -236,7 +236,7 @@ class RateValues(AbstractModel):  # Indices
         Returns a string representation of the object.
     """
     rate = models.ForeignKey(Rate, on_delete=models.CASCADE)
-    date = models.DateField(_('Rate date'))
+    date = models.DateField(_('Rate date'), db_index=True)
     value = models.FloatField(_('Rate value'))
 
     def __str__(self):
