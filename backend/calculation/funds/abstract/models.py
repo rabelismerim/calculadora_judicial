@@ -310,7 +310,7 @@ class AbstractMonetaryCorrection(AbstractModel):
 
     @staticmethod
     def _calc_corrected_value(index_recovering: float, index_data_base: float, total_value: float) -> float:
-        return index_data_base / index_recovering * total_value
+        return index_recovering / index_data_base * total_value  # Regra de divisão seguindo o ipca mensal
 
     @property
     def corrected_value(self) -> float:
