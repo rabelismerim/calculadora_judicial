@@ -3,11 +3,11 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 trigger:
-- prod
+- dev
 pool: 
   name: TR
   demands:
-  - Agent.Name -equals TRPROD
+  - Agent.Name -equals TRDEV
 variables:
   system.debug: 'true'
 strategy:
@@ -153,7 +153,7 @@ steps:
     Contents: |
       **/*
       !**/__pycache__/**
-    TargetFolder: 'E:\wwwroot\fadigitallab.deloitte.com.br\juca\'
+    TargetFolder: 'c:\inetpub\wwwroot\juca\'
     OverWrite: true
     flattenFolders: false
     ignoreMakeDirErrors: true
