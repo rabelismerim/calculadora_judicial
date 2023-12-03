@@ -153,7 +153,7 @@ steps:
     Contents: |
       **/*
       !**/__pycache__/**
-    TargetFolder: 'E:\wwwroot\fadigitallab.deloitte.com.br\juca\'
+    TargetFolder: 'E:\inetpub\wwwroot\uat.fadigitallab.deloitte.com.br\juca'
     OverWrite: true
     flattenFolders: false
     ignoreMakeDirErrors: true
