@@ -19,7 +19,7 @@ const logout = () => api
   .post('/v1/logout/')
 
 const getMyProfile = async () => verifyUser()
-  .then(async (user) => {
+  .then(async (user: any = {}) => {
     const goToSignin = () =>
       redirectTo(`${window.location.origin}/juca/api/drfmsal_signin/juca/`)
 

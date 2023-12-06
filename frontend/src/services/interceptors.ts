@@ -7,6 +7,9 @@ export const requestInterceptor = (request: any) => {
   if (import.meta.env.VITE_LOG_REQUEST === 'true')
     printError(`>>>> REQUEST: ${method?.toUpperCase()} ${baseURL + url}`, request)
 
+  request.url = url.replaceAll('//', '/ ')
+  if (url.includes('http'))
+    request.url = url.split('api').at(1)
   return request
 }
 
