@@ -173,16 +173,6 @@ const updateOption = (key: string, value: any) => {
               error-key="date_rj_request"
             />
             <InputDate
-              v-model="editingProject.dateRjFiling"
-              label="Data de Ajuizamento da Recuperação Judicial"
-              :rules="[
-                (value: any) => value.length === 0 || value.length === 10 || 'Precisa preencher o padrão ##/##/####',
-                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Precisa ser uma data válida!',
-              ]"
-              :error-messages="errorMessages"
-              error-key="date_rj_filling"
-            />
-            <InputDate
               v-model="editingProject.projectStart"
               label="Data do Termo de Compromisso"
               :rules="[
