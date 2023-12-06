@@ -71,6 +71,7 @@ const loadHistoricFiles = async (useLoading = false) => {
 }
 
 const fileStatuses = [
+
   { label: 'Pendente', value: 'PENDING', color: '#c4d600' },
   { label: 'Recebido', value: 'RECEIVED', color: '#007cb0' },
   { label: 'Iniciado', value: 'STARTED', color: '#007cb0' },
@@ -84,7 +85,7 @@ const fileStatuses = [
 
 const getStatus = (statusName: string) => {
   const status = fileStatuses
-    .find(status => status.value === statusName) ?? fileStatuses[0]
+    .find(status => status.value === statusName)
   return status
 }
 
