@@ -2,7 +2,7 @@
 const attrs = useAttrs() as any
 const { dialog } = useQuasar()
 
-const { hasPermissions } = $user
+const { hasPermissions, login } = $user
 
 let loading = $ref(false)
 
@@ -241,8 +241,8 @@ const calculateCredit = async (credit: any, creditIndex: number) => {
       for (const lineIndex in table.values) {
         const line = table.values[lineIndex]
         table.values[lineIndex].loading = true
-        const method = line.id ? 'PUT' : 'POST'
 
+        const method = line.id ? 'PUT' : 'POST'
         const result: any = await fetch(`${host}${table.endPoint}${(method === 'PUT' && !table.endPoint.endsWith('/detail/')) ? 'detail/' : ''}${line.id ? `${line.id}/` : ''}`, {
           method,
           body: JSON.stringify({ ...line, fund_id: credit.id, calculation_id: attrs.calculationId }),
@@ -254,10 +254,11 @@ const calculateCredit = async (credit: any, creditIndex: number) => {
           table.values[lineIndex] = result
         }
         else {
-          table.values[lineIndex].loading = false
           table.values[lineIndex].status = 'ERROR'
           table.values[lineIndex].status_display = result.errors?.[0]?.detail
         }
+
+        table.values[lineIndex].loading = false
       }
     }
     notify({ message: 'Crédito processado com sucesso!' })
@@ -272,6 +273,7 @@ const isRequired = ({ required }: any) => required && [(value: any) => value !==
 onMounted(async () => {
   loading = true
   try {
+    await login()
     await loadBigNumbers()
     await loadCalculation()
     await loadProject()
@@ -474,7 +476,7 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
                   label="Excluir Crédito"
                   icon="i-carbon-trash-can"
                   transparent
-                  :disabled="!hasPermissions('delete_calculation')"
+                  :disabled="['A', 'B'].includes(calculation?.step) || !hasPermissions('delete_calculation')"
                   @click.stop="removeCredit(credit)"
                 />
               </div>
@@ -522,7 +524,7 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
                           <button
                             v-if="column.name === 'delete' && table.many"
                             class="cursor-pointer bg--error h-10 w-10 rounded-.5 border-1 border-red-8 flex justify-center items-center"
-                            :disabled="['A', 'B'].includes(calculation?.step) || !hasPermissions('delete_calculation')"
+                            :disabled="['A', 'B'].includes(calculation?.step) || (props.row?.id && !hasPermissions('delete_calculation'))"
                             @click.stop="removeCreditValue(table.values, props.row, props.rowIndex, table)"
                           >
                             <div class="i-carbon-trash-can bg-white" />
