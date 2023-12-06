@@ -2,7 +2,7 @@
 const attrs = useAttrs() as any
 const router = useRouter()
 
-const { hasPermissions } = $user
+const { hasPermissions, login } = $user
 
 interface Project {
   recoverings: {
@@ -126,6 +126,7 @@ const options: any = $ref({
   lawyers: [],
   courts: [],
   regions: [],
+  ocurrences: [],
 })
 const loadOptions = async () => {
   options.users = await usersService.getUsers()
@@ -133,6 +134,8 @@ const loadOptions = async () => {
   options.lawyers = await projectService.getLawyers()
   options.courts = await projectService.getCourts()
   options.regions = await projectService.getRegions()
+  const result = await creditorsService.getOptions()
+  options.ocurrences = result.occurrenceOptions ?? []
 }
 let bigNumbers: any = $ref({})
 const loadBigNumbers = async () => {
@@ -163,6 +166,7 @@ const loadRates = async () => {
 }
 
 onMounted(async () => {
+  login()
   loadBigNumbers()
   loadIncidents()
   loadOptions()
@@ -371,23 +375,22 @@ onMounted(async () => {
         v-model="showCreateNewCalculation"
         title="Criar um Novo Cálculo"
         hint="Para criar um cálculo é preciso escolher um incidente."
-        modal-class="max-w-120"
+        modal-class="max-w-130"
         @close="closeNewCalculation"
       >
         <QForm
           ref="calculationForm"
           @submit="createNewCalculation"
         >
-          <div class="px-4 grid grid-cols-2 gap-x-4">
+          <div class="px-4 grid grid-cols-6 gap-x-4">
             <InputSelect
               v-model="newCalculation.incidentId"
               v-model:options="incidents"
               label="Número de Incidente"
-              mask="#######-##.####.#.##.####"
               :to-add="addIncident"
               :rules="[(value: any) => !!value || 'É um campo obrigatório']"
               :disable="loading"
-              class="col-span-2"
+              class="col-span-4"
             />
             <QSelect
               v-model="newCalculation.rateId"
@@ -401,16 +404,45 @@ onMounted(async () => {
               :disable="loading"
               :rules="[(value: string) => !!value || 'Este Campo é obrigatório!']"
               dense
+              class="col-span-2"
+            />
+            <QSelect
+              v-model="newCalculation.occurrenceId"
+              :options="options.ocurrences"
+              label="Ocorrência"
+              outlined
+              emit-value
+              map-options
+              option-value="id"
+              option-label="legend"
+              :disable="loading"
+              :rules="[(value: string) => !!value || 'Este Campo é obrigatório!']"
+              dense
+              :class="['CS'.includes(newCalculation.occurrenceId) ? 'col-span-3' : 'col-span-6']"
             />
             <InputDate
+              v-if="newCalculation.occurrenceId === 'C'"
               v-model="newCalculation.dateCitation"
               label="Data da Citação"
               :rules="[
-                (value: any) => value.length === 0 || value.length === 10 || 'Precisa preencher o padrão ##/##/####',
-                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Precisa ser uma data válida!',
+                (value: any) => !!value || 'Campo é obrigatório!',
+                (value: any) => value.length === 0 || value.length === 10 || 'Padrão ##/##/####',
+                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Data inválida!',
               ]"
+              class="col-span-3"
             />
-            <label class="flex gap-4 items-center mb-4 col-span-2">
+            <InputDate
+              v-if="newCalculation.occurrenceId === 'S'"
+              v-model="newCalculation.dateRjFiling"
+              label="Data de Ajuizamento"
+              :rules="[
+                (value: any) => !!value || 'Campo é obrigatório!',
+                (value: any) => value.length === 0 || value.length === 10 || 'Padrão ##/##/####',
+                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Data inválida!',
+              ]"
+              class="col-span-3"
+            />
+            <label class="flex gap-4 items-center mb-4 col-span-6">
               <div class="font-bold color-gray-8 text-md">Fase do Cálculo</div>
               <BtnToggle
                 v-model="newCalculation.isAdm"
