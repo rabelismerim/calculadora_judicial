@@ -8,9 +8,9 @@ from django.http import JsonResponse
 
 from rest_framework import permissions, serializers, status
 from core.permission.views import CheckHasPermission
-from rates.models import Rate, RateFile, Template, Accumulated, Period, RateValues
+from rates.models import Rate, RateFile, Template, Accumulated, Period, RateValues, ClasseTemplate
 from rates.schemas import RateFileSchema, RateSchema, TemplateSchema, TemplateListSchema, RateListSchema, \
-    RateUpdateSchema, RateValuesUpdateSchema, RateValuesCreateSchema
+    RateUpdateSchema, RateValuesUpdateSchema, RateValuesCreateSchema, ClasseTemplateSchema
 from utils import _, doc
 
 query_params = [
@@ -293,14 +293,14 @@ class RateFileApi(AbstractViewApi):
 class TemplateApi(AbstractViewApi):
     """HTTP methods for Template"""
     http_method_names = ['get']
-    serializer_class = TemplateListSchema
+    serializer_class = ClasseTemplateSchema
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
-    model = Template
+    model = ClasseTemplate
 
     query_params = [
         {
             "name": "name",
-            "field": "name__icontains",
+            "field": "template__name__icontains",
             "in": "query",
             "required": False,
             "description": _("Name"),

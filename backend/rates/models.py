@@ -14,6 +14,7 @@ from config.settings import RATE_FILE_TYPES
 from core.abstract.models import AbstractModel
 from rest_framework import serializers
 
+from creditors.classes.models import Classes
 from utils import _, parse_job_id
 
 UNIT_CHOICES = (
@@ -133,7 +134,13 @@ class Rate(AbstractModel):  # Indices
 
         See if the rate is IPCA-E/SELIC reference the analysis sheet worksheet.
         """
-        return self.index == "IPCA-E/SELIC"
+        return self.index.startswith("IPCA-E/SELIC")
+
+    def is_ipca_e_selic_composta(self) -> bool:
+        """
+        Verificar se a Taxa selic é do tipo composta
+        """
+        return self.is_ipca_e_selic() and self.index.endswith("COMPOSTA")
 
     def is_tst(self) -> bool:
         """
@@ -613,7 +620,7 @@ class TemplateSummaryField(AbstractTemplateField):
 
 class CalculeRate:
 
-    def __init__(self, filling_date: str or datetime.date, data_rj, rate_selic):
+    def __init__(self, filling_date: str or datetime.date, data_rj, rate_selic, rate_used):
         if isinstance(filling_date, str):
             filling_date = datetime.datetime.strptime(filling_date, '%Y-%m-%d')
         if isinstance(data_rj, str):
@@ -622,8 +629,62 @@ class CalculeRate:
         self.filling_date: datetime.date = filling_date
         self.data_rj: datetime.date = data_rj
         self.rate_selic: Rate = rate_selic
+        self.rate_used: Rate = rate_used
 
     def calcule(self):
+        print(self.rate_used.index, 'name\n')
+        if str(self.rate_used.index).upper().endswith('RECEITA-FEDERAL'):
+            return self.calcule_receita_federal()
+
+        elif str(self.rate_used.index).upper().endswith('COMPOSTA'):
+            return self.calcule_composto()
+
+        elif str(self.rate_used.index).upper().endswith('SIMPLES'):
+            return self.calcule_simples()
+        else:
+            print('indice SELIC nao encontrado')
+            return self.calcule_receita_federal()
+
+    def calcule_simples(self):
+        # Converting string dates to datetime objects
+
+        last_day_month_filling_date = calendar.monthrange(self.filling_date.year, self.filling_date.month)[1]
+        # Getting the accumulated rate for the filling_date from the Rate object
+        accumulated_filling_date = self.rate_selic.get_rate_by_date(self.filling_date).value
+
+        # Calculating the accumulated rate between filling_date and the end of the month
+        accumulated_interval_filling_rj = (accumulated_filling_date / 100) / last_day_month_filling_date * (
+                last_day_month_filling_date - self.filling_date.day)
+
+        # Calculating the accumulated rate within the given period (filling_date to data_rj)
+        range_rates = self.rate_selic.get_rate_by_range_dates(self.filling_date, self.data_rj)
+
+        accumulated_in_period = \
+            (range_rates.order_by('date').aggregate(
+                total=Sum('value'))['total'] or 0) / 100
+
+        # Aplicar a taxa proporcional aos dias no mês
+        accumulated_rj_date = self.rate_selic.get_rate_by_date(self.data_rj).value
+
+        last_day_month_rj_date = calendar.monthrange(self.data_rj.year, self.data_rj.month)[1]
+
+        accumulated_interval_rj_date = (accumulated_rj_date / 100) / last_day_month_rj_date * self.data_rj.day
+
+        print(accumulated_rj_date, 'accumulated_rj_date')
+        print(last_day_month_rj_date, 'last_day_month_rj_date')
+        print(self.data_rj, 'self.data_rj.month')
+        print(self.data_rj.day, 'self.data_rj.day\n')
+        # Calculating the final SELIC rate for the period
+        rate_selic_in_period = (accumulated_in_period + accumulated_interval_filling_rj + accumulated_interval_rj_date)
+
+        # Printing the SELIC rate for the period
+        print(rate_selic_in_period, 'taxa_selic_no_periodo')
+        print(accumulated_in_period, 'accumulated_in_period')
+        print(accumulated_interval_filling_rj, 'accumulated_interval_filling_rj')
+        print(accumulated_interval_rj_date, 'accumulated_interval_rj_date')
+        return rate_selic_in_period * 100
+
+    def calcule_receita_federal(self):
         # Converting string dates to datetime objects
 
         last_day_month_filling_date = calendar.monthrange(self.filling_date.year, self.filling_date.month)[1]
@@ -646,12 +707,25 @@ class CalculeRate:
         print(rate_selic_in_period, 'taxa_selic_no_periodo antes da porcentagem')
 
         # aplicar 1% referente a regra de no mês da RJ ser 1%
-        # TODO: ver inde é aplicado o 1%
-        # rate_selic_in_period = rate_selic_in_period + (rate_selic_in_period * (1 / 100))
         rate_selic_in_period = rate_selic_in_period + (1 / 100)
 
         # Printing the SELIC rate for the period
         print(rate_selic_in_period, 'taxa_selic_no_periodo')
         print(accumulated_in_period, 'accumulated_in_period')
         print(accumulated_interval_filling_rj, 'accumulated_interval_filling_rj')
-        return rate_selic_in_period
+        return rate_selic_in_period * 100
+
+    def calcule_composto(self):
+        filling_date = self.rate_selic.get_rate_by_date(self.filling_date)
+        rate_date_rj = self.rate_selic.get_rate_by_date(self.data_rj)
+        rate_data_filling_accumulated = filling_date.get_accumulated
+        rate_base_date_rj_accumulated = rate_date_rj.get_accumulated
+        print(f"rate_data_filling_accumulated: {rate_data_filling_accumulated}")
+        print(f"rate_base_date_rj_accumulated: {rate_base_date_rj_accumulated}")
+        print(rate_base_date_rj_accumulated / rate_data_filling_accumulated)
+        return (rate_base_date_rj_accumulated / rate_data_filling_accumulated)
+
+
+class ClasseTemplate(AbstractModel):
+    classe = models.ForeignKey(Classes, on_delete=models.PROTECT)
+    templates = models.ManyToManyField(Template, blank=True)

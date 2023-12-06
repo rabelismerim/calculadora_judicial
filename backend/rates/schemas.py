@@ -1,6 +1,7 @@
 from base.schemas import AbstractDescriptionSchema
+from creditors.classes.models import Classes
 from rates.models import Accumulated, Period, Rate, RateFile, RateValues, AbstractCalcule, TemplateField, TemplateRate, \
-    Template, TemplateSummaryField, TemplateMainSummaryField
+    Template, TemplateSummaryField, TemplateMainSummaryField, ClasseTemplate
 from rest_framework import serializers
 
 from utils import _
@@ -118,6 +119,7 @@ class RateValuesUpdateSchema(AbstractDescriptionSchema):
         rate_value['accumulated'] = rate_value.pop('get_accumulated', False)
         rate_value['period'] = rate_value.pop('get_period', False)
         return super(RateValuesUpdateSchema, self).validate(rate_value)
+
 
 class RateSchema(AbstractDescriptionSchema):
     """Serializer Rate fields"""
@@ -258,3 +260,21 @@ class TemplateListSchema(AbstractDescriptionSchema):
     class Meta:
         model = Template
         fields = ('id', 'name')
+
+
+class ClassesSchema(AbstractDescriptionSchema):
+    classe_display = serializers.CharField(source='get_classe_display', read_only=True)
+
+    class Meta:
+        model = Classes
+        fields = "__all__"
+
+
+class ClasseTemplateSchema(AbstractDescriptionSchema):
+    """Serializer ClasseTemplate fields"""
+    templates = TemplateListSchema(read_only=True, many=True)
+    classe = ClassesSchema(read_only=True)
+
+    class Meta:
+        model = ClasseTemplate
+        fields = '__all__'
