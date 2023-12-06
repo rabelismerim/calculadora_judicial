@@ -407,7 +407,7 @@ onMounted(async () => {
               class="col-span-2"
             />
             <QSelect
-              v-model="newCalculation.occurrenceId"
+              v-model="newCalculation.occurrence"
               :options="options.ocurrences"
               label="Ocorrência"
               outlined
@@ -418,10 +418,10 @@ onMounted(async () => {
               :disable="loading"
               :rules="[(value: string) => !!value || 'Este Campo é obrigatório!']"
               dense
-              :class="['CS'.includes(newCalculation.occurrenceId) ? 'col-span-3' : 'col-span-6']"
+              :class="['CS'.includes(newCalculation.occurrence) ? 'col-span-3' : 'col-span-6']"
             />
             <InputDate
-              v-if="newCalculation.occurrenceId === 'C'"
+              v-if="newCalculation.occurrence === 'C'"
               v-model="newCalculation.dateCitation"
               label="Data da Citação"
               :rules="[
@@ -432,7 +432,7 @@ onMounted(async () => {
               class="col-span-3"
             />
             <InputDate
-              v-if="newCalculation.occurrenceId === 'S'"
+              v-if="newCalculation.occurrence === 'S'"
               v-model="newCalculation.dateRjFiling"
               label="Data de Ajuizamento"
               :rules="[
