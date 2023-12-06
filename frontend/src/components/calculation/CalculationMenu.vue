@@ -26,6 +26,9 @@ const emit = defineEmits(['update:modelValue'])
       <ProjectDetailCell label="Incidente">
         {{ calculation?.incident?.number || '-' }}
       </ProjectDetailCell>
+      <ProjectDetailCell label="Ocorrência">
+        {{ calculation?.occurrenceDisplay || '-' }}
+      </ProjectDetailCell>
       <ProjectDetailCell label="Recuperanda">
         {{ recovering?.entity?.name || '-' }}
       </ProjectDetailCell>
@@ -46,16 +49,15 @@ const emit = defineEmits(['update:modelValue'])
           {{ classe.classeDisplay }}: {{ formatNumber(classe.percentageCalculated, 2) }}%
         </div>
       </ProjectDetailCell>
-
+      <ProjectDetailCell label="Data da Citação">
+        {{ formatDateFromBackend(calculation?.dateCitation) || '-' }}
+      </ProjectDetailCell>
+      <ProjectDetailCell label="Data de Ajuizamento da Recuperação Judicial">
+        {{ formatDateFromBackend(calculation?.dateRjFiling) || '-' }}
+      </ProjectDetailCell>
       <div class="font-bold color--primary uppercase">
         Critério
       </div>
-      <ProjectDetailCell label="Data da Citação">
-        {{ formatDateFromBackend(calculation?.criterion?.dateCitation) || '-' }}
-      </ProjectDetailCell>
-      <ProjectDetailCell label="Data de Ajuizamento da Recuperação Judicial">
-        {{ formatDateFromBackend(calculation?.criterion?.dateRjFiling) || '-' }}
-      </ProjectDetailCell>
       <ProjectDetailCell label="Data de Pedido da Recuperação Judicial">
         {{ formatDateFromBackend(calculation?.criterion?.dateRjRequest) || '-' }}
       </ProjectDetailCell>
