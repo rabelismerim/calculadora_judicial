@@ -112,7 +112,6 @@ onMounted(async () => {
           :rules="[(value: string) => !!value || 'Este Campo é obrigatório!']"
           :disable="loading"
           dense
-          @update:model-value="newCredit.templateId = null"
         />
         <QSelect
           v-model="newCredit.templateId"
