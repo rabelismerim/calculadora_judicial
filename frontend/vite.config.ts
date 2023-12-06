@@ -10,7 +10,7 @@ import Layouts from 'vite-plugin-vue-layouts'
 import mkcert from 'vite-plugin-mkcert'
 import { quasar } from '@quasar/vite-plugin'
 import { QuasarResolver } from 'unplugin-vue-components/resolvers'
-import VueMacros from 'unplugin-vue-macros/dist/vite'
+import VueMacros from 'unplugin-vue-macros/vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -39,7 +39,6 @@ export default defineConfig({
     VueMacros({
       plugins: {
         vue: Vue(),
-        // vueJsx: VueJsx(), // if needed
       },
     }),
 
