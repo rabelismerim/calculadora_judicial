@@ -15,7 +15,7 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits(['update:modelValue', 'paste'])
 
 const input = ref(null as any)
-const hasError = computed(() => input.hasError)
+const hasError = $computed(() => input?.hasError)
 const { clearError } = useBackendErrors(toRef(props, 'errorMessages'))
 const dateData = computed({
   get: () => {
