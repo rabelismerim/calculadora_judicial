@@ -228,6 +228,7 @@ class CalculationSchema(CalculationAllFundsSchema):  # V1
     # special_approver = ProjectUserProjectSchema(read_only=True, allow_null=True)
     executor = ProjectUserProjectSchema(read_only=True, allow_null=True)
     reviewer = ProjectUserProjectSchema(read_only=True, allow_null=True)
+    occurrence_display = serializers.CharField(source='get_occurrence_display', read_only=True)
 
     def get_historical(self, obj):
         return HistoricalSchema(obj).data

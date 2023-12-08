@@ -15,6 +15,7 @@ from creditors.classes.models import CLASSE_CHOICES
 from creditors.models import Creditor, CHOICES_STATUS_LEGAL, LegalPendencies
 from creditors.notice.schemas import NoticeSchema, NoticeRecoveringSchema
 from rates.models import TYPE_CHOICES
+from recovering.models import Recovering
 from utils import _
 
 
@@ -49,12 +50,21 @@ class LegalPendenciesUpdateSchema(AbstractDescriptionSchema):
         exclude = ('creditor',)
 
 
+class RecoveringDetailSchema(AbstractDescriptionSchema):
+    name = serializers.CharField(source='entity.name')
+    legal_number = serializers.CharField(source='entity.legal_number')
+
+    class Meta:
+        model = Recovering
+        fields = ('name', 'legal_number')
+
+
 class AbstractCreditorSchema(AbstractDescriptionSchema):
     """Serializer Creditor fields"""
 
     entity = EntitySchema(many=False, read_only=False)
 
-    # recovering = RecoveringSchema(many=False, read_only=True)
+    recovering = RecoveringDetailSchema(many=False, read_only=True)
     recovering_id = serializers.UUIDField()
 
     # rate = RateSchema(many=False, read_only=False, exclude=('rate_value', ))
@@ -74,8 +84,8 @@ class AbstractCreditorSchema(AbstractDescriptionSchema):
 
     class Meta:
         model = Creditor
-        # fields = '__all__'
-        exclude = ('recovering', )
+        fields = '__all__'
+        # exclude = ('recovering', )
         read_only_fields = ('total',)
 
     def validate(self, data):
@@ -140,6 +150,7 @@ class CreditorCreateSchema(serializers.Serializer):
 
 class CreditorUpdateSchema(AbstractDescriptionSchema):
     """Serializer Creditor fields"""
+
     # rate_id = serializers.UUIDField(required=False)
 
     class Meta:

@@ -411,8 +411,10 @@ class StatementPF(AbstractStatus):
             selic = Rate.objects.filter(code=4390).first()
             filling_date = self._get_date_rj_filing()
             data_rj = self._get_date_rj_request()
-            accumulated = CalculeRate(filling_date=filling_date, data_rj=data_rj, rate_selic=selic).calcule()
-            return accumulated * 100
+            accumulated = CalculeRate(filling_date=filling_date, data_rj=data_rj, rate_selic=selic,
+                                      rate_used=rate).calcule()
+            return accumulated
+
         return max(0, days360(date_rj_filing, date_rj_request))
 
     def _calcule_set_tax_days(self):
@@ -478,7 +480,12 @@ class StatementPF(AbstractStatus):
         creditor_default_interest = self._get_creditor_default_interest()
         rate = self._get_rate()
         if rate.is_ipca_e_selic():
-            return days_in_arrears * total / 100
+            # TODO: alterar o dias em atraso
+            tt = days_in_arrears * total
+            if rate.is_ipca_e_selic_composta():
+                print(tt)
+                return tt - total
+            return tt / 100
         return (total * (days_in_arrears / 30) * creditor_default_interest) / 100
 
     def _delete_default_interest(self):

@@ -27,10 +27,9 @@ def create_indices():
         cont = 0
 
         if code:
-            new_rate, created = Rate.objects.update_or_create(code=code, defaults={
+            new_rate, created = Rate.objects.update_or_create(code=code, index=index_name, defaults={
                 'is_per_day': is_per_day,
                 'initial_accumulated': initial_accumulated,
-                'index': index_name,
                 'start_indice': start_indice
             })
         else:

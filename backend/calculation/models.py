@@ -111,6 +111,12 @@ class Calculation(AbstractModel):
     occurrence = models.CharField(_('Occurrence'), max_length=1, choices=CHOICES_OCCURRENCE, default='O')
 
     @property
+    def incident_number(self):
+        if self.incident:
+            return self.incident.number
+        return ''
+
+    @property
     def has_edital(self):
         return self.creditor.has_notice_aj()
 
@@ -124,6 +130,13 @@ class Calculation(AbstractModel):
     special_approvers = models.ManyToManyField(SpecialApprover, blank=True)
     executor = models.ForeignKey(ProjectUser, on_delete=models.PROTECT, null=True, related_name='executor', blank=True)
     reviewer = models.ForeignKey(ProjectUser, on_delete=models.PROTECT, null=True, related_name='reviewer', blank=True)
+
+    def get_premises(self):
+        return self.premises.all()
+
+    @property
+    def executor_name(self):
+        return self.executor.name
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -187,6 +200,15 @@ class Calculation(AbstractModel):
         """
         return self.criterion.default_interest
 
+    def get_legend_default_interest(self):
+        """
+        Extrato contábil A21
+        =SE(OU($B$19>=$B$18;'Ficha de Análise'!D65="IPCA-E/SELIC");"EXCLUIR LINHA";'Ficha de Análise'!C66)
+        """
+        if (self.get_date_rj_filing() >= self.get_date_rj()) or self.rate.is_ipca_e_selic():
+            return
+        return 'Juros moratórios (a.m.)'
+
     def get_dismissal(self) -> datetime.date or None:
         """
         Excel Analysis sheet D62
@@ -211,6 +233,14 @@ class Calculation(AbstractModel):
         """
         return self.criterion.advocative_hours
 
+    def get_legend_advocative_hours(self):
+        """
+        Extrato contábil A22
+        =SE(OU('Ficha de Análise'!D67="";'Ficha de Análise'!D67=0);"EXCLUIR LINHA";"Multa moratória")
+        """
+        if self.get_advocative_hours() > 0:
+            return 'Honorários advocatícios'
+
     def get_date_approved_calculation(self) -> datetime.date or None:
         """Get the approved calculation date"""
         # TODO verificar com stakeholders o momento que essa data é recebida, se há alterações ao longo do processo.
@@ -224,6 +254,14 @@ class Calculation(AbstractModel):
         Get value of fine
         """
         return self.criterion.fine
+
+    def get_legend_fine(self):
+        """
+        Extrato contábil A22
+        =SE(OU('Ficha de Análise'!D67="";'Ficha de Análise'!D67=0);"EXCLUIR LINHA";"Multa moratória")
+        """
+        if self.get_fine() > 0:
+            return 'Multa moratória'
 
     def get_appeal_credit(self) -> bool:
         """

@@ -178,7 +178,7 @@ class StatementDocument(AbstractStatement):
         :return:
             float: The default interest rate to be charged.
         """
-        default_interest = self.fund.calculation.get_default_interest_value()
+        default_interest = self.fund.calculation.get_default_interest()
         corrected_value = self.get_corrected_value()
         if corrected_value * self.days * default_interest == 0:
             return 0
@@ -375,7 +375,7 @@ class TotalValuesDocument(AbstractTotalValuesFunds):
         if statement and statement.id and statement.is_extraconcursal is False:
             self.total_historical = statement.get_total_value()
             self.total_corrected = statement.get_corrected_value()
-            self.total_default_interest = statement.get_default_interest_value()
+            self.total_default_interest = statement.get_default_interest()
             self.total_fine = statement.get_fine()
             self.total_due = statement.get_total_due()
         else:

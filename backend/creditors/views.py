@@ -68,9 +68,6 @@ class CreditorDetailApi(AbstractCreditorApi):
     def get_queryset(self):
         return {'is_active': True}
 
-    def get(self, request, *args, **kwargs):
-        return super().get(args, kwargs)
-
 
 class CreditorCreateApi(AbstractCreditorApi):
     """HTTP methods for CreditorCreate options"""
