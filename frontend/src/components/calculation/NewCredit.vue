@@ -13,7 +13,7 @@ let loading = $ref(false)
 let newCredit = $ref({} as any)
 const newCreditForm = ref(null as any)
 
-let templates = $ref([] as any[])
+let templates = $ref({} as any)
 const loadTemplates = async () => {
   templates = await ratesService.getTemplates()
 }
@@ -82,7 +82,7 @@ const createCredit = async () => {
 const isRequired = ({ required }: any) => required && [(value: any) => !!value || 'Campo obrigatório!']
 
 const filterInput = $ref('')
-const filteredTemplates = computed(() => templates
+const filteredTemplates = computed(() => (templates[newCredit.classId] ?? [])
   ?.filter(({ name }: any) => name.toLowerCase().includes(filterInput.toLowerCase())))
 
 onMounted(async () => {
@@ -101,6 +101,20 @@ onMounted(async () => {
     <QForm ref="newCreditForm" @submit.prevent="createCredit">
       <div class="p-4 grid grid-cols-2 gap-x-4">
         <QSelect
+          v-model="newCredit.classId"
+          :options="options?.classesOptions"
+          label="Classe"
+          outlined
+          emit-value
+          map-options
+          option-value="id"
+          option-label="legend"
+          :rules="[(value: string) => !!value || 'Este Campo é obrigatório!']"
+          :disable="loading"
+          dense
+          @update:model-value="newCredit.templateId = null"
+        />
+        <QSelect
           v-model="newCredit.templateId"
           :options="filteredTemplates"
           label="Tipo"
@@ -115,19 +129,6 @@ onMounted(async () => {
           dense
           @input-value="(value: string) => filterInput = value"
           @update:model-value="(value: string) => loadTemplate(value)"
-        />
-        <QSelect
-          v-model="newCredit.classId"
-          :options="options?.classesOptions"
-          label="Classe"
-          outlined
-          emit-value
-          map-options
-          option-value="id"
-          option-label="legend"
-          :rules="[(value: string) => !!value || 'Este Campo é obrigatório!']"
-          :disable="loading"
-          dense
         />
         <QSelect
           v-model="newCredit.coinId"

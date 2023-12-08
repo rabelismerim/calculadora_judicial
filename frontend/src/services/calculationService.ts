@@ -306,9 +306,9 @@ const getAccountingStatementPDF = (calculationId: string) => api
 
 const deleteCredit = ({ type, id }: any) => {
   const types: any = {
-    fund: '/v1/calculation/funds/',
-    irrf: '/v1/calculation/funds/irrf/',
-    document: '/v1/calculation/funds/documents/',
+    fund: '/v1/calculation/funds',
+    irrf: '/v1/calculation/funds/irrf',
+    document: '/v1/calculation/funds/documents',
   }
   return api
     .delete(`${types[type]}/${id}/`)
