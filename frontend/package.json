@@ -1,14 +1,14 @@
 {
   "name": "deloitte-juca",
   "type": "module",
-  "version": "1.0.32",
+  "version": "1.0.33",
   "private": true,
   "description": "Sistema de Recuperação Financeira - Deloitte",
   "scripts": {
     "dev": "vite --mode devremote",
     "dev:local": "vite --mode devlocal",
-    "build:prod": "vue-tsc && vite build --mode production --base=/juca/static/src/vue/dist/ --emptyOutDir",
-    "build:hml": "vue-tsc && vite build --mode homolog --base=/juca/static/src/vue/dist/ --emptyOutDir",
+    "build:prod": "vue-tsc --noEmit && vite build --mode production --base=/juca/static/src/vue/dist/ --emptyOutDir",
+    "build:hml": "vue-tsc --noEmit && vite build --mode homolog --base=/juca/static/src/vue/dist/ --emptyOutDir",
     "test": "vitest --ui --mode devremote",
     "ts": "vue-tsc --noEmit",
     "preview": "vite preview",
