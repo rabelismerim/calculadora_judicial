@@ -605,7 +605,7 @@ class Calculation(AbstractModel):
             classes_list.append(obj)
             classes_list_included.append(class_name)
         for key, value in CLASSE_CHOICES:
-            if not key in classes_list_included:
+            if key not in classes_list_included:
                 obj = {'classe': key, 'classes_display': value,
                        'total_value': 0, 'total_calculated': 0,
                        'percentage_value': 0,

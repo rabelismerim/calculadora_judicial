@@ -42,6 +42,10 @@ class AbstractFunds(AbstractCredit):
     def __str__(self):
         return self.name
 
+    @property
+    def monetary_correction(self):
+        return getattr(self, 'monetarycorrection', None)
+
     def get_rate(self):
         """
         Get the index that will be used in the calculation. If there is no unique index, the default index defined
@@ -172,6 +176,14 @@ class AbstractStatement(AbstractStatus):
     # TODO: Verificar automaticamente se é ou não verba para aplicar a sumula
     fund = models.ForeignKey('funds.Funds', on_delete=models.PROTECT)
     is_extraconcursal = models.BooleanField(_('Is extraconcursal'), default=False)
+
+    @property
+    def monetary_correction(self):
+        return getattr(self, 'monetarycorrection', None)
+
+    @property
+    def status_display(self):
+        return self.get_status_display()
 
     def _get_index_monetary_correction(self) -> dict or None:
         """Retrieves the monetary correction from a financial statement. It gets the calculation, data and rate

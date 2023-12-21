@@ -7,7 +7,7 @@ from calculation.funds.document.models import FundDocument
 from calculation.funds.irrf.models import FundIRRF
 from calculation.funds.models import Funds
 from rates.models import Template, TemplateField, TemplateRate, TemplateMainField, TemplateSummaryField, \
-    TemplateMainSummaryField, TemplateMainFieldDefault, TemplateFieldDefault
+    TemplateMainSummaryField, TemplateMainFieldDefault, TemplateFieldDefault, TemplateSlugChoices
 
 TEMPLATE_INSS = 'INSS'
 
@@ -239,6 +239,7 @@ def create_templates():
                   'end_point': '/juca/api/v1/calculation/funds/documents/detail/',
                   'end_point_main': '/juca/api/v1/calculation/funds/documents/',
                   'many': False,
+                  'slug': TemplateSlugChoices.DOCUMENT,
                   'has_commit': True,
                   'summary_fields': summary_fields_document,
                   'summary_main_fields': summary_main_fields_docs,
@@ -248,6 +249,7 @@ def create_templates():
                   'end_point': '/juca/api/v1/calculation/funds/documents/detail/',
                   'end_point_main': '/juca/api/v1/calculation/funds/documents/',
                   'many': False,
+                  'slug': TemplateSlugChoices.DOCUMENT,
                   'has_commit': True,
                   'summary_fields': summary_fields_document,
                   'summary_main_fields': summary_main_fields_docs,
@@ -263,6 +265,7 @@ def create_templates():
              'fund_main': fund_labor,
              'end_point_main': '/juca/api/v1/calculation/funds/',
              'many': True,
+             'slug': TemplateSlugChoices.FUNDS_INTEGRATION,
              'has_commit': True,
              'summary_fields': summary_fields_verbas_integrations,
              'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
@@ -272,6 +275,7 @@ def create_templates():
              'fund_main': fund_labor,
              'end_point_main': '/juca/api/v1/calculation/funds/',
              'many': True,
+             'slug': TemplateSlugChoices.FUNDS,
              'has_commit': True,
              'summary_fields': summary_fields_verbas,
              'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
@@ -281,6 +285,7 @@ def create_templates():
              'fund_main': fund_labor,
              'end_point_main': '/juca/api/v1/calculation/funds/',
              'many': True,
+             'slug': TemplateSlugChoices.FUNDS,
              'has_commit': True,
              'summary_fields': summary_fields_verbas,
              'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
@@ -290,6 +295,7 @@ def create_templates():
              'fund_main': fund_labor,
              'end_point_main': '/juca/api/v1/calculation/funds/',
              'many': True,
+             'slug': TemplateSlugChoices.FUNDS,
              'has_commit': True,
              'summary_fields': summary_fields_verbas_integrations,
              'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
@@ -300,6 +306,7 @@ def create_templates():
              'fund_main': fund_labor,
              'end_point_main': '/juca/api/v1/calculation/funds/',
              'many': True,
+             'slug': TemplateSlugChoices.FUNDS,
              'has_commit': True,
              'summary_fields': summary_fields_verbas,
              'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
@@ -311,6 +318,7 @@ def create_templates():
              'fund_main': fund_irrf,
              'end_point': '/juca/api/v1/calculation/funds/irrf/labor/',
              'many': True,
+             'slug': TemplateSlugChoices.IRRF,
              'has_commit': False,
              'summary_fields': summary_fields_irrf,
              'summary_main_fields': summary_main_fields_verbas_irrf_integrations,
@@ -324,6 +332,7 @@ def create_templates():
                      'fund_main': fund_labor,
                      'end_point_main': '/juca/api/v1/calculation/funds/',
                      'many': True,
+                     'slug': TemplateSlugChoices.FUNDS,
                      'has_commit': True,
                      'summary_fields': summary_fields_verbas,
                      'summary_main_fields': summary_main_fields_verbas_irrf_integrations,

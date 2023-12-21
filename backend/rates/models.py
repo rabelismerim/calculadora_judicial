@@ -5,7 +5,7 @@ import json
 import pandas as pd
 from django.core.validators import MinLengthValidator
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, TextChoices
 from rest_framework.exceptions import ValidationError
 
 from apps.schedule.views import SCHEDULER
@@ -422,6 +422,13 @@ class Template(AbstractModel):
         return self.name
 
 
+class TemplateSlugChoices(TextChoices):
+    FUNDS = 'F', 'Funds'
+    FUNDS_INTEGRATION = 'I', 'Funds Integration'
+    DOCUMENT = 'D', 'Document'
+    IRRF = 'R', 'IRRF'
+
+
 class TemplateRate(AbstractModel):
     """
     This class represents a template used for calculating funds. Each template has fields that store information
@@ -438,19 +445,20 @@ class TemplateRate(AbstractModel):
     is_horizontal = models.BooleanField(_('Is Horizontal'), default=True)
     has_commit = models.BooleanField(_('Commit option'), default=True)
     many = models.BooleanField(_('Is Multiple?'))
+    slug = models.CharField(_('Slug'), max_length=1, choices=TemplateSlugChoices.choices,
+                            default=TemplateSlugChoices.FUNDS)
 
     def __str__(self):
         return f'{self.description} | {self.template.name}'
 
 
-TYPE_CHOICES = (
-    ('D', 'date'),
-    ('B', 'boolean'),
-    ('C', 'text'),
-    ('F', 'float'),
-    ('I', 'integer'),
-    ('T', 'datetime'),
-)
+class FieldTypeChoices(TextChoices):
+    DATE = 'D', 'date'
+    BOOLEAN = 'B', 'boolean'
+    TEXT = 'C', 'text'
+    FLOAT = 'F', 'float'
+    INTEGER = 'I', 'integer'
+    DATETIME = 'T', 'datetime'
 
 
 class AbstractTemplateField(AbstractModel):
@@ -467,7 +475,7 @@ class AbstractTemplateField(AbstractModel):
     """
     label = models.CharField(_('Field name'), max_length=150)
     key = models.CharField(_('Field key'), max_length=150, null=True, blank=True)
-    type = models.CharField(_('Field type'), choices=TYPE_CHOICES, max_length=1)
+    type = models.CharField(_('Field type'), choices=FieldTypeChoices.choices, max_length=1)
     order = models.PositiveIntegerField(_('Order'))
     is_editable = models.BooleanField(_('Is editable?'))
     required = models.BooleanField(_('Required?'))
@@ -482,7 +490,7 @@ class AbstractTemplateField(AbstractModel):
         return 0
 
     class Meta:
-        ordering = ('created_at',)
+        ordering = ('order',)
 
 
 class TemplateMainField(AbstractTemplateField):

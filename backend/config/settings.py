@@ -366,6 +366,9 @@ if BRANCH_DEV or 'test' in sys.argv:
                     'ENGINE': 'django.db.backends.sqlite3',
                     'NAME': ':memory:',
                     'MIRROR': 'default',
+                    'OPTIONS': {
+                        'timeout': 40,  # Define o timeout em segundos (exemplo: 40 segundos)
+                    },
                 },
             }
 
@@ -414,6 +417,9 @@ if BRANCH_DEV or 'test' in sys.argv:
                     'NAME': BASE_DIR / 'db.sqlite3',
                     'TEST': {
                         'MIRROR': 'default',
+                    },
+                    'OPTIONS': {
+                        'timeout': 60,  # Define o timeout em segundos (exemplo: 40 segundos)
                     },
                 }
             }

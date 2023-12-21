@@ -796,8 +796,9 @@ def new_total_funds_rate_integrations(sender, instance, **kwargs) -> None:
         instance.get_calculation())
     defaults = {'statement_pf_id': statement_pf.id,
                 'rate_integrations_id': instance.id}
+
     filters = {'statement_pf_id': statement_pf.id}
-    FundsDescription.objects.get_or_create(defaults=defaults, **filters)
+    FundsDescription.objects.get_or_create(defaults=defaults, **defaults)
     statement_pf.calcule_total()
     extract_formula(instance)
 

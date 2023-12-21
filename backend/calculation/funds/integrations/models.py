@@ -52,6 +52,10 @@ class StatementIntegrations(AbstractStatement):
         """Returns True if the monetary correction exists for the statement."""
         return hasattr(self, 'monetarycorrectionintegrations')
 
+    @property
+    def monetary_correction(self):
+        return self.get_monetary_correction()
+
     def get_monetary_correction(self):
         """Returns the `monetarycorrection` attribute value"""
         if self.has_monetary_correction():
