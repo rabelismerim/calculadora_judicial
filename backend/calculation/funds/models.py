@@ -94,6 +94,18 @@ class Funds(AbstractFunds):
         total_funds = self.get_total_funds()
         total_funds.set_total()
 
+    def get_total_values_funds(self):
+        """
+        This method returns the TotalValuesFunds object associated with the current fund object, if exists.
+        """
+        return getattr(self, 'totalvaluesfunds', None)
+
+    def get_total_values_funds_integrations(self):
+        """
+        This method returns the TotalValuesFundsIntegrations object associated with the current fund object, if exists.
+        """
+        return getattr(self, 'totalvaluesfundsintegrations', None)
+
     def gen_total_integrations(self):
         """
         This method generates the total statements for the current fund by calling the set_total() method of the

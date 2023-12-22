@@ -120,6 +120,14 @@ class StatementDocument(AbstractStatement):
     def __str__(self):
         return f'{self.data_base} - {self.historical_value}'
 
+    @property
+    def name(self):
+        return self.fund.name
+
+    @property
+    def monetary_correction(self):
+        return self.get_monetary_correction()
+
     def has_tax(self):
         """Return True if this statement has tax; False otherwise."""
         data_base = self.get_data_base()
@@ -154,6 +162,10 @@ class StatementDocument(AbstractStatement):
                 return 0
             return self.__days360(data_base, date_rj)
         return 0
+
+    @property
+    def total_days(self) -> int:
+        return self.days
 
     @staticmethod
     def _calc_default_interest(corrected_value, default_interest, days) -> float:

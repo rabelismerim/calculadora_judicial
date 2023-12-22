@@ -1,55 +1,85 @@
 import logging
 import re
-from copy import copy
-
-from openpyxl.utils import get_column_letter
-
-from calculation.sheets_template.models import SheetsTemplate
-from calculation.sheets_template.schemas import SheetsTemplateSchema
-from calculation.funds.document.models import StatementDocument, FundDocument
-from calculation.models import Calculation
-from rates.models import TemplateSlugChoices, FieldTypeChoices
-from rates.schemas import TemplateSchema
-
-from core.abstract.views import AbstractViewApi
-from django.http import JsonResponse
-from xlsx2html import xlsx2html
-
-from rest_framework import permissions
-from core.permission.views import CheckHasPermission
-from utils import _, doc
-
 import pdfkit
 import openpyxl as xl
-from openpyxl.styles import PatternFill, Alignment, Font
+import base64
+
 from os.path import exists
 from os import remove
 from datetime import datetime
-import base64
+from copy import copy
+from rest_framework import permissions
+from django.http import JsonResponse
+from xlsx2html import xlsx2html
+
+from openpyxl.utils import get_column_letter
+from openpyxl.styles import PatternFill, Alignment, Font
+
+from calculation.sheets_template.models import SheetsTemplate
+from calculation.sheets_template.schemas import SheetsTemplateSchema
+from calculation.models import Calculation
+from core.abstract.views import AbstractViewApi
+from core.permission.views import CheckHasPermission
+from rates.models import TemplateSlugChoices, FieldTypeChoices
+from rates.schemas import TemplateSchema
+from utils import _, doc
 
 config = pdfkit.configuration(wkhtmltopdf="C:\Program Files\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
 
-grayFill = PatternFill(start_color="00C0C0C0",
-                       end_color="00C0C0C0", fill_type="solid")
-
+gray_fill = PatternFill(start_color="00C0C0C0",
+                        end_color="00C0C0C0", fill_type="solid")
+green_fill = PatternFill(start_color='86BC25', end_color='86BC25', fill_type='solid')
 bold_font = Font(bold=True)
 bold_white_font = Font(bold=True, color="FFFFFF")  # "FFFFFF" representa a cor branca em hexadecimal
+underline_font = Font(bold=True, color="FFFFFF", underline="single")  # "FFFFFF" representa a cor branca em hexadecimal
 
 total_merged = 2
 
 
 def get_nested_attr(obj, attr_str):
+    """
+    Obtém um atributo aninhado de um objeto.
+
+    Args:
+    - obj: Objeto a ser acessado.
+    - attr_str (str): String contendo o caminho do atributo aninhado separado por pontos.
+
+    Returns:
+    - object: Valor do atributo aninhado.
+    """
     attrs = attr_str.split('.')
     for attr in attrs:
         obj = getattr(obj, attr)
     return obj
 
 
-def move_cell(cell, rows: int, cols: int, preserve_original=False) -> None:
-    """Move ``cell`` by ``rows`` and ``cols``. If ``preserve_original`` is True, do copy instead
-    of a move.
+def get_nesteds_attr(objs, attr_str):
+    """
+    Obtém um atributo aninhado de uma lista de objetos.
 
-    .. note:: Anything already present in the new destination gets overwritten.
+    Args:
+    - objs (list): Lista de objetos.
+    - attr_str (str): String contendo o caminho do atributo aninhado separado por pontos.
+
+    Returns:
+    - object: Valor do atributo aninhado.
+    """
+    for obj in objs:
+        try:
+            return get_nested_attr(obj, attr_str)
+        except AttributeError:
+            pass
+
+
+def move_cell(cell, rows: int, cols: int, preserve_original=False) -> None:
+    """
+    Move uma célula na planilha para uma nova posição especificada por linhas e colunas.
+
+    Args:
+    - cell: Célula a ser movida.
+    - rows (int): Número de linhas a serem movidas.
+    - cols (int): Número de colunas a serem movidas.
+    - preserve_original (bool): Indica se o valor original da célula deve ser mantido (padrão é False).
     """
     new_column = get_column_letter(cell.column + cols)
     new_cell = cell.parent[f"{new_column}{cell.row + rows}"]
@@ -67,6 +97,22 @@ def move_cell(cell, rows: int, cols: int, preserve_original=False) -> None:
 
 
 def set_sheet_value(sheet_, line, column: str or list, value, force=False, alignment=None, font=None, fill=None):
+    """
+    Define o valor de uma célula na planilha.
+
+    Args:
+    - sheet_ (Sheet): Planilha onde será definido o valor.
+    - line (int): Número da linha da célula.
+    - column (str or list): Nome da coluna ou lista de duas colunas para mesclar células.
+    - value: Valor a ser definido na célula.
+    - force (bool): Indica se a ação deve ser forçada (padrão é False).
+    - alignment (str): Alinhamento do texto na célula.
+    - font (Font): Fonte a ser aplicada na célula.
+    - fill (PatternFill): Preenchimento da célula.
+
+    Returns:
+    - Sheet: Planilha com o valor definido na célula.
+    """
     if force:
         merged_cells_range = sheet_.merged_cells.ranges
         for merged_cell in merged_cells_range:
@@ -94,6 +140,22 @@ def set_sheet_value(sheet_, line, column: str or list, value, force=False, align
 
 
 def set_sheet_number(sheet_, line, column, value, force=False, alignment=None, font=None, fill=None):
+    """
+    Define um valor numérico formatado em uma célula na planilha.
+
+    Args:
+    - sheet_ (Sheet): Planilha onde será definido o valor.
+    - line (int): Número da linha da célula.
+    - column (str): Nome da coluna.
+    - value: Valor numérico a ser definido na célula.
+    - force (bool): Indica se a ação deve ser forçada (padrão é False).
+    - alignment (str): Alinhamento do texto na célula.
+    - font (Font): Fonte a ser aplicada na célula.
+    - fill (PatternFill): Preenchimento da célula.
+
+    Returns:
+    - Sheet: Planilha com o valor numérico definido na célula.
+    """
     try:
         value = "{:,.2f}" \
             .format(value) \
@@ -106,6 +168,17 @@ def set_sheet_number(sheet_, line, column, value, force=False, alignment=None, f
 
 
 def delete_rows(sheet_, line, quantity=1):
+    """
+    Remove linhas na planilha.
+
+    Args:
+    - sheet_ (Sheet): Planilha onde as linhas serão removidas.
+    - line (int): Número da linha inicial a ser removida.
+    - quantity (int): Quantidade de linhas a serem removidas (padrão é 1).
+
+    Returns:
+    - None
+    """
     merged_cells_range = sheet_.merged_cells.ranges
     for merged_cell in merged_cells_range:
         if merged_cell.min_row >= line:
@@ -139,22 +212,6 @@ class SheetTemplateViewApi(AbstractViewApi):
                     """
         )
     )
-    # This function changing the new output file name as report
-    def new_archive(self, filename):
-        sequence = 0
-        new_name = filename.split("/")[-1]
-        dir = "/".join(filename.split("/")[:-1])
-        name_file = new_name
-        while True:
-            new_name = f"{str(sequence)}_{name_file}"
-            if exists(f"{dir}/{new_name}"):
-                sequence += 1
-            else:
-                break
-        return f"{dir}/{new_name}"
-
-    # This function have an interpretor in xls database, juca_value and juca_list,
-    # searching value or lists in request calls
     def get(self, request, *args, **kwargs):
         return SheetExcel(**kwargs).generate()
 
@@ -164,7 +221,57 @@ def replace_key(prefix, text, dicionario):
 
 
 class SheetExcel:
+    """
+    Classe que manipula e processa dados em uma planilha do Excel com base em parâmetros fornecidos.
+
+    Atributos:
+    - name_report (str): Nome do relatório.
+    - export_type (str): Tipo de exportação.
+    - sheet_template (SheetsTemplate): Objeto representando o modelo da planilha.
+    - calculation (Calculation): Objeto representando o cálculo associado.
+    - creditor (Creditor): Objeto representando o credor associado ao cálculo.
+    - statement (Statement): Objeto representando a declaração associada ao cálculo.
+    - funds (QuerySet): Conjunto de fundos associados ao cálculo.
+    - premises (Premises): Premissas associadas ao cálculo.
+    - fund_document (QuerySet): Conjunto de documentos de fundos associados ao cálculo.
+    - notice (Notice): Objeto representando o aviso associado ao credor.
+    - claim_creditor (QuerySet): Conjunto de reivindicações do credor ordenadas por classe.
+    - claim_lawyer (ClaimLawyer): Objeto representando as reivindicações do advogado.
+    - recovering (Recovering): Objeto representando a recuperação associada ao credor.
+    - recovering_name (str): Nome da recuperação.
+    - project (Project): Objeto representando o projeto associado à recuperação.
+    - entity (Entity): Objeto representando a entidade associada ao credor.
+    - court (Court): Objeto representando o tribunal associado ao projeto.
+
+    Métodos:
+    - generate(): Gera e processa o arquivo Excel com base nas definições fornecidas.
+
+    Métodos Internos:
+    - new_archive(filename): Cria um novo nome de arquivo para evitar duplicatas.
+    - set_formula_notice_aj(sheet, col, cnt_ini_row, let_ini_col): Define fórmulas de avisos judiciais.
+    - set_formula_claim_creditor(sheet, col, cnt_ini_row, let_ini_col): Define fórmulas de reivindicações do credor.
+    - set_formula_claim_lawyer(sheet, col, cnt_ini_row, let_ini_col): Define fórmulas de honorários advocatícios.
+    - set_formula_sheets(sheet, col, cnt_ini_row, let_ini_col): Define fórmulas relacionadas a folhas.
+    - set_formula_premises(sheet, col, cnt_ini_row, let_ini_col): Define fórmulas de premissas.
+    - set_formula_fund_document(sheet, col, cnt_ini_row, let_ini_col): Define fórmulas de documentos de fundos.
+    - set_formula_juca_lst(sheet, col): Define fórmulas com base em valores específicos.
+    - set_formula_juca(sheet, col): Define fórmulas específicas da variável 'juca_excel' em uma planilha.
+    - set_formula_jucad(sheet, col): Define fórmulas específicas da variável 'juca_excel' e, se necessário, deleta a linha.
+    - set_sheet_juca(sheet): Configura a planilha com base em condições específicas.
+    - set_sheet_calculation(sheet): Configura a planilha de cálculo com base nas definições relacionadas aos fundos.
+    - set_template(sheet, item, cnt_row, force=False, has_headers=False): Define um template específico em uma planilha para um item fornecido.
+    """
+
     def new_archive(self, filename):
+        """
+        Cria um novo nome de arquivo para evitar duplicatas adicionando um número de sequência ao nome do arquivo.
+
+        Args:
+        - filename (str): O nome do arquivo para o qual um novo nome será gerado.
+
+        Returns:
+        - str: O novo nome de arquivo gerado.
+        """
         sequence = 0
         new_name = filename.split("/")[-1]
         path = "/".join(filename.split("/")[:-1])
@@ -178,12 +285,19 @@ class SheetExcel:
         return f"{path}/{new_name}"
 
     def __init__(self, **kwargs):
-        # Objects to publish in sheet
+        """
+        Inicializa a classe SheetExcel com os parâmetros fornecidos.
+
+        Args:
+        - **kwargs: Parâmetros chave-valor fornecidos para inicializar a classe.
+
+        """
         self.name_report = kwargs.get("export_type").split(';')[0] if len(
             kwargs.get("export_type").split(';')) > 1 else kwargs.get("export_type")
         self.export_type = kwargs.get("export_type").split(';')[1] if len(
             kwargs.get("export_type").split(';')) > 1 else None
 
+        self.name_report = f'{self.name_report}_V1'
         self.sheet_template = SheetsTemplate.objects.filter(name=self.name_report).first()
         calculation_id = kwargs.get('calculation_id')
         self.calculation = Calculation.objects.filter(id=calculation_id).first()
@@ -192,8 +306,7 @@ class SheetExcel:
 
         self.funds = self.calculation.funds_set.all()
         self.premises = self.calculation.get_premises()
-        self.fund_document = FundDocument.objects.filter(
-            calculation_id=calculation_id)
+        self.fund_document = self.calculation.funddocument_set.all()
 
         self.notice = self.creditor.get_notice()
         self.claim_creditor = self.creditor.get_claims_creditor().order_by("classes__classe")
@@ -251,6 +364,16 @@ class SheetExcel:
         }
 
     def set_formula_notice_aj(self, sheet, col, cnt_ini_row, let_ini_col):
+        """
+        Define fórmulas relacionadas a avisos judiciais em uma planilha.
+
+        Args:
+        - sheet: A planilha na qual as fórmulas serão aplicadas.
+        - col: A coluna na planilha onde as fórmulas serão aplicadas.
+        - cnt_ini_row: A linha inicial na qual as fórmulas serão aplicadas.
+        - let_ini_col: A letra da coluna inicial na qual as fórmulas serão aplicadas.
+
+        """
         col.value = ""
         for item in self.notice:
             set_sheet_value(sheet, cnt_ini_row, let_ini_col, item.classes)
@@ -259,6 +382,15 @@ class SheetExcel:
             let_ini_col = chr(ord(let_ini_col) + 1)
 
     def set_formula_claim_creditor(self, sheet, col, cnt_ini_row, let_ini_col):
+        """
+        Define fórmulas relacionadas a reivindicações de credores em uma planilha.
+
+        Args:
+        - sheet: A planilha na qual as fórmulas serão aplicadas.
+        - col: A coluna na planilha onde as fórmulas serão aplicadas.
+        - cnt_ini_row: A linha inicial na qual as fórmulas serão aplicadas.
+        - let_ini_col: A letra da coluna inicial na qual as fórmulas serão aplicadas.
+        """
         col.value = ""
         for item in self.claim_creditor:
             set_sheet_value(sheet, cnt_ini_row, let_ini_col, item.classes)
@@ -267,16 +399,33 @@ class SheetExcel:
             let_ini_col = chr(ord(let_ini_col) + 1)
 
     def set_formula_claim_lawyer(self, sheet, col, cnt_ini_row, let_ini_col):
+        """
+        Define fórmulas relacionadas a honorários advocatícios em uma planilha.
+
+        Args:
+        - sheet: A planilha na qual as fórmulas serão aplicadas.
+        - col: A coluna na planilha onde as fórmulas serão aplicadas.
+        - cnt_ini_row: A linha inicial na qual as fórmulas serão aplicadas.
+        - let_ini_col: A letra da coluna inicial na qual as fórmulas serão aplicadas.
+        """
         col.value = ""
         if self.claim_lawyer:
             set_sheet_value(sheet, cnt_ini_row, let_ini_col, self.claim_lawyer.classes)
             set_sheet_number(sheet, cnt_ini_row + 1, let_ini_col, self.claim_lawyer.coins.value)
 
     def set_formula_sheets(self, sheet, col, cnt_ini_row, let_ini_col):
+        """
+        Define fórmulas relacionadas a sheets em uma planilha.
+
+        Args:
+        - sheet: A planilha na qual as fórmulas serão aplicadas.
+        - col: A coluna na planilha onde as fórmulas serão aplicadas.
+        - cnt_ini_row: A linha inicial na qual as fórmulas serão aplicadas.
+        - let_ini_col: A letra da coluna inicial na qual as fórmulas serão aplicadas.
+        """
         col.value = ""
 
         if not self.funds.exists():
-            print('deletando\n')
             delete_rows(sheet, cnt_ini_row - 1, 1)
         for item in self.funds:
             set_sheet_value(sheet, cnt_ini_row, ['A', 'B'], item.name, force=True)
@@ -318,12 +467,31 @@ class SheetExcel:
                 set_sheet_number(sheet, cnt_ini_row, 'C', default_interest_or_due.value)
 
     def set_formula_premises(self, sheet, col, cnt_ini_row, let_ini_col):
+        """
+        Define fórmulas relacionadas a premissas em uma planilha.
+
+        Args:
+        - sheet: A planilha na qual as fórmulas serão aplicadas.
+        - col: A coluna na planilha onde as fórmulas serão aplicadas.
+        - cnt_ini_row: A linha inicial na qual as fórmulas serão aplicadas.
+        - let_ini_col: A letra da coluna inicial na qual as fórmulas serão aplicadas.
+        """
         col.value = ""
         for item in self.premises:
             set_sheet_value(sheet, cnt_ini_row, ['A', 'G'], item, force=True)
             cnt_ini_row = cnt_ini_row + 1
 
     def set_formula_notice_aj_vert(self, sheet, col, cnt_ini_row, let_ini_col):
+        """
+        Define fórmulas relacionadas a avisos judiciais em uma planilha, de forma vertical.
+
+        Args:
+        - sheet: A planilha na qual as fórmulas serão aplicadas.
+        - col: A coluna na planilha onde as fórmulas serão aplicadas.
+        - cnt_ini_row: A linha inicial na qual as fórmulas serão aplicadas.
+        - let_ini_col: A letra da coluna inicial na qual as fórmulas serão aplicadas.
+
+        """
         col.value = "Edital AJ:"
         force = False
         for item in self.notice:
@@ -336,6 +504,15 @@ class SheetExcel:
             force = True
 
     def set_formula_claim_creditor_vert(self, sheet, col, cnt_ini_row, let_ini_col):
+        """
+        Define fórmulas relacionadas a reivindicações de credores em uma planilha, de forma vertical.
+
+        Args:
+        - sheet: A planilha na qual as fórmulas serão aplicadas.
+        - col: A coluna na planilha onde as fórmulas serão aplicadas.
+        - cnt_ini_row: A linha inicial na qual as fórmulas serão aplicadas.
+        - let_ini_col: A letra da coluna inicial na qual as fórmulas serão aplicadas.
+        """
         col.value = "Solicitado pelo credor:"
         force = False
         for item in self.claim_creditor:
@@ -348,6 +525,15 @@ class SheetExcel:
             force = True
 
     def set_formula_claim_lawyer_vert(self, sheet, col, cnt_ini_row, let_ini_col):
+        """
+        Define fórmulas relacionadas a honorários advocatícios em uma planilha, de forma vertical.
+
+        Args:
+        - sheet: A planilha na qual as fórmulas serão aplicadas.
+        - col: A coluna na planilha onde as fórmulas serão aplicadas.
+        - cnt_ini_row: A linha inicial na qual as fórmulas serão aplicadas.
+        - let_ini_col: A letra da coluna inicial na qual as fórmulas serão aplicadas.
+        """
         col.value = "Honorários advocatícios:"
         if self.claim_lawyer:
             set_sheet_value(sheet, cnt_ini_row, 'B', self.claim_lawyer.classes, alignment='left')
@@ -357,101 +543,40 @@ class SheetExcel:
             set_sheet_value(sheet, cnt_ini_row, 'E', self.recovering_name)
 
     def set_formula_fund_document(self, sheet, col, cnt_ini_row, let_ini_col):
-        sum_total = 0
-        sum_total1 = 0
-        sum_total2 = 0
-        sum_total3 = 0
-        sum_total4 = 0
-        col.value = ""
-        if self.fund_document.count() == 0:
-            delete_rows(sheet, cnt_ini_row - 2, 5)
+        """
+        Define fórmulas relacionadas a documentos de fundos em uma planilha.
 
+        Args:
+        - sheet: A planilha na qual as fórmulas serão aplicadas.
+        - col: A coluna na planilha onde as fórmulas serão aplicadas.
+        - cnt_ini_row: A linha inicial na qual as fórmulas serão aplicadas.
+        - let_ini_col: A letra da coluna inicial na qual as fórmulas serão aplicadas.
+        """
+        col.value = ""
+        if self.fund_document.exists():
+            set_sheet_value(sheet, col.row, ['A', 'D'], '', fill=green_fill)
+            set_sheet_value(sheet, col.row, ['E', 'G'], 'Correção monetária', font=underline_font, fill=green_fill,
+                            alignment='center')
+            set_sheet_value(sheet, col.row, ['H', 'J'], 'Encargos moratórios', font=underline_font, fill=green_fill,
+                            alignment='center')
+            set_sheet_value(sheet, col.row, ['K', 'L'], '', fill=green_fill)
+        count = 0
+        has_headers = False
         for item in self.fund_document:
-            statement_document = (
-                StatementDocument.objects.filter(
-                    fund_id=item.id
-                )
-            )
-            for item1 in statement_document:
-                set_sheet_value(sheet, cnt_ini_row, 'A', item, force=True)
-                set_sheet_value(sheet, cnt_ini_row, 'B', item1.number, alignment='center')
-                set_sheet_value(sheet, cnt_ini_row, 'C', item1.data_base, alignment='center')
-                set_sheet_number(sheet, cnt_ini_row, 'D', item1.historical_value,
-                                 alignment='right')
-                set_sheet_number(sheet, cnt_ini_row, 'E',
-                                 item1.monetarycorrectiondocument.index_data_base,
-                                 alignment='center')
-                set_sheet_number(sheet, cnt_ini_row, 'F',
-                                 item1.monetarycorrectiondocument.index_recovering,
-                                 alignment='center')
-                set_sheet_number(sheet, cnt_ini_row, 'G',
-                                 item1.monetarycorrectiondocument.corrected_value,
-                                 alignment='right')
-                set_sheet_value(sheet, cnt_ini_row, 'H', item1.days, alignment='center')
-                set_sheet_number(sheet, cnt_ini_row, 'I', item1.default_interest,
-                                 alignment='center')
-                set_sheet_number(sheet, cnt_ini_row, 'J', item1.fine, alignment='center')
-                set_sheet_number(sheet, cnt_ini_row, 'K', item1.total_due, alignment='center')
-                cnt_ini_row = cnt_ini_row + 1
-                sum_total += float(item1.historical_value)
-                sum_total1 += float(
-                    item1.monetarycorrectiondocument.corrected_value
-                )
-                sum_total2 += float(
-                    item1.default_interest)
-                sum_total3 += float(item1.fine)
-                sum_total4 += float(
-                    item1.monetarycorrectiondocument.corrected_value
-                    + item1.fine
-                    + item1.default_interest
-                )
-        if len(self.fund_document) > 0:
-            sheet["A" + str(cnt_ini_row)] = "Total"
-            sheet["A" +
-                  str(cnt_ini_row)].font = bold_font
-            sheet[
-                "D" + str(cnt_ini_row)
-                ] = "{:,.2f}".format(sum_total).strip()
-            sheet["D" +
-                  str(cnt_ini_row)].font = bold_font
-            sheet[
-                "D" + str(cnt_ini_row)
-                ].alignment = Alignment(horizontal="right")
-            sheet[
-                "G" + str(cnt_ini_row)
-                ] = "{:,.2f}".format(sum_total1).strip()
-            sheet["G" +
-                  str(cnt_ini_row)].font = bold_font
-            sheet[
-                "G" + str(cnt_ini_row)
-                ].alignment = Alignment(horizontal="right")
-            sheet[
-                "I" + str(cnt_ini_row)
-                ] = "{:,.2f}".format(sum_total2).strip()
-            sheet["I" +
-                  str(cnt_ini_row)].font = bold_font
-            sheet[
-                "I" + str(cnt_ini_row)
-                ].alignment = Alignment(horizontal="right")
-            sheet[
-                "J" + str(cnt_ini_row)
-                ] = "{:,.2f}".format(sum_total3).strip()
-            sheet["J" +
-                  str(cnt_ini_row)].font = bold_font
-            sheet[
-                "J" + str(cnt_ini_row)
-                ].alignment = Alignment(horizontal="right")
-            sheet[
-                "K" + str(cnt_ini_row)
-                ] = "{:,.2f}".format(sum_total4).strip()
-            sheet["K" +
-                  str(cnt_ini_row)].font = bold_font
-            sheet[
-                "K" + str(cnt_ini_row)
-                ].alignment = Alignment(horizontal="right")
-            cnt_ini_row = cnt_ini_row + 2
+            print(item, 'item')
+            self.set_template(sheet, item, cnt_ini_row + count, force=True, has_headers=has_headers)
+            count += 1
+            has_headers = True
 
     def set_formula_juca_lst(self, sheet, col):
+        """
+        Define fórmulas com base em valores específicos em uma planilha.
+
+        Args:
+        - sheet: A planilha na qual as fórmulas serão aplicadas.
+        - col: A coluna na planilha onde as fórmulas serão aplicadas.
+
+        """
         col_value = str(col.value)[8:]
         cnt_ini_row = col.row
         let_ini_col = col.column_letter
@@ -472,6 +597,12 @@ class SheetExcel:
             formula(sheet, col, cnt_ini_row, let_ini_col)
 
     def generate(self):
+        """
+        Gera e processa o arquivo Excel com base nas definições e lógica definidas nos métodos anteriores.
+
+        Returns:
+        - Objeto ExportProcessor: Objeto que processa a exportação do arquivo gerado.
+        """
         for sheet in self.archive_view:
             if sheet.sheet_state == "hidden":
                 continue
@@ -496,8 +627,154 @@ class SheetExcel:
 
         self.archive_view.save(self.new_name_view)
 
-        list_html = {}
-        list_pdf = []
+        return ExportProcessor(self.archive_view, self.new_name_view, self.new_name_pdf,
+                               self.export_type).process_export()
+
+    def set_formula_juca(self, sheet, col):
+        """
+        Define fórmulas específicas da variável 'juca_excel' em uma planilha.
+
+        Args:
+        - sheet: A planilha na qual as fórmulas serão aplicadas.
+        - col: A coluna na planilha onde as fórmulas serão aplicadas.
+
+        """
+        value = replace_key('JUCA=', col.value, self.juca_excel)
+        if str(value) == 'None':
+            value = ''
+        col.value = value
+
+    def set_formula_jucad(self, sheet, col):
+        """
+        Define fórmulas específicas da variável 'juca_excel' em uma planilha e, se necessário, deleta a linha.
+
+        Args:
+        - sheet: A planilha na qual as fórmulas serão aplicadas.
+        - col: A coluna na planilha onde as fórmulas serão aplicadas.
+
+        """
+        value = replace_key('JUCAD=', col.value, self.juca_excel)
+        col.value = ''
+        if str(value) == 'None':
+            delete_rows(sheet, col.row)
+        else:
+            col.value = value
+
+    def set_sheet_juca(self, sheet):
+        """
+        Configura a planilha com base em condições específicas.
+
+        Args:
+        - sheet: A planilha que será configurada.
+
+        """
+        if str(sheet.title)[5:] == "Calculation":
+            self.set_sheet_calculation(sheet)
+        self.archive_view.remove_sheet(self.archive_view[sheet.title])
+
+    def set_sheet_calculation(self, sheet):
+        """
+        Configura a planilha de cálculo com base nas definições relacionadas aos fundos.
+
+        Args:
+        - sheet: A planilha que será configurada.
+
+        """
+        copy_sheet = self.archive_view[sheet.title]
+        for item in self.funds:
+            cnt_row = 0
+            self.archive_view.copy_worksheet(copy_sheet)
+            ws = self.archive_view[sheet.title + " Copy"]
+            ws.title = item.name
+
+            set_sheet_value(ws, cnt_row + 1, ['A', 'K'], 'Memória de cálculo da Administradora Judicial',
+                            font=bold_white_font, fill=gray_fill)
+
+            # TODO: Pegar a data e a legenda usado para fazer o cálculo
+            cnt_row += 2
+            set_sheet_value(ws, cnt_row + 1, 'A', 'Correção monetária', font=bold_font)
+            set_sheet_value(ws, cnt_row + 1, ['E', 'K'], item.rate.index, font=bold_font)
+            cnt_row += 1
+
+            self.set_template(ws, item, cnt_row)
+
+    def set_template(self, sheet, item, cnt_row, force=False, has_headers=False):
+        """
+        Define um template específico em uma planilha para um item fornecido.
+
+        Args:
+        - sheet: A planilha na qual o template será aplicado.
+        - item: O item para o qual o template será definido.
+        - cnt_row: A linha na qual o template será iniciado.
+        - force (bool, opcional): Indica se o template será forçado.
+        - has_headers (bool, opcional): Indica se a planilha tem cabeçalhos.
+
+        """
+        TemplateProcessor(sheet, item, cnt_row, self.statement, force, has_headers).set_template()
+
+
+class ExportProcessor:
+    """
+    Classe que processa a exportação de arquivos e gera respostas com base nos dados fornecidos.
+
+    Atributos:
+    - list_html (dict): Dicionário contendo HTML resultante da exportação.
+    - list_pdf (list): Lista contendo dados de PDF resultantes da exportação.
+
+    Métodos:
+    - __init__(archive_view, new_name_view, new_name_pdf, export_type): Inicializa a classe ExportProcessor.
+    - process_export(): Processa a exportação dos arquivos e gera uma resposta.
+    - _generate_html_and_pdf(): Gera dados HTML e PDF a partir das informações fornecidas.
+    - _encode_files(): Codifica os arquivos Excel e PDF para base64.
+    - _clean_temporary_files(): Remove os arquivos temporários gerados.
+    - _prepare_response(base64_message, base64_message_pdf): Prepara a resposta com os dados codificados.
+
+    Métodos Internos:
+    - _generate_html_and_pdf(): Gera dados HTML e PDF a partir das informações fornecidas.
+    - _encode_files(): Codifica os arquivos Excel e PDF para base64.
+    - _clean_temporary_files(): Remove os arquivos temporários gerados.
+    - _prepare_response(): Prepara a resposta com os dados codificados.
+    """
+    list_html = {}
+    list_pdf = []
+
+    def __init__(self, archive_view, new_name_view, new_name_pdf, export_type):
+        """
+        Inicializa a classe ExportProcessor com os parâmetros fornecidos.
+
+        Args:
+        - archive_view: Visualização do arquivo.
+        - new_name_view: Novo nome para a visualização.
+        - new_name_pdf: Novo nome para o arquivo PDF.
+        - export_type: Tipo de exportação.
+        """
+        self.archive_view = archive_view
+        self.new_name_view = new_name_view
+        self.new_name_pdf = new_name_pdf
+        self.export_type = export_type
+
+    def process_export(self):
+        """
+        Processa a exportação dos arquivos e gera uma resposta.
+
+        Returns:
+        - JsonResponse: Resposta JSON com os dados da exportação.
+        """
+        try:
+            self._generate_html_and_pdf()
+            base64_message, base64_message_pdf = self._encode_files()
+            response = self._prepare_response(base64_message, base64_message_pdf)
+            self._clean_temporary_files()
+            return response
+
+        except Exception as e:
+            error_message = f"An error occurred: {str(e)}"
+            return JsonResponse({"error": error_message}, status=500)
+
+    def _generate_html_and_pdf(self):
+        """
+        Gera dados HTML e PDF a partir das informações fornecidas.
+        """
         for sheet in self.archive_view:
             if sheet.sheet_state == "hidden":
                 continue
@@ -511,8 +788,16 @@ class SheetExcel:
                 .replace("\n", "")
                 .replace('\\"', '"')
             )
-            list_html[sheet._WorkbookChild__title] = result_html
-            list_pdf.append(result_html)
+            self.list_html[sheet._WorkbookChild__title] = result_html
+            self.list_pdf.append(result_html)
+
+    def _encode_files(self):
+        """
+        Codifica os arquivos Excel e PDF para base64.
+
+        Returns:
+        - Tuple[str, str]: Tupla contendo mensagens base64 para Excel e PDF.
+        """
 
         # Create a HTML File
         with open(self.new_name_view, "rb") as archive_excel:
@@ -520,135 +805,250 @@ class SheetExcel:
             base64_encoded_data = base64.b64encode(excel_file)
             base64_message = base64_encoded_data.decode("latin-1")
 
-        # create a pdf file
-        pdfkit.from_string('\n'.join(list_pdf), self.new_name_pdf, configuration=config)
+        # Create a pdf file
+        pdfkit.from_string('\n'.join(self.list_pdf), self.new_name_pdf, configuration=config)
 
         with open(self.new_name_pdf, "rb") as archive_pdf:
             pdf_file = archive_pdf.read()
             base64_encoded_data = base64.b64encode(pdf_file)
             base64_message_pdf = base64_encoded_data.decode("latin-1")
 
+        return base64_message, base64_message_pdf
+
+    def _clean_temporary_files(self):
+        """
+        Remove os arquivos temporários gerados.
+        """
         remove(self.new_name_view)
         remove(self.new_name_pdf)
 
+    def _prepare_response(self, base64_message, base64_message_pdf):
+        """
+        Prepara a resposta com os dados codificados.
+
+        Args:
+        - base64_message: Mensagem base64 para o arquivo Excel.
+        - base64_message_pdf: Mensagem base64 para o arquivo PDF.
+
+        Returns:
+        - JsonResponse: Resposta JSON com os dados da exportação.
+        """
+        response_data = {}
+
         if self.export_type == "html":
-            return JsonResponse({"html": f'"{str(list_html)}"'})
-        if self.export_type == "xlsx":
-            return JsonResponse(data={"excel": f"{base64_message}"})
-        if self.export_type == "pdf":
-            return JsonResponse({"pdf": f"{base64_message_pdf}"})
+            response_data["html"] = f'"{str(self.list_html)}"'
+        elif self.export_type == "xlsx":
+            response_data["excel"] = f"{base64_message}"
+        elif self.export_type == "pdf":
+            response_data["pdf"] = f"{base64_message_pdf}"
         else:
-            return JsonResponse(
-                {"html": f'"{str(list_html)}"', "excel": f"{base64_message}", "pdf": f"{base64_message_pdf}"})
+            response_data = {
+                "html": f'"{str(self.list_html)}"',
+                "excel": f"{base64_message}",
+                "pdf": f"{base64_message_pdf}"
+            }
 
-    def set_formula_juca(self, sheet, col):
-        value = replace_key('JUCA=', col.value, self.juca_excel)
-        if str(value) == 'None':
-            value = ''
-        col.value = value
+        return JsonResponse(response_data)
 
-    def set_formula_jucad(self, sheet, col):
-        value = replace_key('JUCAD=', col.value, self.juca_excel)
-        col.value = ''
-        if str(value) == 'None':
-            delete_rows(sheet, col.row)
+
+class TemplateProcessor:
+    """
+    Classe responsável por processar um template de planilha.
+
+    Atributos:
+    - index_order (dict): Dicionário contendo a ordem dos índices.
+    - sheet: Planilha na qual os dados serão processados.
+    - item: Item associado ao template.
+    - cnt_row: Contador de linhas na planilha.
+    - force (bool): Indica se a ação deve ser forçada.
+    - has_headers (bool): Indica se há cabeçalhos na planilha.
+    - statement: Declaração associada ao template.
+
+    Métodos:
+    - __init__(sheet, item, cnt_row, statement, force=False, has_headers=False): Inicializa a classe TemplateProcessor.
+    - set_template(): Define o template na planilha.
+    - _process_table(template, table): Processa uma tabela específica do template.
+    - _process_fields(table, fund_items, nested_attrs, color, fonte, unique_headers): Processa os campos da tabela.
+    - _get_formatted_value(type_value, value): Formata o valor com base no tipo de campo.
+    - _process_summary(summary, total_funds): Processa o resumo da tabela.
+
+    Métodos Internos:
+    - _process_table(template, table): Processa uma tabela específica do template.
+    - _process_fields(table, fund_items, nested_attrs, color, fonte, unique_headers): Processa os campos da tabela.
+    - _get_formatted_value(type_value, value): Formata o valor com base no tipo de campo.
+    - _process_summary(summary, total_funds): Processa o resumo da tabela.
+    """
+
+    def __init__(self, sheet, item, cnt_row, statement, force=False, has_headers=False):
+        """
+        Inicializa a classe TemplateProcessor com os parâmetros fornecidos.
+
+        Args:
+        - sheet: Planilha na qual os dados serão processados.
+        - item: Item associado ao template.
+        - cnt_row: Contador de linhas na planilha.
+        - statement: Declaração associada ao template.
+        - force (bool): Indica se a ação deve ser forçada (padrão é False).
+        - has_headers (bool): Indica se há cabeçalhos na planilha (padrão é False).
+        """
+        self.index_order = {}
+        self.sheet = sheet
+        self.item = item
+        self.cnt_row = cnt_row
+        self.force = force
+        self.has_headers = has_headers
+        self.statement = statement
+
+    def set_template(self):
+        """
+        Define o template na planilha.
+        """
+        template = self.item.template
+        template_serializer = TemplateSchema(template).data
+
+        for table in template_serializer['tables']:
+            self._process_table(template_serializer, table)
+
+    def _process_table(self, template, table):
+        """
+        Processa uma tabela específica do template.
+
+        Args:
+        - template: Template do item.
+        - table: Tabela a ser processada.
+        """
+
+        nested_attrs = []
+        template_name = self.item.template.name
+        color = gray_fill
+        font = bold_font
+        unique_headers = False
+        summary = sorted(table['summary'], key=lambda x: x['order'])
+
+        if table['slug'] == TemplateSlugChoices.FUNDS:
+            fund_items = self.item.get_all_statement_funds()
+            total_funds = self.item.get_total_values_funds()
+        elif table['slug'] == TemplateSlugChoices.FUNDS_INTEGRATION:
+            fund_items = self.item.get_all_statement_funds_integrations()
+            total_funds = self.item.get_total_values_funds_integrations()
+            template_name = f'Integrações sobre {self.item.template.name}'
+        elif table['slug'] == TemplateSlugChoices.DOCUMENT:
+            fund_item = self.item.get_statement()
+            fund_items = [fund_item]
+            nested_attrs = [self.item.get_total_funds()]
+            total_funds = self.statement.get_statement_pj()
+            color = green_fill
+            font = bold_white_font
+            unique_headers = True
+            summary = sorted(template['summary'], key=lambda x: x['order'])
+
         else:
-            col.value = value
+            msg = 'Table não mapeada na geração do extrato contábil'
+            logging.error(msg)
+            raise ValueError(msg)
 
-    def set_sheet_juca(self, sheet):
+        if not unique_headers:
+            set_sheet_value(self.sheet, self.cnt_row + 1, 'A', template_name, font=bold_font)
+            self.cnt_row += 1
 
-        if str(sheet.title)[5:] == "Calculation":
-            self.set_sheet_calculation(sheet)
-        self.archive_view.remove_sheet(self.archive_view[sheet.title])
+        self._process_fields(table, fund_items, nested_attrs, color, font, unique_headers)
+        self._process_summary(summary, total_funds)
+        self.cnt_row += 2
 
-    def set_sheet_calculation(self, sheet):
-        copy_sheet = self.archive_view[sheet.title]
-        for item in self.funds:
-            cnt_row = 0
-            self.archive_view.copy_worksheet(copy_sheet)
-            ws = self.archive_view[sheet.title + " Copy"]
-            ws.title = item.name
-            template = item.template
-            template_serializer = TemplateSchema(template).data
+    def _process_fields(self, table, fund_items, nested_attrs, color, fonte, unique_headers):
+        """
+        Processa os campos da tabela.
 
-            set_sheet_value(ws, cnt_row + 1, ['D', 'K'], 'Memória de cálculo da Administradora Judicial',
-                            font=bold_white_font, fill=grayFill)
+        Args:
+        - table: Tabela a ser processada.
+        - fund_items: Items de verbas associados.
+        - nested_attrs: Atributos aninhados.
+        - color: Cor a ser utilizada.
+        - fonte: Fonte a ser utilizada.
+        - unique_headers (bool): Indica se os cabeçalhos são únicos.
+        """
+        letter = 'A'
+        fields = sorted(table['fields'], key=lambda x: x['order'])
+        self.cnt_row += 1
 
-            # TODO: Pegar a data e a legenda usado para fazer o cálculo
-            cnt_row += 2
-            set_sheet_value(ws, cnt_row + 1, 'D', 'Correção monetária', font=bold_font)
-            set_sheet_value(ws, cnt_row + 1, ['E', 'K'], item.rate.index, font=bold_font)
-            cnt_row += 1
+        for field in fields:
+            key = field['key']
+            if key == 'status_display':
+                continue
+            if not unique_headers or not self.has_headers:
+                set_sheet_value(self.sheet, self.cnt_row, letter, field['label'], font=fonte, fill=color)
 
-            for table in template_serializer['tables']:
-                if table['slug'] == TemplateSlugChoices.FUNDS:
-                    fund_items = item.get_all_statement_funds()
-                    total_funds = getattr(item, 'totalvaluesfunds', None)
-                    template_name = template.name
-                elif table['slug'] == TemplateSlugChoices.FUNDS_INTEGRATION:
-                    total_funds = getattr(item, 'totalvaluesfundsintegrations', None)
-                    fund_items = item.get_all_statement_funds_integrations()
-                    template_name = f'Integrações sobre {template.name}'
-                else:
-                    logging.error('Table não mapeada na geração do extrato contábil')
-                    continue
+            self.index_order[field['order']] = letter
+            letter = chr(ord(letter) + 1)
 
-                fields = sorted(table['fields'], key=lambda x: x['order'])
-                letter = 'D'
-                set_sheet_value(ws, cnt_row + 1, letter, template_name, font=bold_font)
-                cnt_row += 1
-                index_order = {}
+            if not fund_items:
+                set_sheet_value(self.sheet, self.cnt_row + 1, letter, '-')
+        self.has_headers = True
+
+        self.cnt_row += 1
+        if fund_items:
+            for index, fund_item in enumerate(fund_items):
+
+                if self.force:
+                    set_sheet_value(self.sheet, self.cnt_row, letter, '', force=self.force)
                 for field in fields:
-
                     key = field['key']
                     if key == 'status_display':
                         continue
 
-                    set_sheet_value(ws, cnt_row + 1, letter, field['label'], font=bold_font, fill=grayFill)
-                    cnt_fund = cnt_row + 2
+                    value = get_nesteds_attr(nested_attrs + [fund_item], key)
+                    type_value = field['type']
+                    value = self._get_formatted_value(type_value, value)
 
-                    if fund_items:
-                        for fund_item in fund_items:
-
-                            value = get_nested_attr(fund_item, key)
-                            type_value = field['type']
-
-                            if type_value == FieldTypeChoices.DATE:
-                                value = datetime.strftime(value, "%d/%m/%Y")
-                            elif type_value == FieldTypeChoices.DATETIME:
-                                value = datetime.strftime(value, "%d/%m/%Y %H:%M:%S")
-                            elif type_value == FieldTypeChoices.BOOLEAN:
-                                value = 'Sim' if value else 'Não'
-
-                            if type_value == FieldTypeChoices.FLOAT:
-                                set_sheet_number(ws, cnt_fund, letter, value)
-                            else:
-                                set_sheet_value(ws, cnt_fund, letter, value)
-                            cnt_fund += 1
+                    letter = self.index_order[field['order']]
+                    if type_value == FieldTypeChoices.FLOAT:
+                        set_sheet_number(self.sheet, self.cnt_row, letter, value)
                     else:
-                        set_sheet_value(ws, cnt_fund, letter, '-')
-                    index_order[field['order']] = letter
-                    letter = chr(ord(letter) + 1)
+                        set_sheet_value(self.sheet, self.cnt_row, letter, value)
 
-                count = fund_items.count() or 1
-                cnt_row += count + 1
+                if index < len(fund_items) - 1:
+                    self.cnt_row += 1
 
-                summary = sorted(table['summary'], key=lambda x: x['order'])
-                for summ in summary:
-                    key = summ.get('key')
-                    order = summ.get('order')
+    def _get_formatted_value(self, type_value, value):
+        """
+        Formata o valor com base no tipo de campo.
 
-                    if key:
-                        if total_funds:
-                            value = get_nested_attr(total_funds, key)
-                        else:
-                            value = '-'
-                    else:
-                        value = summ['label']
+        Args:
+        - type_value: Tipo do campo.
+        - value: Valor a ser formatado.
 
-                    if summ['type'] == FieldTypeChoices.FLOAT:
-                        set_sheet_number(ws, cnt_row + 1, index_order[order], value, font=bold_font)
-                    else:
-                        set_sheet_value(ws, cnt_row + 1, index_order[order], value, font=bold_font)
+        Returns:
+        - str: Valor formatado.
+        """
+        if type_value == FieldTypeChoices.DATE:
+            return datetime.strftime(value, "%d/%m/%Y")
+        elif type_value == FieldTypeChoices.DATETIME:
+            return datetime.strftime(value, "%d/%m/%Y %H:%M:%S")
+        elif type_value == FieldTypeChoices.BOOLEAN:
+            return 'Sim' if value else 'Não'
+        return value if value is not None else '-'
 
-                cnt_row += 2
+    def _process_summary(self, summary, total_funds):
+        """
+        Processa o resumo da tabela.
+
+        Args:
+        - summary: Fields de resultado a ser processado.
+        - total_funds: O objeto para ser extraídos os valores.
+        """
+        for summ in summary:
+            key = summ.get('key')
+            order = summ.get('order')
+
+            if key and str(key).lower() != 'none':
+                if total_funds:
+                    value = get_nested_attr(total_funds, key)
+                else:
+                    value = '-'
+            else:
+                value = summ['label']
+
+            if summ['type'] == FieldTypeChoices.FLOAT:
+                set_sheet_number(self.sheet, self.cnt_row + 1, self.index_order[order], value, font=bold_font)
+            else:
+                set_sheet_value(self.sheet, self.cnt_row + 1, self.index_order[order], value, font=bold_font)

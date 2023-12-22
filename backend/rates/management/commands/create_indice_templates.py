@@ -79,7 +79,7 @@ def create_templates():
                       'default': False,
                       'required': True},
                      ]
-    summary_fields_verbas = [{'label': 'Total: ', 'key': None, 'type': 'C', 'order': 2, 'is_editable': False,
+    summary_fields_verbas = [{'label': 'Total: ', 'key': None, 'type': 'C', 'order': 0, 'is_editable': False,
                               'required': False},
                              {'label': '', 'key': 'total_historical', 'type': 'F', 'order': 6,
                               'is_editable': False,
@@ -130,7 +130,7 @@ def create_templates():
 
     summary_fields_document = [{'label': 'Total: ', 'key': 'none', 'type': 'C', 'order': 0, 'is_editable': False,
                                 'required': False},
-                               {'label': '', 'key': 'total_historical', 'type': 'F', 'order': 5,
+                               {'label': '', 'key': 'total_historical', 'type': 'F', 'order': 6,
                                 'is_editable': False,
                                 'required': False},
                                {'label': '', 'key': 'total_corrected', 'type': 'F', 'order': 10,
@@ -229,8 +229,17 @@ def create_templates():
     ])
 
     summary_main_fields_docs = [
-        {'label': 'R$', 'key': 'total.total_corrected', 'type': 'F', 'order': 4, 'is_editable': False,
-
+        {'label': 'Total', 'key': '', 'type': 'F', 'order': 0, 'is_editable': False,
+         'required': False},
+        {'label': 'R$', 'key': 'value', 'type': 'F', 'order': 6, 'is_editable': False,
+         'required': False},
+        {'label': 'R$', 'key': 'corrected_value', 'type': 'F', 'order': 10, 'is_editable': False,
+         'required': False},
+        {'label': 'R$', 'key': 'fine', 'type': 'F', 'order': 11, 'is_editable': False,
+         'required': False},
+        {'label': 'R$', 'key': 'interest', 'type': 'F', 'order': 12, 'is_editable': False,
+         'required': False},
+        {'label': 'R$', 'key': 'amount_due', 'type': 'F', 'order': 13, 'is_editable': False,
          'required': False}
     ]
 
