@@ -248,6 +248,7 @@ class TemplateSchema(AbstractDescriptionSchema):
     tables = TemplateRateSchema(source='templaterate_set', many=True, read_only=True)
     fields = TemplateFieldSchema(source='templatemainfield_set', many=True, read_only=True)
     summary = TemplateMainSummaryFieldSchema(source='templatemainsummaryfield_set', many=True, read_only=True)
+    rates = RateListSchema(many=True, read_only=True)
 
     class Meta:
         model = Template
@@ -272,8 +273,8 @@ class ClassesSchema(AbstractDescriptionSchema):
 
 class ClasseTemplateSchema(AbstractDescriptionSchema):
     """Serializer ClasseTemplate fields"""
-    templates = TemplateListSchema(read_only=True, many=True)
     classe = ClassesSchema(read_only=True)
+    templates = TemplateListSchema(read_only=True, many=True)
 
     class Meta:
         model = ClasseTemplate

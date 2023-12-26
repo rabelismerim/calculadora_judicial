@@ -323,11 +323,7 @@ class SheetExcel:
 
         self.sheet_template_name = self.sheet_template.file.name.upper()
         # open the archive and process
-        self.archive_view = xl.load_workbook(
-            "uploads/"
-            + self.sheet_template_name,
-            read_only=False,
-        )
+        self.archive_view = xl.load_workbook(self.sheet_template.file, read_only=False)
         self.new_name_view = self.new_archive(
             "uploads/"
             + self.sheet_template_name.replace(".XLSX", "-VIEW.XLSX")
@@ -340,6 +336,7 @@ class SheetExcel:
         self.juca_excel = {
             'credor_name': self.entity.name,
             'legal_number': self.entity.legal_number,
+            'process_number': self.calculation.incident_number,
             'incident_number': self.calculation.incident_number,
             'court_name': self.court.description,
             'has_edital': 'Sim' if self.calculation.has_edital else 'Não',
