@@ -3,11 +3,13 @@ import json
 
 from django.core.management.base import BaseCommand
 
+from calculation.funds.danos.models import InterestChoices
 from calculation.funds.document.models import FundDocument
 from calculation.funds.irrf.models import FundIRRF
 from calculation.funds.models import Funds
 from rates.models import Template, TemplateField, TemplateRate, TemplateMainField, TemplateSummaryField, \
-    TemplateMainSummaryField, TemplateMainFieldDefault, TemplateFieldDefault, TemplateSlugChoices
+    TemplateMainSummaryField, TemplateMainFieldDefault, TemplateFieldDefault, TemplateSlugChoices, TemplateFieldChoices, \
+    FieldTypeChoices, TemplateMainFieldChoices
 
 TEMPLATE_INSS = 'INSS'
 
@@ -45,6 +47,29 @@ def create_templates():
                       'required': True},
                      ]
 
+    fund_danos = [{'label': 'Nome da verba', 'key': 'name', 'type': 'C', 'order': 0, 'is_editable': True,
+                   'required': True},
+                  {'label': 'Descrição fato gerador', 'key': 'description', 'type': 'C', 'order': 1,
+                   'is_editable': True,
+                   'required': True},
+                  {'label': 'Data base', 'key': 'data_base', 'type': 'D', 'order': 2, 'is_editable': True,
+                   'required': True},
+                  {'label': 'Tipo de juros', 'key': 'type_interest', 'type': FieldTypeChoices.CHOICES, 'order': 3,
+                   'choices': InterestChoices.choices,
+                   'is_editable': True,
+                   'required': True},
+                  {'label': 'Data Inicial do juros', 'key': 'interest_initial_date', 'type': 'D',
+                   'order': 4,
+                   'is_editable': True,
+                   'required': True},
+                  {'label': 'Valor histórico', 'key': 'historical_value', 'type': 'F', 'order': 5,
+                   'is_editable': True,
+                   'required': True},
+                  {'label': 'Aplicar correção monetária?', 'key': 'apply_monetary_correction', 'type': 'B', 'order': 6,
+                   'default': True, 'is_editable': True,
+                   'required': False}
+                  ]
+
     fund_irrf = [{'label': 'Nome da verba', 'key': 'name', 'type': 'C', 'order': 0, 'is_editable': True,
                   'required': True},
                  {'label': 'Meses no período', 'key': 'months_period', 'type': 'I', 'order': 1,
@@ -79,7 +104,7 @@ def create_templates():
                       'default': False,
                       'required': True},
                      ]
-    summary_fields_verbas = [{'label': 'Total: ', 'key': None, 'type': 'C', 'order': 0, 'is_editable': False,
+    summary_fields_verbas = [{'label': 'Total: ', 'key': None, 'type': 'C', 'order': 2, 'is_editable': False,
                               'required': False},
                              {'label': '', 'key': 'total_historical', 'type': 'F', 'order': 6,
                               'is_editable': False,
@@ -89,6 +114,16 @@ def create_templates():
                               'required': False}
                              ]
 
+    summary_fields_verbas_integrations = [
+        {'label': 'Total: ', 'key': None, 'type': 'C', 'order': 0, 'is_editable': False,
+         'required': False},
+        {'label': '', 'key': 'total_historical', 'type': 'F', 'order': 6,
+         'is_editable': False,
+         'required': False},
+        {'label': '', 'key': 'total_corrected', 'type': 'F', 'order': 9,
+         'is_editable': False,
+         'required': False}
+    ]
     fields_verbas_document = [
         {'label': 'Data base', 'key': 'data_base', 'type': 'D', 'order': 2, 'is_editable': True,
          'required': True},
@@ -124,7 +159,36 @@ def create_templates():
         {'label': 'Multa', 'key': 'total_fine', 'type': 'F', 'order': 12, 'is_editable': False,
          'required': False},
         {'label': 'Total devido', 'key': 'total_due', 'type': 'F', 'order': 13, 'is_editable': False,
+         'required': False},
+    ]
 
+    fields_verbas_danos = [
+        {'label': 'Nome da verba', 'key': 'name', 'type': 'C', 'order': 0, 'is_editable': True,
+         'required': True},
+        {'label': 'Descrição fato gerador', 'key': 'description', 'type': 'C', 'order': 1, 'is_editable': True,
+         'required': True},
+        {'label': 'Data base', 'key': 'data_base', 'type': 'D', 'order': 2, 'is_editable': True,
+         'required': True},
+        {'label': 'Data Inicial do juros', 'key': 'interest_initial_date', 'type': 'D', 'order': 3,
+         'is_editable': True,
+         'required': True},
+        {'label': 'Valor histórico', 'key': 'historical_value', 'type': 'F', 'order': 6,
+         'is_editable': True,
+         'required': True},
+        {'label': 'Índice na data base', 'key': 'monetary_correction.index_data_base', 'type': 'F',
+         'order': 7,
+         'is_editable': False, 'required': False},
+        {'label': 'Índice na recuperação', 'key': 'monetary_correction.index_recovering', 'type': 'F',
+         'order': 8,
+         'is_editable': False, 'required': False},
+        {'label': 'Dias', 'key': 'total_days', 'type': 'I', 'order': 9, 'is_editable': False,
+         'required': False},
+        {'label': 'Valor corrigido', 'key': 'monetary_correction.corrected_value', 'type': 'F', 'order': 10,
+         'is_editable': False, 'required': False},
+        {'label': 'Total do juros', 'key': 'total_default_interest', 'type': 'F', 'order': 12,
+         'is_editable': False,
+         'required': False},
+        {'label': 'Total devido', 'key': 'total_due', 'type': 'F', 'order': 13, 'is_editable': False,
          'required': False},
     ]
 
@@ -151,10 +215,30 @@ def create_templates():
                                 'required': False},
                                ]
 
+    summary_fields_danos = [
+        {'label': 'Total: ', 'key': 'none', 'type': 'C', 'order': 0, 'is_editable': False,
+         'required': False},
+        {'label': '', 'key': 'total_historical', 'type': 'F', 'order': 6,
+         'is_editable': False,
+         'required': False},
+        {'label': '', 'key': 'total_corrected', 'type': 'F', 'order': 10,
+         'is_editable': False,
+         'required': False},
+        {'label': '', 'key': 'total_days', 'type': 'I', 'order': 9,
+         'is_editable': False,
+         'required': False},
+        {'label': '', 'key': 'total_default_interest', 'type': 'F', 'order': 12,
+         'is_editable': False,
+         'required': False},
+        {'label': '', 'key': 'total_due', 'type': 'F', 'order': 13,
+         'is_editable': False,
+         'required': False},
+    ]
+
     fields_verbas.append({'label': 'Súmula 381', 'key': 'summary', 'type': 'B', 'order': 3, 'is_editable': True,
                           'default': False,
                           'required': True})
-    summary_fields_verbas_integrations = copy.deepcopy(summary_fields_verbas)
+
     fields_verbas_reflexos = copy.deepcopy(fields_verbas)
     summary_fields_verbas_reflexos = copy.deepcopy(summary_fields_verbas)
     fields_verbas_reflexos.append({'label': 'Reflexos DSR ', 'key': 'dsr_reflexes', 'type': 'F', 'order': 5,
@@ -262,7 +346,17 @@ def create_templates():
                   'has_commit': True,
                   'summary_fields': summary_fields_document,
                   'summary_main_fields': summary_main_fields_docs,
-                  'fields': fields_verbas_document}
+                  'fields': fields_verbas_document},
+                 {'name': 'Danos', 'description': 'Danos',
+                  'fund_main': fund_danos,
+                  'end_point': '/juca/api/v1/calculation/funds/danos/detail/',
+                  'end_point_main': '/v1/calculation/funds/danos/',
+                  'many': False,
+                  'slug': TemplateSlugChoices.Danos,
+                  'has_commit': True,
+                  'summary_fields': summary_fields_danos,
+                  'summary_main_fields': summary_fields_danos,
+                  'fields': fields_verbas_danos},
                  ]
     # verbas = ['TST', 'TST.IPCA-E', 'IPCA-E', 'SELIC', 'IGP-M', 'INPC', 'IPCA', 'IGP-DI', 'IPC-FIPE', 'TJSP']
     verbas = ['Verbas']
@@ -370,12 +464,20 @@ def create_templates():
         for fund_ in fund_main:
             fund = fund_.copy()
             field_default = fund.pop('default', None)
+            field_choices = fund.pop('choices', None)
             main, created = TemplateMainField.objects.update_or_create(template=new_template, **fund)
 
             if field_default is not None:
                 TemplateMainFieldDefault.objects.update_or_create(field=main, defaults={
                     'label': str(field_default), "value": json.dumps({'data': field_default})
                 })
+
+            if field_choices is not None:
+                field_choices = [{'id': str(choice[0]), 'legend': str(choice[1])} for choice in field_choices]
+                has_default = TemplateMainFieldChoices.objects.filter(field=main, choices=field_choices).exists()
+                if not has_default:
+                    default_obj = TemplateMainFieldChoices(field_id=main.id, choices=field_choices)
+                    default_obj.save()
 
         for fund in summary_main_fields:
             defaults = fund.copy()
@@ -392,7 +494,7 @@ def create_templates():
         for field in fields:
             defaults = field.copy()
             field_default = defaults.pop('default', None)
-
+            field_choices = defaults.pop('choices', None)
             defaults['rate'] = new_template_rate
 
             main, created = TemplateField.objects.get_or_create(defaults=defaults, **defaults)
@@ -403,6 +505,14 @@ def create_templates():
                     default_obj = TemplateFieldDefault(field_id=main.id, label=str(field_default),
                                                        value=json.dumps({'data': field_default}))
                     default_obj.save()
+
+            if field_choices is not None:
+                field_choices = [{'id': str(choice[0]), 'legend': str(choice[1])} for choice in field_choices]
+                has_default = TemplateFieldChoices.objects.filter(field=main, choices=field_choices).exists()
+                if not has_default:
+                    default_obj = TemplateFieldChoices(field_id=main.id, choices=field_choices)
+                    default_obj.save()
+
         for field in fields_default_all:
             defaults = field.copy()
             defaults['rate'] = new_template_rate

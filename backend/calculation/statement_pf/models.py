@@ -113,14 +113,14 @@ class StatementPF(AbstractStatus):
         Excel C38
         Returns the value of the default interest due if it exists, otherwise returns None
         """
-        if hasattr(self, 'defaultinterestdue'):
-            return self.defaultinterestdue
+        return getattr(self, 'defaultinterestdue', None)
 
     def _get_calculate_total_value(self) -> float:
         """
         Calculates and returns the total value by summing the
         'total' field of all 'FundsDescription' objects
         """
+
         return sum(fd.total for fd in self.fundsdescription_set.all())
 
     def _get_date_rj_filing(self) -> datetime.date or None:  # B19
@@ -522,7 +522,9 @@ class StatementPF(AbstractStatus):
         if self._calcule_get_default_interest_due_description():
             total = self._get_total()
             default_interest_value = self._get_defaultinterest_value()
-            return default_interest_value + total
+            total_danos = self.statement.calculation.get_total_funds_danos()
+            print(total_danos, 'total_danos\n')
+            return default_interest_value + total + total_danos
         return None
 
     def _calcule_get_default_interest_due_description(self) -> str or None:
@@ -555,6 +557,7 @@ class StatementPF(AbstractStatus):
         if value is None:
             self._delete_default_interest_due()
             return
+
         filters = {'statement_pf_id': self.id}
         default = {'statement_pf_id': self.id,
                    'description': choice, 'value': value}

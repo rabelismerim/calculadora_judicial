@@ -7,56 +7,47 @@ to add specific fields as needed.
 
 import datetime
 
-from django.db import models, transaction
+from django.db import models
+from django.db.models import TextChoices
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
 from base.views import ExtractFormula
-from calculation.comparative.signals import gen_statement_documents, gen_statement_total_documents
+from calculation.comparative.signals import gen_statement_danos, gen_statement_total_documents
 from calculation.funds.models import AbstractFunds, AbstractStatement, AbstractMonetaryCorrection, \
     AbstractTotalValuesFunds
-from rates.models import Rate
+from rates.models import Rate, CalculeRate
 
 
-class FundDocument(AbstractFunds):
+class InterestChoices(TextChoices):
+    SIMPLES = 'S', _('Simples')
+    SELIC_SIMPLES = 'E', _('Selic Simples')
+    SELIC_COMPOSTA = 'C', _('Selic Composta')
+    SELIC_RECEITA_FEDERAL = 'R', _('Selic Receita Federal')
+    SEM_JUROS = 'N', _('Não há incidência de juros')
+
+
+class FundDanos(AbstractFunds):
     # TODO: Adicionar campo fato gerador para verbas de danos morais(field description)
-    # Formula para calculo da selic
-    # selic = Rate.objects.filter(code=4390).first()
-    # filling_date = data_inicial_do_juros
-    #
-    # data_rj = self._get_date_rj_request()
-    #
-    # accumulated = CalculeRate(filling_date=filling_date, data_rj=data_rj, rate_selic=selic,
-    #                           rate_used=rate).calcule()
-
-    # Pode haver multas por atraso de pagamento. Nesse caso a nota fiscal estabelece um valor personalizado
-    fine = models.FloatField(_('Fine'), default=0)
-    has_custom_fine = models.BooleanField(_('Has custom fine invoices'), default=False)
+    type_interest = models.CharField(_('Tipo de juros'), max_length=1, choices=InterestChoices.choices,
+                                     default=InterestChoices.SEM_JUROS)
+    interest_initial_date = models.DateField(_('Data inicial do juros'))
+    apply_monetary_correction = models.BooleanField(_('Aplicar Taxa?'), default=True)
 
     def get_total_funds(self, create=True):
         """
-        This method returns the TotalValuesDocument object associated with the current fund object. If the object does
+        This method returns the TotalValuesDanos object associated with the current fund object. If the object does
         not exist, it creates one and returns it.
         """
-        if hasattr(self, 'totalvaluesdocument'):
-            return self.totalvaluesdocument
+        if hasattr(self, 'totalvaluesdanos'):
+            return self.totalvaluesdanos
         if create:
-            return TotalValuesDocument.objects.get_or_create(fund=self)[0]
-
-    def get_fine(self) -> float:
-        """
-        This method returns the fine amount for the current FundDocument object. If the has_custom_fine flag is set to
-        True, it returns the custom fine value specified in the invoice. If not, it calculates the fine amount using
-        the calculation object associated with the current fund and returns it.
-        """
-        if self.has_custom_fine:
-            return self.fine
-        return self.calculation.get_fine()
+            return TotalValuesDanos.objects.get_or_create(fund=self)[0]
 
     def gen_total(self):
         """
         This method generates the total statements for the current fund by calling the set_total() method of the
-        TotalValuesDocument object associated with it.
+        TotalValuesDanos object associated with it.
         """
         total_funds = self.get_total_funds()
         total_funds.set_total()
@@ -64,29 +55,36 @@ class FundDocument(AbstractFunds):
     def get_total_summed(self):
         """Get the corrected value of the sum of calculated sums"""
         total: float = 0
-        if hasattr(self, 'totalvaluesdocument'):
-            total += self.totalvaluesdocument.total_corrected
+        if hasattr(self, 'totalvaluesdanos'):
+            total += self.totalvaluesdanos.total_corrected
         return total
 
     def get_total_historical_summed(self):
         """Get the corrected value of the sum of calculated sums"""
         total: float = 0
-        if hasattr(self, 'totalvaluesdocument'):
-            total += self.totalvaluesdocument.total_historical
+        if hasattr(self, 'totalvaluesdanos'):
+            total += self.totalvaluesdanos.total_historical
         return total
+
+    def get_total_due_summed(self) -> float:
+        """Get the corrected value of the sum of calculated sums"""
+        totalvaluesdanos = getattr(self, 'totalvaluesdanos', None)
+        print(totalvaluesdanos, 'totalvaluesdanos\n')
+        if totalvaluesdanos:
+            return totalvaluesdanos.total_due
+        return 0
 
     def get_statement(self):
         """
-        This method returns the TotalValuesDocument object associated with the current fund object. If the object does
+        This method returns the TotalValuesDanos object associated with the current fund object. If the object does
         not exist, it creates one and returns it.
         """
-        if hasattr(self, 'statementdocument'):
-            return self.statementdocument
+        return getattr(self, 'statementdanos', None)
 
     def delete(self, *args, **kwargs):
         """
-        Deletes the StatementDocument object, FundDocument, MonetaryCorrection, FundsDocumentDescriptionPJ and
-        generates a new calculation of TotalValuesDocument and StatementPJ
+        Deletes the StatementDanos object, FundDanos, MonetaryCorrection, FundsDocumentDescriptionPJ and
+        generates a new calculation of TotalValuesDanos and StatementPJ
         """
 
         statement = self.get_statement()
@@ -95,10 +93,10 @@ class FundDocument(AbstractFunds):
         total_funds = self.get_total_funds(create=False)
         if total_funds:
             total_funds.delete()
-        super(FundDocument, self).delete(*args, **kwargs)
+        super(FundDanos, self).delete(*args, **kwargs)
 
 
-class StatementDocument(AbstractStatement):
+class StatementDanos(AbstractStatement):
     """
     A model class that represents a financial statement for a fund.
 
@@ -124,11 +122,18 @@ class StatementDocument(AbstractStatement):
         - `_calc_fine()` Calculates the fine to be charged based on the corrected value, fine rate, and default interest
         - `fine()` Getter method for the fine rate.
     """
-    number = models.CharField(_('Document number'), max_length=100)
-    fund = models.OneToOneField(FundDocument, on_delete=models.PROTECT)
+    description = models.CharField(_('Deescrição do dano'), max_length=100)
+    fund = models.OneToOneField(FundDanos, on_delete=models.CASCADE)
+
+    def check_is_extraconcursal(self):
+        return False
 
     def __str__(self):
         return f'{self.data_base} - {self.historical_value}'
+
+    @property
+    def interest_initial_date(self):
+        return self.fund.interest_initial_date
 
     @property
     def name(self):
@@ -137,15 +142,6 @@ class StatementDocument(AbstractStatement):
     @property
     def monetary_correction(self):
         return self.get_monetary_correction()
-
-    def has_tax(self):
-        """Return True if this statement has tax; False otherwise."""
-        data_base = self.get_data_base()
-        date_rj = self.fund.calculation.get_date_rj()
-        if not date_rj:
-            self.set_error_rj()
-            return False
-        return data_base <= date_rj
 
     @staticmethod
     def __days360(start_date, end_date) -> int:
@@ -164,33 +160,57 @@ class StatementDocument(AbstractStatement):
     @property
     def days(self) -> int:
         """Return the number of days between the statement's data_base and the date_rj, if it exists and has tax."""
-        if self.has_tax():
-            data_base = self.get_data_base()
-            date_rj = self.fund.calculation.get_date_rj()
-            if not date_rj:
-                self.set_error_rj()
-                return 0
-            return self.__days360(data_base, date_rj)
-        return 0
+        data_base = self.get_data_base()
+        date_rj = self.fund.calculation.get_date_rj()
+        if not date_rj:
+            self.set_error_rj()
+            return 0
+        return self.__days360(data_base, date_rj)
 
     @property
     def total_days(self) -> int:
         return self.days
 
-    @staticmethod
-    def _calc_default_interest(corrected_value, default_interest, days) -> float:
+    def get_percentage_default_interest(self) -> float:
         """
-        Calculates the default interest based on the corrected value, default interest rate, and the number of days.
-
-        Args:
-           corrected_value (float): The corrected value of the debt.
-           default_interest (float): The default interest rate.
-           days (int): The number of days the debt is overdue.
+        Getter method for the default interest rate.
 
         :return:
-           float: The amount of default interest to be charged.
+            float: The default interest rate to be charged.
         """
-        return (corrected_value * (default_interest / 30) * days) / 100
+        type_interest = self.fund.type_interest
+
+        if type_interest == InterestChoices.SEM_JUROS:
+            return 0
+
+        interest_initial_date = self.fund.interest_initial_date
+        data_rj = self.fund.calculation.get_date_rj()
+        if not data_rj:
+            self.set_error_rj()
+            return 0
+
+        if type_interest == InterestChoices.SIMPLES:
+            days_360 = self.__days360(interest_initial_date, data_rj)
+            indice = 1 / 30
+            percentage_interest = days_360 * indice
+            return percentage_interest
+
+        selic = Rate.objects.filter(code=4390).first()
+        calcule_rate = CalculeRate(filling_date=interest_initial_date, data_rj=data_rj, rate_selic=selic,
+                                   rate_used=self.fund.rate)
+
+        if type_interest == InterestChoices.SELIC_SIMPLES:
+            percentage_interest = calcule_rate.calcule_simples()
+
+        elif type_interest == InterestChoices.SELIC_COMPOSTA:
+            percentage_interest = calcule_rate.calcule_composto()
+
+        elif type_interest == InterestChoices.SELIC_RECEITA_FEDERAL:
+            percentage_interest = calcule_rate.calcule_receita_federal()
+        else:
+            raise NotImplementedError('Tipo de juros não implementado')
+
+        return percentage_interest
 
     @property
     def default_interest(self):
@@ -200,11 +220,21 @@ class StatementDocument(AbstractStatement):
         :return:
             float: The default interest rate to be charged.
         """
-        default_interest = self.fund.calculation.get_default_interest()
-        corrected_value = self.get_corrected_value()
-        if corrected_value * self.days * default_interest == 0:
+
+        interest_initial_date = self.fund.interest_initial_date
+        data_rj = self.fund.calculation.get_date_rj()
+
+        if interest_initial_date > data_rj:
             return 0
-        return self._calc_default_interest(corrected_value, default_interest, self.days)
+
+        percentage_interest = self.get_percentage_default_interest()
+        corrected_value = self.get_corrected_value()
+
+        if percentage_interest <= 0:
+            return 0
+        default_interest = percentage_interest * corrected_value / 100
+
+        return default_interest
 
     @property
     def total_due(self) -> float:
@@ -214,50 +244,15 @@ class StatementDocument(AbstractStatement):
         :return:
             float: The total amount due.
         """
-        return sum([self.get_fine(), self.get_default_interest(), self.get_corrected_value()])
-
-    @staticmethod
-    def _calc_fine(corrected_value, fine, default_interest) -> float:
-        """
-        Calculates the fine to be charged based on the corrected value, fine rate, and default interest.
-
-        Args:
-            corrected_value (float): The corrected value of the debt.
-            fine (float): The fine rate.
-            default_interest (float): The default interest rate.
-
-        :return:
-            float: The amount of fine to be charged.
-        """
-        return (corrected_value + default_interest * fine) / 100
-
-    @property
-    def fine(self):
-        """
-        Getter method for the fine rate.
-
-        :return:
-            float: The fine rate to be charged.
-        """
-        fine = self.fund.get_fine()
-        corrected_value = self.get_corrected_value()
-        default_interest = self.default_interest
-        if corrected_value * default_interest * fine == 0:
-            return 0
-        return self._calc_fine(corrected_value, fine, default_interest)
-
-    def has_monetary_correction(self) -> bool:
-        """Returns True if the monetary correction exists for the statement."""
-        return hasattr(self, 'monetarycorrectiondocument')
+        return self.default_interest + self.get_corrected_value()
 
     def get_monetary_correction(self):
-        """Returns the `monetarycorrection` attribute value"""
-        if self.has_monetary_correction():
-            return self.monetarycorrectiondocument
+        """Returns the `monetarycorrectiondanos` attribute value"""
+        return getattr(self, 'monetarycorrectiondanos', None)
 
     def create_monetary_correction(self, data: dict):
         """Create or update the MonetaryCorrection object"""
-        MonetaryCorrectionDocument.objects.update_or_create(defaults=data, **{'statement': self})
+        MonetaryCorrectionDanos.objects.update_or_create(defaults=data, **{'statement': self})
 
     def calcule_monetary_correction(self):
         """
@@ -276,58 +271,39 @@ class StatementDocument(AbstractStatement):
         monetary = self.get_monetary_correction()
         if monetary:
             monetary.delete()
-        if self.is_extraconcursal:
-            total_funds = self.fund.get_total_funds(create=False)
-            if total_funds:
-                total_funds.set_total()
-                # TODO: apagar funds description
+        total_funds = self.fund.get_total_funds(create=False)
+        if total_funds:
+            total_funds.set_total()
 
     def get_corrected_value(self) -> float:
         """Returns corrected value if the monetary correction exists for the statement, else 0"""
-        if self.has_monetary_correction():
-            return self.monetarycorrectiondocument.corrected_value
+        monetary_correction = getattr(self, 'monetarycorrectiondanos', None)
+        if monetary_correction:
+            return monetary_correction.corrected_value
         return 0
-
-    def get_default_interest(self) -> float:
-        """Returns default interest value for the statement"""
-        return self.default_interest
-
-    def get_total_due(self) -> float:
-        """Returns total_due value for the statement"""
-        return self.total_due
-
-    def get_fine(self) -> float:
-        """Returns fine value for the statement"""
-        return self.fine
 
     def save(self, send_signal_post_save=True, *args, **kwargs):
         """
-        Save the StatementDocument object and send a post-save signal.
+        Save the StatementDanos object and send a post-save signal.
         Args:
             send_signal_post_save (bool): Set to True to send a post-save signal. Default is True.
         """
-        save = super(StatementDocument, self).save(*args, **kwargs)
+        save = super(StatementDanos, self).save(*args, **kwargs)
         if send_signal_post_save:
-            gen_statement_documents.send(sender=self.__class__, instance=self)
+            gen_statement_danos.send(sender=self.__class__, instance=self)
 
         return save
 
     def delete(self, delete_fund=True, *args, **kwargs):
         """
-        Deletes the StatementDocument object, FundDocument, MonetaryCorrection, FundsDocumentDescriptionPJ and
-        generates a new calculation of TotalValuesDocument and StatementPJ
+        Deletes the StatementDanos object, FundDanos, MonetaryCorrection, FundsDocumentDescriptionPJ and
+        generates a new calculation of TotalValuesDanos and StatementPJ
         """
         self.set_calculation_in_delete()
-        fund = self.fund  # FundDocument
-        total = fund.get_total_funds()  # TotalValuesDocument
+        fund = self.fund  # FundDanos
+        total = fund.get_total_funds()  # TotalValuesDanos
         self.delete_monetary_correction()  # MonetaryCorrection
-        super(StatementDocument, self).delete(*args, **kwargs)
-
-        description_doc = total.get_description_doc()  # FundsDocumentDescriptionPJ
-        if description_doc:
-            statement_pj = description_doc.statement_pj  # StatementPJ
-            description_doc.delete()
-            statement_pj.set_total()
+        super(StatementDanos, self).delete(*args, **kwargs)
 
         if total and total.id:
             total.delete()
@@ -335,7 +311,7 @@ class StatementDocument(AbstractStatement):
             fund.delete()
 
 
-class MonetaryCorrectionDocument(AbstractMonetaryCorrection):
+class MonetaryCorrectionDanos(AbstractMonetaryCorrection):
     """
     A class that represents a monetary correction for a statement of integrations.
 
@@ -343,9 +319,9 @@ class MonetaryCorrectionDocument(AbstractMonetaryCorrection):
     sheets (document)
 
     Attributes:
-        statement (StatementIntegrations): The statement of integrations to which the monetary correction applies.
+        statement (StatementDanos): The statement of integrations to which the monetary correction applies.
     """
-    statement = models.OneToOneField(StatementDocument, on_delete=models.PROTECT)
+    statement = models.OneToOneField(StatementDanos, on_delete=models.CASCADE)
 
     @property
     def corrected_value(self) -> float:
@@ -353,18 +329,19 @@ class MonetaryCorrectionDocument(AbstractMonetaryCorrection):
         total_value = self._get_statement().get_total_value()
         if total_value == 0:
             return 0
+
+        if self.statement.fund.apply_monetary_correction is False:
+            return total_value
         return self.index_recovering / self.index_data_base * total_value
 
 
-class TotalValuesDocument(AbstractTotalValuesFunds):
+class TotalValuesDanos(AbstractTotalValuesFunds):
     """
     A class that represents the total values of a fund, which is a concrete implementation of AbstractTotalValuesFunds.
 
     Attributes:
         total_historical (float): The historical value of the fund.
         total_corrected (float): The corrected value of the fund.
-        total_dsr_reflexes (float): The drs reflexes value of the fund.
-        total_accurate (float): The total accurate value of the fund.
         fund (Funds): The fund to which the values apply.
 
     Methods:
@@ -372,21 +349,13 @@ class TotalValuesDocument(AbstractTotalValuesFunds):
         set_total(): Calculates and sets the total corrected and historical values of the fund based on the calculated
          statement.
     """
-    fund = models.OneToOneField(FundDocument, on_delete=models.PROTECT)
+    fund = models.OneToOneField(FundDanos, on_delete=models.PROTECT)
     total_default_interest = models.FloatField(_('Total juros'), default=0)
-    total_fine = models.FloatField(_('Total multa'), default=0)
     total_due = models.FloatField(_('Total due'), default=0)
 
     def __get_calculated_statement(self):
         """Returns the calculated statement of the fund."""
-        if hasattr(self.fund,
-                   'statementdocument') and self.fund.statementdocument.status == 'C' and self.fund.statementdocument.is_extraconcursal == False:
-            return self.fund.statementdocument
-
-    def get_description_doc(self):
-        """Returns the calculated FundsDocumentDescriptionPJ of the total obj."""
-        if hasattr(self, 'fundsdocumentdescriptionpj'):
-            return self.fundsdocumentdescriptionpj
+        return getattr(self.fund, 'statementdanos', None)
 
     def set_total(self):
         """
@@ -394,29 +363,27 @@ class TotalValuesDocument(AbstractTotalValuesFunds):
         the calculated statement.
         """
         statement = self.__get_calculated_statement()
-        if statement and statement.id and statement.is_extraconcursal is False:
+        if statement and statement.id:
             self.total_historical = statement.get_total_value()
             self.total_corrected = statement.get_corrected_value()
-            self.total_default_interest = statement.get_default_interest()
-            self.total_fine = statement.get_fine()
-            self.total_due = statement.get_total_due()
+            self.total_default_interest = statement.default_interest
+            self.total_due = statement.total_due
         else:
             self.total_historical = 0
             self.total_corrected = 0
             self.total_default_interest = 0
-            self.total_fine = 0
             self.total_due = 0
         self.save()
 
     def save(self, *args, **kwargs):
-        super(TotalValuesDocument, self).save()
+        super(TotalValuesDanos, self).save()
         gen_statement_total_documents.send(sender=self.__class__, instance=self)
 
 
-@receiver(gen_statement_documents, sender=StatementDocument)
+@receiver(gen_statement_danos, sender=StatementDanos)
 def save_statement_documents(sender, instance, **kwargs) -> None:
     """
-    This method is a receiver for post_save signal and is triggered when a StatementDocument object is saved. It
+    This method is a receiver for post_save signal and is triggered when a StatementDanos object is saved. It
     calculates the monetary correction for the instance and generates the total document of the related fund. It
     takes the sender and instance as arguments
     """
@@ -426,12 +393,12 @@ def save_statement_documents(sender, instance, **kwargs) -> None:
 
     statement_methods = ['get_total_value', 'get_dsr_reflexes', 'get_monetary_correction',
                          'calcule_monetary_correction', 'get_monetary_correction', 'get_corrected_value',
-                         'get_default_interest', 'get_total_due', 'get_fine', '__days360', 'has_tax',
+                         'default_interest', 'get_total_due', 'get_fine', '__days360', 'has_tax',
                          'get_rate_by_date',
                          '_get_index_monetary_correction', 'get_corrected_value', 'get_data_base', 'get_total_value',
-                         'get_historical_value', 'get_rate', 'save_total_funds', 'monetarycorrection', 'set_total',
+                         'get_historical_value', 'get_rate', 'save_total_funds', 'monetarycorrectiondanos', 'set_total',
                          '_calc_corrected_value', 'has_monetary_correction', '_calc_corrected_value', 'corrected_value']
 
     ExtractFormula(instance, instance.fund.calculation, statement_methods).get_methods(
-        [StatementDocument, MonetaryCorrectionDocument, Rate, TotalValuesDocument, save_statement_documents])
+        [StatementDanos, MonetaryCorrectionDanos, Rate, TotalValuesDanos, save_statement_documents])
     instance.fund.calculation.invalidate_calculation()

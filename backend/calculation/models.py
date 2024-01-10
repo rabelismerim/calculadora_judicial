@@ -654,6 +654,10 @@ class Calculation(AbstractModel):
                      'total_historical': 0} for fund in
                     self.fundirrf_set.filter(classes__classe__isnull=False)]
 
+        classes += [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
+                     'total_calculated': fund.get_total_summed(),
+                     'total_historical': fund.get_total_historical_summed(), } for fund in
+                    self.funddanos_set.filter(classes__classe__isnull=False)]
         total = 0
         total_historical = 0
         count = len(classes)
@@ -742,6 +746,15 @@ class Calculation(AbstractModel):
             self.validated = False
             self.save()
             self.creditor.set_total()
+
+    def get_total_funds_danos(self) -> float:
+        """Add up the corrected amounts of the sums"""
+        total_corrected = 0
+
+        for fund in self.funddanos_set.all():
+            total_corrected += fund.get_total_due_summed()
+
+        return total_corrected
 
 
 class StepAction:

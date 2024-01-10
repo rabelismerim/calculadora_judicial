@@ -177,6 +177,7 @@ INSTALLED_APPS = [
     'calculation.funds.document',  # Verbas documento
     'calculation.funds.integrations',  # Verbas Integratórias
     'calculation.funds.irrf',  # Verbas IRRF
+    'calculation.funds.danos',  # Verbas danos
     'calculation.sheets_template',  # Templates Planilhas Excel
 
     # Rate - Índice

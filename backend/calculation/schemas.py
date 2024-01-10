@@ -19,6 +19,7 @@ from base.schemas import AbstractDescriptionSchema, UpdateUserSerializer
 from calculation.comment.schemas import StepCommentSchema, CommentSchema
 from calculation.comparative.schemas import ComparativeSchema
 from calculation.criterion.schemas import CriterionSchema
+from calculation.funds.danos.schemas import FundDanosSchema
 from calculation.funds.document.schemas import FundDocumentSchema
 from calculation.funds.irrf.schemas import FundIRRFSchema, FundIRRFExcelSchema
 from calculation.funds.schemas import FundsSchema, FundsExcelSchema
@@ -145,7 +146,9 @@ class CalculationAllFundsSchema(AbstractDescriptionSchema):  # V1
             {'data': FundIRRFSchema(many=True, exclude=('calculation_id',), read_only=True).to_representation(
                 obj.fundirrf_set.all()), 'type': 'irrf'},
             {'data': FundDocumentSchema(many=True, exclude=('calculation_id',), read_only=True).to_representation(
-                obj.funddocument_set.all()), 'type': 'document'}
+                obj.funddocument_set.all()), 'type': 'document'},
+            {'data': FundDanosSchema(many=True, exclude=('calculation_id',), read_only=True).to_representation(
+                obj.funddanos_set.all()), 'type': 'danos'}
         ]
 
     class Meta:

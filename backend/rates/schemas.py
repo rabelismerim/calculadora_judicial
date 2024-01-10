@@ -199,6 +199,7 @@ class TemplateFieldSchema(AbstractDescriptionSchema):
 
     default = serializers.SerializerMethodField()
     decimals = serializers.IntegerField()
+    choices = serializers.JSONField(allow_null=True)
 
     def get_default(self, obj):
         return obj.get_default()
