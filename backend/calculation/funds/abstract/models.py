@@ -185,6 +185,9 @@ class AbstractStatement(AbstractStatus):
     def status_display(self):
         return self.get_status_display()
 
+    def check_is_extraconcursal(self) -> bool:
+        return True
+
     def _get_index_monetary_correction(self) -> dict or None:
         """Retrieves the monetary correction from a financial statement. It gets the calculation, data and rate
         information and then validates the date and rate. The index_data_base and index_recovering are returned as a
@@ -200,7 +203,10 @@ class AbstractStatement(AbstractStatus):
             statement.set_error_rj()
             return None
 
-        if date_rj and data_base >= date_rj:
+        is_extraconcursal = self.check_is_extraconcursal()
+        print(is_extraconcursal, 'set_error_extra\n')
+
+        if date_rj and data_base >= date_rj and is_extraconcursal:
             if self.is_extraconcursal is False:
                 raise serializers.ValidationError(
                     [_('This is an extra-bankruptcy budget, it is necessary to flag the extra-bankruptcy budget')])
@@ -283,7 +289,9 @@ class AbstractStatement(AbstractStatus):
         """=IF($B$5<>"TST";"ERRO";VLOOKUP(DATE(YEAR($B$4);MONTH($B$4);DAY($B$4));TST!$A:$B;2;FALSE))"""
 
         data_base = self.get_data_base()
-        if date_rj_request and data_base >= date_rj_request:
+
+        is_extraconcursal = self.check_is_extraconcursal()
+        if (date_rj_request and data_base >= date_rj_request) and is_extraconcursal:
             if self.is_extraconcursal is False:
                 raise serializers.ValidationError(
                     [_('This is an extra-bankruptcy budget, it is necessary to flag the extra-bankruptcy budget')])
@@ -383,7 +391,7 @@ class AbstractTotalValuesFunds(AbstractModel):
             for description in self.fundsdescription_set.all():
                 statement_pf = description.statement_pf
                 description.delete()
-                if not statement_pf.id in statement_pfs_ids:
+                if statement_pf.id not in statement_pfs_ids:
                     statement_pfs.append(statement_pf)
                     statement_pfs_ids.append(statement_pf.id)
 

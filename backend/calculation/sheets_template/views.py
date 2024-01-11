@@ -162,7 +162,7 @@ def set_sheet_number(sheet_, line, column, value, force=False, alignment=None, f
             .replace(".", "|") \
             .replace(",", ".") \
             .replace("|", ",")
-    except ValueError:
+    except (ValueError, TypeError):
         pass
     return set_sheet_value(sheet_, line, column, value, force=force, alignment=alignment, font=font, fill=fill)
 
@@ -305,6 +305,7 @@ class SheetExcel:
         self.statement = self.calculation.get_statement()
 
         self.funds = self.calculation.funds_set.all()
+        self.funds_danos = self.calculation.funddanos_set.all()
         self.premises = self.calculation.get_premises()
         self.fund_document = self.calculation.funddocument_set.all()
 
@@ -323,11 +324,7 @@ class SheetExcel:
 
         self.sheet_template_name = self.sheet_template.file.name.upper()
         # open the archive and process
-        self.archive_view = xl.load_workbook(
-            "uploads/"
-            + self.sheet_template_name,
-            read_only=False,
-        )
+        self.archive_view = xl.load_workbook(self.sheet_template.file, read_only=False)
         self.new_name_view = self.new_archive(
             "uploads/"
             + self.sheet_template_name.replace(".XLSX", "-VIEW.XLSX")
@@ -340,6 +337,7 @@ class SheetExcel:
         self.juca_excel = {
             'credor_name': self.entity.name,
             'legal_number': self.entity.legal_number,
+            'process_number': self.calculation.incident_number,
             'incident_number': self.calculation.incident_number,
             'court_name': self.court.description,
             'has_edital': 'Sim' if self.calculation.has_edital else 'Não',
@@ -563,7 +561,6 @@ class SheetExcel:
         count = 0
         has_headers = False
         for item in self.fund_document:
-            print(item, 'item')
             self.set_template(sheet, item, cnt_ini_row + count, force=True, has_headers=has_headers)
             count += 1
             has_headers = True
@@ -695,7 +692,22 @@ class SheetExcel:
             set_sheet_value(ws, cnt_row + 1, 'A', 'Correção monetária', font=bold_font)
             set_sheet_value(ws, cnt_row + 1, ['E', 'K'], item.rate.index, font=bold_font)
             cnt_row += 1
+            self.set_template(ws, item, cnt_row)
 
+        for item in self.funds_danos:
+            cnt_row = 0
+            self.archive_view.copy_worksheet(copy_sheet)
+            ws = self.archive_view[sheet.title + " Copy"]
+            ws.title = item.name
+
+            set_sheet_value(ws, cnt_row + 1, ['A', 'K'], 'Memória de cálculo da Administradora Judicial',
+                            font=bold_white_font, fill=gray_fill)
+
+            # TODO: Pegar a data e a legenda usado para fazer o cálculo
+            cnt_row += 2
+            set_sheet_value(ws, cnt_row + 1, 'A', 'Correção monetária', font=bold_font)
+            set_sheet_value(ws, cnt_row + 1, ['E', 'K'], item.rate.index, font=bold_font)
+            cnt_row += 1
             self.set_template(ws, item, cnt_row)
 
     def set_template(self, sheet, item, cnt_row, force=False, has_headers=False):
@@ -806,6 +818,7 @@ class ExportProcessor:
             base64_message = base64_encoded_data.decode("latin-1")
 
         # Create a pdf file
+        # pdfkit.from_string('\n'.join(self.list_pdf), self.new_name_pdf, configuration=config)
         pdfkit.from_string('\n'.join(self.list_pdf), self.new_name_pdf)
 
         with open(self.new_name_pdf, "rb") as archive_pdf:
@@ -940,8 +953,13 @@ class TemplateProcessor:
             color = green_fill
             font = bold_white_font
             unique_headers = True
-            summary = sorted(template['summary'], key=lambda x: x['order'])
-
+        elif table['slug'] == TemplateSlugChoices.Danos:
+            fund_item = self.item.get_statement()
+            fund_items = [fund_item]
+            total_obj = self.item.get_total_funds()
+            total_funds = [total_obj, fund_item]
+            nested_attrs = [total_obj]
+            unique_headers = True
         else:
             msg = 'Table não mapeada na geração do extrato contábil'
             logging.error(msg)
@@ -1021,7 +1039,9 @@ class TemplateProcessor:
         - str: Valor formatado.
         """
         if type_value == FieldTypeChoices.DATE:
-            return datetime.strftime(value, "%d/%m/%Y")
+            if value:
+                return datetime.strftime(value, "%d/%m/%Y")
+            return '-'
         elif type_value == FieldTypeChoices.DATETIME:
             return datetime.strftime(value, "%d/%m/%Y %H:%M:%S")
         elif type_value == FieldTypeChoices.BOOLEAN:
@@ -1041,14 +1061,23 @@ class TemplateProcessor:
             order = summ.get('order')
 
             if key and str(key).lower() != 'none':
-                if total_funds:
-                    value = get_nested_attr(total_funds, key)
+
+                if isinstance(total_funds, list) is False:
+                    nested_attrs = [total_funds]
+                else:
+                    nested_attrs = total_funds
+                if nested_attrs:
+                    value = get_nesteds_attr(nested_attrs, key)
+                    if value is None:
+                        value = '-'
                 else:
                     value = '-'
             else:
                 value = summ['label']
 
+            val = self.index_order[order]
+
             if summ['type'] == FieldTypeChoices.FLOAT:
-                set_sheet_number(self.sheet, self.cnt_row + 1, self.index_order[order], value, font=bold_font)
+                set_sheet_number(self.sheet, self.cnt_row + 1, val, value, font=bold_font)
             else:
-                set_sheet_value(self.sheet, self.cnt_row + 1, self.index_order[order], value, font=bold_font)
+                set_sheet_value(self.sheet, self.cnt_row + 1, val, value, font=bold_font)
