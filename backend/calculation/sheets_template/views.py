@@ -24,7 +24,7 @@ from rates.models import TemplateSlugChoices, FieldTypeChoices
 from rates.schemas import TemplateSchema
 from utils import _, doc
 
-config = pdfkit.configuration(wkhtmltopdf="C:\Program Files\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
+# config = pdfkit.configuration(wkhtmltopdf="C:\Program Files\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
 
 gray_fill = PatternFill(start_color="00C0C0C0",
                         end_color="00C0C0C0", fill_type="solid")
@@ -806,7 +806,7 @@ class ExportProcessor:
             base64_message = base64_encoded_data.decode("latin-1")
 
         # Create a pdf file
-        pdfkit.from_string('\n'.join(self.list_pdf), self.new_name_pdf, configuration=config)
+        pdfkit.from_string('\n'.join(self.list_pdf), self.new_name_pdf)
 
         with open(self.new_name_pdf, "rb") as archive_pdf:
             pdf_file = archive_pdf.read()

