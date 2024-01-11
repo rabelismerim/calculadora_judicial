@@ -1,1 +1,30 @@
-[{"id": "9f70278b-60dd-4d45-a468-13ac981666f7", "content_object_id": 29, "path": "calculation"}, {"id": "e8f2ff9f-ae9f-49a2-b7f4-2686e0828437", "content_object_id": 118, "path": "dashboard"}, {"id": "6a65c7ef-78d4-474f-8454-697082edc773", "content_object_id": 10, "path": "creditor"}, {"id": "13574f89-304d-4a3c-8f86-0621883df70b", "content_object_id": 17, "path": "project"}]
+[
+  {
+    "id": "13574f89-304d-4a3c-8f86-0621883df70b",
+    "content_object_id": 17,
+    "path": "project",
+    "label": "projects",
+    "model": "project"
+  },
+  {
+    "id": "9f70278b-60dd-4d45-a468-13ac981666f7",
+    "content_object_id": 29,
+    "path": "calculation",
+    "label": "calculation",
+    "model": "calculation"
+  },
+  {
+    "id": "e8f2ff9f-ae9f-49a2-b7f4-2686e0828437",
+    "content_object_id": 118,
+    "path": "dashboard",
+    "label": "dashboard",
+    "model": "dashboard"
+  },
+  {
+    "id": "6a65c7ef-78d4-474f-8454-697082edc773",
+    "content_object_id": 10,
+    "path": "creditor",
+    "label": "creditors",
+    "model": "creditor"
+  }
+]

@@ -1,17 +1,10 @@
-# create_data.py
 import json
 
+from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
-from django.utils.text import slugify
-from faker import Faker
+from django.db.models import F
 
 from big_number.models import BigNumber, BigNumberMethod, BigNumberMethodFields
-from core.utils.progress_bar import progressbar
-
-from projects.judge.models import Judge
-from projects.court.models import Court
-from projects.lawyer.models import Lawyer
-from projects.region.models import Region
 
 
 class Command(BaseCommand):
@@ -22,7 +15,10 @@ class Command(BaseCommand):
         self.read_big_numbers()
 
     def save_big_numbers(self):
-        big_numbers = BigNumber.objects.all().values('id', 'content_object_id', 'path')
+
+        big_numbers = BigNumber.objects.all().values('id', 'content_object_id', 'path',
+                                                     label=F('content_object__app_label'),
+                                                     model=F('content_object__model'))
         big_numbers_method = BigNumberMethod.objects.all().values('id', 'big_number_id', 'method', 'name', 'field_type')
         big_numbers_method_fields = BigNumberMethodFields.objects.all().values('id', 'big_number_method_id', 'field',
                                                                                'field_type')
@@ -48,14 +44,15 @@ class Command(BaseCommand):
         big_numbers_bulk = []
         all_big_numbers = BigNumber.objects.all()
         for big in big_numbers:
+            content_object_id = ContentType.objects.filter(app_label=big['label'], model=big['model']).first()
             obj = {
-                'id': big['id'], 'content_object_id': big['content_object_id'],
+                'id': big['id'], 'content_object_id': content_object_id,
                 'path': big['path']
             }
             big_obj = all_big_numbers.filter(**obj).exists()
-
             if not big_obj:
                 big_numbers_bulk.append(BigNumber(**obj))
+
         BigNumber.objects.bulk_create(big_numbers_bulk)
 
         with open('big_numbers_method.json', 'r') as f:
