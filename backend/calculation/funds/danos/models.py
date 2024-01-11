@@ -69,9 +69,15 @@ class FundDanos(AbstractFunds):
     def get_total_due_summed(self) -> float:
         """Get the corrected value of the sum of calculated sums"""
         totalvaluesdanos = getattr(self, 'totalvaluesdanos', None)
-        print(totalvaluesdanos, 'totalvaluesdanos\n')
         if totalvaluesdanos:
             return totalvaluesdanos.total_due
+        return 0
+
+    def get_total_total_default_interest(self) -> float:
+        """Get the corrected value of the sum of calculated sums"""
+        totalvaluesdanos = getattr(self, 'totalvaluesdanos', None)
+        if totalvaluesdanos:
+            return totalvaluesdanos.total_default_interest
         return 0
 
     def get_statement(self):
