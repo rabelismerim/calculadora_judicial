@@ -44,9 +44,9 @@ class Command(BaseCommand):
         big_numbers_bulk = []
         all_big_numbers = BigNumber.objects.all()
         for big in big_numbers:
-            content_object_id = ContentType.objects.filter(app_label=big['label'], model=big['model']).first()
+            content_object = ContentType.objects.filter(app_label=big['label'], model=big['model']).first()
             obj = {
-                'id': big['id'], 'content_object_id': content_object_id,
+                'id': big['id'], 'content_object': content_object,
                 'path': big['path']
             }
             big_obj = all_big_numbers.filter(**obj).exists()
