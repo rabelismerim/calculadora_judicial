@@ -418,10 +418,10 @@ onMounted(async () => {
               :disable="loading"
               :rules="[(value: string) => !!value || 'Este Campo é obrigatório!']"
               dense
-              :class="['CS'.includes(newCalculation.occurrence) ? 'col-span-3' : 'col-span-6']"
+              :class="['CA'.includes(newCalculation.occurrence) ? 'col-span-3' : 'col-span-6']"
             />
             <InputDate
-              v-if="newCalculation.occurrence === 'C'"
+              v-if="newCalculation.occurrence === 'A'"
               v-model="newCalculation.dateCitation"
               label="Data da Citação"
               :rules="[
@@ -432,11 +432,31 @@ onMounted(async () => {
               class="col-span-3"
             />
             <InputDate
-              v-if="newCalculation.occurrence === 'S'"
+              v-if="newCalculation.occurrence === 'C'"
               v-model="newCalculation.dateRjFiling"
               label="Data de Ajuizamento"
               :rules="[
                 (value: any) => !!value || 'Campo é obrigatório!',
+                (value: any) => value.length === 0 || value.length === 10 || 'Padrão ##/##/####',
+                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Data inválida!',
+              ]"
+              class="col-span-3"
+            />
+            <InputDate
+              v-if="newCalculation.occurrence && !'CA'.includes(newCalculation.occurrence)"
+              v-model="newCalculation.dateCitation"
+              label="Data da Citação"
+              :rules="[
+                (value: any) => value.length === 0 || value.length === 10 || 'Padrão ##/##/####',
+                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Data inválida!',
+              ]"
+              class="col-span-3"
+            />
+            <InputDate
+              v-if="newCalculation.occurrence && !'CA'.includes(newCalculation.occurrence)"
+              v-model="newCalculation.dateRjFiling"
+              label="Data de Ajuizamento"
+              :rules="[
                 (value: any) => value.length === 0 || value.length === 10 || 'Padrão ##/##/####',
                 (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Data inválida!',
               ]"
