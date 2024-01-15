@@ -1,37 +1,39 @@
+import base64
 import logging
 import re
-import pdfkit
-import openpyxl as xl
-import base64
-
-from os.path import exists
-from os import remove
-from datetime import datetime
 from copy import copy
-from rest_framework import permissions
-from django.http import JsonResponse
-from xlsx2html import xlsx2html
+from datetime import datetime
+from os import remove
+from os.path import exists
 
-from openpyxl.utils import get_column_letter
-from openpyxl.styles import PatternFill, Alignment, Font
-
+import openpyxl as xl
+import pdfkit
+from calculation.models import Calculation
 from calculation.sheets_template.models import SheetsTemplate
 from calculation.sheets_template.schemas import SheetsTemplateSchema
-from calculation.models import Calculation
 from core.abstract.views import AbstractViewApi
 from core.permission.views import CheckHasPermission
-from rates.models import TemplateSlugChoices, FieldTypeChoices
+from django.http import JsonResponse
+from openpyxl.styles import Alignment, Font, PatternFill
+from openpyxl.utils import get_column_letter
+from rates.models import FieldTypeChoices, TemplateSlugChoices
 from rates.schemas import TemplateSchema
+from rest_framework import permissions
 from utils import _, doc
+from xlsx2html import xlsx2html
 
-# config = pdfkit.configuration(wkhtmltopdf="C:\Program Files\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
+config = pdfkit.configuration(
+    wkhtmltopdf="C:\Program Files\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
 
 gray_fill = PatternFill(start_color="00C0C0C0",
                         end_color="00C0C0C0", fill_type="solid")
-green_fill = PatternFill(start_color='86BC25', end_color='86BC25', fill_type='solid')
+green_fill = PatternFill(start_color='86BC25',
+                         end_color='86BC25', fill_type='solid')
 bold_font = Font(bold=True)
-bold_white_font = Font(bold=True, color="FFFFFF")  # "FFFFFF" representa a cor branca em hexadecimal
-underline_font = Font(bold=True, color="FFFFFF", underline="single")  # "FFFFFF" representa a cor branca em hexadecimal
+# "FFFFFF" representa a cor branca em hexadecimal
+bold_white_font = Font(bold=True, color="FFFFFF")
+# "FFFFFF" representa a cor branca em hexadecimal
+underline_font = Font(bold=True, color="FFFFFF", underline="single")
 
 total_merged = 2
 
@@ -298,9 +300,11 @@ class SheetExcel:
             kwargs.get("export_type").split(';')) > 1 else None
 
         self.name_report = f'{self.name_report}_V1'
-        self.sheet_template = SheetsTemplate.objects.filter(name=self.name_report).first()
+        self.sheet_template = SheetsTemplate.objects.filter(
+            name=self.name_report).first()
         calculation_id = kwargs.get('calculation_id')
-        self.calculation = Calculation.objects.filter(id=calculation_id).first()
+        self.calculation = Calculation.objects.filter(
+            id=calculation_id).first()
         self.creditor = self.calculation.creditor
         self.statement = self.calculation.get_statement()
 
@@ -324,7 +328,8 @@ class SheetExcel:
 
         self.sheet_template_name = self.sheet_template.file.name.upper()
         # open the archive and process
-        self.archive_view = xl.load_workbook(self.sheet_template.file, read_only=False)
+        self.archive_view = xl.load_workbook(
+            self.sheet_template.file, read_only=False)
         self.new_name_view = self.new_archive(
             "uploads/"
             + self.sheet_template_name.replace(".XLSX", "-VIEW.XLSX")
@@ -357,7 +362,7 @@ class SheetExcel:
             'executor': self.calculation.executor,
             'reviewer': self.calculation.reviewer,
             'approver': self.calculation.approver,
-            'legend_impugnacao_or_habilitacao': self.statement.get_conclusion_display(),
+            'legend_impugnacao_or_habilitacao': self.statement.get_conclusion_display() if self.statement else '',
             'legend_citation_filling': 'Data da citação:' if self.calculation.is_citation() else 'Data do ajuizamento da RJ:',
         }
 
@@ -376,7 +381,8 @@ class SheetExcel:
         for item in self.notice:
             set_sheet_value(sheet, cnt_ini_row, let_ini_col, item.classes)
             set_sheet_value(sheet, cnt_ini_row + 1, let_ini_col, item.coins)
-            set_sheet_number(sheet, cnt_ini_row + 2, let_ini_col, item.coins.value)
+            set_sheet_number(sheet, cnt_ini_row + 2,
+                             let_ini_col, item.coins.value)
             let_ini_col = chr(ord(let_ini_col) + 1)
 
     def set_formula_claim_creditor(self, sheet, col, cnt_ini_row, let_ini_col):
@@ -393,7 +399,8 @@ class SheetExcel:
         for item in self.claim_creditor:
             set_sheet_value(sheet, cnt_ini_row, let_ini_col, item.classes)
             set_sheet_value(sheet, cnt_ini_row + 1, let_ini_col, item.coins)
-            set_sheet_number(sheet, cnt_ini_row + 2, let_ini_col, item.coins.value)
+            set_sheet_number(sheet, cnt_ini_row + 2,
+                             let_ini_col, item.coins.value)
             let_ini_col = chr(ord(let_ini_col) + 1)
 
     def set_formula_claim_lawyer(self, sheet, col, cnt_ini_row, let_ini_col):
@@ -408,8 +415,10 @@ class SheetExcel:
         """
         col.value = ""
         if self.claim_lawyer:
-            set_sheet_value(sheet, cnt_ini_row, let_ini_col, self.claim_lawyer.classes)
-            set_sheet_number(sheet, cnt_ini_row + 1, let_ini_col, self.claim_lawyer.coins.value)
+            set_sheet_value(sheet, cnt_ini_row, let_ini_col,
+                            self.claim_lawyer.classes)
+            set_sheet_number(sheet, cnt_ini_row + 1, let_ini_col,
+                             self.claim_lawyer.coins.value)
 
     def set_formula_sheets(self, sheet, col, cnt_ini_row, let_ini_col):
         """
@@ -426,10 +435,15 @@ class SheetExcel:
         if not self.funds.exists():
             delete_rows(sheet, cnt_ini_row - 1, 1)
         for item in self.funds:
-            set_sheet_value(sheet, cnt_ini_row, ['A', 'B'], item.name, force=True)
+            set_sheet_value(sheet, cnt_ini_row, [
+                            'A', 'B'], item.name, force=True)
             set_sheet_number(sheet, cnt_ini_row, 'C', item.get_total_summed())
             cnt_ini_row += 1
-
+            
+        statement = getattr(self.calculation, 'statement', None)
+        if not statement: 
+            return 
+        
         statement_pf = self.calculation.statement.get_statement_pf()
         if statement_pf:
             set_sheet_value(sheet, cnt_ini_row, ['A', 'B'],
@@ -455,14 +469,23 @@ class SheetExcel:
             if default_interest:
                 set_sheet_value(sheet, cnt_ini_row, ['A', 'B'],
                                 statement_pf.default_interest_legend, force=True)
-                set_sheet_number(sheet, cnt_ini_row, 'C', default_interest.value)
+                set_sheet_number(sheet, cnt_ini_row, 'C',
+                                 default_interest.value)
                 cnt_ini_row = cnt_ini_row + 1
+
+            for found in self.funds_danos:
+                set_sheet_value(sheet, cnt_ini_row, [
+                                'A', 'B'], item.name, force=True)
+                set_sheet_number(sheet, cnt_ini_row, 'C',
+                                 found.get_total_summed())
+                cnt_ini_row += 1
 
             default_interest_or_due = statement_pf.get_default_interest_due()
             if default_interest_or_due:
                 set_sheet_value(sheet, cnt_ini_row, ['A', 'B'],
                                 default_interest_or_due.get_description_display(), force=True)
-                set_sheet_number(sheet, cnt_ini_row, 'C', default_interest_or_due.value)
+                set_sheet_number(sheet, cnt_ini_row, 'C',
+                                 default_interest_or_due.value)
 
     def set_formula_premises(self, sheet, col, cnt_ini_row, let_ini_col):
         """
@@ -495,8 +518,10 @@ class SheetExcel:
         for item in self.notice:
             set_sheet_value(sheet, cnt_ini_row, 'B', item.classes, alignment='left',
                             force=force)
-            set_sheet_value(sheet, cnt_ini_row, 'C', item.coins, alignment='center')
-            set_sheet_number(sheet, cnt_ini_row, 'D', item.coins.value, alignment='center')
+            set_sheet_value(sheet, cnt_ini_row, 'C',
+                            item.coins, alignment='center')
+            set_sheet_number(sheet, cnt_ini_row, 'D',
+                             item.coins.value, alignment='center')
             set_sheet_value(sheet, cnt_ini_row, 'E', self.recovering_name)
             cnt_ini_row = cnt_ini_row + 1
             force = True
@@ -516,8 +541,10 @@ class SheetExcel:
         for item in self.claim_creditor:
             set_sheet_value(sheet, cnt_ini_row, 'B', item.classes, alignment='left',
                             force=force)
-            set_sheet_value(sheet, cnt_ini_row, 'C', item.coins, alignment='center')
-            set_sheet_number(sheet, cnt_ini_row, 'D', item.coins.value, alignment='center')
+            set_sheet_value(sheet, cnt_ini_row, 'C',
+                            item.coins, alignment='center')
+            set_sheet_number(sheet, cnt_ini_row, 'D',
+                             item.coins.value, alignment='center')
             set_sheet_value(sheet, cnt_ini_row, 'E', self.recovering_name)
             cnt_ini_row = cnt_ini_row + 1
             force = True
@@ -534,8 +561,10 @@ class SheetExcel:
         """
         col.value = "Honorários advocatícios:"
         if self.claim_lawyer:
-            set_sheet_value(sheet, cnt_ini_row, 'B', self.claim_lawyer.classes, alignment='left')
-            set_sheet_value(sheet, cnt_ini_row, 'C', self.claim_lawyer.coins, alignment='center')
+            set_sheet_value(sheet, cnt_ini_row, 'B',
+                            self.claim_lawyer.classes, alignment='left')
+            set_sheet_value(sheet, cnt_ini_row, 'C',
+                            self.claim_lawyer.coins, alignment='center')
             set_sheet_number(sheet, cnt_ini_row, 'D', self.claim_lawyer.coins.value,
                              alignment='center')
             set_sheet_value(sheet, cnt_ini_row, 'E', self.recovering_name)
@@ -561,7 +590,8 @@ class SheetExcel:
         count = 0
         has_headers = False
         for item in self.fund_document:
-            self.set_template(sheet, item, cnt_ini_row + count, force=True, has_headers=has_headers)
+            self.set_template(sheet, item, cnt_ini_row + count,
+                              force=True, has_headers=has_headers)
             count += 1
             has_headers = True
 
@@ -689,8 +719,10 @@ class SheetExcel:
 
             # TODO: Pegar a data e a legenda usado para fazer o cálculo
             cnt_row += 2
-            set_sheet_value(ws, cnt_row + 1, 'A', 'Correção monetária', font=bold_font)
-            set_sheet_value(ws, cnt_row + 1, ['E', 'K'], item.rate.index, font=bold_font)
+            set_sheet_value(ws, cnt_row + 1, 'A',
+                            'Correção monetária', font=bold_font)
+            set_sheet_value(ws, cnt_row + 1,
+                            ['E', 'K'], item.rate.index, font=bold_font)
             cnt_row += 1
             self.set_template(ws, item, cnt_row)
 
@@ -705,8 +737,10 @@ class SheetExcel:
 
             # TODO: Pegar a data e a legenda usado para fazer o cálculo
             cnt_row += 2
-            set_sheet_value(ws, cnt_row + 1, 'A', 'Correção monetária', font=bold_font)
-            set_sheet_value(ws, cnt_row + 1, ['E', 'K'], item.rate.index, font=bold_font)
+            set_sheet_value(ws, cnt_row + 1, 'A',
+                            'Correção monetária', font=bold_font)
+            set_sheet_value(ws, cnt_row + 1,
+                            ['E', 'K'], item.rate.index, font=bold_font)
             cnt_row += 1
             self.set_template(ws, item, cnt_row)
 
@@ -722,7 +756,8 @@ class SheetExcel:
         - has_headers (bool, opcional): Indica se a planilha tem cabeçalhos.
 
         """
-        TemplateProcessor(sheet, item, cnt_row, self.statement, force, has_headers).set_template()
+        TemplateProcessor(sheet, item, cnt_row, self.statement,
+                          force, has_headers).set_template()
 
 
 class ExportProcessor:
@@ -772,16 +807,16 @@ class ExportProcessor:
         Returns:
         - JsonResponse: Resposta JSON com os dados da exportação.
         """
-        try:
-            self._generate_html_and_pdf()
-            base64_message, base64_message_pdf = self._encode_files()
-            response = self._prepare_response(base64_message, base64_message_pdf)
-            self._clean_temporary_files()
-            return response
+        # try:
+        self._generate_html_and_pdf()
+        base64_message, base64_message_pdf = self._encode_files()
+        response = self._prepare_response(base64_message, base64_message_pdf)
+        self._clean_temporary_files()
+        return response
 
-        except Exception as e:
-            error_message = f"An error occurred: {str(e)}"
-            return JsonResponse({"error": error_message}, status=500)
+        # except Exception as e:
+        #     error_message = f"An error occurred: {str(e)}"
+        #     return JsonResponse({"error": error_message}, status=500)
 
     def _generate_html_and_pdf(self):
         """
@@ -818,8 +853,9 @@ class ExportProcessor:
             base64_message = base64_encoded_data.decode("latin-1")
 
         # Create a pdf file
-        # pdfkit.from_string('\n'.join(self.list_pdf), self.new_name_pdf, configuration=config)
-        pdfkit.from_string('\n'.join(self.list_pdf), self.new_name_pdf)
+        pdfkit.from_string('\n'.join(self.list_pdf),
+                           self.new_name_pdf, configuration=config)
+        # pdfkit.from_string('\n'.join(self.list_pdf), self.new_name_pdf)
 
         with open(self.new_name_pdf, "rb") as archive_pdf:
             pdf_file = archive_pdf.read()
@@ -966,10 +1002,12 @@ class TemplateProcessor:
             raise ValueError(msg)
 
         if not unique_headers:
-            set_sheet_value(self.sheet, self.cnt_row + 1, 'A', template_name, font=bold_font)
+            set_sheet_value(self.sheet, self.cnt_row + 1, 'A',
+                            template_name, font=bold_font)
             self.cnt_row += 1
 
-        self._process_fields(table, fund_items, nested_attrs, color, font, unique_headers)
+        self._process_fields(table, fund_items, nested_attrs,
+                             color, font, unique_headers)
         self._process_summary(summary, total_funds)
         self.cnt_row += 2
 
@@ -994,7 +1032,8 @@ class TemplateProcessor:
             if key == 'status_display':
                 continue
             if not unique_headers or not self.has_headers:
-                set_sheet_value(self.sheet, self.cnt_row, letter, field['label'], font=fonte, fill=color)
+                set_sheet_value(self.sheet, self.cnt_row, letter,
+                                field['label'], font=fonte, fill=color)
 
             self.index_order[field['order']] = letter
             letter = chr(ord(letter) + 1)
@@ -1008,7 +1047,8 @@ class TemplateProcessor:
             for index, fund_item in enumerate(fund_items):
 
                 if self.force:
-                    set_sheet_value(self.sheet, self.cnt_row, letter, '', force=self.force)
+                    set_sheet_value(self.sheet, self.cnt_row,
+                                    letter, '', force=self.force)
                 for field in fields:
                     key = field['key']
                     if key == 'status_display':
@@ -1020,9 +1060,11 @@ class TemplateProcessor:
 
                     letter = self.index_order[field['order']]
                     if type_value == FieldTypeChoices.FLOAT:
-                        set_sheet_number(self.sheet, self.cnt_row, letter, value)
+                        set_sheet_number(
+                            self.sheet, self.cnt_row, letter, value)
                     else:
-                        set_sheet_value(self.sheet, self.cnt_row, letter, value)
+                        set_sheet_value(
+                            self.sheet, self.cnt_row, letter, value)
 
                 if index < len(fund_items) - 1:
                     self.cnt_row += 1
@@ -1078,6 +1120,8 @@ class TemplateProcessor:
             val = self.index_order[order]
 
             if summ['type'] == FieldTypeChoices.FLOAT:
-                set_sheet_number(self.sheet, self.cnt_row + 1, val, value, font=bold_font)
+                set_sheet_number(self.sheet, self.cnt_row + 1,
+                                 val, value, font=bold_font)
             else:
-                set_sheet_value(self.sheet, self.cnt_row + 1, val, value, font=bold_font)
+                set_sheet_value(self.sheet, self.cnt_row + 1,
+                                val, value, font=bold_font)
