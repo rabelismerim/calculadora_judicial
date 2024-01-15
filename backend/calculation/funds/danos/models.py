@@ -7,16 +7,18 @@ to add specific fields as needed.
 
 import datetime
 
+from base.views import ExtractFormula
+from calculation.comparative.signals import (gen_statement_danos,
+                                             gen_statement_total_documents)
+from calculation.funds.models import (AbstractFunds,
+                                      AbstractMonetaryCorrection,
+                                      AbstractStatement,
+                                      AbstractTotalValuesFunds)
 from django.db import models
 from django.db.models import TextChoices
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
-
-from base.views import ExtractFormula
-from calculation.comparative.signals import gen_statement_danos, gen_statement_total_documents
-from calculation.funds.models import AbstractFunds, AbstractStatement, AbstractMonetaryCorrection, \
-    AbstractTotalValuesFunds
-from rates.models import Rate, CalculeRate
+from rates.models import CalculeRate, Rate
 
 
 class InterestChoices(TextChoices):
@@ -73,7 +75,7 @@ class FundDanos(AbstractFunds):
             return totalvaluesdanos.total_due
         return 0
 
-    def get_total_total_default_interest(self) -> float:
+    def get_total_default_interest(self) -> float:
         """Get the corrected value of the sum of calculated sums"""
         totalvaluesdanos = getattr(self, 'totalvaluesdanos', None)
         if totalvaluesdanos:
