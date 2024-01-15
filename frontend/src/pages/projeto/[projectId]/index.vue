@@ -421,7 +421,7 @@ onMounted(async () => {
               :class="['CA'.includes(newCalculation.occurrence) ? 'col-span-3' : 'col-span-6']"
             />
             <InputDate
-              v-if="newCalculation.occurrence === 'A'"
+              v-if="newCalculation.occurrence === 'C'"
               v-model="newCalculation.dateCitation"
               label="Data da Citação"
               :rules="[
@@ -432,7 +432,7 @@ onMounted(async () => {
               class="col-span-3"
             />
             <InputDate
-              v-if="newCalculation.occurrence === 'C'"
+              v-if="newCalculation.occurrence === 'A'"
               v-model="newCalculation.dateRjFiling"
               label="Data de Ajuizamento"
               :rules="[
