@@ -436,15 +436,18 @@ class SheetExcel:
             delete_rows(sheet, cnt_ini_row - 1, 1)
         for item in self.funds:
             set_sheet_value(sheet, cnt_ini_row, [
-                            'A', 'B'], item.name, force=True)
+                'A', 'B'], item.name, force=True)
             set_sheet_number(sheet, cnt_ini_row, 'C', item.get_total_summed())
             cnt_ini_row += 1
-            
+
         statement = getattr(self.calculation, 'statement', None)
-        if not statement: 
-            return 
-        
+
+        print(statement, 'statement\n')
+        if not statement:
+            return
+
         statement_pf = self.calculation.statement.get_statement_pf()
+        print(statement_pf, 'statement_pf\n')
         if statement_pf:
             set_sheet_value(sheet, cnt_ini_row, ['A', 'B'],
                             self.calculation.statement.statementpf.get_description_display(),
@@ -473,12 +476,12 @@ class SheetExcel:
                                  default_interest.value)
                 cnt_ini_row = cnt_ini_row + 1
 
-            for found in self.funds_danos:
-                set_sheet_value(sheet, cnt_ini_row, [
-                                'A', 'B'], item.name, force=True)
-                set_sheet_number(sheet, cnt_ini_row, 'C',
-                                 found.get_total_summed())
-                cnt_ini_row += 1
+            for fund in self.funds_danos:
+                statement_fund = fund.get_statement()
+                if statement_fund:
+                    set_sheet_value(sheet, cnt_ini_row, ['A', 'B'], f'Danos {statement_fund.description}', force=True)
+                    set_sheet_number(sheet, cnt_ini_row, 'C', fund.get_total_summed())
+                    cnt_ini_row += 1
 
             default_interest_or_due = statement_pf.get_default_interest_due()
             if default_interest_or_due:

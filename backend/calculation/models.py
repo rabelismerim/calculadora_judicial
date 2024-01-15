@@ -166,6 +166,7 @@ class Calculation(AbstractModel):
             number__isnull=True).count()
 
     def save(self, *args, **kwargs):
+        get_statement = self.get_statement()
         super(Calculation, self).save(*args, **kwargs)
 
         if not self.rate:
@@ -173,8 +174,14 @@ class Calculation(AbstractModel):
 
         if not self.id or not self.number:
             self.number = self._get_number()
-            if not self.id:
-                new_calc.send(sender=self.__class__, instance=self)
+        if not get_statement:
+            self.create_statement()
+
+    def create_statement(self):
+        try:
+            new_calc.send(sender=self.__class__, instance=self)
+        except:
+            pass
 
     def get_rate(self) -> Rate:
         """
@@ -725,8 +732,7 @@ class Calculation(AbstractModel):
             - The statement attribute of the object, if it exists.
             - None, otherwise.
         """
-        if hasattr(self, 'statement'):
-            return self.statement
+        return getattr(self, 'statement', None)
 
     def is_agreement(self) -> bool:
         """
