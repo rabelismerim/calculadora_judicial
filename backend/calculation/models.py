@@ -162,8 +162,7 @@ class Calculation(AbstractModel):
 
     def _get_count_process_calculation(self) -> int:
         """:return: the count of Calculation objects for the creditor's project"""
-        return Calculation.objects.filter(creditor__recovering__project=self.creditor.recovering.project).exclude(
-            number__isnull=True).count()
+        return Calculation.objects.filter(creditor__recovering__project=self.creditor.recovering.project).exclude(number__isnull=True).count()
 
     def save(self, *args, **kwargs):
         get_statement = self.get_statement()
