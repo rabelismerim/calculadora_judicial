@@ -39,6 +39,7 @@ declare module '@vue/runtime-core' {
     InputSelect: typeof import('./components/inputs/InputSelect.vue')['default']
     InputTags: typeof import('./components/inputs/InputTags.vue')['default']
     InputText: typeof import('./components/inputs/InputText.vue')['default']
+    InputToggle: typeof import('./components/inputs/InputToggle.vue')['default']
     InputUser: typeof import('./components/inputs/InputUser.vue')['default']
     InputUsers: typeof import('./components/inputs/InputUsers.vue')['default']
     LawyerClaim: typeof import('./components/creditors/LawyerClaim.vue')['default']
