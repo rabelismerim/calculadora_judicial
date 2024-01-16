@@ -78,7 +78,7 @@ class StatementDanosUpdateSchema(AbstractDescriptionSchema):
     description = serializers.CharField(required=False)
     interest_initial_date = serializers.DateField(write_only=True, required=False)
     apply_monetary_correction = serializers.BooleanField(write_only=True, required=False)
-    type_interest = serializers.ChoiceField(choices=InterestChoices, write_only=True, required=False)
+    type_interest = serializers.ChoiceField(choices=InterestChoices.choices, write_only=True, required=False)
 
     class Meta:
         model = StatementDanos

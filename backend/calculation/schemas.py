@@ -198,13 +198,14 @@ class CalculationSchema(CalculationAllFundsSchema):  # V1
     The Meta class is used to specify the Calculation model and all fields are serialized.
     The validate method is overridden to handle the verdict_set and funds_set fields and returns the validated data.
     """
-
+    # TODO: criar update schema, mover campos(validated, )
+    # TODO: remover campos(date_approved_calculation, )
     incident = IncidentSchema(many=False, read_only=True)
     incident_id = serializers.UUIDField(write_only=True)
     creditor = CreditorSchema(many=False, read_only=True)
     creditor_id = serializers.UUIDField(write_only=True)
-    verdict = VerdictSchema(source='verdict_set', many=True,
-                            required=False, exclude=('calculation_id',))
+    # verdict = VerdictSchema(source='verdict_set', many=True,
+    #                         required=False, exclude=('calculation_id',))
     criterion = CriterionSchema(many=False, read_only=True)
 
     # funds = FundsSchema(source='funds_set', many=True,

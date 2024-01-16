@@ -51,8 +51,9 @@ class AbstractFunds(AbstractCredit):
         Get the index that will be used in the calculation. If there is no unique index, the default index defined
         in the creditor is taken.
         """
-        if self.rate:
-            return self.rate
+        # Removido da verba e mantido apenas um no cálculo
+        # if self.rate:
+        #     return self.rate
         return self.calculation.get_rate()
 
 

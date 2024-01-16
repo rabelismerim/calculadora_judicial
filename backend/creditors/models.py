@@ -57,6 +57,7 @@ class Creditor(AbstractDateCreditor):
         invalidated_calculations.update(validated=False)
 
         # validates all calculations
+        # TODO: Setar data de aprovacao do calculo
         validated_calculations = self.calculation_set.filter(id__in=calculations, validated=False,
                                                              step='A').values_list('id', flat=True)
         validated = list(validated_calculations)
