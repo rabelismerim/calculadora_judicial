@@ -91,7 +91,7 @@ const loadCalculation = async (showLoading = false) => {
     .map((credit: any) => {
       credit.tables = credit?.template?.tables.map(({ fields, description, endPoint, id, many, summary }: any) => {
         const columns = fields
-          ?.map(({ id, isEditable, key, decimals, label, order, required, typeDisplay, default: defaultValue }: any) =>
+          ?.map(({ id, isEditable, key, decimals, label, order, required, typeDisplay, default: defaultValue, choices }: any) =>
             ({
               id,
               isEditable,
@@ -105,6 +105,7 @@ const loadCalculation = async (showLoading = false) => {
               sortable: ['float', 'integer', 'date'].includes(typeDisplay),
               type: typeDisplay,
               align: (isEditable && typeDisplay !== 'boolean') ? 'left' : 'center',
+              choices,
             }))
           .sort(({ order: orderA }: any, { order: orderB }: any) => orderA < orderB ? -1 : 1)
         if (many) {
@@ -562,6 +563,17 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
                             :disable="['A', 'B'].includes(calculation?.step)"
                             @update:model-value="(value: any) => { if (column.type === 'integer') (props.row[column.field] = Math.round(value)) }"
                             @paste.prevent="onPaste($event, table.values, column.field, column.type, props.rowIndex)"
+                          />
+                          <QSelect
+                            v-else-if="column.type === 'choice'"
+                            v-model="props.row[column.field]"
+                            :options="column.choices"
+                            option-label="legend"
+                            option-value="id"
+                            emit-value
+                            map-options
+                            outlined
+                            dense
                           />
                           <InputDate
                             v-else-if="column.type === 'date'"
