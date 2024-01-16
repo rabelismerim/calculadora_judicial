@@ -53,11 +53,15 @@ const loadProject = async () => {
   }
 }
 
+const nullCalculation = {
+  isAdm: true,
+  appealCredit: false,
+  appealDeposit: false,
+  hasAdvocativeHours: false,
+}
 const calculationForm: any = ref(null as any)
 let showCreateNewCalculation = $ref(false)
-let newCalculation: any = $ref({
-  isAdm: true,
-})
+let newCalculation: any = $ref(clone(nullCalculation))
 const openNewCalculation = (creditor: any) => {
   const { id } = creditor
   newCalculation.creditorId = id
@@ -82,9 +86,7 @@ const createNewCalculation = async () => {
 const closeNewCalculation = () => {
   showCreateNewCalculation = false
   calculationForm.value.reset()
-  newCalculation = {
-    isAdm: true,
-  }
+  newCalculation = clone(nullCalculation)
 }
 const loadCalculations = async (creditor: any) => {
   const { id } = creditor
@@ -375,7 +377,7 @@ onMounted(async () => {
         v-model="showCreateNewCalculation"
         title="Criar um Novo Cálculo"
         hint="Para criar um cálculo é preciso escolher um incidente."
-        modal-class="max-w-130"
+        modal-class="max-w-200"
         @close="closeNewCalculation"
       >
         <QForm
@@ -462,7 +464,60 @@ onMounted(async () => {
               ]"
               class="col-span-3"
             />
-            <label class="flex gap-4 items-center mb-4 col-span-6">
+            <InputNumber
+              v-model="newCalculation.recurralDeposit"
+              label="Depósito Recursal Liberado"
+              class="col-span-3"
+            />
+            <InputToggle
+              v-model="newCalculation.appealCredit"
+              label="Crédito totalmente recursal"
+              class="col-span-3 mb-5"
+            />
+            <InputToggle
+              v-model="newCalculation.appealDeposit"
+              label="Retirada de Depósito Recursal"
+              class="col-span-3 mb-5"
+              @update:model-value="(value: any) => {
+                if (!value) newCalculation.numPagFlsAppealDeposit = undefined
+              }"
+            />
+            <QInput
+              v-model="newCalculation.numPagFlsAppealDeposit"
+              type="number"
+              label="Número da Página do depósito Recursal"
+              :disable="!newCalculation.appealDeposit"
+              outlined
+              dense
+              class="col-span-3 mb-5"
+            />
+            <InputDate
+              v-model="newCalculation.dateCreditAuth"
+              label="Data da Certidão de Habilitação de Crédito"
+              :rules="[
+                (value: any) => value.length === 0 || value.length === 10 || 'Padrão ##/##/####',
+                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Data inválida!',
+              ]"
+              class="col-span-3"
+              @update:model-value="(value: any) => {
+                if (!value) newCalculation.numPagFlsCreditAuthDate = undefined
+              }"
+            />
+            <QInput
+              v-model="newCalculation.numPagFlsCreditAuthDate"
+              type="number"
+              label="Número da Página da Certidão de Habilitação de Crédito"
+              :disable="!newCalculation.dateCreditAuth"
+              outlined
+              dense
+              class="col-span-3 mb-5"
+            />
+            <InputToggle
+              v-model="newCalculation.hasAdvocativeHours"
+              label="Horários advocatícios"
+              class="col-span-3 mb-5"
+            />
+            <label class="flex gap-4 md:gap-12 items-center mb-4 col-span-6">
               <div class="font-bold color-gray-8 text-md">Fase do Cálculo</div>
               <BtnToggle
                 v-model="newCalculation.isAdm"
