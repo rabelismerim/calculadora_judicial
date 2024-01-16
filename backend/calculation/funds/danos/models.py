@@ -39,8 +39,9 @@ class FundDanos(AbstractFunds):
         This method returns the TotalValuesDanos object associated with the current fund object. If the object does
         not exist, it creates one and returns it.
         """
-        if hasattr(self, 'totalvaluesdanos'):
-            return self.totalvaluesdanos
+        total_values_danos = self.total_values_danos
+        if total_values_danos:
+            return total_values_danos
         if create:
             return TotalValuesDanos.objects.get_or_create(fund=self)[0]
 
@@ -52,33 +53,25 @@ class FundDanos(AbstractFunds):
         total_funds = self.get_total_funds()
         total_funds.set_total()
 
+    @property
+    def total_values_danos(self):
+        return getattr(self, 'totalvaluesdanos', None)
+
     def get_total_summed(self):
         """Get the corrected value of the sum of calculated sums"""
-        total: float = 0
-        if hasattr(self, 'totalvaluesdanos'):
-            total += self.totalvaluesdanos.total_corrected
-        return total
+        return getattr(self.total_values_danos, 'total_corrected', 0)
 
     def get_total_historical_summed(self):
         """Get the corrected value of the sum of calculated sums"""
-        total: float = 0
-        if hasattr(self, 'totalvaluesdanos'):
-            total += self.totalvaluesdanos.total_historical
-        return total
+        return getattr(self.total_values_danos, 'total_historical', 0)
 
     def get_total_due_summed(self) -> float:
         """Get the corrected value of the sum of calculated sums"""
-        totalvaluesdanos = getattr(self, 'totalvaluesdanos', None)
-        if totalvaluesdanos:
-            return totalvaluesdanos.total_due
-        return 0
+        return getattr(self.total_values_danos, 'total_due', 0)
 
     def get_total_total_default_interest(self) -> float:
         """Get the corrected value of the sum of calculated sums"""
-        totalvaluesdanos = getattr(self, 'totalvaluesdanos', None)
-        if totalvaluesdanos:
-            return totalvaluesdanos.total_default_interest
-        return 0
+        return getattr(self.total_values_danos, 'total_default_interest', 0)
 
     def get_statement(self):
         """
