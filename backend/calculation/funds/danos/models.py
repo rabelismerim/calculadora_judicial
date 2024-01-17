@@ -9,13 +9,15 @@ import datetime
 
 from django.db import models
 from django.db.models import TextChoices
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
 from base.views import ExtractFormula
-from calculation.comparative.signals import gen_statement_danos, gen_statement_total_documents
+from calculation.comparative.signals import gen_statement_danos, gen_statement_total_documents, update_calc
 from calculation.funds.models import AbstractFunds, AbstractStatement, AbstractMonetaryCorrection, \
     AbstractTotalValuesFunds
+from calculation.models import Calculation
 from rates.models import Rate, CalculeRate
 
 
@@ -401,3 +403,23 @@ def save_statement_documents(sender, instance, **kwargs) -> None:
     ExtractFormula(instance, instance.fund.calculation, statement_methods).get_methods(
         [StatementDanos, MonetaryCorrectionDanos, Rate, TotalValuesDanos, save_statement_documents])
     instance.fund.calculation.invalidate_calculation()
+
+
+@receiver(update_calc, sender=Calculation)
+def updated_calculation(sender, instance, **kwargs):
+    """
+    Signal handler for the update_calc event of a Calculation instance.
+
+    Args:
+    - sender: The model class that sent the signal (Calculation in this case).
+    - instance (Calculation): The instance of Calculation that triggered the signal.
+    - kwargs: Additional keyword arguments.
+    """
+    statements = StatementDanos.objects.filter(fund__calculation=instance)
+
+    for statement in statements:
+        statement.calcule_monetary_correction()
+
+    total_funds = TotalValuesDanos.objects.filter(fund__calculation=instance)
+    for total in total_funds:
+        total.set_total()

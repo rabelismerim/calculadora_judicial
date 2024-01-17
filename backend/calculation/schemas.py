@@ -18,6 +18,7 @@ serializer = CalculationSchema()
 from base.schemas import AbstractDescriptionSchema, UpdateUserSerializer
 from calculation.comment.schemas import StepCommentSchema, CommentSchema
 from calculation.comparative.schemas import ComparativeSchema
+from calculation.comparative.signals import update_calc
 from calculation.criterion.schemas import CriterionSchema
 from calculation.funds.danos.schemas import FundDanosSchema
 from calculation.funds.document.schemas import FundDocumentSchema
@@ -126,8 +127,7 @@ class CalculationAllFundsSchema(AbstractDescriptionSchema):  # V1
     """
 
     all_funds = serializers.SerializerMethodField()
-    # TODO: remover required False depois do front ter colocado a obrigatoriedade
-    rate_id = serializers.UUIDField(write_only=True, required=False)
+    rate_id = serializers.UUIDField(write_only=True, required=True)
     rate = RateSchema(read_only=True, allow_null=True, exclude=('rate_values',))
 
     def get_all_funds(self, obj):
@@ -198,22 +198,11 @@ class CalculationSchema(CalculationAllFundsSchema):  # V1
     The Meta class is used to specify the Calculation model and all fields are serialized.
     The validate method is overridden to handle the verdict_set and funds_set fields and returns the validated data.
     """
-    # TODO: criar update schema, mover campos(validated, )
-    # TODO: remover campos(date_approved_calculation, )
     incident = IncidentSchema(many=False, read_only=True)
     incident_id = serializers.UUIDField(write_only=True)
     creditor = CreditorSchema(many=False, read_only=True)
     creditor_id = serializers.UUIDField(write_only=True)
-    # verdict = VerdictSchema(source='verdict_set', many=True,
-    #                         required=False, exclude=('calculation_id',))
     criterion = CriterionSchema(many=False, read_only=True)
-
-    # funds = FundsSchema(source='funds_set', many=True,
-    #                     required=False, exclude=('calculation_id',), read_only=True)
-    # fund_irrf = FundIRRFSchema(source='fundirrf_set', many=True,
-    #                            required=False, exclude=('calculation_id',), read_only=True)
-    # fund_document = FundDocumentSchema(source='fund_document_set', many=True,
-    #                                    required=False, exclude=('calculation_id',), read_only=True)
 
     statement = StatementSchema(read_only=True, exclude=('calculation_id',))
 
@@ -241,7 +230,8 @@ class CalculationSchema(CalculationAllFundsSchema):  # V1
         model = Calculation
         fields = '__all__'
         read_only_fields = ('step', 'number', 'approver',
-                            'special_approvers', 'executor', 'reviewer')
+                            'special_approvers', 'executor', 'reviewer', 'validated', 'date_approved_calculation',
+                            'creditor_id', 'is_adm')
 
     def validate(self, data):
         data['verdict'] = data.pop('verdict_set', None)
@@ -278,6 +268,29 @@ class CalculationSchema(CalculationAllFundsSchema):  # V1
         self.fields['historical'].context.update({'self': instance})
         data = super().to_representation(instance)
         return data
+
+
+class CalculationUpdateSchema(CalculationAllFundsSchema):
+    """
+    The CalculationSchema class is a serializer for the Calculation model fields. It inherits from the
+     AbstractModelSchema class. It includes the following fields:
+
+    creditor: a CreditorSchema instance that is read-only and not serialized.
+    creditor_id: a UUIDField instance that is write-only and serialized.
+    verdict: a VerdictSchema instance that represents a collection of verdicts related to the calculation.
+    criterion: a CriterionSchema instance that is read-only and not serialized.
+    funds: a FundsSchema instance that represents a collection of funds related to the calculation.
+    statement: a StatementSchema instance that is read-only and not serialized.
+    The Meta class is used to specify the Calculation model and all fields are serialized.
+    The validate method is overridden to handle the verdict_set and funds_set fields and returns the validated data.
+    """
+
+    non_required_fields = ['incident_id', 'creditor_id']
+
+    def update(self, instance, validated_data):
+        calcule_updated = super().update(instance, validated_data)
+        update_calc.send(instance=calcule_updated, sender=self.Meta.model)
+        return calcule_updated
 
 
 class CalculationV2Schema(AbstractDescriptionSchema):  # V2

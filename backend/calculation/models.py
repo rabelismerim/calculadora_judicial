@@ -690,13 +690,10 @@ class Calculation(AbstractModel):
 
     def get_rj_filling(self):
         """:return: 'date_rj_filing' from calculation"""
-        # TODO: remover  self.creditor.recovering.project.date_rj_filing após o front começar a enviar a data de
-        #  date_rj_filing ao gerar um cálculo
-        return self.date_rj_filing or self.creditor.recovering.project.date_rj_filing
+        return self.date_rj_filing
 
     def get_date_citation(self) -> datetime.date or None:
         """:return: 'date_citation' from calculation"""
-
         return self.date_citation
 
     def get_date_rj_request(self) -> datetime.date or None:

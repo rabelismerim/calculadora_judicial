@@ -205,7 +205,6 @@ class AbstractStatement(AbstractStatus):
             return None
 
         is_extraconcursal = self.check_is_extraconcursal()
-        print(is_extraconcursal, 'set_error_extra\n')
 
         if date_rj and data_base >= date_rj and is_extraconcursal:
             if self.is_extraconcursal is False:

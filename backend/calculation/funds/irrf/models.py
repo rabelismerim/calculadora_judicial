@@ -6,12 +6,14 @@ to add specific fields as needed.
 """
 from django.db import models
 from django.db.models import FloatField, PositiveIntegerField
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
 from base.views import ExtractFormula
-from calculation.comparative.signals import gen_statement_irrf
+from calculation.comparative.signals import gen_statement_irrf, update_calc
 from calculation.funds.abstract.models import AbstractFunds, AbstractStatus
+from calculation.models import Calculation
 from core.abstract.models import AbstractModel
 from rates.models import get_aliquot_by_tax, Rate
 
@@ -272,3 +274,22 @@ def save_statement_irrf(sender, instance, **kwargs) -> None:
     ExtractFormula(instance, instance.fund.calculation, statement_methods).get_methods(
         [StatementIRRF, FundIRRF, TotalValuesIRRF, Rate, save_statement_irrf])
     instance.fund.calculation.invalidate_calculation()
+
+
+@receiver(update_calc, sender=Calculation)
+def updated_calculation(sender, instance, **kwargs):
+    """
+    Signal handler for the update_calc event of a Calculation instance.
+
+    Args:
+    - sender: The model class that sent the signal (Calculation in this case).
+    - instance (Calculation): The instance of Calculation that triggered the signal.
+    - kwargs: Additional keyword arguments.
+    """
+    statements = StatementIRRF.objects.filter(fund__calculation=instance)
+    for statement in statements:
+        statement.calcule_monetary_correction()
+
+    total_funds = TotalValuesIRRF.objects.filter(fund__calculation=instance)
+    for total in total_funds:
+        total.set_total()
