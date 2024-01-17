@@ -456,7 +456,7 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
             v-for="(credit, creditIndex) in calculation?.credits as any[]"
             :key="creditIndex"
             v-model="credit.isOpen"
-            :title="`Crédito ${credit?.template?.name} - ${credit?.rate?.index}`"
+            :title="`Crédito ${credit?.template?.name}`"
             :subtitle="credit.name"
             class="rounded-0"
             @open="openCredit(credit)"
