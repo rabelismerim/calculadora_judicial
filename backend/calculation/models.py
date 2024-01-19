@@ -87,6 +87,7 @@ class Calculation(AbstractModel):
     # TODO verificar se essas premissas variam de calculo para calculo, ou pode ser relacionado ao credor
     # Statement N5 - Crédito inteiramente concursal? TODO analisar se as verbas adicionadas são concursal e alterar
     #  automaticamente
+    # TODO: Remover de edição, automatizar calculo para obter os creditos, e ver se algum credito tem a flag is_extraconcursal
     appeal_credit = models.BooleanField(_('Fully competitive credit?'), default=False)
     # Statement Q5 - Data do calculo homologado
     date_approved_calculation = models.DateField(_('Approved calculation date'), null=True)
@@ -162,7 +163,8 @@ class Calculation(AbstractModel):
 
     def _get_count_process_calculation(self) -> int:
         """:return: the count of Calculation objects for the creditor's project"""
-        return Calculation.objects.filter(creditor__recovering__project=self.creditor.recovering.project).exclude(number__isnull=True).count()
+        return Calculation.objects.filter(creditor__recovering__project=self.creditor.recovering.project).exclude(
+            number__isnull=True).count()
 
     def save(self, *args, **kwargs):
         get_statement = self.get_statement()
