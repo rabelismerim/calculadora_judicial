@@ -9,6 +9,7 @@ const props = withDefaults(defineProps<{
   toAdd?: Function
   errorMessages?: any
   errorKey?: string
+  disabled?: boolean
 }>(), {
   rules: () => ([]),
   errorMessages: () => ({}),
@@ -76,6 +77,7 @@ const onFilter = (val: any, update: Function) => {
     :rules="rules"
     :error="!!errorMessages[errorKey]"
     :error-message="!!errorMessages[errorKey] ? errorMessages[errorKey] : ''"
+    :disable="!!disabled"
     map-options
     option-value="id"
     option-label="description"

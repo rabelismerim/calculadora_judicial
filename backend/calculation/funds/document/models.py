@@ -8,17 +8,29 @@ to add specific fields as needed.
 import datetime
 
 from django.db import models, transaction
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
 from base.views import ExtractFormula
-from calculation.comparative.signals import gen_statement_documents, gen_statement_total_documents
+from calculation.comparative.signals import gen_statement_documents, gen_statement_total_documents, update_calc
 from calculation.funds.models import AbstractFunds, AbstractStatement, AbstractMonetaryCorrection, \
     AbstractTotalValuesFunds
+from calculation.models import Calculation
 from rates.models import Rate
 
 
 class FundDocument(AbstractFunds):
+    # TODO: Adicionar campo fato gerador para verbas de danos morais(field description)
+    # Formula para calculo da selic
+    # selic = Rate.objects.filter(code=4390).first()
+    # filling_date = data_inicial_do_juros
+    #
+    # data_rj = self._get_date_rj_request()
+    #
+    # accumulated = CalculeRate(filling_date=filling_date, data_rj=data_rj, rate_selic=selic,
+    #                           rate_used=rate).calcule()
+
     # Pode haver multas por atraso de pagamento. Nesse caso a nota fiscal estabelece um valor personalizado
     fine = models.FloatField(_('Fine'), default=0)
     has_custom_fine = models.BooleanField(_('Has custom fine invoices'), default=False)
@@ -120,6 +132,14 @@ class StatementDocument(AbstractStatement):
     def __str__(self):
         return f'{self.data_base} - {self.historical_value}'
 
+    @property
+    def name(self):
+        return self.fund.name
+
+    @property
+    def monetary_correction(self):
+        return self.get_monetary_correction()
+
     def has_tax(self):
         """Return True if this statement has tax; False otherwise."""
         data_base = self.get_data_base()
@@ -154,6 +174,10 @@ class StatementDocument(AbstractStatement):
                 return 0
             return self.__days360(data_base, date_rj)
         return 0
+
+    @property
+    def total_days(self) -> int:
+        return self.days
 
     @staticmethod
     def _calc_default_interest(corrected_value, default_interest, days) -> float:
@@ -413,3 +437,24 @@ def save_statement_documents(sender, instance, **kwargs) -> None:
     ExtractFormula(instance, instance.fund.calculation, statement_methods).get_methods(
         [StatementDocument, MonetaryCorrectionDocument, Rate, TotalValuesDocument, save_statement_documents])
     instance.fund.calculation.invalidate_calculation()
+
+
+@receiver(update_calc, sender=Calculation)
+def updated_calculation(sender, instance, **kwargs):
+    """
+    Signal handler for the update_calc event of a Calculation instance.
+
+    Args:
+    - sender: The model class that sent the signal (Calculation in this case).
+    - instance (Calculation): The instance of Calculation that triggered the signal.
+    - kwargs: Additional keyword arguments.
+    """
+
+    statements = StatementDocument.objects.filter(fund__calculation=instance)
+
+    for statement in statements:
+        statement.calcule_monetary_correction()
+
+    total_funds = TotalValuesDocument.objects.filter(fund__calculation=instance)
+    for total in total_funds:
+        total.set_total()

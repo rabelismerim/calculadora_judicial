@@ -8,6 +8,10 @@ from django.db.models import Q
 from django.db.models.signals import pre_save, pre_delete
 from django.forms import model_to_dict
 
+from django.db.transaction import TransactionManagementError
+from django.db.utils import DataError, ProgrammingError
+from django.db import DataError as DateErr
+
 from utils import get_user_model, _
 
 User = get_user_model()
@@ -101,8 +105,8 @@ class UpdateUser(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     field_changed = models.CharField(_('Field changed'), max_length=100, null=True)
     field_changed_display = models.CharField(_('Field changed display'), max_length=100, null=True)
-    current_value = models.CharField(_('Current value'), max_length=400, null=True)
-    previous_value = models.CharField(_('Previous value '), max_length=400, null=True)
+    current_value = models.TextField(_('Valor atual'), max_length=4000, null=True, editable=False)
+    previous_value = models.TextField(_('Valor anterior'), max_length=4000, null=True, editable=False)
     create_user = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
 
     object_id = models.UUIDField()  # uuid AbstractModel
@@ -132,9 +136,20 @@ def save_obj(sender, **kwargs):
                 choices = dict(new_field.choices)
                 previous_value = choices.get(previous_value, previous_value)
                 current_value = choices.get(current_value, current_value)
-            UpdateUser.objects.create(field_changed=field, field_changed_display=new_field.verbose_name,
-                                      previous_value=previous_value, current_value=current_value,
-                                      create_user_id=user_id, object_id=instance.id, content_object=instance)
+            try:
+                if current_value:
+                    current_value = str(current_value)[:3999]
+                if previous_value:
+                    previous_value = str(previous_value)[:3999]
+
+                if current_value == previous_value:
+                    return
+                UpdateUser.objects.create(field_changed=field, field_changed_display=new_field.verbose_name,
+                                          previous_value=previous_value, current_value=current_value,
+                                          create_user_id=user_id, object_id=instance.id, content_object=instance)
+
+            except (ValueError, DataError, TransactionManagementError, AttributeError, DateErr, ProgrammingError):
+                pass
 
     if hasattr(instance, 'create_user'):
         if instance.create_user is None:

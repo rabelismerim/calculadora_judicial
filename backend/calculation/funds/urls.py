@@ -26,5 +26,6 @@ urlpatterns = [
     path('labor/detail/<uuid:id>/', StatementFundsDetailApi.as_view(), name="statement-funds-detail"),
     path(f'labor/integrations/', include("calculation.funds.integrations.urls")),
     path(f'documents/', include("calculation.funds.document.urls")),
+    path(f'danos/', include("calculation.funds.danos.urls")),
     path(f'irrf/', include("calculation.funds.irrf.urls")),
 ]

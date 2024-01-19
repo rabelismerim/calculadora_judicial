@@ -18,7 +18,7 @@ from apps.schedule.views import SCHEDULER
 from rates.commands import AutomaticUpdateRates, SetAccumulated
 from rates.models import Accumulated, Period, Rate, RateValues, RateFile, IndiceIRRF, Template, TemplateRate, \
     TemplateField, TemplateMainField, TemplateMainSummaryField, TemplateSummaryField, TemplateMainFieldDefault, \
-    TemplateFieldDefault, Source, Unit, ClasseTemplate
+    TemplateFieldDefault, Source, Unit, ClasseTemplate, TemplateFieldChoices, TemplateMainFieldChoices
 from utils import parse_job_id, _
 
 admin.site.register(Accumulated)
@@ -34,6 +34,8 @@ admin.site.register(TemplateFieldDefault)
 admin.site.register(TemplateMainFieldDefault)
 admin.site.register(TemplateMainSummaryField)
 admin.site.register(ClasseTemplate)
+admin.site.register(TemplateFieldChoices)
+admin.site.register(TemplateMainFieldChoices)
 
 
 @admin.register(TemplateMainField)

@@ -14,7 +14,7 @@ from core.entity.schemas import EntitySchema
 from creditors.classes.models import CLASSE_CHOICES
 from creditors.models import Creditor, CHOICES_STATUS_LEGAL, LegalPendencies
 from creditors.notice.schemas import NoticeSchema, NoticeRecoveringSchema
-from rates.models import TYPE_CHOICES
+from rates.models import FieldTypeChoices
 from recovering.models import Recovering
 from utils import _
 
@@ -133,7 +133,7 @@ class CreditorCreateSchema(serializers.Serializer):
 
     classes_options = AbstractChoicesSerializer(CLASSE_CHOICES, many=True)
     coin_options = AbstractChoicesSerializer(COIN_CHOICES, many=True)
-    template_type_options = AbstractChoicesSerializer(TYPE_CHOICES, many=True)
+    template_type_options = AbstractChoicesSerializer(FieldTypeChoices.choices, many=True)
     roles_options = AbstractChoicesSerializer(ROLES_CHOICES, many=True)
     user_status_options = AbstractChoicesSerializer(STATUS_CHOICES, many=True)
     status_funds_options = AbstractChoicesSerializer(CHOICES_STATUS_FUND, many=True)

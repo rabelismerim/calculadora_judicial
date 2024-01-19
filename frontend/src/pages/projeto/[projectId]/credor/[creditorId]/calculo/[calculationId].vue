@@ -5,6 +5,7 @@ const { dialog } = useQuasar()
 const { hasPermissions, login } = $user
 
 let loading = $ref(false)
+const showUpdateCalculation = $ref(false)
 
 const menu = $ref('project')
 const tab = $ref('cred')
@@ -55,6 +56,7 @@ const loadOptions = async () => {
   }
   result.steps = steps
   result.users = users
+  result.ocurrences = result.occurrenceOptions ?? []
   options = result
 }
 
@@ -91,7 +93,7 @@ const loadCalculation = async (showLoading = false) => {
     .map((credit: any) => {
       credit.tables = credit?.template?.tables.map(({ fields, description, endPoint, id, many, summary }: any) => {
         const columns = fields
-          ?.map(({ id, isEditable, key, decimals, label, order, required, typeDisplay, default: defaultValue }: any) =>
+          ?.map(({ id, isEditable, key, decimals, label, order, required, typeDisplay, default: defaultValue, choices }: any) =>
             ({
               id,
               isEditable,
@@ -105,6 +107,7 @@ const loadCalculation = async (showLoading = false) => {
               sortable: ['float', 'integer', 'date'].includes(typeDisplay),
               type: typeDisplay,
               align: (isEditable && typeDisplay !== 'boolean') ? 'left' : 'center',
+              choices,
             }))
           .sort(({ order: orderA }: any, { order: orderB }: any) => orderA < orderB ? -1 : 1)
         if (many) {
@@ -119,6 +122,8 @@ const loadCalculation = async (showLoading = false) => {
       credit.summary = credit?.template?.summary
       return credit
     })
+  result.incidentId = result?.incident?.id
+  result.rateId = result?.rate?.id
   calculation = result
   if (showLoading)
     loading = false
@@ -394,6 +399,12 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
       @reload-click="loadCalculation(true)"
     >
       <Btn
+        label="Editar Cálculo"
+        outlined
+        :disabled="!calculation?.id"
+        @click="showUpdateCalculation = true"
+      />
+      <Btn
         label="Alterar Status"
         outlined
         :disabled="!calculation?.id"
@@ -455,7 +466,7 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
             v-for="(credit, creditIndex) in calculation?.credits as any[]"
             :key="creditIndex"
             v-model="credit.isOpen"
-            :title="`Crédito ${credit?.template?.name} - ${credit?.rate?.index}`"
+            :title="`Crédito ${credit?.template?.name}`"
             :subtitle="credit.name"
             class="rounded-0"
             @open="openCredit(credit)"
@@ -562,6 +573,17 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
                             :disable="['A', 'B'].includes(calculation?.step)"
                             @update:model-value="(value: any) => { if (column.type === 'integer') (props.row[column.field] = Math.round(value)) }"
                             @paste.prevent="onPaste($event, table.values, column.field, column.type, props.rowIndex)"
+                          />
+                          <QSelect
+                            v-else-if="column.type === 'choice'"
+                            v-model="props.row[column.field]"
+                            :options="column.choices"
+                            option-label="legend"
+                            option-value="id"
+                            emit-value
+                            map-options
+                            outlined
+                            dense
                           />
                           <InputDate
                             v-else-if="column.type === 'date'"
@@ -671,6 +693,13 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
     </QTabPanels>
 
     <template #out>
+      <SetCalculation
+        v-model:open="showUpdateCalculation"
+        :options="options"
+        :creditor-id="attrs.creditorId"
+        :calculation="calculation"
+        @success="loadCalculation"
+      />
       <ChangeStatus
         v-model="showChangeStatus"
         :history="history"
