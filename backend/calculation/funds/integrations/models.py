@@ -6,13 +6,15 @@ to add specific fields as needed.
 """
 
 from django.db import models
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
 from base.views import ExtractFormula
-from calculation.comparative.signals import gen_statement_integrations
+from calculation.comparative.signals import gen_statement_integrations, update_calc
 from calculation.funds.abstract.models import AbstractStatement, AbstractMonetaryCorrection, \
     AbstractTotalValuesFunds
+from calculation.models import Calculation
 from rates.models import Rate
 
 
@@ -51,6 +53,10 @@ class StatementIntegrations(AbstractStatement):
     def has_monetary_correction(self) -> bool:
         """Returns True if the monetary correction exists for the statement."""
         return hasattr(self, 'monetarycorrectionintegrations')
+
+    @property
+    def monetary_correction(self):
+        return self.get_monetary_correction()
 
     def get_monetary_correction(self):
         """Returns the `monetarycorrection` attribute value"""
@@ -184,3 +190,22 @@ def save_rate_integrations(sender, instance, **kwargs) -> None:
          save_rate_integrations])
 
     instance.fund.calculation.invalidate_calculation()
+
+
+@receiver(update_calc, sender=Calculation)
+def updated_calculation(sender, instance, **kwargs):
+    """
+    Signal handler for the update_calc event of a Calculation instance.
+
+    Args:
+    - sender: The model class that sent the signal (Calculation in this case).
+    - instance (Calculation): The instance of Calculation that triggered the signal.
+    - kwargs: Additional keyword arguments.
+    """
+    statements = StatementIntegrations.objects.filter(fund__calculation=instance)
+    for statement in statements:
+        statement.calcule_monetary_correction()
+
+    total_funds = TotalValuesFundsIntegrations.objects.filter(fund__calculation=instance)
+    for total in total_funds:
+        total.set_total()

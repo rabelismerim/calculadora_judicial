@@ -158,6 +158,9 @@ div {
 .q-field__control::before {
   background-color: #fff;
 }
+.q-field .q-field__control {
+  height: 100%;
+}
 
 .skeleton-box, tr:has(.is-loading) {
   background-color: hsla(var(--primary,0,0%,0%),0.10);

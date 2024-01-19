@@ -10,14 +10,16 @@ StatementIntegrations extends AbstractStatement and includes a description field
 """
 from django.db import models
 from django.db.models import FloatField, signals
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
 from base.views import ExtractFormula
-from calculation.comparative.signals import gen_statement_funds, gen_total_funds
+from calculation.comparative.signals import gen_statement_funds, gen_total_funds, update_calc
 from calculation.funds.abstract.models import AbstractFunds, AbstractStatement, AbstractMonetaryCorrection, \
     AbstractTotalValuesFunds
 from calculation.funds.integrations.models import TotalValuesFundsIntegrations
+from calculation.models import Calculation
 from rates.models import Rate
 
 
@@ -93,6 +95,18 @@ class Funds(AbstractFunds):
         """
         total_funds = self.get_total_funds()
         total_funds.set_total()
+
+    def get_total_values_funds(self):
+        """
+        This method returns the TotalValuesFunds object associated with the current fund object, if exists.
+        """
+        return getattr(self, 'totalvaluesfunds', None)
+
+    def get_total_values_funds_integrations(self):
+        """
+        This method returns the TotalValuesFundsIntegrations object associated with the current fund object, if exists.
+        """
+        return getattr(self, 'totalvaluesfundsintegrations', None)
 
     def gen_total_integrations(self):
         """
@@ -184,7 +198,7 @@ class StatementFunds(AbstractStatement):
         # TODO: check if template has option dsr_reflexes checked
         return self.historical_value + self.dsr_reflexes
 
-    def get_dsr_reflexes(self) -> FloatField:
+    def get_dsr_reflexes(self) -> float:
         """Returns the `dsr_reflexes` attribute value"""
         return self.dsr_reflexes
 
@@ -353,3 +367,24 @@ def save_total_funds(sender, instance, **kwargs) -> None:
     instance.gen_total_integrations()
 
     instance.calculation.invalidate_calculation()
+
+
+@receiver(update_calc, sender=Calculation)
+def updated_calculation(sender, instance, **kwargs):
+    """
+    Signal handler for the update_calc event of a Calculation instance.
+
+    Args:
+    - sender: The model class that sent the signal (Calculation in this case).
+    - instance (Calculation): The instance of Calculation that triggered the signal.
+    - kwargs: Additional keyword arguments.
+    """
+
+    statements = StatementFunds.objects.filter(fund__calculation=instance)
+
+    for statement in statements:
+        statement.calcule_monetary_correction()
+
+    total_funds = TotalValuesFunds.objects.filter(fund__calculation=instance)
+    for total in total_funds:
+        total.set_total()
