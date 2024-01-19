@@ -50,6 +50,7 @@ const loadRates = async () => {
 
 let incidents: any[] = $ref([])
 const addIncident = async (incidentNumber: string) => {
+  loading = true
   try {
     const result: any = await calculationService.newIncident(incidentNumber)
     const { id, number } = result
@@ -57,6 +58,9 @@ const addIncident = async (incidentNumber: string) => {
   }
   catch (error) {
     printError('ERROR ON LOAD INCIDENSTS:', error)
+  }
+  finally {
+    loading = false
   }
 }
 const loadIncidents = async () => {
@@ -76,6 +80,7 @@ onMounted(() => {
 
 <template>
   <Modal
+    :loading="loading"
     :model-value="open"
     :title="`${localCalculation.id ? 'Editar' : 'Criar'} um Novo Cálculo`"
     hint="Para criar um cálculo é preciso escolher um incidente."
@@ -93,7 +98,7 @@ onMounted(() => {
           label="Número de Incidente"
           :to-add="addIncident"
           :rules="[(value: any) => !!value || 'É um campo obrigatório']"
-          :disable="loading || localCalculation.id"
+          :disabled="loading || localCalculation.id"
           class="col-span-4"
         />
         <QSelect
