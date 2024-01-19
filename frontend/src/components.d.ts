@@ -62,6 +62,7 @@ declare module '@vue/runtime-core' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SearchFilter: typeof import('./components/inputs/SearchFilter.vue')['default']
+    SetCalculation: typeof import('./components/calculation/SetCalculation.vue')['default']
     Spinner: typeof import('./components/common/Spinner.vue')['default']
     StatusTag: typeof import('./components/common/StatusTag.vue')['default']
     TabFilter: typeof import('./components/common/TabFilter.vue')['default']

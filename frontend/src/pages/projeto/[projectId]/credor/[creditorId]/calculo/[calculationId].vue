@@ -5,6 +5,7 @@ const { dialog } = useQuasar()
 const { hasPermissions, login } = $user
 
 let loading = $ref(false)
+const showUpdateCalculation = $ref(false)
 
 const menu = $ref('project')
 const tab = $ref('cred')
@@ -55,6 +56,7 @@ const loadOptions = async () => {
   }
   result.steps = steps
   result.users = users
+  result.ocurrences = result.occurrenceOptions ?? []
   options = result
 }
 
@@ -120,6 +122,8 @@ const loadCalculation = async (showLoading = false) => {
       credit.summary = credit?.template?.summary
       return credit
     })
+  result.incidentId = result?.incident?.id
+  result.rateId = result?.rate?.id
   calculation = result
   if (showLoading)
     loading = false
@@ -395,6 +399,12 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
       @reload-click="loadCalculation(true)"
     >
       <Btn
+        label="Editar Cálculo"
+        outlined
+        :disabled="!calculation?.id"
+        @click="showUpdateCalculation = true"
+      />
+      <Btn
         label="Alterar Status"
         outlined
         :disabled="!calculation?.id"
@@ -456,7 +466,7 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
             v-for="(credit, creditIndex) in calculation?.credits as any[]"
             :key="creditIndex"
             v-model="credit.isOpen"
-            :title="`Crédito ${credit?.template?.name} - ${credit?.rate?.index}`"
+            :title="`Crédito ${credit?.template?.name}`"
             :subtitle="credit.name"
             class="rounded-0"
             @open="openCredit(credit)"
@@ -683,6 +693,13 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
     </QTabPanels>
 
     <template #out>
+      <SetCalculation
+        v-model:open="showUpdateCalculation"
+        :options="options"
+        :creditor-id="attrs.creditorId"
+        :calculation="calculation"
+        @success="loadCalculation"
+      />
       <ChangeStatus
         v-model="showChangeStatus"
         :history="history"

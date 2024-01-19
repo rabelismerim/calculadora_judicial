@@ -145,19 +145,6 @@ onMounted(async () => {
           :disable="loading"
           dense
         />
-        <QSelect
-          v-model="newCredit.rateId"
-          :options="rates"
-          label="Taxa"
-          outlined
-          emit-value
-          map-options
-          option-value="id"
-          option-label="index"
-          :disable="loading"
-          :rules="[(value: string) => !!value || 'Este Campo é obrigatório!']"
-          dense
-        />
         <div v-for="field in newCredit?.fields as any[]" :key="field.id">
           <QInput
             v-if="field.type === 'text'"
