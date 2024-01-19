@@ -5,6 +5,7 @@ const { dialog } = useQuasar()
 const { hasPermissions, login } = $user
 
 let loading = $ref(false)
+const showUpdateCalculation = $ref(false)
 
 const menu = $ref('project')
 const tab = $ref('cred')
@@ -55,6 +56,7 @@ const loadOptions = async () => {
   }
   result.steps = steps
   result.users = users
+  result.ocurrences = result.occurrenceOptions ?? []
   options = result
 }
 
@@ -395,6 +397,12 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
       @reload-click="loadCalculation(true)"
     >
       <Btn
+        label="Editar Cálculo"
+        outlined
+        :disabled="!calculation?.id"
+        @click="showUpdateCalculation = true"
+      />
+      <Btn
         label="Alterar Status"
         outlined
         :disabled="!calculation?.id"
@@ -683,6 +691,12 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
     </QTabPanels>
 
     <template #out>
+      <SetCalculation
+        v-model:open="showUpdateCalculation"
+        :options="options"
+        :creditor-id="attrs.creditorId"
+        :calculation="calculation"
+      />
       <ChangeStatus
         v-model="showChangeStatus"
         :history="history"
