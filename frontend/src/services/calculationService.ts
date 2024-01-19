@@ -8,7 +8,7 @@ const getCalculations = (creditorId: string) => api
 
 const setCalculation = async (calculation: any) => {
   const method = calculation?.id ? 'put' : 'post'
-  return api[method]('/v1/calculation/', calculation)
+  return api[method](`/v1/calculation/${`${calculation.id}/` ?? ''}`, calculation)
     .then((result: any) => result?.calculation)
 }
 
