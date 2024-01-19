@@ -28,7 +28,10 @@ const submit = async () => {
   loading = true
   try {
     const { id } = await calculationService.setCalculation(localCalculation)
+    if (props.calculation?.id && id)
+      notify({ message: 'Cálculo editado com sucesso!' })
     emit('success', id)
+    emit('update:open', false)
   }
   catch (error) {
     printError('ERROR ON SET CALCULATION:', error)
@@ -91,14 +94,14 @@ onMounted(() => {
       ref="calculationForm"
       @submit="submit"
     >
-      <div class="px-4 grid grid-cols-6 gap-x-4">
+      <div class="px-4 pt-4 grid grid-cols-6 gap-x-4">
         <InputSelect
           v-model="localCalculation.incidentId"
           v-model:options="incidents"
           label="Número de Incidente"
           :to-add="addIncident"
           :rules="[(value: any) => !!value || 'É um campo obrigatório']"
-          :disabled="loading || localCalculation.id"
+          :disabled="loading || !!localCalculation.id"
           class="col-span-4"
         />
         <QSelect
@@ -223,7 +226,7 @@ onMounted(() => {
           <div class="font-bold color-gray-8 text-md">Fase do Cálculo</div>
           <BtnToggle
             v-model="localCalculation.isAdm"
-            :disabled="localCalculation.id"
+            :disabled="!!localCalculation.id"
             class="bg--base flex-1"
             :items="[
               { label: 'Administrativa', value: true },

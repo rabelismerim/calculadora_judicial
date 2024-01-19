@@ -122,6 +122,8 @@ const loadCalculation = async (showLoading = false) => {
       credit.summary = credit?.template?.summary
       return credit
     })
+  result.incidentId = result?.incident?.id
+  result.rateId = result?.rate?.id
   calculation = result
   if (showLoading)
     loading = false
@@ -696,6 +698,7 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
         :options="options"
         :creditor-id="attrs.creditorId"
         :calculation="calculation"
+        @success="loadCalculation"
       />
       <ChangeStatus
         v-model="showChangeStatus"
