@@ -120,7 +120,7 @@ class TotalValuesDocumentSchema(AbstractDescriptionSchema):
     """
     fund_id = serializers.UUIDField(read_only=True)
     data = StatementDocumentSchema(many=False, source='fund.statementdocument', exclude=('fund_id',), required=False)
-    total_days = serializers.IntegerField(read_only=True, source='fund.statementdocument.days')
+    total_days = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = TotalValuesDocument
@@ -154,7 +154,7 @@ class TotalValuesDocumentDetailSchema(AbstractDescriptionSchema):
     """
     fund_id = serializers.UUIDField(read_only=True)
     data = StatementDocumentSchema(many=False, source='fund.statementdocument', exclude=('fund_id',), required=False)
-    total_days = serializers.IntegerField(read_only=True, source='fund.statementdocument.days')
+    total_days = serializers.IntegerField(read_only=True)
     fund = FundDocumentDetailSchema(many=False)
 
     # def get_data(self, obj):

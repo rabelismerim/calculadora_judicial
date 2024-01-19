@@ -42,13 +42,18 @@ class AbstractFunds(AbstractCredit):
     def __str__(self):
         return self.name
 
+    @property
+    def monetary_correction(self):
+        return getattr(self, 'monetarycorrection', None)
+
     def get_rate(self):
         """
         Get the index that will be used in the calculation. If there is no unique index, the default index defined
         in the creditor is taken.
         """
-        if self.rate:
-            return self.rate
+        # Removido da verba e mantido apenas um no cálculo
+        # if self.rate:
+        #     return self.rate
         return self.calculation.get_rate()
 
 
@@ -173,6 +178,17 @@ class AbstractStatement(AbstractStatus):
     fund = models.ForeignKey('funds.Funds', on_delete=models.PROTECT)
     is_extraconcursal = models.BooleanField(_('Is extraconcursal'), default=False)
 
+    @property
+    def monetary_correction(self):
+        return getattr(self, 'monetarycorrection', None)
+
+    @property
+    def status_display(self):
+        return self.get_status_display()
+
+    def check_is_extraconcursal(self) -> bool:
+        return True
+
     def _get_index_monetary_correction(self) -> dict or None:
         """Retrieves the monetary correction from a financial statement. It gets the calculation, data and rate
         information and then validates the date and rate. The index_data_base and index_recovering are returned as a
@@ -188,7 +204,9 @@ class AbstractStatement(AbstractStatus):
             statement.set_error_rj()
             return None
 
-        if date_rj and data_base >= date_rj:
+        is_extraconcursal = self.check_is_extraconcursal()
+
+        if date_rj and data_base >= date_rj and is_extraconcursal:
             if self.is_extraconcursal is False:
                 raise serializers.ValidationError(
                     [_('This is an extra-bankruptcy budget, it is necessary to flag the extra-bankruptcy budget')])
@@ -271,7 +289,9 @@ class AbstractStatement(AbstractStatus):
         """=IF($B$5<>"TST";"ERRO";VLOOKUP(DATE(YEAR($B$4);MONTH($B$4);DAY($B$4));TST!$A:$B;2;FALSE))"""
 
         data_base = self.get_data_base()
-        if date_rj_request and data_base >= date_rj_request:
+
+        is_extraconcursal = self.check_is_extraconcursal()
+        if (date_rj_request and data_base >= date_rj_request) and is_extraconcursal:
             if self.is_extraconcursal is False:
                 raise serializers.ValidationError(
                     [_('This is an extra-bankruptcy budget, it is necessary to flag the extra-bankruptcy budget')])
@@ -371,7 +391,7 @@ class AbstractTotalValuesFunds(AbstractModel):
             for description in self.fundsdescription_set.all():
                 statement_pf = description.statement_pf
                 description.delete()
-                if not statement_pf.id in statement_pfs_ids:
+                if statement_pf.id not in statement_pfs_ids:
                     statement_pfs.append(statement_pf)
                     statement_pfs_ids.append(statement_pf.id)
 

@@ -4,6 +4,7 @@ Inherits from AbstractModel, which provides common fields such as id, created_at
 and updated_at. Does not add any additional fields, so should be subclassed
 to add specific fields as needed.
 """
+import json
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -11,6 +12,7 @@ from config.settings import TEMPLATE_FILE_TYPES
 from core.abstract.models import AbstractModel
 import pandas as pd
 from rest_framework import serializers
+
 
 class SheetsTemplate(AbstractModel):
     """
@@ -34,8 +36,12 @@ class SheetsTemplate(AbstractModel):
         file_type = self.file.name.split('.')[-1]
         if file_type not in TEMPLATE_FILE_TYPES:
             raise serializers.ValidationError([_('Invalid file type')])
-        self.value = str(pd.read_excel(self.file.open()))
-        super(SheetsTemplate, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
+
+        excel_data = pd.read_excel(self.file)
+        json_data = excel_data.to_json(orient='records')
+        self.value = json_data
+        super().save(*args, **kwargs)
 
     @property
     def filename(self):
@@ -44,4 +50,3 @@ class SheetsTemplate(AbstractModel):
     @property
     def index(self):
         return self.name.index
-

@@ -87,6 +87,7 @@ class Calculation(AbstractModel):
     # TODO verificar se essas premissas variam de calculo para calculo, ou pode ser relacionado ao credor
     # Statement N5 - Crédito inteiramente concursal? TODO analisar se as verbas adicionadas são concursal e alterar
     #  automaticamente
+    # TODO: Remover de edição, automatizar calculo para obter os creditos, e ver se algum credito tem a flag is_extraconcursal
     appeal_credit = models.BooleanField(_('Fully competitive credit?'), default=False)
     # Statement Q5 - Data do calculo homologado
     date_approved_calculation = models.DateField(_('Approved calculation date'), null=True)
@@ -166,6 +167,7 @@ class Calculation(AbstractModel):
             number__isnull=True).count()
 
     def save(self, *args, **kwargs):
+        get_statement = self.get_statement()
         super(Calculation, self).save(*args, **kwargs)
 
         if not self.rate:
@@ -173,8 +175,14 @@ class Calculation(AbstractModel):
 
         if not self.id or not self.number:
             self.number = self._get_number()
-            if not self.id:
-                new_calc.send(sender=self.__class__, instance=self)
+        if not get_statement:
+            self.create_statement()
+
+    def create_statement(self):
+        try:
+            new_calc.send(sender=self.__class__, instance=self)
+        except:
+            pass
 
     def get_rate(self) -> Rate:
         """
@@ -605,7 +613,7 @@ class Calculation(AbstractModel):
             classes_list.append(obj)
             classes_list_included.append(class_name)
         for key, value in CLASSE_CHOICES:
-            if not key in classes_list_included:
+            if key not in classes_list_included:
                 obj = {'classe': key, 'classes_display': value,
                        'total_value': 0, 'total_calculated': 0,
                        'percentage_value': 0,
@@ -654,6 +662,10 @@ class Calculation(AbstractModel):
                      'total_historical': 0} for fund in
                     self.fundirrf_set.filter(classes__classe__isnull=False)]
 
+        classes += [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
+                     'total_calculated': fund.get_total_summed(),
+                     'total_historical': fund.get_total_historical_summed(), } for fund in
+                    self.funddanos_set.filter(classes__classe__isnull=False)]
         total = 0
         total_historical = 0
         count = len(classes)
@@ -680,13 +692,10 @@ class Calculation(AbstractModel):
 
     def get_rj_filling(self):
         """:return: 'date_rj_filing' from calculation"""
-        # TODO: remover  self.creditor.recovering.project.date_rj_filing após o front começar a enviar a data de
-        #  date_rj_filing ao gerar um cálculo
-        return self.date_rj_filing or self.creditor.recovering.project.date_rj_filing
+        return self.date_rj_filing
 
     def get_date_citation(self) -> datetime.date or None:
         """:return: 'date_citation' from calculation"""
-
         return self.date_citation
 
     def get_date_rj_request(self) -> datetime.date or None:
@@ -721,8 +730,7 @@ class Calculation(AbstractModel):
             - The statement attribute of the object, if it exists.
             - None, otherwise.
         """
-        if hasattr(self, 'statement'):
-            return self.statement
+        return getattr(self, 'statement', None)
 
     def is_agreement(self) -> bool:
         """
@@ -742,6 +750,15 @@ class Calculation(AbstractModel):
             self.validated = False
             self.save()
             self.creditor.set_total()
+
+    def get_total_funds_danos(self) -> float:
+        """Add up the corrected amounts of the sums"""
+        total_corrected = 0
+
+        for fund in self.funddanos_set.all():
+            total_corrected += fund.get_total_due_summed()
+
+        return total_corrected
 
 
 class StepAction:

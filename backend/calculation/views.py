@@ -9,7 +9,7 @@ from calculation.funds.views import CreateFunds
 from calculation.models import Calculation, Incident
 from calculation.premise.views import PremiseCreator
 from calculation.schemas import CalculationSchema, IncidentSchema, ChangeStepSerializer, CalculationV2Schema, \
-    CalculationAllFundsSchema, CheckStepSerializer
+    CalculationAllFundsSchema, CheckStepSerializer, CalculationUpdateSchema
 from calculation.verdict.models import TypeCalculation, Verdict
 from core.abstract.views import AbstractViewApi
 from django.http import JsonResponse
@@ -84,8 +84,14 @@ class IncidentApi(AbstractViewApi):
 class CalculationDetailApi(AbstractCalculationApi):  # V1
     """A class for handling detail HTTP requests for a Calculation object
     HTTP methods for retrieving particular Calculation detail"""
-    http_method_names = ['get']
+    http_method_names = ['get', 'put']
     docs = docs.copy()
+
+    layout_serializers = {
+        'default': CalculationSchema,
+        'get': CalculationSchema,
+        'put': CalculationUpdateSchema,
+    }
 
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific Calculation using the
     given id from the query parameters and serializes the result into JSON format before returning it as
@@ -248,6 +254,8 @@ class CalculationApi(AbstractCalculationApi):
                 comparative.checks()
 
             PremiseCreator(calculation)
+
+            calculation.create_statement()
         return JsonResponse({'calculation': self.serializer_class(calculation, many=False).data},
                             status=status.HTTP_201_CREATED)
 

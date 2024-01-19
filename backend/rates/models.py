@@ -5,7 +5,7 @@ import json
 import pandas as pd
 from django.core.validators import MinLengthValidator
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, TextChoices
 from rest_framework.exceptions import ValidationError
 
 from apps.schedule.views import SCHEDULER
@@ -417,9 +417,18 @@ class Template(AbstractModel):
     """
     name = models.CharField(_('Rates'), max_length=150)
     end_point = models.CharField(_('End Point'), max_length=150, null=True)
+    rates = models.ManyToManyField(Rate, blank=True)
 
     def __str__(self):
         return self.name
+
+
+class TemplateSlugChoices(TextChoices):
+    FUNDS = 'F', 'Funds'
+    FUNDS_INTEGRATION = 'I', 'Funds Integration'
+    DOCUMENT = 'D', 'Document'
+    Danos = 'A', 'Danos'
+    IRRF = 'R', 'IRRF'
 
 
 class TemplateRate(AbstractModel):
@@ -438,19 +447,21 @@ class TemplateRate(AbstractModel):
     is_horizontal = models.BooleanField(_('Is Horizontal'), default=True)
     has_commit = models.BooleanField(_('Commit option'), default=True)
     many = models.BooleanField(_('Is Multiple?'))
+    slug = models.CharField(_('Slug'), max_length=1, choices=TemplateSlugChoices.choices,
+                            default=TemplateSlugChoices.FUNDS)
 
     def __str__(self):
         return f'{self.description} | {self.template.name}'
 
 
-TYPE_CHOICES = (
-    ('D', 'date'),
-    ('B', 'boolean'),
-    ('C', 'text'),
-    ('F', 'float'),
-    ('I', 'integer'),
-    ('T', 'datetime'),
-)
+class FieldTypeChoices(TextChoices):
+    DATE = 'D', 'date'
+    BOOLEAN = 'B', 'boolean'
+    TEXT = 'C', 'text'
+    FLOAT = 'F', 'float'
+    INTEGER = 'I', 'integer'
+    DATETIME = 'T', 'datetime'
+    CHOICES = 'H', 'choice'
 
 
 class AbstractTemplateField(AbstractModel):
@@ -465,15 +476,15 @@ class AbstractTemplateField(AbstractModel):
         is_editable (bool): Whether the field is editable.
         required (bool): Whether the field is required.
     """
-    label = models.CharField(_('Field name'), max_length=150)
+    label = models.CharField(_('Field name'), max_length=150, null=True, blank=True)
     key = models.CharField(_('Field key'), max_length=150, null=True, blank=True)
-    type = models.CharField(_('Field type'), choices=TYPE_CHOICES, max_length=1)
+    type = models.CharField(_('Field type'), choices=FieldTypeChoices.choices, max_length=1)
     order = models.PositiveIntegerField(_('Order'))
     is_editable = models.BooleanField(_('Is editable?'))
     required = models.BooleanField(_('Required?'))
 
     def __str__(self):
-        return self.label
+        return self.label or self.key or self.order
 
     def decimals(self) -> int:
         if self.type == 'F':
@@ -482,7 +493,7 @@ class AbstractTemplateField(AbstractModel):
         return 0
 
     class Meta:
-        ordering = ('created_at',)
+        ordering = ('order',)
 
 
 class TemplateMainField(AbstractTemplateField):
@@ -511,6 +522,11 @@ class TemplateMainField(AbstractTemplateField):
     def __str__(self):
         return f'{self.label} | {self.template.name}'
 
+    def choices(self):
+        choices = getattr(self, 'templatemainfieldchoices', None)
+        if choices:
+            return choices.choices
+
 
 class TemplateField(AbstractTemplateField):
     """
@@ -533,6 +549,11 @@ class TemplateField(AbstractTemplateField):
 
     def __str__(self):
         return f'{self.label} | {self.rate.description} | {self.rate.template.name}'
+
+    def choices(self):
+        choices = getattr(self, 'templatefieldchoices', None)
+        if choices:
+            return choices.choices
 
 
 class AbstractDefault(AbstractModel):
@@ -580,6 +601,28 @@ class TemplateFieldDefault(AbstractDefault):
     field = models.OneToOneField(TemplateField, on_delete=models.CASCADE)
 
 
+class TemplateMainFieldChoices(AbstractModel):
+    """
+    This class represents the fields for a template main.
+
+    Attributes:
+        field (TemplateField): The TemplateField the field belongs to.
+    """
+    field = models.OneToOneField(TemplateMainField, on_delete=models.CASCADE)
+    choices = models.JSONField()
+
+
+class TemplateFieldChoices(AbstractModel):
+    """
+    This class represents the fields for a template main.
+
+    Attributes:
+        field (TemplateField): The TemplateField the field belongs to.
+    """
+    field = models.OneToOneField(TemplateField, on_delete=models.CASCADE)
+    choices = models.JSONField()
+
+
 class TemplateMainSummaryField(AbstractTemplateField):
     """
     This class represents the fields for a template in table
@@ -615,7 +658,7 @@ class TemplateSummaryField(AbstractTemplateField):
     rate = models.ForeignKey(TemplateRate, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return f'{self.label} | {self.rate.description} | {self.rate.template.name}'
+        return self.label or self.key or self.order
 
 
 class CalculeRate:

@@ -177,6 +177,7 @@ INSTALLED_APPS = [
     'calculation.funds.document',  # Verbas documento
     'calculation.funds.integrations',  # Verbas Integratórias
     'calculation.funds.irrf',  # Verbas IRRF
+    'calculation.funds.danos',  # Verbas danos
     'calculation.sheets_template',  # Templates Planilhas Excel
 
     # Rate - Índice
@@ -366,6 +367,9 @@ if BRANCH_DEV or 'test' in sys.argv:
                     'ENGINE': 'django.db.backends.sqlite3',
                     'NAME': ':memory:',
                     'MIRROR': 'default',
+                    'OPTIONS': {
+                        'timeout': 40,  # Define o timeout em segundos (exemplo: 40 segundos)
+                    },
                 },
             }
 
@@ -414,6 +418,9 @@ if BRANCH_DEV or 'test' in sys.argv:
                     'NAME': BASE_DIR / 'db.sqlite3',
                     'TEST': {
                         'MIRROR': 'default',
+                    },
+                    'OPTIONS': {
+                        'timeout': 60,  # Define o timeout em segundos (exemplo: 40 segundos)
                     },
                 }
             }
@@ -516,8 +523,6 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
-if DEBUG is False:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'var/static_root/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

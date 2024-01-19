@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from core.entity.models import Entity
 from rates.models import Rate
@@ -60,7 +62,7 @@ class Creditor(AbstractDateCreditor):
         validated_calculations = self.calculation_set.filter(id__in=calculations, validated=False,
                                                              step='A').values_list('id', flat=True)
         validated = list(validated_calculations)
-        validated_calculations.update(validated=True)
+        validated_calculations.update(validated=True, date_approved_calculation=datetime.datetime.now())
         self.set_total()
 
         return invalidated, validated

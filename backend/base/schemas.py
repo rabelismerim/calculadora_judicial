@@ -49,7 +49,7 @@ class AbstractDescriptionSchema(serializers.ModelSerializer, AbstractModelSchema
     def get_extra_kwargs(self):
         extra_kwargs = super().get_extra_kwargs()
         for field_name in self.non_required_fields:
-            if not field_name in extra_kwargs:
+            if field_name not in extra_kwargs:
                 extra_kwargs[field_name] = {'required': False}
             else:
                 extra_kwargs[field_name]['required'] = False
