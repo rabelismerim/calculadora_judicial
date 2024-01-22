@@ -326,7 +326,8 @@ onMounted(async () => {
         v-model:open="newCalculation.show"
         :options="options"
         :creditor-id="newCalculation.creditorId"
-        @success="({ creditorId, id }: any) => openCalculation(creditorId, id)"
+        :project-id="attrs.projectId"
+        @success="(id : string) => openCalculation(newCalculation.creditorId, id)"
       />
     </template>
   </Page>

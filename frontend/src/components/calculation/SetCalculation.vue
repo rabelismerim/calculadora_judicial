@@ -4,6 +4,7 @@ const props = withDefaults(defineProps<{
   options: any
   calculation?: any
   creditorId?: string
+  projectId?: string
 }>(), {
 
 })
@@ -27,7 +28,7 @@ watchEffect(() => {
 const submit = async () => {
   loading = true
   try {
-    const { id } = await calculationService.setCalculation(localCalculation)
+    const { id } = await calculationService.setCalculation({ ...localCalculation, creditorId: props.creditorId })
     if (props.calculation?.id && id)
       notify({ message: 'Cálculo editado com sucesso!' })
     emit('success', id)
@@ -85,7 +86,7 @@ onMounted(() => {
   <Modal
     :loading="loading"
     :model-value="open"
-    :title="`${localCalculation.id ? 'Editar' : 'Criar'} um Novo Cálculo`"
+    :title="`${localCalculation.id ? 'Edição do' : 'Criar um novo'} Cálculo`"
     hint="Para criar um cálculo é preciso escolher um incidente."
     modal-class="max-w-200"
     @close="close"
