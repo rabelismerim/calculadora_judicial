@@ -86,7 +86,7 @@ onMounted(() => {
   <Modal
     :loading="loading"
     :model-value="open"
-    :title="`${localCalculation.id ? 'Editar' : 'Criar'} um Novo Cálculo`"
+    :title="`${localCalculation.id ? 'Edição do' : 'Criar um novo'} Cálculo`"
     hint="Para criar um cálculo é preciso escolher um incidente."
     modal-class="max-w-200"
     @close="close"
