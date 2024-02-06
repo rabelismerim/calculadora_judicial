@@ -279,10 +279,20 @@ class StatementFundsDanosListApi(AbstractFundDanosApi):
         with transaction.atomic():
             id_ = kwargs.get('fund_id')
             serializer = self.get_serializer_class()
+
             serializer = serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
-            data_obj = dict(serializer.validated_data)
+            data_obj = serializer.validated_data
+
+            fund_fields = ['interest_initial_date', 'apply_monetary_correction', 'type_interest']
+            fund_items = {}
+            for item in fund_fields:
+                item_value = data_obj.pop(item, None)
+                if item_value:
+                    fund_items[item] = item_value
             obj = get_object_or_404(StatementDanos, fund_id=id_)
+            fund = obj.fund
+            fund.dict_update(**fund_items)
             obj.dict_update(**data_obj)
         funds_data = self.get_total_response(request, *args, **kwargs)
         return JsonResponse({'fund': funds_data.get('data')[0]})

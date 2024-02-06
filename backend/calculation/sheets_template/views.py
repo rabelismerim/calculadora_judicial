@@ -22,8 +22,8 @@ from rest_framework import permissions
 from utils import _, doc
 from xlsx2html import xlsx2html
 
-config = pdfkit.configuration(
-    wkhtmltopdf="C:\Program Files\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
+# config = pdfkit.configuration(
+#     wkhtmltopdf="C:\Program Files\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
 
 gray_fill = PatternFill(start_color="00C0C0C0",
                         end_color="00C0C0C0", fill_type="solid")
@@ -331,11 +331,11 @@ class SheetExcel:
         self.archive_view = xl.load_workbook(
             self.sheet_template.file, read_only=False)
         self.new_name_view = self.new_archive(
-            "uploads/"
+            "media/"
             + self.sheet_template_name.replace(".XLSX", "-VIEW.XLSX")
         )
         self.new_name_pdf = self.new_archive(
-            "uploads/"
+            "media/"
             + self.sheet_template_name.replace(".XLSX", ".PDF")
         )
 
@@ -442,12 +442,11 @@ class SheetExcel:
 
         statement = getattr(self.calculation, 'statement', None)
 
-        print(statement, 'statement\n')
         if not statement:
             return
 
         statement_pf = self.calculation.statement.get_statement_pf()
-        print(statement_pf, 'statement_pf\n')
+
         if statement_pf:
             set_sheet_value(sheet, cnt_ini_row, ['A', 'B'],
                             self.calculation.statement.statementpf.get_description_display(),
@@ -497,6 +496,15 @@ class SheetExcel:
                                      fund.get_total_default_interest())
                     cnt_ini_row += 1
 
+                    set_sheet_value(sheet, cnt_ini_row, ['A', 'B'], f'Juros Danos {statement_fund.description}',
+                                    force=True)
+                    set_sheet_number(sheet, cnt_ini_row, 'C', fund.get_total_total_default_interest())
+                    cnt_ini_row += 1
+
+                    set_sheet_value(sheet, cnt_ini_row, ['A', 'B'], f'Total Danos{statement_fund.description}',
+                                    force=True)
+                    set_sheet_number(sheet, cnt_ini_row, 'C', fund.get_total_due_summed())
+                    cnt_ini_row += 1
             default_interest_or_due = statement_pf.get_default_interest_due()
             if default_interest_or_due:
                 set_sheet_value(sheet, cnt_ini_row, ['A', 'B'],
@@ -612,6 +620,25 @@ class SheetExcel:
             count += 1
             has_headers = True
 
+    def set_additional_sentence(self, sheet, col, cnt_ini_row, let_ini_col):
+        """
+        Define fórmulas relacionadas a honorários advocatícios em uma planilha, de forma vertical.
+
+        Args:
+        - sheet: A planilha na qual as fórmulas serão aplicadas.
+        - col: A coluna na planilha onde as fórmulas serão aplicadas.
+        - cnt_ini_row: A linha inicial na qual as fórmulas serão aplicadas.
+        - let_ini_col: A letra da coluna inicial na qual as fórmulas serão aplicadas.
+        """
+        col.value = ""
+        for fund in self.funds_danos:
+            statement_fund = fund.get_statement()
+            if statement_fund:
+                set_sheet_value(sheet, cnt_ini_row, 'C', f'Danos {statement_fund.description}', force=True,
+                                alignment='left')
+                set_sheet_value(sheet, cnt_ini_row, ['D', 'E'], statement_fund.data_base)
+                cnt_ini_row += 1
+
     def set_formula_juca_lst(self, sheet, col):
         """
         Define fórmulas com base em valores específicos em uma planilha.
@@ -634,7 +661,8 @@ class SheetExcel:
             "Premises": self.set_formula_premises,
             "NoticeAJ_Vert": self.set_formula_notice_aj_vert,
             "Claim_Creditor_Vert": self.set_formula_claim_creditor_vert,
-            "Claim_Lawyer_Vert": self.set_formula_claim_lawyer_vert
+            "Claim_Lawyer_Vert": self.set_formula_claim_lawyer_vert,
+            "AdditionalSentence": self.set_additional_sentence
         }
         formula = value_actions.get(col_value)
         if formula:
@@ -651,7 +679,7 @@ class SheetExcel:
             if sheet.sheet_state == "hidden":
                 continue
 
-            if type(sheet.title) == str and sheet.title.find("JUCA=") >= 0:
+            if isinstance(sheet.title, str) and sheet.title.find("JUCA=") >= 0:
                 self.set_sheet_juca(sheet)
 
             sheet.title = sheet.title.replace(" Copy", "")
@@ -738,8 +766,10 @@ class SheetExcel:
             cnt_row += 2
             set_sheet_value(ws, cnt_row + 1, 'A',
                             'Correção monetária', font=bold_font)
+
+            rate = item.get_rate()
             set_sheet_value(ws, cnt_row + 1,
-                            ['E', 'K'], item.rate.index, font=bold_font)
+                            ['E', 'K'], rate.index, font=bold_font)
             cnt_row += 1
             self.set_template(ws, item, cnt_row)
 
@@ -756,8 +786,9 @@ class SheetExcel:
             cnt_row += 2
             set_sheet_value(ws, cnt_row + 1, 'A',
                             'Correção monetária', font=bold_font)
+            rate = item.get_rate()
             set_sheet_value(ws, cnt_row + 1,
-                            ['E', 'K'], item.rate.index, font=bold_font)
+                            ['E', 'K'], rate.index, font=bold_font)
             cnt_row += 1
             self.set_template(ws, item, cnt_row)
 
@@ -870,9 +901,8 @@ class ExportProcessor:
             base64_message = base64_encoded_data.decode("latin-1")
 
         # Create a pdf file
-        pdfkit.from_string('\n'.join(self.list_pdf),
-                           self.new_name_pdf, configuration=config)
-        # pdfkit.from_string('\n'.join(self.list_pdf), self.new_name_pdf)
+        # pdfkit.from_string('\n'.join(self.list_pdf), self.new_name_pdf, configuration=config)
+        pdfkit.from_string('\n'.join(self.list_pdf), self.new_name_pdf)
 
         with open(self.new_name_pdf, "rb") as archive_pdf:
             pdf_file = archive_pdf.read()

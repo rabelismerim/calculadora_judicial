@@ -45,6 +45,10 @@ def create_templates():
                       'is_editable': True,
                       'default': False,
                       'required': True},
+                     {'label': 'É Retroativo', 'key': 'is_retroactive', 'type': 'B', 'order': 5,
+                      'is_editable': True,
+                      'default': False,
+                      'required': True},
                      ]
 
     fund_danos = [{'label': 'Nome da verba', 'key': 'name', 'type': 'C', 'order': 0, 'is_editable': True,
@@ -80,6 +84,10 @@ def create_templates():
                   'is_editable': True,
                   'default': False,
                   'required': True},
+                 {'label': 'É retroativo', 'key': 'is_retroactive', 'type': 'B', 'order': 5,
+                  'is_editable': True,
+                  'default': False,
+                  'required': True},
                  ]
 
     fields_verbas = [{'label': 'Data base', 'key': 'data_base', 'type': 'D', 'order': 2, 'is_editable': True,
@@ -100,6 +108,10 @@ def create_templates():
 
                       'is_editable': False, 'required': False},
                      {'label': 'É extraconcursal', 'key': 'is_extraconcursal', 'type': 'B', 'order': 4,
+                      'is_editable': True,
+                      'default': False,
+                      'required': True},
+                     {'label': 'É retroativo', 'key': 'is_retroactive', 'type': 'B', 'order': 5,
                       'is_editable': True,
                       'default': False,
                       'required': True},
@@ -146,6 +158,10 @@ def create_templates():
          'is_editable': True,
          'default': False,
          'required': True},
+        {'label': 'É retroativo', 'key': 'is_retroactive', 'type': 'B', 'order': 5,
+         'is_editable': True,
+         'default': False,
+         'required': True},
 
         {'label': 'Documento', 'key': 'name', 'type': 'C', 'order': 0, 'is_editable': True,
          'required': True},
@@ -170,6 +186,10 @@ def create_templates():
         {'label': 'Data base', 'key': 'data_base', 'type': 'D', 'order': 2, 'is_editable': True,
          'required': True},
         {'label': 'Data Inicial do juros', 'key': 'interest_initial_date', 'type': 'D', 'order': 3,
+         'is_editable': True,
+         'required': True},
+        {'label': 'Tipo de juros', 'key': 'type_interest', 'type': FieldTypeChoices.CHOICES, 'order': 4,
+         'choices': InterestChoices.choices,
          'is_editable': True,
          'required': True},
         {'label': 'Valor histórico', 'key': 'historical_value', 'type': 'F', 'order': 6,
@@ -330,7 +350,7 @@ def create_templates():
     templates = [{'name': f'Documentos', 'description': f'Documento',
                   'fund_main': fund_document,
                   'end_point': '/juca/api/v1/calculation/funds/documents/detail/',
-                  'end_point_main': '/juca/api/v1/calculation/funds/documents/',
+                  'end_point_main': '/v1/calculation/funds/documents/',
                   'many': False,
                   'slug': TemplateSlugChoices.DOCUMENT,
                   'has_commit': True,

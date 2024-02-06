@@ -87,6 +87,7 @@ class Calculation(AbstractModel):
     # TODO verificar se essas premissas variam de calculo para calculo, ou pode ser relacionado ao credor
     # Statement N5 - Crédito inteiramente concursal? TODO analisar se as verbas adicionadas são concursal e alterar
     #  automaticamente
+    # TODO: Remover de edição, automatizar calculo para obter os creditos, e ver se algum credito tem a flag is_extraconcursal
     appeal_credit = models.BooleanField(_('Fully competitive credit?'), default=False)
     # Statement Q5 - Data do calculo homologado
     date_approved_calculation = models.DateField(_('Approved calculation date'), null=True)
@@ -691,13 +692,10 @@ class Calculation(AbstractModel):
 
     def get_rj_filling(self):
         """:return: 'date_rj_filing' from calculation"""
-        # TODO: remover  self.creditor.recovering.project.date_rj_filing após o front começar a enviar a data de
-        #  date_rj_filing ao gerar um cálculo
-        return self.date_rj_filing or self.creditor.recovering.project.date_rj_filing
+        return self.date_rj_filing
 
     def get_date_citation(self) -> datetime.date or None:
         """:return: 'date_citation' from calculation"""
-
         return self.date_citation
 
     def get_date_rj_request(self) -> datetime.date or None:

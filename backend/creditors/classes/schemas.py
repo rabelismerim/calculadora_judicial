@@ -35,13 +35,16 @@ class AbstractClassesFundsSchema(AbstractDescriptionSchema):
     classes = ClassesSchema(many=False, read_only=False)
     coins = CoinsSchema(many=False, read_only=False)
     archive_json = serializers.JSONField(allow_null=True, required=False)
-    rate_id = serializers.UUIDField(allow_null=True, required=False, write_only=True)
+    # rate_id = serializers.UUIDField(allow_null=True, required=False, write_only=True)
     rate = RateSchema(exclude=('rate_value', 'is_per_day', 'rate_values'), read_only=True)
     template_id = serializers.UUIDField(required=True, write_only=True)
     template = TemplateSchema(read_only=True)
     total = serializers.FloatField(source='get_total_summed', read_only=True)
     incident = serializers.CharField(source='incident__number', read_only=True)
     incident_id = serializers.UUIDField(write_only=True, required=False, allow_null=True)
+
+    class Meta:
+        exclude = ('rate',)
 
 
 class AbstractClassesUpdateSchema(AbstractDescriptionSchema):

@@ -16,7 +16,7 @@ from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
 
 from calculation.funds.danos.models import StatementDanos, MonetaryCorrectionDanos, TotalValuesDanos, \
-    FundDanos
+    FundDanos, InterestChoices
 from creditors.classes.schemas import AbstractClassesFundsSchema
 from utils import _
 
@@ -52,6 +52,7 @@ class StatementDanosSchema(AbstractDescriptionSchema):
     description = serializers.CharField()
     total_days = serializers.IntegerField(read_only=True)
     total_default_interest = serializers.FloatField(source='default_interest', read_only=True)
+
     # default_interest = serializers.FloatField(source='default_interest', read_only=True)
 
     class Meta:
@@ -75,6 +76,9 @@ class StatementDanosUpdateSchema(AbstractDescriptionSchema):
     data_base = serializers.DateField(required=False)
     historical_value = serializers.FloatField(required=False)
     description = serializers.CharField(required=False)
+    interest_initial_date = serializers.DateField(write_only=True, required=False)
+    apply_monetary_correction = serializers.BooleanField(write_only=True, required=False)
+    type_interest = serializers.ChoiceField(choices=InterestChoices.choices, write_only=True, required=False)
 
     class Meta:
         model = StatementDanos

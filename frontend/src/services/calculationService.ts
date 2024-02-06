@@ -6,9 +6,11 @@ const getCalculations = (creditorId: string) => api
   .get(`/v1/calculation/creditor/${creditorId}/`)
   .then((result: any) => result?.calculations)
 
-const newCalculation = async (calculation: any) => api
-  .post('/v1/calculation/', calculation)
-  .then((result: any) => result?.calculation)
+const setCalculation = async (calculation: any) => {
+  const method = calculation?.id ? 'put' : 'post'
+  return api[method](`/v1/calculation/${calculation?.id ? `${calculation?.id}/` : ''}`, calculation)
+    .then((result: any) => result?.calculation)
+}
 
 const getIncidents = () => api
   .get('/v1/calculation/incident/')
@@ -326,7 +328,7 @@ const getCalculationBigNumbers = (calculationId: string) => api
   .then((data: any) => data?.bigNumberCalc)
 
 export default {
-  newCalculation,
+  setCalculation,
   getCalculation,
   getCalculations,
   newIncident,

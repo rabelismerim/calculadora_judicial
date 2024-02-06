@@ -22,12 +22,13 @@ const loadTemplate = async (id: string) => {
     return
   const result = await ratesService.getTemplate(id)
   newCredit.endPoint = result?.endPoint
-  const fields = result?.fields?.map(({ id, key, label, default: fallback, order, required, typeDisplay }: any) => ({
+  const fields = result?.fields?.map(({ id, key, label, default: fallback, order, required, typeDisplay, choices }: any) => ({
     id,
     key,
     label,
     order,
     type: typeDisplay,
+    choices,
     required,
     fallback,
   }))
@@ -37,6 +38,7 @@ const loadTemplate = async (id: string) => {
   if (defaultValues?.length > 0)
     defaultValues.forEach(([key, value]: [string, any]) => newCredit[key] = value)
   newCredit.fields = fields
+    .sort(({ order: a }: any, { order: b }: any) => a - b)
 }
 
 const clearNewCredit = () => {
@@ -53,7 +55,7 @@ const createCredit = async () => {
 
   try {
     loading = true
-    const result: any = await api.post(`${host}${endPoint}`, {
+    const result: any = await api.post(endPoint, {
       ...newCredit,
       classes: {
         classe: classId,
@@ -143,19 +145,6 @@ onMounted(async () => {
           :disable="loading"
           dense
         />
-        <QSelect
-          v-model="newCredit.rateId"
-          :options="rates"
-          label="Taxa"
-          outlined
-          emit-value
-          map-options
-          option-value="id"
-          option-label="index"
-          :disable="loading"
-          :rules="[(value: string) => !!value || 'Este Campo é obrigatório!']"
-          dense
-        />
         <div v-for="field in newCredit?.fields as any[]" :key="field.id">
           <QInput
             v-if="field.type === 'text'"
@@ -175,6 +164,19 @@ onMounted(async () => {
             outlined
             dense
             @update:model-value="(value: number | string | null) => (field.type === 'integer') && (newCredit[field.key] = Math.round(value as number))"
+          />
+          <QSelect
+            v-else-if="field.type === 'choice'"
+            v-model="newCredit[field.key]"
+            :label="field.label"
+            :rules="isRequired(field)"
+            :options="field.choices"
+            option-label="legend"
+            option-value="id"
+            emit-value
+            map-options
+            outlined
+            dense
           />
           <QToggle
             v-else-if="field.type === 'boolean'"

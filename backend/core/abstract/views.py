@@ -519,14 +519,16 @@ class AbstractViewApi(generics.GenericAPIView):
             id_ = kwargs.get('id')
             exclude = self.__get_exclude_values()
             serializer = self.get_serializer_class()
+
+            obj = get_object_or_404(self.model, id=id_)
+
             try:
-                serializer = serializer(data=request.data, exclude=exclude)
+                serializer = serializer(instance=obj, data=request.data, exclude=exclude)
             except ValueError:
-                serializer = serializer(data=request.data)
+                serializer = serializer(instance=obj, data=request.data)
 
             serializer.is_valid(raise_exception=True)
             data_obj = serializer.validated_data
-            obj = get_object_or_404(self.model, id=id_)
 
             for field_name in serializer.fields:
                 field = serializer.fields[field_name]
@@ -536,7 +538,7 @@ class AbstractViewApi(generics.GenericAPIView):
                         attr = getattr(obj, field_name)
                         attr.clear()
                         attr.add(*values)
-            obj.dict_update(**data_obj)
+            serializer.save()
         return JsonResponse({self.get_model_name(): self.serializer_class(obj, many=False).data})
 
     def get_model_name(self):

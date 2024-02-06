@@ -52,40 +52,16 @@ const loadProject = async () => {
     loading = false
   }
 }
-
-const calculationForm: any = ref(null as any)
-let showCreateNewCalculation = $ref(false)
-let newCalculation: any = $ref({
-  isAdm: true,
+const newCalculation: any = $ref({
+  creditorId: null,
+  show: false,
 })
-const openNewCalculation = (creditor: any) => {
-  const { id } = creditor
-  newCalculation.creditorId = id
-  showCreateNewCalculation = true
+const openNewCalcultation = (creditorId: string) => {
+  newCalculation.creditorId = creditorId
+  newCalculation.show = true
 }
 const openCalculation = (creditorId: string, calculationId: string) =>
   router.push({ path: `/projeto/${project.id}/credor/${creditorId}/calculo/${calculationId}` })
-const createNewCalculation = async () => {
-  loading = true
-  try {
-    const { creditorId } = newCalculation
-    const { id } = await calculationService.newCalculation(newCalculation)
-    openCalculation(creditorId, id)
-  }
-  catch (error) {
-    printError('ERROR ON CREATE NEW CALCULATION:', error)
-  }
-  finally {
-    loading = false
-  }
-}
-const closeNewCalculation = () => {
-  showCreateNewCalculation = false
-  calculationForm.value.reset()
-  newCalculation = {
-    isAdm: true,
-  }
-}
 const loadCalculations = async (creditor: any) => {
   const { id } = creditor
   loading = true
@@ -101,25 +77,6 @@ const loadCalculations = async (creditor: any) => {
 }
 
 // Options Helpers list
-let incidents: any[] = $ref([])
-const addIncident = async (incidentNumber: string) => {
-  try {
-    const result: any = await calculationService.newIncident(incidentNumber)
-    const { id, number } = result
-    return { id, number, description: number }
-  }
-  catch (error) {
-    printError('ERROR ON LOAD INCIDENSTS:', error)
-  }
-}
-const loadIncidents = async () => {
-  try {
-    incidents = await calculationService.getIncidents()
-  }
-  catch (error) {
-    printError('ERROR ON LOAD INCIDENSTS:', error)
-  }
-}
 const options: any = $ref({
   users: [],
   judges: [],
@@ -160,17 +117,10 @@ const loadTotalValues = async () => {
   }
 }
 
-let rates = $ref([] as any[])
-const loadRates = async () => {
-  rates = await ratesService.getRates()
-}
-
 onMounted(async () => {
   login()
   loadBigNumbers()
-  loadIncidents()
   loadOptions()
-  loadRates()
   await loadProject()
   await loadTotalValues()
 })
@@ -312,7 +262,7 @@ onMounted(async () => {
                   label="Novo Cálculo"
                   icon="i-carbon-add-filled"
                   transparent
-                  @click.stop="openNewCalculation(creditor)"
+                  @click.stop="openNewCalcultation(creditor.id)"
                 />
                 <div class="font-bold flex no-wrap items-center gap-2 text-lg">
                   Total: R$ {{ formatNumber(creditor?.total || 0, 2) }}
@@ -361,7 +311,8 @@ onMounted(async () => {
             </div>
             <div v-if="group?.length > 0" class="flex gap-2">
               <UserTag
-                v-for="user in group as any[]" :key="user.id"
+                v-for="user in group"
+                :key="user.id"
                 :model-value="user"
               />
             </div>
@@ -371,99 +322,13 @@ onMounted(async () => {
           </div>
         </div>
       </Modal>
-      <Modal
-        v-model="showCreateNewCalculation"
-        title="Criar um Novo Cálculo"
-        hint="Para criar um cálculo é preciso escolher um incidente."
-        modal-class="max-w-130"
-        @close="closeNewCalculation"
-      >
-        <QForm
-          ref="calculationForm"
-          @submit="createNewCalculation"
-        >
-          <div class="px-4 grid grid-cols-6 gap-x-4">
-            <InputSelect
-              v-model="newCalculation.incidentId"
-              v-model:options="incidents"
-              label="Número de Incidente"
-              :to-add="addIncident"
-              :rules="[(value: any) => !!value || 'É um campo obrigatório']"
-              :disable="loading"
-              class="col-span-4"
-            />
-            <QSelect
-              v-model="newCalculation.rateId"
-              :options="rates"
-              label="Taxa"
-              outlined
-              emit-value
-              map-options
-              option-value="id"
-              option-label="index"
-              :disable="loading"
-              :rules="[(value: string) => !!value || 'Este Campo é obrigatório!']"
-              dense
-              class="col-span-2"
-            />
-            <QSelect
-              v-model="newCalculation.occurrence"
-              :options="options.ocurrences"
-              label="Ocorrência"
-              outlined
-              emit-value
-              map-options
-              option-value="id"
-              option-label="legend"
-              :disable="loading"
-              :rules="[(value: string) => !!value || 'Este Campo é obrigatório!']"
-              dense
-              :class="['CS'.includes(newCalculation.occurrence) ? 'col-span-3' : 'col-span-6']"
-            />
-            <InputDate
-              v-if="newCalculation.occurrence === 'C'"
-              v-model="newCalculation.dateCitation"
-              label="Data da Citação"
-              :rules="[
-                (value: any) => !!value || 'Campo é obrigatório!',
-                (value: any) => value.length === 0 || value.length === 10 || 'Padrão ##/##/####',
-                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Data inválida!',
-              ]"
-              class="col-span-3"
-            />
-            <InputDate
-              v-if="newCalculation.occurrence === 'S'"
-              v-model="newCalculation.dateRjFiling"
-              label="Data de Ajuizamento"
-              :rules="[
-                (value: any) => !!value || 'Campo é obrigatório!',
-                (value: any) => value.length === 0 || value.length === 10 || 'Padrão ##/##/####',
-                (value: any) => value.length === 0 || /^[0-3]\d\/[0-1]\d\/[\d]+$/.test(value) || 'Data inválida!',
-              ]"
-              class="col-span-3"
-            />
-            <label class="flex gap-4 items-center mb-4 col-span-6">
-              <div class="font-bold color-gray-8 text-md">Fase do Cálculo</div>
-              <BtnToggle
-                v-model="newCalculation.isAdm"
-                class="bg--base flex-1"
-                :items="[
-                  { label: 'Administrativa', value: true },
-                  { label: 'Judiciária', value: false },
-                ]"
-              />
-            </label>
-          </div>
-          <div class="flex justify-end p4 border-t-1 border-black/12">
-            <Btn
-              label="Criar Cálculo"
-              type="submit"
-              loading-label="Criando Novo Cálculo..."
-              :loading="loading"
-            />
-          </div>
-        </QForm>
-      </Modal>
+      <SetCalculation
+        v-model:open="newCalculation.show"
+        :options="options"
+        :creditor-id="newCalculation.creditorId"
+        :project-id="attrs.projectId"
+        @success="(id : string) => openCalculation(newCalculation.creditorId, id)"
+      />
     </template>
   </Page>
 </template>
