@@ -9,13 +9,16 @@ import datetime
 
 from base.views import ExtractFormula
 from calculation.comparative.signals import (gen_statement_danos,
-                                             gen_statement_total_documents)
+                                             gen_statement_total_documents,
+                                             update_calc)
 from calculation.funds.models import (AbstractFunds,
                                       AbstractMonetaryCorrection,
                                       AbstractStatement,
                                       AbstractTotalValuesFunds)
+from calculation.models import Calculation
 from django.db import models
 from django.db.models import TextChoices
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from rates.models import CalculeRate, Rate
@@ -34,15 +37,17 @@ class FundDanos(AbstractFunds):
     type_interest = models.CharField(_('Tipo de juros'), max_length=1, choices=InterestChoices.choices,
                                      default=InterestChoices.SEM_JUROS)
     interest_initial_date = models.DateField(_('Data inicial do juros'))
-    apply_monetary_correction = models.BooleanField(_('Aplicar Taxa?'), default=True)
+    apply_monetary_correction = models.BooleanField(
+        _('Aplicar Taxa?'), default=True)
 
     def get_total_funds(self, create=True):
         """
         This method returns the TotalValuesDanos object associated with the current fund object. If the object does
         not exist, it creates one and returns it.
         """
-        if hasattr(self, 'totalvaluesdanos'):
-            return self.totalvaluesdanos
+        total_values_danos = self.total_values_danos
+        if total_values_danos:
+            return total_values_danos
         if create:
             return TotalValuesDanos.objects.get_or_create(fund=self)[0]
 
@@ -54,33 +59,25 @@ class FundDanos(AbstractFunds):
         total_funds = self.get_total_funds()
         total_funds.set_total()
 
+    @property
+    def total_values_danos(self):
+        return getattr(self, 'totalvaluesdanos', None)
+
     def get_total_summed(self):
         """Get the corrected value of the sum of calculated sums"""
-        total: float = 0
-        if hasattr(self, 'totalvaluesdanos'):
-            total += self.totalvaluesdanos.total_corrected
-        return total
+        return getattr(self.total_values_danos, 'total_corrected', 0)
 
     def get_total_historical_summed(self):
         """Get the corrected value of the sum of calculated sums"""
-        total: float = 0
-        if hasattr(self, 'totalvaluesdanos'):
-            total += self.totalvaluesdanos.total_historical
-        return total
+        return getattr(self.total_values_danos, 'total_historical', 0)
 
     def get_total_due_summed(self) -> float:
         """Get the corrected value of the sum of calculated sums"""
-        totalvaluesdanos = getattr(self, 'totalvaluesdanos', None)
-        if totalvaluesdanos:
-            return totalvaluesdanos.total_due
-        return 0
+        return getattr(self.total_values_danos, 'total_due', 0)
 
-    def get_total_default_interest(self) -> float:
+    def get_total_total_default_interest(self) -> float:
         """Get the corrected value of the sum of calculated sums"""
-        totalvaluesdanos = getattr(self, 'totalvaluesdanos', None)
-        if totalvaluesdanos:
-            return totalvaluesdanos.total_default_interest
-        return 0
+        return getattr(self.total_values_danos, 'total_default_interest', 0)
 
     def get_statement(self):
         """
@@ -260,7 +257,8 @@ class StatementDanos(AbstractStatement):
 
     def create_monetary_correction(self, data: dict):
         """Create or update the MonetaryCorrection object"""
-        MonetaryCorrectionDanos.objects.update_or_create(defaults=data, **{'statement': self})
+        MonetaryCorrectionDanos.objects.update_or_create(
+            defaults=data, **{'statement': self})
 
     def calcule_monetary_correction(self):
         """
@@ -385,7 +383,8 @@ class TotalValuesDanos(AbstractTotalValuesFunds):
 
     def save(self, *args, **kwargs):
         super(TotalValuesDanos, self).save()
-        gen_statement_total_documents.send(sender=self.__class__, instance=self)
+        gen_statement_total_documents.send(
+            sender=self.__class__, instance=self)
 
 
 @receiver(gen_statement_danos, sender=StatementDanos)
@@ -410,3 +409,23 @@ def save_statement_documents(sender, instance, **kwargs) -> None:
     ExtractFormula(instance, instance.fund.calculation, statement_methods).get_methods(
         [StatementDanos, MonetaryCorrectionDanos, Rate, TotalValuesDanos, save_statement_documents])
     instance.fund.calculation.invalidate_calculation()
+
+
+@receiver(update_calc, sender=Calculation)
+def updated_calculation(sender, instance, **kwargs):
+    """
+    Signal handler for the update_calc event of a Calculation instance.
+
+    Args:
+    - sender: The model class that sent the signal (Calculation in this case).
+    - instance (Calculation): The instance of Calculation that triggered the signal.
+    - kwargs: Additional keyword arguments.
+    """
+    statements = StatementDanos.objects.filter(fund__calculation=instance)
+
+    for statement in statements:
+        statement.calcule_monetary_correction()
+
+    total_funds = TotalValuesDanos.objects.filter(fund__calculation=instance)
+    for total in total_funds:
+        total.set_total()
