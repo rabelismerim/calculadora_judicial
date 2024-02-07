@@ -270,7 +270,7 @@ class CalculationSchema(CalculationAllFundsSchema):  # V1
         return data
 
 
-class CalculationUpdateSchema(CalculationAllFundsSchema):
+class CalculationUpdateSchema(CalculationSchema):
     """
     The CalculationSchema class is a serializer for the Calculation model fields. It inherits from the
      AbstractModelSchema class. It includes the following fields:
