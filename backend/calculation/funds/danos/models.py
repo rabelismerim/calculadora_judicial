@@ -34,6 +34,18 @@ class FundDanos(AbstractFunds):
     type_interest = models.CharField(_('Tipo de juros'), max_length=1, choices=InterestChoices.choices,
                                      default=InterestChoices.SEM_JUROS)
     interest_initial_date = models.DateField(_('Data inicial do juros'))
+
+    # TODO MARCELO: deixar a data interest_initial_date como opcional, fazer validador se tiver type_interest calculo
+    #  de juros a data ser obrigatória
+
+    # TODO MARCELO: ter um campo descrição da correção, esse campo se refere a data que deve ser utilizada para o
+    #  calculo da correção(data_base)
+
+    # TODO MARCELO: alterar nomenclatura data base para data da correção
+
+    # TODO MARCELO: adicionar campo data do fato gerador, faz a validação se é extraconcursal ou não(ter a mesma regra
+    #  dos outros, ter a extraconcursal e o campo is_retroactive), se for extraconcursal, não bloquear, manter o valor
+    #  histórico se o campo is_retroactive for False
     apply_monetary_correction = models.BooleanField(_('Aplicar Taxa?'), default=True)
 
     def get_total_funds(self, create=True):

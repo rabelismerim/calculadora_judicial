@@ -135,6 +135,7 @@ class TotalLawyer(AbstractModel):
         Returns a queryset of all the lawyers associated with this instance.
         """
         return self.lawyer_set.all()
+
     def get_lawyers_name(self):
         """
         Returns a queryset of all the lawyers associated with this instance.
@@ -158,6 +159,7 @@ class TotalLawyer(AbstractModel):
         super().save(*args, **kwargs)
 
 
+# TODO MARCELO: Adicionar os lawyers e o calculo devido no extrato contábil
 class Lawyer(AbstractModel):
     """
     Represents a single lawyer's fee for a Statement.

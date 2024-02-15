@@ -448,6 +448,8 @@ class SheetExcel:
         statement_pf = self.calculation.statement.get_statement_pf()
 
         if statement_pf:
+            # TODO MARCELO: verificar por que não apareceu o deposito recursal
+
             set_sheet_value(sheet, cnt_ini_row, ['A', 'B'],
                             self.calculation.statement.statementpf.get_description_display(),
                             force=True)
