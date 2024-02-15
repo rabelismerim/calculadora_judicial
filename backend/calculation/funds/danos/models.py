@@ -7,18 +7,21 @@ to add specific fields as needed.
 
 import datetime
 
+from base.views import ExtractFormula
+from calculation.comparative.signals import (gen_statement_danos,
+                                             gen_statement_total_documents,
+                                             update_calc)
+from calculation.funds.models import (AbstractFunds,
+                                      AbstractMonetaryCorrection,
+                                      AbstractStatement,
+                                      AbstractTotalValuesFunds)
+from calculation.models import Calculation
 from django.db import models
 from django.db.models import TextChoices
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
-
-from base.views import ExtractFormula
-from calculation.comparative.signals import gen_statement_danos, gen_statement_total_documents, update_calc
-from calculation.funds.models import AbstractFunds, AbstractStatement, AbstractMonetaryCorrection, \
-    AbstractTotalValuesFunds
-from calculation.models import Calculation
-from rates.models import Rate, CalculeRate
+from rates.models import CalculeRate, Rate
 
 
 class InterestChoices(TextChoices):
@@ -265,7 +268,8 @@ class StatementDanos(AbstractStatement):
 
     def create_monetary_correction(self, data: dict):
         """Create or update the MonetaryCorrection object"""
-        MonetaryCorrectionDanos.objects.update_or_create(defaults=data, **{'statement': self})
+        MonetaryCorrectionDanos.objects.update_or_create(
+            defaults=data, **{'statement': self})
 
     def calcule_monetary_correction(self):
         """
@@ -390,7 +394,8 @@ class TotalValuesDanos(AbstractTotalValuesFunds):
 
     def save(self, *args, **kwargs):
         super(TotalValuesDanos, self).save()
-        gen_statement_total_documents.send(sender=self.__class__, instance=self)
+        gen_statement_total_documents.send(
+            sender=self.__class__, instance=self)
 
 
 @receiver(gen_statement_danos, sender=StatementDanos)

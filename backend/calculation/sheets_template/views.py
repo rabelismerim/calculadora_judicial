@@ -480,8 +480,22 @@ class SheetExcel:
             for fund in self.funds_danos:
                 statement_fund = fund.get_statement()
                 if statement_fund:
-                    set_sheet_value(sheet, cnt_ini_row, ['A', 'B'], f'Danos {statement_fund.description}', force=True)
-                    set_sheet_number(sheet, cnt_ini_row, 'C', fund.get_total_summed())
+                    set_sheet_value(sheet, cnt_ini_row, [
+                                    'A', 'B'], f'Danos {statement_fund.description}', force=True)
+                    set_sheet_number(sheet, cnt_ini_row, 'C',
+                                     fund.get_total_summed())
+                    cnt_ini_row += 1
+
+                    set_sheet_value(sheet, cnt_ini_row, [
+                                    'A', 'B'], f'Total {statement_fund.description}', force=True)
+                    set_sheet_number(sheet, cnt_ini_row, 'C',
+                                     fund.get_total_due_summed())
+                    cnt_ini_row += 1
+
+                    set_sheet_value(sheet, cnt_ini_row, [
+                                    'A', 'B'], f'Juros {statement_fund.description}', force=True)
+                    set_sheet_number(sheet, cnt_ini_row, 'C',
+                                     fund.get_total_default_interest())
                     cnt_ini_row += 1
 
                     set_sheet_value(sheet, cnt_ini_row, ['A', 'B'], f'Juros Danos {statement_fund.description}',
