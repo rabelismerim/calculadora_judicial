@@ -592,12 +592,14 @@ const getSummary = (orderItem: number, summaryList: any[] = []) => summaryList
                             class="flex-1"
                             :disabled="['A', 'B'].includes(calculation?.step)"
                             @paste.prevent="onPaste($event, table.values, column.field, column.type, props.rowIndex)"
-                            @update:model-value="props.row.is_extraconcursal = false"
+                            @update:model-value="props.row.is_extraconcursal = false; props.row.is_retroactive = false;"
                           />
+                          <!-- TODO: reset fields: @update:model-value="resetFields(['is_extraconcursal','is_retroactive'], props.row)" -->
                           <div v-else-if="column.type === 'boolean'" class="row justify-center">
                             <div
-                              v-if="column.field === 'is_extraconcursal'"
+                              v-if="['is_extraconcursal', 'is_retroactive'].includes(column.field)"
                             >
+                              <!-- TODO: v-if="evaluate("data_base >= date_rj_request", props.row)" -->
                               <QToggle
                                 v-if="props.row?.data_base >= calculation?.criterion?.dateRjRequest"
                                 v-model="props.row[column.field]"

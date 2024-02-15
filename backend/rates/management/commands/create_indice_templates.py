@@ -45,6 +45,10 @@ def create_templates():
                       'is_editable': True,
                       'default': False,
                       'required': True},
+                     {'label': 'É Retroativo', 'key': 'is_retroactive', 'type': 'B', 'order': 5,
+                      'is_editable': True,
+                      'default': False,
+                      'required': True},
                      ]
 
     fund_danos = [{'label': 'Nome da verba', 'key': 'name', 'type': 'C', 'order': 0, 'is_editable': True,
@@ -80,6 +84,10 @@ def create_templates():
                   'is_editable': True,
                   'default': False,
                   'required': True},
+                 {'label': 'É retroativo', 'key': 'is_retroactive', 'type': 'B', 'order': 5,
+                  'is_editable': True,
+                  'default': False,
+                  'required': True},
                  ]
 
     fields_verbas = [{'label': 'Data base', 'key': 'data_base', 'type': 'D', 'order': 2, 'is_editable': True,
@@ -100,6 +108,10 @@ def create_templates():
 
                       'is_editable': False, 'required': False},
                      {'label': 'É extraconcursal', 'key': 'is_extraconcursal', 'type': 'B', 'order': 4,
+                      'is_editable': True,
+                      'default': False,
+                      'required': True},
+                     {'label': 'É retroativo', 'key': 'is_retroactive', 'type': 'B', 'order': 5,
                       'is_editable': True,
                       'default': False,
                       'required': True},
@@ -143,6 +155,10 @@ def create_templates():
 
          'is_editable': False, 'required': False},
         {'label': 'É extraconcursal', 'key': 'is_extraconcursal', 'type': 'B', 'order': 4,
+         'is_editable': True,
+         'default': False,
+         'required': True},
+        {'label': 'É retroativo', 'key': 'is_retroactive', 'type': 'B', 'order': 5,
          'is_editable': True,
          'default': False,
          'required': True},

@@ -8,7 +8,7 @@ from rates.models import Rate, RateValues, Accumulated, Period
 
 def create_indices():
     """Create Index by files"""
-    base = 'rates/indices'
+    base = 'rates/indices_json'
 
     averages = []
     for file in os.listdir(base):
