@@ -105,8 +105,8 @@ class UpdateUser(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     field_changed = models.CharField(_('Field changed'), max_length=100, null=True)
     field_changed_display = models.CharField(_('Field changed display'), max_length=100, null=True)
-    current_value = models.TextField(_('Valor atual'), max_length=4001, null=True, editable=False)
-    previous_value = models.TextField(_('Valor anterior'), max_length=4001, null=True, editable=False)
+    current_value = models.TextField(_('Valor atual'), max_length=4000, null=True, editable=False)
+    previous_value = models.TextField(_('Valor anterior'), max_length=4000, null=True, editable=False)
     create_user = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
 
     object_id = models.UUIDField()  # uuid AbstractModel
