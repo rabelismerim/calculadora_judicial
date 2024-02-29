@@ -1,24 +1,28 @@
 import datetime
 
-from django.db import models
+from base.models import AbstractDateCreditor, AbstractDescription
 from core.entity.models import Entity
+from django.db import models
 from rates.models import Rate
 from recovering.models import Recovering
-from base.models import AbstractDateCreditor, AbstractDescription
 from utils import _
 
-CHOICES_STATUS_LEGAL = (('U', _('Under review')), ('P', _('Pending')), ('C', _('Concluded')))
+CHOICES_STATUS_LEGAL = (('U', _('Under review')),
+                        ('P', _('Pending')), ('C', _('Concluded')))
 
 
 class Creditor(AbstractDateCreditor):
     entity = models.ForeignKey(Entity, on_delete=models.PROTECT)
     recovering = models.ForeignKey(Recovering, on_delete=models.PROTECT)
-    description = models.CharField(_('Description'), max_length=255, null=True, blank=True)
+    description = models.CharField(
+        _('Description'), max_length=255, null=True, blank=True)
 
     total = models.FloatField(_('Total sum of valid amounts'), default=0)
-    total_historical = models.FloatField(_('Total historical sum of valid amounts'), default=0)
+    total_historical = models.FloatField(
+        _('Total historical sum of valid amounts'), default=0)
     is_active = models.BooleanField(_('Is active'), default=True)
-    rate = models.ForeignKey(Rate, on_delete=models.PROTECT, null=True, blank=True)
+    rate = models.ForeignKey(
+        Rate, on_delete=models.PROTECT, null=True, blank=True)
 
     def get_total(self) -> float:
         return self.total
@@ -62,7 +66,8 @@ class Creditor(AbstractDateCreditor):
         validated_calculations = self.calculation_set.filter(id__in=calculations, validated=False,
                                                              step='A').values_list('id', flat=True)
         validated = list(validated_calculations)
-        validated_calculations.update(validated=True, date_approved_calculation=datetime.datetime.now())
+        validated_calculations.update(
+            validated=True, date_approved_calculation=datetime.datetime.now())
         self.set_total()
 
         return invalidated, validated
@@ -92,7 +97,8 @@ class Creditor(AbstractDateCreditor):
     def get_calculation_impediment_list(self):
         impediment_list = self.legalpendencies_set.exclude(status='C')
         impediment_list = [
-            _('Legal Pending: {}, has the status {}').format(impediment.description, impediment.get_status_display())
+            _('Legal Pending: {}, has the status {}').format(
+                impediment.description, impediment.get_status_display())
             for impediment in impediment_list]
 
         if self.representation_documentation != 'R':
@@ -112,5 +118,6 @@ class Creditor(AbstractDateCreditor):
 
 class LegalPendencies(AbstractDescription):
     creditor = models.ForeignKey(Creditor, on_delete=models.PROTECT)
-    status = models.CharField(_('Status'), max_length=1, choices=CHOICES_STATUS_LEGAL)
+    status = models.CharField(
+        _('Status'), max_length=1, choices=CHOICES_STATUS_LEGAL)
     deadline = models.DateField(_('Response deadline'), null=True, blank=True)
