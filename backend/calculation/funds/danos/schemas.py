@@ -57,7 +57,7 @@ class StatementDanosSchema(AbstractDescriptionSchema):
 
     class Meta:
         model = StatementDanos
-        exclude = ('fund', 'is_extraconcursal')
+        exclude = ('fund', 'is_extraconcursal', 'is_retroactive')
         # fields = '__all__'
         read_only_fields = ('status', 'status_display')
 
