@@ -116,7 +116,7 @@ class StatementDocument(AbstractStatement):
 
     Methods:
         - `has_tax()` Return True if this statement has tax; False otherwise.
-        - `__days360()` Return the number of days between the start_date and end_date using the 360-day method.
+        - `days360()` Return the number of days between the start_date and end_date using the 360-day method.
         - `days()` Return the number of days between the statement's data_base and the date_rj, if it exists and has tax
         - `_calc_default_interest()` Calculates the default interest based on the corrected value, default interest rate
             , and the number of days.
@@ -149,20 +149,6 @@ class StatementDocument(AbstractStatement):
             return False
         return data_base <= date_rj
 
-    @staticmethod
-    def __days360(start_date, end_date) -> int:
-        """Return the number of days between the start_date and end_date using the 360-day method."""
-        if start_date.day == 31:
-            start_date = start_date.replace(day=30)
-        if end_date.day == 31 and (start_date.day == 30 or start_date.day == 31):
-            end_date = end_date.replace(day=30)
-        elif end_date.day == 31:
-            end_date = end_date.replace(day=1)
-            end_date = end_date + datetime.timedelta(days=1)
-        return (end_date.year - start_date.year) * 360 + \
-            (end_date.month - start_date.month) * 30 + \
-            (end_date.day - start_date.day)
-
     @property
     def days(self) -> int:
         """Return the number of days between the statement's data_base and the date_rj, if it exists and has tax."""
@@ -172,7 +158,7 @@ class StatementDocument(AbstractStatement):
             if not date_rj:
                 self.set_error_rj()
                 return 0
-            return self.__days360(data_base, date_rj)
+            return self.days360(data_base, date_rj)
         return 0
 
     @property
@@ -428,7 +414,7 @@ def save_statement_documents(sender, instance, **kwargs) -> None:
 
     statement_methods = ['get_total_value', 'get_dsr_reflexes', 'get_monetary_correction',
                          'calcule_monetary_correction', 'get_monetary_correction', 'get_corrected_value',
-                         'get_default_interest', 'get_total_due', 'get_fine', '__days360', 'has_tax',
+                         'get_default_interest', 'get_total_due', 'get_fine', 'days360', 'has_tax',
                          'get_rate_by_date',
                          '_get_index_monetary_correction', 'get_corrected_value', 'get_data_base', 'get_total_value',
                          'get_historical_value', 'get_rate', 'save_total_funds', 'monetarycorrection', 'set_total',

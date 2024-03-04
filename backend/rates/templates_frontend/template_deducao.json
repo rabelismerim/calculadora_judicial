@@ -1,0 +1,274 @@
+{
+    "name": "Verbas de dedu\u00E7\u00E3o",
+    "description": "Verbas de dedu\u00E7\u00E3o",
+    "end_point": "/juca/api/v1/calculation/funds/deduction/detail/",
+    "fund_main": [
+        {
+            "label": "Data da atualiza\u00E7\u00E3o da corre\u00E7\u00E3o monet\u00E1ria",
+            "key": "monetary_correction_update_date",
+            "type": "D",
+            "order": 0,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Data da atualiza\u00E7\u00E3o dos juros",
+            "key": "interest_update_date",
+            "type": "D",
+            "order": 1,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Data da homologa\u00E7\u00E3o da proposta",
+            "key": "approval_proposal_date",
+            "type": "D",
+            "order": 2,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Multa",
+            "key": "fine",
+            "type": "F",
+            "order": 3,
+            "is_editable": true,
+            "required": false
+        },
+        {
+            "label": "Juros",
+            "key": "default_interest",
+            "type": "F",
+            "order": 4,
+            "is_editable": true,
+            "required": false
+        },
+        {
+            "label": "Nome",
+            "key": "name",
+            "type": "C",
+            "order": 5,
+            "is_editable": true,
+            "required": true
+        }
+    ],
+    "end_point_main": "/v1/calculation/funds/deduction/",
+    "many": true,
+    "slug": "E",
+    "has_commit": true,
+    "summary_fields": [
+        {
+            "label": "",
+            "key": "total_legend",
+            "type": "C",
+            "order": 2,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "total_net_value",
+            "type": "F",
+            "order": 6,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "total_corrected_value",
+            "type": "F",
+            "order": 9,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "total_fine",
+            "type": "F",
+            "order": 11,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "total_default_interest",
+            "type": "F",
+            "order": 12,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "total_payment_adjusted",
+            "type": "F",
+            "order": 13,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "total_remaining_balance",
+            "type": "F",
+            "order": 14,
+            "is_editable": false,
+            "required": false
+        }
+    ],
+    "summary_main_fields": [
+        {
+            "label": "",
+            "key": "classes.classe_display",
+            "type": "C",
+            "order": 0,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "coins.coin_display",
+            "type": "C",
+            "order": 1,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "coins.value",
+            "type": "F",
+            "order": 2,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "rate.index",
+            "type": "C",
+            "order": 3,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "R$",
+            "key": "total",
+            "type": "F",
+            "order": 4,
+            "is_editable": false,
+            "required": false
+        }
+    ],
+    "fields": [
+        {
+            "label": "Documento",
+            "key": "document",
+            "type": "C",
+            "order": 2,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Data base",
+            "key": "data_base",
+            "type": "D",
+            "order": 3,
+            "is_editable": true,
+            "required": false,
+            "default": null
+        },
+        {
+            "label": "Data de pagamento",
+            "key": "payment_date",
+            "type": "D",
+            "order": 4,
+            "is_editable": true,
+            "required": false,
+            "default": null
+        },
+        {
+            "label": "Valor Bruto",
+            "key": "historical_value",
+            "type": "F",
+            "order": 5,
+            "is_editable": true,
+            "required": false,
+            "default": null
+        },
+        {
+            "label": "Valor l\u00EDquido",
+            "key": "net_value",
+            "type": "F",
+            "order": 6,
+            "is_editable": true,
+            "required": false,
+            "default": null
+        },
+        {
+            "label": "\u00cdndice na data base",
+            "key": "index_data_base",
+            "type": "F",
+            "order": 7,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "\u00cdndice na data de liquida\u00E7\u00E3o",
+            "key": "index_payment",
+            "type": "F",
+            "order": 8,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "Valor corrigido",
+            "key": "corrected_value",
+            "type": "F",
+            "order": 9,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "Dias",
+            "key": "days",
+            "type": "F",
+            "order": 10,
+            "is_editable": false,
+            "default": 0,
+            "required": false
+        },
+        {
+            "label": "Juros devido",
+            "key": "default_interest",
+            "type": "F",
+            "order": 11,
+            "is_editable": false,
+            "default": 0,
+            "required": false
+        },
+        {
+            "label": "Multa devida",
+            "key": "fine",
+            "type": "F",
+            "order": 12,
+            "is_editable": false,
+            "default": 0,
+            "required": false
+        },
+        {
+            "label": "Pagamento ajustado",
+            "key": "adjusted_payment",
+            "type": "F",
+            "order": 13,
+            "is_editable": true,
+            "default": null,
+            "required": false
+        },
+        {
+            "label": "Saldo remanescente",
+            "key": "remaining_balance",
+            "type": "F",
+            "order": 14,
+            "is_editable": false,
+            "default": 0,
+            "required": false
+        }
+    ]
+}

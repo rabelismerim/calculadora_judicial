@@ -15,11 +15,11 @@ Including another URLconf
 """
 from django.urls import path
 
-from calculation.funds.document.views import FundDocumentDetailApi, FundDocumentApi, StatementFundsIRRFListApi
+from calculation.funds.deduction.views import FundDeductionDetailApi, FundDeductionApi, StatementFundsDeductionDetailApi
 
 urlpatterns = [
-    path('', FundDocumentApi.as_view(), name="documents-list-create"),
-    path('detail/', FundDocumentApi.as_view(), name="document-detail-create"),
-    path('detail/<uuid:fund_id>/', StatementFundsIRRFListApi.as_view(), name="document-statement-detail"),
-    path('<uuid:id>/', FundDocumentDetailApi.as_view(), name="document-detail"),
+    path('', FundDeductionApi.as_view(), name="deductions-list-create"),
+    path('detail/', FundDeductionApi.as_view(), name="deduction-detail-create"),
+    path('detail/<uuid:id>/', StatementFundsDeductionDetailApi.as_view(), name="deduction-statement-detail"),
+    path('<uuid:id>/', FundDeductionDetailApi.as_view(), name="deduction-detail"),
 ]
