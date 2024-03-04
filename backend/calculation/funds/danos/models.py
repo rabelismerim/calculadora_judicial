@@ -36,7 +36,14 @@ class FundDanos(AbstractFunds):
     # TODO: Adicionar campo fato gerador para verbas de danos morais(field description)
     type_interest = models.CharField(_('Tipo de juros'), max_length=1, choices=InterestChoices.choices,
                                      default=InterestChoices.SEM_JUROS)
-    interest_initial_date = models.DateField(_('Data inicial do juros'))
+    interest_initial_date = models.DateField(
+        _('Data inicial do juros'), blank=True, null=True)
+
+    correction_description = models.CharField(
+        _('Descrição da Correção'), max_length=100, blank=True, null=True)
+
+    # if type_interest and interest_initial_date is None:
+    #     raise ValueError('A Data inicial do juros deve ser preenchida.')
 
     # TODO MARCELO: deixar a data interest_initial_date como opcional, fazer validador se tiver type_interest calculo
     #  de juros a data ser obrigatória
@@ -49,7 +56,8 @@ class FundDanos(AbstractFunds):
     # TODO MARCELO: adicionar campo data do fato gerador, faz a validação se é extraconcursal ou não(ter a mesma regra
     #  dos outros, ter a extraconcursal e o campo is_retroactive), se for extraconcursal, não bloquear, manter o valor
     #  histórico se o campo is_retroactive for False
-    apply_monetary_correction = models.BooleanField(_('Aplicar Taxa?'), default=True)
+    apply_monetary_correction = models.BooleanField(
+        _('Aplicar Taxa?'), default=True)
 
     def get_total_funds(self, create=True):
         """

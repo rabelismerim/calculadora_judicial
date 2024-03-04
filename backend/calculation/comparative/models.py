@@ -5,14 +5,14 @@ and updated_at. Does not add any additional fields, so should be subclassed
 to add specific fields as needed.
 """
 
-from django.db import models
-from django.dispatch import receiver
 from base.models import AbstractDescription
+from calculation.comparative.signals import gen_calc
 from calculation.funds.integrations.models import TotalValuesFundsIntegrations
 from calculation.funds.models import TotalValuesFunds
-from calculation.comparative.signals import gen_calc
 from calculation.models import Calculation
 from core.abstract.models import AbstractModel
+from django.db import models
+from django.dispatch import receiver
 from utils import _
 
 
@@ -44,7 +44,8 @@ class Comparative(AbstractModel):
     calculation = models.OneToOneField(Calculation, on_delete=models.PROTECT)
 
     # TODO: Esse valor pode ser nulo?
-    data_base_creditor = models.DateField(_('Creditor base date'), null=True)  # C4
+    data_base_creditor = models.DateField(
+        _('Creditor base date'), null=True)  # C4
     data_base_dtt = models.DateField(_('DTT base date'), null=True)  # D4
 
     @property
@@ -280,7 +281,6 @@ class ApprovedCalculation(AbstractDescription):  # Calculo homologado
         """Returns float: The default interest value from the associated CalculationStatement object."""
         return self.comparative.calculation.statement.get_default_interest_value()
 
-
     def get_advocative_hours_dtt(self) -> float:
         """Returns float: The total credited advocative hours value from the associated CalculationStatement object."""
         try:
@@ -390,7 +390,8 @@ class AbstractComparativeFunds(AbstractDescription):
 
     def get_total_funds(self):
         if hasattr(self, 'total_funds') is False:
-            raise NotImplementedError(_('Must have the total_funds relation to inherit this method'))
+            raise NotImplementedError(
+                _('Must have the total_funds relation to inherit this method'))
         return self.total_funds
 
     @property
@@ -430,7 +431,8 @@ class ComparativeFundsIntegrations(AbstractComparativeFunds):
     """
     This class is used to store a OneToOne relationship with the Comparative model.
     """
-    total_funds = models.OneToOneField(TotalValuesFundsIntegrations, on_delete=models.PROTECT)
+    total_funds = models.OneToOneField(
+        TotalValuesFundsIntegrations, on_delete=models.PROTECT)
 
 
 @receiver(gen_calc, sender=ComparativeFunds)
