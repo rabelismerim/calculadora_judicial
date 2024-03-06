@@ -57,7 +57,7 @@ class StatementDanosSchema(AbstractDescriptionSchema):
 
     class Meta:
         model = StatementDanos
-        exclude = ('fund', 'is_extraconcursal')
+        exclude = ('fund', 'is_extraconcursal', 'is_retroactive')
         # fields = '__all__'
         read_only_fields = ('status', 'status_display')
 
@@ -73,12 +73,13 @@ class StatementDanosUpdateSchema(AbstractDescriptionSchema):
 
     fund_id = serializers.UUIDField(read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
-    data_base = serializers.DateField(required=False)
+    data_correction = serializers.DateField(required=False)
     historical_value = serializers.FloatField(required=False)
     description = serializers.CharField(required=False)
     interest_initial_date = serializers.DateField(write_only=True, required=False)
     apply_monetary_correction = serializers.BooleanField(write_only=True, required=False)
     type_interest = serializers.ChoiceField(choices=InterestChoices.choices, write_only=True, required=False)
+    description_correction = serializers.CharField(required=False)
 
     class Meta:
         model = StatementDanos

@@ -211,7 +211,8 @@ class StatementFunds(AbstractStatement):
 
         """
         super(StatementFunds, self).save(*args, **kwargs)
-        if send_signal_post_save and self.is_extraconcursal is False:
+        # if send_signal_post_save and self.is_extraconcursal is False:
+        if send_signal_post_save:
             gen_statement_funds.send(sender=self.__class__, instance=self)
 
     def delete(self, delete_total=True, *args, **kwargs):
@@ -237,11 +238,15 @@ class StatementFunds(AbstractStatement):
         """Delete the MonetaryCorrection object if exists"""
         monetary = self.get_monetary_correction()
         if monetary:
-            monetary.delete()
+            try:
+                monetary.delete()
+            except ValueError:
+                # Already in process to delete
+                pass
 
     def create_monetary_correction(self, data: dict):
         """Create or update the MonetaryCorrection object"""
-        money, c = MonetaryCorrection.objects.update_or_create(defaults=data, **{'statement': self})
+        MonetaryCorrection.objects.update_or_create(defaults=data, **{'statement': self})
 
     def calcule_monetary_correction(self):
         """
@@ -273,7 +278,7 @@ class MonetaryCorrection(AbstractMonetaryCorrection):
     Attributes:ø
         statement (StatementFunds): The statement of funds to which the monetary correction applies.
     """
-    statement = models.OneToOneField(StatementFunds, on_delete=models.PROTECT)
+    statement = models.OneToOneField(StatementFunds, on_delete=models.CASCADE)
 
 
 class TotalValuesFunds(AbstractTotalValuesFunds):
@@ -299,7 +304,7 @@ class TotalValuesFunds(AbstractTotalValuesFunds):
 
     def get_calculated_statement(self):
         """Returns the calculated statement of the fund."""
-        return self.fund.statementfunds_set.filter(status='C', is_extraconcursal=False)
+        return self.fund.statementfunds_set.filter(status='C').exclude(is_extraconcursal=True, is_retroactive=False)
 
     def set_total(self):
         """

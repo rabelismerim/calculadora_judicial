@@ -5,9 +5,9 @@ and updated_at. Does not add any additional fields, so should be subclassed
 to add specific fields as needed.
 """
 
-from django.db import models
 from calculation.models import Calculation
 from core.abstract.models import AbstractModel
+from django.db import models
 from utils import _
 
 CHOICES_CONCLUSION = (('I', _('Impugnment')), ('H', _('Qualification')))
@@ -83,6 +83,12 @@ class Statement(AbstractModel):
             return statement_pf.get_recurral_deposit()
         return 0
 
+    def get_default_interest_value(self) -> float:
+        """Returns the value of the default interest due if it exists, otherwise returns None"""
+        if hasattr(self, 'defaultinterest'):
+            return self.defaultinterest.value
+        return 0
+
     def get_default_interest(self) -> float:
         statement_pf = self.get_statement_pf()
         if statement_pf:
@@ -135,6 +141,7 @@ class TotalLawyer(AbstractModel):
         Returns a queryset of all the lawyers associated with this instance.
         """
         return self.lawyer_set.all()
+
     def get_lawyers_name(self):
         """
         Returns a queryset of all the lawyers associated with this instance.
@@ -158,6 +165,7 @@ class TotalLawyer(AbstractModel):
         super().save(*args, **kwargs)
 
 
+# TODO MARCELO: Adicionar os lawyers e o calculo devido no extrato contábil
 class Lawyer(AbstractModel):
     """
     Represents a single lawyer's fee for a Statement.

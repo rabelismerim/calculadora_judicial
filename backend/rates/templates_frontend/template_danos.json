@@ -1,0 +1,310 @@
+{
+    "name": "Danos",
+    "description": "Danos",
+    "fund_main": [
+        {
+            "label": "Nome da verba",
+            "key": "name",
+            "type": "C",
+            "order": 0,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Descri\u00e7\u00e3o fato gerador",
+            "key": "description",
+            "type": "C",
+            "order": 1,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Data base",
+            "key": "data_base",
+            "type": "D",
+            "order": 2,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Tipo de juros",
+            "key": "type_interest",
+            "type": "H",
+            "order": 3,
+            "choices": [
+                [
+                    "S",
+                    "Simples"
+                ],
+                [
+                    "E",
+                    "Selic Simples"
+                ],
+                [
+                    "C",
+                    "Selic Composta"
+                ],
+                [
+                    "R",
+                    "Selic Receita Federal"
+                ],
+                [
+                    "N",
+                    "N\u00e3o h\u00e1 incid\u00eancia de juros"
+                ]
+            ],
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Data Inicial do juros",
+            "key": "interest_initial_date",
+            "type": "D",
+            "order": 4,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Valor hist\u00f3rico",
+            "key": "historical_value",
+            "type": "F",
+            "order": 5,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Aplicar corre\u00e7\u00e3o monet\u00e1ria?",
+            "key": "apply_monetary_correction",
+            "type": "B",
+            "order": 6,
+            "default": true,
+            "is_editable": true,
+            "required": false
+        }
+    ],
+    "end_point": "/juca/api/v1/calculation/funds/danos/detail/",
+    "end_point_main": "/v1/calculation/funds/danos/",
+    "many": false,
+    "slug": "A",
+    "has_commit": true,
+    "summary_fields": [
+        {
+            "label": "Total: ",
+            "key": "none",
+            "type": "C",
+            "order": 0,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "total_historical",
+            "type": "F",
+            "order": 6,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "total_corrected",
+            "type": "F",
+            "order": 10,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "total_days",
+            "type": "I",
+            "order": 9,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "total_default_interest",
+            "type": "F",
+            "order": 12,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "total_due",
+            "type": "F",
+            "order": 13,
+            "is_editable": false,
+            "required": false
+        }
+    ],
+    "summary_main_fields": [
+        {
+            "label": "Total: ",
+            "key": "none",
+            "type": "C",
+            "order": 0,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "total_historical",
+            "type": "F",
+            "order": 6,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "total_corrected",
+            "type": "F",
+            "order": 10,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "total_days",
+            "type": "I",
+            "order": 9,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "total_default_interest",
+            "type": "F",
+            "order": 12,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "total_due",
+            "type": "F",
+            "order": 13,
+            "is_editable": false,
+            "required": false
+        }
+    ],
+    "fields": [
+        {
+            "label": "Nome da verba",
+            "key": "name",
+            "type": "C",
+            "order": 0,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Descri\u00e7\u00e3o fato gerador",
+            "key": "description",
+            "type": "C",
+            "order": 1,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Data base",
+            "key": "data_base",
+            "type": "D",
+            "order": 2,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Data Inicial do juros",
+            "key": "interest_initial_date",
+            "type": "D",
+            "order": 3,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Tipo de juros",
+            "key": "type_interest",
+            "type": "H",
+            "order": 4,
+            "choices": [
+                [
+                    "S",
+                    "Simples"
+                ],
+                [
+                    "E",
+                    "Selic Simples"
+                ],
+                [
+                    "C",
+                    "Selic Composta"
+                ],
+                [
+                    "R",
+                    "Selic Receita Federal"
+                ],
+                [
+                    "N",
+                    "N\u00e3o h\u00e1 incid\u00eancia de juros"
+                ]
+            ],
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Valor hist\u00f3rico",
+            "key": "historical_value",
+            "type": "F",
+            "order": 6,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "\u00cdndice na data base",
+            "key": "monetary_correction.index_data_base",
+            "type": "F",
+            "order": 7,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "\u00cdndice na recupera\u00e7\u00e3o",
+            "key": "monetary_correction.index_recovering",
+            "type": "F",
+            "order": 8,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "Dias",
+            "key": "total_days",
+            "type": "I",
+            "order": 9,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "Valor corrigido",
+            "key": "monetary_correction.corrected_value",
+            "type": "F",
+            "order": 10,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "Total do juros",
+            "key": "total_default_interest",
+            "type": "F",
+            "order": 12,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "Total devido",
+            "key": "total_due",
+            "type": "F",
+            "order": 13,
+            "is_editable": false,
+            "required": false
+        }
+    ]
+}

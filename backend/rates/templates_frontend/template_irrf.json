@@ -1,0 +1,165 @@
+{
+    "name": "IRRF",
+    "description": "Base de c\u00e1lculo",
+    "end_point_main": "/juca/api/v1/calculation/funds/irrf/",
+    "is_horizontal": false,
+    "fund_main": [
+        {
+            "label": "Nome da verba",
+            "key": "name",
+            "type": "C",
+            "order": 0,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Meses no per\u00edodo",
+            "key": "months_period",
+            "type": "I",
+            "order": 1,
+            "default": 1,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "\u00c9 extraconcursal",
+            "key": "is_extraconcursal",
+            "type": "B",
+            "order": 4,
+            "is_editable": true,
+            "default": false,
+            "required": true
+        },
+        {
+            "label": "\u00c9 retroativo",
+            "key": "is_retroactive",
+            "type": "B",
+            "order": 5,
+            "is_editable": true,
+            "default": false,
+            "required": true
+        }
+    ],
+    "end_point": "/juca/api/v1/calculation/funds/irrf/labor/",
+    "many": true,
+    "slug": "R",
+    "has_commit": false,
+    "summary_fields": [
+        {
+            "label": "Valor tribut\u00e1vel",
+            "key": "taxable_amount",
+            "type": "F",
+            "order": 0,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "taxable_portion",
+            "type": "F",
+            "order": 1,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "aliquot",
+            "type": "F",
+            "order": 2,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "installment_deducted",
+            "type": "F",
+            "order": 3,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "irrf_per_month",
+            "type": "F",
+            "order": 4,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "irrf_per_period",
+            "type": "F",
+            "order": 5,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "Status",
+            "key": "status_display",
+            "type": "C",
+            "order": 6,
+            "is_editable": false,
+            "required": false
+        }
+    ],
+    "summary_main_fields": [
+        {
+            "label": "",
+            "key": "classes.classe_display",
+            "type": "C",
+            "order": 0,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "coins.coin_display",
+            "type": "C",
+            "order": 1,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "coins.value",
+            "type": "F",
+            "order": 2,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "rate.index",
+            "type": "C",
+            "order": 3,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "R$",
+            "key": "total",
+            "type": "F",
+            "order": 4,
+            "is_editable": false,
+            "required": false
+        }
+    ],
+    "fields": [
+        {
+            "label": "Verbas",
+            "key": "fund_name",
+            "type": "C",
+            "order": 0,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Valores tribut\u00e1veis",
+            "key": "taxable_amounts",
+            "type": "F",
+            "order": 1,
+            "is_editable": true,
+            "required": true
+        }
+    ]
+}

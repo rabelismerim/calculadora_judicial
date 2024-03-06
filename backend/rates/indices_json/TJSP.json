@@ -1,0 +1,1342 @@
+{
+    "is_per_day": false,
+    "index": "TJSP",
+    "values": [
+        {
+            "date": null,
+            "accumulated": "Acumulado"
+        },
+        {
+            "date": "1994-07-01",
+            "accumulated": 11.346741
+        },
+        {
+            "date": "1994-08-01",
+            "accumulated": 12.036622
+        },
+        {
+            "date": "1994-09-01",
+            "accumulated": 12.693821
+        },
+        {
+            "date": "1994-10-01",
+            "accumulated": 12.885497
+        },
+        {
+            "date": "1994-11-01",
+            "accumulated": 13.125167
+        },
+        {
+            "date": "1994-12-01",
+            "accumulated": 13.554359
+        },
+        {
+            "date": "1995-01-01",
+            "accumulated": 13.851199
+        },
+        {
+            "date": "1995-02-01",
+            "accumulated": 14.082514
+        },
+        {
+            "date": "1995-03-01",
+            "accumulated": 14.22193
+        },
+        {
+            "date": "1995-04-01",
+            "accumulated": 14.422459
+        },
+        {
+            "date": "1995-05-01",
+            "accumulated": 14.69937
+        },
+        {
+            "date": "1995-06-01",
+            "accumulated": 15.077143
+        },
+        {
+            "date": "1995-07-01",
+            "accumulated": 15.351547
+        },
+        {
+            "date": "1995-08-01",
+            "accumulated": 15.729195
+        },
+        {
+            "date": "1995-09-01",
+            "accumulated": 15.889632
+        },
+        {
+            "date": "1995-10-01",
+            "accumulated": 16.07554
+        },
+        {
+            "date": "1995-11-01",
+            "accumulated": 16.300597
+        },
+        {
+            "date": "1995-12-01",
+            "accumulated": 16.546736
+        },
+        {
+            "date": "1996-01-01",
+            "accumulated": 16.819757
+        },
+        {
+            "date": "1996-02-01",
+            "accumulated": 17.065325
+        },
+        {
+            "date": "1996-03-01",
+            "accumulated": 17.186488
+        },
+        {
+            "date": "1996-04-01",
+            "accumulated": 17.236328
+        },
+        {
+            "date": "1996-05-01",
+            "accumulated": 17.396625
+        },
+        {
+            "date": "1996-06-01",
+            "accumulated": 17.619301
+        },
+        {
+            "date": "1996-07-01",
+            "accumulated": 17.853637
+        },
+        {
+            "date": "1996-08-01",
+            "accumulated": 18.06788
+        },
+        {
+            "date": "1996-09-01",
+            "accumulated": 18.158219
+        },
+        {
+            "date": "1996-10-01",
+            "accumulated": 18.16185
+        },
+        {
+            "date": "1996-11-01",
+            "accumulated": 18.230865
+        },
+        {
+            "date": "1996-12-01",
+            "accumulated": 18.292849
+        },
+        {
+            "date": "1997-01-01",
+            "accumulated": 18.353215
+        },
+        {
+            "date": "1997-02-01",
+            "accumulated": 18.501876
+        },
+        {
+            "date": "1997-03-01",
+            "accumulated": 18.585134
+        },
+        {
+            "date": "1997-04-01",
+            "accumulated": 18.711512
+        },
+        {
+            "date": "1997-05-01",
+            "accumulated": 18.823781
+        },
+        {
+            "date": "1997-06-01",
+            "accumulated": 18.844487
+        },
+        {
+            "date": "1997-07-01",
+            "accumulated": 18.910442
+        },
+        {
+            "date": "1997-08-01",
+            "accumulated": 18.94448
+        },
+        {
+            "date": "1997-09-01",
+            "accumulated": 18.938796
+        },
+        {
+            "date": "1997-10-01",
+            "accumulated": 18.957734
+        },
+        {
+            "date": "1997-11-01",
+            "accumulated": 19.012711
+        },
+        {
+            "date": "1997-12-01",
+            "accumulated": 19.04123
+        },
+        {
+            "date": "1998-01-01",
+            "accumulated": 19.149765
+        },
+        {
+            "date": "1998-02-01",
+            "accumulated": 19.312538
+        },
+        {
+            "date": "1998-03-01",
+            "accumulated": 19.416825
+        },
+        {
+            "date": "1998-04-01",
+            "accumulated": 19.511967
+        },
+        {
+            "date": "1998-05-01",
+            "accumulated": 19.59977
+        },
+        {
+            "date": "1998-06-01",
+            "accumulated": 19.740888
+        },
+        {
+            "date": "1998-07-01",
+            "accumulated": 19.770499
+        },
+        {
+            "date": "1998-08-01",
+            "accumulated": 19.715141
+        },
+        {
+            "date": "1998-09-01",
+            "accumulated": 19.618536
+        },
+        {
+            "date": "1998-10-01",
+            "accumulated": 19.557718
+        },
+        {
+            "date": "1998-11-01",
+            "accumulated": 19.579231
+        },
+        {
+            "date": "1998-12-01",
+            "accumulated": 19.543988
+        },
+        {
+            "date": "1999-01-01",
+            "accumulated": 19.626072
+        },
+        {
+            "date": "1999-02-01",
+            "accumulated": 19.753641
+        },
+        {
+            "date": "1999-03-01",
+            "accumulated": 20.008462
+        },
+        {
+            "date": "1999-04-01",
+            "accumulated": 20.26457
+        },
+        {
+            "date": "1999-05-01",
+            "accumulated": 20.359813
+        },
+        {
+            "date": "1999-06-01",
+            "accumulated": 20.369992
+        },
+        {
+            "date": "1999-07-01",
+            "accumulated": 20.38425
+        },
+        {
+            "date": "1999-08-01",
+            "accumulated": 20.535093
+        },
+        {
+            "date": "1999-09-01",
+            "accumulated": 20.648036
+        },
+        {
+            "date": "1999-10-01",
+            "accumulated": 20.728563
+        },
+        {
+            "date": "1999-11-01",
+            "accumulated": 20.927557
+        },
+        {
+            "date": "1999-12-01",
+            "accumulated": 21.124276
+        },
+        {
+            "date": "2000-01-01",
+            "accumulated": 21.280595
+        },
+        {
+            "date": "2000-02-01",
+            "accumulated": 21.410406
+        },
+        {
+            "date": "2000-03-01",
+            "accumulated": 21.421111
+        },
+        {
+            "date": "2000-04-01",
+            "accumulated": 21.448958
+        },
+        {
+            "date": "2000-05-01",
+            "accumulated": 21.468262
+        },
+        {
+            "date": "2000-06-01",
+            "accumulated": 21.457527
+        },
+        {
+            "date": "2000-07-01",
+            "accumulated": 21.521899
+        },
+        {
+            "date": "2000-08-01",
+            "accumulated": 21.821053
+        },
+        {
+            "date": "2000-09-01",
+            "accumulated": 22.085087
+        },
+        {
+            "date": "2000-10-01",
+            "accumulated": 22.180052
+        },
+        {
+            "date": "2000-11-01",
+            "accumulated": 22.21554
+        },
+        {
+            "date": "2000-12-01",
+            "accumulated": 22.279965
+        },
+        {
+            "date": "2001-01-01",
+            "accumulated": 22.402504
+        },
+        {
+            "date": "2001-02-01",
+            "accumulated": 22.575003
+        },
+        {
+            "date": "2001-03-01",
+            "accumulated": 22.68562
+        },
+        {
+            "date": "2001-04-01",
+            "accumulated": 22.79451
+        },
+        {
+            "date": "2001-05-01",
+            "accumulated": 22.985983
+        },
+        {
+            "date": "2001-06-01",
+            "accumulated": 23.117003
+        },
+        {
+            "date": "2001-07-01",
+            "accumulated": 23.255705
+        },
+        {
+            "date": "2001-08-01",
+            "accumulated": 23.513843
+        },
+        {
+            "date": "2001-09-01",
+            "accumulated": 23.699602
+        },
+        {
+            "date": "2001-10-01",
+            "accumulated": 23.80388
+        },
+        {
+            "date": "2001-11-01",
+            "accumulated": 24.027636
+        },
+        {
+            "date": "2001-12-01",
+            "accumulated": 24.337592
+        },
+        {
+            "date": "2002-01-01",
+            "accumulated": 24.51769
+        },
+        {
+            "date": "2002-02-01",
+            "accumulated": 24.780029
+        },
+        {
+            "date": "2002-03-01",
+            "accumulated": 24.856847
+        },
+        {
+            "date": "2002-04-01",
+            "accumulated": 25.010959
+        },
+        {
+            "date": "2002-05-01",
+            "accumulated": 25.181033
+        },
+        {
+            "date": "2002-06-01",
+            "accumulated": 25.203695
+        },
+        {
+            "date": "2002-07-01",
+            "accumulated": 25.357437
+        },
+        {
+            "date": "2002-08-01",
+            "accumulated": 25.649047
+        },
+        {
+            "date": "2002-09-01",
+            "accumulated": 25.869628
+        },
+        {
+            "date": "2002-10-01",
+            "accumulated": 26.084345
+        },
+        {
+            "date": "2002-11-01",
+            "accumulated": 26.493869
+        },
+        {
+            "date": "2002-12-01",
+            "accumulated": 27.392011
+        },
+        {
+            "date": "2003-01-01",
+            "accumulated": 28.131595
+        },
+        {
+            "date": "2003-02-01",
+            "accumulated": 28.826445
+        },
+        {
+            "date": "2003-03-01",
+            "accumulated": 29.247311
+        },
+        {
+            "date": "2003-04-01",
+            "accumulated": 29.647999
+        },
+        {
+            "date": "2003-05-01",
+            "accumulated": 30.057141
+        },
+        {
+            "date": "2003-06-01",
+            "accumulated": 30.354706
+        },
+        {
+            "date": "2003-07-01",
+            "accumulated": 30.336493
+        },
+        {
+            "date": "2003-08-01",
+            "accumulated": 30.348627
+        },
+        {
+            "date": "2003-09-01",
+            "accumulated": 30.403254
+        },
+        {
+            "date": "2003-10-01",
+            "accumulated": 30.65256
+        },
+        {
+            "date": "2003-11-01",
+            "accumulated": 30.772104
+        },
+        {
+            "date": "2003-12-01",
+            "accumulated": 30.88596
+        },
+        {
+            "date": "2004-01-01",
+            "accumulated": 31.052744
+        },
+        {
+            "date": "2004-02-01",
+            "accumulated": 31.310481
+        },
+        {
+            "date": "2004-03-01",
+            "accumulated": 31.432591
+        },
+        {
+            "date": "2004-04-01",
+            "accumulated": 31.611756
+        },
+        {
+            "date": "2004-05-01",
+            "accumulated": 31.741364
+        },
+        {
+            "date": "2004-06-01",
+            "accumulated": 31.868329
+        },
+        {
+            "date": "2004-07-01",
+            "accumulated": 32.02767
+        },
+        {
+            "date": "2004-08-01",
+            "accumulated": 32.261471
+        },
+        {
+            "date": "2004-09-01",
+            "accumulated": 32.422778
+        },
+        {
+            "date": "2004-10-01",
+            "accumulated": 32.477896
+        },
+        {
+            "date": "2004-11-01",
+            "accumulated": 32.533108
+        },
+        {
+            "date": "2004-12-01",
+            "accumulated": 32.676253
+        },
+        {
+            "date": "2005-01-01",
+            "accumulated": 32.957268
+        },
+        {
+            "date": "2005-02-01",
+            "accumulated": 33.145124
+        },
+        {
+            "date": "2005-03-01",
+            "accumulated": 33.290962
+        },
+        {
+            "date": "2005-04-01",
+            "accumulated": 33.533986
+        },
+        {
+            "date": "2005-05-01",
+            "accumulated": 33.839145
+        },
+        {
+            "date": "2005-06-01",
+            "accumulated": 34.076019
+        },
+        {
+            "date": "2005-07-01",
+            "accumulated": 34.038535
+        },
+        {
+            "date": "2005-08-01",
+            "accumulated": 34.048746
+        },
+        {
+            "date": "2005-09-01",
+            "accumulated": 34.048746
+        },
+        {
+            "date": "2005-10-01",
+            "accumulated": 34.099819
+        },
+        {
+            "date": "2005-11-01",
+            "accumulated": 34.297597
+        },
+        {
+            "date": "2005-12-01",
+            "accumulated": 34.482804
+        },
+        {
+            "date": "2006-01-01",
+            "accumulated": 34.620735
+        },
+        {
+            "date": "2006-02-01",
+            "accumulated": 34.752293
+        },
+        {
+            "date": "2006-03-01",
+            "accumulated": 34.832223
+        },
+        {
+            "date": "2006-04-01",
+            "accumulated": 34.92627
+        },
+        {
+            "date": "2006-05-01",
+            "accumulated": 34.968181
+        },
+        {
+            "date": "2006-06-01",
+            "accumulated": 35.013639
+        },
+        {
+            "date": "2006-07-01",
+            "accumulated": 34.989129
+        },
+        {
+            "date": "2006-08-01",
+            "accumulated": 35.027617
+        },
+        {
+            "date": "2006-09-01",
+            "accumulated": 35.020611
+        },
+        {
+            "date": "2006-10-01",
+            "accumulated": 35.076643
+        },
+        {
+            "date": "2006-11-01",
+            "accumulated": 35.227472
+        },
+        {
+            "date": "2006-12-01",
+            "accumulated": 35.375427
+        },
+        {
+            "date": "2007-01-01",
+            "accumulated": 35.594754
+        },
+        {
+            "date": "2007-02-01",
+            "accumulated": 35.769168
+        },
+        {
+            "date": "2007-03-01",
+            "accumulated": 35.919398
+        },
+        {
+            "date": "2007-04-01",
+            "accumulated": 36.077443
+        },
+        {
+            "date": "2007-05-01",
+            "accumulated": 36.171244
+        },
+        {
+            "date": "2007-06-01",
+            "accumulated": 36.265289
+        },
+        {
+            "date": "2007-07-01",
+            "accumulated": 36.377711
+        },
+        {
+            "date": "2007-08-01",
+            "accumulated": 36.494119
+        },
+        {
+            "date": "2007-09-01",
+            "accumulated": 36.709434
+        },
+        {
+            "date": "2007-10-01",
+            "accumulated": 36.801207
+        },
+        {
+            "date": "2007-11-01",
+            "accumulated": 36.91161
+        },
+        {
+            "date": "2007-12-01",
+            "accumulated": 37.070329
+        },
+        {
+            "date": "2008-01-01",
+            "accumulated": 37.429911
+        },
+        {
+            "date": "2008-02-01",
+            "accumulated": 37.688177
+        },
+        {
+            "date": "2008-03-01",
+            "accumulated": 37.86908
+        },
+        {
+            "date": "2008-04-01",
+            "accumulated": 38.062212
+        },
+        {
+            "date": "2008-05-01",
+            "accumulated": 38.30581
+        },
+        {
+            "date": "2008-06-01",
+            "accumulated": 38.673545
+        },
+        {
+            "date": "2008-07-01",
+            "accumulated": 39.025474
+        },
+        {
+            "date": "2008-08-01",
+            "accumulated": 39.251821
+        },
+        {
+            "date": "2008-09-01",
+            "accumulated": 39.334249
+        },
+        {
+            "date": "2008-10-01",
+            "accumulated": 39.39325
+        },
+        {
+            "date": "2008-11-01",
+            "accumulated": 39.590216
+        },
+        {
+            "date": "2008-12-01",
+            "accumulated": 39.740658
+        },
+        {
+            "date": "2009-01-01",
+            "accumulated": 39.855905
+        },
+        {
+            "date": "2009-02-01",
+            "accumulated": 40.110982
+        },
+        {
+            "date": "2009-03-01",
+            "accumulated": 40.235326
+        },
+        {
+            "date": "2009-04-01",
+            "accumulated": 40.315796
+        },
+        {
+            "date": "2009-05-01",
+            "accumulated": 40.537532
+        },
+        {
+            "date": "2009-06-01",
+            "accumulated": 40.780757
+        },
+        {
+            "date": "2009-07-01",
+            "accumulated": 40.952036
+        },
+        {
+            "date": "2009-08-01",
+            "accumulated": 41.046225
+        },
+        {
+            "date": "2009-09-01",
+            "accumulated": 41.079061
+        },
+        {
+            "date": "2009-10-01",
+            "accumulated": 41.144787
+        },
+        {
+            "date": "2009-11-01",
+            "accumulated": 41.243534
+        },
+        {
+            "date": "2009-12-01",
+            "accumulated": 41.396135
+        },
+        {
+            "date": "2010-01-01",
+            "accumulated": 41.495485
+        },
+        {
+            "date": "2010-02-01",
+            "accumulated": 41.860645
+        },
+        {
+            "date": "2010-03-01",
+            "accumulated": 42.153669
+        },
+        {
+            "date": "2010-04-01",
+            "accumulated": 42.45296
+        },
+        {
+            "date": "2010-05-01",
+            "accumulated": 42.762866
+        },
+        {
+            "date": "2010-06-01",
+            "accumulated": 42.946746
+        },
+        {
+            "date": "2010-07-01",
+            "accumulated": 42.899504
+        },
+        {
+            "date": "2010-08-01",
+            "accumulated": 42.869474
+        },
+        {
+            "date": "2010-09-01",
+            "accumulated": 42.839465
+        },
+        {
+            "date": "2010-10-01",
+            "accumulated": 43.070798
+        },
+        {
+            "date": "2010-11-01",
+            "accumulated": 43.467049
+        },
+        {
+            "date": "2010-12-01",
+            "accumulated": 43.914759
+        },
+        {
+            "date": "2011-01-01",
+            "accumulated": 44.178247
+        },
+        {
+            "date": "2011-02-01",
+            "accumulated": 44.593522
+        },
+        {
+            "date": "2011-03-01",
+            "accumulated": 44.834327
+        },
+        {
+            "date": "2011-04-01",
+            "accumulated": 45.130233
+        },
+        {
+            "date": "2011-05-01",
+            "accumulated": 45.45517
+        },
+        {
+            "date": "2011-06-01",
+            "accumulated": 45.714264
+        },
+        {
+            "date": "2011-07-01",
+            "accumulated": 45.814835
+        },
+        {
+            "date": "2011-08-01",
+            "accumulated": 45.814835
+        },
+        {
+            "date": "2011-09-01",
+            "accumulated": 46.007257
+        },
+        {
+            "date": "2011-10-01",
+            "accumulated": 46.214289
+        },
+        {
+            "date": "2011-11-01",
+            "accumulated": 46.362174
+        },
+        {
+            "date": "2011-12-01",
+            "accumulated": 46.626438
+        },
+        {
+            "date": "2012-01-01",
+            "accumulated": 46.864232
+        },
+        {
+            "date": "2012-02-01",
+            "accumulated": 47.103239
+        },
+        {
+            "date": "2012-03-01",
+            "accumulated": 47.286941
+        },
+        {
+            "date": "2012-04-01",
+            "accumulated": 47.372057
+        },
+        {
+            "date": "2012-05-01",
+            "accumulated": 47.675238
+        },
+        {
+            "date": "2012-06-01",
+            "accumulated": 47.937451
+        },
+        {
+            "date": "2012-07-01",
+            "accumulated": 48.062088
+        },
+        {
+            "date": "2012-08-01",
+            "accumulated": 48.268754
+        },
+        {
+            "date": "2012-09-01",
+            "accumulated": 48.485963
+        },
+        {
+            "date": "2012-10-01",
+            "accumulated": 48.791424
+        },
+        {
+            "date": "2012-11-01",
+            "accumulated": 49.137843
+        },
+        {
+            "date": "2012-12-01",
+            "accumulated": 49.403187
+        },
+        {
+            "date": "2013-01-01",
+            "accumulated": 49.76877
+        },
+        {
+            "date": "2013-02-01",
+            "accumulated": 50.226642
+        },
+        {
+            "date": "2013-03-01",
+            "accumulated": 50.48782
+        },
+        {
+            "date": "2013-04-01",
+            "accumulated": 50.790746
+        },
+        {
+            "date": "2013-05-01",
+            "accumulated": 51.090411
+        },
+        {
+            "date": "2013-06-01",
+            "accumulated": 51.269227
+        },
+        {
+            "date": "2013-07-01",
+            "accumulated": 51.41278
+        },
+        {
+            "date": "2013-08-01",
+            "accumulated": 51.345943
+        },
+        {
+            "date": "2013-09-01",
+            "accumulated": 51.428096
+        },
+        {
+            "date": "2013-10-01",
+            "accumulated": 51.566951
+        },
+        {
+            "date": "2013-11-01",
+            "accumulated": 51.881509
+        },
+        {
+            "date": "2013-12-01",
+            "accumulated": 52.161669
+        },
+        {
+            "date": "2014-01-01",
+            "accumulated": 52.537233
+        },
+        {
+            "date": "2014-02-01",
+            "accumulated": 52.868217
+        },
+        {
+            "date": "2014-03-01",
+            "accumulated": 53.206573
+        },
+        {
+            "date": "2014-04-01",
+            "accumulated": 53.642866
+        },
+        {
+            "date": "2014-05-01",
+            "accumulated": 54.06128
+        },
+        {
+            "date": "2014-06-01",
+            "accumulated": 54.385647
+        },
+        {
+            "date": "2014-07-01",
+            "accumulated": 54.527049
+        },
+        {
+            "date": "2014-08-01",
+            "accumulated": 54.597934
+        },
+        {
+            "date": "2014-09-01",
+            "accumulated": 54.69621
+        },
+        {
+            "date": "2014-10-01",
+            "accumulated": 54.964221
+        },
+        {
+            "date": "2014-11-01",
+            "accumulated": 55.173085
+        },
+        {
+            "date": "2014-12-01",
+            "accumulated": 55.465502
+        },
+        {
+            "date": "2015-01-01",
+            "accumulated": 55.809388
+        },
+        {
+            "date": "2015-02-01",
+            "accumulated": 56.635366
+        },
+        {
+            "date": "2015-03-01",
+            "accumulated": 57.292336
+        },
+        {
+            "date": "2015-04-01",
+            "accumulated": 58.15745
+        },
+        {
+            "date": "2015-05-01",
+            "accumulated": 58.570367
+        },
+        {
+            "date": "2015-06-01",
+            "accumulated": 59.150213
+        },
+        {
+            "date": "2015-07-01",
+            "accumulated": 59.605669
+        },
+        {
+            "date": "2015-08-01",
+            "accumulated": 59.951381
+        },
+        {
+            "date": "2015-09-01",
+            "accumulated": 60.101259
+        },
+        {
+            "date": "2015-10-01",
+            "accumulated": 60.407775
+        },
+        {
+            "date": "2015-11-01",
+            "accumulated": 60.872914
+        },
+        {
+            "date": "2015-12-01",
+            "accumulated": 61.548603
+        },
+        {
+            "date": "2016-01-01",
+            "accumulated": 62.10254
+        },
+        {
+            "date": "2016-02-01",
+            "accumulated": 63.040288
+        },
+        {
+            "date": "2016-03-01",
+            "accumulated": 63.63917
+        },
+        {
+            "date": "2016-04-01",
+            "accumulated": 63.919182
+        },
+        {
+            "date": "2016-05-01",
+            "accumulated": 64.328264
+        },
+        {
+            "date": "2016-06-01",
+            "accumulated": 64.95868
+        },
+        {
+            "date": "2016-07-01",
+            "accumulated": 65.263985
+        },
+        {
+            "date": "2016-08-01",
+            "accumulated": 65.681674
+        },
+        {
+            "date": "2016-09-01",
+            "accumulated": 65.885287
+        },
+        {
+            "date": "2016-10-01",
+            "accumulated": 65.937995
+        },
+        {
+            "date": "2016-11-01",
+            "accumulated": 66.050089
+        },
+        {
+            "date": "2016-12-01",
+            "accumulated": 66.096324
+        },
+        {
+            "date": "2017-01-01",
+            "accumulated": 66.188858
+        },
+        {
+            "date": "2017-02-01",
+            "accumulated": 66.466851
+        },
+        {
+            "date": "2017-03-01",
+            "accumulated": 66.626371
+        },
+        {
+            "date": "2017-04-01",
+            "accumulated": 66.839575
+        },
+        {
+            "date": "2017-05-01",
+            "accumulated": 66.893046
+        },
+        {
+            "date": "2017-06-01",
+            "accumulated": 67.13386
+        },
+        {
+            "date": "2017-07-01",
+            "accumulated": 66.932458
+        },
+        {
+            "date": "2017-08-01",
+            "accumulated": 67.046243
+        },
+        {
+            "date": "2017-09-01",
+            "accumulated": 67.026129
+        },
+        {
+            "date": "2017-10-01",
+            "accumulated": 67.012723
+        },
+        {
+            "date": "2017-11-01",
+            "accumulated": 67.26067
+        },
+        {
+            "date": "2017-12-01",
+            "accumulated": 67.381739
+        },
+        {
+            "date": "2018-01-01",
+            "accumulated": 67.556931
+        },
+        {
+            "date": "2018-02-01",
+            "accumulated": 67.712311
+        },
+        {
+            "date": "2018-03-01",
+            "accumulated": 67.834193
+        },
+        {
+            "date": "2018-04-01",
+            "accumulated": 67.881676
+        },
+        {
+            "date": "2018-05-01",
+            "accumulated": 68.024227
+        },
+        {
+            "date": "2018-06-01",
+            "accumulated": 68.316731
+        },
+        {
+            "date": "2018-07-01",
+            "accumulated": 69.29366
+        },
+        {
+            "date": "2018-08-01",
+            "accumulated": 69.466894
+        },
+        {
+            "date": "2018-09-01",
+            "accumulated": 69.466894
+        },
+        {
+            "date": "2018-10-01",
+            "accumulated": 69.675294
+        },
+        {
+            "date": "2018-11-01",
+            "accumulated": 69.953995
+        },
+        {
+            "date": "2018-12-01",
+            "accumulated": 69.77911
+        },
+        {
+            "date": "2019-01-01",
+            "accumulated": 69.8768
+        },
+        {
+            "date": "2019-02-01",
+            "accumulated": 70.128356
+        },
+        {
+            "date": "2019-03-01",
+            "accumulated": 70.507049
+        },
+        {
+            "date": "2019-04-01",
+            "accumulated": 71.049953
+        },
+        {
+            "date": "2019-05-01",
+            "accumulated": 71.476252
+        },
+        {
+            "date": "2019-06-01",
+            "accumulated": 71.583466
+        },
+        {
+            "date": "2019-07-01",
+            "accumulated": 71.590624
+        },
+        {
+            "date": "2019-08-01",
+            "accumulated": 71.662214
+        },
+        {
+            "date": "2019-09-01",
+            "accumulated": 71.748208
+        },
+        {
+            "date": "2019-10-01",
+            "accumulated": 71.712333
+        },
+        {
+            "date": "2019-11-01",
+            "accumulated": 71.741017
+        },
+        {
+            "date": "2019-12-01",
+            "accumulated": 72.128418
+        },
+        {
+            "date": "2020-01-01",
+            "accumulated": 73.008384
+        },
+        {
+            "date": "2020-02-01",
+            "accumulated": 73.147099
+        },
+        {
+            "date": "2020-03-01",
+            "accumulated": 73.271449
+        },
+        {
+            "date": "2020-04-01",
+            "accumulated": 73.403337
+        },
+        {
+            "date": "2020-05-01",
+            "accumulated": 73.234509
+        },
+        {
+            "date": "2020-06-01",
+            "accumulated": 73.051422
+        },
+        {
+            "date": "2020-07-01",
+            "accumulated": 73.270576
+        },
+        {
+            "date": "2020-08-01",
+            "accumulated": 73.592966
+        },
+        {
+            "date": "2020-09-01",
+            "accumulated": 73.8579
+        },
+        {
+            "date": "2020-10-01",
+            "accumulated": 74.500463
+        },
+        {
+            "date": "2020-11-01",
+            "accumulated": 75.163517
+        },
+        {
+            "date": "2020-12-01",
+            "accumulated": 75.87757
+        },
+        {
+            "date": "2021-01-01",
+            "accumulated": 76.985382
+        },
+        {
+            "date": "2021-02-01",
+            "accumulated": 77.193242
+        },
+        {
+            "date": "2021-03-01",
+            "accumulated": 77.826226
+        },
+        {
+            "date": "2021-04-01",
+            "accumulated": 78.495531
+        },
+        {
+            "date": "2021-05-01",
+            "accumulated": 78.793814
+        },
+        {
+            "date": "2021-06-01",
+            "accumulated": 79.550234
+        },
+        {
+            "date": "2021-07-01",
+            "accumulated": 80.027535
+        },
+        {
+            "date": "2021-08-01",
+            "accumulated": 80.843815
+        },
+        {
+            "date": "2021-09-01",
+            "accumulated": 81.55524
+        },
+        {
+            "date": "2021-10-01",
+            "accumulated": 82.533902
+        },
+        {
+            "date": "2021-11-01",
+            "accumulated": 83.491295
+        },
+        {
+            "date": "2021-12-01",
+            "accumulated": 84.192621
+        },
+        {
+            "date": "2022-01-01",
+            "accumulated": 84.807227
+        },
+        {
+            "date": "2022-02-01",
+            "accumulated": 85.375435
+        },
+        {
+            "date": "2022-03-01",
+            "accumulated": 86.229189
+        }
+    ]
+}
