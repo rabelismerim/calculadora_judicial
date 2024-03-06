@@ -66,47 +66,47 @@ steps:
     md .\log
   failOnStderr: true
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Create dir log'
 - script: |
     pip install virtualenv
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Install virtualenv'
 - script: |
     virtualenv venv
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Create virtualenv'
 - script: |
     .\venv\Scripts\activate
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Active virtualenv'
 - script: |
     python -m pip install --upgrade --user pip setuptools wheel
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Install and update pip'
 - script: |
     pip install --user -r requirements.txt
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Install requirements'
 - script: |
     pip install --user unittest-xml-reporting
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Install unittest'
 - script: |
     python -m pip install --user fastcgi
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Install fastcgi'
 - script: |
     python manage.py collectstatic --no-input
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Django Collectstatic'
 - task: DeleteFiles@1
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)/backend/venv'
@@ -149,9 +149,9 @@ steps:
     ignoreMakeDirErrors: true
     ignoreErrors: true
 - script: |
-    E:/wwwroot/fadigitallab.deloitte.com.br/juca/backend/venv/Scripts/python manage.py makemigrations
-    E:/wwwroot/fadigitallab.deloitte.com.br/juca/backend/venv/Scripts/python manage.py migrate
+    cd E:/wwwroot/fadigitallab.deloitte.com.br/juca/backend/ || exit 0
+    E:/wwwroot/fadigitallab.deloitte.com.br/juca/backend/venv/Scripts/python manage.py makemigrations || exit 0
+    E:/wwwroot/fadigitallab.deloitte.com.br/juca/backend/venv/Scripts/python manage.py migrate || exit 0
   failOnStderr: false
-  workingDirectory: E:/wwwroot/fadigitallab.deloitte.com.br/juca/backend
   displayName: 'Run Django migrations on target VM'
   continueOnError: true
