@@ -155,4 +155,3 @@ steps:
   workingDirectory: E:/wwwroot/fadigitallab.deloitte.com.br/juca/backend
   displayName: 'Run Django migrations on target VM'
   continueOnError: true
-  ignoreErrors: true
