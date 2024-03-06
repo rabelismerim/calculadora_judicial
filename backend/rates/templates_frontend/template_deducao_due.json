@@ -1,0 +1,256 @@
+{
+  "name": "Verbas de dedu\u00E7\u00E3o",
+  "description": "Saldo a pagar",
+  "end_point": "/juca/api/v1/calculation/funds/deduction/due/detail/",
+  "fund_main": [
+    {
+      "label": "Data da atualiza\u00E7\u00E3o da corre\u00E7\u00E3o monet\u00E1ria",
+      "key": "monetary_correction_update_date",
+      "type": "D",
+      "order": 0,
+      "is_editable": true,
+      "required": true
+    },
+    {
+      "label": "Data da atualiza\u00E7\u00E3o dos juros",
+      "key": "interest_update_date",
+      "type": "D",
+      "order": 1,
+      "is_editable": true,
+      "required": true
+    },
+    {
+      "label": "Data da homologa\u00E7\u00E3o da proposta",
+      "key": "approval_proposal_date",
+      "type": "D",
+      "order": 2,
+      "is_editable": true,
+      "required": true
+    },
+    {
+      "label": "Multa",
+      "key": "fine",
+      "type": "F",
+      "order": 3,
+      "is_editable": true,
+      "required": false
+    },
+    {
+      "label": "Juros",
+      "key": "default_interest",
+      "type": "F",
+      "order": 4,
+      "is_editable": true,
+      "required": false
+    },
+    {
+      "label": "Nome",
+      "key": "name",
+      "type": "C",
+      "order": 5,
+      "is_editable": true,
+      "required": true
+    }
+  ],
+  "end_point_main": "/v1/calculation/funds/deduction/",
+  "many": false,
+  "slug": "E",
+  "has_commit": true,
+  "summary_fields": [
+    {
+      "label": "",
+      "key": "total.document",
+      "type": "C",
+      "order": 1,
+      "is_editable": false,
+      "required": false
+    },
+    {
+      "label": "",
+      "key": "total.historical_value",
+      "type": "F",
+      "order": 3,
+      "is_editable": false,
+      "required": false
+    },
+    {
+      "label": "",
+      "key": "total.corrected_value",
+      "type": "F",
+      "order": 6,
+      "is_editable": false,
+      "required": false
+    },
+    {
+      "label": "",
+      "key": "total.default_interest",
+      "type": "F",
+      "order": 8,
+      "is_editable": false,
+      "required": false
+    },
+    {
+      "label": "",
+      "key": "total.fine",
+      "type": "F",
+      "order": 9,
+      "is_editable": false,
+      "required": false
+    },
+    {
+      "label": "",
+      "key": "total.historical_charges",
+      "type": "F",
+      "order": 10,
+      "is_editable": false,
+      "required": false
+    },
+    {
+      "label": "",
+      "key": "total.total_due",
+      "type": "F",
+      "order": 11,
+      "is_editable": false,
+      "required": false
+    }
+  ],
+  "summary_main_fields": [
+    {
+      "label": "",
+      "key": "classes.classe_display",
+      "type": "C",
+      "order": 0,
+      "is_editable": false,
+      "required": false
+    },
+    {
+      "label": "",
+      "key": "coins.coin_display",
+      "type": "C",
+      "order": 1,
+      "is_editable": false,
+      "required": false
+    },
+    {
+      "label": "",
+      "key": "coins.value",
+      "type": "F",
+      "order": 2,
+      "is_editable": false,
+      "required": false
+    },
+    {
+      "label": "",
+      "key": "rate.index",
+      "type": "C",
+      "order": 3,
+      "is_editable": false,
+      "required": false
+    },
+    {
+      "label": "R$",
+      "key": "total",
+      "type": "F",
+      "order": 4,
+      "is_editable": false,
+      "required": false
+    }
+  ],
+  "fields": [
+    {
+      "label": "Documento",
+      "key": "document",
+      "type": "C",
+      "order": 1,
+      "is_editable": false,
+      "required": true
+    },
+    {
+      "label": "Data base",
+      "key": "data_base",
+      "type": "D",
+      "order": 2,
+      "is_editable": false,
+      "required": false,
+      "default": null
+    },
+    {
+      "label": "Valor",
+      "key": "historical_value",
+      "type": "F",
+      "order": 3,
+      "is_editable": false,
+      "required": false,
+      "default": null
+    },
+    {
+      "label": "\u00cdndice na data base",
+      "key": "index_data_base",
+      "type": "F",
+      "order": 4,
+      "is_editable": false,
+      "required": false
+    },
+    {
+      "label": "\u00cdndice na data de liquida\u00E7\u00E3o",
+      "key": "index_payment",
+      "type": "F",
+      "order": 5,
+      "is_editable": false,
+      "required": false
+    },
+    {
+      "label": "Valor corrigido",
+      "key": "corrected_value",
+      "type": "F",
+      "order": 6,
+      "is_editable": false,
+      "required": false
+    },
+    {
+      "label": "Dias",
+      "key": "days",
+      "type": "F",
+      "order": 7,
+      "is_editable": false,
+      "default": 0,
+      "required": false
+    },
+    {
+      "label": "Juros (BRL)",
+      "key": "default_interest",
+      "type": "F",
+      "order": 8,
+      "is_editable": false,
+      "default": 0,
+      "required": false
+    },
+    {
+      "label": "Multa (BRL)",
+      "key": "fine",
+      "type": "F",
+      "order": 9,
+      "is_editable": false,
+      "default": 0,
+      "required": false
+    },
+    {
+      "label": "Encargos historicos (BRL)",
+      "key": "historical_charges",
+      "type": "F",
+      "order": 10,
+      "is_editable": false,
+      "default": 0,
+      "required": false
+    },
+    {
+      "label": "Valor devido (BRL)",
+      "key": "total_due",
+      "type": "F",
+      "order": 11,
+      "is_editable": false,
+      "default": 0,
+      "required": false
+    }
+  ]
+}

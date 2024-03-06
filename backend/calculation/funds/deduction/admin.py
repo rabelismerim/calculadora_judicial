@@ -18,10 +18,10 @@ admin.site.register(Deduction)
 from django.contrib import admin
 
 from calculation.funds.admin import AbstractStatementFundsAdmin
-from calculation.funds.deduction.models import StatementDeduction, FundDeduction
+from calculation.funds.deduction.models import StatementDeduction, FundDeduction, StatementDeductionDue
 
 readonly_fields = ['index_data_base', 'index_payment', 'corrected_value', 'days', 'default_interest', 'fine',
-                   'remaining_balance']
+                   'remaining_balance', 'total_due']
 
 
 class StatementDeductionsAdmin(AbstractStatementFundsAdmin):
@@ -39,6 +39,15 @@ class StatementDeductionsRemainAdmin(AbstractStatementFundsAdmin):
     admin interface for the Comparative instance.
     """
     readonly_fields = readonly_fields
+
+
+class StatementDeductionDueAdmin(AbstractStatementFundsAdmin):
+    """
+    A ModelAdmin class containing the definition of fields displayed in the
+    admin interface for the Comparative instance.
+    """
+    readonly_fields = ['index_data_base', 'index_payment', 'corrected_value', 'days', 'default_interest', 'fine',
+                       'total_due']
 
 
 class FundDeductionAdmin(admin.ModelAdmin):
@@ -65,3 +74,4 @@ class FundDeductionAdmin(admin.ModelAdmin):
 
 admin.site.register(FundDeduction, FundDeductionAdmin)
 admin.site.register(StatementDeduction, StatementDeductionsAdmin)
+admin.site.register(StatementDeductionDue, StatementDeductionDueAdmin)

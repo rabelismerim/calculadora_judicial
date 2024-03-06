@@ -59,7 +59,7 @@
     "summary_fields": [
         {
             "label": "",
-            "key": "total_legend",
+            "key": "last_remaining.total_legend",
             "type": "C",
             "order": 2,
             "is_editable": false,
@@ -67,7 +67,7 @@
         },
         {
             "label": "",
-            "key": "total_net_value",
+            "key": "last_remaining.net_value",
             "type": "F",
             "order": 6,
             "is_editable": false,
@@ -75,7 +75,7 @@
         },
         {
             "label": "",
-            "key": "total_corrected_value",
+            "key": "last_remaining.corrected_value",
             "type": "F",
             "order": 9,
             "is_editable": false,
@@ -83,7 +83,7 @@
         },
         {
             "label": "",
-            "key": "total_fine",
+            "key": "last_remaining.fine",
             "type": "F",
             "order": 11,
             "is_editable": false,
@@ -91,7 +91,7 @@
         },
         {
             "label": "",
-            "key": "total_default_interest",
+            "key": "last_remaining.default_interest",
             "type": "F",
             "order": 12,
             "is_editable": false,
@@ -99,7 +99,7 @@
         },
         {
             "label": "",
-            "key": "total_payment_adjusted",
+            "key": "last_remaining.adjusted_payment",
             "type": "F",
             "order": 13,
             "is_editable": false,
@@ -107,7 +107,7 @@
         },
         {
             "label": "",
-            "key": "total_remaining_balance",
+            "key": "last_remaining.remaining_balance",
             "type": "F",
             "order": 14,
             "is_editable": false,

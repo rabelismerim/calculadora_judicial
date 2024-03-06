@@ -15,9 +15,8 @@ Attributes:
 from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
 
-from calculation.funds.deduction.models import StatementDeduction, FundDeduction
+from calculation.funds.deduction.models import StatementDeduction, FundDeduction, StatementDeductionDue
 from creditors.classes.schemas import AbstractClassesFundsSchema
-from utils import _
 
 
 class StatementDeductionSchema(AbstractDescriptionSchema):
@@ -31,9 +30,32 @@ class StatementDeductionSchema(AbstractDescriptionSchema):
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     data_base = serializers.DateField(required=False, allow_null=True)
     historical_value = serializers.FloatField(required=False, allow_null=True)
+    total_legend = serializers.CharField(read_only=True)
 
     class Meta:
         model = StatementDeduction
+        exclude = ('fund',)
+        # fields = '__all__'
+        read_only_fields = ('status', 'status_display')
+
+
+class StatementDeductionDueSchema(AbstractDescriptionSchema):
+    """
+    A schema for serializing and deserializing StatementDeductions instances.
+
+    Attributes:
+        fund_id (serializers.UUIDField): The UUID of the related fund.
+    """
+    fund_id = serializers.UUIDField()
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    data_base = serializers.DateField(required=False, allow_null=True)
+    historical_value = serializers.FloatField(required=False, allow_null=True)
+    total_legend = serializers.CharField(read_only=True)
+    total_due = serializers.FloatField(read_only=True)
+    historical_charges = serializers.FloatField(read_only=True)
+
+    class Meta:
+        model = StatementDeductionDue
         exclude = ('fund',)
         # fields = '__all__'
         read_only_fields = ('status', 'status_display')
@@ -50,6 +72,7 @@ class FundDeductionSchema(AbstractClassesFundsSchema):
     deserializing StatementIRRF instances.
     """
     calculation_id = serializers.UUIDField()
+    last_remaining = StatementDeductionSchema(read_only=True, allow_null=True)
 
     class Meta:
         model = FundDeduction
@@ -66,12 +89,25 @@ class TotalStatementDeductionSchema(AbstractDescriptionSchema):
 
     fund_id = serializers.UUIDField(read_only=True)
     data = StatementDeductionSchema(many=True, source='statementdeduction_set', exclude=('fund_id',), required=False)
-
-    # total_days = serializers.IntegerField(read_only=True)
-    # fund = FundDeductionSchema(many=False)
+    last_remaining = StatementDeductionSchema(read_only=True, allow_null=True)
 
     class Meta:
         model = FundDeduction
-        # exclude = ('fund',)
         fields = '__all__'
-        read_only_fields = ('status', 'status_display')
+
+
+class TotalStatementDeductionDueSchema(AbstractDescriptionSchema):
+    """
+    A schema for serializing and deserializing StatementDeductions instances.
+
+    Attributes:
+        fund_id (serializers.UUIDField): The UUID of the related fund.
+    """
+
+    fund_id = serializers.UUIDField(read_only=True)
+    data = StatementDeductionDueSchema(many=True, source='get_statementdeductiondue', exclude=('fund_id',), required=False)
+    total = StatementDeductionDueSchema(many=False, source='statementdeductiondue', exclude=('fund_id',), required=False)
+
+    class Meta:
+        model = FundDeduction
+        fields = '__all__'

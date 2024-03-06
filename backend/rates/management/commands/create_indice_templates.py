@@ -24,10 +24,11 @@ def open_json(filepath):
 
 
 class TemplateFundFront:
-    # available_templates = ['template_acordos', 'template_danos', 'template_document', 'template_irrf',
-    #                        'template_verbas', 'template_verbas_integratorias', 'template_verbas_reflexos',
-    #                        'template_verbas_rescisorias', 'template_deducao']
-    available_templates = ['template_deducao']
+    available_templates = ['template_acordos', 'template_danos', 'template_document', 'template_irrf',
+                           'template_verbas', 'template_verbas_integratorias', 'template_verbas_reflexos',
+                           'template_verbas_rescisorias', 'template_deducao_due', 'template_deducao']
+
+    # available_templates = ['template_deducao_due', 'template_deducao']
 
     def get_templates(self) -> list:
 
@@ -122,7 +123,7 @@ class TemplateFundFront:
             for field in summary_fields:
                 defaults = field.copy()
                 defaults['rate'] = new_template_rate
-            TemplateSummaryField.objects.get_or_create(defaults=defaults, **defaults)
+                TemplateSummaryField.objects.get_or_create(defaults=defaults, **defaults)
 
 
 def delete_verbas():
