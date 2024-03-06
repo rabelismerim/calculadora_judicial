@@ -175,6 +175,7 @@ INSTALLED_APPS = [
     'calculation.statement_pj',  # Extrato contábil PJ
     'calculation.comparative',  # Comparativo
     'calculation.funds.document',  # Verbas documento
+    'calculation.funds.deduction',  # Verbas Dedução de pagamentos
     'calculation.funds.integrations',  # Verbas Integratórias
     'calculation.funds.irrf',  # Verbas IRRF
     'calculation.funds.danos',  # Verbas danos

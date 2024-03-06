@@ -429,6 +429,7 @@ class TemplateSlugChoices(TextChoices):
     DOCUMENT = 'D', 'Document'
     Danos = 'A', 'Danos'
     IRRF = 'R', 'IRRF'
+    DEDUCTION = 'E', 'Deduction'
 
 
 class TemplateRate(AbstractModel):

@@ -74,6 +74,8 @@ CHOICES_STATUS_FUND = (('S', _('Requested')), ('C', _('Concluded')), ('E', _('In
 class AbstractStatus(AbstractModel):
     status = models.CharField(_('Calculation status'), max_length=1, choices=CHOICES_STATUS_FUND, default='S')
 
+    CHOICES_STATUS_FUND = CHOICES_STATUS_FUND
+
     def set_in_progress(self):
         """Sets the status of the calculation to 'E'. Calculation in progress"""
         self._set_status('E')
@@ -123,11 +125,10 @@ class AbstractStatus(AbstractModel):
         """Sets the status of the calculation to 'J'. Rate SELIC not found"""
         self._set_status('J')
 
-    @staticmethod
-    def _check_status_choice(value: str):
+    def _check_status_choice(self, value: str):
         """Checks if the status value provided is valid"""
         has_value = False
-        for string, legend in CHOICES_STATUS_FUND:
+        for string, legend in self.CHOICES_STATUS_FUND:
             if value == string:
                 has_value = True
                 break
@@ -138,7 +139,6 @@ class AbstractStatus(AbstractModel):
         """Sets the status of the statement with the given value."""
         self._check_status_choice(value)
         self.status = value
-        self.save(send_signal_post_save=False)
 
     class Meta:
         abstract = True
@@ -177,6 +177,8 @@ class AbstractStatement(AbstractStatus):
     # TODO: Verificar automaticamente se é ou não verba para aplicar a sumula
     fund = models.ForeignKey('funds.Funds', on_delete=models.PROTECT)
     is_extraconcursal = models.BooleanField(_('Is extraconcursal'), default=False)
+    is_retroactive = models.BooleanField(_('Is retroactive'), default=False)
+    calcule_is_extraconcursal = True
 
     @property
     def monetary_correction(self):
@@ -187,6 +189,8 @@ class AbstractStatement(AbstractStatus):
         return self.get_status_display()
 
     def check_is_extraconcursal(self) -> bool:
+        if self.calcule_is_extraconcursal is False or self.is_retroactive:
+            return False
         return True
 
     def _get_index_monetary_correction(self) -> dict or None:
@@ -205,6 +209,7 @@ class AbstractStatement(AbstractStatus):
             return None
 
         is_extraconcursal = self.check_is_extraconcursal()
+
 
         if date_rj and data_base >= date_rj and is_extraconcursal:
             if self.is_extraconcursal is False:
@@ -291,6 +296,7 @@ class AbstractStatement(AbstractStatus):
         data_base = self.get_data_base()
 
         is_extraconcursal = self.check_is_extraconcursal()
+
         if (date_rj_request and data_base >= date_rj_request) and is_extraconcursal:
             if self.is_extraconcursal is False:
                 raise serializers.ValidationError(
@@ -302,6 +308,33 @@ class AbstractStatement(AbstractStatus):
 
     def delete_monetary_correction(self):
         pass
+
+    @staticmethod
+    def days360(start_date, end_date):
+        start_day = start_date.day
+        start_month = start_date.month
+        start_year = start_date.year
+        end_day = end_date.day
+        end_month = end_date.month
+        end_year = end_date.year
+
+        if start_day == 31 or (
+                start_month == 2 and (start_day == 29 or (start_day == 28 and start_date.is_leap_year is False))):
+            start_day = 30
+
+        if end_day == 31:
+            if start_day != 30:
+                end_day = 1
+
+                if end_month == 12:
+                    end_year += 1
+                    end_month = 1
+                else:
+                    end_month += 1
+            else:
+                end_day = 30
+
+        return end_day + end_month * 30 + end_year * 360 - start_day - start_month * 30 - start_year * 360
 
 
 class AbstractMonetaryCorrection(AbstractModel):

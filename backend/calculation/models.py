@@ -6,20 +6,20 @@ to add specific fields as needed.
 """
 import datetime
 
-from django.db import models
-from django.db.models import F
-from django.utils.translation import gettext_lazy as _
-from rest_framework import serializers
-
 from base.models import CHOICES_OCCURRENCE
 from calculation.comparative.signals import new_calc
 from calculation.premise.models import Premise
-from config.settings import GROUP_NAME_EXECUTOR, GROUP_NAME_REVIEWER, GROUP_NAME_APPROVER, GROUP_NAME_SPECIAL_APPROVE
+from config.settings import (GROUP_NAME_APPROVER, GROUP_NAME_EXECUTOR,
+                             GROUP_NAME_REVIEWER, GROUP_NAME_SPECIAL_APPROVE)
 from core.abstract.models import AbstractModel
 from creditors.classes.models import CLASSE_CHOICES
 from creditors.models import Creditor
+from django.db import models
+from django.db.models import F
+from django.utils.translation import gettext_lazy as _
 from projects.project_user.models import ProjectUser
 from rates.models import Rate
+from rest_framework import serializers
 from utils import check_choice
 
 CHOICES_STEP = (
@@ -76,9 +76,12 @@ class Calculation(AbstractModel):
         has_edital (models.BooleanField): Is there an Article 7 Section 2 - 11.101/2005 Edital?
     """
     creditor = models.ForeignKey(Creditor, on_delete=models.PROTECT)
-    step = models.CharField(_('Calculation step'), max_length=1, choices=CHOICES_STEP, default='S')
-    number = models.CharField(_('Calculation number'), max_length=10, null=True, blank=True)
-    recurral_deposit = models.FloatField(_('Recurral deposit released'), default=0)
+    step = models.CharField(_('Calculation step'),
+                            max_length=1, choices=CHOICES_STEP, default='S')
+    number = models.CharField(_('Calculation number'),
+                              max_length=10, null=True, blank=True)
+    recurral_deposit = models.FloatField(
+        _('Recurral deposit released'), default=0)
     validated = models.BooleanField(_('Validated?'), default=False)
 
     # Statement A5
@@ -88,28 +91,36 @@ class Calculation(AbstractModel):
     # Statement N5 - Crédito inteiramente concursal? TODO analisar se as verbas adicionadas são concursal e alterar
     #  automaticamente
     # TODO: Remover de edição, automatizar calculo para obter os creditos, e ver se algum credito tem a flag is_extraconcursal
-    appeal_credit = models.BooleanField(_('Fully competitive credit?'), default=False)
+    appeal_credit = models.BooleanField(
+        _('Fully competitive credit?'), default=False)
     # Statement Q5 - Data do calculo homologado
-    date_approved_calculation = models.DateField(_('Approved calculation date'), null=True)
+    date_approved_calculation = models.DateField(
+        _('Approved calculation date'), null=True)
 
     # Statement N7 - Levantamento de depósito recursal?
-    appeal_deposit = models.BooleanField(_('Recursal deposit withdrawal?'), default=False)
+    appeal_deposit = models.BooleanField(
+        _('Recursal deposit withdrawal?'), default=False)
     # Statement Q7 - Página que mostra o levantamento de depósito recursal
     num_pag_fls_appeal_deposit = models.CharField(_('Page number of the appeal deposit withdrawal'), max_length=10,
                                                   null=True, blank=True)
 
     # Statement N9 - Data da certidão de habilitação de crédito
-    date_credit_auth = models.DateField(_('Date of credit qualification certificate'), null=True)
+    date_credit_auth = models.DateField(
+        _('Date of credit qualification certificate'), null=True)
     # Statement Q9 - Página da certidão de habilitação de crédito
     num_pag_fls_credit_auth_date = models.CharField(_('Credit qualification certificate page'), max_length=10,
                                                     null=True, blank=True)
     # Statement N10 - Há honorários advocatícios?
-    has_advocative_hours = models.BooleanField(_('Are there fees in the approved calculation?'), default=False)
+    has_advocative_hours = models.BooleanField(
+        _('Are there fees in the approved calculation?'), default=False)
 
-    rate = models.ForeignKey(Rate, on_delete=models.PROTECT, null=True, blank=True)
-    date_rj_filing = models.DateField(_("RJ filing date"), blank=True, null=True)
+    rate = models.ForeignKey(
+        Rate, on_delete=models.PROTECT, null=True, blank=True)
+    date_rj_filing = models.DateField(
+        _("RJ filing date"), blank=True, null=True)
     date_citation = models.DateField(_("Citation Date"), blank=True, null=True)
-    occurrence = models.CharField(_('Occurrence'), max_length=1, choices=CHOICES_OCCURRENCE, default='O')
+    occurrence = models.CharField(
+        _('Occurrence'), max_length=1, choices=CHOICES_OCCURRENCE, default='O')
 
     @property
     def incident_number(self):
@@ -124,13 +135,16 @@ class Calculation(AbstractModel):
     premises = models.ManyToManyField(Premise, blank=True)
     is_adm = models.BooleanField(default=True)  # É administrativa ou judicial
 
-    approver = models.ForeignKey(ProjectUser, on_delete=models.PROTECT, null=True, related_name='approver', blank=True)
+    approver = models.ForeignKey(
+        ProjectUser, on_delete=models.PROTECT, null=True, related_name='approver', blank=True)
     # special_approver = models.ForeignKey(ProjectUser, on_delete=models.PROTECT, null=True,
     #                                      # TODO: transformar em listas, ter um campo de controle para aprovado
     #                                      related_name='special_approver', blank=True)
     special_approvers = models.ManyToManyField(SpecialApprover, blank=True)
-    executor = models.ForeignKey(ProjectUser, on_delete=models.PROTECT, null=True, related_name='executor', blank=True)
-    reviewer = models.ForeignKey(ProjectUser, on_delete=models.PROTECT, null=True, related_name='reviewer', blank=True)
+    executor = models.ForeignKey(
+        ProjectUser, on_delete=models.PROTECT, null=True, related_name='executor', blank=True)
+    reviewer = models.ForeignKey(
+        ProjectUser, on_delete=models.PROTECT, null=True, related_name='reviewer', blank=True)
 
     def get_premises(self):
         return self.premises.all()
@@ -213,6 +227,7 @@ class Calculation(AbstractModel):
         Extrato contábil A21
         =SE(OU($B$19>=$B$18;'Ficha de Análise'!D65="IPCA-E/SELIC");"EXCLUIR LINHA";'Ficha de Análise'!C66)
         """
+        # TODO: ver erro no extrato contábil ao nao usar date rj filling or date_rj
         if (self.get_date_rj_filing() >= self.get_date_rj()) or self.rate.is_ipca_e_selic():
             return
         return 'Juros moratórios (a.m.)'
@@ -320,8 +335,8 @@ class Calculation(AbstractModel):
         :return: A ProjectUser object representing the user if it exists, None otherwise.
         """
         return ProjectUser.objects.filter(user=user, groups__permissions__codename=codename,
-                                          projectengagement__project__recovering__creditor__calculation__id=
-                                          self.id).values('id', group_name=F('groups__name')).first()
+                                          projectengagement__project__recovering__creditor__calculation__id=self.id).values(
+            'id', group_name=F('groups__name')).first()
 
     def get_complete_project_user(self, user, codename):
         """
@@ -332,8 +347,8 @@ class Calculation(AbstractModel):
         :return: A ProjectUser object representing the user if it exists, None otherwise.
         """
         return ProjectUser.objects.filter(user=user, groups__permissions__codename=codename,
-                                          projectengagement__project__recovering__creditor__calculation__id=
-                                          self.id).annotate(group_name=F('groups__name')).first()
+                                          projectengagement__project__recovering__creditor__calculation__id=self.id).annotate(
+            group_name=F('groups__name')).first()
 
     def get_step_to_approve(self):
         return 'e'
@@ -383,9 +398,11 @@ class Calculation(AbstractModel):
             serializers.ValidationError: If the user does not have permission to specially approve the calculation,
             or if the user has already specially approved the calculation.
         """
-        user_special = self.special_approvers.filter(project_user__user=user).first()
+        user_special = self.special_approvers.filter(
+            project_user__user=user).first()
         if not user_special:
-            raise serializers.ValidationError([_('You do not have permission to specially approve this calculation')])
+            raise serializers.ValidationError(
+                [_('You do not have permission to specially approve this calculation')])
         if user_special.approved:
             raise serializers.ValidationError(
                 [_('You have already specially approved this calculation, wait for the other approvers')])
@@ -401,7 +418,8 @@ class Calculation(AbstractModel):
         approved, sets the step to the next step and saves the object.
         """
         if self.step == self.get_step_to_approve_special().upper():
-            has_pending_approval = self.special_approvers.filter(approved=False).exists()
+            has_pending_approval = self.special_approvers.filter(
+                approved=False).exists()
             if has_pending_approval is False:
                 self.step = self.get_step_approved().upper()
                 self.save()
@@ -436,7 +454,8 @@ class Calculation(AbstractModel):
                 if approve_calculation:
                     self._set_special_approvers(special_approvers)
 
-                self.__check_user_already_allocated([user_executed.user.id], selected_group=group_name)
+                self.__check_user_already_allocated(
+                    [user_executed.user.id], selected_group=group_name)
                 setattr(self, selected_group, user_executed.id)
 
         self.step = next_step
@@ -464,9 +483,11 @@ class Calculation(AbstractModel):
             groups__permissions__codename=self.special_approve_to_approved)
         # groups__permissions__codename=self.special_approve_to_approved)
 
-        users_not_in_project = [spe for spe in special_approvers if not project_users.filter(id=spe).exists()]
+        users_not_in_project = [
+            spe for spe in special_approvers if not project_users.filter(id=spe).exists()]
         if users_not_in_project:
-            users = ProjectUser.objects.filter(id__in=users_not_in_project).values_list('user__username', flat=True)
+            users = ProjectUser.objects.filter(
+                id__in=users_not_in_project).values_list('user__username', flat=True)
             raise serializers.ValidationError(
                 [_('The users: {} are not allocated in the project as a special approver'.format(', '.join(users)))])
         project_users_filtered = project_users.filter(id__in=special_approvers)
@@ -513,13 +534,17 @@ class Calculation(AbstractModel):
         """
         # Check empty list
         if not special_approvers:
-            raise serializers.ValidationError([_('The list of special approvers is empty')])
-        project_users = self.__check_user_is_special_approver(special_approvers)
+            raise serializers.ValidationError(
+                [_('The list of special approvers is empty')])
+        project_users = self.__check_user_is_special_approver(
+            special_approvers)
 
-        users_django_ids = list(project_users.values_list('user__id', flat=True))
+        users_django_ids = list(
+            project_users.values_list('user__id', flat=True))
         self.__check_user_already_allocated(users_django_ids)
 
-        specials = SpecialApprover.objects.filter(project_user__id__in=special_approvers, approved=False)
+        specials = SpecialApprover.objects.filter(
+            project_user__id__in=special_approvers, approved=False)
         special_approvers_list = self.special_approvers.all()
         special_approvers_approved = self.special_approvers.filter(project_user__id__in=special_approvers,
                                                                    approved=True)
@@ -527,18 +552,21 @@ class Calculation(AbstractModel):
         specials_ids = []
         specials_bulk = []
         for approver_id in special_approvers:
-            user_special = special_approvers_approved.filter(project_user__id=approver_id).first()
+            user_special = special_approvers_approved.filter(
+                project_user__id=approver_id).first()
             if user_special:  # User already registered
                 specials_ids.append(user_special.id)
                 continue
             special = specials.filter(project_user_id=approver_id).first()
             if not special:
-                special = SpecialApprover(project_user_id=approver_id, approved=False)
+                special = SpecialApprover(
+                    project_user_id=approver_id, approved=False)
                 specials_bulk.append(special)
             specials_ids.append(special.id)
 
         SpecialApprover.objects.bulk_create(specials_bulk)
-        special_approvers_list.exclude(id__in=specials_ids).exclude(approved=True).delete()
+        special_approvers_list.exclude(
+            id__in=specials_ids).exclude(approved=True).delete()
         self.special_approvers.add(*specials_ids)
         # self._check_approve_special_calculation()
 
@@ -597,7 +625,8 @@ class Calculation(AbstractModel):
             total_value = class_dict['total_value']
             class_dict['percentage_calculated'] = (
                                                           total_calculated / total_calculated_sum) * 100 if total_calculated_sum > 0 else 0
-            class_dict['percentage_value'] = (total_value / total_value_sum) * 100 if total_value_sum > 0 else 0
+            class_dict['percentage_value'] = (
+                                                     total_value / total_value_sum) * 100 if total_value_sum > 0 else 0
 
         classes_list = []
         classes_list_included = []
@@ -772,9 +801,12 @@ class StepAction:
         self.next_step = next_step
         options = [
             self.Option(GROUP_NAME_EXECUTOR, [('r', 's'), ('s', 'c')]),
-            self.Option(GROUP_NAME_REVIEWER, [('c', 'e'), ('c', 'b'), ('c', 's'), ('c', 'r')]),
-            self.Option(GROUP_NAME_APPROVER, [('e', 'a'), ('e', 'c'), ('e', 'r')]),
-            self.Option(GROUP_NAME_SPECIAL_APPROVE, [('b', 'a'), ('b', 'c'), ('b', 'r')])
+            self.Option(GROUP_NAME_REVIEWER, [
+                ('c', 'e'), ('c', 'b'), ('c', 's'), ('c', 'r')]),
+            self.Option(GROUP_NAME_APPROVER, [
+                ('e', 'a'), ('e', 'c'), ('e', 'r')]),
+            self.Option(GROUP_NAME_SPECIAL_APPROVE, [
+                ('b', 'a'), ('b', 'c'), ('b', 'r')])
         ]
 
         self.options = {o.name: o.lst for o in options}

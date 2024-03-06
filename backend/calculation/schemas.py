@@ -21,6 +21,7 @@ from calculation.comparative.schemas import ComparativeSchema
 from calculation.comparative.signals import update_calc
 from calculation.criterion.schemas import CriterionSchema
 from calculation.funds.danos.schemas import FundDanosSchema
+from calculation.funds.deduction.schemas import FundDeductionSchema
 from calculation.funds.document.schemas import FundDocumentSchema
 from calculation.funds.irrf.schemas import FundIRRFSchema, FundIRRFExcelSchema
 from calculation.funds.schemas import FundsSchema, FundsExcelSchema
@@ -148,7 +149,9 @@ class CalculationAllFundsSchema(AbstractDescriptionSchema):  # V1
             {'data': FundDocumentSchema(many=True, exclude=('calculation_id',), read_only=True).to_representation(
                 obj.funddocument_set.all()), 'type': 'document'},
             {'data': FundDanosSchema(many=True, exclude=('calculation_id',), read_only=True).to_representation(
-                obj.funddanos_set.all()), 'type': 'danos'}
+                obj.funddanos_set.all()), 'type': 'danos'},
+            {'data': FundDeductionSchema(many=True, exclude=('calculation_id',), read_only=True).to_representation(
+                obj.funddeduction_set.all()), 'type': 'deduction'}
         ]
 
     class Meta:

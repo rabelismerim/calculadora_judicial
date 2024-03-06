@@ -22,8 +22,8 @@ from rest_framework import permissions
 from utils import _, doc
 from xlsx2html import xlsx2html
 
-# config = pdfkit.configuration(
-#     wkhtmltopdf="C:\Program Files\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
+config = pdfkit.configuration(
+    wkhtmltopdf="C:\Program Files\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
 
 gray_fill = PatternFill(start_color="00C0C0C0",
                         end_color="00C0C0C0", fill_type="solid")
@@ -448,6 +448,8 @@ class SheetExcel:
         statement_pf = self.calculation.statement.get_statement_pf()
 
         if statement_pf:
+            # TODO MARCELO: verificar por que não apareceu o deposito recursal
+
             set_sheet_value(sheet, cnt_ini_row, ['A', 'B'],
                             self.calculation.statement.statementpf.get_description_display(),
                             force=True)
@@ -458,6 +460,14 @@ class SheetExcel:
             self.juca_excel[
                 'legend_monetary_correction_update'] = statement_pf.legend_monetary_correction_update
             self.juca_excel['index_name'] = self.calculation.rate.index
+            self.juca_excel['legend_default_interest'] = statement_pf.default_interest_legend
+            self.juca_excel['default_interest'] = statement_pf.get_default_interest()
+            self.juca_excel['legend_fine'] = self.calculation.get_legend_fine()
+            self.juca_excel['fine'] = self.calculation.get_fine()
+            self.juca_excel['legend_advocative_hours'] = self.calculation.get_legend_advocative_hours()
+            self.juca_excel['advocative_hours'] = self.calculation.get_advocative_hours()
+
+            # self.juca_excel['legend_advocative_hours'] = self.calculation.get_legend_advocative_hours()
 
             tax_days = statement_pf.get_tax_days()
 
@@ -478,18 +488,34 @@ class SheetExcel:
             for fund in self.funds_danos:
                 statement_fund = fund.get_statement()
                 if statement_fund:
-                    set_sheet_value(sheet, cnt_ini_row, ['A', 'B'], f'Danos {statement_fund.description}', force=True)
-                    set_sheet_number(sheet, cnt_ini_row, 'C', fund.get_total_summed())
+                    set_sheet_value(sheet, cnt_ini_row, [
+                                    'A', 'B'], f'Danos {statement_fund.description}', force=True)
+                    set_sheet_number(sheet, cnt_ini_row, 'C',
+                                     fund.get_total_summed())
+                    cnt_ini_row += 1
+
+                    set_sheet_value(sheet, cnt_ini_row, [
+                                    'A', 'B'], f'Total {statement_fund.description}', force=True)
+                    set_sheet_number(sheet, cnt_ini_row, 'C',
+                                     fund.get_total_due_summed())
+                    cnt_ini_row += 1
+
+                    set_sheet_value(sheet, cnt_ini_row, [
+                                    'A', 'B'], f'Juros {statement_fund.description}', force=True)
+                    set_sheet_number(sheet, cnt_ini_row, 'C',
+                                     fund.get_total_default_interest())
                     cnt_ini_row += 1
 
                     set_sheet_value(sheet, cnt_ini_row, ['A', 'B'], f'Juros Danos {statement_fund.description}',
                                     force=True)
-                    set_sheet_number(sheet, cnt_ini_row, 'C', fund.get_total_total_default_interest())
+                    set_sheet_number(sheet, cnt_ini_row, 'C',
+                                     fund.get_total_total_default_interest())
                     cnt_ini_row += 1
 
                     set_sheet_value(sheet, cnt_ini_row, ['A', 'B'], f'Total Danos{statement_fund.description}',
                                     force=True)
-                    set_sheet_number(sheet, cnt_ini_row, 'C', fund.get_total_due_summed())
+                    set_sheet_number(sheet, cnt_ini_row, 'C',
+                                     fund.get_total_due_summed())
                     cnt_ini_row += 1
             default_interest_or_due = statement_pf.get_default_interest_due()
             if default_interest_or_due:
@@ -622,7 +648,8 @@ class SheetExcel:
             if statement_fund:
                 set_sheet_value(sheet, cnt_ini_row, 'C', f'Danos {statement_fund.description}', force=True,
                                 alignment='left')
-                set_sheet_value(sheet, cnt_ini_row, ['D', 'E'], statement_fund.data_base)
+                set_sheet_value(sheet, cnt_ini_row, [
+                                'D', 'E'], statement_fund.data_base)
                 cnt_ini_row += 1
 
     def set_formula_juca_lst(self, sheet, col):
@@ -887,8 +914,9 @@ class ExportProcessor:
             base64_message = base64_encoded_data.decode("latin-1")
 
         # Create a pdf file
-        # pdfkit.from_string('\n'.join(self.list_pdf), self.new_name_pdf, configuration=config)
-        pdfkit.from_string('\n'.join(self.list_pdf), self.new_name_pdf)
+        pdfkit.from_string('\n'.join(self.list_pdf),
+                           self.new_name_pdf, configuration=config)
+        # pdfkit.from_string('\n'.join(self.list_pdf), self.new_name_pdf)
 
         with open(self.new_name_pdf, "rb") as archive_pdf:
             pdf_file = archive_pdf.read()

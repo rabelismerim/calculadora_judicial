@@ -5,10 +5,6 @@ and updated_at. Does not add any additional fields, so should be subclassed
 to add specific fields as needed.
 """
 import datetime
-from django.db import models
-from django.db.models import signals
-from django.dispatch import receiver
-from django.utils.translation import gettext_lazy as _
 
 from base.views import ExtractFormula
 from calculation.comparative.signals import new_calc
@@ -20,7 +16,11 @@ from calculation.models import Calculation
 from calculation.statement.models import Statement
 from calculation.statement_pj.models import FundsDocumentDescriptionPJ
 from core.abstract.models import AbstractModel
-from rates.models import Rate, CalculeRate
+from django.db import models
+from django.db.models import signals
+from django.dispatch import receiver
+from django.utils.translation import gettext_lazy as _
+from rates.models import CalculeRate, Rate
 from utils import days360, get_rate_selic
 
 CHOICES_TOTAL_PF = (('A', _('Updated total')), ('D', _('Total due')))

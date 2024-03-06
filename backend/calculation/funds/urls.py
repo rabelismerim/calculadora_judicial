@@ -28,4 +28,5 @@ urlpatterns = [
     path(f'documents/', include("calculation.funds.document.urls")),
     path(f'danos/', include("calculation.funds.danos.urls")),
     path(f'irrf/', include("calculation.funds.irrf.urls")),
+    path(f'deduction/', include("calculation.funds.deduction.urls")),
 ]

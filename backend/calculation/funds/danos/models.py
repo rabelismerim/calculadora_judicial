@@ -7,18 +7,21 @@ to add specific fields as needed.
 
 import datetime
 
+from base.views import ExtractFormula
+from calculation.comparative.signals import (gen_statement_danos,
+                                             gen_statement_total_documents,
+                                             update_calc)
+from calculation.funds.models import (AbstractFunds,
+                                      AbstractMonetaryCorrection,
+                                      AbstractStatement,
+                                      AbstractTotalValuesFunds)
+from calculation.models import Calculation
 from django.db import models
 from django.db.models import TextChoices
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
-
-from base.views import ExtractFormula
-from calculation.comparative.signals import gen_statement_danos, gen_statement_total_documents, update_calc
-from calculation.funds.models import AbstractFunds, AbstractStatement, AbstractMonetaryCorrection, \
-    AbstractTotalValuesFunds
-from calculation.models import Calculation
-from rates.models import Rate, CalculeRate
+from rates.models import CalculeRate, Rate
 
 
 class InterestChoices(TextChoices):
@@ -33,8 +36,28 @@ class FundDanos(AbstractFunds):
     # TODO: Adicionar campo fato gerador para verbas de danos morais(field description)
     type_interest = models.CharField(_('Tipo de juros'), max_length=1, choices=InterestChoices.choices,
                                      default=InterestChoices.SEM_JUROS)
-    interest_initial_date = models.DateField(_('Data inicial do juros'))
-    apply_monetary_correction = models.BooleanField(_('Aplicar Taxa?'), default=True)
+    interest_initial_date = models.DateField(
+        _('Data inicial do juros'), blank=True, null=True)
+
+    correction_description = models.CharField(
+        _('Descrição da Correção'), max_length=100, blank=True, null=True)
+
+    # if type_interest and interest_initial_date is None:
+    #     raise ValueError('A Data inicial do juros deve ser preenchida.')
+
+    # TODO MARCELO: deixar a data interest_initial_date como opcional, fazer validador se tiver type_interest calculo
+    #  de juros a data ser obrigatória
+
+    # TODO MARCELO: ter um campo descrição da correção, esse campo se refere a data que deve ser utilizada para o
+    #  calculo da correção(data_base)
+
+    # TODO MARCELO: alterar nomenclatura data base para data da correção
+
+    # TODO MARCELO: adicionar campo data do fato gerador, faz a validação se é extraconcursal ou não(ter a mesma regra
+    #  dos outros, ter a extraconcursal e o campo is_retroactive), se for extraconcursal, não bloquear, manter o valor
+    #  histórico se o campo is_retroactive for False
+    apply_monetary_correction = models.BooleanField(
+        _('Aplicar Taxa?'), default=True)
 
     def get_total_funds(self, create=True):
         """
@@ -113,7 +136,7 @@ class StatementDanos(AbstractStatement):
 
     Methods:
         - `has_tax()` Return True if this statement has tax; False otherwise.
-        - `__days360()` Return the number of days between the start_date and end_date using the 360-day method.
+        - `days360()` Return the number of days between the start_date and end_date using the 360-day method.
         - `days()` Return the number of days between the statement's data_base and the date_rj, if it exists and has tax
         - `_calc_default_interest()` Calculates the default interest based on the corrected value, default interest rate
             , and the number of days.
@@ -144,20 +167,6 @@ class StatementDanos(AbstractStatement):
     def monetary_correction(self):
         return self.get_monetary_correction()
 
-    @staticmethod
-    def __days360(start_date, end_date) -> int:
-        """Return the number of days between the start_date and end_date using the 360-day method."""
-        if start_date.day == 31:
-            start_date = start_date.replace(day=30)
-        if end_date.day == 31 and (start_date.day == 30 or start_date.day == 31):
-            end_date = end_date.replace(day=30)
-        elif end_date.day == 31:
-            end_date = end_date.replace(day=1)
-            end_date = end_date + datetime.timedelta(days=1)
-        return (end_date.year - start_date.year) * 360 + \
-            (end_date.month - start_date.month) * 30 + \
-            (end_date.day - start_date.day)
-
     @property
     def days(self) -> int:
         """Return the number of days between the statement's data_base and the date_rj, if it exists and has tax."""
@@ -166,7 +175,7 @@ class StatementDanos(AbstractStatement):
         if not date_rj:
             self.set_error_rj()
             return 0
-        return self.__days360(data_base, date_rj)
+        return self.days360(data_base, date_rj)
 
     @property
     def total_days(self) -> int:
@@ -191,7 +200,7 @@ class StatementDanos(AbstractStatement):
             return 0
 
         if type_interest == InterestChoices.SIMPLES:
-            days_360 = self.__days360(interest_initial_date, data_rj)
+            days_360 = self.days360(interest_initial_date, data_rj)
             indice = 1 / 30
             percentage_interest = days_360 * indice
             return percentage_interest
@@ -253,7 +262,8 @@ class StatementDanos(AbstractStatement):
 
     def create_monetary_correction(self, data: dict):
         """Create or update the MonetaryCorrection object"""
-        MonetaryCorrectionDanos.objects.update_or_create(defaults=data, **{'statement': self})
+        MonetaryCorrectionDanos.objects.update_or_create(
+            defaults=data, **{'statement': self})
 
     def calcule_monetary_correction(self):
         """
@@ -378,7 +388,8 @@ class TotalValuesDanos(AbstractTotalValuesFunds):
 
     def save(self, *args, **kwargs):
         super(TotalValuesDanos, self).save()
-        gen_statement_total_documents.send(sender=self.__class__, instance=self)
+        gen_statement_total_documents.send(
+            sender=self.__class__, instance=self)
 
 
 @receiver(gen_statement_danos, sender=StatementDanos)
@@ -394,7 +405,7 @@ def save_statement_documents(sender, instance, **kwargs) -> None:
 
     statement_methods = ['get_total_value', 'get_dsr_reflexes', 'get_monetary_correction',
                          'calcule_monetary_correction', 'get_monetary_correction', 'get_corrected_value',
-                         'default_interest', 'get_total_due', 'get_fine', '__days360', 'has_tax',
+                         'default_interest', 'get_total_due', 'get_fine', 'days360', 'has_tax',
                          'get_rate_by_date',
                          '_get_index_monetary_correction', 'get_corrected_value', 'get_data_base', 'get_total_value',
                          'get_historical_value', 'get_rate', 'save_total_funds', 'monetarycorrectiondanos', 'set_total',
