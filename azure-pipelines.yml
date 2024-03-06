@@ -113,6 +113,16 @@ steps:
     Contents: '**'
     RemoveSourceFolder: true
 - script: |
+    python manage.py makemigrations
+  failOnStderr: false
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Django makemigrations'
+- script: |
+    python manage.py migrate
+  failOnStderr: false
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Django migrate'
+- script: |
     del venv\.*
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
@@ -148,10 +158,3 @@ steps:
     flattenFolders: false
     ignoreMakeDirErrors: true
     ignoreErrors: true
-- script: |
-    cd E:/wwwroot/fadigitallab.deloitte.com.br/juca/backend/ || exit 0
-    E:/wwwroot/fadigitallab.deloitte.com.br/juca/backend/venv/Scripts/python manage.py makemigrations || exit 0
-    E:/wwwroot/fadigitallab.deloitte.com.br/juca/backend/venv/Scripts/python manage.py migrate || exit 0
-  failOnStderr: false
-  displayName: 'Run Django migrations on target VM'
-  continueOnError: true
