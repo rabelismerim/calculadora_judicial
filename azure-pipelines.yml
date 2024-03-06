@@ -149,8 +149,10 @@ steps:
     ignoreMakeDirErrors: true
     ignoreErrors: true
 - script: |
-    python manage.py makemigrations
-    python manage.py migrate
+    E:/wwwroot/fadigitallab.deloitte.com.br/juca/backend/venv/Scripts/python manage.py makemigrations
+    E:/wwwroot/fadigitallab.deloitte.com.br/juca/backend/venv/Scripts/python manage.py migrate
   failOnStderr: false
-  workingDirectory: E:\wwwroot\fadigitallab.deloitte.com.br\juca\backend
+  workingDirectory: E:/wwwroot/fadigitallab.deloitte.com.br/juca/backend
   displayName: 'Run Django migrations on target VM'
+  continueOnError: true
+  ignoreErrors: true
