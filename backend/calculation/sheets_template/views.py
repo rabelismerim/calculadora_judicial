@@ -467,8 +467,6 @@ class SheetExcel:
             self.juca_excel['legend_advocative_hours'] = self.calculation.get_legend_advocative_hours()
             self.juca_excel['advocative_hours'] = self.calculation.get_advocative_hours()
 
-            # self.juca_excel['legend_advocative_hours'] = self.calculation.get_legend_advocative_hours()
-
             tax_days = statement_pf.get_tax_days()
 
             if tax_days:
@@ -509,7 +507,7 @@ class SheetExcel:
                     set_sheet_value(sheet, cnt_ini_row, ['A', 'B'], f'Juros Danos {statement_fund.description}',
                                     force=True)
                     set_sheet_number(sheet, cnt_ini_row, 'C',
-                                     fund.get_total_total_default_interest())
+                                     fund.get_total_default_interest())
                     cnt_ini_row += 1
 
                     set_sheet_value(sheet, cnt_ini_row, ['A', 'B'], f'Total Danos{statement_fund.description}',
