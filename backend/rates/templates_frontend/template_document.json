@@ -1,0 +1,294 @@
+{
+    "name": "Documentos",
+    "description": "Documento",
+    "fund_main": [
+        {
+            "label": "Nome da verba",
+            "key": "name",
+            "type": "C",
+            "order": 0,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "N\u00famero do documento",
+            "key": "number",
+            "type": "C",
+            "order": 1,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Multa",
+            "key": "fine",
+            "type": "F",
+            "order": 2,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "H\u00e1 multa adicional?",
+            "key": "has_custom_fine",
+            "type": "B",
+            "order": 3,
+            "is_editable": true,
+            "default": false,
+            "required": true
+        },
+        {
+            "label": "Data base",
+            "key": "data_base",
+            "type": "D",
+            "order": 4,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Valor hist\u00f3rico",
+            "key": "historical_value",
+            "type": "F",
+            "order": 5,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "\u00c9 extraconcursal",
+            "key": "is_extraconcursal",
+            "type": "B",
+            "order": 4,
+            "is_editable": true,
+            "default": false,
+            "required": true
+        },
+        {
+            "label": "\u00c9 Retroativo",
+            "key": "is_retroactive",
+            "type": "B",
+            "order": 5,
+            "is_editable": true,
+            "default": false,
+            "required": true
+        }
+    ],
+    "end_point": "/juca/api/v1/calculation/funds/documents/detail/",
+    "end_point_main": "/v1/calculation/funds/documents/",
+    "many": false,
+    "slug": "D",
+    "has_commit": true,
+    "summary_fields": [
+        {
+            "label": "Total: ",
+            "key": "none",
+            "type": "C",
+            "order": 0,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "total_historical",
+            "type": "F",
+            "order": 6,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "total_corrected",
+            "type": "F",
+            "order": 10,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "total_days",
+            "type": "I",
+            "order": 9,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "total_default_interest",
+            "type": "F",
+            "order": 11,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "total_fine",
+            "type": "F",
+            "order": 12,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "total_due",
+            "type": "F",
+            "order": 13,
+            "is_editable": false,
+            "required": false
+        }
+    ],
+    "summary_main_fields": [
+        {
+            "label": "Total",
+            "key": "",
+            "type": "F",
+            "order": 0,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "R$",
+            "key": "value",
+            "type": "F",
+            "order": 6,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "R$",
+            "key": "corrected_value",
+            "type": "F",
+            "order": 10,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "R$",
+            "key": "fine",
+            "type": "F",
+            "order": 11,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "R$",
+            "key": "interest",
+            "type": "F",
+            "order": 12,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "R$",
+            "key": "amount_due",
+            "type": "F",
+            "order": 13,
+            "is_editable": false,
+            "required": false
+        }
+    ],
+    "fields": [
+        {
+            "label": "Data base",
+            "key": "data_base",
+            "type": "D",
+            "order": 2,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Valor hist\u00f3rico",
+            "key": "historical_value",
+            "type": "F",
+            "order": 6,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "\u00cdndice na data base",
+            "key": "monetary_correction.index_data_base",
+            "type": "F",
+            "order": 7,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "\u00cdndice na recupera\u00e7\u00e3o",
+            "key": "monetary_correction.index_recovering",
+            "type": "F",
+            "order": 8,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "Valor corrigido",
+            "key": "monetary_correction.corrected_value",
+            "type": "F",
+            "order": 10,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "\u00c9 extraconcursal",
+            "key": "is_extraconcursal",
+            "type": "B",
+            "order": 4,
+            "is_editable": true,
+            "default": false,
+            "required": true
+        },
+        {
+            "label": "\u00c9 retroativo",
+            "key": "is_retroactive",
+            "type": "B",
+            "order": 5,
+            "is_editable": true,
+            "default": false,
+            "required": true
+        },
+        {
+            "label": "Documento",
+            "key": "name",
+            "type": "C",
+            "order": 0,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "N\u00famero",
+            "key": "number",
+            "type": "C",
+            "order": 1,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Dias",
+            "key": "total_days",
+            "type": "I",
+            "order": 9,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "Juros",
+            "key": "total_default_interest",
+            "type": "F",
+            "order": 11,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "Multa",
+            "key": "total_fine",
+            "type": "F",
+            "order": 12,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "Total devido",
+            "key": "total_due",
+            "type": "F",
+            "order": 13,
+            "is_editable": false,
+            "required": false
+        }
+    ]
+}

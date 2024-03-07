@@ -227,6 +227,7 @@ class Calculation(AbstractModel):
         Extrato contábil A21
         =SE(OU($B$19>=$B$18;'Ficha de Análise'!D65="IPCA-E/SELIC");"EXCLUIR LINHA";'Ficha de Análise'!C66)
         """
+        # TODO: ver erro no extrato contábil ao nao usar date rj filling or date_rj
         if (self.get_date_rj_filing() >= self.get_date_rj()) or self.rate.is_ipca_e_selic():
             return
         return 'Juros moratórios (a.m.)'
@@ -334,7 +335,8 @@ class Calculation(AbstractModel):
         :return: A ProjectUser object representing the user if it exists, None otherwise.
         """
         return ProjectUser.objects.filter(user=user, groups__permissions__codename=codename,
-                                          projectengagement__project__recovering__creditor__calculation__id=self.id).values('id', group_name=F('groups__name')).first()
+                                          projectengagement__project__recovering__creditor__calculation__id=self.id).values(
+            'id', group_name=F('groups__name')).first()
 
     def get_complete_project_user(self, user, codename):
         """
@@ -345,7 +347,8 @@ class Calculation(AbstractModel):
         :return: A ProjectUser object representing the user if it exists, None otherwise.
         """
         return ProjectUser.objects.filter(user=user, groups__permissions__codename=codename,
-                                          projectengagement__project__recovering__creditor__calculation__id=self.id).annotate(group_name=F('groups__name')).first()
+                                          projectengagement__project__recovering__creditor__calculation__id=self.id).annotate(
+            group_name=F('groups__name')).first()
 
     def get_step_to_approve(self):
         return 'e'
@@ -621,9 +624,9 @@ class Calculation(AbstractModel):
             total_calculated = class_dict['total_calculated']
             total_value = class_dict['total_value']
             class_dict['percentage_calculated'] = (
-                total_calculated / total_calculated_sum) * 100 if total_calculated_sum > 0 else 0
+                                                          total_calculated / total_calculated_sum) * 100 if total_calculated_sum > 0 else 0
             class_dict['percentage_value'] = (
-                total_value / total_value_sum) * 100 if total_value_sum > 0 else 0
+                                                     total_value / total_value_sum) * 100 if total_value_sum > 0 else 0
 
         classes_list = []
         classes_list_included = []
@@ -799,11 +802,11 @@ class StepAction:
         options = [
             self.Option(GROUP_NAME_EXECUTOR, [('r', 's'), ('s', 'c')]),
             self.Option(GROUP_NAME_REVIEWER, [
-                        ('c', 'e'), ('c', 'b'), ('c', 's'), ('c', 'r')]),
+                ('c', 'e'), ('c', 'b'), ('c', 's'), ('c', 'r')]),
             self.Option(GROUP_NAME_APPROVER, [
-                        ('e', 'a'), ('e', 'c'), ('e', 'r')]),
+                ('e', 'a'), ('e', 'c'), ('e', 'r')]),
             self.Option(GROUP_NAME_SPECIAL_APPROVE, [
-                        ('b', 'a'), ('b', 'c'), ('b', 'r')])
+                ('b', 'a'), ('b', 'c'), ('b', 'r')])
         ]
 
         self.options = {o.name: o.lst for o in options}

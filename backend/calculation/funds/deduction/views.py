@@ -1,18 +1,18 @@
 """
-This module defines a FundDocumentApi class that provides HTTP methods for managing Funds objects.
+This module defines a FundDeductionApi class that provides HTTP methods for managing Funds objects.
 It extends the AbstractViewApi class and includes a CheckHasPermission permission class for authorization.
 The API responds with JSON data and utilizes the rest_framework.schemas.openapi.AutoSchema for generating API documentation.
-The FundDocumentApi class uses the Funds model and FundDocumentSchema for working with data.
+The FundDeductionApi class uses the Funds model and FundDeductionSchema for working with data.
 """
 from django.db import transaction
 from django.http import JsonResponse
-from django.shortcuts import redirect
 from rest_framework.generics import get_object_or_404
 
 from base.coins.models import Coins
-from calculation.funds.document.models import FundDocument, StatementDocument
-from calculation.funds.document.schemas import FundDocumentSchema, FundDocumentUpdateSchema, FundDocumentGetSchema, \
-    TotalValuesDocumentSchema, TotalValuesDocumentDetailSchema, StatementDocumentUpdateSchema
+from calculation.funds.deduction.models import FundDeduction, StatementDeduction, StatementDeductionDue
+from calculation.funds.deduction.schemas import FundDeductionSchema, StatementDeductionSchema, \
+    TotalStatementDeductionSchema, TotalStatementDeductionDueSchema, StatementDeductionDueSchema
+from calculation.funds.schemas import StatementFundsUpdateSchema
 from core.abstract.views import AbstractViewApi
 
 from rest_framework import permissions, status
@@ -26,11 +26,11 @@ docs = {
 }
 
 
-class AbstractFundDocumentApi(AbstractViewApi):
-    """Define the FundDocumentApi view class for handling HTTP methods related to Funds.
+class AbstractFundDeductionApi(AbstractViewApi):
+    """Define the FundDeductionApi view class for handling HTTP methods related to Funds.
 
     This view class extends the AbstractViewApi class, which provides a basic implementation
-    for common API actions. The FundDocumentApi supports HTTP POST and GET methods, and uses the FundDocumentSchema
+    for common API actions. The FundDeductionApi supports HTTP POST and GET methods, and uses the FundDeductionSchema
     serializer for input/output validation. The view requires authenticated users with appropriate
     permissions to access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission
     permission classes.
@@ -49,10 +49,10 @@ class AbstractFundDocumentApi(AbstractViewApi):
         GET /api/v1/calculation/funds/?funds=funds_name
         ```
     """
-    serializer_class = FundDocumentSchema
-    model = FundDocument
+    serializer_class = FundDeductionSchema
+    model = FundDeduction
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
-    tags = [_('Cálculo - Verbas - Documentos')]
+    tags = [_('Cálculo - Verbas - Dedução')]
     query_params = [
         {
             "name": "name",
@@ -65,11 +65,11 @@ class AbstractFundDocumentApi(AbstractViewApi):
     ]
 
 
-class FundDocumentApi(AbstractFundDocumentApi):
-    """Define the FundDocumentApi view class for handling HTTP methods related to Funds.
+class FundDeductionApi(AbstractFundDeductionApi):
+    """Define the FundDeductionApi view class for handling HTTP methods related to Funds.
 
     This view class extends the AbstractViewApi class, which provides a basic implementation
-    for common API actions. The FundDocumentApi supports HTTP POST and GET methods, and uses the FundDocumentSchema
+    for common API actions. The FundDeductionApi supports HTTP POST and GET methods, and uses the FundDeductionSchema
     serializer for input/output validation. The view requires authenticated users with appropriate
     permissions to access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission
     permission classes.
@@ -92,6 +92,8 @@ class FundDocumentApi(AbstractFundDocumentApi):
     docs = docs.copy()
     permission_classes = [permissions.IsAuthenticated,
                           CheckHasPermission, CheckHasFundRegisteredPermissions]
+
+    serializer_class = StatementDeductionSchema
 
     @doc(_("""Create Document Fund object from request data and return Document Fund detail.
         The 'has_custom_fine' field controls whether the fine entered in the document will be used, or the standard 
@@ -116,26 +118,20 @@ class FundDocumentApi(AbstractFundDocumentApi):
             serializer = self.serializer_class(data=request.data)
             serializer.is_valid(raise_exception=True)
             new_funds = serializer.validated_data
-
-            statement_document = new_funds.pop('statement_document')
-            coins = new_funds.get('coins')
-            new_funds['coins'] = Coins.objects.create(**coins)
-            fund = self.model.objects.create(**new_funds)
-            statement_document['fund'] = fund
-            StatementDocument.objects.create(**statement_document)
+            fund = StatementDeduction.objects.create(**new_funds)
             if commit is False:
                 transaction.set_rollback(True)
         if commit is False:
             transaction.rollback()
-        return JsonResponse({'fund_document': self.serializer_class(fund, many=False).data},
+        return JsonResponse({'fund_deduction': self.serializer_class(fund, many=False).data},
                             status=status.HTTP_201_CREATED)
 
 
-class FundDocumentDetailApi(AbstractFundDocumentApi):
-    """Define the FundDocumentApi view class for handling HTTP methods related to Funds.
+class FundDeductionDetailApi(AbstractFundDeductionApi):
+    """Define the FundDeductionApi view class for handling HTTP methods related to Funds.
 
     This view class extends the AbstractViewApi class, which provides a basic implementation
-    for common API actions. The FundDocumentApi supports HTTP POST and GET methods, and uses the FundDocumentSchema
+    for common API actions. The FundDeductionApi supports HTTP POST and GET methods, and uses the FundDeductionSchema
     serializer for input/output validation. The view requires authenticated users with appropriate
     permissions to access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission
     permission classes.
@@ -166,9 +162,9 @@ class FundDocumentDetailApi(AbstractFundDocumentApi):
     http_method_names = ['get', 'put', 'delete']
 
     layout_serializers = {
-        'default': FundDocumentSchema,
-        'get': FundDocumentGetSchema,
-        'put': FundDocumentUpdateSchema,
+        'default': FundDeductionSchema,
+        # 'get': FundDeductionGetSchema,
+        # 'put': FundDeductionUpdateSchema,
     }
 
     @doc(_("""This method handles PUT requests for the view. It updates a specific document fund object using the given id 
@@ -201,12 +197,12 @@ class FundDocumentDetailApi(AbstractFundDocumentApi):
     def delete(self, request, *args, **kwargs):
         with transaction.atomic():
             fund_id = kwargs.get('id')
-            document = get_object_or_404(FundDocument, id=fund_id)
+            document = get_object_or_404(FundDeduction, id=fund_id)
             document.delete()
         return JsonResponse({'data': _('Statement fund deleted')}, status=status.HTTP_200_OK)
 
 
-class StatementFundsIRRFListApi(AbstractFundDocumentApi):
+class StatementFundsDeductionDetailApi(AbstractViewApi):
     """Define the StatementFundsApi view class for handling HTTP methods related to StatementFunds.
 
     This view class extends the AbstractViewApi class, which provides a basic implementation
@@ -226,63 +222,103 @@ class StatementFundsIRRFListApi(AbstractFundDocumentApi):
     Examples:
         To retrieve funds with a matching description:
         ```
-        GET /api/v1/calculation/funds/labor/integration/<uuid:fund_id>/
+        GET /api/v1/calculation/funds/funds/
         ```
     """
-    serializer_class = TotalValuesDocumentDetailSchema
-    http_method_names = ['get', 'put']
+    serializer_class = StatementDeductionSchema
+    http_method_names = ['get', 'put', 'delete']
+    model = StatementDeduction
+
     docs = docs.copy()
-    model = FundDocument
+    docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific statement fund object 
+    using the given id from the query parameters and serializes the result into JSON format before returning it as an 
+    HTTP response. 
 
-    layout_serializers = {
-        'default': TotalValuesDocumentDetailSchema,
-        'get': TotalValuesDocumentDetailSchema,
-        'put': StatementDocumentUpdateSchema,
-    }
+            :return:
+                JsonResponse: An HTTP response containing the serialized statement fund data retrieved.
+        """)
+    docs['put'] = _("""This method handles PUT requests for the view. It updates a specific statement fund 
+        object using the given id from the query parameters and the serialized input data from the request body. 
 
-    tags = [_('Cálculo - Verbas - Documentos - Valores das verbas')]
+            :return:
+                JsonResponse: An HTTP response containing the serialized statement fund data updated.
+                """)
 
-    @doc(_("""This method handles GET requests for the view. It retrieves the calculated fund total and a list of fund 
-    IRRF objects using the received fund_id from the query parameters and serializes the result into 
-    JSON format before returning it as an JSON response. 
+    docs['delete'] = _("""Delete a specific statement fund according to the ID passed by the url
 
-    :return:
-        - JsonResponse: An HTTP response containing the serialized statement IRRF data retrieved.
-    """))
+            :return:
+                - JsonResponse: An HTTP response containing the ok message.
+            """)
+
     def get(self, request, *args, **kwargs):
-        funds_data = self.get_total_response(request, *args, **kwargs)
+        fund_id = kwargs.get('id')
+        fund = FundDeduction.objects.filter(id=fund_id).first()
+        funds_data = TotalStatementDeductionSchema(fund, many=False).data
         return JsonResponse({'fund': funds_data})
 
-    def get_total_response(self, request, *args, **kwargs):
-        fund_id = kwargs.get('fund_id')
-        fund = self.model.objects.filter(id=fund_id).first()
-        if hasattr(fund, 'totalvaluesdocument'):
-            funds_data = self.serializer_class(
-                fund.totalvaluesdocument, many=False).data
-        else:
-            funds_data = self.serializer_class(fund, many=False).data
-        return funds_data
-
     def put(self, request, *args, **kwargs):
-        """
-        This method handles PUT requests for the view. It expects input data that conform to the serializer used by
-        the view class. It updates the approved_calculation or date object of a specific comparative object using the
-        given calculation_id from the query parameters and serializes the updated object in JSON format before
-        returning it as an HTTP response.
+        fund_id = kwargs.get('id')
+        fund = FundDeduction.objects.filter(statementdeduction__id=fund_id).first()
+        fund.statementdeduction_set.all().update(used_remaining_balance=False)
+        return super().put(request, *args, **kwargs)
 
-        :params:
-            request: The HTTP request object. args: Any additional positional arguments passed to the method.
-            kwargs: Any additional keyword arguments passed to the method, with calculation_id identifying the
-            comparative object to update. :return: JsonResponse: An HTTP response containing the updated and serialized
-            comparative object data.
-        """
-        with transaction.atomic():
-            id_ = kwargs.get('fund_id')
-            serializer = self.get_serializer_class()
-            serializer = serializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            data_obj = dict(serializer.validated_data)
-            obj = get_object_or_404(StatementDocument, fund_id=id_)
-            obj.dict_update(**data_obj)
-        funds_data = self.get_total_response(request, *args, **kwargs)
-        return JsonResponse({'fund': funds_data.get('data')[0]})
+
+class StatementFundsDeductionDueDetailApi(AbstractViewApi):
+    """Define the StatementFundsApi view class for handling HTTP methods related to StatementFunds.
+
+    This view class extends the AbstractViewApi class, which provides a basic implementation
+    for common API actions. The StatementFundsApi supports HTTP POST and GET methods, and uses the StatementFundsSchema
+    serializer for input/output validation. The view requires authenticated users with appropriate
+    permissions to access the API endpoints, as specified by the IsAuthenticated and CheckHasPermission
+    permission classes.
+
+    Attributes:
+        http_method_names (list): A list of HTTP methods supported by this view.
+        serializer_class (class): The serializer class for input/output validation.
+        permission_classes (list): A list of permission classes for user authentication and authorization.
+        model (class): The model class associated with this view.
+
+        query_params (list): A list of dictionaries, each specifying a query parameter for the API.
+
+    Examples:
+        To retrieve funds with a matching description:
+        ```
+        GET /api/v1/calculation/funds/funds/
+        ```
+    """
+    serializer_class = StatementDeductionDueSchema
+    http_method_names = ['get', 'put', 'delete']
+    model = StatementDeductionDue
+
+    docs = docs.copy()
+    docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific statement fund object 
+    using the given id from the query parameters and serializes the result into JSON format before returning it as an 
+    HTTP response. 
+
+            :return:
+                JsonResponse: An HTTP response containing the serialized statement fund data retrieved.
+        """)
+    docs['put'] = _("""This method handles PUT requests for the view. It updates a specific statement fund 
+        object using the given id from the query parameters and the serialized input data from the request body. 
+
+            :return:
+                JsonResponse: An HTTP response containing the serialized statement fund data updated.
+                """)
+
+    docs['delete'] = _("""Delete a specific statement fund according to the ID passed by the url
+
+            :return:
+                - JsonResponse: An HTTP response containing the ok message.
+            """)
+
+    def get(self, request, *args, **kwargs):
+        fund_id = kwargs.get('id')
+        fund = FundDeduction.objects.filter(id=fund_id).first()
+        funds_data = TotalStatementDeductionDueSchema(fund, many=False).data
+        return JsonResponse({'fund': funds_data})
+
+    #
+    def put(self, request, *args, **kwargs):
+        id_ = kwargs.get('id')
+        obj = get_object_or_404(self.model, id=id_)
+        return JsonResponse({self.get_model_name(): self.serializer_class(obj, many=False).data})
