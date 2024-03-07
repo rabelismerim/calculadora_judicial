@@ -217,6 +217,8 @@ class AbstractStatement(AbstractStatus):
                     [_('This is an extra-bankruptcy budget, it is necessary to flag the extra-bankruptcy budget')])
             statement.set_calculation_registered()
             return None
+        
+        
 
         rate_data_base = rate.get_rate_by_date(data_base)
 

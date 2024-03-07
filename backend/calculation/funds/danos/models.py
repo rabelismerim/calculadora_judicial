@@ -42,8 +42,8 @@ class FundDanos(AbstractFunds):
     correction_description = models.CharField(
         _('Descrição da Correção'), max_length=100, blank=True, null=True)
 
-    # if type_interest and interest_initial_date is None:
-    #     raise ValueError('A Data inicial do juros deve ser preenchida.')
+    date_of_generator_fact = models.DateField(
+        _('Data do fato gerador'), blank=True, null=True)
 
     # TODO MARCELO: deixar a data interest_initial_date como opcional, fazer validador se tiver type_interest calculo
     #  de juros a data ser obrigatória
@@ -97,6 +97,11 @@ class FundDanos(AbstractFunds):
     def get_total_total_default_interest(self) -> float:
         """Get the corrected value of the sum of calculated sums"""
         return getattr(self.total_values_danos, 'total_default_interest', 0)
+
+    def check_is_extraconcursal(self) -> bool:
+        if self.calcule_is_extraconcursal is False or self.is_retroactive:
+            return False
+        return True
 
     def get_statement(self):
         """
@@ -244,9 +249,15 @@ class StatementDanos(AbstractStatement):
         :return:
             float: The default interest rate to be charged.
         """
-
+        type_interest = self.fund.type_interest
         interest_initial_date = self.fund.interest_initial_date
         data_rj = self.fund.calculation.get_date_rj()
+
+        if self.calcule_is_extraconcursal is False or self.is_retroactive:
+            pass
+
+        if type_interest and interest_initial_date is None:
+            raise ValueError('A Data inicial do juros deve ser preenchida.')
 
         if interest_initial_date > data_rj:
             return 0

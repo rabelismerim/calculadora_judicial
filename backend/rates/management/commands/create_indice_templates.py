@@ -1,15 +1,17 @@
 import copy
 import json
 
-from django.core.management.base import BaseCommand
-
 from calculation.funds.danos.models import InterestChoices
 from calculation.funds.document.models import FundDocument
 from calculation.funds.irrf.models import FundIRRF
 from calculation.funds.models import Funds
-from rates.models import Template, TemplateField, TemplateRate, TemplateMainField, TemplateSummaryField, \
-    TemplateMainSummaryField, TemplateMainFieldDefault, TemplateFieldDefault, TemplateSlugChoices, TemplateFieldChoices, \
-    FieldTypeChoices, TemplateMainFieldChoices
+from django.core.management.base import BaseCommand
+from rates.models import (FieldTypeChoices, Template, TemplateField,
+                          TemplateFieldChoices, TemplateFieldDefault,
+                          TemplateMainField, TemplateMainFieldChoices,
+                          TemplateMainFieldDefault, TemplateMainSummaryField,
+                          TemplateRate, TemplateSlugChoices,
+                          TemplateSummaryField)
 
 TEMPLATE_INSS = 'INSS'
 
@@ -56,7 +58,7 @@ def create_templates():
                   {'label': 'Descrição fato gerador', 'key': 'description', 'type': 'C', 'order': 1,
                    'is_editable': True,
                    'required': True},
-                  {'label': 'Data base', 'key': 'data_base', 'type': 'D', 'order': 2, 'is_editable': True,
+                  {'label': 'Data da correção', 'key': 'data_base', 'type': 'D', 'order': 2, 'is_editable': True,
                    'required': True},
                   {'label': 'Tipo de juros', 'key': 'type_interest', 'type': FieldTypeChoices.CHOICES, 'order': 3,
                    'choices': InterestChoices.choices,
@@ -65,7 +67,7 @@ def create_templates():
                   {'label': 'Data Inicial do juros', 'key': 'interest_initial_date', 'type': 'D',
                    'order': 4,
                    'is_editable': True,
-                   'required': True},
+                   'required': False},
                   {'label': 'Valor histórico', 'key': 'historical_value', 'type': 'F', 'order': 5,
                    'is_editable': True,
                    'required': True},
@@ -475,17 +477,20 @@ def create_templates():
         summary_main_fields = template.pop('summary_main_fields')
         defaults = {'name': name, 'end_point': end_point}
         filters = {'name': name}
-        new_template, created = Template.objects.get_or_create(defaults=defaults, **filters)
+        new_template, created = Template.objects.get_or_create(
+            defaults=defaults, **filters)
 
         if created is False:
-            TemplateMainFieldDefault.objects.filter(field__template=new_template).delete()
+            TemplateMainFieldDefault.objects.filter(
+                field__template=new_template).delete()
             TemplateMainField.objects.filter(template=new_template).delete()
 
         for fund_ in fund_main:
             fund = fund_.copy()
             field_default = fund.pop('default', None)
             field_choices = fund.pop('choices', None)
-            main, created = TemplateMainField.objects.update_or_create(template=new_template, **fund)
+            main, created = TemplateMainField.objects.update_or_create(
+                template=new_template, **fund)
 
             if field_default is not None:
                 TemplateMainFieldDefault.objects.update_or_create(field=main, defaults={
@@ -493,23 +498,30 @@ def create_templates():
                 })
 
             if field_choices is not None:
-                field_choices = [{'id': str(choice[0]), 'legend': str(choice[1])} for choice in field_choices]
-                has_default = TemplateMainFieldChoices.objects.filter(field=main, choices=field_choices).exists()
+                field_choices = [{'id': str(choice[0]), 'legend': str(
+                    choice[1])} for choice in field_choices]
+                has_default = TemplateMainFieldChoices.objects.filter(
+                    field=main, choices=field_choices).exists()
                 if not has_default:
-                    default_obj = TemplateMainFieldChoices(field_id=main.id, choices=field_choices)
+                    default_obj = TemplateMainFieldChoices(
+                        field_id=main.id, choices=field_choices)
                     default_obj.save()
 
         for fund in summary_main_fields:
             defaults = fund.copy()
             defaults['template'] = new_template
-            TemplateMainSummaryField.objects.get_or_create(defaults=defaults, **defaults)
-        new_template_rate, created = TemplateRate.objects.get_or_create(template=new_template, **template)
+            TemplateMainSummaryField.objects.get_or_create(
+                defaults=defaults, **defaults)
+        new_template_rate, created = TemplateRate.objects.get_or_create(
+            template=new_template, **template)
         new_template_rate.has_commit = has_commit
         new_template_rate.save()
         if created is False:
-            TemplateFieldDefault.objects.filter(field__rate=new_template_rate).delete()
+            TemplateFieldDefault.objects.filter(
+                field__rate=new_template_rate).delete()
             TemplateField.objects.filter(rate=new_template_rate).delete()
-            TemplateSummaryField.objects.filter(rate=new_template_rate).delete()
+            TemplateSummaryField.objects.filter(
+                rate=new_template_rate).delete()
 
         for field in fields:
             defaults = field.copy()
@@ -517,20 +529,25 @@ def create_templates():
             field_choices = defaults.pop('choices', None)
             defaults['rate'] = new_template_rate
 
-            main, created = TemplateField.objects.get_or_create(defaults=defaults, **defaults)
+            main, created = TemplateField.objects.get_or_create(
+                defaults=defaults, **defaults)
 
             if field_default is not None:
-                has_default = TemplateFieldDefault.objects.filter(field=main, label=field_default).exists()
+                has_default = TemplateFieldDefault.objects.filter(
+                    field=main, label=field_default).exists()
                 if not has_default:
                     default_obj = TemplateFieldDefault(field_id=main.id, label=str(field_default),
                                                        value=json.dumps({'data': field_default}))
                     default_obj.save()
 
             if field_choices is not None:
-                field_choices = [{'id': str(choice[0]), 'legend': str(choice[1])} for choice in field_choices]
-                has_default = TemplateFieldChoices.objects.filter(field=main, choices=field_choices).exists()
+                field_choices = [{'id': str(choice[0]), 'legend': str(
+                    choice[1])} for choice in field_choices]
+                has_default = TemplateFieldChoices.objects.filter(
+                    field=main, choices=field_choices).exists()
                 if not has_default:
-                    default_obj = TemplateFieldChoices(field_id=main.id, choices=field_choices)
+                    default_obj = TemplateFieldChoices(
+                        field_id=main.id, choices=field_choices)
                     default_obj.save()
 
         for field in fields_default_all:
@@ -540,7 +557,8 @@ def create_templates():
         for field in summary_fields:
             defaults = field.copy()
             defaults['rate'] = new_template_rate
-            TemplateSummaryField.objects.get_or_create(defaults=defaults, **defaults)
+            TemplateSummaryField.objects.get_or_create(
+                defaults=defaults, **defaults)
 
 
 def delete_verbas():
@@ -557,7 +575,8 @@ def correct_verbas():
     old_id = ['8503cfdb-d36d-45b8-a5fd-aefd330961e4']
     new_id = '48ed463e-8b3a-4029-b394-29e13f7dc951'
     Funds.objects.filter(template_id__in=old_id).update(template_id=new_id)
-    FundDocument.objects.filter(template_id__in=old_id).update(template_id=new_id)
+    FundDocument.objects.filter(
+        template_id__in=old_id).update(template_id=new_id)
     FundIRRF.objects.filter(template_id__in=old_id).update(template_id=new_id)
 
 
