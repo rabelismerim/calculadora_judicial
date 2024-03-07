@@ -210,7 +210,6 @@ class AbstractStatement(AbstractStatus):
 
         is_extraconcursal = self.check_is_extraconcursal()
 
-
         if date_rj and data_base >= date_rj and is_extraconcursal:
             if self.is_extraconcursal is False:
                 raise serializers.ValidationError(
