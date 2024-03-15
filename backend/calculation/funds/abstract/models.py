@@ -219,7 +219,11 @@ class AbstractStatement(AbstractStatus):
             return None
 
         if is_extraconcursal and self.is_retroactive is False:
-            return self.historical_value
+            # Para manter o valor histórico e não retroagir o valor
+            return {
+                'index_data_base': 1,
+                'index_recovering': 1,
+            }
 
         rate_data_base = rate.get_rate_by_date(data_base)
 
