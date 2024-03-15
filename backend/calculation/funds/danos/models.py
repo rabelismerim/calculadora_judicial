@@ -22,6 +22,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from rates.models import CalculeRate, Rate
+from rest_framework import serializers
 
 
 class InterestChoices(TextChoices):
@@ -42,8 +43,8 @@ class FundDanos(AbstractFunds):
     correction_description = models.CharField(
         _('Descrição da Correção'), max_length=100, blank=True, null=True)
 
-    # if type_interest and interest_initial_date is None:
-    #     raise ValueError('A Data inicial do juros deve ser preenchida.')
+    date_of_generator_fact = models.DateField(
+        _('Data do fato gerador'), blank=True, null=True)
 
     # TODO MARCELO: deixar a data interest_initial_date como opcional, fazer validador se tiver type_interest calculo
     #  de juros a data ser obrigatória
@@ -94,9 +95,14 @@ class FundDanos(AbstractFunds):
         """Get the corrected value of the sum of calculated sums"""
         return getattr(self.total_values_danos, 'total_due', 0)
 
-    def get_total_total_default_interest(self) -> float:
+    def get_total_default_interest(self) -> float:
         """Get the corrected value of the sum of calculated sums"""
         return getattr(self.total_values_danos, 'total_default_interest', 0)
+
+    def check_is_extraconcursal(self) -> bool:
+        if self.calcule_is_extraconcursal is False or self.is_retroactive:
+            return False
+        return True
 
     def get_statement(self):
         """
@@ -299,6 +305,13 @@ class StatementDanos(AbstractStatement):
         Args:
             send_signal_post_save (bool): Set to True to send a post-save signal. Default is True.
         """
+        type_interest = self.fund.type_interest
+        interest_initial_date = self.fund.interest_initial_date
+
+        if type_interest and interest_initial_date is None:
+            raise serializers.ValidationError(
+                [_('You need the starting date of the interest.')])
+
         save = super(StatementDanos, self).save(*args, **kwargs)
         if send_signal_post_save:
             gen_statement_danos.send(sender=self.__class__, instance=self)
