@@ -3,7 +3,7 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 trigger:
-- prod
+- main
 pool:
   name: TR
   demands:
@@ -61,52 +61,52 @@ steps:
     npm run build:prod
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/frontend
-  displayName: 'Install node prerequisites'
+  displayName: 'Build node prerequisites'
 - script: |
     md .\log
   failOnStderr: true
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Create dir log'
 - script: |
     pip install virtualenv
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Install virtualenv'
 - script: |
     virtualenv venv
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Create virtualenv'
 - script: |
     .\venv\Scripts\activate
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Active virtualenv'
 - script: |
     python -m pip install --upgrade --user pip setuptools wheel
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Install and update pip'
 - script: |
     pip install --user -r requirements.txt
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Install requirements'
 - script: |
     pip install --user unittest-xml-reporting
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Install unittest'
 - script: |
     python -m pip install --user fastcgi
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Install fastcgi'
 - script: |
     python manage.py collectstatic --no-input
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Django Collectstatic'
 - task: DeleteFiles@1
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)/backend/venv'
@@ -116,32 +116,32 @@ steps:
     python manage.py makemigrations
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
-- script: |
-    del venv\.*
-  failOnStderr: false
-  workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Django makemigrations'
 - script: |
     python manage.py migrate
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Django migrate'
+- script: |
+    del venv\.*
+  failOnStderr: false
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Deleting venv backend'
 - script: |
     rd venv
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Deleting venv backend'
 - script: |
     del .env
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Deleting env backend'
 - script: |
     del .env.example
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Deleting env.example backend'
 - task: DeleteFiles@1
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)/backend/__pycache__'
