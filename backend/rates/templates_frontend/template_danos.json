@@ -18,11 +18,27 @@
             "is_editable": true,
             "required": true
         },
-        {
-            "label": "Data base",
-            "key": "data_base",
+         {
+            "label": "Data do fato gerador",
+            "key": "date_of_generator_fact",
             "type": "D",
             "order": 2,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Descri\u00e7\u00e3o da Corre\u00e7\u00e3o",
+            "key": "correction_description",
+            "type": "C",
+            "order": 3,
+            "is_editable": true,
+            "required": true
+        },
+        {
+            "label": "Data da Corre\u00e7\u00e3o",
+            "key": "data_base",
+            "type": "D",
+            "order": 4,
             "is_editable": true,
             "required": true
         },
@@ -30,7 +46,7 @@
             "label": "Tipo de juros",
             "key": "type_interest",
             "type": "H",
-            "order": 3,
+            "order": 5,
             "choices": [
                 [
                     "S",
@@ -60,7 +76,7 @@
             "label": "Data Inicial do juros",
             "key": "interest_initial_date",
             "type": "D",
-            "order": 4,
+            "order": 6,
             "is_editable": true,
             "required": true
         },
@@ -68,7 +84,7 @@
             "label": "Valor hist\u00f3rico",
             "key": "historical_value",
             "type": "F",
-            "order": 5,
+            "order": 7,
             "is_editable": true,
             "required": true
         },
@@ -76,7 +92,7 @@
             "label": "Aplicar corre\u00e7\u00e3o monet\u00e1ria?",
             "key": "apply_monetary_correction",
             "type": "B",
-            "order": 6,
+            "order": 8,
             "default": true,
             "is_editable": true,
             "required": false

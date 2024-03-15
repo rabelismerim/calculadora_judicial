@@ -13,11 +13,11 @@ Attributes:
       representation.
 """
 from base.schemas import AbstractDescriptionSchema
-from rest_framework import serializers
-
-from calculation.funds.danos.models import StatementDanos, MonetaryCorrectionDanos, TotalValuesDanos, \
-    FundDanos, InterestChoices
+from calculation.funds.danos.models import (FundDanos, InterestChoices,
+                                            MonetaryCorrectionDanos,
+                                            StatementDanos, TotalValuesDanos)
 from creditors.classes.schemas import AbstractClassesFundsSchema
+from rest_framework import serializers
 from utils import _
 
 
@@ -43,15 +43,18 @@ class StatementDanosSchema(AbstractDescriptionSchema):
     Attributes:
         fund_id (serializers.UUIDField): The UUID of the related fund.
     """
-    monetary_correction = MonetaryCorrectionDanosSchema(read_only=True, source='monetarycorrectiondanos')
+    monetary_correction = MonetaryCorrectionDanosSchema(
+        read_only=True, source='monetarycorrectiondanos')
 
     fund_id = serializers.UUIDField()
-    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    status_display = serializers.CharField(
+        source='get_status_display', read_only=True)
     historical_value = serializers.FloatField()
     data_base = serializers.DateField()
     description = serializers.CharField()
     total_days = serializers.IntegerField(read_only=True)
-    total_default_interest = serializers.FloatField(source='default_interest', read_only=True)
+    total_default_interest = serializers.FloatField(
+        source='default_interest', read_only=True)
 
     # default_interest = serializers.FloatField(source='default_interest', read_only=True)
 
@@ -69,16 +72,21 @@ class StatementDanosUpdateSchema(AbstractDescriptionSchema):
     Attributes:
         fund_id (serializers.UUIDField): The UUID of the related fund.
     """
-    monetary_correction = MonetaryCorrectionDanosSchema(read_only=True, source='monetarycorrectiondanos')
+    monetary_correction = MonetaryCorrectionDanosSchema(
+        read_only=True, source='monetarycorrectiondanos')
 
     fund_id = serializers.UUIDField(read_only=True)
-    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    status_display = serializers.CharField(
+        source='get_status_display', read_only=True)
     data_correction = serializers.DateField(required=False)
     historical_value = serializers.FloatField(required=False)
     description = serializers.CharField(required=False)
-    interest_initial_date = serializers.DateField(write_only=True, required=False)
-    apply_monetary_correction = serializers.BooleanField(write_only=True, required=False)
-    type_interest = serializers.ChoiceField(choices=InterestChoices.choices, write_only=True, required=False)
+    interest_initial_date = serializers.DateField(
+        write_only=True, required=False)
+    apply_monetary_correction = serializers.BooleanField(
+        write_only=True, required=False)
+    type_interest = serializers.ChoiceField(
+        choices=InterestChoices.choices, write_only=True, required=False)
     description_correction = serializers.CharField(required=False)
 
     class Meta:
@@ -98,7 +106,8 @@ class StatementFundDanosUpdateSchema(AbstractDescriptionSchema):
         read_only=True, source='monetarycorrectiondanos')
 
     fund_id = serializers.UUIDField(read_only=True)
-    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    status_display = serializers.CharField(
+        source='get_status_display', read_only=True)
 
     class Meta:
         model = StatementDanos
@@ -126,7 +135,8 @@ class TotalValuesDanosSchema(AbstractDescriptionSchema):
         fund_id (serializers.UUIDField): The UUID of the related fund.
     """
     fund_id = serializers.UUIDField(read_only=True)
-    data = StatementDanosSchema(many=False, source='fund.statementdanos', exclude=('fund_id',), required=False)
+    data = StatementDanosSchema(
+        many=False, source='fund.statementdanos', exclude=('fund_id',), required=False)
     total_days = serializers.IntegerField(read_only=True)
 
     class Meta:
@@ -160,7 +170,8 @@ class TotalValuesDanosDetailSchema(AbstractDescriptionSchema):
         fund_id (serializers.UUIDField): The UUID of the related fund.
     """
     fund_id = serializers.UUIDField(read_only=True)
-    data = StatementDanosSchema(many=False, source='fund.statementdanos', exclude=('fund_id',), required=False)
+    data = StatementDanosSchema(
+        many=False, source='fund.statementdanos', exclude=('fund_id',), required=False)
     total_days = serializers.IntegerField(read_only=True)
     fund = FundDanosDetailSchema(many=False)
 
@@ -212,13 +223,16 @@ class FundDanosSchema(AbstractClassesFundsSchema):
     deserializing StatementIRRF instances.
     """
     calculation_id = serializers.UUIDField()
-    total = TotalValuesDanosSchema(source='totalvaluesdanos', read_only=True, exclude=('fund_id', 'statement'))
-    statement = StatementDanosSchema(source='statementdanos', exclude=('fund_id', 'status'), read_only=True)
+    total = TotalValuesDanosSchema(
+        source='totalvaluesdanos', read_only=True, exclude=('fund_id', 'statement'))
+    statement = StatementDanosSchema(
+        source='statementdanos', exclude=('fund_id', 'status'), read_only=True)
     commit = serializers.BooleanField(write_only=True, required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        statement_serializer = StatementDanosSchema(exclude=('fund_id', 'status'))
+        statement_serializer = StatementDanosSchema(
+            exclude=('fund_id', 'status'))
         statement_fields = statement_serializer.get_fields()
         self.write_only_fields = {}
         extra_kwargs = {}
@@ -259,7 +273,8 @@ class FundDanosSchema(AbstractClassesFundsSchema):
         if FundDanos.objects.filter(calculation_id=calculation_id, name=name, statementdanos__data_base=data_base,
                                     statementdanos__description=description,
                                     statementdanos__historical_value=historical_value).exists():
-            raise serializers.ValidationError([_('Verba de dano já registrada')])
+            raise serializers.ValidationError(
+                [_('Verba de dano já registrada')])
         data['statement_danos'] = {}
         for field_name in self.write_only_fields.keys():
             data['statement_danos'][field_name] = data.pop(field_name)
@@ -277,7 +292,8 @@ class FundDanosGetSchema(AbstractClassesFundsSchema):
     deserializing StatementIRRF instances.
     """
     calculation_id = serializers.UUIDField()
-    total = TotalValuesDanosSchema(source='totalvaluesdanos', read_only=True, exclude=('fund_id', 'statement'))
+    total = TotalValuesDanosSchema(
+        source='totalvaluesdanos', read_only=True, exclude=('fund_id', 'statement'))
 
     class Meta:
         model = FundDanos
@@ -295,7 +311,8 @@ class FundDanosUpdateSchema(AbstractDescriptionSchema):
     deserializing StatementIRRF instances.
     """
     calculation_id = serializers.UUIDField(read_only=True)
-    fund = TotalValuesDanosSchema(source='totalvaluesdanos', read_only=True, exclude=('fund_id',))
+    fund = TotalValuesDanosSchema(
+        source='totalvaluesdanos', read_only=True, exclude=('fund_id',))
     statement = StatementDanosUpdateSchema(source='statementdanos', exclude=('fund_id', 'status'),
                                            write_only=True, required=False)
     name = serializers.CharField(required=False)

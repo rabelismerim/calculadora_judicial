@@ -10,17 +10,15 @@ StatementIntegrations extends AbstractStatement and includes a description field
 """
 import datetime
 
-from django.db import models
-from django.db.models import FloatField
-from django.utils.translation import gettext_lazy as _
-from rest_framework import serializers
-
+from base.models import AbstractCredit
 from calculation.models import Calculation
 from core.abstract.models import AbstractModel
 from dateutil.relativedelta import relativedelta
-
+from django.db import models
+from django.db.models import FloatField
+from django.utils.translation import gettext_lazy as _
 from rates.models import Rate, Template
-from base.models import AbstractCredit
+from rest_framework import serializers
 
 
 class AbstractFunds(AbstractCredit):
@@ -72,7 +70,8 @@ CHOICES_STATUS_FUND = (('S', _('Requested')), ('C', _('Concluded')), ('E', _('In
 
 
 class AbstractStatus(AbstractModel):
-    status = models.CharField(_('Calculation status'), max_length=1, choices=CHOICES_STATUS_FUND, default='S')
+    status = models.CharField(
+        _('Calculation status'), max_length=1, choices=CHOICES_STATUS_FUND, default='S')
 
     CHOICES_STATUS_FUND = CHOICES_STATUS_FUND
 
@@ -133,7 +132,8 @@ class AbstractStatus(AbstractModel):
                 has_value = True
                 break
         if not has_value:
-            raise ValueError(_('Status {} does not match any valid status').format(value))
+            raise ValueError(
+                _('Status {} does not match any valid status').format(value))
 
     def _set_status(self, value: str):
         """Sets the status of the statement with the given value."""
@@ -176,7 +176,8 @@ class AbstractStatement(AbstractStatus):
     # Sendo necessário adicionar um mês na hora de calcular o valor
     # TODO: Verificar automaticamente se é ou não verba para aplicar a sumula
     fund = models.ForeignKey('funds.Funds', on_delete=models.PROTECT)
-    is_extraconcursal = models.BooleanField(_('Is extraconcursal'), default=False)
+    is_extraconcursal = models.BooleanField(
+        _('Is extraconcursal'), default=False)
     is_retroactive = models.BooleanField(_('Is retroactive'), default=False)
     calcule_is_extraconcursal = True
 
@@ -210,7 +211,6 @@ class AbstractStatement(AbstractStatus):
 
         is_extraconcursal = self.check_is_extraconcursal()
 
-
         if date_rj and data_base >= date_rj and is_extraconcursal:
             if self.is_extraconcursal is False:
                 raise serializers.ValidationError(
@@ -218,10 +218,18 @@ class AbstractStatement(AbstractStatus):
             statement.set_calculation_registered()
             return None
 
+        if is_extraconcursal and self.is_retroactive is False:
+            # Para manter o valor histórico e não retroagir o valor
+            return {
+                'index_data_base': 1,
+                'index_recovering': 1,
+            }
+
         rate_data_base = rate.get_rate_by_date(data_base)
 
         if rate.is_ipca_e_selic():  # IPCA-E/SELIC usa a data de ajuizamento para os calculos
-            rate_date_rj = rate.get_rate_by_date(calculation.get_date_rj_filing())
+            rate_date_rj = rate.get_rate_by_date(
+                calculation.get_date_rj_filing())
         else:
             rate_date_rj = rate.get_rate_by_date(date_rj)
 
@@ -358,12 +366,14 @@ class AbstractMonetaryCorrection(AbstractModel):
         object does not exist, it raize implemented error.
         """
         if hasattr(self, 'statement') is False or self.statement is None:
-            raise NotImplementedError(_('OneToOneField relationship required for Statement'))
+            raise NotImplementedError(
+                _('OneToOneField relationship required for Statement'))
         return self.statement
 
     @staticmethod
     def _calc_corrected_value(index_recovering: float, index_data_base: float, total_value: float) -> float:
-        return index_recovering / index_data_base * total_value  # Regra de divisão seguindo o ipca mensal
+        # Regra de divisão seguindo o ipca mensal
+        return index_recovering / index_data_base * total_value
 
     @property
     def corrected_value(self) -> float:
@@ -391,7 +401,8 @@ class AbstractTotalValuesFunds(AbstractModel):
         fund (Funds): The fund to which the values apply.
     """
 
-    total_historical = models.FloatField(_('Total historical value'), default=0)
+    total_historical = models.FloatField(
+        _('Total historical value'), default=0)
     total_corrected = models.FloatField(_('Total corrected amount'), default=0)
 
     def __str__(self):
