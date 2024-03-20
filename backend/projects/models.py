@@ -297,15 +297,21 @@ class Project(AbstractDescription, AbstractDateRecovering):
         if not data:
             ErrorFile.objects.create(file_id=file_id, error='A lista de excel processada estava vazia')
             return
+
+        recoveries = self.recovering_set.all().values('id', 'entity__legal_number')
         for credor in data:
             try:
                 with transaction.atomic():
                     natures = []
                     nature = credor['Natureza (NF, contrato, trabalhista etc)']
                     recovering_legal_number = ''.join(re.findall(r'\d', str(credor['Credor - Recuperanda CPF/CNPJ'])))
-                    recovering = self.recovering_set.filter(entity__legal_number=recovering_legal_number).values_list(
-                        'id', flat=True).first()
-                    # recovering = self.recovering_set.filter().values_list('id', flat=True).first()
+
+                    recovering = None
+                    for rec in recoveries:
+                        if rec['entity__legal_number'] == recovering_legal_number:
+                            recovering = rec['id']
+                            break
+
                     if not recovering:
                         ErrorFile.objects.create(file_id=file_id,
                                                  error=f'Linha: {credor["index"]}, Field recuperanda: Recuperanda não encontrada')
