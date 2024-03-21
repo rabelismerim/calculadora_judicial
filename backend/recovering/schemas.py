@@ -58,6 +58,14 @@ class RecoveringSchema(AbstractDescriptionSchema):  # V1
         return super(RecoveringSchema, self).validate(data)
 
 
+class RecoveringExcelSchema(RecoveringSchema):
+    entity_id = serializers.UUIDField(write_only=True)
+
+    class Meta:
+        model = Recovering
+        exclude = ('entity',)
+
+
 class RecoveringV2Schema(AbstractDescriptionSchema):  # V2
     """
     Serializes the fields of the Lawyer model for use in the API.

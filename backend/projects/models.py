@@ -295,7 +295,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
             raise serializers.ValidationError(_('Excel is not in the correct format'))
 
     def process_json_to_model(self, data: list, **kwargs):
-        from recovering.schemas import RecoveringSchema
+        from recovering.schemas import RecoveringExcelSchema
         from calculation.schemas import IncidentSchema
 
         name = kwargs.get('name')
@@ -326,20 +326,21 @@ class Project(AbstractDescription, AbstractDateRecovering):
                             break
 
                     if not recovering:
+                        entity = recovering.pop('entity')
+
                         recovering_data = {
-                            "entity": {
-                                "name": recovering_name,
-                                "legal_number": recovering_legal_number
-                            },
+                            "entity_id": Entity.objects.get_or_create(**entity)[0].id,
                             "project_id": self.id,
                         }
-                        recovering_schema = RecoveringSchema(data=recovering_data)
+
+                        recovering_schema = RecoveringExcelSchema(data=recovering_data)
                         is_valid = recovering_schema.is_valid(raise_exception=False)
 
                         if not is_valid:
                             ErrorFile.objects.create(file_id=file_id,
                                                      error=f'Linha: {credor["index"]}, {recovering_schema.errors}')
                             continue
+
                         recovering = recovering_schema.save()
 
                     nature_id = all_natures.filter(
