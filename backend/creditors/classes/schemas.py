@@ -1,9 +1,30 @@
 from base.coins.schemas import CoinsSchema
+from calculation.models import Incident
 from creditors.classes.models import Classes
 from base.schemas import AbstractDescriptionSchema
 from rest_framework import serializers
 
 from rates.schemas import RateSchema, TemplateSchema
+
+
+class IncidentSchema(AbstractDescriptionSchema):
+    """
+    The IncidentSchema class is a serializer for the Incident model fields. It inherits from the AbstractModelSchema
+    class. It includes the following fields:
+
+    creditor: a CreditorSchema instance that is read-only and not serialized.
+    creditor_id: a UUIDField instance that is write-only and serialized.
+    verdict: a VerdictSchema instance that represents a collection of verdicts related to the Incident.
+    criterion: a CriterionSchema instance that is read-only and not serialized.
+    funds: a FundsSchema instance that represents a collection of funds related to the Incident.
+    statement: a StatementSchema instance that is read-only and not serialized.
+    The Meta class is used to specify the Incident model and all fields are serialized.
+    The validate method is overridden to handle the verdict_set and funds_set fields and returns the validated data.
+    """
+
+    class Meta:
+        model = Incident
+        fields = '__all__'
 
 
 class ClassesSchema(AbstractDescriptionSchema):
@@ -24,6 +45,8 @@ class AbstractClassesSchema(AbstractDescriptionSchema):
     coins = CoinsSchema(many=False, read_only=False)
     archive_json = serializers.JSONField(allow_null=True, required=False)
     creditor_id = serializers.UUIDField()
+    incident_id = serializers.UUIDField(write_only=True, required=False, allow_null=True)
+    incident = IncidentSchema(read_only=True)
 
     # def validate_creditor_id(self, creditor_id):
     #     if self.model.objects.filter(creditor_id=creditor_id).exists():
@@ -51,12 +74,16 @@ class AbstractClassesUpdateSchema(AbstractDescriptionSchema):
     classes = ClassesSchema(many=False, read_only=False, required=False)
     coins = CoinsSchema(many=False, read_only=False, required=False)
     archive_json = serializers.JSONField(allow_null=True, required=False)
+    incident_id = serializers.UUIDField(write_only=True, required=False, allow_null=True)
+    incident = IncidentSchema(read_only=True)
 
 
 class AbstractClassesLawyerUpdateSchema(AbstractDescriptionSchema):
     coins = CoinsSchema(many=False, read_only=False)
     archive_json = serializers.JSONField(allow_null=True, required=False)
     creditor_id = serializers.UUIDField()
+    incident_id = serializers.UUIDField(write_only=True, required=False, allow_null=True)
+    incident = IncidentSchema(read_only=True)
 
     def validate(self, data):
         data = super().validate(data)
@@ -70,6 +97,8 @@ class AbstractClassesLawyerSchema(AbstractDescriptionSchema):
     coins = CoinsSchema(many=False, read_only=False, required=False)
     archive_json = serializers.JSONField(allow_null=True, required=False)
     creditor_id = serializers.UUIDField()
+    incident_id = serializers.UUIDField(write_only=True, required=False, allow_null=True)
+    incident = IncidentSchema(read_only=True)
 
     def validate_creditor_id(self, creditor_id):
         if self.model.objects.filter(creditor_id=creditor_id).exists():
