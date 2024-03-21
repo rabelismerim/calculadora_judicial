@@ -28,8 +28,6 @@ class IncidentSchema(AbstractDescriptionSchema):
 
 class ClaimLawyerSchema(AbstractClassesLawyerSchema):
     model = ClaimLawyer
-    incident_id = serializers.UUIDField(write_only=True)
-    incident = IncidentSchema(read_only=True)
 
     class Meta:
         model = ClaimLawyer
@@ -48,8 +46,6 @@ class ClaimCreditorSchema(AbstractClassesSchema):
 
 class ClaimCreditorUpdateSchema(AbstractClassesUpdateSchema):
     model = ClaimCreditor
-    incident_id = serializers.UUIDField(write_only=True)
-    incident = IncidentSchema(read_only=True)
 
     class Meta:
         model = ClaimCreditor
@@ -58,8 +54,6 @@ class ClaimCreditorUpdateSchema(AbstractClassesUpdateSchema):
 
 class ClaimLawyerUpdateSchema(AbstractClassesLawyerUpdateSchema):
     model = ClaimCreditor
-    incident_id = serializers.UUIDField(write_only=True)
-    incident = IncidentSchema(read_only=True)
 
     class Meta:
         model = ClaimLawyer
@@ -69,8 +63,6 @@ class ClaimLawyerUpdateSchema(AbstractClassesLawyerUpdateSchema):
 class ClaimSchema(AbstractClassesSchema):
     model = Claim
     creditor_id = None
-    incident_id = serializers.UUIDField(write_only=True)
-    incident = IncidentSchema(read_only=True)
 
     class Meta:
         model = Claim

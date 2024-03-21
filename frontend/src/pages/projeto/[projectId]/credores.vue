@@ -179,23 +179,28 @@ const editCreditor = (creditor: any) => {
 }
 
 const { dialog } = useQuasar()
-const validateCreditor = async (creditor: any) => {
-  if (!creditor)
-    return
+const validateCreditors = async () => {
+  const toValidate = inactiveCreditors
+    ?.filter(({ toValidate }: any) => toValidate) ?? []
   dialog({
-    title: 'Validando Credor',
-    message: 'Você tem certeza que deseja validar este credor?',
+    title: 'Validar Credores',
+    message: 'Você tem certeza que deseja validar os credores marcados?',
     cancel: true,
     persistent: true,
   }).onOk(async () => {
+    if (toValidate?.length <= 0) {
+      throwError({ message: 'Não tem nenhum credor selecionado...' })
+      return
+    }
     loading = true
     try {
-      const updatedCreditor = {
+      const updatedCreditors = toValidate.map((creditor: any) => ({
         ...creditor,
         is_active: true,
-      }
+      }))
 
-      await creditorsService.updateCreditor(updatedCreditor)
+      for (const creditor of updatedCreditors)
+        await creditorsService.updateCreditor(creditor)
 
       await loadInactiveCreditors()
       await loadCreditors()
@@ -406,6 +411,7 @@ onMounted(() => {
             :key="creditor.id"
             :title="creditor.entity.name"
             :subtitle="formatLegalNumber(creditor.entity.legalNumber)"
+            @open="creditor.toValidate = true"
           >
             <div class="grid grid-cols-1 sm:grid-cols-2 px-7 py-5 border-b-1">
               <div><b>Nome:</b> {{ creditor?.entity?.name }}</div>
@@ -433,12 +439,7 @@ onMounted(() => {
             </template>
             <template #header-right>
               <div class="flex-1 flex gap-2 justify-end items-center pl-8 pr-4">
-                <Btn
-                  label="Validar Credor"
-                  icon="i-carbon-checkmark"
-                  transparent
-                  @click.stop="validateCreditor(creditor)"
-                />
+                <QToggle v-model="creditor.toValidate" :false-value="null" />
               </div>
             </template>
             <div v-if="creditor.recoveringName" class="p-4 flex gap-4">
@@ -459,6 +460,13 @@ onMounted(() => {
               Nenhuma Recuperanda para esse Credor
             </div>
           </Accordion>
+          <div class="flex justify-end">
+            <Btn
+              label="Validar Credores"
+              icon="i-carbon-checkmark"
+              @click.stop="validateCreditors"
+            />
+          </div>
         </div>
         <div v-else class="pt-5 text-center">
           Parece que não existe nenhum usuário inativo no momento...
