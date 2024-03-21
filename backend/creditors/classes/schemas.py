@@ -45,7 +45,7 @@ class AbstractClassesSchema(AbstractDescriptionSchema):
     coins = CoinsSchema(many=False, read_only=False)
     archive_json = serializers.JSONField(allow_null=True, required=False)
     creditor_id = serializers.UUIDField()
-    incident_id = serializers.UUIDField(write_only=True, required=False, allow_null=True)
+    incident_id = serializers.UUIDField(required=False, allow_null=True)
     incident = IncidentSchema(read_only=True)
 
     # def validate_creditor_id(self, creditor_id):
@@ -64,7 +64,7 @@ class AbstractClassesFundsSchema(AbstractDescriptionSchema):
     template = TemplateSchema(read_only=True)
     total = serializers.FloatField(source='get_total_summed', read_only=True)
     incident = serializers.CharField(source='incident__number', read_only=True)
-    incident_id = serializers.UUIDField(write_only=True, required=False, allow_null=True)
+    incident_id = serializers.UUIDField(required=False, allow_null=True)
 
     class Meta:
         exclude = ('rate',)
@@ -74,7 +74,7 @@ class AbstractClassesUpdateSchema(AbstractDescriptionSchema):
     classes = ClassesSchema(many=False, read_only=False, required=False)
     coins = CoinsSchema(many=False, read_only=False, required=False)
     archive_json = serializers.JSONField(allow_null=True, required=False)
-    incident_id = serializers.UUIDField(write_only=True, required=False, allow_null=True)
+    incident_id = serializers.UUIDField(required=False, allow_null=True)
     incident = IncidentSchema(read_only=True)
 
 
@@ -82,7 +82,7 @@ class AbstractClassesLawyerUpdateSchema(AbstractDescriptionSchema):
     coins = CoinsSchema(many=False, read_only=False)
     archive_json = serializers.JSONField(allow_null=True, required=False)
     creditor_id = serializers.UUIDField()
-    incident_id = serializers.UUIDField(write_only=True, required=False, allow_null=True)
+    incident_id = serializers.UUIDField(required=False, allow_null=True)
     incident = IncidentSchema(read_only=True)
 
     def validate(self, data):
@@ -97,7 +97,7 @@ class AbstractClassesLawyerSchema(AbstractDescriptionSchema):
     coins = CoinsSchema(many=False, read_only=False, required=False)
     archive_json = serializers.JSONField(allow_null=True, required=False)
     creditor_id = serializers.UUIDField()
-    incident_id = serializers.UUIDField(write_only=True, required=False, allow_null=True)
+    incident_id = serializers.UUIDField(required=False, allow_null=True)
     incident = IncidentSchema(read_only=True)
 
     def validate_creditor_id(self, creditor_id):
