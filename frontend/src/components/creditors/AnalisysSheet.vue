@@ -23,7 +23,7 @@ const onSubmit = (event: any) => emit('submit', event)
     :name="name"
     :title="subtitle"
     icon="o_settings"
-    class="bg--primary/10"
+    class="bg--primary/10 overflow-x-hidden"
   >
     <QForm @submit.prevent="emit('submit', $event)">
       <div class="flex">
