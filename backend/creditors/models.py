@@ -1,5 +1,7 @@
 import datetime
 
+from django.core.exceptions import ValidationError
+
 from base.models import AbstractDateCreditor, AbstractDescription
 from core.entity.models import Entity
 from django.db import models
@@ -23,6 +25,13 @@ class Creditor(AbstractDateCreditor):
     is_active = models.BooleanField(_('Is active'), default=True)
     rate = models.ForeignKey(
         Rate, on_delete=models.PROTECT, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.created_at or not self.id:
+            if Creditor.objects.filter(entity=self.entity, recovering=self.recovering).exclude(id=self.id).exists():
+                raise ValidationError([_('Creditor already registered in this recovering')])
+
+        return super().save(*args, **kwargs)
 
     def get_total(self) -> float:
         return self.total

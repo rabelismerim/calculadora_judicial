@@ -79,6 +79,8 @@ ENABLE_DRF = str(os.getenv('ENABLE_DRF', 'true')).lower() == 'true'
 
 IS_HML = any([BRANCH_LOCAL, BRANCH_DEV]) is False
 
+ENABLE_LOGGER = config('ENABLE_LOGGER', cast=bool, default=False)
+
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'uat.fadigitallab.deloitte.com.br',
@@ -261,46 +263,102 @@ DEFAULT_AUTHENTICATION_CLASSES = [
 ]
 # Logging file
 # https://docs.djangoproject.com/en/3.2/topics/logging/
-if IS_HML:
+if IS_HML or ENABLE_LOGGER:
+    path_file_logs = os.path.join(BASE_DIR, 'log')
+    os.makedirs(path_file_logs, exist_ok=True)
+    file_log = os.path.join(path_file_logs, str(datetime.datetime.now().date()) + '_{}.log')
+    log_format = "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s"
+
     LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'handlers': {
-            'file': {
-                'level': 'WARNING',
-                'class': 'logging.FileHandler',
-                'filename': str(BASE_DIR / 'log' / 'juca.log'),
-                'encoding': 'utf-8'
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "simple": {
+                "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
             },
-            'file_info': {
-                'level': 'INFO',
-                'class': 'logging.FileHandler',
-                'filename': str(BASE_DIR / 'log' / 'juca_info.log'),
-                'encoding': 'utf-8'
+            "verbose": {
+                "format": "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s"
+            }
+        },
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "level": "DEBUG",
+                "formatter": "simple",
+                "stream": "ext://sys.stdout",
             },
-            'console': {
-                'level': 'DEBUG',
-                'class': 'logging.StreamHandler',
+            "debug": {
+                "class": 'apps.handler.LevelSpecificFileHandler',
+                "level": "DEBUG",
+                "custom_level": "DEBUG",
+                "formatter": "verbose",
+                "filename": file_log.format("debug"),
+            },
+            "critical": {
+                'class': 'apps.handler.LevelSpecificFileHandler',
+                "level": "CRITICAL",
+                "custom_level": "CRITICAL",
+                "formatter": "verbose",
+                "filename": file_log.format("critical"),
+            },
+            "error": {
+                'class': 'apps.handler.LevelSpecificFileHandler',
+                "level": "ERROR",
+                "custom_level": "ERROR",
+                "formatter": "verbose",
+                "filename": file_log.format("error"),
+            },
+            "info": {
+                'class': 'apps.handler.LevelSpecificFileHandler',
+                "level": "INFO",
+                "custom_level": "INFO",
+                "formatter": "verbose",
+                "filename": file_log.format("info"),
+            },
+
+            "warning": {
+                'class': 'apps.handler.LevelSpecificFileHandler',
+                "level": "WARNING",
+                "custom_level": "WARNING",
+                "formatter": "verbose",
+                "filename": file_log.format("warning"),
             },
         },
-        'loggers': {
-            'django': {
-                'handlers': ['file', 'file_info'],
-                'level': 'WARNING',
-                'propagate': True,
+        "loggers": {
+            "root": {
+                "handlers": ["console", "debug", "critical", "info", "error", 'warning'],
+                "level": "DEBUG",
+                "propagate": True,
             },
-            'werkzeug': {
-                'handlers': ['console'],
-                'level': 'DEBUG',
-                'propagate': True,
+            "": {
+                "handlers": ["console", "debug", "critical", "info", "error", 'warning'],
+                "level": "DEBUG",
+                "propagate": False,
             },
-        },
-        'root': {
-            'handlers': ['console'],
-            'level': 'INFO',
-        },
+            "django": {
+                "handlers": ["console", "debug", "critical", "info", "error", 'warning'],
+                "level": "DEBUG",
+                "propagate": False,
+            },
+            'django.request': {  # capturar logs relacionados a requisições HTTP
+                'handlers': ["console", "debug", "critical", "info", "error", 'warning'],
+                "level": "DEBUG",
+                'propagate': False,
+            },
+            'django.utils.autoreload': {  # capturar logs relacionados a requisições HTTP
+                'handlers': ["critical", "error", 'warning'],
+                "level": "ERROR",
+                'propagate': False,
+            },
+            "werkzeug": {  # capturar logs do runser_plus,
+                "handlers": ["console", "debug", "critical", "info", "error", 'warning'],
+                "level": "DEBUG",
+                "propagate": False,
+            },
+        }
     }
 
+if IS_HML:
     ALLOWED_HOSTS = [
         'uat.fadigitallab.deloitte.com.br',
         'dev.fadigitallab.deloitte.com.br',

@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from rest_framework.generics import get_object_or_404
 
@@ -193,6 +194,10 @@ class CreateCreditor:
         legal_pendencies = creditor.pop('legal_pendencies', [])
         natures = creditor.pop('natures', [])
         claim_lawyer = creditor.pop('claimlawyer', None)
+
+        if Creditor.objects.filter(recovering_id=creditor['recovering_id'],
+                                   entity__legal_number=entity['legal_number']).exists():
+            raise ValidationError([_('Creditor already registered in this recovering')])
 
         creditor['entity'], created = Entity.objects.get_or_create(defaults=entity,
                                                                    **{'legal_number': entity['legal_number']})

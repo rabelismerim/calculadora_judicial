@@ -22,7 +22,7 @@ from rest_framework import serializers
 from utils import _
 
 
-class RecoveringSchema(AbstractDescriptionSchema): #V1
+class RecoveringSchema(AbstractDescriptionSchema):  # V1
     """
     Serializes the fields of the Lawyer model for use in the API.
 
@@ -56,7 +56,17 @@ class RecoveringSchema(AbstractDescriptionSchema): #V1
             if Recovering.objects.filter(project_id=project_id, entity__legal_number=legal_number).exists():
                 raise serializers.ValidationError([_('Recovering already registered')])
         return super(RecoveringSchema, self).validate(data)
-class RecoveringV2Schema(AbstractDescriptionSchema): #V2
+
+
+class RecoveringExcelSchema(RecoveringSchema):
+    entity_id = serializers.UUIDField(write_only=True)
+
+    class Meta:
+        model = Recovering
+        exclude = ('entity',)
+
+
+class RecoveringV2Schema(AbstractDescriptionSchema):  # V2
     """
     Serializes the fields of the Lawyer model for use in the API.
 
@@ -69,7 +79,8 @@ class RecoveringV2Schema(AbstractDescriptionSchema): #V2
     """
     entity = EntitySchema(many=False, read_only=False)
 
-    creditors = CreditorSchema(source='creditor_set', many=True, read_only=True, allow_null=True, fields=('id', 'entity'))
+    creditors = CreditorSchema(source='creditor_set', many=True, read_only=True, allow_null=True,
+                               fields=('id', 'entity'))
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     status_support_display = serializers.CharField(source='get_status_support_display', read_only=True)
     project_id = serializers.UUIDField()
