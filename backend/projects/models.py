@@ -326,7 +326,10 @@ class Project(AbstractDescription, AbstractDateRecovering):
                             break
 
                     if not recovering:
-                        entity = recovering.pop('entity')
+                        entity = {
+                            "name": recovering_name,
+                            "legal_number": recovering_legal_number
+                        }
 
                         recovering_data = {
                             "entity_id": Entity.objects.get_or_create(**entity)[0].id,
@@ -341,7 +344,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
                                                      error=f'Linha: {credor["index"]}, {recovering_schema.errors}')
                             continue
 
-                        recovering = recovering_schema.save()
+                        recovering = recovering_schema.save().id
 
                     nature_id = all_natures.filter(
                         Q(description=nature) | Q(description_en=nature) | Q(description_pt_br=nature)).values_list(

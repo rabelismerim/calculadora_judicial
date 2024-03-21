@@ -58,12 +58,13 @@ class RecoveringSchema(AbstractDescriptionSchema):  # V1
         return super(RecoveringSchema, self).validate(data)
 
 
-class RecoveringExcelSchema(RecoveringSchema):
+class RecoveringExcelSchema(AbstractDescriptionSchema):
     entity_id = serializers.UUIDField(write_only=True)
+    project_id = serializers.UUIDField()
 
     class Meta:
         model = Recovering
-        exclude = ('entity',)
+        exclude = ('project', 'entity')
 
 
 class RecoveringV2Schema(AbstractDescriptionSchema):  # V2

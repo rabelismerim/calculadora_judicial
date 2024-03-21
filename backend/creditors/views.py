@@ -18,6 +18,7 @@ from creditors.notice.models import Notice, NoticeRecovering
 from creditors.schemas import CreditorCreateSchema, CreditorSchema, CreditorUpdateSchema, LegalPendenciesSchema, \
     LegalPendenciesUpdateSchema
 from creditors.models import Creditor, LegalPendencies
+from recovering.models import Recovering
 from utils import get_user_model, _, doc
 
 User = get_user_model()
@@ -195,14 +196,16 @@ class CreateCreditor:
         natures = creditor.pop('natures', [])
         claim_lawyer = creditor.pop('claimlawyer', None)
 
-        if Creditor.objects.filter(recovering_id=creditor['recovering_id'],
+        recovering = Recovering.objects.filter(id=creditor['recovering_id']).first()
+        if Creditor.objects.filter(recovering__entity__legal__number=recovering.entity.legal_number,
                                    entity__legal_number=entity['legal_number']).exists():
             raise ValidationError([_('Creditor already registered in this recovering')])
 
         creditor['entity'], created = Entity.objects.get_or_create(defaults=entity,
                                                                    **{'legal_number': entity['legal_number']})
 
-        new_creditor = Creditor.objects.create(**creditor)
+        new_creditor = Creditor(**creditor)
+        new_creditor.save()
 
         if claims_creditor:
             for claim_creditor in claims_creditor:
