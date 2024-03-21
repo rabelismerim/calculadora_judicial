@@ -182,6 +182,8 @@ const toValidate = (value: string, end: number, start = 0) => format(value)
   .map(el => +el)
 
 export const isValidCPF = (cpf: string) => {
+  if (!cpf)
+    return false
   if (!isValidNumber(cpf, 11))
     return false
   const digit = (end: number, factor: number) =>
@@ -192,6 +194,8 @@ export const isValidCPF = (cpf: string) => {
 }
 
 export const isValidCNPJ = (cnpj: string) => {
+  if (!cnpj)
+    return false
   if (!isValidNumber(cnpj, 14))
     return false
   const digit = (sum: number) => rest(sum) < 2 ? 0 : 11 - rest(sum)
