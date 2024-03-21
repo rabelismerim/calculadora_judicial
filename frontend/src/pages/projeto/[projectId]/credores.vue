@@ -441,24 +441,19 @@ onMounted(() => {
                 />
               </div>
             </template>
-            <div v-if="inactiveCreditors?.length > 0">
-              <Accordion
-                v-for="(creditor, index) in inactiveCreditors as any[]"
-                :key="creditor.id"
-                :title="creditor.recoveringName"
-                :subtitle="formatLegalNumber(creditor.recoveringLegalNumber)"
-                class="pl-6 border-x-0 border-b-0 rounded-0"
-                :class="{ 'border-t-0': index === 0 }"
-              >
-                <template #header-left>
-                  <IconHint
-                    icon="i-carbon-enterprise"
-                    hint="Este ícone indica que este\nitem é uma Recuperanda!"
-                    dark
-                    class="self-center"
-                  />
-                </template>
-              </Accordion>
+            <div v-if="creditor.recoveringName" class="p-4 flex gap-4">
+              <IconHint
+                icon="i-carbon-enterprise"
+                hint="Este ícone indica que este\nitem é uma Recuperanda!"
+                dark
+                class="self-center"
+              />
+              <div>
+                <div class="text-lg font-bold">
+                  {{ creditor.recoveringName }}
+                </div>
+                <div>{{ formatLegalNumber(creditor.recoveringLegalNumber) }}</div>
+              </div>
             </div>
             <div v-else class="p-6 text-center">
               Nenhuma Recuperanda para esse Credor
