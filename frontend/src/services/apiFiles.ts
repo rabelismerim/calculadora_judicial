@@ -27,14 +27,15 @@ api.interceptors.request.use((request: any) => {
 })
 api.interceptors.response.use((response: any) => response.data, async (error: any) => {
   const { message, code, response } = error
-  const errors = response?.data?.data
+  const errors = (response?.data?.data?.errors ?? response?.data?.data ?? [])
+    .map((error: any) => error?.detail ?? error)
   const status = response?.status || 500
 
-  printError('ON ERROR:', errors)
+  printError('API FILE ON ERROR:', errors)
 
   if (errors?.length > 0) {
     for (const error of errors) {
-      throwError({ message: error })
+      throwError({ message: error?.detail ?? error })
       await delay(0.5)
     }
 
