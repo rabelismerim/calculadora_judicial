@@ -18,6 +18,7 @@ from calculation.funds.document.models import FundDocument
 from calculation.funds.irrf.models import FundIRRF
 from calculation.funds.models import Funds
 from calculation.models import Calculation, CHOICES_STEP
+from core.entity.models import Entity
 from creditors.classes.models import CLASSE_CHOICES
 from creditors.models import Creditor, CHOICES_STATUS_LEGAL
 from file.models import ErrorFile
@@ -224,7 +225,8 @@ class Project(AbstractDescription, AbstractDateRecovering):
         default_columns = [
             {"title": "Credor", 'choice': None, 'default': None, 'type': 'str'},
             {"title": "Credor - CPF/CNPJ", 'choice': None, 'default': None, 'type': 'str'},
-            {"title": "Credor - Recuperanda CPF/CNPJ", 'choice': None, 'default': None, 'type': 'str'},
+            {"title": "Credor - CPF/CNPJ da Recuperanda", 'choice': None, 'default': None, 'type': 'str'},
+            {"title": "Credor - Nome da Recuperanda", 'choice': None, 'default': None, 'type': 'str'},
 
             {"title": "Documentação de representação", 'choice': CHOICES_REPRESENTATION_DOCUMENTATION,
              'default': None, 'type': 'str'},
@@ -239,25 +241,30 @@ class Project(AbstractDescription, AbstractDateRecovering):
         ]
 
         rj_columns = default_columns.copy()
-        rj_columns[3:3] = [
-            {"title": "Credor - Classe", 'choice': CLASSE_CHOICES, 'default': None, 'type': 'str'},
-            {"title": "Credor - Valor", 'choice': None, 'default': None, 'type': 'float'},
-            {"title": "Credor - Moeda", 'choice': COIN_CHOICES, 'default': None, 'type': 'str'},
+        rj_columns[4:4] = [
+            {"title": "Pleito do Credor - Classe(Opcional)", 'choice': CLASSE_CHOICES, 'default': None, 'type': 'str'},
+            {"title": "Pleito do Credor - Valor(Opcional)", 'choice': None, 'default': None, 'type': 'float'},
+            {"title": "Pleito do Credor - Moeda(Opcional)", 'choice': COIN_CHOICES, 'default': None, 'type': 'str'},
+            {"title": "Pleito do Credor - N° do Incidente(Opcional)", 'choice': None, 'default': None, 'type': 'str'},
 
-            {"title": "Edital RJ - Classe", 'choice': CLASSE_CHOICES, 'default': None, 'type': 'str'},
-            {"title": "Edital RJ - Valor", 'choice': None, 'default': None, 'type': 'float'},
-            {"title": "Edital RJ - Moeda", 'choice': COIN_CHOICES, 'default': None, 'type': 'str'},
+            {"title": "Edital RJ - Class(Opcional)", 'choice': CLASSE_CHOICES, 'default': None, 'type': 'str'},
+            {"title": "Edital RJ - Valor(Opcional)", 'choice': None, 'default': None, 'type': 'float'},
+            {"title": "Edital RJ - Moeda(Opcional)", 'choice': COIN_CHOICES, 'default': None, 'type': 'str'},
+            {"title": "Edital RJ - N° do Incidente(Opcional)", 'choice': None, 'default': None, 'type': 'str'},
+
         ]
 
         aj_columns = default_columns.copy()
-        aj_columns[3:3] = [
-            {"title": "Credor - Classe", 'choice': CLASSE_CHOICES, 'default': None, 'type': 'str'},
-            {"title": "Credor - Valor", 'choice': None, 'default': None, 'type': 'float'},
-            {"title": "Credor - Moeda", 'choice': COIN_CHOICES, 'default': None, 'type': 'str'},
+        aj_columns[4:4] = [
+            {"title": "Pleito do Credor - Classe(Opcional)", 'choice': CLASSE_CHOICES, 'default': None, 'type': 'str'},
+            {"title": "Pleito do Credor - Valor(Opcional)", 'choice': None, 'default': None, 'type': 'float'},
+            {"title": "Pleito do Credor - Moeda(Opcional)", 'choice': COIN_CHOICES, 'default': None, 'type': 'str'},
+            {"title": "Pleito do Credor - N° do Incidente(Opcional)", 'choice': None, 'default': None, 'type': 'str'},
 
-            {"title": "Edital AJ - Classe", 'choice': CLASSE_CHOICES, 'default': None, 'type': 'str'},
-            {"title": "Edital AJ - Valor", 'choice': None, 'default': None, 'type': 'float'},
-            {"title": "Edital AJ - Moeda", 'choice': COIN_CHOICES, 'default': None, 'type': 'str'},
+            {"title": "Edital AJ - Classe(Opcional)", 'choice': CLASSE_CHOICES, 'default': None, 'type': 'str'},
+            {"title": "Edital AJ - Valor(Opcional)", 'choice': None, 'default': None, 'type': 'float'},
+            {"title": "Edital AJ - Moeda(Opcional)", 'choice': COIN_CHOICES, 'default': None, 'type': 'str'},
+            {"title": "Edital AJ - N° do Incidente(Opcional)", 'choice': None, 'default': None, 'type': 'str'},
         ]
 
         excels = [
@@ -288,6 +295,9 @@ class Project(AbstractDescription, AbstractDateRecovering):
             raise serializers.ValidationError(_('Excel is not in the correct format'))
 
     def process_json_to_model(self, data: list, **kwargs):
+        from recovering.schemas import RecoveringSchema
+        from calculation.schemas import IncidentSchema
+
         name = kwargs.get('name')
         excel = self.get_excel_by_name(name)
         data = excel.parse_list(data)
@@ -304,7 +314,10 @@ class Project(AbstractDescription, AbstractDateRecovering):
                 with transaction.atomic():
                     natures = []
                     nature = credor['Natureza (NF, contrato, trabalhista etc)']
-                    recovering_legal_number = ''.join(re.findall(r'\d', str(credor['Credor - Recuperanda CPF/CNPJ'])))
+                    recovering_legal_number = ''.join(
+                        re.findall(r'\d', str(credor['Credor - CPF/CNPJ da Recuperanda'])))
+
+                    recovering_name = str(credor['Credor - Nome da Recuperanda'])
 
                     recovering = None
                     for rec in recoveries:
@@ -313,9 +326,22 @@ class Project(AbstractDescription, AbstractDateRecovering):
                             break
 
                     if not recovering:
-                        ErrorFile.objects.create(file_id=file_id,
-                                                 error=f'Linha: {credor["index"]}, Field recuperanda: Recuperanda não encontrada')
-                        continue
+                        recovering_data = {
+                            "entity": {
+                                "name": recovering_name,
+                                "legal_number": recovering_legal_number
+                            },
+                            "project_id": self.id,
+                        }
+                        recovering_schema = RecoveringSchema(data=recovering_data)
+                        is_valid = recovering_schema.is_valid(raise_exception=False)
+
+                        if not is_valid:
+                            ErrorFile.objects.create(file_id=file_id,
+                                                     error=f'Linha: {credor["index"]}, {recovering_schema.errors}')
+                            continue
+                        recovering = recovering_schema.save()
+
                     nature_id = all_natures.filter(
                         Q(description=nature) | Q(description_en=nature) | Q(description_pt_br=nature)).values_list(
                         'id',
@@ -340,10 +366,21 @@ class Project(AbstractDescription, AbstractDateRecovering):
                     notice_rj_creditor = []
                     notice_aj_creditor = []
 
-                    claim_classe = credor.get('Credor - Classe')
-                    claim_coin = credor.get('Credor - Moeda')
-                    claim_value = credor.get('Credor - Valor')
+                    claim_classe = credor.get('Pleito do Credor - Classe(Opcional)')
+                    claim_coin = credor.get('Pleito do Credor - Moeda(Opcional)')
+                    claim_value = credor.get('Pleito do Credor - Valor(Opcional)')
+                    claim_incident = credor.get('Pleito do Credor - N° do Incidente(Opcional)')
                     if all([claim_classe, claim_coin]) and claim_value is not None:
+
+                        incident_schema = IncidentSchema(data={'number': claim_incident})
+                        is_valid = incident_schema.is_valid(raise_exception=False)
+
+                        if not is_valid:
+                            ErrorFile.objects.create(file_id=file_id,
+                                                     error=f'Linha: {credor["index"]}, {incident_schema.errors}')
+                            continue
+                        incident = incident_schema.save()
+
                         claims_creditor.append({
                             "classes": {
                                 "classe": claim_classe
@@ -352,12 +389,24 @@ class Project(AbstractDescription, AbstractDateRecovering):
                                 "coin": claim_coin,
                                 "value": claim_value
                             },
+                            "incident_id": incident.id,
                         })
 
-                    notice_rj_classe = credor.get('Edital RJ - Classe')
-                    notice_rj_coin = credor.get('Edital RJ - Moeda')
-                    notice_rj_value = credor.get('Edital RJ - Valor')
+                    notice_rj_classe = credor.get('Edital RJ - Class(Opcional)')
+                    notice_rj_coin = credor.get('Edital RJ - Moeda(Opcional)')
+                    notice_rj_value = credor.get('Edital RJ - Valor(Opcional)')
+                    notice_rj_incident = credor.get('Edital RJ - N° do Incidente(Opcional)')
                     if all([notice_rj_classe, notice_rj_coin]) and notice_rj_value is not None:
+
+                        incident_schema = IncidentSchema(data={'number': notice_rj_incident})
+                        is_valid = incident_schema.is_valid(raise_exception=False)
+
+                        if not is_valid:
+                            ErrorFile.objects.create(file_id=file_id,
+                                                     error=f'Linha: {credor["index"]}, {incident_schema.errors}')
+                            continue
+                        incident = incident_schema.save()
+
                         notice_rj_creditor.append({
                             "classes": {
                                 "classe": notice_rj_classe
@@ -366,12 +415,24 @@ class Project(AbstractDescription, AbstractDateRecovering):
                                 "coin": notice_rj_coin,
                                 "value": notice_rj_value
                             },
+                            "incident_id": incident.id,
                         })
 
-                    notice_aj_classe = credor.get('Edital AJ - Classe')
-                    notice_aj_coin = credor.get('Edital AJ - Moeda')
-                    notice_aj_value = credor.get('Edital AJ - Valor')
+                    notice_aj_classe = credor.get('Edital AJ - Classe(Opcional)')
+                    notice_aj_coin = credor.get('Edital AJ - Moeda(Opcional)')
+                    notice_aj_value = credor.get('Edital AJ - Valor(Opcional)')
+                    notice_aj_incident = credor.get('Edital AJ - N° do Incidente(Opcional)')
                     if all([notice_aj_classe, notice_aj_coin]) and notice_aj_value is not None:
+
+                        incident_schema = IncidentSchema(data={'number': notice_aj_incident})
+                        is_valid = incident_schema.is_valid(raise_exception=False)
+
+                        if not is_valid:
+                            ErrorFile.objects.create(file_id=file_id,
+                                                     error=f'Linha: {credor["index"]}, {incident_schema.errors}')
+                            continue
+                        incident = incident_schema.save()
+
                         notice_aj_creditor.append({
                             "classes": {
                                 "classe": notice_aj_classe
@@ -380,6 +441,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
                                 "coin": notice_aj_coin,
                                 "value": notice_aj_value
                             },
+                            "incident_id": incident.id,
                         })
 
                     new_credor = {

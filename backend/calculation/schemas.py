@@ -55,8 +55,13 @@ class IncidentSchema(AbstractDescriptionSchema):
         model = Incident
         fields = '__all__'
 
-    def validate_number(self, number):
-        return number
+    def create(self, validated_data):
+        old_incidente = Incident.objects.filter(number=validated_data['number']).first()
+
+        if old_incidente:
+            return old_incidente
+
+        return super().create(validated_data)
 
 
 class ClassesSerializer(serializers.Serializer):
