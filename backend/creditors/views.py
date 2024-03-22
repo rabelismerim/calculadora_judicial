@@ -197,7 +197,7 @@ class CreateCreditor:
         claim_lawyer = creditor.pop('claimlawyer', None)
 
         recovering = Recovering.objects.filter(id=creditor['recovering_id']).first()
-        if Creditor.objects.filter(recovering__entity__legal__number=recovering.entity.legal_number,
+        if Creditor.objects.filter(recovering__entity__legal_number=recovering.entity.legal_number,
                                    entity__legal_number=entity['legal_number']).exists():
             raise ValidationError([_('Creditor already registered in this recovering')])
 
