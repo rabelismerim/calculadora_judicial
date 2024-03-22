@@ -35,4 +35,3 @@ celerybeat-schedule.dir
 .history
 remove_migrations.py
 mypy.ini
-start_server.bat
