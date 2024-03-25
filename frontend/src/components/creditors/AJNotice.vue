@@ -62,28 +62,28 @@ const onReset = () => {
   data.value = clone(props.modelValue)
 }
 
-let incidents: any[] = $ref([])
-const addIncident = async (incidentNumber: string) => {
-  try {
-    const result: any = await calculationService.newIncident(incidentNumber)
-    const { id, number } = result
-    return { id, number, description: number }
-  }
-  catch (error) {
-    printError('ERROR ON LOAD INCIDENSTS:', error)
-  }
-}
-const loadIncidents = async () => {
-  try {
-    incidents = await calculationService.getIncidents()
-  }
-  catch (error) {
-    printError('ERROR ON LOAD INCIDENSTS:', error)
-  }
-}
+// let incidents: any[] = $ref([])
+// const addIncident = async (incidentNumber: string) => {
+//   try {
+//     const result: any = await calculationService.newIncident(incidentNumber)
+//     const { id, number } = result
+//     return { id, number, description: number }
+//   }
+//   catch (error) {
+//     printError('ERROR ON LOAD INCIDENSTS:', error)
+//   }
+// }
+// const loadIncidents = async () => {
+//   try {
+//     incidents = await calculationService.getIncidents()
+//   }
+//   catch (error) {
+//     printError('ERROR ON LOAD INCIDENSTS:', error)
+//   }
+// }
 
 onMounted(() => {
-  loadIncidents()
+  // loadIncidents()
 })
 </script>
 
@@ -101,16 +101,16 @@ onMounted(() => {
       <div class="pb-2 font-bold text-md">
         Créditos
       </div>
+      <!-- // <InputSelect
+      //   v-model="value.incidentId"
+      //   v-model:options="incidents"
+      //   label="Número de Incidente"
+      //   mask="#######-##.####.#.##.####"
+      //   :to-add="addIncident"
+      //   :rules="[(value: any) => !!value || 'É um campo obrigatório']"
+      //   :disable="!isEditing"
+      // /> -->
       <div v-for="(value, index) in data as any[]" :key="index" class="grid gap-x-3 @lg:grid-cols-2 @3xl:grid-cols-[3fr_130px_1fr_232px_40px]">
-        <InputSelect
-          v-model="value.incidentId"
-          v-model:options="incidents"
-          label="Número de Incidente"
-          mask="#######-##.####.#.##.####"
-          :to-add="addIncident"
-          :rules="[(value: any) => !!value || 'É um campo obrigatório']"
-          :disable="!isEditing"
-        />
         <QInput
           v-model="value.coins.value"
           label="Valor"
