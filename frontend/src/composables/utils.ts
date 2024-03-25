@@ -168,8 +168,7 @@ const sum = (array: number[], start: number) =>
   array.reduce((total, el, i) => total + el * (start - i), 0)
 const rest = (value: number) => value % 11
 const format = (value: string) => value.replace(/[^\d]+/g, '')
-const isValidNumber = (value: string, count: number) =>
-  format(value).length === count && !format(value).match(/(\d)\1{10}/)
+const isValidNumber = (value: string, count: number) => value && format(value).length === count && !format(value).match(/(\d)\1{10}/)
 const validator = (value: string) => format(value)
   .split('')
   .splice(format(value).length - 2)
@@ -182,6 +181,8 @@ const toValidate = (value: string, end: number, start = 0) => format(value)
   .map(el => +el)
 
 export const isValidCPF = (cpf: string) => {
+  if (!cpf)
+    return false
   if (!isValidNumber(cpf, 11))
     return false
   const digit = (end: number, factor: number) =>
@@ -192,6 +193,8 @@ export const isValidCPF = (cpf: string) => {
 }
 
 export const isValidCNPJ = (cnpj: string) => {
+  if (!cnpj)
+    return false
   if (!isValidNumber(cnpj, 14))
     return false
   const digit = (sum: number) => rest(sum) < 2 ? 0 : 11 - rest(sum)

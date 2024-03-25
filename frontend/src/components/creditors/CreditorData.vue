@@ -96,6 +96,7 @@ const onSubmit = async () => {
           option-label="legend"
           option-value="id"
           :disable="!isEditing"
+          class="mb-5"
         />
       </div>
     </div>
