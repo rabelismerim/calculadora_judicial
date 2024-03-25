@@ -12,10 +12,10 @@ Modules:
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
+from config.settings import ENABLE_SSO
 from .models import User, Subgroup
 from .forms import UserCreationForm
 from django.contrib.auth.models import Permission
@@ -23,8 +23,10 @@ from django.contrib.auth.models import Permission
 
 class CustomUserAdmin(UserAdmin):
     add_form = UserCreationForm
+
+    fields_sso = ("username",) if ENABLE_SSO else ("username", "password")
     fieldsets = (
-        (None, {'fields': ('username',)}),
+        (None, {"fields": fields_sso}),
         (_('Personal info'),
          {'fields': ('first_name', 'last_name', 'email', 'role', 'status', 'userpicture', 'user_img')}),
         (_('Permissions'), {

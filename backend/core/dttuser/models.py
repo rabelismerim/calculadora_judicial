@@ -228,7 +228,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         validators=[username_validator],
         error_messages={'unique': _("A user with that username already exists.")},
     )
-    password = models.CharField(max_length=128, editable=False)
     role = models.CharField(_('role'), default="A", max_length=1, choices=ROLES_CHOICES)
     status = models.CharField('status', default="P", max_length=1, choices=STATUS_CHOICES)
     first_name = models.CharField(_('first name'), max_length=150, blank=True)
