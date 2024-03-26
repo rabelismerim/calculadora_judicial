@@ -55,7 +55,8 @@ const createCredit = async () => {
 
   try {
     loading = true
-    const result: any = await api.post(endPoint, {
+    const endPointNewCredit = endPoint.replace('/juca/api/', '')
+    const result: any = await api.post(endPointNewCredit, {
       ...newCredit,
       classes: {
         classe: classId,
