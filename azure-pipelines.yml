@@ -88,10 +88,15 @@ steps:
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Install and preparing python prerequisites'
 - script: |
+    pip uninstall django-fernet-encrypted-fields 
+  failOnStderr: false
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Remove fernet keys'
+- script: |
     pip install --user -r requirements.txt
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and preparing python prerequisites'
+  displayName: 'Install python requirements'
 - script: |
     pip install --user unittest-xml-reporting
   failOnStderr: false
