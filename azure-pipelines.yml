@@ -78,11 +78,6 @@ steps:
   workingDirectory: $(Build.SourcesDirectory)/backend
   displayName: 'Create virtualenv'
 - script: |
-    .\venv\Scripts\activate
-  failOnStderr: false
-  workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Activate virtualenv'
-- script: |
     python -m pip install --upgrade --user pip setuptools wheel
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
