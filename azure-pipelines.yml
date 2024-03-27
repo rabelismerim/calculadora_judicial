@@ -133,11 +133,6 @@ steps:
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Delete venv'
   - script: |
-      rd venv
-    failOnStderr: false
-    workingDirectory: $(Build.SourcesDirectory)/backend
-    displayName: 'RD venv'
-  - script: |
       del .env
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
