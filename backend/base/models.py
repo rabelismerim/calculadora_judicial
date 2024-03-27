@@ -1,10 +1,11 @@
 from django.utils.translation import gettext_lazy as _
 from base.coins.models import Coins
+from config.settings import FIELD_HASH_KEY
 from creditors.classes.models import Classes
 from django.db import models
 from core.abstract.models import AbstractModel
 from rates.models import Rate
-from encrypted_fields.fields import EncryptedTextField
+from encrypted_fields.fields import EncryptedTextField, SearchField
 
 
 class AbstractDescription(AbstractModel):
@@ -19,8 +20,13 @@ class AbstractDescription(AbstractModel):
 
 
 class AbstractInfo(AbstractModel):
-    name = EncryptedTextField(_('Description'), max_length=150)
-    legal_number = EncryptedTextField('CPF/CNPJ', max_length=150, unique=True)
+    _encrypted_name = EncryptedTextField(_('Description'), max_length=4000, null=True)
+    _encrypted_name_bk = models.TextField(_('Description'), max_length=4000, null=True, editable=False)
+    name = SearchField(hash_key=FIELD_HASH_KEY, encrypted_field_name="_encrypted_name")
+
+    _encrypted_legal_number = EncryptedTextField('CPF/CNPJ', max_length=4000, null=True)
+    _encrypted_legal_number_bk = models.TextField('CPF/CNPJ', max_length=4000, null=True, editable=False)
+    legal_number = SearchField(hash_key=FIELD_HASH_KEY, encrypted_field_name="_encrypted_legal_number")
 
     # TODO: ver como fazer o queryset no Encrypted
 
