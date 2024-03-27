@@ -117,26 +117,21 @@ steps:
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Django collectstatic'
-  - task: DeleteFiles@1
-    inputs:
-      SourceFolder: '$(Build.SourcesDirectory)/backend/venv'
-      Contents: '**'
-      RemoveSourceFolder: true
   - script: |
       $(Build.SourcesDirectory)/backend/venv/Scripts/python manage.py makemigrations
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Django makemigrations'
   - script: |
-      del venv\.*
-    failOnStderr: false
-    workingDirectory: $(Build.SourcesDirectory)/backend
-    displayName: 'Delete venv'
-  - script: |
       $(Build.SourcesDirectory)/backend/venv/Scripts/python manage.py migrate
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Django migrate'
+  - script: |
+      del venv\.*
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/backend
+    displayName: 'Delete venv'
   - script: |
       rd venv
     failOnStderr: false
