@@ -83,7 +83,7 @@ steps:
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Activate virtualenv'
   - script: |
-      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install --upgrade --user pip setuptools wheel
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install --upgrade pip setuptools wheel
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Install  pip setuptools wheel'
@@ -98,17 +98,17 @@ steps:
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Install django-searchable-encrypted-fields'
   - script: |
-      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install --user -r requirements.txt
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install -r requirements.txt
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Install pip requirements'
   - script: |
-      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install --user unittest-xml-reporting
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install unittest-xml-reporting
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Install pip unittest-xml-reporting'
   - script: |
-      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install --user fastcgi
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install fastcgi
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Install pip fastcgi'
