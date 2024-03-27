@@ -127,7 +127,7 @@ INSTALLED_APPS = [
     # 'debug_toolbar', # Debug query, views in realtime on navigation
     'django_apscheduler',  # Eventos crontab
     'django_celery_results',  # View results Tasks in admin
-
+    'encrypted_fields',
     # Base
     'base',
     'base.claim',
@@ -198,6 +198,10 @@ INSTALLED_APPS = [
 
 ]
 
+FIELD_HASH_KEY = config('FIELD_HASH_KEY', default='cef9dc82b9360609c35ee23ab333c00996275635a106e959c8211dd59fcf990b',
+                        cast=str)
+
+FIELD_ENCRYPTION_KEYS = FIELD_HASH_KEY.split(',')
 # Start config debug toolbar
 INTERNAL_IPS = [
     # ...
