@@ -26,15 +26,6 @@ class Creditor(AbstractDateCreditor):
     rate = models.ForeignKey(
         Rate, on_delete=models.PROTECT, null=True, blank=True)
 
-    def save(self, *args, **kwargs):
-        if not self.created_at or not self.id:
-            if Creditor.objects.filter(entity__legal_number=self.entity.legal_number,
-                                       recovering__entity__legal_number=self.recovering.entity.legal_number).exclude(
-                id=self.id).exists():
-                raise ValidationError([_('Creditor already registered in this recovering')])
-
-        return super().save(*args, **kwargs)
-
     def get_total(self) -> float:
         return self.total
 
