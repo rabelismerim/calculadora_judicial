@@ -83,32 +83,32 @@ steps:
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Activate virtualenv'
   - script: |
-      python -m pip install --upgrade --user pip setuptools wheel
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install --upgrade --user pip setuptools wheel
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Install  pip setuptools wheel'
   - script: |
-      pip uninstall django-fernet-encrypted-fields -y
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip uninstall django-fernet-encrypted-fields -y
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Uninstall fernet keys'
   - script: |
-      pip install django-searchable-encrypted-fields --index-url=https://pypi.org/simple
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install django-searchable-encrypted-fields --index-url=https://pypi.org/simple
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Install django-searchable-encrypted-fields'
   - script: |
-      pip install --user -r requirements.txt
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install --user -r requirements.txt
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Install pip requirements'
   - script: |
-      pip install --user unittest-xml-reporting
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install --user unittest-xml-reporting
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Install pip unittest-xml-reporting'
   - script: |
-      python -m pip install --user fastcgi
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install --user fastcgi
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Install pip fastcgi'
@@ -123,7 +123,7 @@ steps:
       Contents: '**'
       RemoveSourceFolder: true
   - script: |
-      python manage.py makemigrations
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python manage.py makemigrations
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Django makemigrations'
@@ -133,7 +133,7 @@ steps:
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Delete venv'
   - script: |
-      python manage.py migrate
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python manage.py migrate
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Django migrate'
