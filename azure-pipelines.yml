@@ -91,7 +91,12 @@ steps:
     pip uninstall django-fernet-encrypted-fields -y
   failOnStderr: false
   workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Ininstall fernet keys'
+  displayName: 'Uninstall fernet keys'
+- script: |
+    pip install --user django-searchable-encrypted-fields
+  failOnStderr: false
+  workingDirectory: $(Build.SourcesDirectory)/backend
+  displayName: 'Install django-searchable-encrypted-fields'
 - script: |
     pip install --user -r requirements.txt
   failOnStderr: false
