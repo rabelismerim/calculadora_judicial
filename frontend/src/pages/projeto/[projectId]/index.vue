@@ -20,6 +20,24 @@ interface Project {
   [key: string]: any
 }
 
+interface Notice {
+  id: string
+  classes: {
+    classeDisplay: string
+  }
+  coins: {
+    coinDisplay: string
+    value: number
+  }
+}
+
+const AJNoticeColumns = $ref([])
+let noticesAJ: Notice[] = []
+
+const loadNotices = async () => {
+  noticesAJ = await creditorsService.getNoticeAJ()
+}
+
 let loading = $ref(false)
 const filterBy = $ref('')
 const showParticipants = $ref(false)
@@ -32,6 +50,7 @@ const tabFilters = [
   { label: 'A Revisar', value: 'd' },
   { label: 'A Aprovar', value: 'c' },
   { label: 'Aprovado', value: 'p' },
+
 ]
 
 const filteredRecoverings = computed(() => {
@@ -123,6 +142,7 @@ onMounted(async () => {
   loadOptions()
   await loadProject()
   await loadTotalValues()
+  await loadNotices()
 })
 </script>
 
@@ -270,6 +290,9 @@ onMounted(async () => {
                 </div>
               </div>
             </template>
+            <div class="px-4 py-3">
+              <AJNoticeTable :notices="creditor.notices || []" :aj-notice-columns="AJNoticeColumns" />
+            </div>
             <CalculationTable
               v-model="creditor.calculations"
               v-model:validation="creditor.isValidating"
