@@ -146,7 +146,7 @@ onMounted(() => {
           dense
           class="mb-5"
         />
-        <div
+        <button
           class="@container @md:col-start-2 @3xl:col-start-auto cursor-pointer bg--error h-10 rounded-.5 border-1 border-red-8 color-white flex gap-4 justify-center items-center"
           :disabled="!isEditing ? true : value.id ? true : undefined"
           @click="removeCredit(!value.id && index)"
@@ -154,8 +154,8 @@ onMounted(() => {
           <div class="hidden @[100px]:block">
             Remover
           </div>
-          <div class="i-carbon-trash-can bg-white" />
-        </div>
+          <div class="i-carbon-trash-can" />
+        </button>
       </div>
       <Btn
         label="Adicionar novo Crédito"
