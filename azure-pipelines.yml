@@ -88,21 +88,6 @@ steps:
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Install  pip setuptools wheel'
   - script: |
-      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip uninstall django-fernet-encrypted-fields -y
-    failOnStderr: false
-    workingDirectory: $(Build.SourcesDirectory)/backend
-    displayName: 'Uninstall django-fernet-encrypted-fields'
-  - script: |
-      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip uninstall django-searchable-encrypted-fields -y
-    failOnStderr: false
-    workingDirectory: $(Build.SourcesDirectory)/backend
-    displayName: 'Uninstall django-searchable-encrypted-fields'
-  - script: |
-      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install django-searchable-encrypted-fields==0.2.1 --no-cache --index-url=https://pypi.org/simple
-    failOnStderr: false
-    workingDirectory: $(Build.SourcesDirectory)/backend
-    displayName: 'Install django-searchable-encrypted-fields'
-  - script: |
       $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install -r requirements.txt
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
