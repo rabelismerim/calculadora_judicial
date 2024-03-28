@@ -11,6 +11,7 @@ from django.core.cache.utils import make_template_fragment_key
 from django.db import transaction
 from django.http import JsonResponse, Http404
 from django.template.response import ContentNotRenderedError
+from django.urls import resolve
 from django.utils.encoding import smart_str
 from drf_yasg import openapi
 from rest_framework import generics, serializers, status
@@ -263,6 +264,8 @@ class AbstractViewApi(generics.GenericAPIView):
     cache_version = 'v1'
     allow_cache: bool = True
     allowed_versions = ['v1']
+    query_slug = False
+    many = True
 
     # def get_permissions(self):
     #     """
@@ -360,17 +363,19 @@ class AbstractViewApi(generics.GenericAPIView):
     def get_query(self, id_=None, **kwargs):
         """Validate parameters received in query params, returning query values"""
         query = self.get_queryset()
+        get_query_slug = self.get_query_slug()
+        query.update(get_query_slug)
         query_exclude = self.get_exclude_queryset()
         exclude = self.__get_exclude_values()
         query_parameters = self.get_query_parameters()
         query.update(query_parameters)
 
         serializer = self.get_serializer_class()
-        if id_:
+        if id_ or self.many is False:
             obj = self.model.objects.exclude(**query_exclude).filter(id=id_, **query, **kwargs).first()
             if not obj:
                 raise Http404
-            return serializer(obj, many=False, exclude=exclude).data
+            return serializer(obj, exclude=exclude).data
         return serializer(self.model.objects.exclude(**query_exclude).filter(**query, **kwargs).distinct(), many=True,
                           exclude=exclude).data
 
@@ -482,6 +487,12 @@ class AbstractViewApi(generics.GenericAPIView):
                 model_class = serializer_cls.Meta.model
                 self.delete_cache_from_app(model_class)
         return response
+
+    def get_query_slug(self):
+        if self.query_slug:
+            resolver_match = resolve(self.request.path_info)
+            return resolver_match.kwargs
+        return {}
 
     def get(self, request, *args, **kwargs):
         """Abstract method for default method GET. Override method in class for custom operation"""
