@@ -16,145 +16,146 @@ strategy:
       PYTHON_VERSION: '3.9.10'
   maxParallel: 3
 steps:
-- task: NodeTool@0
-  inputs:
-    versionSource: 'spec'
-    versionSpec: '18.x'
-    checkLatest: true
-- task: DownloadSecureFile@1
-  name: Env
-  inputs:
-    secureFile: '.env-prd'
-- task: DownloadSecureFile@1
-  name: EnvFrontEnd
-  inputs:
-    secureFile: '.env-frontend-prod'
-- script: |
-    echo Installing $(Env.secureFilePath) to the path backend...
-    copy $(Env.secureFilePath) $(Build.SourcesDirectory)\backend\.env
-  failOnStderr: true
-- script: |
-    echo Installing $(EnvFrontEnd.secureFilePath) to the path frontend...
-    copy $(EnvFrontEnd.secureFilePath) $(Build.SourcesDirectory)\frontend\.env
-  failOnStderr: true
-- task: PythonScript@0
-  displayName: 'Export project path'
-  inputs:
-    scriptSource: 'inline'
-    script: |
-      """Search all subdirectories for `manage.py`."""
-      from glob import iglob
-      from os import path
-      # Python >= 3.9.10
-      manage_py = next(iglob(path.join('**', 'manage.py'), recursive=True), None)
-      if not manage_py:
-          raise SystemExit('Could not find a Django project')
-      project_location = path.dirname(path.abspath(manage_py))
-      print('Found Django project in', project_location)
-      print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
-- script: |
-    npm install
-  failOnStderr: false
-  workingDirectory: $(Build.SourcesDirectory)/frontend
-  displayName: 'Install node prerequisites'
-- script: |
-    npm run build:prod
-  failOnStderr: false
-  workingDirectory: $(Build.SourcesDirectory)/frontend
-  displayName: 'Build node prerequisites'
-- script: |
-    md .\log
-  failOnStderr: true
-  workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Create dir log'
-- script: |
-    pip install virtualenv
-  failOnStderr: false
-  workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install virtualenv'
-- script: |
-    virtualenv venv
-  failOnStderr: false
-  workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Create virtualenv'
-- script: |
-    .\venv\Scripts\activate
-  failOnStderr: false
-  workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Active virtualenv'
-- script: |
-    python -m pip install --upgrade --user pip setuptools wheel
-  failOnStderr: false
-  workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install and update pip'
-- script: |
-    pip install --user -r requirements.txt
-  failOnStderr: false
-  workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install requirements'
-- script: |
-    pip install --user unittest-xml-reporting
-  failOnStderr: false
-  workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install unittest'
-- script: |
-    python -m pip install --user fastcgi
-  failOnStderr: false
-  workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Install fastcgi'
-- script: |
-    python manage.py collectstatic --no-input
-  failOnStderr: false
-  workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Django Collectstatic'
-- task: DeleteFiles@1
-  inputs:
-    SourceFolder: '$(Build.SourcesDirectory)/backend/venv'
-    Contents: '**'
-    RemoveSourceFolder: true
-- script: |
-    python manage.py makemigrations
-  failOnStderr: false
-  workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Django makemigrations'
-- script: |
-    python manage.py migrate
-  failOnStderr: false
-  workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Django migrate'
-- script: |
-    del venv\.*
-  failOnStderr: false
-  workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Deleting venv backend'
-- script: |
-    rd venv
-  failOnStderr: false
-  workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Deleting venv backend'
-- script: |
-    del .env
-  failOnStderr: false
-  workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Deleting env backend'
-- script: |
-    del .env.example
-  failOnStderr: false
-  workingDirectory: $(Build.SourcesDirectory)/backend
-  displayName: 'Deleting env.example backend'
-- task: DeleteFiles@1
-  inputs:
-    SourceFolder: '$(Build.SourcesDirectory)/backend/__pycache__'
-    Contents: '**'
-    RemoveSourceFolder: true
-- task: CopyFiles@2
-  inputs:
-    SourceFolder: '$(Build.SourcesDirectory)/backend'
-    Contents: |
-      **/*
-      !**/__pycache__/**
-    TargetFolder: 'E:\wwwroot\fadigitallab.deloitte.com.br\juca\'
-    OverWrite: true
-    flattenFolders: false
-    ignoreMakeDirErrors: true
-    ignoreErrors: true
+  - task: NodeTool@0
+    inputs:
+      versionSource: 'spec'
+      versionSpec: '18.x'
+      checkLatest: true
+  - task: DownloadSecureFile@1
+    name: Env
+    inputs:
+      secureFile: '.env-prd'
+  - task: DownloadSecureFile@1
+    name: EnvFrontEnd
+    inputs:
+      secureFile: '.env-frontend-prod'
+  - script: |
+      echo Installing $(Env.secureFilePath) to the path backend...
+      copy $(Env.secureFilePath) $(Build.SourcesDirectory)\backend\.env
+    failOnStderr: true
+  - script: |
+      echo Installing $(EnvFrontEnd.secureFilePath) to the path frontend...
+      copy $(EnvFrontEnd.secureFilePath) $(Build.SourcesDirectory)\frontend\.env
+    failOnStderr: true
+  - task: PythonScript@0
+    displayName: 'Export project path'
+    inputs:
+      scriptSource: 'inline'
+      script: |
+        """Search all subdirectories for `manage.py`."""
+        from glob import iglob
+        from os import path
+        # Python >= 3.9.10
+        manage_py = next(iglob(path.join('**', 'manage.py'), recursive=True), None)
+        if not manage_py:
+            raise SystemExit('Could not find a Django project')
+        project_location = path.dirname(path.abspath(manage_py))
+        print('Found Django project in', project_location)
+        print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
+  - script: |
+      npm install
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/frontend
+    displayName: 'Install node prerequisites'
+  - script: |
+      npm run build:prod
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/frontend
+    displayName: 'Run npm build'
+  - script: |
+      md .\log
+    failOnStderr: true
+    workingDirectory: $(Build.SourcesDirectory)/backend
+    displayName: 'Create md log'
+  - script: |
+      pip install virtualenv
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/backend
+    displayName: 'Install virtualenv'
+  - script: |
+      virtualenv venv
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/backend
+    displayName: 'Create virtualenv'
+  - script: |
+      .\venv\Scripts\activate
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/backend
+    displayName: 'Activate virtualenv'
+  - script: |
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install --upgrade pip setuptools wheel
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/backend
+    displayName: 'Install  pip setuptools wheel'
+  - script: |
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip uninstall django-fernet-encrypted-fields -y
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/backend
+    displayName: 'Uninstall django-fernet-encrypted-fields'
+  - script: |
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip uninstall django-searchable-encrypted-fields -y
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/backend
+    displayName: 'Uninstall django-searchable-encrypted-fields'
+  - script: |
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install django-searchable-encrypted-fields==0.2.1 --no-cache --index-url=https://pypi.org/simple
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/backend
+    displayName: 'Install django-searchable-encrypted-fields'
+  - script: |
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install -r requirements.txt
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/backend
+    displayName: 'Install pip requirements'
+  - script: |
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install unittest-xml-reporting
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/backend
+    displayName: 'Install pip unittest-xml-reporting'
+  - script: |
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install fastcgi
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/backend
+    displayName: 'Install pip fastcgi'
+  - script: |
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python manage.py collectstatic --no-input
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/backend
+    displayName: 'Django collectstatic'
+  - script: |
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python manage.py makemigrations
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/backend
+    displayName: 'Django makemigrations'
+  - script: |
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python manage.py migrate
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/backend
+    displayName: 'Django migrate'
+  - script: |
+      del .env
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/backend
+    displayName: 'Delete venv'
+  - script: |
+      del .env.example
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/backend
+    displayName: 'Delete file .env'
+  - task: DeleteFiles@1
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)/backend/__pycache__'
+      Contents: '**'
+      RemoveSourceFolder: true
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)/backend'
+      Contents: |
+        **/*
+        !**/__pycache__/**
+        !**/venv/**
+      TargetFolder: 'E:\wwwroot\fadigitallab.deloitte.com.br\juca\'
+      OverWrite: true
+      flattenFolders: false
+      ignoreMakeDirErrors: true
+      ignoreErrors: true
