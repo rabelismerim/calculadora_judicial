@@ -12,6 +12,23 @@ from creditors.notice.schemas import NoticeSchema, NoticeUpdateSchema, NoticeRec
 from utils import _, doc
 
 
+class NoticeDetailApi(AbstractViewApi):
+    """HTTP methods for Notice"""
+    http_method_names = ['get']
+    serializer_class = NoticeSchema
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    model = Notice
+
+    docs = {
+        'init': _("""NoticeAJ gathers information about the creditor's process. It contains data relevant to the 
+        process, such as what was requested by the creditor, how much was calculated due, the dates and amounts."""),
+        'get': _("""Get the entire list of notices, containing the classes and values.
+        """),
+    }
+
+    query_slug = True
+
+
 class NoticeApi(AbstractViewApi):
     """HTTP methods for Notice"""
     http_method_names = ['post', 'get']
@@ -106,6 +123,26 @@ class NoticeRecoveringApi(AbstractViewApi):
         notice = self.model.objects.create(**new_notice)
 
         return JsonResponse({'notice': self.serializer_class(notice, many=False).data}, status=status.HTTP_201_CREATED)
+
+
+class NoticeRecoveringDetailApi(AbstractViewApi):
+    """HTTP methods for Notice"""
+    http_method_names = ['get']
+    serializer_class = NoticeRecoveringUpdateSchema
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    model = NoticeRecovering
+
+    docs = {
+        'init': _("""NoticeAJ gathers information about the creditor's process. It contains data relevant to the 
+                process, such as what was requested by the creditor, how much was calculated due, the dates and 
+                amounts.
+                """),
+        'delete': _("""Delete a specific NoticeRecovering to the ID passed by the url
+            :return:
+                - JsonResponse: An HTTP response containing the ok message.
+            """)
+    }
+    query_slug = True
 
 
 class NoticeRecoveringUpdateApi(AbstractViewApi):
