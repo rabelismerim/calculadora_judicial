@@ -62,28 +62,7 @@ const onReset = () => {
   data.value = clone(props.modelValue)
 }
 
-// let incidents: any[] = $ref([])
-// const addIncident = async (incidentNumber: string) => {
-//   try {
-//     const result: any = await calculationService.newIncident(incidentNumber)
-//     const { id, number } = result
-//     return { id, number, description: number }
-//   }
-//   catch (error) {
-//     printError('ERROR ON LOAD INCIDENSTS:', error)
-//   }
-// }
-// const loadIncidents = async () => {
-//   try {
-//     incidents = await calculationService.getIncidents()
-//   }
-//   catch (error) {
-//     printError('ERROR ON LOAD INCIDENSTS:', error)
-//   }
-// }
-
 onMounted(() => {
-  // loadIncidents()
 })
 </script>
 
@@ -101,15 +80,6 @@ onMounted(() => {
       <div class="pb-2 font-bold text-md">
         Créditos
       </div>
-      <!-- // <InputSelect
-      //   v-model="value.incidentId"
-      //   v-model:options="incidents"
-      //   label="Número de Incidente"
-      //   mask="#######-##.####.#.##.####"
-      //   :to-add="addIncident"
-      //   :rules="[(value: any) => !!value || 'É um campo obrigatório']"
-      //   :disable="!isEditing"
-      // /> -->
       <div v-for="(value, index) in data as any[]" :key="index" class="grid gap-x-3 @lg:grid-cols-2 @3xl:grid-cols-[3fr_130px_1fr_232px_40px]">
         <QInput
           v-model="value.coins.value"
@@ -145,7 +115,7 @@ onMounted(() => {
           dense
           class="mb-5"
         />
-        <div
+        <button
           class="@container @md:col-start-2 @3xl:col-start-auto cursor-pointer bg--error h-10 rounded-.5 border-1 border-red-8 color-white flex gap-4 justify-center items-center"
           :disabled="!isEditing ? true : value.id ? true : undefined"
           @click="removeCredit(!value.id && index)"
@@ -153,8 +123,8 @@ onMounted(() => {
           <div class="hidden @[100px]:block">
             Remover
           </div>
-          <div class="i-carbon-trash-can bg-white" />
-        </div>
+          <div class="i-carbon-trash-can" />
+        </button>
       </div>
       <Btn
         label="Adicionar novo Crédito"
