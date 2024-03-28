@@ -86,11 +86,20 @@ class Calculation(AbstractModel):
 
     # Statement A5
     incident = models.ForeignKey(Incident, on_delete=models.PROTECT, null=True)
+    # TODO Marcelo: Remover incidente
+    # TODO Marcelo: Adicionar Coin, podendo ser nulo
+    # TODO Marcelo: Adicionar ManytoMany para pleitos(claims)(pode ser em branco). Validar no Schema se os pleitos vindo
+    #  são do mesmo credor, incidente, moeda,
+    # TODO Marcelo: Trazer total dos pleitos(claims) ou total da moeda como property(total_coin)
+    # TODO Marcelo: Trazer incidente como property pegando o primeiro pleito(se houver)
+    # TODO Marcelo: Receber apenas Coin ou pleito, se vier os dois ou nenhum, gerar erro
 
     # TODO verificar se essas premissas variam de calculo para calculo, ou pode ser relacionado ao credor
     # Statement N5 - Crédito inteiramente concursal? TODO analisar se as verbas adicionadas são concursal e alterar
     #  automaticamente
-    # TODO: Remover de edição, automatizar calculo para obter os creditos, e ver se algum credito tem a flag is_extraconcursal
+    # TODO: Remover de edição, automatizar calculo para obter os creditos, e ver se algum credito tem a flag
+    #  is_extraconcursal
+
     appeal_credit = models.BooleanField(
         _('Fully competitive credit?'), default=False)
     # Statement Q5 - Data do calculo homologado
@@ -600,6 +609,19 @@ class Calculation(AbstractModel):
                      'coin': fund.coins.get_coin_display(),
                      'total_calculated': fund.get_total_summed()} for fund in
                     self.fundirrf_set.filter(classes__classe__isnull=False)]
+
+        classes += [{'classe': fund.classes.classe,
+                     'total_value': fund.coins.value,
+                     'coin': fund.coins.get_coin_display(),
+                     'total_calculated': fund.get_total_summed()} for fund in
+                    self.funddanos_set.filter(classes__classe__isnull=False)]
+
+        classes += [{'classe': fund.classes.classe,
+                     'total_value': fund.coins.value,
+                     'coin': fund.coins.get_coin_display(),
+                     'total_calculated': fund.get_total_summed()} for fund in
+                    self.funddeduction_set.filter(classes__classe__isnull=False)]
+
         class_totals = {}
         total_value_sum = 0
         total_calculated_sum = 0
@@ -695,6 +717,12 @@ class Calculation(AbstractModel):
                      'total_calculated': fund.get_total_summed(),
                      'total_historical': fund.get_total_historical_summed(), } for fund in
                     self.funddanos_set.filter(classes__classe__isnull=False)]
+
+        classes += [{'classe': fund.classes.classe, 'total_value': fund.coins.value,
+                     'total_calculated': fund.get_total_summed(),
+                     'total_historical': fund.get_total_historical_summed(), } for fund in
+                    self.funddeduction_set.filter(classes__classe__isnull=False)]
+
         total = 0
         total_historical = 0
         count = len(classes)
