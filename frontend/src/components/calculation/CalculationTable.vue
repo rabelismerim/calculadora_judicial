@@ -126,9 +126,20 @@ const calculationColumns: TableColumn[] = [
   {
     name: 'class',
     field: 'classes',
-    format: (value: any[]) => value && value
-      .filter(({ percentageCalculated }: any) => !!percentageCalculated)
-      .map(({ classeDisplay, percentageCalculated }: any) => `${classeDisplay?.split('-').at(0).trim()}: ${formatNumber(percentageCalculated || 0, 2)}%`).join(' ,'),
+    format: (value: any[]) => {
+      if (!value || !Array.isArray(value))
+        return []
+
+      const filteredValue = value.filter(({ percentageCalculated }: any) => {
+        return percentageCalculated !== 0
+      })
+
+      const formattedValue = filteredValue.map(({ classeDisplay, percentageCalculated }: any) => {
+        const formattedString = `${classeDisplay?.split('-').at(0).trim()}: ${formatNumber(percentageCalculated || 0, 2)}%`
+        return formattedString
+      }).join(' ,')
+      return formattedValue || '-'
+    },
     label: 'Classe',
     align: 'left',
     sortable: true,
@@ -165,13 +176,29 @@ const calculationColumns: TableColumn[] = [
     sortable: true,
   },
   {
+    name: 'coin',
+    field: 'coin',
+    label: 'Moeda',
+    align: 'left',
+    sortable: true,
+    format: (value: any) => value ?? '-',
+  },
+  {
+    name: 'referenceValue',
+    field: 'coin',
+    label: 'Referência',
+    align: 'left',
+    sortable: true,
+    format: (value: any) => value ?? '-',
+  },
+  {
     name: 'total',
     field: 'allFunds',
     format: (value: any = []) => formatNumber(value
       ?.flatMap(({ data }: any) => data)
       ?.map((credit: any) => (typeof credit?.total === 'number' ? credit?.total : credit?.total?.totalCorrected) || 0)
       ?.reduce((acc: number, cur: number) => acc + cur, 0), 2) || '-',
-    label: 'Valor',
+    label: 'Calculado',
     align: 'left',
     sortable: true,
   },
@@ -356,7 +383,7 @@ const statusColors: any = {
       <div v-else class="flex gap-3">
         <Btn
           label="Cancelar"
-          :dosabled="loading"
+          :disabled="loading"
           outlined
           @click="resetValidation"
         />
@@ -373,7 +400,7 @@ const statusColors: any = {
 </template>
 
 <style>
-.calculation-table tr:has(.is-validated) {
-  background-color: hsla(var(--secondary,0,0%,0%),0.05)
+.calculation-table .is-validated {
+  background-color: hsla(var(--secondary, 0, 0%, 0%), 0.05);
 }
 </style>
