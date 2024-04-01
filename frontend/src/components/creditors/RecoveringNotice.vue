@@ -101,15 +101,6 @@ onMounted(() => {
       <div class="pb-2 font-bold text-md">
         Créditos
       </div>
-      <!-- <InputSelect
-          v-model="value.incidentId"
-          v-model:options="incidents"
-          label="Número de Incidente"
-          mask="#######-##.####.#.##.####"
-          :to-add="addIncident"
-          :rules="[(value: any) => !!value || 'É um campo obrigatório']"
-          :disable="!isEditing"
-        /> -->
       <div v-for="(value, index) in data as any[]" :key="index" class="grid gap-x-3 @lg:grid-cols-2 @3xl:grid-cols-[3fr_130px_1fr_232px_40px]">
         <QInput
           v-model="value.coins.value"
