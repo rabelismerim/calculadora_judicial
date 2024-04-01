@@ -36,19 +36,11 @@ const noticesAJ: Ref<Notice[]> = ref([])
 const noticesRJ: Ref<Notice[]> = ref([])
 
 let loading = $ref(false)
-const filterBy = $ref('')
 const showParticipants = $ref(false)
 let project = $ref({} as Project)
 const showEditingProject = $ref(false)
 
 const tab = $ref('all')
-const tabFilters = [
-  { label: 'Todos', value: 'all' },
-  { label: 'A Revisar', value: 'd' },
-  { label: 'A Aprovar', value: 'c' },
-  { label: 'Aprovado', value: 'p' },
-
-]
 
 const filteredRecoverings = computed(() => {
   if (tab === 'all')
