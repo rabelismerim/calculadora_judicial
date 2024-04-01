@@ -33,6 +33,7 @@ interface Notice {
 }
 
 const noticesAJ: Ref<Notice[]> = ref([])
+const noticesRJ: Ref<Notice[]> = ref([])
 
 let loading = $ref(false)
 const filterBy = $ref('')
@@ -77,29 +78,42 @@ const openNewCalcultation = (creditorId: string) => {
 }
 const openCalculation = (creditorId: string, calculationId: string) =>
   router.push({ path: `/projeto/${project.id}/credor/${creditorId}/calculo/${calculationId}` })
+
 const loadCalculations = async (creditor: any) => {
   const { id } = creditor
   loading = true
   try {
     const noticeAJResult = await creditorsService.getNoticeAJCreditor(id)
     const noticeRJResult = await creditorsService.getNoticeAJRecovering(id)
-    const noticesAJ = noticeAJResult.data?.map((notices: any) => ({
-      classeDisplay: notices.classes?.classeDisplay || '-',
-      coinDisplay: notices.coins?.coinDisplay || '-',
-      value: notices.coins?.value || '-',
-      createdAt: notices.createdAt,
-    }))
-    const noticesRJ = noticeRJResult.data?.map((noticeRecoverings: any) => ({
-      classeDisplay: noticeRecoverings.classes?.classeDisplay || '-',
-      coinDisplay: noticeRecoverings.coins?.coinDisplay || '-',
-      value: noticeRecoverings.coins?.value || '-',
-      createdAt: noticeRecoverings.createdAt,
-    }))
+    console.log('Dados noticesAJ - ANTES DO MAPEAMENTO:', noticeAJResult)
+    console.log('Dados noticesRJ - ANTES DO MAPEAMENTO:', noticeRJResult)
+    const noticesAJ = Array.isArray(noticeAJResult)
+      ? noticeAJResult.data.notice.map((notices: any) => ({
+        classeDisplay: notices.classes?.classeDisplay || '-',
+        coinDisplay: notices.coins?.coinDisplay || '-',
+        value: notices.coins?.value || '-',
+        createdAt: notices.createdAt || '-',
+      }))
+      : []
+
+    console.log('Dados noticesAJ - DEPOIS DO MAPEAMENTO:', noticesAJ)
+
+    const noticesRJ = Array.isArray(noticeRJResult)
+      ? noticeRJResult.data.noticeRecoverings.map((noticesRecoverings: any) => ({
+        classeDisplay: noticesRecoverings.classes?.classeDisplay || '-',
+        coinDisplay: noticesRecoverings.coins?.coinDisplay || '-',
+        value: noticesRecoverings.coins?.value || '-',
+        createdAt: noticesRecoverings.createdAt || '-',
+      }))
+      : []
+
+    console.log('Dados noticesRJ - DEPOIS DO MAPEAMENTO:', noticesRJ)
+
     const calculationsResult = await calculationService.getCalculations(id)
     creditor.calculations = [
       ...noticesAJ,
       ...noticesRJ,
-      ...calculationsResult,
+      ...(calculationsResult || []),
     ]
   }
   catch (error) {
@@ -142,8 +156,8 @@ const loadTotalValues = async () => {
     for (const recovering of project?.recoverings) {
       for (const creditor of recovering?.creditors)
         creditor.total = await projectService.getCreditorBigNumbers(creditor.id)
-      recovering.total = recovering?.creditors
-        .reduce((acc, { total }: any) => acc + total, 0)
+
+      recovering.total = recovering?.creditors.reduce((acc, { total }: any) => acc + total, 0)
     }
   }
   catch (error) {
@@ -246,7 +260,6 @@ onMounted(async () => {
         @click="router.push({ path: `/projeto/${attrs.projectId}/credores` })"
       />
     </Header>
-
     <div v-if="filteredRecoverings.length > 0" class="flex flex-col gap-3">
       <Accordion
         v-for="recovering in filteredRecoverings"
@@ -254,7 +267,6 @@ onMounted(async () => {
         :title="recovering.entity.name"
         :subtitle="formatLegalNumber(recovering.entity.legalNumber)"
         class="accordion w-[min(1600px,100%)_!important]"
-        :notices-a-j="noticesAJ"
       >
         <template #header-left>
           <IconHint
@@ -272,6 +284,7 @@ onMounted(async () => {
             </div>
           </div>
         </template>
+
         <div v-if="recovering.creditors.length > 0">
           <Accordion
             v-for="(creditor, index) in recovering.creditors"
@@ -282,6 +295,8 @@ onMounted(async () => {
             class="border-x-0 border-b-0 rounded-0"
             summary-class="pl-8"
             :class="{ 'border-t-0': index === 0 }"
+            :notices-a-j="noticesAJ"
+            :notices-r-j="noticesRJ"
             @open="loadCalculations(creditor)"
           >
             <template #header-left>
@@ -310,6 +325,7 @@ onMounted(async () => {
               v-model:validation="creditor.isValidating"
               :creditor="creditor"
               :notices-a-j="noticesAJ"
+              :notices-r-j="noticesRJ"
               @row-click="(row: any) => openCalculation(creditor.id, row.id)"
               @validated="loadCalculations(creditor); loadBigNumbers(); loadTotalValues()"
             />
