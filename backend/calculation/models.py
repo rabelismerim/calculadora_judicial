@@ -102,7 +102,8 @@ class Calculation(AbstractModel):
     # TODO: Remover de edição, automatizar calculo para obter os creditos, e ver se algum credito tem a flag
     #  is_extraconcursal
 
-    coins = models.ForeignKey(Coins, on_delete=models.PROTECT, null=True)  # TODO Marcelo
+    coins = models.ForeignKey(
+        Coins, on_delete=models.PROTECT, null=True)  # TODO Marcelo
     claims = models.ManyToManyField(ClaimCreditor, blank=True)  # TODO Marcelo
 
     appeal_credit = models.BooleanField(
@@ -652,9 +653,9 @@ class Calculation(AbstractModel):
             total_calculated = class_dict['total_calculated']
             total_value = class_dict['total_value']
             class_dict['percentage_calculated'] = (
-                                                          total_calculated / total_calculated_sum) * 100 if total_calculated_sum > 0 else 0
+                total_calculated / total_calculated_sum) * 100 if total_calculated_sum > 0 else 0
             class_dict['percentage_value'] = (
-                                                     total_value / total_value_sum) * 100 if total_value_sum > 0 else 0
+                total_value / total_value_sum) * 100 if total_value_sum > 0 else 0
 
         classes_list = []
         classes_list_included = []
