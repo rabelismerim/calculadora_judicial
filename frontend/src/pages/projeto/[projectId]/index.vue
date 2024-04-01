@@ -22,6 +22,7 @@ interface Project {
 
 interface Notice {
   id: string
+  createdAt: string
   classes: {
     classeDisplay: string
   }
@@ -31,12 +32,7 @@ interface Notice {
   }
 }
 
-const AJNoticeColumns = $ref([])
-let noticesAJ: Notice[] = []
-
-const loadNotices = async () => {
-  noticesAJ = await creditorsService.getNoticeAJ()
-}
+const noticesAJ: Ref<Notice[]> = ref([])
 
 let loading = $ref(false)
 const filterBy = $ref('')
@@ -85,7 +81,26 @@ const loadCalculations = async (creditor: any) => {
   const { id } = creditor
   loading = true
   try {
-    creditor.calculations = await calculationService.getCalculations(id)
+    const noticeAJResult = await creditorsService.getNoticeAJCreditor(id)
+    const noticeRJResult = await creditorsService.getNoticeAJRecovering(id)
+    const noticesAJ = noticeAJResult.data?.map((notices: any) => ({
+      classeDisplay: notices.classes?.classeDisplay || '-',
+      coinDisplay: notices.coins?.coinDisplay || '-',
+      value: notices.coins?.value || '-',
+      createdAt: notices.createdAt,
+    }))
+    const noticesRJ = noticeRJResult.data?.map((noticeRecoverings: any) => ({
+      classeDisplay: noticeRecoverings.classes?.classeDisplay || '-',
+      coinDisplay: noticeRecoverings.coins?.coinDisplay || '-',
+      value: noticeRecoverings.coins?.value || '-',
+      createdAt: noticeRecoverings.createdAt,
+    }))
+    const calculationsResult = await calculationService.getCalculations(id)
+    creditor.calculations = [
+      ...noticesAJ,
+      ...noticesRJ,
+      ...calculationsResult,
+    ]
   }
   catch (error) {
     printError('ERROR ON LOAD CALCULATIONS OF CREDITOR:', error)
@@ -142,7 +157,6 @@ onMounted(async () => {
   loadOptions()
   await loadProject()
   await loadTotalValues()
-  await loadNotices()
 })
 </script>
 
@@ -240,6 +254,7 @@ onMounted(async () => {
         :title="recovering.entity.name"
         :subtitle="formatLegalNumber(recovering.entity.legalNumber)"
         class="accordion w-[min(1600px,100%)_!important]"
+        :notices-a-j="noticesAJ"
       >
         <template #header-left>
           <IconHint
@@ -290,13 +305,11 @@ onMounted(async () => {
                 </div>
               </div>
             </template>
-            <div class="px-4 py-3">
-              <AJNoticeTable :notices="creditor.notices || []" :aj-notice-columns="AJNoticeColumns" />
-            </div>
             <CalculationTable
               v-model="creditor.calculations"
               v-model:validation="creditor.isValidating"
               :creditor="creditor"
+              :notices-a-j="noticesAJ"
               @row-click="(row: any) => openCalculation(creditor.id, row.id)"
               @validated="loadCalculations(creditor); loadBigNumbers(); loadTotalValues()"
             />
