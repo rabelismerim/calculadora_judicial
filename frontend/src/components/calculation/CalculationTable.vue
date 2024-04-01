@@ -3,10 +3,12 @@ const props = withDefaults(defineProps<{
   modelValue?: any[]
   validation?: boolean
   creditor?: any
+  noticesAJ: any[]
 }>(), {
   modelValue: () => [],
   validation: false,
 })
+
 const emit = defineEmits(['update:modelValue', 'rowClick', 'update:validation', 'validated'])
 const { dialog } = useQuasar()
 
@@ -101,7 +103,7 @@ const calculationColumns: TableColumn[] = [
   {
     name: 'incident',
     field: 'incident',
-    format: ({ number }: any) => number || '-',
+    format: (value: any) => value?.number ?? '-',
     label: 'N° Incidente',
     align: 'left',
     style: 'width: 100px',
@@ -177,7 +179,7 @@ const calculationColumns: TableColumn[] = [
   },
   {
     name: 'coin',
-    field: 'coin',
+    field: 'coins',
     label: 'Moeda',
     align: 'left',
     sortable: true,
@@ -226,12 +228,44 @@ const statusColors: any = {
   A: '#007CB0', // Approved
   R: '#DA291C', // Failed
 }
+
+interface AdditionalRow {
+  id: string
+  created: string
+  fase: string
+  class: string
+  coin: string
+  referenceValue: string
+  total: string
+}
+
+const additionalRow = ref<AdditionalRow>({
+  id: '',
+  created: '',
+  fase: '',
+  class: '',
+  coin: '',
+  referenceValue: '',
+  total: '',
+})
+
+watch(props.noticesAJ, (newValue) => {
+  additionalRow.value = {
+    id: newValue.map(notice => notice.id).join(', '),
+    created: '',
+    fase: '',
+    class: '',
+    coin: '',
+    referenceValue: '',
+    total: '',
+  }
+})
 </script>
 
 <template>
   <QTable
     ref="calculationsTable"
-    :rows="modelValue"
+    :rows="[...modelValue, additionalRow]"
     :columns="calculationColumns"
     flat
     class="calculation-table"
