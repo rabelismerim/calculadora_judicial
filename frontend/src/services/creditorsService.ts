@@ -71,6 +71,13 @@ interface Notice {
 const getNoticeAJ = () => api
   .get('/v1/creditors/notice/aj/')
   .then((result: any) => result?.notices)
+
+const getNoticeAJCreditor = (creditorId: any) => api
+  .get(`/v1/creditors/notice/aj/creditor/${creditorId}/`)
+
+const getNoticeAJRecovering = (creditorId: any) => api
+  .get(`/v1/creditors/notice/recovering/creditor/${creditorId}/`)
+
 const setNoticeAJ = async (notice: Notice) => {
   const { id } = notice
   const method = id ? 'put' : 'post'
@@ -106,6 +113,8 @@ export default {
   getOptions,
   newCreditors,
   getNoticeAJ,
+  getNoticeAJCreditor,
+  getNoticeAJRecovering,
   setNoticeAJ,
   getNoticeRecovering,
   setNoticeRecovering,
