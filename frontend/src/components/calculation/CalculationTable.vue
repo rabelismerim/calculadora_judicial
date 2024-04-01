@@ -3,7 +3,8 @@ const props = withDefaults(defineProps<{
   modelValue?: any[]
   validation?: boolean
   creditor?: any
-  noticesAJ: any[]
+  noticesAJ?: any[]
+  noticesRJ?: any[]
 }>(), {
   modelValue: () => [],
   validation: false,
@@ -249,15 +250,31 @@ const additionalRow = ref<AdditionalRow>({
   total: '',
 })
 
-watch(props.noticesAJ, (newValue) => {
-  additionalRow.value = {
-    id: newValue.map(notice => notice.id).join(', '),
-    created: '',
-    fase: '',
-    class: '',
-    coin: '',
-    referenceValue: '',
-    total: '',
+watch(toRef(props, 'noticesAJ'), (newValue) => {
+  if (newValue) {
+    additionalRow.value = {
+      id: newValue.map(notice => notice.id).join(', '),
+      created: '',
+      fase: '',
+      class: '',
+      coin: '',
+      referenceValue: '',
+      total: '',
+    }
+  }
+})
+
+watch(toRef(props, 'noticesRJ'), (newValue) => {
+  if (newValue) {
+    additionalRow.value = {
+      id: newValue.map(notice => notice.id).join(', '),
+      created: '',
+      fase: '',
+      class: '',
+      coin: '',
+      referenceValue: '',
+      total: '',
+    }
   }
 })
 </script>
