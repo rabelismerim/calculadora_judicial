@@ -3,8 +3,6 @@ const props = withDefaults(defineProps<{
   modelValue?: any[]
   validation?: boolean
   creditor?: any
-  noticesAJ?: any[]
-  noticesRJ?: any[]
 }>(), {
   modelValue: () => [],
   validation: false,
@@ -129,9 +127,11 @@ const calculationColumns: TableColumn[] = [
   {
     name: 'class',
     field: 'classes',
-    format: (value: any[]) => {
+    format: (value: any) => {
+      if (value?.classeDisplay)
+        return value?.classeDisplay ?? '-'
       if (!value || !Array.isArray(value))
-        return []
+        return '-'
 
       const filteredValue = value.filter(({ percentageCalculated }: any) => {
         return percentageCalculated !== 0
@@ -184,23 +184,27 @@ const calculationColumns: TableColumn[] = [
     label: 'Moeda',
     align: 'left',
     sortable: true,
-    format: (value: any) => value ?? '-',
+    format: (value: any) => value?.coinDisplay ?? '-',
   },
   {
     name: 'referenceValue',
-    field: 'coin',
+    field: 'coins',
     label: 'Referência',
     align: 'left',
     sortable: true,
-    format: (value: any) => value ?? '-',
+    format: (value: any) => typeOf(value?.value) === 'Number' ? formatNumber(value?.value, 2) : '-',
   },
   {
     name: 'total',
     field: 'allFunds',
-    format: (value: any = []) => formatNumber(value
-      ?.flatMap(({ data }: any) => data)
-      ?.map((credit: any) => (typeof credit?.total === 'number' ? credit?.total : credit?.total?.totalCorrected) || 0)
-      ?.reduce((acc: number, cur: number) => acc + cur, 0), 2) || '-',
+    format: (value: any = []) => {
+      if (typeOf(value) === 'Number')
+        return formatNumber(value, 2)
+      return formatNumber(value
+        ?.flatMap(({ data }: any) => data)
+        ?.map((credit: any) => (typeof credit?.total === 'number' ? credit?.total : credit?.total?.totalCorrected) || 0)
+        ?.reduce((acc: number, cur: number) => acc + cur, 0), 2) || '-'
+    },
     label: 'Calculado',
     align: 'left',
     sortable: true,
@@ -230,65 +234,26 @@ const statusColors: any = {
   R: '#DA291C', // Failed
 }
 
-interface AdditionalRow {
-  id: string
-  created: string
-  fase: string
-  class: string
-  coin: string
-  referenceValue: string
-  total: string
+const handleRowClick = (evt: Event, row: any) => {
+  const target = (evt.target) as HTMLElement
+  if (['AJ', 'RJ'].includes(row.number)) {
+    target.style.cursor = 'auto'
+    return
+  }
+  emit('rowClick', row)
 }
-
-const additionalRow = ref<AdditionalRow>({
-  id: '',
-  created: '',
-  fase: '',
-  class: '',
-  coin: '',
-  referenceValue: '',
-  total: '',
-})
-
-watch(toRef(props, 'noticesAJ'), (newValue) => {
-  if (newValue) {
-    additionalRow.value = {
-      id: newValue.map(notice => notice.id).join(', '),
-      created: '',
-      fase: '',
-      class: '',
-      coin: '',
-      referenceValue: '',
-      total: '',
-    }
-  }
-})
-
-watch(toRef(props, 'noticesRJ'), (newValue) => {
-  if (newValue) {
-    additionalRow.value = {
-      id: newValue.map(notice => notice.id).join(', '),
-      created: '',
-      fase: '',
-      class: '',
-      coin: '',
-      referenceValue: '',
-      total: '',
-    }
-  }
-})
 </script>
 
 <template>
   <QTable
     ref="calculationsTable"
-    :rows="[...modelValue, additionalRow]"
+    :rows="modelValue"
     :columns="calculationColumns"
     flat
     class="calculation-table"
     :pagination="{ rowsPerPage: 0 }"
     hide-pagination
-    @row-click="(evt: Event, row: any) => emit('rowClick', row)"
+    @row-click="(evt: Event, row: any) => handleRowClick(evt, row)"
   >
     <template #header-cell-action="prop">
       <QTh :props="prop" class="w-2">
@@ -303,6 +268,7 @@ watch(toRef(props, 'noticesRJ'), (newValue) => {
     <template #body-cell-action="prop">
       <QTd class="flex justify-center items-center">
         <div
+          v-if="!['AJ', 'RJ'].includes(prop.row?.number)"
           class="w-2 h-2 block rounded-full"
           :class="prop.row.validated ? 'bg--secondary' : 'bg--error'"
         />
@@ -310,7 +276,10 @@ watch(toRef(props, 'noticesRJ'), (newValue) => {
     </template>
     <template #body-cell-executor="prop">
       <QTd>
-        <div v-if="prop.value">
+        <div v-if="['AJ', 'RJ'].includes(prop.row?.number)">
+          -
+        </div>
+        <div v-else-if="prop.value">
           {{ prop.value }}
         </div>
         <div
@@ -321,7 +290,10 @@ watch(toRef(props, 'noticesRJ'), (newValue) => {
     </template>
     <template #body-cell-reviewer="prop">
       <QTd>
-        <div v-if="prop.value">
+        <div v-if="['AJ', 'RJ'].includes(prop.row?.number)">
+          -
+        </div>
+        <div v-else-if="prop.value">
           {{ prop.value }}
         </div>
         <div
@@ -333,7 +305,10 @@ watch(toRef(props, 'noticesRJ'), (newValue) => {
     </template>
     <template #body-cell-approver="prop">
       <QTd>
-        <div v-if="prop.value">
+        <div v-if="['AJ', 'RJ'].includes(prop.row?.number)">
+          -
+        </div>
+        <div v-else-if="prop.value">
           {{ prop.value }}
         </div>
         <div
@@ -345,7 +320,10 @@ watch(toRef(props, 'noticesRJ'), (newValue) => {
     </template>
     <template #body-cell-specialapprover="prop">
       <QTd>
-        <div v-if="prop.value?.length" class="flex gap-2">
+        <div v-if="['AJ', 'RJ'].includes(prop.row?.number)">
+          -
+        </div>
+        <div v-else-if="prop.value?.length" class="flex gap-2">
           <div v-for="approver in prop.value as any[]" :key="approver.id">
             <UserPicture
               v-model="approver.projectUser"
@@ -404,6 +382,7 @@ watch(toRef(props, 'noticesRJ'), (newValue) => {
         }"
       >
         <div
+          v-if="!['AJ', 'RJ'].includes(prop.row?.number)"
           class="flex"
           @click.stop="selectRow(prop.rowIndex, prop.row?.step)"
         >
