@@ -20,21 +20,6 @@ interface Project {
   [key: string]: any
 }
 
-interface Notice {
-  id: string
-  createdAt: string
-  classes: {
-    classeDisplay: string
-  }
-  coins: {
-    coinDisplay: string
-    value: number
-  }
-}
-
-const noticesAJ: Ref<Notice[]> = ref([])
-const noticesRJ: Ref<Notice[]> = ref([])
-
 let loading = $ref(false)
 const showParticipants = $ref(false)
 let project = $ref({} as Project)
@@ -77,34 +62,34 @@ const loadCalculations = async (creditor: any) => {
   try {
     const noticeAJResult = await creditorsService.getNoticeAJCreditor(id)
     const noticeRJResult = await creditorsService.getNoticeAJRecovering(id)
-    console.log('Dados noticesAJ - ANTES DO MAPEAMENTO:', noticeAJResult)
-    console.log('Dados noticesRJ - ANTES DO MAPEAMENTO:', noticeRJResult)
-    const noticesAJ = Array.isArray(noticeAJResult)
-      ? noticeAJResult.data.notice.map((notices: any) => ({
-        classeDisplay: notices.classes?.classeDisplay || '-',
-        coinDisplay: notices.coins?.coinDisplay || '-',
-        value: notices.coins?.value || '-',
-        createdAt: notices.createdAt || '-',
+    const noticesAJ = noticeAJResult
+      .map((notice: any) => ({
+        number: 'AJ',
+        incident: { number: 'Edital AJ' },
+        isAdm: false,
+        classes: notice?.classes ?? {},
+        coins: notice?.coins ?? {},
+        allFunds: notice.coins?.value || '-',
+        createdAt: notice.createdAt || '-',
+        stepDisplay: 'Edital',
       }))
-      : []
 
-    console.log('Dados noticesAJ - DEPOIS DO MAPEAMENTO:', noticesAJ)
-
-    const noticesRJ = Array.isArray(noticeRJResult)
-      ? noticeRJResult.data.noticeRecoverings.map((noticesRecoverings: any) => ({
-        classeDisplay: noticesRecoverings.classes?.classeDisplay || '-',
-        coinDisplay: noticesRecoverings.coins?.coinDisplay || '-',
-        value: noticesRecoverings.coins?.value || '-',
-        createdAt: noticesRecoverings.createdAt || '-',
+    const noticesRJ = noticeRJResult
+      .map((noticeRecovering: any) => ({
+        number: 'RJ',
+        incident: { number: 'Edital RJ' },
+        isAdm: true,
+        classes: noticeRecovering?.classes ?? {},
+        coins: noticeRecovering?.coins ?? {},
+        allFunds: noticeRecovering.coins?.value || '-',
+        createdAt: noticeRecovering.createdAt || '-',
+        stepDisplay: 'Edital',
       }))
-      : []
-
-    console.log('Dados noticesRJ - DEPOIS DO MAPEAMENTO:', noticesRJ)
 
     const calculationsResult = await calculationService.getCalculations(id)
     creditor.calculations = [
-      ...noticesAJ,
       ...noticesRJ,
+      ...noticesAJ,
       ...(calculationsResult || []),
     ]
   }
@@ -287,8 +272,6 @@ onMounted(async () => {
             class="border-x-0 border-b-0 rounded-0"
             summary-class="pl-8"
             :class="{ 'border-t-0': index === 0 }"
-            :notices-a-j="noticesAJ"
-            :notices-r-j="noticesRJ"
             @open="loadCalculations(creditor)"
           >
             <template #header-left>
@@ -316,8 +299,6 @@ onMounted(async () => {
               v-model="creditor.calculations"
               v-model:validation="creditor.isValidating"
               :creditor="creditor"
-              :notices-a-j="noticesAJ"
-              :notices-r-j="noticesRJ"
               @row-click="(row: any) => openCalculation(creditor.id, row.id)"
               @validated="loadCalculations(creditor); loadBigNumbers(); loadTotalValues()"
             />
