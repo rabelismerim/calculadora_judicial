@@ -1,5 +1,8 @@
+import random
+
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from faker import Faker
 from rest_framework.generics import get_object_or_404
 
 from base.claim.models import ClaimCreditor, ClaimLawyer
@@ -197,15 +200,26 @@ class CreateCreditor:
         claim_lawyer = creditor.pop('claimlawyer', None)
 
         recovering = Recovering.objects.filter(id=creditor['recovering_id']).first()
-        if Creditor.objects.filter(recovering__entity__legal_number=recovering.entity.legal_number,
-                                   entity__legal_number=entity['legal_number']).exists():
+
+        old_creditor = Creditor.objects.filter(recovering__entity__legal_number=recovering.entity.legal_number,
+                                               entity__legal_number=entity['legal_number']).first()
+
+        if old_creditor and notice_recoverings:
             raise ValidationError([_('Creditor already registered in this recovering')])
 
-        creditor['entity'], created = Entity.objects.get_or_create(defaults=entity,
-                                                                   **{'legal_number': entity['legal_number']})
+        if old_creditor:
+            new_creditor = old_creditor
+        else:
 
-        new_creditor = Creditor(**creditor)
-        new_creditor.save()
+            entity = Entity.objects.filter(legal_number=entity['legal_number']).first()
+
+            if not entity:
+                entity = Entity.objects.create(**entity)
+
+            creditor['entity'] = entity
+
+            new_creditor = Creditor(**creditor)
+            new_creditor.save()
 
         if claims_creditor:
             for claim_creditor in claims_creditor:
@@ -361,3 +375,53 @@ class LegalPendenciesDetailApi(LegalPendenciesApi):
             Finds the Calculation instance based on the URL parameter id.
             Returns a JSON response with the updated Creditor object.
             """)
+
+
+def generate_cnpj():
+    def calculate_special_digit(l):
+        digit = 0
+
+        for i, v in enumerate(l):
+            digit += v * (i % 8 + 2)
+
+        digit = 11 - digit % 11
+
+        return digit if digit < 10 else 0
+
+    cnpj = [1, 0, 0, 0] + [random.randint(0, 9) for x in range(8)]
+
+    for _ in range(2):
+        cnpj = [calculate_special_digit(cnpj)] + cnpj
+
+    return '%s%s%s%s%s%s%s%s%s%s%s%s%s%s' % tuple(cnpj[::-1])
+
+
+def save_bk_entity():
+    entis = Entity.objects.all()
+
+    for ent in entis:
+        ent._encrypted_name = ent.name
+        ent._encrypted_name_bk = ent.name
+
+        ent._encrypted_legal_number = ent.legal_number
+        ent._encrypted_legal_number_bk = ent.legal_number
+        print(ent.name, 'name')
+        ent.save()
+
+
+# save_bk_entity()
+
+
+def bk_entity():
+    entis = Entity.objects.all()
+
+    for ent in entis:
+        ent.name = ent._encrypted_name_bk
+        # # ent._encrypted_name = ent._encrypted_name_bk
+        # # ent._encrypted_legal_number = ent._encrypted_legal_number_bk
+        ent.legal_number = ent._encrypted_legal_number_bk
+
+        print(ent.name, 'name\n')
+        ent.save()
+
+# bk_entity()

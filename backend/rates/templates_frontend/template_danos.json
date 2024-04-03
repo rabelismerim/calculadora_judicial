@@ -162,6 +162,30 @@
             "is_editable": false,
             "required": false
         },
+         {
+            "label": "",
+            "key": "classes.classe_display",
+            "type": "C",
+            "order": 1,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "coins.coin_display",
+            "type": "C",
+            "order": 2,
+            "is_editable": false,
+            "required": false
+        },
+        {
+            "label": "",
+            "key": "coins.value",
+            "type": "F",
+            "order": 3,
+            "is_editable": false,
+            "required": false
+        },
         {
             "label": "",
             "key": "total_historical",

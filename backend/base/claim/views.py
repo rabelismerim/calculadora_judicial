@@ -17,6 +17,21 @@ docs = {
 }
 
 
+class ClaimCreditorDetailApi(AbstractViewApi):
+    """This class provides basic HTTP methods for managing Calculation Objects.
+    It includes a serializer_class and required permission_classes to authenticate the users,
+    a model instance with a corresponding schema as well as custom query parameters to retrieve data.
+    """
+    serializer_class = ClaimCreditorSchema
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    model = ClaimCreditor
+
+    http_method_names = ['get']
+    docs = docs.copy()
+    query_slug = True
+    many = True
+
+
 class ClaimCreditorApi(AbstractViewApi):
     """This class provides basic HTTP methods for managing Calculation Objects.
     It includes a serializer_class and required permission_classes to authenticate the users,
