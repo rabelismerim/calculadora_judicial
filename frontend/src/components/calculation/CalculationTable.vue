@@ -276,7 +276,10 @@ const handleRowClick = (evt: Event, row: any) => {
     </template>
     <template #body-cell-executor="prop">
       <QTd>
-        <div v-if="['AJ', 'RJ'].includes(prop.row?.number)">
+        <div
+          v-if="['AJ', 'RJ'].includes(prop.row?.number)"
+          class="w-2 h-2 block rounded-full"
+        >
           -
         </div>
         <div v-else-if="prop.value">
@@ -290,7 +293,10 @@ const handleRowClick = (evt: Event, row: any) => {
     </template>
     <template #body-cell-reviewer="prop">
       <QTd>
-        <div v-if="['AJ', 'RJ'].includes(prop.row?.number)">
+        <div
+          v-if="['AJ', 'RJ'].includes(prop.row?.number)"
+          class="w-2 h-2 block rounded-full"
+        >
           -
         </div>
         <div v-else-if="prop.value">
@@ -305,7 +311,10 @@ const handleRowClick = (evt: Event, row: any) => {
     </template>
     <template #body-cell-approver="prop">
       <QTd>
-        <div v-if="['AJ', 'RJ'].includes(prop.row?.number)">
+        <div
+          v-if="['AJ', 'RJ'].includes(prop.row?.number)"
+          class="w-2 h-2 block rounded-full"
+        >
           -
         </div>
         <div v-else-if="prop.value">
@@ -320,7 +329,10 @@ const handleRowClick = (evt: Event, row: any) => {
     </template>
     <template #body-cell-specialapprover="prop">
       <QTd>
-        <div v-if="['AJ', 'RJ'].includes(prop.row?.number)">
+        <div
+          v-if="['AJ', 'RJ'].includes(prop.row?.number)"
+          class="w-2 h-2 block rounded-full"
+        >
           -
         </div>
         <div v-else-if="prop.value?.length" class="flex gap-2">
@@ -383,7 +395,7 @@ const handleRowClick = (evt: Event, row: any) => {
       >
         <div
           v-if="!['AJ', 'RJ'].includes(prop.row?.number)"
-          class="flex"
+          class="w-2 h-2 block rounded-full"
           @click.stop="selectRow(prop.rowIndex, prop.row?.step)"
         >
           <div
