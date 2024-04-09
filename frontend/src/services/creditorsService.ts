@@ -71,6 +71,15 @@ interface Notice {
 const getNoticeAJ = () => api
   .get('/v1/creditors/notice/aj/')
   .then((result: any) => result?.notices)
+
+const getNoticeAJCreditor = (creditorId: any) => api
+  .get(`/v1/creditors/notice/aj/creditor/${creditorId}/`)
+  .then((result: any) => result?.notices ?? [])
+
+const getNoticeAJRecovering = (creditorId: any) => api
+  .get(`/v1/creditors/notice/recovering/creditor/${creditorId}/`)
+  .then((result: any) => result?.noticeRecoverings ?? [])
+
 const setNoticeAJ = async (notice: Notice) => {
   const { id } = notice
   const method = id ? 'put' : 'post'
@@ -86,11 +95,15 @@ const setNoticeRecovering = async (notice: Notice) => {
   return api[method](`/v1/creditors/notice/recovering/${id ? `${id}/` : ''}`, notice)
 }
 
+const getCreditorClaims = (creditorId: string) => api
+  .get(`/v1/base/claim-creditor/creditor/${creditorId}/`)
+  .then((result: any) => result?.claimCreditors)
 const setCreditorClaim = async (notice: Notice) => {
   const { id } = notice
   const method = id ? 'put' : 'post'
   return api[method](`/v1/base/claim-creditor/${id ? `${id}/` : ''}`, notice)
 }
+
 const setLawyerClaim = async (notice: Notice) => api
   .post('/v1/base/claim-lawyer/', notice)
 
@@ -106,9 +119,12 @@ export default {
   getOptions,
   newCreditors,
   getNoticeAJ,
+  getNoticeAJCreditor,
+  getNoticeAJRecovering,
   setNoticeAJ,
   getNoticeRecovering,
   setNoticeRecovering,
+  getCreditorClaims,
   setCreditorClaim,
   setLawyerClaim,
   validateCalculations,

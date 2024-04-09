@@ -7,6 +7,7 @@ const props = withDefaults(defineProps<{
   modelValue: () => [],
   validation: false,
 })
+
 const emit = defineEmits(['update:modelValue', 'rowClick', 'update:validation', 'validated'])
 const { dialog } = useQuasar()
 
@@ -101,7 +102,7 @@ const calculationColumns: TableColumn[] = [
   {
     name: 'incident',
     field: 'incident',
-    format: ({ number }: any) => number || '-',
+    format: (value: any) => value?.number ?? '-',
     label: 'N° Incidente',
     align: 'left',
     style: 'width: 100px',
@@ -126,9 +127,22 @@ const calculationColumns: TableColumn[] = [
   {
     name: 'class',
     field: 'classes',
-    format: (value: any[]) => value && value
-      .filter(({ percentageCalculated }: any) => !!percentageCalculated)
-      .map(({ classeDisplay, percentageCalculated }: any) => `${classeDisplay?.split('-').at(0).trim()}: ${formatNumber(percentageCalculated || 0, 2)}%`).join(' ,'),
+    format: (value: any) => {
+      if (value?.classeDisplay)
+        return value?.classeDisplay ?? '-'
+      if (!value || !Array.isArray(value))
+        return '-'
+
+      const filteredValue = value.filter(({ percentageCalculated }: any) => {
+        return percentageCalculated !== 0
+      })
+
+      const formattedValue = filteredValue.map(({ classeDisplay, percentageCalculated }: any) => {
+        const formattedString = `${classeDisplay?.split('-').at(0).trim()}: ${formatNumber(percentageCalculated || 0, 2)}%`
+        return formattedString
+      }).join(' ,')
+      return formattedValue || '-'
+    },
     label: 'Classe',
     align: 'left',
     sortable: true,
@@ -165,13 +179,33 @@ const calculationColumns: TableColumn[] = [
     sortable: true,
   },
   {
+    name: 'coin',
+    field: 'coins',
+    label: 'Moeda',
+    align: 'left',
+    sortable: true,
+    format: (value: any) => value?.coinDisplay ?? '-',
+  },
+  {
+    name: 'referenceValue',
+    field: 'coins',
+    label: 'Referência',
+    align: 'left',
+    sortable: true,
+    format: (value: any) => typeOf(value?.value) === 'Number' ? formatNumber(value?.value, 2) : '-',
+  },
+  {
     name: 'total',
     field: 'allFunds',
-    format: (value: any = []) => formatNumber(value
-      ?.flatMap(({ data }: any) => data)
-      ?.map((credit: any) => (typeof credit?.total === 'number' ? credit?.total : credit?.total?.totalCorrected) || 0)
-      ?.reduce((acc: number, cur: number) => acc + cur, 0), 2) || '-',
-    label: 'Valor',
+    format: (value: any = []) => {
+      if (typeOf(value) === 'Number')
+        return formatNumber(value, 2)
+      return formatNumber(value
+        ?.flatMap(({ data }: any) => data)
+        ?.map((credit: any) => (typeof credit?.total === 'number' ? credit?.total : credit?.total?.totalCorrected) || 0)
+        ?.reduce((acc: number, cur: number) => acc + cur, 0), 2) || '-'
+    },
+    label: 'Calculado',
     align: 'left',
     sortable: true,
   },
@@ -199,6 +233,15 @@ const statusColors: any = {
   A: '#007CB0', // Approved
   R: '#DA291C', // Failed
 }
+
+const handleRowClick = (evt: Event, row: any) => {
+  const target = (evt.target) as HTMLElement
+  if (['AJ', 'RJ'].includes(row.number)) {
+    target.style.cursor = 'auto'
+    return
+  }
+  emit('rowClick', row)
+}
 </script>
 
 <template>
@@ -210,7 +253,7 @@ const statusColors: any = {
     class="calculation-table"
     :pagination="{ rowsPerPage: 0 }"
     hide-pagination
-    @row-click="(evt: Event, row: any) => emit('rowClick', row)"
+    @row-click="(evt: Event, row: any) => handleRowClick(evt, row)"
   >
     <template #header-cell-action="prop">
       <QTh :props="prop" class="w-2">
@@ -225,6 +268,7 @@ const statusColors: any = {
     <template #body-cell-action="prop">
       <QTd class="flex justify-center items-center">
         <div
+          v-if="!['AJ', 'RJ'].includes(prop.row?.number)"
           class="w-2 h-2 block rounded-full"
           :class="prop.row.validated ? 'bg--secondary' : 'bg--error'"
         />
@@ -232,7 +276,13 @@ const statusColors: any = {
     </template>
     <template #body-cell-executor="prop">
       <QTd>
-        <div v-if="prop.value">
+        <div
+          v-if="['AJ', 'RJ'].includes(prop.row?.number)"
+          class="w-2 h-2 block rounded-full"
+        >
+          -
+        </div>
+        <div v-else-if="prop.value">
           {{ prop.value }}
         </div>
         <div
@@ -243,7 +293,13 @@ const statusColors: any = {
     </template>
     <template #body-cell-reviewer="prop">
       <QTd>
-        <div v-if="prop.value">
+        <div
+          v-if="['AJ', 'RJ'].includes(prop.row?.number)"
+          class="w-2 h-2 block rounded-full"
+        >
+          -
+        </div>
+        <div v-else-if="prop.value">
           {{ prop.value }}
         </div>
         <div
@@ -255,7 +311,13 @@ const statusColors: any = {
     </template>
     <template #body-cell-approver="prop">
       <QTd>
-        <div v-if="prop.value">
+        <div
+          v-if="['AJ', 'RJ'].includes(prop.row?.number)"
+          class="w-2 h-2 block rounded-full"
+        >
+          -
+        </div>
+        <div v-else-if="prop.value">
           {{ prop.value }}
         </div>
         <div
@@ -267,7 +329,13 @@ const statusColors: any = {
     </template>
     <template #body-cell-specialapprover="prop">
       <QTd>
-        <div v-if="prop.value?.length" class="flex gap-2">
+        <div
+          v-if="['AJ', 'RJ'].includes(prop.row?.number)"
+          class="w-2 h-2 block rounded-full"
+        >
+          -
+        </div>
+        <div v-else-if="prop.value?.length" class="flex gap-2">
           <div v-for="approver in prop.value as any[]" :key="approver.id">
             <UserPicture
               v-model="approver.projectUser"
@@ -326,7 +394,8 @@ const statusColors: any = {
         }"
       >
         <div
-          class="flex"
+          v-if="!['AJ', 'RJ'].includes(prop.row?.number)"
+          class="w-2 h-2 block rounded-full"
           @click.stop="selectRow(prop.rowIndex, prop.row?.step)"
         >
           <div
@@ -356,7 +425,7 @@ const statusColors: any = {
       <div v-else class="flex gap-3">
         <Btn
           label="Cancelar"
-          :dosabled="loading"
+          :disabled="loading"
           outlined
           @click="resetValidation"
         />
@@ -373,7 +442,7 @@ const statusColors: any = {
 </template>
 
 <style>
-.calculation-table tr:has(.is-validated) {
-  background-color: hsla(var(--secondary,0,0%,0%),0.05)
+.calculation-table .is-validated {
+  background-color: hsla(var(--secondary, 0, 0%, 0%), 0.05);
 }
 </style>

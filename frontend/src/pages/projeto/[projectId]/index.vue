@@ -21,18 +21,11 @@ interface Project {
 }
 
 let loading = $ref(false)
-const filterBy = $ref('')
 const showParticipants = $ref(false)
 let project = $ref({} as Project)
 const showEditingProject = $ref(false)
 
 const tab = $ref('all')
-const tabFilters = [
-  { label: 'Todos', value: 'all' },
-  { label: 'A Revisar', value: 'd' },
-  { label: 'A Aprovar', value: 'c' },
-  { label: 'Aprovado', value: 'p' },
-]
 
 const filteredRecoverings = computed(() => {
   if (tab === 'all')
@@ -62,11 +55,43 @@ const openNewCalcultation = (creditorId: string) => {
 }
 const openCalculation = (creditorId: string, calculationId: string) =>
   router.push({ path: `/projeto/${project.id}/credor/${creditorId}/calculo/${calculationId}` })
+
 const loadCalculations = async (creditor: any) => {
   const { id } = creditor
   loading = true
   try {
-    creditor.calculations = await calculationService.getCalculations(id)
+    const noticeAJResult = await creditorsService.getNoticeAJCreditor(id)
+    const noticeRJResult = await creditorsService.getNoticeAJRecovering(id)
+    const noticesAJ = noticeAJResult
+      .map((notice: any) => ({
+        number: 'AJ',
+        incident: { number: 'Edital AJ' },
+        isAdm: false,
+        classes: notice?.classes ?? {},
+        coins: notice?.coins ?? {},
+        allFunds: notice.coins?.value || '-',
+        createdAt: notice.createdAt || '-',
+        stepDisplay: 'Edital',
+      }))
+
+    const noticesRJ = noticeRJResult
+      .map((noticeRecovering: any) => ({
+        number: 'RJ',
+        incident: { number: 'Edital RJ' },
+        isAdm: true,
+        classes: noticeRecovering?.classes ?? {},
+        coins: noticeRecovering?.coins ?? {},
+        allFunds: noticeRecovering.coins?.value || '-',
+        createdAt: noticeRecovering.createdAt || '-',
+        stepDisplay: 'Edital',
+      }))
+
+    const calculationsResult = await calculationService.getCalculations(id)
+    creditor.calculations = [
+      ...noticesRJ,
+      ...noticesAJ,
+      ...(calculationsResult || []),
+    ]
   }
   catch (error) {
     printError('ERROR ON LOAD CALCULATIONS OF CREDITOR:', error)
@@ -108,8 +133,8 @@ const loadTotalValues = async () => {
     for (const recovering of project?.recoverings) {
       for (const creditor of recovering?.creditors)
         creditor.total = await projectService.getCreditorBigNumbers(creditor.id)
-      recovering.total = recovering?.creditors
-        .reduce((acc, { total }: any) => acc + total, 0)
+
+      recovering.total = recovering?.creditors.reduce((acc, { total }: any) => acc + total, 0)
     }
   }
   catch (error) {
@@ -212,7 +237,6 @@ onMounted(async () => {
         @click="router.push({ path: `/projeto/${attrs.projectId}/credores` })"
       />
     </Header>
-
     <div v-if="filteredRecoverings.length > 0" class="flex flex-col gap-3">
       <Accordion
         v-for="recovering in filteredRecoverings"
@@ -237,6 +261,7 @@ onMounted(async () => {
             </div>
           </div>
         </template>
+
         <div v-if="recovering.creditors.length > 0">
           <Accordion
             v-for="(creditor, index) in recovering.creditors"

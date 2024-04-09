@@ -2,6 +2,7 @@ import json
 
 from django.db import transaction
 from base.claim.models import Claim
+from base.coins.models import Coins
 from calculation.comment.models import Comment, StepComment
 from calculation.comparative.models import Comparative
 from calculation.criterion.models import Criterion, CriterionClaimCredor
@@ -191,8 +192,11 @@ class CalculationApi(AbstractCalculationApi):
             new_verdicts = new_calculation.pop('verdict', None)
             new_funds = new_calculation.pop('funds', None)
 
-            # coins = new_calculation.get('coins')
-            # new_calculation['coins'] = Coins.objects.create(**coins)
+            coins = new_calculation.pop('coins', None)  # TODO Marcelo
+            claims_ids = new_calculation.pop('claims_ids', [])  # TODO Marcelo
+
+            if coins:  # TODO Marcelo
+                new_calculation['coins'] = Coins.objects.create(**coins)  # TODO Marcelo
 
             calculation = self.model.objects.create(**new_calculation)
             creditor = calculation.creditor
@@ -256,6 +260,10 @@ class CalculationApi(AbstractCalculationApi):
             PremiseCreator(calculation)
 
             calculation.create_statement()
+
+        if claims_ids:  # TODO Marcelo
+            calculation.claims.add(*claims_ids)
+
         return JsonResponse({'calculation': self.serializer_class(calculation, many=False).data},
                             status=status.HTTP_201_CREATED)
 

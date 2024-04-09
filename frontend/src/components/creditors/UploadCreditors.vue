@@ -217,6 +217,12 @@ const updateFiles = (newFiles: File[]) => uploadFiles = newFiles
                     Aguardando o processamento em andamento...
                   </div>
                   <div
+                    v-else-if="file.task?.status === 'FAILURE'"
+                    class="p-2 flex justify-center"
+                  >
+                    O processamento do arquivo falhou.
+                  </div>
+                  <div
                     v-else
                     class="p-2 flex justify-center"
                   >
