@@ -95,11 +95,15 @@ const setNoticeRecovering = async (notice: Notice) => {
   return api[method](`/v1/creditors/notice/recovering/${id ? `${id}/` : ''}`, notice)
 }
 
+const getCreditorClaims = (creditorId: string) => api
+  .get(`/v1/base/claim-creditor/creditor/${creditorId}/`)
+  .then((result: any) => result?.claimCreditors)
 const setCreditorClaim = async (notice: Notice) => {
   const { id } = notice
   const method = id ? 'put' : 'post'
   return api[method](`/v1/base/claim-creditor/${id ? `${id}/` : ''}`, notice)
 }
+
 const setLawyerClaim = async (notice: Notice) => api
   .post('/v1/base/claim-lawyer/', notice)
 
@@ -120,6 +124,7 @@ export default {
   setNoticeAJ,
   getNoticeRecovering,
   setNoticeRecovering,
+  getCreditorClaims,
   setCreditorClaim,
   setLawyerClaim,
   validateCalculations,
