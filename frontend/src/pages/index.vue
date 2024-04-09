@@ -1,4 +1,6 @@
 <script setup lang="ts">
+const emit = defineEmits(['notifyPendingUser'])
+
 const router = useRouter()
 
 const { login, user } = $user
@@ -13,6 +15,8 @@ const enter = async () => {
   const { authenticated, authorized, isActive } = user.value
   if ((inProduction && authenticated && authorized && isActive) || (inDevelopment && isActive))
     router.push({ path: '/projetos' })
+  else
+    emit('notifyPendingUser', { email: user.value.email })
 }
 
 let emailManagers = $ref([])
