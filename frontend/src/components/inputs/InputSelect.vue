@@ -10,11 +10,13 @@ const props = withDefaults(defineProps<{
   errorMessages?: any
   errorKey?: string
   disabled?: boolean
+  emptyMessage?: string
+  emitValue?: boolean
 }>(), {
-  rules: () => ([]),
   errorMessages: () => ({}),
   errorKey: '',
-  toAdd: () => {},
+  emptyMessage: 'Nenhum item encontrado...',
+  emitValue: true,
 })
 const emit = defineEmits(['update:modelValue', 'update:options'])
 
@@ -41,9 +43,10 @@ const addNewItem = async () => {
   }
   loading = true
   try {
-    const value = await props?.toAdd(inputValue)
+    const value = await props?.toAdd?.(inputValue)
+    if (value === undefined)
+      return
     emit('update:options', [...props.options, value])
-    // filteredOptions.push(value)
     inputValue = ''
     select.value.updateInputValue('', true)
     select.value.add(value)
@@ -78,6 +81,7 @@ const onFilter = (val: any, update: Function) => {
     :error="!!errorMessages[errorKey]"
     :error-message="!!errorMessages[errorKey] ? errorMessages[errorKey] : ''"
     :disable="!!disabled"
+    :hide-bottom-space="!rules?.length"
     map-options
     option-value="id"
     option-label="description"
@@ -86,7 +90,7 @@ const onFilter = (val: any, update: Function) => {
     hide-selected
     fill-input
     input-debounce="0"
-    emit-value
+    :emit-value="emitValue"
     dense
     @filter="onFilter"
     @update:model-value="onInput"
@@ -101,6 +105,9 @@ const onFilter = (val: any, update: Function) => {
       >
         <div class="i-carbon-add-filled ml-3" />
       </QBtn>
+      <div v-else class="w-full h-12 flex justify-center items-center">
+        {{ emptyMessage }}
+      </div>
     </template>
   </QSelect>
 </template>
