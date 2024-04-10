@@ -212,7 +212,7 @@ class CalculationSchema(CalculationAllFundsSchema):  # V1
     # incident = IncidentSchema(many=False, read_only=True) # TODO Marcelo
     # incident_id = serializers.UUIDField(write_only=True) # TODO Marcelo
 
-    coins = CoinsSchema(many=False, allow_null=True)  # TODO Marcelo
+    coins = CoinsSchema(many=False, allow_null=True, required=False)  # TODO Marcelo
     claims = ClaimCreditorSchema(many=True, allow_null=True, read_only=True)  # TODO Marcelo
     claims_ids = serializers.ListField(child=serializers.UUIDField(), write_only=True, required=False)  # TODO Marcelo
 
