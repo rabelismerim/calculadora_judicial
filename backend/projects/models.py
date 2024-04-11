@@ -5,6 +5,7 @@ import traceback
 from datetime import datetime
 import xlsxwriter
 
+from collections import OrderedDict
 from django.db import models, transaction
 from django.db.models import Count, Sum, Q
 from django.http import HttpResponse
@@ -308,12 +309,11 @@ class Project(AbstractDescription, AbstractDateRecovering):
         if not data:
             ErrorFile.objects.create(file_id=file_id, error='A lista de excel processada estava vazia')
             return
-        error_bulk = []
         recoveries = self.recovering_set.all().values('id', 'entity__legal_number')
-        with transaction.atomic():
-            for credor in data:
-                try:
-                    natures = []
+        for credor in data:
+            try:
+                with transaction.atomic():
+                    #natures = []
                     # nature = credor['Natureza (NF, contrato, trabalhista etc)']
                     recovering_legal_number = ''.join(
                         re.findall(r'\d', str(credor['Credor - CPF/CNPJ da Recuperanda'])))
@@ -338,16 +338,17 @@ class Project(AbstractDescription, AbstractDateRecovering):
                         }
 
                         recovering_schema = RecoveringExcelSchema(data=recovering_data)
+                        print("Recovering_schema",str(recovering_schema))
                         is_valid = recovering_schema.is_valid(raise_exception=False)
 
                         if not is_valid:
-                            error_bulk.append(ErrorFile(file_id=file_id,
-                                                        error=f'Linha: {credor["index"]}, {recovering_schema.errors}'))
+                            ErrorFile.objects.create(file_id=file_id,
+                                                     error=f'Linha: {credor["index"]}, {recovering_schema.errors}')
                             continue
 
                         recovering = recovering_schema.save().id
 
-                    legal_pendencies = []
+                    #legal_pendencies = []
                     # Create Legal Pendencies
                     # credor_description = credor.get('Descrição')
                     # credor_description = credor_description if credor_description is not None \
@@ -372,21 +373,22 @@ class Project(AbstractDescription, AbstractDateRecovering):
                     claims_creditor = []
                     notice_rj_creditor = []
                     notice_aj_creditor = []
+                    
 
                     claim_classe = credor.get('Pleito do Credor - Classe(Opcional)')
                     claim_coin = credor.get('Pleito do Credor - Moeda(Opcional)')
                     claim_value = credor.get('Pleito do Credor - Valor(Opcional)')
-                    claim_incident = credor.get('Pleito do Credor - N° do Incidente(Opcional)')
+                    #claim_incident = credor.get('Pleito do Credor - N° do Incidente(Opcional)')
                     if all([claim_classe, claim_coin]) and claim_value is not None:
 
-                        incident_schema = IncidentSchema(data={'number': claim_incident})
-                        is_valid = incident_schema.is_valid(raise_exception=False)
+                    #    incident_schema = IncidentSchema(data={'number': claim_incident})
+                    #    is_valid = incident_schema.is_valid(raise_exception=False)
 
-                        if not is_valid:
-                            error_bulk.append(ErrorFile(file_id=file_id,
-                                                        error=f'Linha: {credor["index"]}, {incident_schema.errors}'))
-                            continue
-                        incident = incident_schema.save()
+                    #   if not is_valid:
+                    #        ErrorFile.objects.create(file_id=file_id,
+                    #                                 error=f'Linha: {credor["index"]}, {incident_schema.errors}')
+                    #        continue
+                    #    incident = incident_schema.save()
 
                         claims_creditor.append({
                             "classes": {
@@ -396,14 +398,25 @@ class Project(AbstractDescription, AbstractDateRecovering):
                                 "coin": claim_coin,
                                 "value": claim_value
                             },
-                            "incident_id": incident.id,
+                            #"incident_id": incident.id,
                         })
+
 
                     notice_rj_classe = credor.get('Edital RJ - Class(Opcional)')
                     notice_rj_coin = credor.get('Edital RJ - Moeda(Opcional)')
                     notice_rj_value = credor.get('Edital RJ - Valor(Opcional)')
-                    notice_rj_incident = credor.get('Edital RJ - N° do Incidente(Opcional)')
+                    #notice_rj_incident = credor.get('Edital RJ - N° do Incidente(Opcional)')
                     if all([notice_rj_classe, notice_rj_coin]) and notice_rj_value is not None:
+
+                        #incident_schema = IncidentSchema(data={'number': notice_rj_incident})
+                        #is_valid = incident_schema.is_valid(raise_exception=False)
+
+                        #if not is_valid:
+                        #    ErrorFile.objects.create(file_id=file_id,
+                        #                             error=f'Linha: {credor["index"]}, {incident_schema.errors}')
+                        #    continue
+                        #incident = incident_schema.save()
+
                         notice_rj_creditor.append({
                             "classes": {
                                 "classe": notice_rj_classe
@@ -412,13 +425,24 @@ class Project(AbstractDescription, AbstractDateRecovering):
                                 "coin": notice_rj_coin,
                                 "value": notice_rj_value
                             },
+                            #"incident_id": incident.id,
                         })
 
                     notice_aj_classe = credor.get('Edital AJ - Classe(Opcional)')
                     notice_aj_coin = credor.get('Edital AJ - Moeda(Opcional)')
                     notice_aj_value = credor.get('Edital AJ - Valor(Opcional)')
-                    notice_aj_incident = credor.get('Edital AJ - N° do Incidente(Opcional)')
+                    #notice_aj_incident = credor.get('Edital AJ - N° do Incidente(Opcional)')
                     if all([notice_aj_classe, notice_aj_coin]) and notice_aj_value is not None:
+
+                    #    incident_schema = IncidentSchema(data={'number': notice_aj_incident})
+                    #    is_valid = incident_schema.is_valid(raise_exception=False)
+
+                    #    if not is_valid:
+                    #        ErrorFile.objects.create(file_id=file_id,
+                    #                                 error=f'Linha: {credor["index"]}, {incident_schema.errors}')
+                    #        continue
+                    #    incident = incident_schema.save()
+
                         notice_aj_creditor.append({
                             "classes": {
                                 "classe": notice_aj_classe
@@ -427,13 +451,29 @@ class Project(AbstractDescription, AbstractDateRecovering):
                                 "coin": notice_aj_coin,
                                 "value": notice_aj_value
                             },
+                    #       "incident_id": incident.id,
                         })
 
+                    entity_dict=dict({
+                        "name": credor['Credor'],
+                        "legal_number": str(credor['Credor - CPF/CNPJ'])
+                    })
+
+                    entity_schema={}
+                    from core.entity.schemas import EntitySchema
+                    entity_get = EntitySchema(data=entity_dict)
+
+                    if entity_get.is_valid(raise_exception=True):
+                        entity_schema = entity_get.validated_data
+                    else:
+                        print('Errors: ', str(serializer.errors.items()))
+                        for field, error_messages in entity_get.errors.items():
+                            for error_message in error_messages:
+                                ErrorFile.objects.create(file_id=file_id,
+                                                         error=f"Linha: {credor['index']}, Field {field}: {error_message}")
+
                     new_credor = {
-                        "entity": {
-                            "name": credor['Credor'],
-                            "legal_number": credor['Credor - CPF/CNPJ']
-                        },
+                        "entity": entity_schema,
                         "recovering_id": recovering,
                         "claim_creditor": claims_creditor,
                         "notice_recovering": notice_rj_creditor,
@@ -441,8 +481,8 @@ class Project(AbstractDescription, AbstractDateRecovering):
                         # "representation_documentation": credor['Documentação de representação'],
                         # "claim_type": credor['Tipo'],
                         "physical_person": str(credor['Pessoa Física']).lower() in ['true', 'verdadeiro'],
-                        "natures": natures,
-                        "legal_pendencies": legal_pendencies,
+                        #"natures": natures,
+                        #"legal_pendencies": legal_pendencies,
                         "is_active": False,
                     }
 
@@ -451,25 +491,20 @@ class Project(AbstractDescription, AbstractDateRecovering):
 
                     serializer = CreditorBulkSchema(data=new_credor)
 
-                    if serializer.is_valid(raise_exception=False):
+                    if serializer.is_valid(raise_exception=True):
                         creditor = serializer.validated_data
                         CreateCreditor().create_creditor(creditor)
                     else:
+                        print('Errors: ', str(serializer.errors.items()))
                         for field, error_messages in serializer.errors.items():
                             for error_message in error_messages:
-                                error_bulk.append(ErrorFile(file_id=file_id,
-                                                            error=f"Linha: {credor['index']}, Field {field}: {error_message}"))
+                                ErrorFile.objects.create(file_id=file_id,
+                                                         error=f"Linha: {credor['index']}, Field {field}: {error_message}")
 
-                except Exception as e:
-                    logging.error(e, exc_info=True)
-                    error_bulk.append(ErrorFile(file_id=file_id, error=str(e), status='P'))
-
-            if error_bulk:
-                transaction.set_rollback(True)
-                transaction.rollback()
-
-        if error_bulk:
-            ErrorFile.objects.bulk_create(error_bulk)
+            except Exception as e:
+                print(e, 'err proccess file\n')
+                traceback.print_exc()  # Imprime o traceback completo no console
+                ErrorFile.objects.create(file_id=file_id, error=str(e), status='P')
 
 
 class ExcelHeader:
