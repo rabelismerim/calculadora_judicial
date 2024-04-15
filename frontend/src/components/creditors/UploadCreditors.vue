@@ -12,10 +12,6 @@ const emit = defineEmits(['update:modelValue', 'update:uploadFiles', 'success', 
 let isLoading = $ref(false)
 
 const selectedTab = ref('carregamento')
-const tabs = [
-  { label: 'Carregamento', value: 'carregamento' },
-  { label: 'Histórico', value: 'historico' },
-]
 
 const closeModal = () => {
   emit('update:modelValue', false)
@@ -49,8 +45,8 @@ const downloadTemplate = async (fileName: string) => {
 }
 
 let historicFiles: any = $ref([])
-const loadHistoricFiles = async (useLoading = false) => {
-  isLoading = useLoading && true
+const loadHistoricFiles = async () => {
+  isLoading = true
   try {
     const files = []
     const filesData = await uploadService.getObjetcId('project', props.projectId)
@@ -66,9 +62,14 @@ const loadHistoricFiles = async (useLoading = false) => {
     printError('ERROR ON LOADING HISTORIC FILES:', error)
   }
   finally {
-    isLoading = useLoading && false
+    isLoading = false
   }
 }
+
+const tabs = [
+  { label: 'Carregamento', value: 'carregamento' },
+  { label: 'Histórico', value: 'historico', onclick: loadHistoricFiles },
+]
 
 const fileStatuses = [
   { label: 'Pendente', value: 'PENDING', color: '#c4d600' },
@@ -159,14 +160,14 @@ const updateFiles = (newFiles: File[]) => uploadFiles = newFiles
 
         <QTabPanel
           name="historico"
-          class="px-4 bg-slate-1"
+          class="bg-slate-1 p-0"
         >
-          <div class="mb-3">
+          <div class="pb-3 pt-4 px-4 overflow-y-auto max-h-70vh">
             <div class="mb-2 flex items-center gap-4">
               <div class="font-bold text-xl">
                 Histórico de arquivos carregados no sistema ({{ historicFiles.length }})
               </div>
-              <ReloadBtn @click="loadHistoricFiles(true)" />
+              <ReloadBtn @click="loadHistoricFiles" />
             </div>
             <div>
               <div>
