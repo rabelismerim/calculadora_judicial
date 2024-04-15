@@ -76,11 +76,11 @@ class AbstractCreditorSchema(AbstractDescriptionSchema):
                                          allow_null=True, exclude=('creditor_id',))
     claim_lawyer = ClaimLawyerSchema(source='claimlawyer', many=False, read_only=False, required=False, allow_null=True,
                                      exclude=('creditor_id',))
-    legal_pendencies = LegalPendenciesCreditorSchema(source='legalpendencies_set', many=True, required=False)
+    legal_pendencies = LegalPendenciesCreditorSchema(source='legalpendencies_set', many=True, required=False, allow_null=True)
 
     calculation_impediment_list = serializers.ListField(source='get_calculation_impediment_list', read_only=True)
-    nature = serializers.ListField(source='get_nature_description', read_only=True)
-    natures = serializers.ListField(write_only=True, child=serializers.UUIDField(), required=False)
+    nature = serializers.ListField(source='get_nature_description', read_only=True, allow_null=True)
+    natures = serializers.ListField(write_only=True, child=serializers.UUIDField(), required=False, allow_null=True)
 
     class Meta:
         model = Creditor
@@ -95,7 +95,7 @@ class AbstractCreditorSchema(AbstractDescriptionSchema):
         data['notice'] = data.pop('notice_set', [])
         data['claim_creditor'] = data.pop('claimcreditor_set', [])
         data['legal_pendencies'] = data.pop('legalpendencies_set', [])
-        legal_number = data.get('entity').get('legal_number')
+        legal_number = data.get('entity', {}).get('legal_number')
         legal_number = ''.join(re.findall(r'\d', str(legal_number)))
 
         # TODO desbloqueio por classes diferentes

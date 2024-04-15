@@ -8,24 +8,28 @@ const getCalculations = (creditorId: string) => api
 
 const setCalculation = async (calculation: any) => {
   const localCalculation = clone(calculation)
-  const { id, claims, coin, creditorId } = localCalculation
+  const { id, claims, coin, creditorId, referenceValue } = localCalculation
 
-  for (const claim of claims) {
-    if (!claim.id) {
-      const { classeId, value, incidentId } = claim
-      const result = await creditorsService.setCreditorClaim({
-        classes: { classe: classeId },
-        coins: { coin, value },
-        creditorId,
-        incidentId,
-      } as any) as any
-      claim.id = result?.id
+  if (claims?.length) {
+    for (const claim of claims) {
+      if (!claim.id) {
+        const { classeId, value, incidentId } = claim
+        const result = await creditorsService.setCreditorClaim({
+          classes: { classe: classeId },
+          coins: { coin, value },
+          creditorId,
+          incidentId,
+        } as any) as any
+        claim.id = result?.id
+      }
     }
+    localCalculation.claimsIds = claims
+      .map(({ id }: any) => id)
+      .filter((id: string) => !!id)
   }
-  localCalculation.claimsIds = claims
-    .map(({ id }: any) => id)
-    .filter((id: string) => !!id)
-  // localCalculation.coins = { coin, value: 0 }
+  else {
+    localCalculation.coins = { coin, value: referenceValue }
+  }
 
   const method = calculation?.id ? 'put' : 'post'
   return api[method](`/v1/calculation/${id ? `${id}/` : ''}`, localCalculation)

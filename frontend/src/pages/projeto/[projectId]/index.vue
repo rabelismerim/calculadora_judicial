@@ -69,7 +69,6 @@ const loadCalculations = async (creditor: any) => {
         isAdm: false,
         classes: notice?.classes ?? {},
         coins: notice?.coins ?? {},
-        allFunds: notice.coins?.value || '-',
         createdAt: notice.createdAt || '-',
         stepDisplay: 'Edital',
       }))
@@ -81,7 +80,6 @@ const loadCalculations = async (creditor: any) => {
         isAdm: true,
         classes: noticeRecovering?.classes ?? {},
         coins: noticeRecovering?.coins ?? {},
-        allFunds: noticeRecovering.coins?.value || '-',
         createdAt: noticeRecovering.createdAt || '-',
         stepDisplay: 'Edital',
       }))

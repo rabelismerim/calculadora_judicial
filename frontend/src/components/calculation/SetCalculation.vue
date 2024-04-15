@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import InputNumber from '../inputs/InputNumber.vue'
+
 const props = withDefaults(defineProps<{
   open: boolean
   options: any
@@ -27,7 +29,7 @@ watchEffect(() => {
 })
 
 const submit = async () => {
-  if (!localCalculation.claims?.length) {
+  if (!localCalculation.isAdm && !localCalculation.claims?.length) {
     throwError({ message: 'Você precisa adicionar no mínimo um pleito ao Cálculo!' })
     return
   }
@@ -108,11 +110,15 @@ watchEffect(async () => {
       value: claim?.coins?.value,
       coin: claim?.coins?.coin,
       coinDisplay: claim?.coins?.coinDisplay,
+      isAdmin: claim?.isAdmin,
     }))
   }
 })
 const filteredClaims = $computed(() => creditorClaims
-  .filter(claim => localCalculation.coin === claim.coin && localCalculation.incidentId === claim.incidentId))
+  .filter(claim => localCalculation.coin === claim.coin
+    && localCalculation.incidentId === claim.incidentId
+    && (localCalculation.isAdm ? !!claim.isAdmin : !claim.isAdmin)))
+
 const addClaim = () => {
   if (!selectedClaim) {
     localCalculation.claims.push({
@@ -163,6 +169,7 @@ onMounted(() => {
               { label: 'Administrativa', value: true },
               { label: 'Judiciária', value: false },
             ]"
+            @click="selectedClaim = undefined"
           />
         </label>
         <QSelect
@@ -182,7 +189,7 @@ onMounted(() => {
         <InputSelect
           v-model="localCalculation.incidentId"
           v-model:options="incidents"
-          label="Número de Incidente"
+          :label=" `Número ${localCalculation.isAdm ? 'da Ficha' : 'de Incidente'}`"
           :to-add="addIncident"
           :rules="[(value: any) => !!value || 'É um campo obrigatório']"
           :disabled="loading || !!localCalculation.id"

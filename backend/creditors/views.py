@@ -191,7 +191,7 @@ class CreateCreditor:
 
     @staticmethod
     def create_creditor(creditor):
-        entity = creditor.pop('entity')
+        entity_get = creditor.get('entity', [])
         notices = creditor.pop('notice', [])
         notice_recoverings = creditor.pop('notice_recovering', [])
         claims_creditor = creditor.pop('claim_creditor', [])
@@ -202,7 +202,7 @@ class CreateCreditor:
         recovering = Recovering.objects.filter(id=creditor['recovering_id']).first()
 
         old_creditor = Creditor.objects.filter(recovering__entity__legal_number=recovering.entity.legal_number,
-                                               entity__legal_number=entity['legal_number']).first()
+                                               entity__legal_number=entity_get['legal_number']).first()
 
         if old_creditor and notice_recoverings:
             raise ValidationError([_('Creditor already registered in this recovering')])
@@ -211,10 +211,10 @@ class CreateCreditor:
             new_creditor = old_creditor
         else:
 
-            entity = Entity.objects.filter(legal_number=entity['legal_number']).first()
+            entity = Entity.objects.filter(legal_number=entity_get['legal_number']).first()
 
             if not entity:
-                entity = Entity.objects.create(**entity)
+                entity = Entity.objects.create(**entity_get)
 
             creditor['entity'] = entity
 
