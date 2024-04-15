@@ -198,8 +198,8 @@ const calculationColumns: TableColumn[] = [
     name: 'total',
     field: 'allFunds',
     format: (value: any = []) => {
-      if (typeOf(value) === 'Number')
-        return formatNumber(value, 2)
+      if (!value.length)
+        return '-'
       return formatNumber(value
         ?.flatMap(({ data }: any) => data)
         ?.map((credit: any) => (typeof credit?.total === 'number' ? credit?.total : credit?.total?.totalCorrected) || 0)
