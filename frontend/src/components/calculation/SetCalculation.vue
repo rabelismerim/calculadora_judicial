@@ -181,9 +181,9 @@ onMounted(() => {
           map-options
           option-value="id"
           option-label="legend"
-          :disable="loading"
           :rules="[(value: string) => !!value || 'Este Campo é obrigatório!']"
           dense
+          :disable="loading || !!localCalculation.id"
           class="col-span-2"
         />
         <InputSelect

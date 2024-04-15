@@ -184,6 +184,12 @@ const updateFiles = (newFiles: File[]) => uploadFiles = newFiles
                         <div>{{ file.name }}</div>
                       </div>
                       <StatusTag
+                        v-if="file.errors?.length"
+                        label="Falhou"
+                        color="#d9291c"
+                      />
+                      <StatusTag
+                        v-else
                         :label="getStatus(file.task?.status)?.label"
                         :color="getStatus(file.task?.status)?.color"
                       />
