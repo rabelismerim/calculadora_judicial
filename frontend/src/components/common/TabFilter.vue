@@ -25,6 +25,7 @@ const emit = defineEmits(['update:model-value', 'update:search'])
         :key="index"
         :name="tab.value"
         :label="tab.label"
+        @click="() => tab?.onclick?.()"
       />
     </QTabs>
     <div v-if="$slots.side">
