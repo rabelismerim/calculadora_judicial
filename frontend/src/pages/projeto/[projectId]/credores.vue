@@ -368,12 +368,21 @@ onMounted(() => {
                     icon="o_request_page"
                     @save="loadCreditors"
                   />
-                  <CreditorClaim
-                    v-model="recovering.claimCreditor"
+                  <AdministrativeClaim
+                    :model-value="recovering.claimCreditor.filter(({ isAdmin }: any) => !!isAdmin)"
                     :creditor-id="recovering.creditorId"
                     :options="creditorOptions"
                     :name="4"
-                    title="Pleito Credor"
+                    title="Pleito Admnistrativo"
+                    icon="o_attach_money"
+                    @save="loadCreditors"
+                  />
+                  <JuridicalClaim
+                    :model-value="recovering.claimCreditor.filter(({ isAdmin }: any) => !isAdmin)"
+                    :creditor-id="recovering.creditorId"
+                    :options="creditorOptions"
+                    :name="5"
+                    title="Pleito Jurídico"
                     icon="o_attach_money"
                     @save="loadCreditors"
                   />
@@ -381,7 +390,7 @@ onMounted(() => {
                     v-model="recovering.claimLawyer"
                     :creditor-id="recovering.creditorId"
                     :options="creditorOptions"
-                    :name="5"
+                    :name="6"
                     title="Pleito Advocatício"
                     icon="o_attach_money"
                     @save="loadCreditors"
