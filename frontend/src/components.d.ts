@@ -21,8 +21,6 @@ declare module '@vue/runtime-core' {
     CalculationMenu: typeof import('./components/calculation/CalculationMenu.vue')['default']
     CalculationTable: typeof import('./components/calculation/CalculationTable.vue')['default']
     ChangeStatus: typeof import('./components/calculation/ChangeStatus.vue')['default']
-    copy: typeof import('./components/creditors/CreditorClaim copy.vue')['default']
-    CreditorClaim: typeof import('./components/creditors/CreditorClaim.vue')['default']
     CreditorData: typeof import('./components/creditors/CreditorData.vue')['default']
     DropZone: typeof import('./components/common/DropZone.vue')['default']
     EditUser: typeof import('./components/team/EditUser.vue')['default']
