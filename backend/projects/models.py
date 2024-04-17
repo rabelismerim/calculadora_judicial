@@ -40,7 +40,7 @@ STATUS_CHOICES = (
     ('F', _('Canceled')),
 )
 
-CHOICES_PHYSICAL_PERSON = (('verdadeiro', 'verdadeiro'), ('falso', 'falso'))
+CHOICES_PHYSICAL_PERSON = (('verdadeiro', True), ('falso', False))
 
 
 def get_first_value(choices, second_value):
@@ -309,12 +309,12 @@ class Project(AbstractDescription, AbstractDateRecovering):
         if not data:
             ErrorFile.objects.create(file_id=file_id, error='A lista de excel processada estava vazia')
             return
-        recoveries = self.recovering_set.all().values('id', 'entity__legal_number')
         for credor in data:
             try:
                 with transaction.atomic():
                     #natures = []
                     # nature = credor['Natureza (NF, contrato, trabalhista etc)']
+                    recoveries = self.recovering_set.all().values('id', 'entity__legal_number')
                     recovering_legal_number = ''.join(
                         re.findall(r'\d', str(credor['Credor - CPF/CNPJ da Recuperanda'])))
 
