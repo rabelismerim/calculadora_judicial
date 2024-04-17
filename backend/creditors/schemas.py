@@ -2,27 +2,28 @@ import re
 
 from base.claim.schemas import ClaimCreditorSchema, ClaimLawyerSchema
 from base.coins.models import COIN_CHOICES
-from base.models import CHOICES_OCCURRENCE, CHOICES_REPRESENTATION_DOCUMENTATION, CHOICES_CLAIM_TYPE
+from base.models import (CHOICES_CLAIM_TYPE, CHOICES_OCCURRENCE,
+                         CHOICES_REPRESENTATION_DOCUMENTATION)
 from base.schemas import AbstractDescriptionSchema
-from rest_framework import serializers
-
 from calculation.funds.abstract.models import CHOICES_STATUS_FUND
 from calculation.funds.irrf.models import CHOICES_STATUS_IRRF
 from calculation.models import CHOICES_STEP
 from core.dttuser.models import ROLES_CHOICES, STATUS_CHOICES
 from core.entity.schemas import EntitySchema
 from creditors.classes.models import CLASSE_CHOICES
-from creditors.models import Creditor, CHOICES_STATUS_LEGAL, LegalPendencies
-from creditors.notice.schemas import NoticeSchema, NoticeRecoveringSchema
+from creditors.models import CHOICES_STATUS_LEGAL, Creditor, LegalPendencies
+from creditors.notice.schemas import NoticeRecoveringSchema, NoticeSchema
 from rates.models import FieldTypeChoices
 from recovering.models import Recovering
+from rest_framework import serializers
 from utils import _
 
 
 class LegalPendenciesSchema(AbstractDescriptionSchema):
     """Serializer LegalPendencies fields"""
     creditor_id = serializers.UUIDField()
-    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    status_display = serializers.CharField(
+        source='get_status_display', read_only=True)
 
     class Meta:
         model = LegalPendencies
@@ -32,7 +33,8 @@ class LegalPendenciesSchema(AbstractDescriptionSchema):
 class LegalPendenciesCreditorSchema(AbstractDescriptionSchema):
     """Serializer LegalPendencies fields"""
     creditor_id = serializers.UUIDField(read_only=True)
-    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    status_display = serializers.CharField(
+        source='get_status_display', read_only=True)
 
     class Meta:
         model = LegalPendencies
@@ -42,7 +44,8 @@ class LegalPendenciesCreditorSchema(AbstractDescriptionSchema):
 class LegalPendenciesUpdateSchema(AbstractDescriptionSchema):
     """Serializer LegalPendencies fields"""
     creditor_id = serializers.UUIDField(read_only=True)
-    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    status_display = serializers.CharField(
+        source='get_status_display', read_only=True)
     non_required_fields = ['description', 'status']
 
     class Meta:
@@ -76,11 +79,15 @@ class AbstractCreditorSchema(AbstractDescriptionSchema):
                                          allow_null=True, exclude=('creditor_id',))
     claim_lawyer = ClaimLawyerSchema(source='claimlawyer', many=False, read_only=False, required=False, allow_null=True,
                                      exclude=('creditor_id',))
-    legal_pendencies = LegalPendenciesCreditorSchema(source='legalpendencies_set', many=True, required=False, allow_null=True)
+    legal_pendencies = LegalPendenciesCreditorSchema(
+        source='legalpendencies_set', many=True, required=False, allow_null=True)
 
-    calculation_impediment_list = serializers.ListField(source='get_calculation_impediment_list', read_only=True)
-    nature = serializers.ListField(source='get_nature_description', read_only=True, allow_null=True)
-    natures = serializers.ListField(write_only=True, child=serializers.UUIDField(), required=False, allow_null=True)
+    calculation_impediment_list = serializers.ListField(
+        source='get_calculation_impediment_list', read_only=True)
+    nature = serializers.ListField(
+        source='get_nature_description', read_only=True, allow_null=True)
+    natures = serializers.ListField(
+        write_only=True, child=serializers.UUIDField(), required=False, allow_null=True)
 
     class Meta:
         model = Creditor
@@ -101,7 +108,8 @@ class AbstractCreditorSchema(AbstractDescriptionSchema):
         # TODO desbloqueio por classes diferentes
         if Creditor.objects.filter(recovering_id=recovering_id, entity__legal_number=legal_number,
                                    physical_person=physical_person).exists():
-            raise serializers.ValidationError([_('Creditor already registered in this recovering')])
+            raise serializers.ValidationError(
+                [_('Creditor already registered in this recovering')])
         return super(AbstractCreditorSchema, self).validate(data)
 
 
@@ -133,16 +141,24 @@ class CreditorCreateSchema(serializers.Serializer):
 
     classes_options = AbstractChoicesSerializer(CLASSE_CHOICES, many=True)
     coin_options = AbstractChoicesSerializer(COIN_CHOICES, many=True)
-    template_type_options = AbstractChoicesSerializer(FieldTypeChoices.choices, many=True)
+    template_type_options = AbstractChoicesSerializer(
+        FieldTypeChoices.choices, many=True)
     roles_options = AbstractChoicesSerializer(ROLES_CHOICES, many=True)
     user_status_options = AbstractChoicesSerializer(STATUS_CHOICES, many=True)
-    status_funds_options = AbstractChoicesSerializer(CHOICES_STATUS_FUND, many=True)
-    step_calculation_options = AbstractChoicesSerializer(CHOICES_STEP, many=True)
-    occurrence_options = AbstractChoicesSerializer(CHOICES_OCCURRENCE, many=True)
-    status_irrf_options = AbstractChoicesSerializer(CHOICES_STATUS_IRRF, many=True)
-    status_legal_options = AbstractChoicesSerializer(CHOICES_STATUS_LEGAL, many=True)
-    representation_document_options = AbstractChoicesSerializer(CHOICES_REPRESENTATION_DOCUMENTATION, many=True)
-    claim_type_options = AbstractChoicesSerializer(CHOICES_CLAIM_TYPE, many=True)
+    status_funds_options = AbstractChoicesSerializer(
+        CHOICES_STATUS_FUND, many=True)
+    step_calculation_options = AbstractChoicesSerializer(
+        CHOICES_STEP, many=True)
+    occurrence_options = AbstractChoicesSerializer(
+        CHOICES_OCCURRENCE, many=True)
+    status_irrf_options = AbstractChoicesSerializer(
+        CHOICES_STATUS_IRRF, many=True)
+    status_legal_options = AbstractChoicesSerializer(
+        CHOICES_STATUS_LEGAL, many=True)
+    representation_document_options = AbstractChoicesSerializer(
+        CHOICES_REPRESENTATION_DOCUMENTATION, many=True)
+    claim_type_options = AbstractChoicesSerializer(
+        CHOICES_CLAIM_TYPE, many=True)
 
     class Meta:
         fields = '__all__'
@@ -152,8 +168,11 @@ class CreditorUpdateSchema(AbstractDescriptionSchema):
     """Serializer Creditor fields"""
 
     # rate_id = serializers.UUIDField(required=False)
+    name = serializers.CharField(source='get_entity_name', read_only=True)
+    legal_number = serializers.CharField(
+        source='get_entity_legal_number', read_only=True)
 
     class Meta:
         model = Creditor
         fields = ('description', 'admission', 'dismissal', 'default_interest', 'fine', 'advocative_hours', 'occurrence',
-                  'representation_documentation', 'claim_type', 'nature', 'is_active')
+                  'representation_documentation', 'claim_type', 'nature', 'name', 'legal_number', 'physical_person')
