@@ -87,11 +87,11 @@ class Calculation(AbstractModel):
     validated = models.BooleanField(_('Validated?'), default=False)
 
     # Statement A5
-    # incident = models.ForeignKey(Incident, on_delete=models.PROTECT, null=True) # TODO Marcelo
+    incident = models.ForeignKey(Incident, on_delete=models.PROTECT, null=True)
     # TODO Marcelo: Remover incidente
     # TODO Marcelo: Adicionar Coin, podendo ser nulo
     # TODO Marcelo: Adicionar ManytoMany para pleitos(claims)(pode ser em branco). Validar no Schema se os pleitos vindo
-    #  são do mesmo credor, coin
+    #  são do mesmo credor, incidente, moeda,
     # TODO Marcelo: Trazer total dos pleitos(claims) ou total da moeda como property(total_coin)
     # TODO Marcelo: Trazer incidente como property pegando o primeiro pleito(se houver)
     # TODO Marcelo: Receber apenas Coin ou pleito, se vier os dois ou nenhum, gerar erro
@@ -101,10 +101,6 @@ class Calculation(AbstractModel):
     #  automaticamente
     # TODO: Remover de edição, automatizar calculo para obter os creditos, e ver se algum credito tem a flag
     #  is_extraconcursal
-
-    coins = models.ForeignKey(
-        Coins, on_delete=models.PROTECT, null=True)  # TODO Marcelo
-    claims = models.ManyToManyField(ClaimCreditor, blank=True)  # TODO Marcelo
 
     appeal_credit = models.BooleanField(
         _('Fully competitive credit?'), default=False)

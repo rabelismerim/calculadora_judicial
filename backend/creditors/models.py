@@ -25,7 +25,6 @@ class Creditor(AbstractDateCreditor):
     is_active = models.BooleanField(_('Is active'), default=True)
     rate = models.ForeignKey(
         Rate, on_delete=models.PROTECT, null=True, blank=True)
-    
 
     def get_total(self) -> float:
         return self.total

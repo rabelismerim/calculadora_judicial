@@ -20,17 +20,13 @@ class AbstractDescription(AbstractModel):
 
 
 class AbstractInfo(AbstractModel):
-    #_encrypted_name = EncryptedTextField(_('Description'), max_length=4000, null=True)
-    #_encrypted_name = models.TextField(_('Description'), max_length=4000, null=True, editable=False)
-    #_encrypted_name_bk = models.TextField(_('Description'), max_length=4000, null=True, editable=False)
-    #name = SearchField(hash_key=FIELD_HASH_KEY, encrypted_field_name="_encrypted_name")
-    name = models.TextField(_('Description'), max_length=4000, null=True, editable=True)
+    _encrypted_name = EncryptedTextField(_('Description'), max_length=4000, null=True)
+    _encrypted_name_bk = models.TextField(_('Description'), max_length=4000, null=True, editable=False)
+    name = SearchField(hash_key=FIELD_HASH_KEY, encrypted_field_name="_encrypted_name")
 
-    #_encrypted_legal_number = EncryptedTextField('CPF/CNPJ', max_length=4000, null=True)
-    #_encrypted_legal_number = models.TextField('CPF/CNPJ', max_length=4000, null=True, editable=False)
-    #_encrypted_legal_number_bk = models.TextField('CPF/CNPJ', max_length=4000, null=True, editable=False)
-    #legal_number = SearchField(hash_key=FIELD_HASH_KEY, encrypted_field_name="_encrypted_legal_number")
-    legal_number = models.TextField('CPF/CNPJ', max_length=4000, null=True, editable=True)
+    _encrypted_legal_number = EncryptedTextField('CPF/CNPJ', max_length=4000, null=True)
+    _encrypted_legal_number_bk = models.TextField('CPF/CNPJ', max_length=4000, null=True, editable=False)
+    legal_number = SearchField(hash_key=FIELD_HASH_KEY, encrypted_field_name="_encrypted_legal_number")
 
     # TODO: ver como fazer o queryset no Encrypted
 
