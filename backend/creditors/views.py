@@ -191,7 +191,7 @@ class CreateCreditor:
 
     @staticmethod
     def create_creditor(creditor):
-        entity_get = creditor.get('entity', [])
+        entity = creditor.pop('entity')
         notices = creditor.pop('notice', [])
         notice_recoverings = creditor.pop('notice_recovering', [])
         claims_creditor = creditor.pop('claim_creditor', [])
