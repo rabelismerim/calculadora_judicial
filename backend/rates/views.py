@@ -123,9 +123,8 @@ class RateAdminApi(AbstractViewApi):
         'get': _("""Returns the rate and its accumulated values, period and date""")
     }
 
-    pagination_class = LimitOffsetPagination
+    pagination = True
     page_size = 30
-
     query_params = query_params
 
     def get_queryset(self):

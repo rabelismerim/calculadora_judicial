@@ -30,6 +30,8 @@ class RecoveringApi(AbstractViewApi):  # V1
     serializer_class = RecoveringSchema
     model = Recovering
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    many = True
+    pagination = True
 
     query_params = [
         {
@@ -69,6 +71,27 @@ class RecoveringApi(AbstractViewApi):  # V1
                     recovering=new_recovering, archive=new_archive)
         return JsonResponse({'recovering': self.serializer_class(new_recovering, many=False).data},
                             status=status.HTTP_201_CREATED)
+
+
+class RecoveringLegalNumberApi(RecoveringApi):  # V1
+    """HTTP methods for recovering"""
+
+    http_method_names = ['get']
+    many = True
+    query_slug = True
+    query_params = []
+    docs = docs.copy()
+
+
+class RecoveringProjectApi(RecoveringApi):  # V1
+    """HTTP methods for recovering"""
+
+    http_method_names = ['get']
+    many = True
+    query_slug = True
+    query_params = []
+    docs = docs.copy()
+    operation_id_base = 'RecoveringProjectApiList'
 
 
 class RecoveringV2Api(AbstractViewApi):  # V1

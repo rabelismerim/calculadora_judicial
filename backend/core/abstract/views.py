@@ -19,6 +19,7 @@ from rest_framework.filters import BaseFilterBackend
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.relations import ManyRelatedField
+from rest_framework.schemas.utils import is_list_view
 from rest_framework.utils import formatting
 from rest_framework.schemas.openapi import AutoSchema
 
@@ -131,6 +132,77 @@ class CustomSchema(AutoSchema):
             }
         return fields
 
+    def get_pagination_parameters(self, path, method):
+        view = self.view
+        if not view.pagination:
+            return []
+
+        paginator = self.get_paginator()
+        if not paginator:
+            return []
+
+        return paginator.get_schema_operation_parameters(view)
+
+    def get_responses(self, path, method):
+        # Start main default get_responses
+        if method == 'DELETE':
+            return {
+                '204': {
+                    'description': ''
+                }
+            }
+
+        self.response_media_types = self.map_renderers(path, method)
+
+        serializer = self.get_response_serializer(path, method)
+
+        if not isinstance(serializer, serializers.Serializer):
+            item_schema = {}
+        else:
+            item_schema = self.get_reference(serializer)
+
+        if is_list_view(path, method,
+                        self.view) or self.view.pagination:  # Modified: Include check if is self.view.pagination
+            response_schema = {
+                'type': 'array',
+                'items': item_schema,
+            }
+            paginator = self.get_paginator()
+            if paginator:
+                response_schema = paginator.get_paginated_response_schema(response_schema)
+        else:
+            response_schema = item_schema
+        status_code = '201' if method == 'POST' else '200'
+        # end main default get_responses
+
+        responses = {
+            status_code: {
+                'content': {
+                    ct: {'schema': response_schema}
+                    for ct in self.response_media_types
+                },
+                # description is a mandatory property,
+                # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#responseObject
+                # TODO: put something meaningful into it
+                'description': ""
+            }
+        }
+
+        custom_responses = self.view.responses
+        if custom_responses:
+            for code, value in custom_responses.items():
+                if not responses.get(code):
+                    responses[code] = {}
+                responses[code]['content'] = {
+                    'application/json': {
+                        'example': json.loads(json.dumps(value, default=str))
+                    }
+                }
+            for code, value in responses.copy().items():
+                if code not in custom_responses:
+                    responses.pop(code, None)
+        return responses
+
     def get_operation(self, path, method):
         """
         Override get_operation method of base class.
@@ -218,12 +290,39 @@ class SimpleFilterBackend(BaseFilterBackend, ABC):
         return view.query_params + view.default_query_params
 
 
+class CustomLimitOffsetPagination(LimitOffsetPagination):
+    max_limit = 30
+
+    def paginate_queryset_ids(self, queryset, request, view=None):
+        self.limit = self.get_limit(request)
+        if self.limit is None:
+            return None
+
+        self.count = self.get_count(queryset)
+        self.offset = self.get_offset(request)
+        self.request = request
+        if self.count > self.limit and self.template is not None:
+            self.display_page_controls = True
+
+        if self.count == 0 or self.offset > self.count:
+            return []
+        return list(queryset[self.offset:self.offset + self.limit].values_list('id', flat=True))
+
+
 class AbstractViewApi(generics.GenericAPIView):
     """HTTP methods for Api VIew"""
     filter_backends = (SimpleFilterBackend,)
     permission_classes = [CheckAPIVersion]
     query_params = []
     pagination_class = None
+    pagination = False
+    responses = None
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.pagination:
+            self.pagination_class = CustomLimitOffsetPagination
+
     default_query_params = [
         {
             "name": "created_at_min",
@@ -360,24 +459,30 @@ class AbstractViewApi(generics.GenericAPIView):
                         {name: _('Field in invalid format. It must be in the format{}').format(instance["legend"])})
         return query
 
-    def get_query(self, id_=None, **kwargs):
-        """Validate parameters received in query params, returning query values"""
+    def filter(self, id_, **kwargs):
         query = self.get_queryset()
         get_query_slug = self.get_query_slug()
         query.update(get_query_slug)
         query_exclude = self.get_exclude_queryset()
-        exclude = self.__get_exclude_values()
         query_parameters = self.get_query_parameters()
         query.update(query_parameters)
+        query.update(kwargs)
 
-        serializer = self.get_serializer_class()
         if id_ or self.many is False:
-            obj = self.model.objects.exclude(**query_exclude).filter(id=id_, **query, **kwargs).first()
+            if id_:
+                query['id'] = id_
+            obj = self.model.objects.exclude(**query_exclude).filter(**query).first()
             if not obj:
                 raise Http404
-            return serializer(obj, exclude=exclude).data
-        return serializer(self.model.objects.exclude(**query_exclude).filter(**query, **kwargs).distinct(), many=True,
-                          exclude=exclude).data
+            return obj
+        return self.model.objects.exclude(**query_exclude).filter(**query).distinct()
+
+    def get_query(self, id_=None, **kwargs):
+        """Validate parameters received in query params, returning query values"""
+
+        obj = self.filter(id_, **kwargs)
+        many = False if id_ or self.many is False else True
+        return self.serializer(obj, many)
 
     def get_cache_key(self, request):
         """Generates a unique cache key for the current request and model."""
@@ -494,14 +599,24 @@ class AbstractViewApi(generics.GenericAPIView):
             return resolver_match.kwargs
         return {}
 
+    def serializer(self, obj, many):
+        exclude = self.get_exclude_queryset()
+        serializer = self.get_serializer_class()
+        return serializer(obj, many=many, exclude=exclude, context={'request': self.request}).data
+
     def get(self, request, *args, **kwargs):
         """Abstract method for default method GET. Override method in class for custom operation"""
         id_ = kwargs.get('id')
+
+        if self.pagination:
+            queryset = self.filter(id_, **kwargs)
+
+            paginated_queryset = self.paginate_queryset(queryset)
+            data = self.serializer(paginated_queryset, many=True)
+            return self.get_paginated_response(data)
+
         query = self.get_query(id_=id_)
-        if self.pagination_class:
-            return self.get_paginated_response(self.paginate_queryset(query))
-        model_name = self.model._meta.verbose_name_plural.lower() if not id_ else self.get_model_name()
-        return JsonResponse({model_name.replace(' ', '_'): query})
+        return JsonResponse(query, safe=False)
 
     def post(self, request, *args, **kwargs):
         """Abstract method for default method POST. Override method in class for custom operation"""

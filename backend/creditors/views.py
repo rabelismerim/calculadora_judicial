@@ -124,18 +124,72 @@ class CreditorListApi(AbstractCreditorApi):
     http_method_names = ['get']
     docs = docs.copy()
     operation_id_base = 'CreditorList'
-
-    @doc(_("""Retrieves a queryset of creditors related to a given project ID,
+    query_slug = True
+    pagination = True
+    docs['get'] = """Retrieves a queryset of creditors related to a given project ID,
         serializes it and returns a JSON response with the serialized data.
 
         :return:
             - JsonResponse: An HTTP response with a JSON object containing a list of serialized creditor data.
-        """))
-    def get(self, request, *args, **kwargs):
-        project_id = kwargs.get('project_id')
-        creditors = self.serializer_class(self.model.objects.filter(recovering__project_id=project_id, is_active=True),
-                                          many=True).data
-        return JsonResponse({'creditors': creditors})
+        """
+
+    query_params = [
+        {
+            "name": "name",
+            "field": "entity__name__icontains",
+            "in": "query",
+            "required": False,
+            "description": _("Name"),
+            "schema": {"type": "string"}
+        },
+        {
+            "name": "cpf_cnpj",
+            "field": "entity__legal_number__icontains",
+            "in": "query",
+            "required": False,
+            "description": _("CPF/CNPJ"),
+            "schema": {"type": "string"}
+        },
+        {
+            "name": "recovering_name",
+            "field": "recovering__entity__name__icontains",
+            "in": "query",
+            "required": False,
+            "description": _("Name"),
+            "schema": {"type": "string"}
+        },
+        {
+            "name": "recovering_cpf_cnpj",
+            "field": "recovering__entity__legal_number__icontains",
+            "in": "query",
+            "required": False,
+            "description": _("CPF/CNPJ"),
+            "schema": {"type": "string"}
+        }
+    ]
+
+
+class CreditorListLegalNumberApi(CreditorListApi):
+    """
+    A view for retrieving a list of creditors from a specific project.
+    Inherits from AbstractCreditorApi.
+
+    Methods
+    -------
+    get(self, request, *args, **kwargs):
+        Retrieves a queryset of creditors related to a given project ID,
+        serializes it using self.serializer_class, and returns a JSON response
+        with the serialized data.
+    """
+    http_method_names = ['get']
+    docs = docs.copy()
+    operation_id_base = 'CreditorListLegalNumber'
+    docs['get'] = """Retrieves a queryset of creditors related to a given Recovering Legal Number,
+        serializes it and returns a JSON response with the serialized data.
+
+        :return:
+            - JsonResponse: An HTTP response with a JSON object containing a list of serialized creditor data.
+        """
 
 
 class CreditorInactiveListApi(AbstractCreditorApi):

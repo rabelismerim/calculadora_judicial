@@ -11,28 +11,26 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import datetime
 import re
-from pathlib import Path
 import os
 import sys
+import urllib3
+import warnings
+
+from pathlib import Path
 from dotenv import load_dotenv
 from kombu import Exchange, Queue
-
 from core.drfmsal import IdentityWebPython
-import urllib3
 from decouple import config
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
-# tasks = str(subprocess.check_output(['wmic','path','win32_process','where',"Name like '%python%' and commandline like '%manage%'",'get','name,commandline']))
-# if len(tasks)==0:
-#    subprocess.call([sys.executable, 'manage.py', 'runserver','127.0.0.1:8999'])
-# tasks = str(subprocess.check_output(['wmic','path','win32_process','where',"Name like '%python%' and commandline like '%celery%'",'get','name,commandline']))
-# if len(tasks)==0:
-#     subprocess.call([sys.executable, '-m', 'celery','-A','config','worker','--pool=eventlet','--loglevel=DEBUG','-Q','default,save-file'])
 urllib3.disable_warnings()
-import warnings
 
 warnings.filterwarnings("ignore", message="You have a duplicated operationId")
 warnings.filterwarnings('ignore', message='DateTimeField LoginRecord.login_time received a naive datetime')
+# warning rest_framework.W001:  You have specified a default PAGE_SIZE pagination rest_framework setting,
+# without specifying also a DEFAULT_PAGINATION_CLASS. PAGINATION_CLASS is added dynamically according to whether the
+# class is pagination or not
+SILENCED_SYSTEM_CHECKS = ['rest_framework.W001']
 
 if '--env' in sys.argv:
     # get the index of the --env argument
@@ -617,6 +615,7 @@ REST_FRAMEWORK = {
         "core.drfmsal.renderer.APIRendererInterceptor",
         "rest_framework.renderers.BrowsableAPIRenderer"
     ),
+    'PAGE_SIZE': 10,
 }
 
 if ENABLE_DRF:

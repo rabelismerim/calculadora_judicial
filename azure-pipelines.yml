@@ -88,14 +88,15 @@ steps:
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Install  pip setuptools wheel'
   - script: |
-       .\venv\Scripts\python -m pip install unittest-xml-reporting 
-       .\venv\Scripts\python -m pip install fastcgi 
-       .\venv\Scripts\python -m pip install keyring artifacts-keyring
-       .\venv\Scripts\python -m pip install -r requirements.txt --index-url=https://pkgs.dev.azure.com/DeloitteBR-FA305/_packaging/dtt_base/pypi/simple/ --extra-index-url https://pypi.python.org/simple/
-       .\venv\Scripts\python -m pip install dtt_drf_base_deloitte==2.1.17 --index-url=https://pkgs.dev.azure.com/DeloitteBR-FA305/_packaging/dtt_base/pypi/simple/
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install -r requirements.txt
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
-    displayName: 'Install pip unittest-xml-reporting and requirements'
+    displayName: 'Install pip requirements'
+  - script: |
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install unittest-xml-reporting
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/backend
+    displayName: 'Install pip unittest-xml-reporting'
   - script: |
       $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install fastcgi
     failOnStderr: false
