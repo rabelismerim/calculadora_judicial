@@ -88,15 +88,16 @@ steps:
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Install  pip setuptools wheel'
   - script: |
-      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install -r requirements.txt
+      pip install virtualenv
+      virtualenv venv
+      .\venv\Scripts\activate
+      pip install --user unittest-xml-reporting 
+      pip install --user fastcgi 
+      pip install --user keyring artifacts-keyring
+      pip install --user -r requirements.txt --index-url=https://pkgs.dev.azure.com/DeloitteBR-FA305/_packaging/dtt_base/pypi/simple/ --extra-index-url https://pypi.python.org/simple/
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
-    displayName: 'Install pip requirements'
-  - script: |
-      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install unittest-xml-reporting
-    failOnStderr: false
-    workingDirectory: $(Build.SourcesDirectory)/backend
-    displayName: 'Install pip unittest-xml-reporting'
+    displayName: 'Install pip unittest-xml-reporting and requirements'
   - script: |
       $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install fastcgi
     failOnStderr: false

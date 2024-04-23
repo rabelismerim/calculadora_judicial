@@ -118,6 +118,14 @@ class CreditorSchema(AbstractCreditorSchema):
     # rate_id = serializers.UUIDField()
 
 
+class CreditorRecoveringSchema(AbstractCreditorSchema):
+    """Serializer Creditor fields to create unique Creditor"""
+
+    class Meta:
+        model = Creditor
+        fields = ('id',)
+
+
 class CreditorBulkSchema(AbstractCreditorSchema):
     """Serializer Creditor fields to create bulk Creditor"""
 
