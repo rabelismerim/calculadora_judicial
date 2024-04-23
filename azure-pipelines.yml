@@ -53,6 +53,16 @@ steps:
         print('Found Django project in', project_location)
         print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
   - script: |
+      npm install
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/frontend
+    displayName: 'Install node prerequisites'
+  - script: |
+      npm run build:prod
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/frontend
+    displayName: 'Run npm build'
+  - script: |
       md .\log
     failOnStderr: true
     workingDirectory: $(Build.SourcesDirectory)/backend
@@ -78,10 +88,11 @@ steps:
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Install  pip setuptools wheel'
   - script: |
-      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install unittest-xml-reporting 
-      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install fastcgi 
-      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install keyring artifacts-keyring
-      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install -r requirements.txt --index-url=https://pkgs.dev.azure.com/DeloitteBR-FA305/_packaging/dtt_base/pypi/simple/ --extra-index-url https://pypi.python.org/simple/
+       .\venv\Scripts\python -m pip install unittest-xml-reporting 
+       .\venv\Scripts\python -m pip install fastcgi 
+       .\venv\Scripts\python -m pip install keyring artifacts-keyring
+       .\venv\Scripts\python -m pip install -r requirements.txt --index-url=https://pkgs.dev.azure.com/DeloitteBR-FA305/_packaging/dtt_base/pypi/simple/ --extra-index-url https://pypi.python.org/simple/
+       .\venv\Scripts\python -m pip install dtt_drf_base_deloitte==2.1.17
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Install pip unittest-xml-reporting and requirements'
