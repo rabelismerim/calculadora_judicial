@@ -40,7 +40,7 @@ if '--env' in sys.argv:
     env = sys.argv[env_index]
     env_file = f".env.{env}"
 
-    if not env in ['dev', 'prod', 'hml', 'azure']:
+    if env not in ['dev', 'prod', 'hml', 'azure']:
         raise ValueError('Incorrect option to use the --env argument. The options are: dev, prod, hml, azure')
 
     if not os.path.exists(env_file):
@@ -126,6 +126,8 @@ INSTALLED_APPS = [
     'django_apscheduler',  # Eventos crontab
     'django_celery_results',  # View results Tasks in admin
     'encrypted_fields',
+    'django_filters',
+
     # Base
     'base',
     'base.claim',

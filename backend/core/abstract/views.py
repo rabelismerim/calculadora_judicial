@@ -4,18 +4,19 @@ import json
 import os
 from abc import ABC
 from importlib.util import spec_from_file_location, module_from_spec
+from pathlib import Path
 
 from django.apps import apps
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
-from django.db import transaction
+from django.db import transaction, models
 from django.http import JsonResponse, Http404
 from django.template.response import ContentNotRenderedError
 from django.urls import resolve
 from django.utils.encoding import smart_str
 from drf_yasg import openapi
 from rest_framework import generics, serializers, status
-from rest_framework.filters import BaseFilterBackend
+from rest_framework.filters import BaseFilterBackend, OrderingFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.relations import ManyRelatedField
@@ -203,6 +204,21 @@ class CustomSchema(AutoSchema):
                     responses.pop(code, None)
         return responses
 
+    def get_kwargs_from_path(self, url_path):
+        path = Path(url_path)
+        kwargs = {}
+
+        # Itera sobre cada parte do caminho do URL
+        for part in path.parts:
+            # Verifica se a parte começa com "{", indicando um argumento nomeado
+            if part.startswith("{") and part.endswith("}"):
+                # Remove as chaves "{" e "}" para obter o nome do argumento
+                arg_name = part[1:-1]
+                # Adiciona o argumento nomeado ao dicionário kwargs
+                kwargs[arg_name] = None  # Defina o valor inicial como None ou atribua um valor padrão desejado
+
+        return kwargs
+
     def get_operation(self, path, method):
         """
         Override get_operation method of base class.
@@ -211,12 +227,44 @@ class CustomSchema(AutoSchema):
         Modifies the operation to include parameter descriptions.
         """
         op = super(CustomSchema, self).get_operation(path, method)
-        op['parameters'] = list(map(lambda x: {**x, 'description': str(x['description'])}, op['parameters']))
-        if len(op['parameters']) > 1:
-            for x in op['parameters']:
-                if x['required']:
-                    self.has_path_parameters = True
-                    break
+        has_path_parameters = len(self.get_kwargs_from_path(path).keys()) > 0 and not self.view.query_slug
+
+        if method != 'GET' or has_path_parameters:
+            op['parameters'] = [param for param in op['parameters'] if param['in'] == 'path']
+
+        else:
+            if not self.view.pagination:
+                op['parameters'] = [param for param in op['parameters'] if param['name'] not in ('limit', 'offset')]
+            else:
+                op['parameters'] += self.view.default_query_params + self.view.query_params
+
+        # Crie um conjunto para rastrear os nomes de campo já encontrados
+        seen_names = set()
+
+        # Percorra a lista de parâmetros na ordem inversa
+        for count in range(len(op['parameters']) - 1, -1, -1):
+            x = op['parameters'][count]
+            name = x['name']
+
+            # Verifique se o nome do campo já foi visto
+            if name in seen_names:
+                # Se já foi visto, remova o campo duplicado
+                del op['parameters'][count]
+            else:
+                # Se não foi visto, adicione-o ao conjunto de nomes vistos
+                seen_names.add(name)
+
+            if x['name'] == 'ordering':
+                if has_path_parameters:
+                    del op['parameters'][count]
+                    continue
+                else:
+                    op['parameters'][count]['schema'] = {"type": openapi.TYPE_ARRAY,
+                                                         "items": {"type": openapi.TYPE_STRING,
+                                                                   "enum": self.view.ordering_fields}}
+
+            op['parameters'][count]['description'] = str(op['parameters'][count]['description'])
+            op['parameters'][count]['name'] = str(op['parameters'][count]['name'])
         return op
 
     def get_tags(self, path, method):
@@ -284,10 +332,19 @@ class CustomSchema(AutoSchema):
 
 
 class SimpleFilterBackend(BaseFilterBackend, ABC):
-    def get_schema_operation_parameters(self, view):
-        # if view.schema.has_path_parameters:
-        #     return view.query_params
-        return view.query_params + view.default_query_params
+
+    @staticmethod
+    def get_schema_operation_parameters(view):
+        """
+        Returns the query parameters for the schema operation.
+
+        Args:
+            view: The view obtaining the query parameters.
+
+        Returns:
+            Query parameters.
+        """
+        return view.query_params
 
 
 class CustomLimitOffsetPagination(LimitOffsetPagination):
@@ -309,19 +366,32 @@ class CustomLimitOffsetPagination(LimitOffsetPagination):
         return list(queryset[self.offset:self.offset + self.limit].values_list('id', flat=True))
 
 
-class AbstractViewApi(generics.GenericAPIView):
+class AbstractViewApi(generics.GenericAPIView, OrderingFilter):
     """HTTP methods for Api VIew"""
-    filter_backends = (SimpleFilterBackend,)
+    filter_backends = (SimpleFilterBackend, OrderingFilter)
     permission_classes = [CheckAPIVersion]
     query_params = []
     pagination_class = None
     pagination = False
     responses = None
+    order_by = []
+
+    ordering_fields = []  # Especifique quais campos podem ser usados para ordenação
+    default_ordering_fields = ['created_at',
+                               'updated_at']  # Especifique quais campos padrões podem ser usados para ordenação
+
+    # ordering = ['created_at'] # Especifique os campos que serão usados para ordenação
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        ordering_fields = self.get_default_ordering_fields()
+        ordering_fields.extend(self.get_non_relation_fields())
+        self.ordering_fields = ordering_fields
         if self.pagination:
             self.pagination_class = CustomLimitOffsetPagination
+
+    def get_default_ordering_fields(self):
+        return ['created_at', 'updated_at']
 
     default_query_params = [
         {
@@ -365,6 +435,17 @@ class AbstractViewApi(generics.GenericAPIView):
     allowed_versions = ['v1']
     query_slug = False
     many = True
+
+    def get_non_relation_fields(self):
+        non_relation_fields = []
+
+        if not self.model:
+            return non_relation_fields
+
+        for field in self.model._meta.fields:
+            if not isinstance(field, (models.ForeignKey, models.OneToOneField, models.ManyToManyField)):
+                non_relation_fields.append(field.name)
+        return list(set(non_relation_fields))
 
     # def get_permissions(self):
     #     """
@@ -459,6 +540,9 @@ class AbstractViewApi(generics.GenericAPIView):
                         {name: _('Field in invalid format. It must be in the format{}').format(instance["legend"])})
         return query
 
+    def get_order_by(self):
+        return self.order_by
+
     def filter(self, id_, **kwargs):
         query = self.get_queryset()
         get_query_slug = self.get_query_slug()
@@ -475,12 +559,36 @@ class AbstractViewApi(generics.GenericAPIView):
             if not obj:
                 raise Http404
             return obj
-        return self.model.objects.exclude(**query_exclude).filter(**query).distinct()
+
+        queryset = self.model.objects.exclude(**query_exclude).filter(**query).distinct()
+        ordering = self.get_ordering(self.request, queryset, self)
+        if ordering:
+            return queryset.order_by(*ordering)
+        return queryset
+
+    def get_ordering(self, request, queryset, view):
+        """
+        Ordering is set by a comma delimited ?ordering=... query parameter.
+
+        The `ordering` query parameter can be overridden by setting
+        the `ordering_param` value on the OrderingFilter or by
+        specifying an `ORDERING_PARAM` value in the API settings.
+        """
+        params = request.query_params.getlist(self.ordering_param)
+        if params:
+            fields = params
+            ordering = self.remove_invalid_fields(queryset, fields, view, request)
+            if ordering:
+                return ordering
+
+        # No ordering was included, or all the ordering fields were invalid
+        return self.get_default_ordering(view)
 
     def get_query(self, id_=None, **kwargs):
         """Validate parameters received in query params, returning query values"""
 
         obj = self.filter(id_, **kwargs)
+
         many = False if id_ or self.many is False else True
         return self.serializer(obj, many)
 
