@@ -259,6 +259,8 @@ class CustomSchema(AutoSchema):
                     del op['parameters'][count]
                     continue
                 else:
+                    op['parameters'][count][
+                        'description'] = 'Campo para ordenação dos resultados. Envie uma lista com as opções escolhidas. Use o caracter - em frente a opção para descendente e apenas a opção para ascendente'
                     op['parameters'][count]['schema'] = {"type": openapi.TYPE_ARRAY,
                                                          "items": {"type": openapi.TYPE_STRING,
                                                                    "enum": self.view.ordering_fields}}
@@ -384,11 +386,21 @@ class AbstractViewApi(generics.GenericAPIView, OrderingFilter):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        ordering_fields = self.get_default_ordering_fields()
-        ordering_fields.extend(self.get_non_relation_fields())
-        self.ordering_fields = ordering_fields
+        self.ordering_fields = self.get_ordering_fields()
         if self.pagination:
             self.pagination_class = CustomLimitOffsetPagination
+
+    def get_ordering_fields(self):
+        ordering_fields = self.get_default_ordering_fields()
+        ordering_fields.extend(self.get_non_relation_fields())
+        ordering = ordering_fields + self.ordering_fields.copy()
+        ordering_hifen = []
+
+        for s in ordering:
+            ordering_hifen.append(f"-{s}")
+        ordering.extend(ordering_hifen)
+
+        return ordering
 
     def get_default_ordering_fields(self):
         return ['created_at', 'updated_at']

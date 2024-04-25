@@ -132,7 +132,7 @@ class CreditorListApi(AbstractCreditorApi):
         :return:
             - JsonResponse: An HTTP response with a JSON object containing a list of serialized creditor data.
         """
-
+    ordering_fields = ['entity__name', 'entity__legal_number']
     query_params = [
         {
             "name": "name",

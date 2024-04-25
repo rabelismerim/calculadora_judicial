@@ -32,6 +32,7 @@ class RecoveringApi(AbstractViewApi):  # V1
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     many = True
     pagination = True
+    ordering_fields = ['entity__name', 'entity__legal_number']
 
     query_params = [
         {
