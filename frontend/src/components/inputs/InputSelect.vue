@@ -5,7 +5,7 @@ const props = withDefaults(defineProps<{
   modelValue: any
   label?: string
   rules?: ValidationRule<any>[]
-  options: any[]
+  options?: any[]
   toAdd?: Function
   errorMessages?: any
   errorKey?: string
@@ -46,7 +46,7 @@ const addNewItem = async () => {
     const value = await props?.toAdd?.(inputValue)
     if (value === undefined)
       return
-    emit('update:options', [...props.options, value])
+    emit('update:options', [...(props?.options ?? []), value])
     inputValue = ''
     select.value.updateInputValue('', true)
     select.value.add(value)
@@ -64,8 +64,8 @@ const onFilter = (val: any, update: Function) => {
     const needle = val?.toLowerCase()
     inputValue = needle
     filteredOptions = props.options
-      .filter(v => !!v)
-      .filter(v => v?.description?.toLowerCase()?.includes(needle))
+      ?.filter(v => !!v)
+      ?.filter(v => v?.description?.toLowerCase()?.includes(needle))
   })
 }
 </script>
