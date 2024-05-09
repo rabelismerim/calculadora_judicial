@@ -21,6 +21,7 @@ const loadTemplate = async (id: string) => {
   if (!id)
     return
   const result = await ratesService.getTemplate(id)
+  console.log({ result })
   newCredit.endPoint = result?.endPoint
   const fields = result?.fields?.map(({ id, key, label, default: fallback, order, required, typeDisplay, choices }: any) => ({
     id,
@@ -38,7 +39,7 @@ const loadTemplate = async (id: string) => {
   if (defaultValues?.length > 0)
     defaultValues.forEach(([key, value]: [string, any]) => newCredit[key] = value)
   newCredit.fields = fields
-    .sort(({ order: a }: any, { order: b }: any) => a - b)
+    ?.sort(({ order: a }: any, { order: b }: any) => a - b)
 }
 
 const clearNewCredit = () => {
