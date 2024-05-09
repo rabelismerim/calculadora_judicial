@@ -21,9 +21,9 @@ const loadTemplate = async (id: string) => {
   if (!id)
     return
   const result = await ratesService.getTemplate(id)
-  console.log({ result })
-  newCredit.endPoint = result?.endPoint
-  const fields = result?.fields?.map(({ id, key, label, default: fallback, order, required, typeDisplay, choices }: any) => ({
+  const template = (result ?? {}) as any
+  newCredit.endPoint = template?.endPoint
+  const fields = template?.fields?.map(({ id, key, label, default: fallback, order, required, typeDisplay, choices }: any) => ({
     id,
     key,
     label,
@@ -48,7 +48,6 @@ const clearNewCredit = () => {
   emit('update:modelValue', false)
 }
 
-const host = import.meta.env.VITE_API_HOST
 const createCredit = async () => {
   const { classId, coinId, rateId, templateId, endPoint } = newCredit
   if (!endPoint)
