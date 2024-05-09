@@ -7,7 +7,6 @@ const showUploadCreditors = $ref(false)
 const showCreateCreditor = $ref(false)
 let showUpdateCreditor = $ref(false)
 
-let loading = $ref(false)
 let project = $ref({} as any)
 let creditors = $ref([] as any[])
 let rates = $ref([])
@@ -71,65 +70,71 @@ const filteredInactiveCreditors = computed((): any[] =>
   ),
 )
 
+const mapCreditor = (creditor: any) => {
+  const {
+    id,
+    recoveringId,
+    description,
+    admission,
+    dismissal,
+    advocativeHours,
+    fine,
+    defaultInterest,
+    occurrence,
+    noticeAj,
+    noticeRecovering,
+    claimCreditor,
+    claimLawyer,
+    entity: { legalNumber, name },
+  } = creditor
+  const {
+    entity: { name: recoveringName, legalNumber: recoveringLegalNuber },
+  } = project?.recoverings?.find(({ id }: any) => recoveringId === id)
+  return {
+    id,
+    name,
+    legalNumber,
+    description,
+    admission,
+    dismissal,
+    advocativeHours,
+    fine,
+    defaultInterest,
+    occurrence,
+    recovering: {
+      id: recoveringId,
+      step: 1,
+      open: false,
+      name: recoveringName,
+      legalNumber: recoveringLegalNuber,
+      creditorLegalNumber: legalNumber,
+      creditor: { ...creditor, legalNumber },
+      creditorId: id,
+      noticeAj,
+      noticeRecovering,
+      claimCreditor: claimCreditor.map((creditor: any) => ({ ...creditor, incidentId: creditor?.incident?.id })),
+      claimLawyer,
+    },
+  }
+}
+let loadingCreditors = $ref(false)
 const loadCreditors = async () => {
-  loading = true
+  loadingCreditors = true
   try {
     project = await projectService.getProject(attrs.projectId)
     const creditorsResult = await creditorsService.getCreditors(attrs.projectId)
-    creditors = creditorsResult
-      .map((creditor: any) => {
-        const {
-          id,
-          recoveringId,
-          description,
-          admission,
-          dismissal,
-          advocativeHours,
-          fine,
-          defaultInterest,
-          occurrence,
-          noticeAj,
-          noticeRecovering,
-          claimCreditor,
-          claimLawyer,
-          entity: { legalNumber, name },
-        } = creditor
-        const {
-          entity: { name: recoveringName, legalNumber: recoveringLegalNuber },
-        } = project?.recoverings?.find(({ id }: any) => recoveringId === id)
-        return {
-          id,
-          name,
-          legalNumber,
-          description,
-          admission,
-          dismissal,
-          advocativeHours,
-          fine,
-          defaultInterest,
-          occurrence,
-          recovering: {
-            id: recoveringId,
-            step: 1,
-            open: false,
-            name: recoveringName,
-            legalNumber: recoveringLegalNuber,
-            creditorLegalNumber: legalNumber,
-            creditor: { ...creditor, legalNumber },
-            creditorId: id,
-            noticeAj,
-            noticeRecovering,
-            claimCreditor: claimCreditor.map((creditor: any) => ({ ...creditor, incidentId: creditor?.incident?.id })),
-            claimLawyer,
-          },
-        }
-      })
+    const mappedCreditors = []
+    for (const creditor of creditorsResult) {
+      mappedCreditors.push(mapCreditor(creditor))
+      await delay(0.01)
+    }
+    creditors = mappedCreditors
   }
   catch (error) {
     printError('ERROR ON LOAD CREDITORS:', error)
   }
   finally {
-    loading = false
+    loadingCreditors = false
   }
 }
 
@@ -141,32 +146,50 @@ const newCreditorOptions = computed(() => ({
 
 const getOcurrence = (occurrenceId: string) => newCreditorOptions.value.ocurrences
   .find(({ id }: any) => id === occurrenceId)?.legend ?? occurrenceId
+const mapInactiveCreditor = (creditor: any) => {
+  const {
+    recoveringId,
+  } = creditor
+  const recovering = newCreditorOptions.value?.recoverings?.find(({ id }: any) => recoveringId === id)
+  return {
+    ...creditor,
+    recoveringName: recovering?.entity?.name,
+    recoveringLegalNumber: recovering?.entity?.legalNumber,
+  }
+}
+const {
+  page: inactivePage,
+  next: nextInactivePage,
+  previous: previousInactivePage,
+} = usePagination(computed(() => inactiveCreditors), 10)
+
+let loadingInactiveCreditors = $ref(false)
 const loadInactiveCreditors = async () => {
-  loading = true
+  loadingInactiveCreditors = true
   try {
     project = await projectService.getProject(attrs.projectId)
-    const inactiveCreditorsResult = await validationService.getInactive(attrs.projectId)
-    inactiveCreditors = inactiveCreditorsResult
-      .map((creditor: any) => {
-        const {
-          recoveringId,
-        } = creditor
-        const recovering = newCreditorOptions.value?.recoverings?.find(({ id }: any) => recoveringId === id)
-        return {
-          ...creditor,
-          recoveringName: recovering?.entity?.name,
-          recoveringLegalNumber: recovering?.entity?.legalNumber,
-        }
-      })
+    const inactiveCreditorsResult = await creditorsService.getInactiveCreditors(attrs.projectId)
+    const mappedInactiveCreditors = []
+    for (const creditor of inactiveCreditorsResult) {
+      mappedInactiveCreditors.push(mapInactiveCreditor(creditor))
+      await delay(0.01)
+    }
+    inactiveCreditors = mappedInactiveCreditors
   }
   catch (error) {
     printError('ERROR ON LOAD CREDITORS:', error)
   }
   finally {
-    loading = false
+    loadingInactiveCreditors = false
   }
 }
 
+const selectAllInactiveCreditors = async () => {
+  for (const creditor of inactiveCreditors) {
+    creditor.toValidate = true
+    await delay(0.01)
+  }
+}
 const editCreditor = (creditor: any) => {
   const newCreditor = clone(creditor)
   const { legalNumber, recoverings } = newCreditor
@@ -179,42 +202,44 @@ const editCreditor = (creditor: any) => {
 }
 
 const { dialog } = useQuasar()
+let loadingValidate = $ref(false)
 const validateCreditors = async () => {
-  const toValidate = inactiveCreditors
-    ?.filter(({ toValidate }: any) => toValidate) ?? []
   dialog({
     title: 'Validar Credores',
     message: 'Você tem certeza que deseja validar os credores marcados?',
     cancel: true,
     persistent: true,
   }).onOk(async () => {
+    const toValidate = inactiveCreditors
+      ?.map((creditor, index) => ({ ...creditor, isActive: true, index }))
+      ?.filter(({ toValidate }: any) => toValidate) ?? []
     if (toValidate?.length <= 0) {
       throwError({ message: 'Não tem nenhum credor selecionado...' })
       return
     }
-    loading = true
+    loadingValidate = true
     try {
-      const updatedCreditors = toValidate.map((creditor: any) => ({
-        ...creditor,
-        is_active: true,
-      }))
-
-      for (const creditor of updatedCreditors)
+      for (const creditor of toValidate) {
+        const { index } = creditor
         await creditorsService.updateCreditor(creditor)
-
-      await loadInactiveCreditors()
-      await loadCreditors()
+        const newCreditor = mapCreditor(creditor)
+        creditors.push(newCreditor)
+        inactiveCreditors.splice(index, 1)
+        await delay(0.01)
+      }
     }
     catch (error) {
       printError('ERROR ON VALIDATE CREDITOR:', error)
     }
     finally {
-      loading = false
+      loadingValidate = false
     }
   })
 }
 
+let loadingOptions = $ref(false)
 const loadOptions = async () => {
+  loadingOptions = true
   try {
     rates = await ratesService.getRates()
     creditorOptions = await creditorsService.getOptions()
@@ -222,7 +247,12 @@ const loadOptions = async () => {
   catch (error) {
     printError('ERROR ON LOAD CREDITORS OPTIONS:', error)
   }
+  finally {
+    loadingOptions = false
+  }
 }
+
+const loading = $computed(() => loadingCreditors || loadingInactiveCreditors || loadingOptions || loadingValidate)
 
 onMounted(() => {
   loadOptions()
@@ -239,6 +269,8 @@ onMounted(() => {
       { label: project.description, url: `/projeto/${attrs.projectId}` },
       { label: 'Credores' },
     ]"
+    class="flex flex-col flex-1"
+    wrapper-classe="pb-0!"
   >
     <template #header>
       <div class="flex-1 flex justify-end gap-4">
@@ -264,7 +296,6 @@ onMounted(() => {
           @click="loadCreditors();loadInactiveCreditors()"
         />
       </template>
-      <!-- <SearchFilter v-model="filterBy" /> -->
     </Header>
     <TabFilter
       v-model:search="filterBy"
@@ -369,7 +400,7 @@ onMounted(() => {
                     @save="loadCreditors"
                   />
                   <AdministrativeClaim
-                    :model-value="recovering.claimCreditor.filter(({ isAdmin }: any) => !!isAdmin)"
+                    :model-value="recovering.claimCreditor.filter((claim: any) => !!claim?.isAdmin)"
                     :creditor-id="recovering.creditorId"
                     :options="creditorOptions"
                     :name="4"
@@ -378,7 +409,7 @@ onMounted(() => {
                     @save="loadCreditors"
                   />
                   <JuridicalClaim
-                    :model-value="recovering.claimCreditor.filter(({ isAdmin }: any) => !isAdmin)"
+                    :model-value="recovering.claimCreditor.filter((claim: any) => !claim?.isAdmin)"
                     :creditor-id="recovering.creditorId"
                     :options="creditorOptions"
                     :name="5"
@@ -416,7 +447,7 @@ onMounted(() => {
           class="grid gap-3"
         >
           <Accordion
-            v-for="creditor in filteredInactiveCreditors"
+            v-for="creditor in inactivePage.items"
             :key="creditor.id"
             :title="creditor.entity.name"
             :subtitle="formatLegalNumber(creditor.entity.legalNumber)"
@@ -469,19 +500,40 @@ onMounted(() => {
               Nenhuma Recuperanda para esse Credor
             </div>
           </Accordion>
-          <div class="flex justify-end">
-            <Btn
-              label="Validar Credores"
-              icon="i-carbon-checkmark"
-              @click.stop="validateCreditors"
-            />
-          </div>
         </div>
         <div v-else class="pt-5 text-center">
           Parece que não existe nenhum usuário inativo no momento...
         </div>
       </QTabPanel>
     </QTabPanels>
+
+    <div v-if="selectedTab === 'inativos' && inactiveCreditors?.length" class="flex justify-between px-4 sticky bottom-0 py-2 gap-4 bg--background">
+      <div class="flex gap-4">
+        <Btn
+          label="Anterior"
+          outlined
+          @click.stop="previousInactivePage"
+        />
+        <Btn
+          label="Próximo"
+          outlined
+          @click.stop="nextInactivePage"
+        />
+        {{ inactivePage.current }} de {{ inactivePage.total }}
+      </div>
+      <div class="flex gap-4">
+        <Btn
+          label="Selecionar Todos"
+          outlined
+          @click.stop="selectAllInactiveCreditors"
+        />
+        <Btn
+          label="Validar Credores Selecionados"
+          icon="i-carbon-checkmark"
+          @click.stop="validateCreditors"
+        />
+      </div>
+    </div>
 
     <template #out>
       <NewCreditor

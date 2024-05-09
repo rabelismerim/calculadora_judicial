@@ -60,19 +60,21 @@ const loadOptions = async () => {
   options = result
 }
 
-let rates = $ref([] as any[])
+let rates = $ref([]) as any[]
 const loadRates = async () => {
-  rates = await ratesService.getRates()
+  const result = await ratesService.getRates()
+  rates = result as unknown as any[]
 }
 
 let calculation = $ref({} as any)
 const loadCalculationBigNumbers = async () => {
   try {
     const result = await calculationService.getCalculation(attrs.calculationId)
-    result.allFunds
-      .flatMap(({ data, type }: any) => data.map((el: any) => ({ ...el, type })))
-      .sort(({ createdAt: dateA }: any, { createdAt: dateB }: any) => dateA < dateB ? -1 : 1)
-      .forEach(({ id, total }: any) => {
+    const calculation = (result ?? {}) as any
+    calculation?.allFunds
+      ?.flatMap(({ data, type }: any) => data.map((el: any) => ({ ...el, type })))
+      ?.sort(({ createdAt: dateA }: any, { createdAt: dateB }: any) => dateA < dateB ? -1 : 1)
+      ?.forEach(({ id, total }: any) => {
         const credit = calculation?.credits?.find(({ id: creditId }: any) => creditId === id)
         if (credit)
           credit.total = total
@@ -86,8 +88,9 @@ const loadCalculation = async (showLoading = false) => {
   if (showLoading)
     loading = true
   const result = await calculationService.getCalculation(attrs.calculationId)
-  const { allFunds = [] } = result
-  result.credits = allFunds
+  const loadCalculation = (result ?? {}) as any
+  const { allFunds = [] } = loadCalculation
+  loadCalculation.credits = allFunds
     .flatMap(({ data, type }: any) => data.map((el: any) => ({ ...el, type })))
     .sort(({ createdAt: dateA }: any, { createdAt: dateB }: any) => dateA < dateB ? -1 : 1)
     .map((credit: any) => {
@@ -122,9 +125,9 @@ const loadCalculation = async (showLoading = false) => {
       credit.summary = credit?.template?.summary
       return credit
     })
-  result.incidentId = result?.incident?.id
-  result.rateId = result?.rate?.id
-  calculation = result
+  loadCalculation.incidentId = loadCalculation?.incident?.id
+  loadCalculation.rateId = loadCalculation?.rate?.id
+  calculation = loadCalculation
   if (showLoading)
     loading = false
 }
