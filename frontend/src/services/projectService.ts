@@ -25,21 +25,19 @@ const mapProject = (project: any) => {
 
   return {
     ...project,
-    fase: isAdm ? 'Administrativa' : 'Judicial',
+    isAdmin: isAdm ? 'Administrativa' : 'Judicial',
     responsible: engagement?.createUser,
     responsibles,
   }
 }
-
 const getUserProjects = () => api
   .get('/v1/projects/project_user/')
   .then((result: any) => [...new Set(result?.projectUser || [])])
-const getProjects = () => api
-  .get('/v1/projects/')
-  .then((result: any) => result?.projects?.map(mapProject) || [])
+const getProjects = (pagination: any) => api
+  .get(`/v1/projects/${controlPagination(pagination)}`)
+  .then((result: any) => ({ count: result?.data?.count, items: result?.data?.results?.map(mapProject) || [] }))
 const getProject = (id: string) => api
   .get(`/v1/projects/${id}/`)
-  .then((result: any) => result?.project)
   .then(mapProject)
   .then((project: any) => {
     const { projectUsers = [], recoverings = [] } = project
@@ -152,7 +150,7 @@ const updateProject = ({
 // JUDGES
 const getJudges = () => api
   .get('/v1/projects/judge/')
-  .then((result: any) => result?.judges || [])
+  .then((result: any) => result ?? [])
   .then(data => data?.map(({ description, id }: any) => ({ description, id })))
 const newJudge = (description: string) => api
   .post('/v1/projects/judge/', { description })
@@ -162,7 +160,7 @@ const newJudge = (description: string) => api
 // LAWYERS
 const getLawyers = () => api
   .get('/v1/projects/lawyer/')
-  .then((result: any) => result?.lawyers)
+  .then((result: any) => result ?? [])
   .then(data => data?.map(({ description, id }: any) => ({ description, id })))
 const newLawyer = (description: string) => api
   .post('/v1/projects/lawyer/', { description })
@@ -172,7 +170,7 @@ const newLawyer = (description: string) => api
 // REGIONS
 const getRegions = () => api
   .get('/v1/projects/region/')
-  .then((result: any) => result?.regions)
+  .then((result: any) => result ?? [])
   .then(data => data?.map(({ description, id }: any) => ({ description, id })))
 const newRegion = (description: string) => api
   .post('/v1/projects/region/', { description })
@@ -182,7 +180,7 @@ const newRegion = (description: string) => api
 // COURTS
 const getCourts = () => api
   .get('/v1/projects/court/')
-  .then((result: any) => result?.courts)
+  .then((result: any) => result ?? [])
   .then(data => data?.map(({ description, id }: any) => ({ description, id })))
 const newCourt = (description: string) => api
   .post('/v1/projects/court/', { description })
