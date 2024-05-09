@@ -5,7 +5,6 @@ import traceback
 from datetime import datetime
 import xlsxwriter
 
-from collections import OrderedDict
 from django.db import models, transaction
 from django.db.models import Count, Sum, Q
 from django.http import HttpResponse
@@ -53,12 +52,12 @@ def get_first_value(choices, second_value):
 class Project(AbstractDescription, AbstractDateRecovering):
     """
     This class Project represents a grand project/engagement.
-    It contains the properties project_start and project_end for specifying the start and end date of the project, 
-    as well as a status field with choices specified by the constant STATUS_CHOICES. 
+    It contains the properties project_start and project_end for specifying the start and end date of the project,
+    as well as a status field with choices specified by the constant STATUS_CHOICES.
     Additionally it stores relations to other models such as Judge, Lawyer, and Region through foreign keys,
-    as well as a one-to-one relationship to the model ProjectEngagement through the field engagement. 
-    Lastly it has two fields containing relationships to the User model, namely manager and partner. 
-    The property num_recovering is responsible for retrieving the number of recovering related to this project. 
+    as well as a one-to-one relationship to the model ProjectEngagement through the field engagement.
+    Lastly it has two fields containing relationships to the User model, namely manager and partner.
+    The property num_recovering is responsible for retrieving the number of recovering related to this project.
     Lastly the string representation of this object is defined in the method __str__.
     """
 
@@ -229,44 +228,22 @@ class Project(AbstractDescription, AbstractDateRecovering):
             {"title": "Credor - CPF/CNPJ", 'choice': None, 'default': None, 'type': 'str'},
             {"title": "Credor - CPF/CNPJ da Recuperanda", 'choice': None, 'default': None, 'type': 'str'},
             {"title": "Credor - Nome da Recuperanda", 'choice': None, 'default': None, 'type': 'str'},
-
-            # {"title": "Documentação de representação", 'choice': CHOICES_REPRESENTATION_DOCUMENTATION,
-            #  'default': None, 'type': 'str'},
-            # {"title": "Tipo", 'choice': CHOICES_CLAIM_TYPE, 'default': None, 'type': 'str'},
-            # {"title": "Natureza (NF, contrato, trabalhista etc)", 'choice': NATURE_CHOICES,
-            #  'default': None, 'type': 'str'},
-            # {"title": "Descrição", 'choice': None, 'default': None, 'type': 'str'},
-            # {"title": "Status", 'choice': CHOICES_STATUS_LEGAL, 'default': None, 'type': 'str'},
-            # {"title": "Prazo resposta", 'choice': None, 'default': None, 'type': 'date'},
             {"title": "Pessoa Física", 'choice': CHOICES_PHYSICAL_PERSON, 'default': None,
              'type': 'str'},
         ]
 
         rj_columns = default_columns.copy()
         rj_columns[4:4] = [
-            # {"title": "Pleito do Credor - Classe(Opcional)", 'choice': CLASSE_CHOICES, 'default': None, 'type': 'str'},
-            # {"title": "Pleito do Credor - Valor(Opcional)", 'choice': None, 'default': None, 'type': 'float'},
-            # {"title": "Pleito do Credor - Moeda(Opcional)", 'choice': COIN_CHOICES, 'default': None, 'type': 'str'},
-            # {"title": "Pleito do Credor - N° do Incidente(Opcional)", 'choice': None, 'default': None, 'type': 'str'},
-
             {"title": "Edital RJ - Class(Opcional)", 'choice': CLASSE_CHOICES, 'default': None, 'type': 'str'},
             {"title": "Edital RJ - Valor(Opcional)", 'choice': None, 'default': None, 'type': 'float'},
             {"title": "Edital RJ - Moeda(Opcional)", 'choice': COIN_CHOICES, 'default': None, 'type': 'str'},
-            # {"title": "Edital RJ - N° do Incidente(Opcional)", 'choice': None, 'default': None, 'type': 'str'},
-
         ]
 
         aj_columns = default_columns.copy()
         aj_columns[4:4] = [
-            # {"title": "Pleito do Credor - Classe(Opcional)", 'choice': CLASSE_CHOICES, 'default': None, 'type': 'str'},
-            # {"title": "Pleito do Credor - Valor(Opcional)", 'choice': None, 'default': None, 'type': 'float'},
-            # {"title": "Pleito do Credor - Moeda(Opcional)", 'choice': COIN_CHOICES, 'default': None, 'type': 'str'},
-            # {"title": "Pleito do Credor - N° do Incidente(Opcional)", 'choice': None, 'default': None, 'type': 'str'},
-
             {"title": "Edital AJ - Classe(Opcional)", 'choice': CLASSE_CHOICES, 'default': None, 'type': 'str'},
             {"title": "Edital AJ - Valor(Opcional)", 'choice': None, 'default': None, 'type': 'float'},
             {"title": "Edital AJ - Moeda(Opcional)", 'choice': COIN_CHOICES, 'default': None, 'type': 'str'},
-            # {"title": "Edital AJ - N° do Incidente(Opcional)", 'choice': None, 'default': None, 'type': 'str'},
         ]
 
         excels = [
@@ -298,23 +275,20 @@ class Project(AbstractDescription, AbstractDateRecovering):
 
     def process_json_to_model(self, data: list, **kwargs):
         from recovering.schemas import RecoveringExcelSchema
-        from calculation.schemas import IncidentSchema
 
         name = kwargs.get('name')
         excel = self.get_excel_by_name(name)
         data = excel.parse_list(data)
-        all_natures = NatureChoice.objects.all()
         file_id = kwargs.get('file_id')
 
         if not data:
             ErrorFile.objects.create(file_id=file_id, error='A lista de excel processada estava vazia')
             return
+        error_bulk = []
         recoveries = self.recovering_set.all().values('id', 'entity__legal_number')
-        for credor in data:
-            try:
-                with transaction.atomic():
-                    #natures = []
-                    # nature = credor['Natureza (NF, contrato, trabalhista etc)']
+        with transaction.atomic():
+            for credor in data:
+                try:
                     recovering_legal_number = ''.join(
                         re.findall(r'\d', str(credor['Credor - CPF/CNPJ da Recuperanda'])))
 
@@ -338,85 +312,23 @@ class Project(AbstractDescription, AbstractDateRecovering):
                         }
 
                         recovering_schema = RecoveringExcelSchema(data=recovering_data)
-                        print("Recovering_schema",str(recovering_schema))
                         is_valid = recovering_schema.is_valid(raise_exception=False)
 
                         if not is_valid:
-                            ErrorFile.objects.create(file_id=file_id,
-                                                     error=f'Linha: {credor["index"]}, {recovering_schema.errors}')
+                            error_bulk.append(ErrorFile(file_id=file_id,
+                                                        error=f'Linha: {credor["index"]}, {recovering_schema.errors}'))
                             continue
 
                         recovering = recovering_schema.save().id
 
-                    #legal_pendencies = []
-                    # Create Legal Pendencies
-                    # credor_description = credor.get('Descrição')
-                    # credor_description = credor_description if credor_description is not None \
-                    #                                            and str(credor_description).strip() != '' else None
-                    #
-                    # if all([credor_description, credor.get('Status'), credor.get('Prazo resposta')]):
-                    #     legal_pendencies.append(
-                    #         {
-                    #             "description": credor_description,
-                    #             "status": credor['Status'],
-                    #             "deadline": datetime.strptime(str(credor['Prazo resposta']), "%d/%m/%Y").date()
-                    #         })
-
-                    # Create Nature
-                    # nature_id = all_natures.filter(
-                    #     Q(description=nature) | Q(description_en=nature) | Q(description_pt_br=nature)).values_list(
-                    #     'id',
-                    #     flat=True).first()
-                    # if nature_id:
-                    #     natures.append(nature_id)
-
-                    claims_creditor = []
+                    legal_pendencies = []
                     notice_rj_creditor = []
                     notice_aj_creditor = []
-                    
-
-                    claim_classe = credor.get('Pleito do Credor - Classe(Opcional)')
-                    claim_coin = credor.get('Pleito do Credor - Moeda(Opcional)')
-                    claim_value = credor.get('Pleito do Credor - Valor(Opcional)')
-                    #claim_incident = credor.get('Pleito do Credor - N° do Incidente(Opcional)')
-                    if all([claim_classe, claim_coin]) and claim_value is not None:
-
-                    #    incident_schema = IncidentSchema(data={'number': claim_incident})
-                    #    is_valid = incident_schema.is_valid(raise_exception=False)
-
-                    #   if not is_valid:
-                    #        ErrorFile.objects.create(file_id=file_id,
-                    #                                 error=f'Linha: {credor["index"]}, {incident_schema.errors}')
-                    #        continue
-                    #    incident = incident_schema.save()
-
-                        claims_creditor.append({
-                            "classes": {
-                                "classe": claim_classe
-                            },
-                            "coins": {
-                                "coin": claim_coin,
-                                "value": claim_value
-                            },
-                            #"incident_id": incident.id,
-                        })
-
 
                     notice_rj_classe = credor.get('Edital RJ - Class(Opcional)')
                     notice_rj_coin = credor.get('Edital RJ - Moeda(Opcional)')
                     notice_rj_value = credor.get('Edital RJ - Valor(Opcional)')
-                    #notice_rj_incident = credor.get('Edital RJ - N° do Incidente(Opcional)')
                     if all([notice_rj_classe, notice_rj_coin]) and notice_rj_value is not None:
-
-                        #incident_schema = IncidentSchema(data={'number': notice_rj_incident})
-                        #is_valid = incident_schema.is_valid(raise_exception=False)
-
-                        #if not is_valid:
-                        #    ErrorFile.objects.create(file_id=file_id,
-                        #                             error=f'Linha: {credor["index"]}, {incident_schema.errors}')
-                        #    continue
-                        #incident = incident_schema.save()
-
                         notice_rj_creditor.append({
                             "classes": {
                                 "classe": notice_rj_classe
@@ -425,24 +337,12 @@ class Project(AbstractDescription, AbstractDateRecovering):
                                 "coin": notice_rj_coin,
                                 "value": notice_rj_value
                             },
-                            #"incident_id": incident.id,
                         })
 
                     notice_aj_classe = credor.get('Edital AJ - Classe(Opcional)')
                     notice_aj_coin = credor.get('Edital AJ - Moeda(Opcional)')
                     notice_aj_value = credor.get('Edital AJ - Valor(Opcional)')
-                    #notice_aj_incident = credor.get('Edital AJ - N° do Incidente(Opcional)')
                     if all([notice_aj_classe, notice_aj_coin]) and notice_aj_value is not None:
-
-                    #    incident_schema = IncidentSchema(data={'number': notice_aj_incident})
-                    #    is_valid = incident_schema.is_valid(raise_exception=False)
-
-                    #    if not is_valid:
-                    #        ErrorFile.objects.create(file_id=file_id,
-                    #                                 error=f'Linha: {credor["index"]}, {incident_schema.errors}')
-                    #        continue
-                    #    incident = incident_schema.save()
-
                         notice_aj_creditor.append({
                             "classes": {
                                 "classe": notice_aj_classe
@@ -451,38 +351,20 @@ class Project(AbstractDescription, AbstractDateRecovering):
                                 "coin": notice_aj_coin,
                                 "value": notice_aj_value
                             },
-                    #       "incident_id": incident.id,
                         })
 
-                    entity_dict=dict({
-                        "name": credor['Credor'],
-                        "legal_number": str(credor['Credor - CPF/CNPJ'])
-                    })
-
-                    entity_schema={}
-                    from core.entity.schemas import EntitySchema
-                    entity_get = EntitySchema(data=entity_dict)
-
-                    if entity_get.is_valid(raise_exception=True):
-                        entity_schema = entity_get.validated_data
-                    else:
-                        print('Errors: ', str(serializer.errors.items()))
-                        for field, error_messages in entity_get.errors.items():
-                            for error_message in error_messages:
-                                ErrorFile.objects.create(file_id=file_id,
-                                                         error=f"Linha: {credor['index']}, Field {field}: {error_message}")
-
                     new_credor = {
-                        "entity": entity_schema,
+                        "entity": {
+                            "name": credor['Credor'],
+                            "legal_number": credor['Credor - CPF/CNPJ']
+                        },
                         "recovering_id": recovering,
-                        "claim_creditor": claims_creditor,
+                        "claim_creditor": [],
                         "notice_recovering": notice_rj_creditor,
                         "notice_aj": notice_aj_creditor,
-                        # "representation_documentation": credor['Documentação de representação'],
-                        # "claim_type": credor['Tipo'],
                         "physical_person": str(credor['Pessoa Física']).lower() in ['true', 'verdadeiro'],
-                        #"natures": natures,
-                        #"legal_pendencies": legal_pendencies,
+                        "natures": [],
+                        "legal_pendencies": legal_pendencies,
                         "is_active": False,
                     }
 
@@ -491,20 +373,25 @@ class Project(AbstractDescription, AbstractDateRecovering):
 
                     serializer = CreditorBulkSchema(data=new_credor)
 
-                    if serializer.is_valid(raise_exception=True):
+                    if serializer.is_valid(raise_exception=False):
                         creditor = serializer.validated_data
                         CreateCreditor().create_creditor(creditor)
                     else:
-                        print('Errors: ', str(serializer.errors.items()))
                         for field, error_messages in serializer.errors.items():
                             for error_message in error_messages:
-                                ErrorFile.objects.create(file_id=file_id,
-                                                         error=f"Linha: {credor['index']}, Field {field}: {error_message}")
+                                error_bulk.append(ErrorFile(file_id=file_id,
+                                                            error=f"Linha: {credor['index']}, Field {field}: {error_message}"))
 
-            except Exception as e:
-                print(e, 'err proccess file\n')
-                traceback.print_exc()  # Imprime o traceback completo no console
-                ErrorFile.objects.create(file_id=file_id, error=str(e), status='P')
+                except Exception as e:
+                    logging.error(e, exc_info=True)
+                    error_bulk.append(ErrorFile(file_id=file_id, error=str(e), status='P'))
+
+            if error_bulk:
+                transaction.set_rollback(True)
+                transaction.rollback()
+
+        if error_bulk:
+            ErrorFile.objects.bulk_create(error_bulk)
 
 
 class ExcelHeader:

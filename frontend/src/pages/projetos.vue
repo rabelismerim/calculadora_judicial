@@ -1,16 +1,21 @@
 <script setup lang="ts">
 const router = useRouter()
-
-const { hasProject, updateProjectList } = $user
+const { updateProjectList, hasPermissions } = $user
 
 let loading = $ref(false)
 let showNewProject = $ref(false)
-const filterBy = $ref('')
+let pagination = $ref({
+  sortBy: 'description',
+  descending: false,
+  page: 1,
+  rowsPerPage: 5,
+  rowsNumber: 5,
+  filterBy: '',
+  filterColumn: 'description',
+})
 
 let projects = $ref([])
 const projectsCount = computed(() => projects.length)
-
-const { hasPermissions } = $user
 
 const statusColors: any = {
   p: '#c4d600', // Em Preparação
@@ -53,19 +58,19 @@ const responsibleList = computed(() => Object.entries(projects
   .sort(([labelA], [labelB]) => (labelA < labelB) ? -1 : 1)
   .map(([label, count = 0]) => ({ label, count: Number(count) })))
 
-const loadProjects = async () => {
+async function loadProjects(props: any = {}) {
+  const localPagination = {
+    ...pagination,
+    ...props.pagination,
+  }
   loading = true
   try {
-    const projectResult = await projectService.getProjects()
-
-    const recoveringResult = await recoveringService.getRecoverings()
-    const getRecovering = (project: string) => recoveringResult
-      ?.find(({ projectId }: any) => projectId === project)
-
-    projects = projectResult?.map((project: any) => ({
-      ...getRecovering(project.id),
-      ...project,
-    }))
+    const { items, count: rowsNumber } = await projectService.getProjects(localPagination)
+    projects = items
+    pagination = {
+      ...localPagination,
+      rowsNumber,
+    }
   }
   catch (error) {
     printError('ERROR ON LOAD PROJECTS:', error)
@@ -76,13 +81,6 @@ const loadProjects = async () => {
 }
 
 const redirectToProject = (_: any, row: any) => {
-  // if (!hasProject(row.id)) {
-  //   throwError({
-  //     id: 'not_in_project',
-  //     message: 'Você não está na equipe deste Projeto!',
-  //   })
-  //   return
-  // }
   router.push(`/projeto/${row.id}`)
 }
 
@@ -105,13 +103,13 @@ const loadBigNumbers = async () => {
 }
 
 onMounted(() => {
-  loadBigNumbers()
   loadProjects()
+  loadBigNumbers()
 })
 
 const columns = [
   {
-    name: 'name',
+    name: 'description',
     field: 'description',
     required: true,
     label: 'Projeto',
@@ -119,14 +117,14 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'process',
+    name: 'process_number',
     field: 'processNumber',
     label: 'N° do Processo',
     align: 'left',
     sortable: true,
   },
   {
-    name: 'createdAt',
+    name: 'created_at',
     field: 'createdAt',
     label: 'Data de Criação',
     align: 'left',
@@ -139,20 +137,13 @@ const columns = [
     field: 'responsibles',
     label: 'Responsáveis',
     align: 'left',
-    sortable: true,
   },
   {
-    name: 'company',
-    field: 'company',
-    label: 'Recuperanda(s)',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'fase',
-    field: 'fase',
+    name: 'is_adm',
+    field: 'isAdm',
     label: 'Fase',
     align: 'left',
+    format: value => value ? 'Administrativa' : 'Judicial',
     sortable: true,
   },
   {
@@ -213,26 +204,37 @@ const columns = [
       />
     </div>
 
-    <Header :title="`Projetos (${projectsCount})`">
+    <Header title="Projetos" :tag="projectsCount">
       <template #side>
         <ReloadBtn
           hint="Recarregar a Lista de Projetos"
           @click="loadProjects"
         />
       </template>
-      <SearchFilter v-model="filterBy" />
+      <SearchFilter
+        v-model:search="pagination.filterBy"
+        v-model:field="pagination.filterColumn"
+        :options="{
+          description: 'Nome do Projeto',
+          process_number: 'N° do Processo',
+          status: 'Status',
+        }"
+      />
     </Header>
 
     <QTable
+      v-model:pagination="pagination"
       class="my-header-table"
       :rows="projects"
       :columns="columns"
       :loading="loading"
-      :filter="filterBy"
+      :filter="pagination.filterBy"
+      :rows-per-page-options="[5, 10, 15, 20, 25]"
       row-key="id"
       flat
       bordered
       @row-click="redirectToProject"
+      @request="loadProjects"
     >
       <template #body-cell-name="props">
         <QTd :props="props">

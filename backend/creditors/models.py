@@ -48,6 +48,12 @@ class Creditor(AbstractDateCreditor):
 
     def has_notice_aj(self) -> bool:
         return self.noticerecovering_set.exists()
+    
+    def get_entity_name(self):
+        return self.entity.name
+    
+    def get_entity_legal_number(self):
+        return self.entity.legal_number
 
     # def get_classes(self):
     #     return self.calculation_set.all().values_list('')

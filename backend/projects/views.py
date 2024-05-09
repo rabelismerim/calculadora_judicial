@@ -229,6 +229,7 @@ class ProjectApi(AbstractProjectApi):
         'get': ProjectListSchema,
         'post': ProjectSchema,
     }
+    pagination = True
 
     @doc(_("""Create Project receiving a dict, return project detail"""))
     def post(self, request, *args, **kwargs):

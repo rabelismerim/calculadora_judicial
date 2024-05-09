@@ -258,7 +258,7 @@ class CalculationSchema(CalculationAllFundsSchema):  # V1
         coins = data.get('coins', None)
 
         if claims_ids and coins:
-            raise serializers.ValidationError('Usar apenas um campo')
+            raise serializers.ValidationError('Usar apenas um campo, coins ou claims_ids')
 
         if claims_ids:
 
@@ -269,6 +269,8 @@ class CalculationSchema(CalculationAllFundsSchema):  # V1
             for claim_id in claims_ids:
                 if not claim_creditor.filter(id=claim_id).exists():
                     raise serializers.ValidationError('O id do pleito recebido não tem ligação com esse credor')
+        elif not coins:
+            raise serializers.ValidationError('Usar um dos campos, coins ou claims_ids')
 
         return super(CalculationSchema, self).validate(data)
 

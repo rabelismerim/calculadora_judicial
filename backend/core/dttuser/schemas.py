@@ -232,6 +232,12 @@ class UserDttSchema(serializers.ModelSerializer):
                     pass
 
 
+class UserDttProjectSchema(UserDttSchema):
+    class Meta:
+        model = User
+        fields = ['full_name', 'picture_url', 'userpicture']
+
+
 class UserDttMFASchema(serializers.ModelSerializer):
     """
     Serializer for fields of the abstract model.

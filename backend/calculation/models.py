@@ -87,24 +87,8 @@ class Calculation(AbstractModel):
     validated = models.BooleanField(_('Validated?'), default=False)
 
     # Statement A5
-    # incident = models.ForeignKey(Incident, on_delete=models.PROTECT, null=True) # TODO Marcelo
-    # TODO Marcelo: Remover incidente
-    # TODO Marcelo: Adicionar Coin, podendo ser nulo
-    # TODO Marcelo: Adicionar ManytoMany para pleitos(claims)(pode ser em branco). Validar no Schema se os pleitos vindo
-    #  são do mesmo credor, coin
-    # TODO Marcelo: Trazer total dos pleitos(claims) ou total da moeda como property(total_coin)
-    # TODO Marcelo: Trazer incidente como property pegando o primeiro pleito(se houver)
-    # TODO Marcelo: Receber apenas Coin ou pleito, se vier os dois ou nenhum, gerar erro
-
-    # TODO verificar se essas premissas variam de calculo para calculo, ou pode ser relacionado ao credor
-    # Statement N5 - Crédito inteiramente concursal? TODO analisar se as verbas adicionadas são concursal e alterar
-    #  automaticamente
-    # TODO: Remover de edição, automatizar calculo para obter os creditos, e ver se algum credito tem a flag
-    #  is_extraconcursal
-
-    coins = models.ForeignKey(
-        Coins, on_delete=models.PROTECT, null=True)  # TODO Marcelo
-    claims = models.ManyToManyField(ClaimCreditor, blank=True)  # TODO Marcelo
+    coins = models.ForeignKey(Coins, on_delete=models.PROTECT, null=True)
+    claims = models.ManyToManyField(ClaimCreditor, blank=True)
 
     appeal_credit = models.BooleanField(
         _('Fully competitive credit?'), default=False)
@@ -167,7 +151,8 @@ class Calculation(AbstractModel):
 
     @property
     def executor_name(self):
-        return self.executor.name
+        if self.executor:
+            return self.executor.name
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -653,9 +638,9 @@ class Calculation(AbstractModel):
             total_calculated = class_dict['total_calculated']
             total_value = class_dict['total_value']
             class_dict['percentage_calculated'] = (
-                total_calculated / total_calculated_sum) * 100 if total_calculated_sum > 0 else 0
+                                                          total_calculated / total_calculated_sum) * 100 if total_calculated_sum > 0 else 0
             class_dict['percentage_value'] = (
-                total_value / total_value_sum) * 100 if total_value_sum > 0 else 0
+                                                     total_value / total_value_sum) * 100 if total_value_sum > 0 else 0
 
         classes_list = []
         classes_list_included = []
