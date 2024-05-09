@@ -10,6 +10,9 @@ interface Project {
     entity: any
     creditors: any[]
     total?: number
+    open?: boolean
+    loading?: boolean
+    pagination?: any
   }[]
   engagement: {
     numbers: any[]
@@ -20,23 +23,34 @@ interface Project {
   [key: string]: any
 }
 
+const nullPagination = {
+  sortBy: 'name',
+  descending: false,
+  page: 1,
+  rowsPerPage: 5,
+  rowsNumber: 5,
+  filterBy: '',
+  filterColumn: 'name',
+}
+
 let loading = $ref(false)
 const showParticipants = $ref(false)
 let project = $ref({} as Project)
 const showEditingProject = $ref(false)
 
-const tab = $ref('all')
-
-const filteredRecoverings = computed(() => {
-  if (tab === 'all')
-    return project?.recoverings || []
-  return project?.recoverings?.filter(() => false)
-})
-
 const loadProject = async () => {
   loading = true
   try {
-    project = await projectService.getProject(attrs.projectId)
+    const result = await projectService.getProject(attrs.projectId)
+    project = {
+      ...result,
+      recoverings: result?.recoverings?.map((recovering: any) => ({
+        ...recovering,
+        open: false,
+        loading: false,
+        pagination: { ...nullPagination },
+      })),
+    }
   }
   catch (error) {
     printError(`ERROR ON LOAD PROJECT ${attrs.projectId}:`, error)
@@ -56,8 +70,14 @@ const openNewCalcultation = (creditorId: string) => {
 const openCalculation = (creditorId: string, calculationId: string) =>
   router.push({ path: `/projeto/${project.id}/credor/${creditorId}/calculo/${calculationId}` })
 
-const loadCalculations = async (creditor: any) => {
-  const { id } = creditor
+let expandedCalculation = $ref('')
+const loadCalculations = async (props: any) => {
+  const { row: { id } = {} as any } = props
+  if (expandedCalculation === id) {
+    expandedCalculation = ''
+    return
+  }
+  expandedCalculation = id
   loading = true
   try {
     const noticeAJResult = await creditorsService.getNoticeAJCreditor(id)
@@ -85,7 +105,7 @@ const loadCalculations = async (creditor: any) => {
       }))
 
     const calculationsResult = await calculationService.getCalculations(id)
-    creditor.calculations = [
+    props.row.calculations = [
       ...noticesRJ,
       ...noticesAJ,
       ...(calculationsResult || []),
@@ -96,6 +116,67 @@ const loadCalculations = async (creditor: any) => {
   }
   finally {
     loading = false
+  }
+}
+
+const creditorColumns = [
+  {
+    name: 'entity__name',
+    field: 'entity',
+    label: 'Credor',
+    align: 'left',
+    classes: 'w-25',
+    sortable: true,
+    format: value => value?.name ?? '-',
+  },
+  {
+    name: 'entity__legal_number',
+    field: 'entity',
+    label: 'CPF/CNPJ',
+    align: 'left',
+    classes: 'w-25',
+    sortable: true,
+    format: value => formatLegalNumber(value?.legalNumber),
+  },
+  {
+    name: 'action',
+    field: 'action',
+    label: 'Ação',
+    classes: 'flex justify-end min-h-14 gap-3',
+    headerClasses: 'pr-24!',
+  },
+] as {
+  name: string
+  label: string
+  field: string
+  classes?: string
+  headerClasses?: string
+  required?: boolean
+  align?: 'left' | 'right' | 'center'
+  sortable?: boolean
+  format?: (val: any, row: any) => any
+}[]
+
+const loadCreditors = async (recovering: any, props: any = {}) => {
+  recovering.loading = true
+  const localPagination = {
+    ...nullPagination,
+    ...recovering.pagination,
+    ...props.pagination,
+  }
+  try {
+    const { items, count: rowsNumber } = await creditorsService.getCreditorsByLegalNumber(recovering?.entity?.legalNumber, localPagination)
+    recovering.creditors = items
+    recovering.pagination = {
+      ...localPagination,
+      rowsNumber,
+    }
+  }
+  catch (error) {
+    printError(`ERROR ON LOADING RECOVERING ${formatLegalNumber(recovering.entity?.legalNumber)}`, error)
+  }
+  finally {
+    recovering.loading = false
   }
 }
 
@@ -132,7 +213,7 @@ const loadTotalValues = async () => {
       for (const creditor of recovering?.creditors)
         creditor.total = await projectService.getCreditorBigNumbers(creditor.id)
 
-      recovering.total = recovering?.creditors.reduce((acc, { total }: any) => acc + total, 0)
+      recovering.total = recovering?.creditors?.reduce((acc, { total }: any) => acc + total, 0)
     }
   }
   catch (error) {
@@ -235,13 +316,15 @@ onMounted(async () => {
         @click="router.push({ path: `/projeto/${attrs.projectId}/credores` })"
       />
     </Header>
-    <div v-if="filteredRecoverings.length > 0" class="flex flex-col gap-3">
+    <div v-if="project?.recoverings?.length > 0" class="flex flex-col gap-3">
       <Accordion
-        v-for="recovering in filteredRecoverings"
+        v-for="recovering in project?.recoverings ?? []"
         :key="recovering.id"
-        :title="recovering.entity.name"
+        v-model="recovering.open"
+        :title="recovering.entity?.name"
         :subtitle="formatLegalNumber(recovering.entity.legalNumber)"
         class="accordion w-[min(1600px,100%)_!important]"
+        @open="loadCreditors(recovering)"
       >
         <template #header-left>
           <IconHint
@@ -253,58 +336,87 @@ onMounted(async () => {
         </template>
         <template #header-right>
           <div class="flex-1 flex gap-2 justify-end items-center pl-4 pr-4">
-            <div class="font-bold flex no-wrap items-center gap-2 text-lg">
+            <!-- <div class="font-bold flex no-wrap items-center gap-2 text-lg">
               Total: R$ {{ formatNumber(recovering?.total || 0, 2) }}
               <Hint value="Total dos Cálculos Aprovados." />
-            </div>
+            </div> -->
+            <SearchFilter
+              v-if="recovering.open"
+              v-model:search="recovering.pagination.filterBy"
+              v-model:field="recovering.pagination.filterColumn"
+              :options="{
+                name: 'Nome do Credor',
+                cpf_cnpj: 'CPF/CNPJ do Credor',
+              }"
+              @update:search="loadCreditors(recovering)"
+            />
           </div>
         </template>
 
-        <div v-if="recovering.creditors.length > 0">
-          <Accordion
-            v-for="(creditor, index) in recovering.creditors"
-            :key="creditor.id"
-            v-model="creditor.isOpen"
-            :title="`${creditor.entity.name}`"
-            :subtitle="`${formatLegalNumber(creditor.entity.legalNumber)}`"
-            class="border-x-0 border-b-0 rounded-0"
-            summary-class="pl-8"
-            :class="{ 'border-t-0': index === 0 }"
-            @open="loadCalculations(creditor)"
-          >
-            <template #header-left>
-              <IconHint
-                icon="i-carbon-identification"
-                hint="Este ícone indica que este\nitem é um Credor!"
-                class="self-center"
-              />
-            </template>
-            <template #header-right>
-              <div class="flex-1 flex items-center justify-between pr-4">
+        <QTable
+          v-model:pagination="recovering.pagination"
+          :columns="creditorColumns"
+          :rows="recovering.creditors"
+          :rows-per-page-options="[5, 10, 15, 20, 25]"
+          no-data-label="Nenhum Credor cadastrado para essa Recuperanda"
+          row-key="id"
+          flat
+          @request="props => loadCreditors(recovering, props)"
+        >
+          <template #header="props">
+            <QTr :props="props">
+              <QTh auto-width />
+              <QTh
+                v-for="col in props.cols"
+                :key="col.name"
+                :props="props"
+              >
+                {{ col.label }}
+              </QTh>
+            </QTr>
+          </template>
+          <template #body="props">
+            <QTr
+              :props="props"
+              class="cursor-pointer"
+              @click="loadCalculations(props)"
+            >
+              <QTd auto-width>
+                <div
+                  :class="{ 'rotate-180': props.row?.id === expandedCalculation }"
+                  class="group h-8 w-8 rounded-8 text--secondary text-5 flex justify-center items-center hover:bg--secondary/20 tween-600"
+                >
+                  <div class="i-carbon-chevron-down" />
+                </div>
+              </QTd>
+              <QTd
+                v-for="col in props.cols"
+                :key="col.name"
+                :props="props"
+              >
                 <Btn
+                  v-if="col.name === 'action'"
                   label="Novo Cálculo"
                   icon="i-carbon-add-filled"
                   transparent
-                  @click.stop="openNewCalcultation(creditor.id)"
+                  @click.stop="openNewCalcultation(props.row?.id)"
                 />
-                <div class="font-bold flex no-wrap items-center gap-2 text-lg">
-                  Total: R$ {{ formatNumber(creditor?.total || 0, 2) }}
-                  <Hint value="Total dos Cálculos Aprovados." />
-                </div>
-              </div>
-            </template>
-            <CalculationTable
-              v-model="creditor.calculations"
-              v-model:validation="creditor.isValidating"
-              :creditor="creditor"
-              @row-click="(row: any) => openCalculation(creditor.id, row.id)"
-              @validated="loadCalculations(creditor); loadBigNumbers(); loadTotalValues()"
-            />
-          </Accordion>
-        </div>
-        <div v-else class="p-6 text-center">
-          Nenhum Credor cadastrado para essa Recuperanda
-        </div>
+                <span v-else>{{ col.value }}</span>
+              </QTd>
+            </QTr>
+            <QTr v-show="expandedCalculation === props.row?.id" :props="props">
+              <QTd colspan="100%" class="p-0!">
+                <CalculationTable
+                  v-model="props.row.calculations"
+                  v-model:validation="props.row.isValidating"
+                  :creditor="props.row"
+                  @row-click="(row: any) => openCalculation(props.row?.id, row.id)"
+                  @validated="loadCalculations(props.row); loadBigNumbers(); loadTotalValues()"
+                />
+              </QTd>
+            </QTr>
+          </template>
+        </QTable>
       </Accordion>
     </div>
     <div v-else class="text-lg text-center pt-5">

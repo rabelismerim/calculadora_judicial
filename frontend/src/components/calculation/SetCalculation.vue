@@ -36,7 +36,11 @@ const submit = async () => {
 
   loading = true
   try {
-    const { id } = await calculationService.setCalculation({ ...localCalculation, creditorId: props.creditorId })
+    const { id } = await calculationService.setCalculation({
+      ...localCalculation,
+      creditorId: props.creditorId,
+      isAdmin: localCalculation.isAdm,
+    })
     if (props.calculation?.id && id)
       notify({ message: `Cálculo ${localCalculation.id ? 'editado' : 'criado'} com sucesso!` })
     emit('success', id)
@@ -49,13 +53,8 @@ const submit = async () => {
     loading = false
   }
 }
-const close = () => {
-  emit('update:open', false)
-  calculationForm.value.reset()
-  localCalculation = clone(props.calculation ? props.calculation : nullCalculation)
-}
 
-let rates = $ref([] as any[])
+let rates: any = $ref([])
 const loadRates = async () => {
   rates = await ratesService.getRates()
 }
@@ -102,7 +101,8 @@ let creditorClaims = $ref([] as any[])
 watchEffect(async () => {
   if (props.creditorId) {
     const result = await creditorsService.getCreditorClaims(props.creditorId)
-    creditorClaims = result.map((claim: any) => ({
+    const claims = result as unknown as any[] ?? []
+    creditorClaims = claims?.map((claim: any) => ({
       id: claim?.id,
       description: `${claim?.incident?.number} ⇒ ${claim?.coins?.coinDisplay} ${formatNumber(claim?.coins?.value, 2)} ⇒ ${claim?.classes?.classeDisplay}`,
       incidentId: claim?.incident?.id,
@@ -115,9 +115,11 @@ watchEffect(async () => {
   }
 })
 const filteredClaims = $computed(() => creditorClaims
-  .filter(claim => localCalculation.coin === claim.coin
+  ?.filter(claim => !localCalculation.incidentId
+    ? true
+    : (localCalculation.coin === claim.coin
     && localCalculation.incidentId === claim.incidentId
-    && (localCalculation.isAdm ? !!claim.isAdmin : !claim.isAdmin)))
+    && (localCalculation.isAdm ? !!claim.isAdmin : !claim.isAdmin))))
 
 const addClaim = () => {
   if (!selectedClaim) {
@@ -128,7 +130,7 @@ const addClaim = () => {
     })
     return
   }
-  if (!localCalculation.claims.map(({ id }: any) => id).includes(selectedClaim?.id))
+  if (!localCalculation.claims?.map(({ id }: any) => id).includes(selectedClaim?.id))
     localCalculation.claims.push(selectedClaim)
   selectedClaim = undefined
 }
@@ -136,6 +138,18 @@ const removeClaim = (index: number) => {
   if (index === undefined)
     return
   localCalculation.claims.splice(index, 1)
+}
+
+const setCoinIncident = ({ incidentId, coin }: any) => {
+  localCalculation.coin = coin
+  localCalculation.incidentId = incidentId
+}
+
+const close = () => {
+  emit('update:open', false)
+  calculationForm.value.reset()
+  localCalculation = clone(props.calculation ? props.calculation : nullCalculation)
+  selectedClaim = undefined
 }
 
 onMounted(() => {
@@ -167,7 +181,7 @@ onMounted(() => {
             class="bg--base flex-1"
             :items="[
               { label: 'Administrativa', value: true },
-              { label: 'Judiciária', value: false },
+              { label: 'Judicial', value: false },
             ]"
             @click="selectedClaim = undefined"
           />
@@ -205,6 +219,7 @@ onMounted(() => {
               :empty-message="localCalculation.coin && localCalculation.incidentId ? 'Nenhum Pleito encontrado...' : 'Selecione Moeda e Incidente!'"
               class="flex-1"
               :emit-value="false"
+              @update:model-value="setCoinIncident"
             />
             <button
               type="button" class="bg--base px-4 text--primary border--primary border-1 font-bold hover:bg--primary/50 hover:text-white rounded h-10 flex justify-center items-center"

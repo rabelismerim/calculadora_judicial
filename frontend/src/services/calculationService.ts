@@ -1,14 +1,13 @@
 // CALCULO
 const getCalculation = (id: string) => api
   .get(`/v1/calculation/${id}/`)
-  .then((result: any) => result?.calculation)
 const getCalculations = (creditorId: string) => api
   .get(`/v1/calculation/creditor/${creditorId}/`)
   .then((result: any) => result?.calculations)
 
 const setCalculation = async (calculation: any) => {
   const localCalculation = clone(calculation)
-  const { id, claims, coin, creditorId, referenceValue } = localCalculation
+  const { id, claims, coin, creditorId, referenceValue, isAdmin } = localCalculation
 
   if (claims?.length) {
     for (const claim of claims) {
@@ -19,6 +18,7 @@ const setCalculation = async (calculation: any) => {
           coins: { coin, value },
           creditorId,
           incidentId,
+          isAdmin,
         } as any) as any
         claim.id = result?.id
       }
@@ -38,7 +38,7 @@ const setCalculation = async (calculation: any) => {
 
 const getIncidents = () => api
   .get('/v1/calculation/incident/')
-  .then((result: any) => result?.incidents?.map(({ id, number, historical }: any) =>
+  .then((result: any) => result?.map(({ id, number, historical }: any) =>
     ({ id, number, historical, description: number })))
 
 const newIncident = async (number: string) => api

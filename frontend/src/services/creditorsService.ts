@@ -22,12 +22,19 @@ interface Creditor {
   recoverings?: { recoveringId: string; rateId: string }[]
 }
 
-const getCreditors = (id: string) => api
-  .get(`/v1/creditors/project/${id}/`)
+const getCreditors = (projectId: string) => api
+  .get(`/v1/creditors/project/${projectId}/`)
+  .then((result: any) => result?.creditors)
+const getCreditorsByLegalNumber = (legalNumber: string, pagination: any) => api
+  .get(`/v1/creditors/recovering_legal_number/${legalNumber}/${controlPagination(pagination)}`)
+  .then((result: any) => ({ items: result?.data?.results, count: result?.data?.count }))
+
+const getInactiveCreditors = (projectId: string) => api
+  .get(`/v1/creditors/project/inactive/${projectId}/`)
   .then((result: any) => result?.creditors)
 
-const getCreditor = (id: string) => api
-  .get(`/v1/creditors/detail/${id}/`)
+const getCreditor = (creditorId: string) => api
+  .get(`/v1/creditors/detail/${creditorId}/`)
   .then((result: any) => result?.creditor)
 
 const getOptions = () => api
@@ -97,7 +104,6 @@ const setNoticeRecovering = async (notice: Notice) => {
 
 const getCreditorClaims = (creditorId: string) => api
   .get(`/v1/base/claim-creditor/creditor/${creditorId}/`)
-  .then((result: any) => result?.claimCreditors)
 const setCreditorClaim = async (notice: Notice) => {
   const { id } = notice
   const method = id ? 'put' : 'post'
@@ -114,6 +120,8 @@ const validateCalculations = async (creditorId: string, calculationIds: string[]
 
 export default {
   getCreditors,
+  getCreditorsByLegalNumber,
+  getInactiveCreditors,
   getCreditor,
   updateCreditor,
   getOptions,

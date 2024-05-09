@@ -33,8 +33,8 @@ const emit = defineEmits(['update:model-value', 'update:search'])
     </div>
     <SearchFilter
       v-else-if="search !== undefined"
-      :model-value="search"
-      @update:model-value="(value: any) => emit('update:search', value)"
+      :search="search"
+      @update:search="(value: any) => emit('update:search', value)"
     />
   </div>
 </template>

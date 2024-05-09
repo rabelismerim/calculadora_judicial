@@ -44,7 +44,7 @@ const getMyProfile = async () => verifyUser()
 
 const getUsers = () => api
   .get('/users/')
-  .then((result: any) => result?.users || [])
+  .then((result: any) => result ?? [])
   .then((users: any[]) => users?.filter(({ role }: any) => !['R'].includes(role)))
 
 const getGroups = () => api
