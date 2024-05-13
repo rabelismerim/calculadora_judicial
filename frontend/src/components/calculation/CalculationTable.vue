@@ -250,9 +250,10 @@ const handleRowClick = (evt: Event, row: any) => {
     :rows="modelValue"
     :columns="calculationColumns"
     flat
-    class="calculation-table"
+    class="calculation-table max-w-100%"
     :pagination="{ rowsPerPage: 0 }"
     hide-pagination
+    no-data-label="Nenhum Cálculo para esse Credor"
     @row-click="(evt: Event, row: any) => handleRowClick(evt, row)"
   >
     <template #header-cell-action="prop">

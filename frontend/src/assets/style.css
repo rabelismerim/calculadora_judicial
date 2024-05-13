@@ -162,6 +162,16 @@ div {
   height: 100%;
 }
 
+.q-table__bottom {
+  position: sticky;
+  bottom: var(--table-bottom, -32px);
+  backdrop-filter: blur(16px);
+  background: #fff8;
+}
+.q-table__bottom .q-field__control::before {
+  background: none;
+}
+
 .skeleton-box, tr:has(.is-loading) {
   background-color: hsla(var(--primary,0,0%,0%),0.10);
   animation: gra 1s infinite;
