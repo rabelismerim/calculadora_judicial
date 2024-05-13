@@ -76,7 +76,8 @@ const addIncident = async (incidentNumber: string) => {
 }
 const loadIncidents = async () => {
   try {
-    incidents = await calculationService.getIncidents()
+    if (!incidents.length)
+      incidents = await calculationService.getIncidents()
   }
   catch (error) {
     printError('ERROR ON LOAD INCIDENSTS:', error)
