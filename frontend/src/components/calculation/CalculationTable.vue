@@ -101,8 +101,8 @@ const calculationColumns: TableColumn[] = [
   },
   {
     name: 'incident',
-    field: 'incident',
-    format: (value: any) => value?.number ?? '-',
+    field: 'claims',
+    format: (value: any) => value?.[0]?.incident?.number ?? '-',
     label: 'N° Incidente',
     align: 'left',
     style: 'width: 100px',
