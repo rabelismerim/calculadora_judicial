@@ -25,8 +25,8 @@ interface Creditor {
 const getCreditors = (projectId: string, pagination = {}) => api
   .get(`/v1/creditors/project/${projectId}/${controlPagination(pagination)}`)
   .then(result => ({ items: result?.data?.results, count: result?.data.count }))
-const getCreditorsByLegalNumber = (legalNumber: string, pagination: any) => api
-  .get(`/v1/creditors/recovering_legal_number/${legalNumber}/${controlPagination(pagination)}`)
+const getCreditorsByLegalNumber = (projectId: string, legalNumber: string, pagination: any) => api
+  .get(`/v1/creditors/recovering_legal_number/${projectId}/entity/${legalNumber}/${controlPagination(pagination)}`)
   .then((result: any) => ({ items: result?.data?.results, count: result?.data?.count }))
 
 const getInactiveCreditors = (projectId: string) => api
