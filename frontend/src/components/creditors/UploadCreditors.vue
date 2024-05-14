@@ -51,7 +51,7 @@ const loadHistoricFiles = async () => {
     const files = []
     const filesData = await uploadService.getObjetcId('project', props.projectId)
     for (const file of filesData) {
-      const result = await uploadService.getFileDetail(file.id)
+      const result = await uploadService.getFileDetail(file.id) as any
       result.name = result.file?.split('/')?.at(-1)
 
       files.push(result)
@@ -165,7 +165,10 @@ const updateFiles = (newFiles: File[]) => uploadFiles = newFiles
           <div class="pb-3 pt-4 px-4 overflow-y-auto max-h-70vh">
             <div class="mb-2 flex items-center gap-4">
               <div class="font-bold text-xl">
-                Histórico de arquivos carregados no sistema ({{ historicFiles.length }})
+                Histórico de arquivos carregados no sistema
+                <span class="px-2 bg--content/50 text--base rounded-full font-bold text-4 border-1 border--content/12">
+                  {{ historicFiles.length }}
+                </span>
               </div>
               <ReloadBtn @click="loadHistoricFiles" />
             </div>
@@ -222,6 +225,12 @@ const updateFiles = (newFiles: File[]) => uploadFiles = newFiles
                     class="p-2 flex justify-center"
                   >
                     Aguardando o processamento em andamento...
+                  </div>
+                  <div
+                    v-else-if="file.task?.status === 'STARTED'"
+                    class="p-2 flex justify-center"
+                  >
+                    O processamento do arquivo iniciou.
                   </div>
                   <div
                     v-else-if="file.task?.status === 'FAILURE'"

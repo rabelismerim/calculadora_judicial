@@ -175,7 +175,7 @@ const loadCreditors = async (recovering: any, props: any = {}) => {
     ...props.pagination,
   }
   try {
-    const { items, count: rowsNumber } = await creditorsService.getCreditorsByLegalNumber(recovering?.entity?.legalNumber, localPagination)
+    const { items, count: rowsNumber } = await creditorsService.getCreditorsByLegalNumber(attrs.projectId, recovering?.entity?.legalNumber, localPagination)
     recovering.creditors = items
 
     for (const creditor of recovering.creditors)

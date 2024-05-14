@@ -265,9 +265,9 @@ class CreateCreditor:
             new_creditor = old_creditor
         else:
 
-            entity = Entity.objects.filter(legal_number=entity['legal_number']).first()
+            new_entity = Entity.objects.filter(legal_number=entity['legal_number']).first()
 
-            if not entity:
+            if not new_entity:
                 entity = Entity.objects.create(**entity)
 
             creditor['entity'] = entity
