@@ -216,7 +216,7 @@ export const isValidCNPJ = (cnpj: string) => {
   return validate(firstDigit, lastDigit, validator(cnpj))
 }
 
-export const controlPagination = ({ rowsPerPage, page, sortBy, descending, filterBy, filterColumn }: any) =>
+export const controlPagination = ({ rowsPerPage = 10, page = 1, sortBy, descending, filterBy, filterColumn }: any) =>
   `?limit=${rowsPerPage}&offset=${rowsPerPage * (page - 1)}${
    sortBy ? `&ordering=${descending ? '-' : ''}${sortBy}` : ''
    }${filterBy ? `&${filterColumn}=${filterBy}` : ''}`

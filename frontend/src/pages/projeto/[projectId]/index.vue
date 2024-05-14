@@ -38,9 +38,19 @@ const showParticipants = $ref(false)
 let project = $ref({} as Project)
 const showEditingProject = $ref(false)
 
+let bigNumbers: any = $ref({})
+const loadBigNumbers = async () => {
+  try {
+    bigNumbers = await projectService.getProjectBigNumbers(attrs.projectId)
+  }
+  catch (error) {
+    printError('ERROR ON LOADING PROJECT BIG NUMBERS:', error)
+  }
+}
 const loadProject = async () => {
   loading = true
   try {
+    loadBigNumbers()
     const result = await projectService.getProject(attrs.projectId)
     project = {
       ...result,
@@ -167,6 +177,10 @@ const loadCreditors = async (recovering: any, props: any = {}) => {
   try {
     const { items, count: rowsNumber } = await creditorsService.getCreditorsByLegalNumber(recovering?.entity?.legalNumber, localPagination)
     recovering.creditors = items
+
+    for (const creditor of recovering.creditors)
+      creditor.total = await projectService.getCreditorBigNumbers(creditor.id)
+
     recovering.pagination = {
       ...localPagination,
       rowsNumber,
@@ -198,35 +212,11 @@ const loadOptions = async () => {
   const result = await creditorsService.getOptions()
   options.ocurrences = result.occurrenceOptions ?? []
 }
-let bigNumbers: any = $ref({})
-const loadBigNumbers = async () => {
-  try {
-    bigNumbers = await projectService.getProjectBigNumbers(attrs.projectId)
-  }
-  catch (error) {
-    printError('ERROR ON LOADING PROJECT BIG NUMBERS:', error)
-  }
-}
-const loadTotalValues = async () => {
-  try {
-    for (const recovering of project?.recoverings) {
-      for (const creditor of recovering?.creditors)
-        creditor.total = await projectService.getCreditorBigNumbers(creditor.id)
-
-      recovering.total = recovering?.creditors?.reduce((acc, { total }: any) => acc + total, 0)
-    }
-  }
-  catch (error) {
-    printError('ERROR ON LOADING CREDITORS TOTAL:', error)
-  }
-}
 
 onMounted(async () => {
   login()
-  loadBigNumbers()
   loadOptions()
-  await loadProject()
-  await loadTotalValues()
+  loadProject()
 })
 </script>
 
@@ -411,7 +401,7 @@ onMounted(async () => {
                   v-model:validation="props.row.isValidating"
                   :creditor="props.row"
                   @row-click="(row: any) => openCalculation(props.row?.id, row.id)"
-                  @validated="loadCalculations(props.row); loadBigNumbers(); loadTotalValues()"
+                  @validated="loadCalculations(props.row); loadBigNumbers()"
                 />
               </QTd>
             </QTr>

@@ -16,7 +16,6 @@ interface ErrorDetail {
 
 const getFileDetail = (id: string) => api
   .get(`/v1/files/detail/${id}/`)
-  .then((result: any) => result?.file)
 
 const getObjetcId = (path: string, objectId: string) => api
   .get(`/v1/files/detail/${path}/${objectId}/`)
