@@ -15,7 +15,6 @@ let pagination = $ref({
 })
 
 let projects = $ref([])
-const projectsCount = computed(() => projects.length)
 
 const statusColors: any = {
   p: '#c4d600', // Em Preparação
@@ -24,40 +23,16 @@ const statusColors: any = {
   a: '#007cb0', // Em Andamento
   f: '#cccccc', // Cancelado
 }
-const gaugeValues = computed(() => Object.entries(projects
-  .reduce((acc: any, { statusDisplay, status }: any) => {
-    if (!acc[statusDisplay]) {
-      acc[statusDisplay] = {
-        count: 0,
-        color: statusColors[status.toLowerCase()],
-      }
-    }
-    acc[statusDisplay].count += 1
-    return acc
-  }, {}))
-  .map(([label, content]) => {
-    const { count, color }: any = content
-    return { label, count, color }
-  }))
 
-const responsibleList = computed(() => Object.entries(projects
-  .reduce((acc: any, project) => {
-    const { legalManager, legalPartner, financialManager, financialPartner, calculationManager } = project
-    const responsibles = [legalManager, legalPartner, financialManager, financialPartner, calculationManager]
-    const uniqueResponsibles = [...new Set(responsibles.map((responsible: any) => responsible?.id))]
-      .map((responsibleId: number) => (responsibles.find(({ id }) => id === responsibleId) || { fullName: '' }).fullName)
-    uniqueResponsibles.forEach((responsible) => {
-      if (!responsible)
-        return acc
-      if (!acc[responsible])
-        acc[responsible] = 0
-      acc[responsible]++
-    })
-    return acc
-  }, {}))
-  .sort(([labelA], [labelB]) => (labelA < labelB) ? -1 : 1)
-  .map(([label, count = 0]) => ({ label, count: Number(count) })))
-
+let bigNumbers: any = $ref({})
+const loadBigNumbers = async () => {
+  try {
+    bigNumbers = await projectService.getDashboardBigNumbers()
+  }
+  catch (error) {
+    printError('ERROR ON LOADING PROJECT BIG NUMBERS:', error)
+  }
+}
 async function loadProjects(props: any = {}) {
   const localPagination = {
     ...pagination,
@@ -65,6 +40,7 @@ async function loadProjects(props: any = {}) {
   }
   loading = true
   try {
+    loadBigNumbers()
     const { items, count: rowsNumber } = await projectService.getProjects(localPagination)
     projects = items
     pagination = {
@@ -92,19 +68,8 @@ const onProjectCreated = async () => {
   loading = false
 }
 
-let bigNumbers: any = $ref({})
-const loadBigNumbers = async () => {
-  try {
-    bigNumbers = await projectService.getDashboardBigNumbers()
-  }
-  catch (error) {
-    printError('ERROR ON LOADING PROJECT BIG NUMBERS:', error)
-  }
-}
-
 onMounted(() => {
   loadProjects()
-  loadBigNumbers()
 })
 
 const columns = [
@@ -150,7 +115,7 @@ const columns = [
     name: 'status',
     field: 'statusDisplay',
     label: 'Status',
-    align: 'left',
+    align: 'right',
     sortable: true,
   },
 ] as {
@@ -178,7 +143,7 @@ const columns = [
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-12 gap-6 mb-8">
       <GraphGauge
-        :values="gaugeValues"
+        :values="bigNumbers.countStatus"
         title="Status dos projetos"
         hint="Esse gráfico apresenta a quantidade de cálculo total de todos os projetos pelo tempo."
         class="md:col-span-2 xl:col-span-3"
@@ -191,7 +156,7 @@ const columns = [
         class="md:col-span-2 xl:col-span-3"
       />
       <ProgressList
-        :values="responsibleList"
+        :values="bigNumbers.countUsers"
         title="Projetos x Responsável"
         hint="Esse gráfico apresenta o número de Projetos por Responsável."
         class="sm:col-span-2 xl:col-span-3"
@@ -204,7 +169,7 @@ const columns = [
       />
     </div>
 
-    <Header title="Projetos" :tag="projectsCount">
+    <Header title="Projetos" :tag="pagination.rowsNumber ?? 0">
       <template #side>
         <ReloadBtn
           hint="Recarregar a Lista de Projetos"
@@ -271,7 +236,7 @@ const columns = [
       </template>
       <template #body-cell-status="props">
         <QTd :props="props">
-          <div class="flex">
+          <div class="flex justify-end">
             <StatusTag
               :label="props.value"
               :color="statusColors[props.row.status.toLowerCase()]"
