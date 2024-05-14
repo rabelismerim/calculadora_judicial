@@ -14,10 +14,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('big_number/', include('big_number.another_app.urls'))
 """
 from django.urls import path
-from .views import BigNumberApi, BigNumberProjectsApi
+from .views import BigNumberApi
 
 urlpatterns = [
     path('<str:path>/<uuid:id>/', BigNumberApi.as_view(), name="big_number-list-detail"),
     path('<str:path>/', BigNumberApi.as_view(), name="big_number-list"),
-    path('projects/detail/', BigNumberProjectsApi.as_view(), name="big_number-project-detail"),
 ]

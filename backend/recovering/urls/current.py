@@ -4,7 +4,7 @@ from recovering.views import RecoveringApi, RecoveringCheckApi, RecoveringLegalN
 
 urlpatterns = [
     path('', RecoveringApi.as_view(), name="recovering-list-create"),
-    path('legal_number/<str:entity__legal_number>/', RecoveringLegalNumberApi.as_view(),
+    path('legal_number/<uuid:project_id>/<str:entity__legal_number>/', RecoveringLegalNumberApi.as_view(),
          name="recovering-list-legal-number"),
     path('project/<uuid:project_id>/', RecoveringProjectApi.as_view(),
          name="recovering-list-project"),

@@ -29,6 +29,7 @@ from projects.judge.models import Judge
 from projects.lawyer.models import Lawyer
 from projects.region.models import Region
 from projects.engagement.models import ProjectEngagement
+from recovering.models import Recovering
 from utils import get_user_model, _
 
 User = get_user_model()
@@ -285,7 +286,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
             ErrorFile.objects.create(file_id=file_id, error='A lista de excel processada estava vazia')
             return
         error_bulk = []
-        recoveries = self.recovering_set.all().values('id', 'entity__legal_number')
+        recoveries = self.recovering_set.all()
         with transaction.atomic():
             for credor in data:
                 try:
@@ -294,11 +295,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
 
                     recovering_name = str(credor['Credor - Nome da Recuperanda'])
 
-                    recovering = None
-                    for rec in recoveries:
-                        if rec['entity__legal_number'] == recovering_legal_number:
-                            recovering = rec['id']
-                            break
+                    recovering = recoveries.filter(entity__legal_number=recovering_legal_number).first()
 
                     if not recovering:
                         entity = {
@@ -312,6 +309,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
                         }
 
                         recovering_schema = RecoveringExcelSchema(data=recovering_data)
+
                         is_valid = recovering_schema.is_valid(raise_exception=False)
 
                         if not is_valid:
@@ -388,7 +386,6 @@ class Project(AbstractDescription, AbstractDateRecovering):
 
             if error_bulk:
                 transaction.set_rollback(True)
-                transaction.rollback()
 
         if error_bulk:
             ErrorFile.objects.bulk_create(error_bulk)
