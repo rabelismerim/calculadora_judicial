@@ -52,7 +52,7 @@ const loadHistoricFiles = async () => {
     const filesData = await uploadService.getObjetcId('project', props.projectId)
     for (const file of filesData) {
       const result = await uploadService.getFileDetail(file.id)
-      result.name = result.file.split('/').at(-1)
+      result.name = result.file?.split('/')?.at(-1)
 
       files.push(result)
     }

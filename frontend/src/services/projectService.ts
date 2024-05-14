@@ -196,11 +196,32 @@ const getUsers = () => api
   .get('/v1/projects/project_user/')
 
 // BIG NUMBERS
+const statusColors: any = {
+  p: '#c4d600', // Em Preparação
+  e: '#c4d600', // Em Preparação
+  c: '#86bc25', // Concluído
+  a: '#007cb0', // Em Andamento
+  f: '#cccccc', // Cancelado
+}
+const statusNames: any = {
+  p: 'Em Preparação', // Em Preparação
+  e: 'Em Preparação', // Em Preparação
+  c: 'Concluído', // Concluído
+  a: 'Em Andamento', // Em Andamento
+  f: 'Cancelado', // Cancelado
+}
 const getDashboardBigNumbers = () => api
   .get('/v1/big_number/dashboard/')
   .then((data: any) => ({
-    rangeDays: data?.rangeForDays?.map(({ day, total }: any) => [formatDay(day), total]) || [],
-    rangeMonths: data?.rangeForMonth?.map(({ month, total }: any) => [formatMonth(month), total]) || [],
+    rangeDays: data?.rangeForDays
+      ?.map(({ day, total }: any) => [formatDay(day), total]) || [],
+    rangeMonths: data?.rangeForMonth
+      ?.map(({ month, total }: any) => [formatMonth(month), total]) || [],
+    countStatus: data?.projectStatus?.countStatus
+      ?.map(({ status, total }: any) => ({ count: total, label: statusNames[status.toLowerCase()] ?? status, color: statusColors[status] ?? statusColors.p })),
+    countUsers: data?.projectStatus?.countUsers
+      ?.map(({ username, total }: any) => ({ count: total, label: username }))
+      ?.sort(({ label: a }: any, { label: b }: any) => a.toLowerCase() < b.toLowerCase() ? -1 : 1),
     byPhase: [
       {
         color: '#86BC25',
@@ -232,11 +253,11 @@ const getProjectBigNumbers = (projectId: string) => api
       label: stepDisplay,
     })) || [],
     classesCalculationsCount: data?.totalClassesCreditor?.map(({ classesDisplay, quantity }: any) => ({
-      label: classesDisplay.split(' - ')?.[0] || '',
+      label: classesDisplay.split(' - ')?.[0] ?? '',
       count: quantity,
     })),
     classesCalculationsTotal: data?.totalClassesCreditor?.map(({ classesDisplay, totalHistorical, totalCalculated }: any) => ({
-      label: classesDisplay.split(' - ')?.[0] || '',
+      label: classesDisplay.split(' - ')?.[0] ?? '',
       calc: totalCalculated / 1000,
       calcHint: formatNumber(totalCalculated, 2),
       hist: totalHistorical / 1000,

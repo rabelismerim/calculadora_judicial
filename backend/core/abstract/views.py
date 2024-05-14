@@ -376,8 +376,7 @@ class AbstractViewApi(generics.GenericAPIView, OrderingFilter):
     pagination_class = None
     pagination = False
     responses = None
-    order_by = []
-
+    order_by = True
     ordering_fields = []  # Especifique quais campos podem ser usados para ordenação
     default_ordering_fields = ['created_at',
                                'updated_at']  # Especifique quais campos padrões podem ser usados para ordenação
@@ -391,6 +390,9 @@ class AbstractViewApi(generics.GenericAPIView, OrderingFilter):
             self.pagination_class = CustomLimitOffsetPagination
 
     def get_ordering_fields(self):
+
+        if not self.order_by:
+            return []
         ordering_fields = self.get_default_ordering_fields()
         ordering_fields.extend(self.get_non_relation_fields())
         ordering = ordering_fields + self.ordering_fields.copy()
@@ -551,9 +553,6 @@ class AbstractViewApi(generics.GenericAPIView, OrderingFilter):
                     raise serializers.ValidationError(
                         {name: _('Field in invalid format. It must be in the format{}').format(instance["legend"])})
         return query
-
-    def get_order_by(self):
-        return self.order_by
 
     def filter(self, id_, **kwargs):
         query = self.get_queryset()

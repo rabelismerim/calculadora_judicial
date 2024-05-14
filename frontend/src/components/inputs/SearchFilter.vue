@@ -83,6 +83,7 @@ const updateField = async (value: string) => {
         placeholder="buscar..."
         class="outline-none max-w-[var(--w)] h-10 py-1"
         @input="debounce(updateSearch)"
+        @keyup.prevent
       >
     </label>
     <button

@@ -1,13 +1,12 @@
 <script setup lang='ts'>
 const props = withDefaults(defineProps<{
-  modelValue: any
+  creditor: any
   options: any
   title: string
   name: number
-  creditorId: string
 }>(), {
 })
-const emit = defineEmits(['update:model-value', 'save'])
+const emit = defineEmits(['update:creditor', 'save'])
 
 let isLoading = $ref(false)
 let isEditing = $ref(false)
@@ -22,15 +21,34 @@ let editingCreditor = $ref({
   occurrence: null,
 } as any)
 
-watchEffect(() => editingCreditor = clone(props.modelValue))
+watchEffect(() => editingCreditor = { ...props.creditor })
 const onReset = () => {
-  editingCreditor = clone(props.modelValue)
+  editingCreditor = { ...props.creditor }
 }
 
 const onSubmit = async () => {
   isLoading = true
   try {
-    await creditorsService.updateCreditor(editingCreditor)
+    const {
+      id,
+      legalNumber,
+      admission,
+      dismissal,
+      fine,
+      defaultInterest,
+      advocativeHours,
+      occurrence,
+    } = editingCreditor
+    await creditorsService.updateCreditor({
+      id,
+      legalNumber,
+      admission,
+      dismissal,
+      fine,
+      defaultInterest,
+      advocativeHours,
+      occurrence,
+    })
     isEditing = false
     emit('save')
   }

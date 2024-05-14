@@ -15,7 +15,7 @@ class AbstractModelSchema(serializers.Serializer):
     create_user = serializers.CharField(read_only=True)
     update_user = serializers.CharField(read_only=True)
     created_at = serializers.DateTimeField(read_only=True)
-    updated_at = serializers.DateTimeField(allow_null=True, read_only=True)
+    updated_at = serializers.DateTimeField(read_only=True)
 
     class Meta:
         fields = '__all__'
