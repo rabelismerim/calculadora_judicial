@@ -5,11 +5,16 @@ const props = withDefaults(defineProps<{
 }>(), {
   users: () => ([]),
 })
-const emit = defineEmits(['update:model-value', 'success'])
+const emit = defineEmits(['update:model-value', 'success', 'notifyPendingUser'])
 
 const { hasPermissions } = $user
 
 const form = ref(null as any)
+
+const pendingUser = ref(props.users)
+const notifyPendingUser = (userData: any) => {
+  pendingUser.value.push(userData)
+}
 
 let loading = $ref(false)
 let editingUser: any = $ref({})

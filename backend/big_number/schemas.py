@@ -14,6 +14,9 @@ Attributes:
 """
 from rest_framework import serializers
 
+from base.schemas import AbstractDescriptionSchema
+from core.abstract.schemas import AbstractModelSchema
+from projects.models import Project
 from utils import _
 
 
@@ -28,7 +31,7 @@ class MethodField(serializers.SerializerMethodField):
         return method(value, **self.func_kwargs)
 
 
-class BigNumberSchema(serializers.Serializer):
+class BigNumberSchema(AbstractModelSchema):
     """
     Serializes the fields of the BigNumber model for use in the API.
 
@@ -57,14 +60,11 @@ class BigNumberSchema(serializers.Serializer):
 
     def get_method(self, obj, **kwargs):
         method = kwargs.get('method')
-        name = kwargs.get('name')
         field = kwargs.get('field')
         obj_method = getattr(obj, method, None)
 
         if not obj_method:
-        #     self.fields.pop(name)
             raise ValueError(_('{} not found').format(method))
-            return
         if callable(obj_method):
             try:
                 obj_method = obj_method()
@@ -74,12 +74,17 @@ class BigNumberSchema(serializers.Serializer):
         obj_method = field().to_representation(obj_method)
         return obj_method
 
-    # def __init__(self, *args, **kwargs):
-    #     bignumber_methods = kwargs.pop('methods_list', [])
-    #     super().__init__(*args, **kwargs)
-    #
-    #     # Add dynamic fields based on list of BigNumberMethod objects
-    #     for method in bignumber_methods:
-    #         field = getattr(serializers, method.get_field_type_display())
-    #         self.fields[method.name] = field(source=method.method, label=method.name, context=self.context)
-    #
+
+class CountStatusSchema(AbstractModelSchema):
+    status = serializers.CharField(read_only=True)
+    total = serializers.IntegerField(read_only=True)
+
+
+class CountUserSchema(AbstractModelSchema):
+    username = serializers.CharField(read_only=True)
+    total = serializers.IntegerField(read_only=True)
+
+
+class BigNumberProjectSchema(AbstractModelSchema):
+    count_status = serializers.ListSerializer(child=CountStatusSchema())
+    count_users = serializers.ListSerializer(child=CountUserSchema())

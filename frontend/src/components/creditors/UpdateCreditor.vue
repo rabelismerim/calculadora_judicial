@@ -2,24 +2,26 @@
 const props = withDefaults(defineProps<{
   modelValue: boolean
   creditor: any
+  loading?: boolean
 }>(), {
   modelValue: false,
+  default: false,
 })
-const emit = defineEmits(['update:modelValue', 'update:creditor', 'success', 'clear'])
+const emit = defineEmits(['update:modelValue', 'update:creditor', 'update:loading', 'success', 'clear'])
 
-let loading = $ref(false)
+let localLoading = $ref(false)
 const form = ref(null as any)
 
 const nullCreditor: any = {
   name: '',
   legalNumber: '',
   description: '',
-  recoverings: [],
+  recovering: null,
 }
 let editingCreditor = $ref(clone(nullCreditor))
 
 watchEffect(() => {
-  editingCreditor = clone(props.creditor)
+  editingCreditor = { ...props.creditor }
 })
 const clear = async () => {
   editingCreditor = clone(nullCreditor)
@@ -31,22 +33,27 @@ const onSubmit = async () => {
   const isValid = await form.value.validate()
   if (!isValid)
     return
-  loading = true
+  localLoading = true
+  emit('update:loading', true)
   try {
-    const { creditorsIds } = editingCreditor
-    for (const _ of creditorsIds)
-      await creditorsService.updateCreditor(editingCreditor)
-
+    const body = { ...editingCreditor }
+    delete body.recovering
+    const creditor = await creditorsService.updateCreditor(body)
+    if (!creditor?.legalNumber)
+      return
     notify({ message: 'O Credor foi atualizado com sucesso!' })
+    emit('update:creditor', creditor)
     emit('update:modelValue', false)
-    emit('success')
-    emit('clear')
   }
   catch (error) {
     printError('ERROR ON CREATE NEW CREDITOR:', error)
   }
   finally {
-    loading = false
+    localLoading = false
+    emit('update:loading', false)
+    emit('success')
+    await delay(0.5)
+    emit('clear')
   }
 }
 </script>
@@ -68,11 +75,13 @@ const onSubmit = async () => {
           :rules="[(value: any) => !!value || 'Este é um campo obrigatório!']"
           grow
         />
-        <InputLegal
+        <QInput
           v-model="editingCreditor.legalNumber"
+          label="CPF/CNPJ"
           :rules="[(value: any) => !!value || 'Este é um campo obrigatório!']"
           disable
           grow
+          outlined
         />
         <QInput
           v-model="editingCreditor.description"
@@ -85,7 +94,7 @@ const onSubmit = async () => {
       </div>
       <div class="relative flex justify-end gap-2 p-3 border-t-1 ">
         <QLinearProgress
-          v-if="loading"
+          v-if="localLoading"
           indeterminate
           color="secondary"
           class="absolute top-0 left-0"
@@ -94,9 +103,9 @@ const onSubmit = async () => {
         <Btn
           label="Atualizar Credor"
           type="button"
-          :loading="loading"
+          :loading="localLoading"
           loading-label="Atualizando Credor..."
-          :disabled="loading"
+          :disabled="localLoading"
           @click="onSubmit"
         />
       </div>

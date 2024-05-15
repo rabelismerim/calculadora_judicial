@@ -4,18 +4,22 @@ It is extended from an AbstractViewApi class and includes a CheckHasPermission p
 Api's responds with JSON data and uses rest_framework.schemas.openapi.AutoSchema to generate the API documents.
 Api's classes use the BigNumber model and schema BigNumber to work with data.
 """
+from itertools import chain
+
 from django.core.exceptions import PermissionDenied
-from django.db.models import Q
+from django.db.models import Q, Count, Value
+from django.db.models.functions import Coalesce
 from django.http import JsonResponse
-from big_number.schemas import BigNumberSchema
+from big_number.schemas import BigNumberSchema, BigNumberProjectSchema
 from big_number.models import BigNumber, BigNumberMethod
 from core.abstract.views import AbstractViewApi
 
 from rest_framework import permissions, serializers
-from core.permission.views import CheckHasPermission
 from dashboard.models import QUERY_DASHBOARD
 from projects.models import Project
-from utils import _, doc
+from utils import _, doc, get_user_model
+
+User = get_user_model()
 
 
 class BigNumberApi(AbstractViewApi):

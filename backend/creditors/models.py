@@ -14,8 +14,8 @@ CHOICES_STATUS_LEGAL = (('U', _('Under review')),
 
 
 class Creditor(AbstractDateCreditor):
-    entity = models.ForeignKey(Entity, on_delete=models.PROTECT)
-    recovering = models.ForeignKey(Recovering, on_delete=models.PROTECT)
+    entity = models.ForeignKey(Entity, on_delete=models.CASCADE)
+    recovering = models.ForeignKey(Recovering, on_delete=models.CASCADE)
     description = models.CharField(
         _('Description'), max_length=255, null=True, blank=True)
 
@@ -24,7 +24,7 @@ class Creditor(AbstractDateCreditor):
         _('Total historical sum of valid amounts'), default=0)
     is_active = models.BooleanField(_('Is active'), default=True)
     rate = models.ForeignKey(
-        Rate, on_delete=models.PROTECT, null=True, blank=True)
+        Rate, on_delete=models.CASCADE, null=True, blank=True)
 
     def get_total(self) -> float:
         return self.total
@@ -48,6 +48,12 @@ class Creditor(AbstractDateCreditor):
 
     def has_notice_aj(self) -> bool:
         return self.noticerecovering_set.exists()
+    
+    def get_entity_name(self):
+        return self.entity.name
+    
+    def get_entity_legal_number(self):
+        return self.entity.legal_number
 
     # def get_classes(self):
     #     return self.calculation_set.all().values_list('')
@@ -119,7 +125,7 @@ class Creditor(AbstractDateCreditor):
 
 
 class LegalPendencies(AbstractDescription):
-    creditor = models.ForeignKey(Creditor, on_delete=models.PROTECT)
+    creditor = models.ForeignKey(Creditor, on_delete=models.CASCADE)
     status = models.CharField(
         _('Status'), max_length=1, choices=CHOICES_STATUS_LEGAL)
     deadline = models.DateField(_('Response deadline'), null=True, blank=True)

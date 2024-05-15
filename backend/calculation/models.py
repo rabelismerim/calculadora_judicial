@@ -6,6 +6,8 @@ to add specific fields as needed.
 """
 import datetime
 
+from base.claim.models import ClaimCreditor
+from base.coins.models import Coins
 from base.models import CHOICES_OCCURRENCE
 from calculation.comparative.signals import new_calc
 from calculation.premise.models import Premise
@@ -75,7 +77,7 @@ class Calculation(AbstractModel):
         date_credit_auth (models.DateField): The date of the credit authorization certificate.
         has_edital (models.BooleanField): Is there an Article 7 Section 2 - 11.101/2005 Edital?
     """
-    creditor = models.ForeignKey(Creditor, on_delete=models.PROTECT)
+    creditor = models.ForeignKey(Creditor, on_delete=models.CASCADE)
     step = models.CharField(_('Calculation step'),
                             max_length=1, choices=CHOICES_STEP, default='S')
     number = models.CharField(_('Calculation number'),
@@ -85,20 +87,8 @@ class Calculation(AbstractModel):
     validated = models.BooleanField(_('Validated?'), default=False)
 
     # Statement A5
-    incident = models.ForeignKey(Incident, on_delete=models.PROTECT, null=True)
-    # TODO Marcelo: Remover incidente
-    # TODO Marcelo: Adicionar Coin, podendo ser nulo
-    # TODO Marcelo: Adicionar ManytoMany para pleitos(claims)(pode ser em branco). Validar no Schema se os pleitos vindo
-    #  são do mesmo credor, incidente, moeda,
-    # TODO Marcelo: Trazer total dos pleitos(claims) ou total da moeda como property(total_coin)
-    # TODO Marcelo: Trazer incidente como property pegando o primeiro pleito(se houver)
-    # TODO Marcelo: Receber apenas Coin ou pleito, se vier os dois ou nenhum, gerar erro
-
-    # TODO verificar se essas premissas variam de calculo para calculo, ou pode ser relacionado ao credor
-    # Statement N5 - Crédito inteiramente concursal? TODO analisar se as verbas adicionadas são concursal e alterar
-    #  automaticamente
-    # TODO: Remover de edição, automatizar calculo para obter os creditos, e ver se algum credito tem a flag
-    #  is_extraconcursal
+    coins = models.ForeignKey(Coins, on_delete=models.CASCADE, null=True)
+    claims = models.ManyToManyField(ClaimCreditor, blank=True)
 
     appeal_credit = models.BooleanField(
         _('Fully competitive credit?'), default=False)
@@ -133,8 +123,9 @@ class Calculation(AbstractModel):
 
     @property
     def incident_number(self):
-        if self.incident:
-            return self.incident.number
+        claim = self.claims.first()
+        if claim:
+            return claim.incident.number
         return ''
 
     @property
@@ -160,7 +151,8 @@ class Calculation(AbstractModel):
 
     @property
     def executor_name(self):
-        return self.executor.name
+        if self.executor:
+            return self.executor.name
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

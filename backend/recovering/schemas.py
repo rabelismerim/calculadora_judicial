@@ -15,7 +15,7 @@ Attributes:
 
 from base.schemas import AbstractDescriptionSchema
 from core.entity.schemas import EntitySchema
-from creditors.schemas import CreditorSchema
+from creditors.schemas import CreditorSchema, CreditorRecoveringSchema
 from recovering.models import Recovering
 from rest_framework import serializers
 
@@ -40,7 +40,7 @@ class RecoveringSchema(AbstractDescriptionSchema):  # V1
     #     source='archiverecovering_set', many=True, read_only=True, exclude=('recovering_id', ))
     # archives = ArchiveRecoveringSchema(
     #     many=True, write_only=True, exclude=('recovering_id', ))
-    creditors = CreditorSchema(source='creditor_set', many=True, read_only=True, allow_null=True)
+    creditors = CreditorRecoveringSchema(source='creditor_set', many=True, read_only=True, allow_null=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     status_support_display = serializers.CharField(source='get_status_support_display', read_only=True)
     project_id = serializers.UUIDField()

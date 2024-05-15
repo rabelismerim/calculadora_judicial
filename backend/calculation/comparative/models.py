@@ -41,7 +41,7 @@ class Comparative(AbstractModel):
     #     if hasattr(self, 'calculation'):
     #         self.checks()
 
-    calculation = models.OneToOneField(Calculation, on_delete=models.PROTECT)
+    calculation = models.OneToOneField(Calculation, on_delete=models.CASCADE)
 
     # TODO: Esse valor pode ser nulo?
     data_base_creditor = models.DateField(

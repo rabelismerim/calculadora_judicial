@@ -1,7 +1,8 @@
 from django.http import JsonResponse
 from rest_framework import permissions, status, serializers
 from base.claim.models import ClaimCreditor, ClaimLawyer
-from base.claim.schemas import ClaimCreditorUpdateSchema, ClaimLawyerUpdateSchema, ClaimCreditorSchema
+from base.claim.schemas import ClaimCreditorUpdateSchema, ClaimLawyerUpdateSchema, ClaimCreditorSchema, \
+    ClaimLawyerSchema
 from base.coins.models import Coins
 from core.abstract.views import AbstractViewApi
 from core.permission.views import CheckHasPermission
@@ -59,8 +60,8 @@ class ClaimCreditorApi(AbstractViewApi):
         classes = new_claim.get('classes')
         new_claim['coins'] = Coins.objects.create(**coins)
         new_claim['creditor'] = creditor
-        self.model.objects.create(classes_id=classes.id, **new_claim)
-        return JsonResponse({'creditor': CreditorSchema(creditor).data}, status=status.HTTP_201_CREATED)
+        new_claim_obj = self.model.objects.create(classes_id=classes.id, **new_claim)
+        return JsonResponse(ClaimCreditorSchema(new_claim_obj).data, status=status.HTTP_201_CREATED)
 
 
 class ClaimCreditorUpdateApi(AbstractViewApi):
@@ -101,7 +102,7 @@ class ClaimCreditorUpdateApi(AbstractViewApi):
             claim.classes = classes
             claim.save()
 
-        return JsonResponse({'creditor': CreditorSchema(claim.creditor).data}, status=status.HTTP_201_CREATED)
+        return JsonResponse(ClaimLawyerSchema(claim).data, status=status.HTTP_201_CREATED)
 
 
 class ClaimLawyerApi(AbstractViewApi):
@@ -144,7 +145,7 @@ class ClaimLawyerApi(AbstractViewApi):
         elif coins:
             claim.coins.dict_update(**coins)
 
-        return JsonResponse({'creditor': CreditorSchema(creditor).data}, status=status.HTTP_201_CREATED)
+        return JsonResponse(ClaimLawyerSchema(claim).data, status=status.HTTP_201_CREATED)
 
 
 class ClaimLawyerDeleteApi(AbstractViewApi):

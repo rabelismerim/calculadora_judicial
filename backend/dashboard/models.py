@@ -7,6 +7,7 @@ to add specific fields as needed.
 import datetime as dt
 from calendar import monthrange
 from datetime import datetime, timedelta, time, date
+from itertools import chain
 
 from dateutil.relativedelta import relativedelta
 from django.db import models
@@ -17,6 +18,7 @@ from rest_framework import serializers
 
 from calculation.models import Calculation
 from core.abstract.models import AbstractModel
+from projects.models import Project
 from utils import get_user_model, _
 
 User = get_user_model()
@@ -146,6 +148,7 @@ class Dashboard(AbstractModel, Query):
         return {
             'adm': total_adm,
             'judicial': total_judicial,
+
         }
 
     def range_for_days(self, request):
@@ -218,6 +221,45 @@ class Dashboard(AbstractModel, Query):
             total_registros = records_by_month.filter(login_date__month=month.month).count()
             records_by_month_list.append({'month': month_str, 'total': total_registros})
         return records_by_month_list
+
+    def project_status(self, request):
+        projects = Project.objects.all().select_related('legal_manager', 'calculation_manager',
+                                                        'financial_manager', 'legal_partner',
+                                                        'financial_partner')
+        count_status = projects.values('status').annotate(total=Count('id'))
+
+        count_status = list(count_status.values('status', 'total'))
+
+        project_users = projects.values_list('legal_manager__username', 'calculation_manager__username',
+                                             'financial_manager__username', 'legal_partner__username',
+                                             'financial_partner__username')
+        project_users = list(set(chain.from_iterable(project_users)))
+
+        count_users = []
+
+        users = User.objects.all()
+        for username in project_users:
+
+            print(type(username), 'user type')
+            total = 0
+
+            for project in projects:
+
+                any_user = [
+                    str(project.legal_manager) == username,
+                    str(project.calculation_manager) == username,
+                    str(project.financial_manager) == username,
+                    str(project.legal_partner) == username,
+                    str(project.financial_partner) == username,
+                ]
+
+                if any(any_user):
+                    total += 1
+
+            user = users.filter(username=username).first()
+            count_users.append({'username': user.get_full_name, 'total': total})
+
+        return {'count_status': count_status, 'count_users': count_users}
 
 
 class LoginRecord(models.Model):

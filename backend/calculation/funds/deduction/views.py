@@ -228,6 +228,7 @@ class StatementFundsDeductionDetailApi(AbstractViewApi):
     serializer_class = StatementDeductionSchema
     http_method_names = ['get', 'put', 'delete']
     model = StatementDeduction
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
 
     docs = docs.copy()
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific statement fund object 
@@ -289,7 +290,7 @@ class StatementFundsDeductionDueDetailApi(AbstractViewApi):
     serializer_class = StatementDeductionDueSchema
     http_method_names = ['get', 'put', 'delete']
     model = StatementDeductionDue
-
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     docs = docs.copy()
     docs['get'] = _("""This method handles GET requests for the view. It retrieves a specific statement fund object 
     using the given id from the query parameters and serializes the result into JSON format before returning it as an 

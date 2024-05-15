@@ -21,7 +21,7 @@ class Statement(AbstractModel):
         calculation (Calculation): The calculation that this statement belongs to.
         conclusion (str): A one-character string indicating the conclusion of the statement.
     """
-    calculation = models.OneToOneField(Calculation, on_delete=models.PROTECT)
+    calculation = models.OneToOneField(Calculation, on_delete=models.CASCADE)
     conclusion = models.CharField(_('Conclusion legend'), max_length=1, choices=CHOICES_CONCLUSION, default='I')
 
     def get_statement_pf(self):

@@ -21,8 +21,9 @@ const loadTemplate = async (id: string) => {
   if (!id)
     return
   const result = await ratesService.getTemplate(id)
-  newCredit.endPoint = result?.endPoint
-  const fields = result?.fields?.map(({ id, key, label, default: fallback, order, required, typeDisplay, choices }: any) => ({
+  const template = (result ?? {}) as any
+  newCredit.endPoint = template?.endPoint
+  const fields = template?.fields?.map(({ id, key, label, default: fallback, order, required, typeDisplay, choices }: any) => ({
     id,
     key,
     label,
@@ -38,7 +39,7 @@ const loadTemplate = async (id: string) => {
   if (defaultValues?.length > 0)
     defaultValues.forEach(([key, value]: [string, any]) => newCredit[key] = value)
   newCredit.fields = fields
-    .sort(({ order: a }: any, { order: b }: any) => a - b)
+    ?.sort(({ order: a }: any, { order: b }: any) => a - b)
 }
 
 const clearNewCredit = () => {
@@ -47,7 +48,6 @@ const clearNewCredit = () => {
   emit('update:modelValue', false)
 }
 
-const host = import.meta.env.VITE_API_HOST
 const createCredit = async () => {
   const { classId, coinId, rateId, templateId, endPoint } = newCredit
   if (!endPoint)
@@ -55,7 +55,10 @@ const createCredit = async () => {
 
   try {
     loading = true
-    const result: any = await api.post(endPoint, {
+    const endPointNewCredit = endPoint.startsWith('/juca/api/')
+      ? endPoint.replace('/juca/api/', '')
+      : endPoint
+    const result: any = await api.post(endPointNewCredit, {
       ...newCredit,
       classes: {
         classe: classId,
