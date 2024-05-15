@@ -69,7 +69,7 @@ DEBUG = config('DEBUG', cast=bool, default=False)
 ENABLE_SSO = config('ENABLE_SSO', cast=bool, default=True)
 ENABLE_TOKEN = config('ENABLE_TOKEN', cast=bool, default=False)
 ENABLE_DRF = config('ENABLE_DRF', cast=bool, default=True)
-TEST_PROD = config('TEST_PROD', cast=bool, default=False)
+DATABASE_POSTGRES = config('DATABASE_POSTGRES', cast=bool, default=False)
 ENVIRONMENT = config('ENVIRONMENT', cast=str, default='prod').lower()
 ENABLE_LOGGER = config('ENABLE_LOGGER', cast=bool, default=False)
 
@@ -419,7 +419,7 @@ if IS_DEV or 'test' in sys.argv:
     my_string = sys.argv[0].replace('\\', '').replace('/', '')
 
     if my_string.endswith('main.py'):
-        if TEST_PROD is False:
+        if DATABASE_POSTGRES is False:
             DATABASES = {
                 'default': {
                     'ENGINE': 'django.db.backends.sqlite3',
@@ -455,7 +455,7 @@ if IS_DEV or 'test' in sys.argv:
                 }
             }
     else:
-        if TEST_PROD:
+        if DATABASE_POSTGRES:
             DATABASES = {
                 'default': {
                     'ENGINE': 'django.db.backends.postgresql',
