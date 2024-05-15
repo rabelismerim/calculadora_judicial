@@ -138,6 +138,7 @@ steps:
       Contents: |
         **/*
         !**/__pycache__/**
+        !**/*.pyd
       TargetFolder: 'C:\inetpub\wwwroot\juca\'
       OverWrite: true
       flattenFolders: false
