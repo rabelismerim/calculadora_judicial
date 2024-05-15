@@ -15,6 +15,8 @@ Attributes:
 Usage example:
 serializer = CalculationSchema()
 """
+from base.claim.schemas import ClaimCreditorSchema
+from base.coins.schemas import CoinsSchema
 from base.schemas import AbstractDescriptionSchema, UpdateUserSerializer
 from calculation.comment.schemas import StepCommentSchema, CommentSchema
 from calculation.comparative.schemas import ComparativeSchema
@@ -31,6 +33,7 @@ from calculation.verdict.schemas import VerdictSchema
 from rest_framework import serializers
 from calculation.models import Calculation, Incident, CHOICES_STEP, SpecialApprover
 from creditors.classes.models import CLASSE_CHOICES
+from creditors.models import Creditor
 from creditors.schemas import CreditorSchema
 from projects.project_user.schemas import ProjectUserProjectSchema
 from rates.schemas import RateSchema
@@ -206,8 +209,13 @@ class CalculationSchema(CalculationAllFundsSchema):  # V1
     The Meta class is used to specify the Calculation model and all fields are serialized.
     The validate method is overridden to handle the verdict_set and funds_set fields and returns the validated data.
     """
-    incident = IncidentSchema(many=False, read_only=True)
-    incident_id = serializers.UUIDField(write_only=True)
+    # incident = IncidentSchema(many=False, read_only=True) # TODO Marcelo
+    # incident_id = serializers.UUIDField(write_only=True) # TODO Marcelo
+
+    coins = CoinsSchema(many=False, allow_null=True, required=False)  # TODO Marcelo
+    claims = ClaimCreditorSchema(many=True, allow_null=True, read_only=True)  # TODO Marcelo
+    claims_ids = serializers.ListField(child=serializers.UUIDField(), write_only=True, required=False)  # TODO Marcelo
+
     creditor = CreditorSchema(many=False, read_only=True)
     creditor_id = serializers.UUIDField(write_only=True)
     criterion = CriterionSchema(many=False, read_only=True)
@@ -239,12 +247,31 @@ class CalculationSchema(CalculationAllFundsSchema):  # V1
         fields = '__all__'
         read_only_fields = ('step', 'number', 'approver',
                             'special_approvers', 'executor', 'reviewer', 'validated', 'date_approved_calculation',
-                            'creditor_id', 'is_adm')
+                            'creditor_id', 'is_adm', 'incident_number')
 
     def validate(self, data):
         data['verdict'] = data.pop('verdict_set', None)
         data['funds'] = data.pop('funds_set', None)
         data['is_adm'] = data.pop('is_adm', True)
+
+        claims_ids = data.get('claims_ids', [])
+        coins = data.get('coins', None)
+
+        if claims_ids and coins:
+            raise serializers.ValidationError('Usar apenas um campo, coins ou claims_ids')
+
+        if claims_ids:
+
+            creditor = Creditor.objects.filter(id=data['creditor_id']).first()
+
+            claim_creditor = creditor.claimcreditor_set.all()
+
+            for claim_id in claims_ids:
+                if not claim_creditor.filter(id=claim_id).exists():
+                    raise serializers.ValidationError('O id do pleito recebido não tem ligação com esse credor')
+        elif not coins:
+            raise serializers.ValidationError('Usar um dos campos, coins ou claims_ids')
+
         return super(CalculationSchema, self).validate(data)
 
     def extract_historical_lists(self, data):
@@ -316,8 +343,8 @@ class CalculationV2Schema(AbstractDescriptionSchema):  # V2
     The validate method is overridden to handle the verdict_set and funds_set fields and returns the validated data.
     """
 
-    incident = IncidentSchema(many=False, read_only=True)
-    incident_id = serializers.UUIDField(write_only=True)
+    # incident = IncidentSchema(many=False, read_only=True)
+    # incident_id = serializers.UUIDField(write_only=True)
     creditor_id = serializers.UUIDField(write_only=True)
     # TODO: remover required False depois do front ter colocado a obrigatoriedade
     rate_id = serializers.UUIDField(write_only=True, required=False)
@@ -361,7 +388,7 @@ class CalculationV2Schema(AbstractDescriptionSchema):  # V2
         data['verdict'] = data.pop('verdict_set', None)
         data['funds'] = data.pop('funds_set', None)
         data['is_adm'] = data.pop('is_adm', True)
-        return super(CalculationSchema, self).validate(data)
+        return super(CalculationV2Schema, self).validate(data)
 
     def extract_historical_lists(self, data):
         # Inicializa uma lista para conter os valores históricos

@@ -12,10 +12,6 @@ const emit = defineEmits(['update:modelValue', 'update:uploadFiles', 'success', 
 let isLoading = $ref(false)
 
 const selectedTab = ref('carregamento')
-const tabs = [
-  { label: 'Carregamento', value: 'carregamento' },
-  { label: 'Histórico', value: 'historico' },
-]
 
 const closeModal = () => {
   emit('update:modelValue', false)
@@ -49,14 +45,14 @@ const downloadTemplate = async (fileName: string) => {
 }
 
 let historicFiles: any = $ref([])
-const loadHistoricFiles = async (useLoading = false) => {
-  isLoading = useLoading && true
+const loadHistoricFiles = async () => {
+  isLoading = true
   try {
     const files = []
     const filesData = await uploadService.getObjetcId('project', props.projectId)
     for (const file of filesData) {
-      const result = await uploadService.getFileDetail(file.id)
-      result.name = result.file.split('/').at(-1)
+      const result = await uploadService.getFileDetail(file.id) as any
+      result.name = result.file?.split('/')?.at(-1)
 
       files.push(result)
     }
@@ -66,9 +62,14 @@ const loadHistoricFiles = async (useLoading = false) => {
     printError('ERROR ON LOADING HISTORIC FILES:', error)
   }
   finally {
-    isLoading = useLoading && false
+    isLoading = false
   }
 }
+
+const tabs = [
+  { label: 'Carregamento', value: 'carregamento' },
+  { label: 'Histórico', value: 'historico', onclick: loadHistoricFiles },
+]
 
 const fileStatuses = [
   { label: 'Pendente', value: 'PENDING', color: '#c4d600' },
@@ -159,14 +160,17 @@ const updateFiles = (newFiles: File[]) => uploadFiles = newFiles
 
         <QTabPanel
           name="historico"
-          class="px-4 bg-slate-1"
+          class="bg-slate-1 p-0"
         >
-          <div class="mb-3">
+          <div class="pb-3 pt-4 px-4 overflow-y-auto max-h-70vh">
             <div class="mb-2 flex items-center gap-4">
               <div class="font-bold text-xl">
-                Histórico de arquivos carregados no sistema ({{ historicFiles.length }})
+                Histórico de arquivos carregados no sistema
+                <span class="px-2 bg--content/50 text--base rounded-full font-bold text-4 border-1 border--content/12">
+                  {{ historicFiles.length }}
+                </span>
               </div>
-              <ReloadBtn @click="loadHistoricFiles(true)" />
+              <ReloadBtn @click="loadHistoricFiles" />
             </div>
             <div>
               <div>
@@ -183,6 +187,12 @@ const updateFiles = (newFiles: File[]) => uploadFiles = newFiles
                         <div>{{ file.name }}</div>
                       </div>
                       <StatusTag
+                        v-if="file.errors?.length"
+                        label="Falhou"
+                        color="#d9291c"
+                      />
+                      <StatusTag
+                        v-else
                         :label="getStatus(file.task?.status)?.label"
                         :color="getStatus(file.task?.status)?.color"
                       />
@@ -215,6 +225,18 @@ const updateFiles = (newFiles: File[]) => uploadFiles = newFiles
                     class="p-2 flex justify-center"
                   >
                     Aguardando o processamento em andamento...
+                  </div>
+                  <div
+                    v-else-if="file.task?.status === 'STARTED'"
+                    class="p-2 flex justify-center"
+                  >
+                    O processamento do arquivo iniciou.
+                  </div>
+                  <div
+                    v-else-if="file.task?.status === 'FAILURE'"
+                    class="p-2 flex justify-center"
+                  >
+                    O processamento do arquivo falhou.
                   </div>
                   <div
                     v-else

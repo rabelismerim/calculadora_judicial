@@ -4,8 +4,8 @@ from base.models import AbstractCredit
 
 
 class Notice(AbstractCredit):  # Edital AJ
-    creditor = models.ForeignKey(Creditor, on_delete=models.PROTECT)
+    creditor = models.ForeignKey(Creditor, on_delete=models.CASCADE)
 
 
 class NoticeRecovering(AbstractCredit):  # Edital Recuperanda
-    creditor = models.ForeignKey(Creditor, on_delete=models.PROTECT)
+    creditor = models.ForeignKey(Creditor, on_delete=models.CASCADE)

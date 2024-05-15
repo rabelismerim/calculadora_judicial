@@ -22,13 +22,19 @@ interface Creditor {
   recoverings?: { recoveringId: string; rateId: string }[]
 }
 
-const getCreditors = (id: string) => api
-  .get(`/v1/creditors/project/${id}/`)
+const getCreditors = (projectId: string, pagination = {}) => api
+  .get(`/v1/creditors/project/${projectId}/${controlPagination(pagination)}`)
+  .then(result => ({ items: result?.data?.results, count: result?.data.count }))
+const getCreditorsByLegalNumber = (projectId: string, legalNumber: string, pagination: any) => api
+  .get(`/v1/creditors/recovering_legal_number/${projectId}/${legalNumber}/${controlPagination(pagination)}`)
+  .then((result: any) => ({ items: result?.data?.results ?? [], count: result?.data?.count ?? 0 }))
+
+const getInactiveCreditors = (projectId: string) => api
+  .get(`/v1/creditors/project/inactive/${projectId}/`)
   .then((result: any) => result?.creditors)
 
-const getCreditor = (id: string) => api
-  .get(`/v1/creditors/detail/${id}/`)
-  .then((result: any) => result?.creditor)
+const getCreditor = (creditorId: string) => api
+  .get(`/v1/creditors/detail/${creditorId}/`)
 
 const getOptions = () => api
   .get('/v1/creditors/options/')
@@ -71,6 +77,15 @@ interface Notice {
 const getNoticeAJ = () => api
   .get('/v1/creditors/notice/aj/')
   .then((result: any) => result?.notices)
+
+const getNoticeAJCreditor = (creditorId: any) => api
+  .get(`/v1/creditors/notice/aj/creditor/${creditorId}/`)
+  .then((result: any) => result?.notices ?? [])
+
+const getNoticeAJRecovering = (creditorId: any) => api
+  .get(`/v1/creditors/notice/recovering/creditor/${creditorId}/`)
+  .then((result: any) => result?.noticeRecoverings ?? [])
+
 const setNoticeAJ = async (notice: Notice) => {
   const { id } = notice
   const method = id ? 'put' : 'post'
@@ -86,11 +101,14 @@ const setNoticeRecovering = async (notice: Notice) => {
   return api[method](`/v1/creditors/notice/recovering/${id ? `${id}/` : ''}`, notice)
 }
 
+const getCreditorClaims = (creditorId: string) => api
+  .get(`/v1/base/claim-creditor/creditor/${creditorId}/`)
 const setCreditorClaim = async (notice: Notice) => {
   const { id } = notice
   const method = id ? 'put' : 'post'
   return api[method](`/v1/base/claim-creditor/${id ? `${id}/` : ''}`, notice)
 }
+
 const setLawyerClaim = async (notice: Notice) => api
   .post('/v1/base/claim-lawyer/', notice)
 
@@ -101,14 +119,19 @@ const validateCalculations = async (creditorId: string, calculationIds: string[]
 
 export default {
   getCreditors,
+  getCreditorsByLegalNumber,
+  getInactiveCreditors,
   getCreditor,
   updateCreditor,
   getOptions,
   newCreditors,
   getNoticeAJ,
+  getNoticeAJCreditor,
+  getNoticeAJRecovering,
   setNoticeAJ,
   getNoticeRecovering,
   setNoticeRecovering,
+  getCreditorClaims,
   setCreditorClaim,
   setLawyerClaim,
   validateCalculations,

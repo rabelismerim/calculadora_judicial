@@ -16,8 +16,7 @@ Including another URLconf
 from django.urls import path
 from .views import BigNumberApi
 
-
 urlpatterns = [
-    path('<str:path>/<uuid:id>/', BigNumberApi.as_view(), name="big_number-list-create"),
-    path('<str:path>/', BigNumberApi.as_view(), name="big_number-list-create"),
+    path('<str:path>/<uuid:id>/', BigNumberApi.as_view(), name="big_number-list-detail"),
+    path('<str:path>/', BigNumberApi.as_view(), name="big_number-list"),
 ]

@@ -7,9 +7,11 @@ const props = withDefaults(defineProps<{
   menuLabel?: string
   loading?: boolean
   links?: Link[]
+  wrapperClasse?: string
 }>(), {
   menuLabel: 'Menu',
   links: () => [],
+  wrapperClasse: '',
 })
 const router = useRouter()
 const isOpen = $ref(false)
@@ -65,6 +67,7 @@ const isOpen = $ref(false)
           class="px-4 md:px-8 py-4 md:py-8 lg:pl-8 max-h-[calc(100vh-96px)] overflow-y-auto overflow-x-hidden flex justify-center"
           :class="{
             'pl-12 md:pl-16': $slots.menu,
+            [wrapperClasse]: true,
           }"
         >
           <div class="max-w-[min(1600px,100%)] w-full" :class="{ 'page-open': isOpen }">

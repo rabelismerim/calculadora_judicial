@@ -3,6 +3,19 @@ export const printError = (message: string, error: any) => {
     console.warn(message, error)
 }
 
+const fnMap = new Map()
+export const debounce = (data: Function, ...args: any[]) => {
+  const [func, timeout = 500] = Array.isArray(data) ? data : [data]
+  let timeoutId = fnMap.get(func)
+  if (timeoutId)
+    clearTimeout(timeoutId)
+  timeoutId = setTimeout(() => {
+    func(...args)
+    fnMap.delete(func)
+  }, timeout)
+  fnMap.set(func, timeoutId)
+}
+
 export const toUpperCase = (text = '') => text.toUpperCase()
 
 export const formatDate = (date: string) => new Date(date)
@@ -202,6 +215,11 @@ export const isValidCNPJ = (cnpj: string) => {
   const lastDigit = digit(sum(toValidate(cnpj, 4), 6) + sum(toValidate(cnpj, 12, 5), 9))
   return validate(firstDigit, lastDigit, validator(cnpj))
 }
+
+export const controlPagination = ({ rowsPerPage = 10, page = 1, sortBy, descending, filterBy, filterColumn }: any) =>
+  `?limit=${rowsPerPage}&offset=${rowsPerPage * (page - 1)}${
+   sortBy ? `&ordering=${descending ? '-' : ''}${sortBy}` : ''
+   }${filterBy ? `&${filterColumn}=${filterBy}` : ''}`
 
 export const rangeBetween = (start = 0, end = 0, count = 1) => Array(count < 0 ? 0 : count).fill(0)
   .map((_, i) => start + ((end - start) / (count <= 1 ? 1 : count - 1) * i))

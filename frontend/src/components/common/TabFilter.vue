@@ -25,6 +25,7 @@ const emit = defineEmits(['update:model-value', 'update:search'])
         :key="index"
         :name="tab.value"
         :label="tab.label"
+        @click="() => tab?.onclick?.()"
       />
     </QTabs>
     <div v-if="$slots.side">
@@ -32,8 +33,8 @@ const emit = defineEmits(['update:model-value', 'update:search'])
     </div>
     <SearchFilter
       v-else-if="search !== undefined"
-      :model-value="search"
-      @update:model-value="(value: any) => emit('update:search', value)"
+      :search="search"
+      @update:search="(value: any) => emit('update:search', value)"
     />
   </div>
 </template>

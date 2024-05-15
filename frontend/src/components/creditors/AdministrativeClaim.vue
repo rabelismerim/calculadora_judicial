@@ -21,6 +21,7 @@ const newCredit = {
     coin: 'B',
     value: 0,
   },
+  isAdmin: true,
 }
 let localData = $ref([clone(newCredit)] as any[])
 const data = computed({
@@ -46,7 +47,7 @@ const onSubmit = async () => {
   isLoading = true
   try {
     for (const item of data.value) {
-      const payload = { ...item, creditorId: props.creditorId }
+      const payload = { ...item, creditorId: props.creditorId, isAdmin: true }
       await creditorsService.setCreditorClaim(payload)
     }
     isEditing = false
@@ -106,7 +107,7 @@ onMounted(() => {
         <InputSelect
           v-model="value.incidentId"
           v-model:options="incidents"
-          label="Número de Incidente"
+          label="Número da Ficha"
           mask="#######-##.####.#.##.####"
           :to-add="addIncident"
           :rules="[(value: any) => !!value || 'É um campo obrigatório']"
@@ -146,7 +147,7 @@ onMounted(() => {
           dense
           class="mb-5"
         />
-        <div
+        <button
           class="@container @md:col-start-2 @3xl:col-start-auto cursor-pointer bg--error h-10 rounded-.5 border-1 border-red-8 color-white flex gap-4 justify-center items-center"
           :disabled="!isEditing ? true : value.id ? true : undefined"
           @click="removeCredit(!value.id && index)"
@@ -154,8 +155,8 @@ onMounted(() => {
           <div class="hidden @[100px]:block">
             Remover
           </div>
-          <div class="i-carbon-trash-can bg-white" />
-        </div>
+          <div class="i-carbon-trash-can" />
+        </button>
       </div>
       <Btn
         label="Adicionar novo Crédito"

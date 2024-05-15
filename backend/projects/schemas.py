@@ -1,7 +1,7 @@
 from django.db.models import F
 from base.schemas import AbstractChoicesSerializer, AbstractDescriptionSchema
 from core.abstract.schemas import AbstractModelSchema
-from core.dttuser.schemas import UserDttSchema
+from core.dttuser.schemas import UserDttSchema, UserDttProjectSchema
 from projects.court.models import Court
 from projects.court.schemas import CourtSchema
 from projects.engagement.schemas import ProjectEngagementSchema
@@ -249,11 +249,22 @@ class ProjectListSchema(ProjectSchema):
     """
 
     # recoverings = RecoveringListSchema(source='recovering_set',
+
     #                                    many=True, read_only=False, exclude=('project', ))
+
+    legal_manager = UserDttProjectSchema(many=False, read_only=True)
+
+    calculation_manager = UserDttProjectSchema(many=False, read_only=True)
+
+    financial_manager = UserDttProjectSchema(many=False, read_only=True)
+
+    legal_partner = UserDttProjectSchema(many=False, read_only=True)
+
+    financial_partner = UserDttProjectSchema(many=False, read_only=True)
 
     class Meta:
         model = Project
-        fields = ("id", 'description', 'status', 'status_display', 'created_at', 'project_users',
+        fields = ("id", 'description', 'status', 'status_display', 'created_at',
                   'engagement', 'num_recovering', 'is_adm', 'process_number', 'legal_manager',
                   'calculation_manager', 'financial_manager', 'legal_partner', 'financial_partner')
 
