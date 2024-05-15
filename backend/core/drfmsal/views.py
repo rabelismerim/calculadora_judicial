@@ -6,7 +6,7 @@ from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from config.settings import ENABLE_SSO, DRFMSAL_IDENTITY_WEB
+from config.settings import ENABLE_SSO, DRFMSAL_IDENTITY_WEB, ENABLE_TOKEN
 from core.abstract.views import AbstractViewApi
 from core.drfmsal.schemas import SignStatusSerializer
 
@@ -48,7 +48,7 @@ class SignStatusApi(AbstractViewApi):
     }
     serializer_class = SignStatusSerializer
     permission_classes = [AllowAny]
-    if ENABLE_SSO:
+    if not ENABLE_TOKEN:
         authentication_classes = [SessionAuthentication]
     else:
         authentication_classes = [SessionAuthentication, TokenAuthentication]

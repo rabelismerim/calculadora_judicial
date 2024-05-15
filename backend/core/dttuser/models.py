@@ -17,7 +17,7 @@ from django.utils.translation import gettext_lazy as _
 
 from utils import check_choice
 from .managers import CustomUserManager
-from config.settings import IS_LOCALHOST, ENABLE_SSO
+from config.settings import ENABLE_SSO, IS_PROD
 
 ROLES_CHOICES = (
     ('S', _('Partner')),
@@ -329,7 +329,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         # Allowing or blocking to use django user with password
         self.is_active = self.status in STATUS_ACTIVE
-        if IS_LOCALHOST is False:
+        if IS_PROD is False:
             if not self._state.adding and (self.id != self._loaded_values['id']):
                 raise ValueError(_("Updating the value of id isn't allowed"))
             if ENABLE_SSO:

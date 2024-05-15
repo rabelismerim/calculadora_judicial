@@ -7,8 +7,7 @@ Api's classes use the DttUser model and schema DttUser to work with data.
 from django.db.models import Q
 from rest_framework.exceptions import PermissionDenied
 
-from config.settings import IS_LOCALHOST, DTT_EMAIL, ROLES, GROUP_NAME_FINANCIAL_MANAGER, \
-    GROUP_NAME_CALCULATION_MANAGER, GROUP_NAME_LEGAL_MANAGER, GROUP_NAME_PARTNER
+from config.settings import DTT_EMAIL, ROLES, IS_DEV
 from core.abstract.views import AbstractViewApi
 from core.dttuser.schemas import UserDttSchema, UserAuthorizeDttSchema, GroupSchema, SubgroupSchema, UserMailDttSchema
 from django.contrib.auth import authenticate, login
@@ -20,7 +19,7 @@ from core.permission.views import CheckHasPermission, CheckPermissions, CheckAut
 from utils import get_user_model, _, doc
 from rest_framework import permissions, serializers
 from django.contrib.auth.models import Group
-from core.dttuser.models import Subgroup, ROLES_EMAIL
+from core.dttuser.models import Subgroup
 
 User = get_user_model()
 
@@ -42,10 +41,7 @@ class AbstractUserDttApi(AbstractViewApi):
     returned in a JSON format. """
     serializer_class = UserDttSchema
     docs = docs.copy()
-    if IS_LOCALHOST:
-        permission_classes = [permissions.AllowAny]
-    else:
-        permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = User
     allow_cache = False
     query_params = [
@@ -194,10 +190,7 @@ class GroupApi(AbstractViewApi):
         """)
     }
 
-    if IS_LOCALHOST:
-        permission_classes = [permissions.AllowAny]
-    else:
-        permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Group
     http_method_names = ['get']
 
@@ -259,10 +252,7 @@ class SubgroupApi(AbstractViewApi):
             permissions the user has and what he can do within the system.Returns a list of groups.
             """)
     }
-    if IS_LOCALHOST:
-        permission_classes = [permissions.AllowAny]
-    else:
-        permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
+    permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Subgroup
     http_method_names = ['get']
     allow_cache = False
@@ -294,7 +284,7 @@ class UserDttApi(AbstractUserDttApi):
         returning the specific user details.
         """))
     def post(self, request, *args, **kwargs):
-        if IS_LOCALHOST is False:
+        if IS_DEV is False:
             raise PermissionDenied()
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
