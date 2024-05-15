@@ -12,7 +12,7 @@ const emit = defineEmits(['update:tab', 'update:filter', 'editingUser'])
 
 const router = useRouter()
 
-const { hasProject, hasPermissions, user } = $user
+const { hasPermissions } = $user
 const showUserModal = $ref(false)
 const modalUser = $ref({ fullName: '' })
 const editUser = (evt: Event, user: any) => {
@@ -20,10 +20,7 @@ const editUser = (evt: Event, user: any) => {
     emit('editingUser', user)
 }
 
-const canGoTo = (project: any) => hasProject(project.id)
 const goTo = (project: any) => {
-  if (!canGoTo(project))
-    return
   router.push({ path: `/projeto/${project.id}` })
 }
 
@@ -175,8 +172,7 @@ const columns = [
             <div
               v-for="project in props.value as any[]"
               :key="project.id"
-              class="rounded-full px-3 py-1 border-1 border--black/10 bg-gray/10 whitespace-nowrap"
-              :class="canGoTo(project) ? 'cursor-pointer hover:bg--primary/20 hover:border--primary/50' : 'cursor-not-allowed'"
+              class="rounded-full px-3 py-1 border-1 border--black/10 bg-gray/10 whitespace-nowrap cursor-pointer hover:bg--primary/20 hover:border--primary/50"
               @click.stop="goTo(project)"
             >
               {{ project.description }}
