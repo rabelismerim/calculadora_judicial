@@ -1,8 +1,6 @@
 import logging
 import pickle
 import re
-import traceback
-from datetime import datetime
 import xlsxwriter
 
 from django.db import models, transaction
@@ -13,15 +11,14 @@ from numpy import number
 from rest_framework import serializers
 
 from base.coins.models import COIN_CHOICES
-from base.models import AbstractDateRecovering, AbstractDescription, CHOICES_REPRESENTATION_DOCUMENTATION, \
-    CHOICES_CLAIM_TYPE, NATURE_CHOICES, NatureChoice
+from base.models import AbstractDateRecovering, AbstractDescription, NatureChoice
 from calculation.funds.document.models import FundDocument
 from calculation.funds.irrf.models import FundIRRF
 from calculation.funds.models import Funds
 from calculation.models import Calculation, CHOICES_STEP
 from core.entity.models import Entity
 from creditors.classes.models import CLASSE_CHOICES
-from creditors.models import Creditor, CHOICES_STATUS_LEGAL
+from creditors.models import Creditor
 from file.models import ErrorFile
 from file.tasks import ProcessExcelTask
 from projects.court.models import Court
@@ -229,8 +226,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
             {"title": "Credor - CPF/CNPJ", 'choice': None, 'default': None, 'type': 'str'},
             {"title": "Credor - CPF/CNPJ da Recuperanda", 'choice': None, 'default': None, 'type': 'str'},
             {"title": "Credor - Nome da Recuperanda", 'choice': None, 'default': None, 'type': 'str'},
-            {"title": "Pessoa Física", 'choice': CHOICES_PHYSICAL_PERSON, 'default': None,
-             'type': 'str'},
+            {"title": "Pessoa Física", 'choice': None, 'default': 'verdadeiro', 'type': 'str'},
         ]
 
         rj_columns = default_columns.copy()
@@ -354,7 +350,6 @@ class Project(AbstractDescription, AbstractDateRecovering):
                             },
                         })
 
-                    print(str(credor['Pessoa Física']).lower(), 'pessoa fisica\n\n')
                     new_credor = {
                         "entity": {
                             "name": credor['Credor'],
@@ -364,7 +359,8 @@ class Project(AbstractDescription, AbstractDateRecovering):
                         "claim_creditor": [],
                         "notice_recovering": notice_rj_creditor,
                         "notice_aj": notice_aj_creditor,
-                        "physical_person": str(credor['Pessoa Física']).lower() in ['true', 'verdadeiro'],
+                        "physical_person": str(credor['Pessoa Física']).strip().lower() in ['true', 'verdadeiro', 'sim',
+                                                                                            'yes'],
                         "natures": [],
                         "legal_pendencies": legal_pendencies,
                         "is_active": True,
