@@ -10,16 +10,7 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits(['update:tab', 'update:filter'])
 const router = useRouter()
 
-const { hasProject } = $user
-
 const redirectToProject = (_: any, row: any) => {
-  if (!hasProject(row.id)) {
-    throwError({
-      id: 'not_in_project',
-      message: 'Você não está na equipe deste Projeto!',
-    })
-    return
-  }
   router.push(`/projeto/${row.id}`)
 }
 

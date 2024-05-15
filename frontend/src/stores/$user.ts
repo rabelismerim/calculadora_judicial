@@ -46,7 +46,6 @@ const isActive = computed(() => store.value.isActive)
 const isAuthorized = computed(() => store.value.isActive)
 const hasPermissions = (...permissions: string[]) => permissions
   .every(permission => store.value.permissions.includes(permission))
-const hasProject = (id: string) => store.value.projects.includes(id)
 
 const updateProjectList = async () => {
   store.value.projects = await projectService.getUserProjects()
@@ -59,6 +58,5 @@ export default {
   isActive,
   isAuthorized,
   hasPermissions,
-  hasProject,
   updateProjectList,
 }

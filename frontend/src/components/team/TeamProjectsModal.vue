@@ -9,12 +9,7 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits(['update:modelValue', 'success'])
 const router = useRouter()
 
-const { hasProject } = $user
-
-const canGoTo = (project: any) => hasProject(project.id)
 const goTo = (project: any) => {
-  if (!canGoTo(project))
-    return
   router.push({ path: `/projeto/${project.id}` })
 }
 </script>
@@ -31,11 +26,7 @@ const goTo = (project: any) => {
       <div
         v-for="project in user.projects as any[]"
         :key="project.id"
-        class="rounded-full px-3 py-1 border-1 border--black/10 bg-gray/10 whitespace-nowrap"
-        :class="{
-          'cursor-pointer hover:bg--primary/20': hasProject(project.id),
-          'cursor-not-allowed': !hasProject(project.id),
-        }"
+        class="rounded-full px-3 py-1 border-1 border--black/10 bg-gray/10 whitespace-nowrap cursor-pointer hover:bg--primary/20"
         @click="goTo(project)"
       >
         {{ project.description }}

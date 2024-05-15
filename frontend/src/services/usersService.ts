@@ -33,12 +33,10 @@ const getMyProfile = async () => verifyUser()
       goToSignin()
 
     const permissions = (authorized || inDevelopment) ? await getPermissions() : []
-    const projects = (authorized || inDevelopment) ? await projectService.getUserProjects() : []
 
     return {
       ...user,
       ...permissions,
-      projects,
     }
   })
 
