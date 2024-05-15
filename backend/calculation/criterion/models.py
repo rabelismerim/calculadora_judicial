@@ -14,8 +14,8 @@ class Criterion(AbstractDateCreditor, AbstractDateRecovering):
     Method: get_claims_creditor
     """
 
-    calculation = models.OneToOneField(Calculation, on_delete=models.PROTECT)
-    claim_lawyer = models.ForeignKey(Claim, on_delete=models.PROTECT, null=True, blank=True)  # Pegar informações do credor
+    calculation = models.OneToOneField(Calculation, on_delete=models.CASCADE)
+    claim_lawyer = models.ForeignKey(Claim, on_delete=models.CASCADE, null=True, blank=True)  # Pegar informações do credor
 
 
 def get_claims_creditor(self):
@@ -38,5 +38,5 @@ class CriterionClaimCredor(AbstractModel):
     This class represents the relationship between a Criterion and its related Claims.
     In particular, it associates a Criterion with a Claim submitted by a Creditor.
     """
-    criterion = models.ForeignKey(Criterion, on_delete=models.PROTECT)
-    claim_creditor = models.ForeignKey(Claim, on_delete=models.PROTECT)  # Pegar informações do credor
+    criterion = models.ForeignKey(Criterion, on_delete=models.CASCADE)
+    claim_creditor = models.ForeignKey(Claim, on_delete=models.CASCADE)  # Pegar informações do credor

@@ -230,6 +230,8 @@ class ProjectApi(AbstractProjectApi):
         'post': ProjectSchema,
     }
     pagination = True
+    select_related = ['legal_manager', 'calculation_manager', 'financial_manager', 'legal_partner', 'financial_partner',
+                      'engagement']
 
     @doc(_("""Create Project receiving a dict, return project detail"""))
     def post(self, request, *args, **kwargs):

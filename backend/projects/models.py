@@ -45,7 +45,7 @@ CHOICES_PHYSICAL_PERSON = (('verdadeiro', 'verdadeiro'), ('falso', 'falso'))
 
 def get_first_value(choices, second_value):
     for choice in choices:
-        if choice[1] == second_value:
+        if str(choice[1]).lower() == str(second_value).lower():
             return choice[0]
     return None
 
@@ -317,7 +317,10 @@ class Project(AbstractDescription, AbstractDateRecovering):
                                                         error=f'Linha: {credor["index"]}, {recovering_schema.errors}'))
                             continue
 
-                        recovering = recovering_schema.save().id
+                        recovering_id = recovering_schema.save().id
+
+                    else:
+                        recovering_id = recovering.id
 
                     legal_pendencies = []
                     notice_rj_creditor = []
@@ -351,19 +354,20 @@ class Project(AbstractDescription, AbstractDateRecovering):
                             },
                         })
 
+                    print(str(credor['Pessoa Física']).lower(), 'pessoa fisica\n\n')
                     new_credor = {
                         "entity": {
                             "name": credor['Credor'],
                             "legal_number": credor['Credor - CPF/CNPJ']
                         },
-                        "recovering_id": recovering,
+                        "recovering_id": recovering_id,
                         "claim_creditor": [],
                         "notice_recovering": notice_rj_creditor,
                         "notice_aj": notice_aj_creditor,
                         "physical_person": str(credor['Pessoa Física']).lower() in ['true', 'verdadeiro'],
                         "natures": [],
                         "legal_pendencies": legal_pendencies,
-                        "is_active": False,
+                        "is_active": True,
                     }
 
                     from creditors.schemas import CreditorBulkSchema
@@ -389,6 +393,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
 
         if error_bulk:
             ErrorFile.objects.bulk_create(error_bulk)
+            raise ValueError(error_bulk)
 
 
 class ExcelHeader:
@@ -426,6 +431,7 @@ class ExcelHeader:
 
                 if choice:
                     new_credor[title] = get_first_value(choice, credor[title])
+
                 else:
                     new_credor[title] = credor[title]
 

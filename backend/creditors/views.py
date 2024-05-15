@@ -2,7 +2,6 @@ import random
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from faker import Faker
 from rest_framework.generics import get_object_or_404
 
 from base.claim.models import ClaimCreditor, ClaimLawyer
@@ -21,7 +20,6 @@ from creditors.notice.models import Notice, NoticeRecovering
 from creditors.schemas import CreditorCreateSchema, CreditorSchema, CreditorUpdateSchema, LegalPendenciesSchema, \
     LegalPendenciesUpdateSchema
 from creditors.models import Creditor, LegalPendencies
-from recovering.models import Recovering
 from utils import get_user_model, _, doc
 
 User = get_user_model()
@@ -192,36 +190,6 @@ class CreditorListLegalNumberApi(CreditorListApi):
         """
 
 
-class CreditorInactiveListApi(AbstractCreditorApi):
-    """
-    A view for retrieving a list of creditors from a specific project.
-    Inherits from AbstractCreditorApi.
-
-    Methods
-    -------
-    get(self, request, *args, **kwargs):
-        Retrieves a queryset of creditors related to a given project ID,
-        serializes it using self.serializer_class, and returns a JSON response
-        with the serialized data.
-    """
-    http_method_names = ['get']
-    docs = docs.copy()
-    operation_id_base = 'CreditorInactiveList'
-
-    @doc(_("""Retrieves a queryset of creditors inactive related to a given project ID,
-        serializes it and returns a JSON response with the serialized data.
-
-        :return:
-            - JsonResponse: An HTTP response containing with a JSON object containing a list of serialized creditor
-             inactivities data.
-        """))
-    def get(self, request, *args, **kwargs):
-        project_id = kwargs.get('project_id')
-        creditors = self.serializer_class(self.model.objects.filter(recovering__project_id=project_id, is_active=False),
-                                          many=True).data
-        return JsonResponse({'creditors': creditors})
-
-
 class CreditorApi(AbstractCreditorApi):
     """ AbstractCreditorApi's HTTP methods for creating new creditor with required fields."""
     http_method_names = ['post']
@@ -253,9 +221,7 @@ class CreateCreditor:
         natures = creditor.pop('natures', [])
         claim_lawyer = creditor.pop('claimlawyer', None)
 
-        recovering = Recovering.objects.filter(id=creditor['recovering_id']).first()
-
-        old_creditor = Creditor.objects.filter(recovering__entity__legal_number=recovering.entity.legal_number,
+        old_creditor = Creditor.objects.filter(recovering_id=creditor['recovering_id'],
                                                entity__legal_number=entity['legal_number']).first()
 
         if old_creditor and notice_recoverings:
@@ -268,9 +234,9 @@ class CreateCreditor:
             new_entity = Entity.objects.filter(legal_number=entity['legal_number']).first()
 
             if not new_entity:
-                entity = Entity.objects.create(**entity)
+                new_entity = Entity.objects.create(**entity)
 
-            creditor['entity'] = entity
+            creditor['entity_id'] = new_entity.id
 
             new_creditor = Creditor(**creditor)
             new_creditor.save()

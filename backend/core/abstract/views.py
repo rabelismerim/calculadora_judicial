@@ -449,6 +449,19 @@ class AbstractViewApi(generics.GenericAPIView, OrderingFilter):
     allowed_versions = ['v1']
     query_slug = False
     many = True
+    select_related = '__all__'
+
+    def get_select_related(self):
+
+        if isinstance(self.select_related, str):
+            if self.select_related != '__all__':
+                raise ValueError('select_related deve ser uma string __all__, False, ou uma lista de fields')
+            return []
+
+        elif isinstance(self.select_related, list):
+            return self.select_related
+
+        return False
 
     def get_non_relation_fields(self):
         non_relation_fields = []
@@ -571,7 +584,14 @@ class AbstractViewApi(generics.GenericAPIView, OrderingFilter):
                 raise Http404
             return obj
 
-        queryset = self.model.objects.exclude(**query_exclude).filter(**query).distinct()
+        select_related = self.get_select_related()
+
+        if select_related is False:
+            queryset = self.model.objects.exclude(**query_exclude).filter(**query).distinct()
+        else:
+            queryset = self.model.objects.exclude(**query_exclude).filter(**query).select_related(
+                *select_related).distinct()
+
         ordering = self.get_ordering(self.request, queryset, self)
         if ordering:
             return queryset.order_by(*ordering)

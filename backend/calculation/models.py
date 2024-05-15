@@ -77,7 +77,7 @@ class Calculation(AbstractModel):
         date_credit_auth (models.DateField): The date of the credit authorization certificate.
         has_edital (models.BooleanField): Is there an Article 7 Section 2 - 11.101/2005 Edital?
     """
-    creditor = models.ForeignKey(Creditor, on_delete=models.PROTECT)
+    creditor = models.ForeignKey(Creditor, on_delete=models.CASCADE)
     step = models.CharField(_('Calculation step'),
                             max_length=1, choices=CHOICES_STEP, default='S')
     number = models.CharField(_('Calculation number'),
@@ -87,7 +87,7 @@ class Calculation(AbstractModel):
     validated = models.BooleanField(_('Validated?'), default=False)
 
     # Statement A5
-    coins = models.ForeignKey(Coins, on_delete=models.PROTECT, null=True)
+    coins = models.ForeignKey(Coins, on_delete=models.CASCADE, null=True)
     claims = models.ManyToManyField(ClaimCreditor, blank=True)
 
     appeal_credit = models.BooleanField(
