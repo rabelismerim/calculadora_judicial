@@ -1,6 +1,7 @@
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.renderers import JSONRenderer
 
+from config.settings import ENABLE_TOKEN
 from utils import get_user_model
 
 User = get_user_model()
@@ -32,7 +33,12 @@ class APIRendererInterceptor(JSONRenderer):
                 identity_context_data = request._request.identity_context_data
                 authorized = request.user.is_authenticated
                 is_active = request.user.is_active
-                authenticated = identity_context_data.authenticated
+
+                if ENABLE_TOKEN:
+                    authenticated = identity_context_data.authenticated or request.user.is_authenticated
+                else:
+                    authenticated = identity_context_data.authenticated
+
                 full_name = identity_context_data.username
                 if request.user.is_authenticated and hasattr(request.user, 'full_name'):
                     full_name = request.user.full_name

@@ -179,14 +179,7 @@ FIELD_HASH_KEY = config('FIELD_HASH_KEY', default='cef9dc82b9360609c35ee23ab333c
                         cast=str)
 
 FIELD_ENCRYPTION_KEYS = FIELD_HASH_KEY.split(',')
-# Start config debug toolbar
-INTERNAL_IPS = [
-    # ...
-    "127.0.0.1",
-    # ...
-]
 
-# End config debug toolbar
 SITE_ID = 1
 
 AUTH_USER_MODEL = 'dttuser.User'
@@ -637,6 +630,18 @@ if IS_DEV:
     LOGOUT_REDIRECT_URL = f"/{BASE_URL}docs/swagger/"
     LOGIN_REDIRECT_URL = f"/{BASE_URL}docs/swagger/"
     LOGOUT_URL = "/juca/logout/"
+    # Start config debug toolbar
+    INTERNAL_IPS = [
+        # ...
+        "127.0.0.1",
+        "127.0.0.3",
+        # ...
+    ]
+
+    INSTALLED_APPS.append('debug_toolbar')
+    MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
+    # End config debug toolbar
+
 
 else:
     LOGIN_URL = "/juca/login/"

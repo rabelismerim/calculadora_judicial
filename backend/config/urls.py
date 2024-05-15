@@ -19,7 +19,7 @@ from django.urls import include, path, re_path, reverse
 from django.shortcuts import render, redirect
 from rest_framework.views import APIView
 
-from config.settings import ENABLE_SSO, BASE_URL_NEXT, ENABLE_TOKEN
+from config.settings import ENABLE_SSO, BASE_URL_NEXT, ENABLE_TOKEN, IS_DEV
 from django.conf import settings
 from django.views.generic import TemplateView
 from rest_framework import permissions, status
@@ -58,7 +58,6 @@ def post_logout(request):
 
 
 urlpatterns = [
-    path('__debug__/', include('debug_toolbar.urls')),
     # API Authentication
     path('juca/api-auth/', include("rest_framework.urls")),
 
@@ -101,7 +100,7 @@ urlpatterns = [
     path('juca/logout/', views.LogoutView.as_view(), name='logout'),
 
     # VUE FRONTEND
-    re_path(r'^(?!juca\/admin|juca\/api|simple|juca\/media).*$', frontend_index, name='frontend'),
+    re_path(r'^(?!juca\/admin|juca\/api|simple|juca\/media|juca\/__debug__).*$', frontend_index, name='frontend'),
     re_path(f'{BASE_URL}logout/', LogoutView.as_view(), name='api-logout'),
 
     # Documentation
@@ -114,6 +113,9 @@ urlpatterns = [
                                                    version="1.0.0", permission_classes=[permissions.AllowAny]),
          name='schema-api'),
 ]
+
+if IS_DEV:
+    urlpatterns.append(path('juca/__debug__/', include('debug_toolbar.urls')))
 
 if ENABLE_SSO and not ENABLE_TOKEN:
     urlpatterns.extend([
