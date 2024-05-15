@@ -130,8 +130,22 @@ steps:
         !**/__pycache__/**
         !**/*.pyd
         !**/*.pyc
+        !**/venv/**
       TargetFolder: 'E:\inetpub\wwwroot\uat.fadigitallab.deloitte.com.br\juca'
       OverWrite: true
+      flattenFolders: false
+      ignoreMakeDirErrors: true
+      ignoreErrors: true
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)/backend/venv'
+      Contents: |
+        **/*
+        !**/__pycache__/**
+        !**/*.pyd
+        !**/*.pyc
+      TargetFolder: 'E:\inetpub\wwwroot\uat.fadigitallab.deloitte.com.br\juca'
+      OverWrite: false
       flattenFolders: false
       ignoreMakeDirErrors: true
       ignoreErrors: true
