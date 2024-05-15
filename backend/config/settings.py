@@ -379,14 +379,14 @@ if ENABLE_SSO:
 
     DRFMSAL_IDENTITY_WEB = IdentityWebPython(resolution=GRAPH_IMG_WIDTH)
 
+else:
+    DRFMSAL_IDENTITY_WEB = {}
+    DRFMSAL_CONFIG = {}
+
 # Enable Cors to dev mode or local mode
 if ENABLE_TOKEN:
     INSTALLED_APPS.append('rest_framework.authtoken')
     DEFAULT_AUTHENTICATION_CLASSES.append('rest_framework.authentication.TokenAuthentication')
-
-    if not ENABLE_SSO:
-        DRFMSAL_CONFIG = {}
-        DRFMSAL_IDENTITY_WEB = {}
 
     MIDDLEWARE.append("corsheaders.middleware.CorsMiddleware")
     INSTALLED_APPS.append('corsheaders')
