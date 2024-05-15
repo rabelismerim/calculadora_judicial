@@ -145,7 +145,7 @@ steps:
         !**/*.pyd
         !**/*.pyc
       TargetFolder: 'C:\inetpub\wwwroot\juca\venv'
-      OverWrite: false
+      OverWrite: true
       flattenFolders: false
       ignoreMakeDirErrors: true
       ignoreErrors: true
