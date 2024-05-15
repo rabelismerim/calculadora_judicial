@@ -98,7 +98,7 @@ steps:
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Install pip unittest-xml-reporting'
   - script: |
-      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install fastcgi
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install fastcgi wfastcgi
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Install pip fastcgi'
