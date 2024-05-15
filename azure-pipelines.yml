@@ -130,7 +130,7 @@ steps:
         !**/__pycache__/**
         !**/*.pyd
         !**/*.pyc
-        !**/venv/Lib/site-packages/**
+        !**/venv/**
       TargetFolder: 'C:\inetpub\wwwroot\juca\'
       OverWrite: true
       flattenFolders: false
@@ -138,13 +138,13 @@ steps:
       ignoreErrors: true
   - task: CopyFiles@2
     inputs:
-      SourceFolder: '$(Build.SourcesDirectory)/backend/venv/Lib/site-packages'
+      SourceFolder: '$(Build.SourcesDirectory)/backend/venv'
       Contents: |
         **/*
         !**/__pycache__/**
         !**/*.pyd
         !**/*.pyc
-      TargetFolder: 'C:\inetpub\wwwroot\juca\venv\Lib\site-packages'
+      TargetFolder: 'C:\inetpub\wwwroot\juca\venv'
       OverWrite: false
       flattenFolders: false
       ignoreMakeDirErrors: true
