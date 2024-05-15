@@ -144,7 +144,7 @@ steps:
         !**/__pycache__/**
         !**/*.pyd
         !**/*.pyc
-      TargetFolder: 'E:\inetpub\wwwroot\uat.fadigitallab.deloitte.com.br\juca'
+      TargetFolder: 'E:\inetpub\wwwroot\uat.fadigitallab.deloitte.com.br\juca\venv'
       OverWrite: false
       flattenFolders: false
       ignoreMakeDirErrors: true
