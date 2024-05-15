@@ -24,7 +24,7 @@ steps:
   - task: DownloadSecureFile@1
     name: Env
     inputs:
-      secureFile: '.env-prd'
+      secureFile: '.juca-prod.env'
   - task: DownloadSecureFile@1
     name: EnvFrontEnd
     inputs:
@@ -133,8 +133,24 @@ steps:
       Contents: |
         **/*
         !**/__pycache__/**
+        !**/*.pyd
+        !**/*.pyc
+        !**/venv/**
       TargetFolder: 'E:\wwwroot\fadigitallab.deloitte.com.br\juca\'
       OverWrite: true
+      flattenFolders: false
+      ignoreMakeDirErrors: true
+      ignoreErrors: true
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)/backend/venv'
+      Contents: |
+        **/*
+        !**/__pycache__/**
+        !**/*.pyd
+        !**/*.pyc
+      TargetFolder: 'E:\wwwroot\fadigitallab.deloitte.com.br\juca\venv'
+      OverWrite: false
       flattenFolders: false
       ignoreMakeDirErrors: true
       ignoreErrors: true

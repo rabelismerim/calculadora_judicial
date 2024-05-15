@@ -13,15 +13,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-import os
 from django.contrib import admin
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import include, path, re_path, reverse
 from django.shortcuts import render, redirect
-from rest_framework.permissions import IsAuthenticated
+from django.views.static import serve
 from rest_framework.views import APIView
 
-from config.settings import ENABLE_SSO, IS_LOCALHOST, BASE_URL_NEXT
+from config.settings import ENABLE_SSO, BASE_URL_NEXT, ENABLE_TOKEN, IS_DEV
 from django.conf import settings
 from django.views.generic import TemplateView
 from rest_framework import permissions, status
@@ -52,6 +51,7 @@ class LogoutView(APIView):
         logout(request)
         return JsonResponse({}, status=status.HTTP_204_NO_CONTENT)
 
+
 @csrf_exempt
 def post_logout(request):
     logout(request)
@@ -59,7 +59,6 @@ def post_logout(request):
 
 
 urlpatterns = [
-    path('__debug__/', include('debug_toolbar.urls')),
     # API Authentication
     path('juca/api-auth/', include("rest_framework.urls")),
 
@@ -92,19 +91,17 @@ urlpatterns = [
     path(BASE_URL, include("core.dttuser.api.urls")),
 
     # TODO: desativar urls sem versão de api
-    path(BASE_URL_AUTH, include("core.drfmsal.urls")),
     path(BASE_URL_AUTH, include("core.dttuser.urls")),
 
-    path(BASE_URL, include("core.drfmsal.urls")),
+    path(BASE_URL_AUTH, include("core.drfmsal.urls")),
     path(BASE_URL, include("core.dttuser.urls")),
 
     # Django
-    path('juca/admin/', admin.site.urls),
     path('juca/login/', views.LoginView.as_view(template_name='admin/login.html'), name='login'),
     path('juca/logout/', views.LogoutView.as_view(), name='logout'),
 
     # VUE FRONTEND
-    re_path(r'^(?!juca\/admin|juca\/api|simple|juca\/media).*$', frontend_index, name='frontend'),
+    re_path(r'^(?!juca\/admin|juca\/api|simple|juca\/media|juca\/__debug__).*$', frontend_index, name='frontend'),
     re_path(f'{BASE_URL}logout/', LogoutView.as_view(), name='api-logout'),
 
     # Documentation
@@ -116,28 +113,32 @@ urlpatterns = [
                                                                "liabilities monitoring)",
                                                    version="1.0.0", permission_classes=[permissions.AllowAny]),
          name='schema-api'),
+
+    re_path(r'^juca/media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    re_path(r'^juca/static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
 ]
 
-# TODO: definir se frontend MFA pode ter alteração de versões
-# Active or inactive MFA login MS
-if IS_LOCALHOST is False:
+if IS_DEV:
+    urlpatterns.append(path('juca/__debug__/', include('debug_toolbar.urls')))
+
+if ENABLE_SSO and not ENABLE_TOKEN:
     urlpatterns.extend([
         path('juca/admin/login/', lambda r: redirect(
-            reverse('drfmsal_signin', kwargs={'redirect_uri': 'juca/admin'})
+            reverse('drfmsal_signin', kwargs={'redirect_uri': 'juca/admin/'})
         )),
-        path('juca/admin/logout/', lambda r: redirect(
-            reverse('drfmsal_signout', kwargs={'redirect_uri': 'juca'})
-        )),
+
+        # TODO: verificar se deve ser do sistema ou de todos os SSOs. Inativado remove apenas do sistema. Ativo remove do SSO de todas as contas
+        # path('juca/admin/logout/', lambda r: redirect(
+        #     reverse('drfmsal_signout', kwargs={'redirect_uri': 'juca'})
+        # )),
+        path('juca/admin/', admin.site.urls),
     ])
 
-if ENABLE_SSO is False:
-    urlpatterns.extend([
-        path(f'{BASE_URL}obtain-auth-token/', rest_views.obtain_auth_token),
-    ])
+else:
+    urlpatterns.append(path('juca/admin/', admin.site.urls))
 
-# if IS_LOCALHOST or BRANCH_LOCAL:
-#     urlpatterns.extend([])
+if ENABLE_TOKEN:
+    urlpatterns.append(path(f'{BASE_URL}obtain-auth-token/', rest_views.obtain_auth_token))
 
-# if (str(os.getenv('ENV', )) == 'branch') or (str(os.getenv('ENV')) == 'hml'):
-#     urlpatterns += static(f"/juca" + settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-urlpatterns += static(f"/juca" + settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL,
+                                                                                        document_root=settings.MEDIA_ROOT)

@@ -60,49 +60,26 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = str(os.getenv('SECRET_KEY'))
+SECRET_KEY = config('SECRET_KEY', cast=str)
 
-PASSWD_DEV = str(os.getenv('PASSWD_DEV', 'fake_passwd'))
-DTT_EMAIL = os.getenv('DTT_EMAIL')
+PASSWD_DEV = config('PASSWD_DEV', cast=str, default='fake_passwd')
+DTT_EMAIL = config('DTT_EMAIL', cast=str, default='')
 
-DEBUG = str(os.getenv('DEBUG', 'false')).lower() == 'true'
-ENABLE_SSO = str(os.getenv('ENABLE_SSO', 'true')).lower() == 'true'
-
-BRANCH_DEV = str(os.getenv('ENV', 'hml')) == 'branch'
-TEST_PROD = str(os.getenv('TEST_PROD', 'false')) == 'true'
-BRANCH_LOCAL = str(os.getenv('ENV', 'hml')) == 'dev'
-
-IS_LOCALHOST = str(os.getenv('IS_LOCALHOST', 'false')).lower() == 'true' and BRANCH_DEV
-ENABLE_DRF = str(os.getenv('ENABLE_DRF', 'true')).lower() == 'true'
-
-IS_HML = any([BRANCH_LOCAL, BRANCH_DEV]) is False
-
+DEBUG = config('DEBUG', cast=bool, default=False)
+ENABLE_SSO = config('ENABLE_SSO', cast=bool, default=True)
+ENABLE_TOKEN = config('ENABLE_TOKEN', cast=bool, default=False)
+ENABLE_DRF = config('ENABLE_DRF', cast=bool, default=True)
+DATABASE_POSTGRES = config('DATABASE_POSTGRES', cast=bool, default=False)
+ENVIRONMENT = config('ENVIRONMENT', cast=str, default='prod').lower()
 ENABLE_LOGGER = config('ENABLE_LOGGER', cast=bool, default=False)
 
-ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'uat.fadigitallab.deloitte.com.br',
-    'dev.fadigitallab.deloitte.com.br',
-    'fadigitallab.deloitte.com.br',
-    'localhost',
-    'brdcvmdev07',
-    'brfojwanderley',
-    'brsphearndt',  # TEMP
-    'brspwaoliveira',
-    '10.127.145.231'
-]
+if ENVIRONMENT not in ['prod', 'hml', 'dev']:
+    raise ValueError('Invalid ENVIRONMENT. Options is (prod, hml or dev)')
 
-CSRF_TRUSTED_ORIGINS = [
-    'http://127.0.0.1:8000',
-    'https://brfojwanderley:5173',
-    'https://brspwaoliveira:8080/juca',
-    'https://brdcvmdev07/juca',
-    'https://brsphearndt:8080/juca',
-    'https://uat.fadigitallab.deloitte.com.br/juca',
-    'https://fadigitallab.deloitte.com.br/juca',
-    'https://dev.fadigitallab.deloitte.com.br/juca',
-    'https://10.127.145.231:8000/juca'
-]
+IS_PROD = ENVIRONMENT == 'prod'
+IS_HML = ENVIRONMENT == 'hml'
+IS_DEV = ENVIRONMENT == 'dev'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -202,19 +179,7 @@ FIELD_HASH_KEY = config('FIELD_HASH_KEY', default='cef9dc82b9360609c35ee23ab333c
                         cast=str)
 
 FIELD_ENCRYPTION_KEYS = FIELD_HASH_KEY.split(',')
-# Start config debug toolbar
-INTERNAL_IPS = [
-    # ...
-    "127.0.0.1",
-    # ...
-]
-# if DEBUG:
-#     import socket  # only if you haven't already imported this
 
-# hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-# INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
-
-# End config debug toolbar
 SITE_ID = 1
 
 AUTH_USER_MODEL = 'dttuser.User'
@@ -267,7 +232,7 @@ DEFAULT_AUTHENTICATION_CLASSES = [
 ]
 # Logging file
 # https://docs.djangoproject.com/en/3.2/topics/logging/
-if IS_HML or ENABLE_LOGGER:
+if IS_PROD or ENABLE_LOGGER:
     path_file_logs = os.path.join(BASE_DIR, 'log')
     os.makedirs(path_file_logs, exist_ok=True)
     file_log = os.path.join(path_file_logs, str(datetime.datetime.now().date()) + '_{}.log')
@@ -362,21 +327,67 @@ if IS_HML or ENABLE_LOGGER:
         }
     }
 
-if IS_HML:
+if IS_PROD:
     ALLOWED_HOSTS = [
-        'uat.fadigitallab.deloitte.com.br',
-        'dev.fadigitallab.deloitte.com.br',
         'fadigitallab.deloitte.com.br',
-        'brdcvmdev07',
-        'brfojwanderley',
-        'brsphearndt',
-        'brspwaoliveira',
     ]
 
+    CSRF_TRUSTED_ORIGINS = [
+        'https://fadigitallab.deloitte.com.br/juca',
+    ]
 
+elif IS_HML:
+    ALLOWED_HOSTS = [
+        'uat.fadigitallab.deloitte.com.br',
+    ]
+
+    CSRF_TRUSTED_ORIGINS = [
+        'https://uat.fadigitallab.deloitte.com.br/juca',
+    ]
+
+else:
+    ALLOWED_HOSTS = ['*']
+
+    CSRF_TRUSTED_ORIGINS = [
+        'https://uat.fadigitallab.deloitte.com.br/juca',
+        'https://fadigitallab.deloitte.com.br/juca',
+        'https://dev.fadigitallab.deloitte.com.br/juca',
+        'https://www.brdcvmdev07/juca',
+        'https://www.brfojwanderley/juca',
+        'https://www.brsphearndt/juca',
+        'https://www.brspwaoliveira/juca',
+    ]
+# Enable Login SSO
+if ENABLE_SSO:
+    MIDDLEWARE.append('core.drfmsal.middleware.MsalMiddleware')
+    # DRFMSAL AUTHENTICATION
+    DRFMSAL_CONFIG = {
+        'id_web_configs': 'MS_ID_WEB_CONFIGS',
+        'graph_url': 'https://graph.microsoft.com/v1.0',
+        'client': {
+            'client_id': str(os.getenv('MSAL_CLIENT_ID')),
+            'client_credential': str(os.getenv('MSAL_CLIENT_SECRET')),
+            'authority': f'https://login.microsoftonline.com/{str(os.getenv("MSAL_DTT_TENANT"))}/'
+        },
+        'auth_request': {
+            'scopes': ['User.Read'],
+            'response_type': 'code'
+        },
+    }
+
+    GRAPH_IMG_WIDTH = config('GRAPH_IMG_WIDTH', cast=str, default='240x240')
+
+    DRFMSAL_IDENTITY_WEB = IdentityWebPython(resolution=GRAPH_IMG_WIDTH)
+
+else:
+    DRFMSAL_IDENTITY_WEB = {}
+    DRFMSAL_CONFIG = {}
 
 # Enable Cors to dev mode or local mode
-else:
+if ENABLE_TOKEN:
+    INSTALLED_APPS.append('rest_framework.authtoken')
+    DEFAULT_AUTHENTICATION_CLASSES.append('rest_framework.authentication.TokenAuthentication')
+
     MIDDLEWARE.append("corsheaders.middleware.CorsMiddleware")
     INSTALLED_APPS.append('corsheaders')
     CORS_ALLOWED_ORIGINS = [
@@ -386,45 +397,29 @@ else:
     CORS_ALLOW_ALL_ORIGINS = True
     CORS_ALLOW_CREDENTIALS = True
 
-    ALLOWED_HOSTS = ['*']
+    CSRF_TRUSTED_ORIGINS = [
+        'http://127.0.0.1:8000',
+        'https://brfojwanderley:5173',
+        'https://brspwaoliveira:8080/juca',
+        'https://brdcvmdev07/juca',
+        'https://brsphearndt:8080/juca',
+        'https://uat.fadigitallab.deloitte.com.br/juca',
+        'https://fadigitallab.deloitte.com.br/juca',
+        'https://dev.fadigitallab.deloitte.com.br/juca',
+        'https://10.127.145.231:8000/juca'
+    ]
 
-# Enable Login SSO
-if ENABLE_SSO:
-    MIDDLEWARE.append('core.drfmsal.middleware.MsalMiddleware')
-else:
-    INSTALLED_APPS.append('rest_framework.authtoken')
-    DEFAULT_AUTHENTICATION_CLASSES.append(
-        'rest_framework.authentication.TokenAuthentication')
-
-# DRFMSAL AUTHENTICATION
-DRFMSAL_CONFIG = {
-    'id_web_configs': 'MS_ID_WEB_CONFIGS',
-    'graph_url': 'https://graph.microsoft.com/v1.0',
-    'client': {
-        'client_id': str(os.getenv('MSAL_CLIENT_ID')),
-        'client_credential': str(os.getenv('MSAL_CLIENT_SECRET')),
-        'authority': f'https://login.microsoftonline.com/{str(os.getenv("MSAL_DTT_TENANT"))}/'
-    },
-    'auth_request': {
-        'scopes': ['User.Read'],
-        'response_type': 'code'
-    },
-}
-
-GRAPH_IMG_WIDTH = config('GRAPH_IMG_WIDTH', cast=str, default='240x240')
-
-DRFMSAL_IDENTITY_WEB = IdentityWebPython(resolution=GRAPH_IMG_WIDTH)
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 # str(os.getenv('SECRET_KEY'))
 # if 'test' in sys.argv:
 #    ENABLE_SSO=False
-if BRANCH_DEV or 'test' in sys.argv:
+if IS_DEV or 'test' in sys.argv:
     my_string = sys.argv[0].replace('\\', '').replace('/', '')
 
     if my_string.endswith('main.py'):
-        if TEST_PROD is False:
+        if DATABASE_POSTGRES is False:
             DATABASES = {
                 'default': {
                     'ENGINE': 'django.db.backends.sqlite3',
@@ -460,7 +455,7 @@ if BRANCH_DEV or 'test' in sys.argv:
                 }
             }
     else:
-        if TEST_PROD:
+        if DATABASE_POSTGRES:
             DATABASES = {
                 'default': {
                     'ENGINE': 'django.db.backends.postgresql',
@@ -491,11 +486,11 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': str(os.getenv('DB_NAME')),
-            'USER': str(os.getenv('DB_USER')),
-            'PASSWORD': str(os.getenv('DB_PASS')),
-            'HOST': str(os.getenv('DB_HOST')),
-            'PORT': str(os.getenv('DB_PORT')),
+            'NAME': config('DB_NAME', cast=str),
+            'USER': config('DB_USER', cast=str),
+            'PASSWORD': config('DB_PASS', cast=str),
+            'HOST': config('DB_HOST', cast=str),
+            'PORT': config('DB_PORT', cast=str),
         }
     }
 
@@ -572,15 +567,21 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-if IS_HML:
-    STATIC_URL = 'static/'
-else:
-    STATIC_URL = 'juca/static/'
-# STATIC_URL = '/static/'
-STATIC_ROOT = 'var/static_root/'
+# if IS_DEV:
+#     import mimetypes
+#
+#     mimetypes.add_type("application/javascript", ".js", True)
+#     mimetypes.add_type("text/css", ".css", True)
+
+STATIC_URL = '/juca/static/'
+STATIC_ROOT = '/var/static_root/'
+
+# Setting media info for images
+MEDIA_URL = "/juca/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'juca/static/'),
-    # os.path.join(BASE_DIR, 'static/'),
+    os.path.join(BASE_DIR, 'juca/static'),
 ]
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
@@ -591,10 +592,6 @@ STATICFILES_FINDERS = [
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Setting media info for images
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 REST_FRAMEWORK = {
 
@@ -630,15 +627,29 @@ BASE_URL = 'juca/api/v1/'  # Current version
 BASE_URL_NEXT = 'juca/api/v2/'  # Next version
 BASE_URL_AUTH = 'juca/api/'
 
-if DEBUG:
-    import mimetypes
-
-    mimetypes.add_type("application/javascript", ".js", True)
-
-    # Documentation login Urls
+# Documentation login Urls
+if IS_DEV:
     LOGIN_URL = "/juca/login/"
     LOGOUT_REDIRECT_URL = f"/{BASE_URL}docs/swagger/"
     LOGIN_REDIRECT_URL = f"/{BASE_URL}docs/swagger/"
+    LOGOUT_URL = "/juca/logout/"
+    # Start config debug toolbar
+    INTERNAL_IPS = [
+        # ...
+        "127.0.0.1",
+        "127.0.0.3",
+        # ...
+    ]
+
+    INSTALLED_APPS.append('debug_toolbar')
+    MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
+    # End config debug toolbar
+
+
+else:
+    LOGIN_URL = "/juca/login/"
+    LOGOUT_REDIRECT_URL = f"/juca/"
+    LOGIN_REDIRECT_URL = f"/juca/"
     LOGOUT_URL = "/juca/logout/"
 
 SWAGGER_URL = f'/{BASE_URL}docs/redoc/'
@@ -702,6 +713,9 @@ result_extended = True
 cache_backend = 'redis'
 # troca padrão usada pelo Celery (uma Exchange chamada 'media', do tipo 'direto').
 default_exchange = Exchange('media', type='direct')
+# start no traceback de resultado da task no TaskResult
+task_track_started = True
+result_persistent = True
 
 # tupla com todas as filas usadas pelo Celery. Neste caso, apenas uma fila chamada 'media_queue' é definida, com uma
 # chave de roteamento ('routing_key') chamada 'video'.
