@@ -117,6 +117,16 @@ steps:
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Django migrate'
+  - script: |
+      del .env-hml
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/backend
+    displayName: 'Delete .env-hml'
+  - script: |
+      del .env-frontend-hml
+    failOnStderr: false
+    workingDirectory: $(Build.SourcesDirectory)/backend
+    displayName: 'Delete file .env-frontend-hml'
   - task: DeleteFiles@1
     inputs:
       SourceFolder: '$(Build.SourcesDirectory)/backend/__pycache__'

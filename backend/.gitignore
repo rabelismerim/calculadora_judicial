@@ -37,3 +37,4 @@ remove_migrations.py
 mypy.ini
 start_server.bat
 *sqlite3
+juca/
