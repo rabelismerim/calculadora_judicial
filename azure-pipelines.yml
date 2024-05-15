@@ -24,7 +24,7 @@ steps:
   - task: DownloadSecureFile@1
     name: Env
     inputs:
-      secureFile: '.env'
+      secureFile: '.juca-dev.env'
   - task: DownloadSecureFile@1
     name: EnvFrontEnd
     inputs:
@@ -117,16 +117,6 @@ steps:
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Django migrate'
-  - script: |
-      del .env
-    failOnStderr: false
-    workingDirectory: $(Build.SourcesDirectory)/backend
-    displayName: 'Delete .env'
-  - script: |
-      del .env-frontend
-    failOnStderr: false
-    workingDirectory: $(Build.SourcesDirectory)/backend
-    displayName: 'Delete file .env-frontend'
   - task: DeleteFiles@1
     inputs:
       SourceFolder: '$(Build.SourcesDirectory)/backend/__pycache__'
@@ -139,6 +129,7 @@ steps:
         **/*
         !**/__pycache__/**
         !**/*.pyd
+        !**/*.pyc
       TargetFolder: 'C:\inetpub\wwwroot\juca\'
       OverWrite: true
       flattenFolders: false
