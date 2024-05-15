@@ -38,3 +38,6 @@ mypy.ini
 start_server.bat
 *sqlite3
 juca/
+.juca-dev.env
+.juca-hml.env
+.juca-prod.env

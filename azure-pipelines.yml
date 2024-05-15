@@ -24,7 +24,7 @@ steps:
   - task: DownloadSecureFile@1
     name: Env
     inputs:
-      secureFile: '.env-hml'
+      secureFile: '.juca-hml.env'
   - task: DownloadSecureFile@1
     name: EnvFrontEnd
     inputs:
@@ -117,16 +117,6 @@ steps:
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Django migrate'
-  - script: |
-      del .env-hml
-    failOnStderr: false
-    workingDirectory: $(Build.SourcesDirectory)/backend
-    displayName: 'Delete .env-hml'
-  - script: |
-      del .env-frontend-hml
-    failOnStderr: false
-    workingDirectory: $(Build.SourcesDirectory)/backend
-    displayName: 'Delete file .env-frontend-hml'
   - task: DeleteFiles@1
     inputs:
       SourceFolder: '$(Build.SourcesDirectory)/backend/__pycache__'
@@ -139,6 +129,7 @@ steps:
         **/*
         !**/__pycache__/**
         !**/*.pyd
+        !**/*.pyc
       TargetFolder: 'E:\inetpub\wwwroot\uat.fadigitallab.deloitte.com.br\juca'
       OverWrite: true
       flattenFolders: false
