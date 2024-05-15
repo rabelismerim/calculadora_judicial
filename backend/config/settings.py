@@ -569,12 +569,19 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 # if IS_DEV:
 #     import mimetypes
+#
 #     mimetypes.add_type("application/javascript", ".js", True)
+#     mimetypes.add_type("text/css", ".css", True)
 
-STATIC_URL = 'juca/static/'
-STATIC_ROOT = 'var/static_root/'
+STATIC_URL = '/juca/static/'
+STATIC_ROOT = '/var/static_root/'
+
+# Setting media info for images
+MEDIA_URL = "/juca/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'juca/static/'),
+    os.path.join(BASE_DIR, 'juca/static'),
 ]
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
@@ -585,10 +592,6 @@ STATICFILES_FINDERS = [
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Setting media info for images
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 REST_FRAMEWORK = {
 

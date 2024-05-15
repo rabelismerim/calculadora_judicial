@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import include, path, re_path, reverse
 from django.shortcuts import render, redirect
+from django.views.static import serve
 from rest_framework.views import APIView
 
 from config.settings import ENABLE_SSO, BASE_URL_NEXT, ENABLE_TOKEN, IS_DEV
@@ -112,6 +113,9 @@ urlpatterns = [
                                                                "liabilities monitoring)",
                                                    version="1.0.0", permission_classes=[permissions.AllowAny]),
          name='schema-api'),
+
+    re_path(r'^juca/media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    re_path(r'^juca/static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
 ]
 
 if IS_DEV:
@@ -136,4 +140,5 @@ else:
 if ENABLE_TOKEN:
     urlpatterns.append(path(f'{BASE_URL}obtain-auth-token/', rest_views.obtain_auth_token))
 
-urlpatterns += static(f"/juca" + settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL,
+                                                                                        document_root=settings.MEDIA_ROOT)
