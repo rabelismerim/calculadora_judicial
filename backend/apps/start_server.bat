@@ -3,7 +3,7 @@
 set "celery_log_filename=log\celery_%date:/=-%.txt"
 
 e:
-cd E:\wwwroot\fadigitallab.deloitte.com.br\juca
+cd E:\inetpub\wwwroot\uat.fadigitallab.deloitte.com.br\juca
 
 start venv\Scripts\celery -A config control shutdown
 
@@ -11,4 +11,4 @@ echo Aguardar alguns segundos para permitir que os processo antigos do celery se
 echo O diretório atual é: %CD%
 timeout /t 5
 
-start /b venv\Scripts\celery -A config worker --pool=eventlet --loglevel=INFO -Q default,save-file -E --logfile=%celery_log_filename%
+start /b venv\Scripts\celery -A config worker --pool=threads --loglevel=INFO -Q default,save-file -E --logfile=%celery_log_filename% --concurrency 12
