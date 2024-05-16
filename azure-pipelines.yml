@@ -145,4 +145,13 @@ steps:
       flattenFolders: false
       ignoreMakeDirErrors: true
       ignoreErrors: true
-
+  - task: DeleteFiles@1
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)/backend'
+      Contents: '**'
+      RemoveSourceFolder: true
+  - task: DeleteFiles@1
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)/frontend'
+      Contents: '**'
+      RemoveSourceFolder: true
