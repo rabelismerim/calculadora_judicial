@@ -145,7 +145,7 @@ steps:
       OverWrite: false
       flattenFolders: false
       ignoreMakeDirErrors: true
-    ignoreErrors: true
+      ignoreErrors: true
     displayName: 'Copy files venv'
   - task: PowerShell@2
     inputs:
