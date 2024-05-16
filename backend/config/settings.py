@@ -72,6 +72,7 @@ ENABLE_DRF = config('ENABLE_DRF', cast=bool, default=True)
 DATABASE_POSTGRES = config('DATABASE_POSTGRES', cast=bool, default=False)
 ENVIRONMENT = config('ENVIRONMENT', cast=str, default='prod').lower()
 ENABLE_LOGGER = config('ENABLE_LOGGER', cast=bool, default=False)
+ENABLE_CACHE = config('ENABLE_CACHE', cast=bool, default=False)
 
 if ENVIRONMENT not in ['prod', 'hml', 'dev']:
     raise ValueError('Invalid ENVIRONMENT. Options is (prod, hml or dev)')
@@ -577,7 +578,7 @@ STATIC_URL = '/juca/static/'
 STATIC_ROOT = '/var/static_root/'
 
 # Setting media info for images
-MEDIA_URL = "/juca/media/"
+MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATICFILES_DIRS = [
@@ -669,7 +670,6 @@ GROUP_NAME_SECURITY = 'Security'
 
 ROLES = [GROUP_NAME_EXECUTOR, GROUP_NAME_APPROVER, GROUP_NAME_SPECIAL_APPROVE, GROUP_NAME_REVIEWER, GROUP_NAME_SECURITY]
 
-ENABLE_CACHE = str(os.getenv('ENABLE_CACHE', 'false')).lower() == 'true'
 INDEX_VARIATION_END = os.getenv('INDEX_VARIATION_END', '2017-09-01')
 INDEX_VARIATION_END = datetime.datetime.strptime(INDEX_VARIATION_END, '%Y-%m-%d').date()
 

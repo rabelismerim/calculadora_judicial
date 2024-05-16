@@ -127,6 +127,7 @@ steps:
       SourceFolder: '$(Build.SourcesDirectory)/backend'
       Contents: |
         **/*
+        !**/__pycache__/**
         !**/venv/**
       TargetFolder: 'C:\inetpub\wwwroot\juca\'
       OverWrite: true
@@ -138,6 +139,7 @@ steps:
       SourceFolder: '$(Build.SourcesDirectory)/backend/venv'
       Contents: |
         **/*
+        !**/__pycache__/**
       TargetFolder: 'C:\inetpub\wwwroot\juca\venv'
       OverWrite: true
       flattenFolders: false
