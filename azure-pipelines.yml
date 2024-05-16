@@ -134,6 +134,7 @@ steps:
       flattenFolders: false
       ignoreMakeDirErrors: true
       ignoreErrors: true
+    displayName: 'Copy files ignoring venv'
   - task: CopyFiles@2
     inputs:
       SourceFolder: '$(Build.SourcesDirectory)/backend/venv'
@@ -145,3 +146,16 @@ steps:
       flattenFolders: false
       ignoreMakeDirErrors: true
       ignoreErrors: true
+    displayName: 'Copy files venv'
+  - task: PowerShell@2
+    inputs:
+      targetType: 'inline'
+      script: |
+        Remove-Item -Path '$(Build.SourcesDirectory)/backend' -Recurse -Force
+    displayName: 'Remove folder backend'
+  - task: PowerShell@2
+    inputs:
+      targetType: 'inline'
+      script: |
+        Remove-Item -Path '$(Build.SourcesDirectory)/frontend' -Recurse -Force
+    displayName: 'Remove folder frontend'
