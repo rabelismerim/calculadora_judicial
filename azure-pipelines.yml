@@ -98,7 +98,7 @@ steps:
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Install pip unittest-xml-reporting'
   - script: |
-      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install fastcgi
+      $(Build.SourcesDirectory)/backend/venv/Scripts/python -m pip install fastcgi wfastcgi
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Install pip fastcgi'
@@ -133,24 +133,34 @@ steps:
       Contents: |
         **/*
         !**/__pycache__/**
-        !**/*.pyd
-        !**/*.pyc
         !**/venv/**
       TargetFolder: 'E:\wwwroot\fadigitallab.deloitte.com.br\juca\'
       OverWrite: true
       flattenFolders: false
       ignoreMakeDirErrors: true
       ignoreErrors: true
+    displayName: 'Copy files ignoring venv'
   - task: CopyFiles@2
     inputs:
       SourceFolder: '$(Build.SourcesDirectory)/backend/venv'
       Contents: |
         **/*
         !**/__pycache__/**
-        !**/*.pyd
-        !**/*.pyc
       TargetFolder: 'E:\wwwroot\fadigitallab.deloitte.com.br\juca\venv'
       OverWrite: false
       flattenFolders: false
       ignoreMakeDirErrors: true
       ignoreErrors: true
+    displayName: 'Copy files venv'
+  - task: PowerShell@2
+    inputs:
+      targetType: 'inline'
+      script: |
+        Remove-Item -Path '$(Build.SourcesDirectory)/backend' -Recurse -Force
+    displayName: 'Remove folder backend'
+  - task: PowerShell@2
+    inputs:
+      targetType: 'inline'
+      script: |
+        Remove-Item -Path '$(Build.SourcesDirectory)/frontend' -Recurse -Force
+    displayName: 'Remove folder frontend'
