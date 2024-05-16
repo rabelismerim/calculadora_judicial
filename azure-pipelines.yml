@@ -3,11 +3,11 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 trigger:
-- dev
+  - dev
 pool:
   name: TR
   demands:
-  - Agent.Name -equals TRDEV
+    - Agent.Name -equals TRDEV
 variables:
   system.debug: 'true'
 strategy:
@@ -134,6 +134,7 @@ steps:
       flattenFolders: false
       ignoreMakeDirErrors: true
       ignoreErrors: true
+    displayName: 'Copy files ignoring venv'
   - task: CopyFiles@2
     inputs:
       SourceFolder: '$(Build.SourcesDirectory)/backend/venv'
@@ -141,17 +142,20 @@ steps:
         **/*
         !**/__pycache__/**
       TargetFolder: 'C:\inetpub\wwwroot\juca\venv'
-      OverWrite: true
+      OverWrite: false
       flattenFolders: false
       ignoreMakeDirErrors: true
-      ignoreErrors: true
-  - task: DeleteFiles@1
+    ignoreErrors: true
+    displayName: 'Copy files venv'
+  - task: PowerShell@2
     inputs:
-      SourceFolder: '$(Build.SourcesDirectory)/backend'
-      Contents: '**'
-      RemoveSourceFolder: true
-  - task: DeleteFiles@1
+      targetType: 'inline'
+      script: |
+        Remove-Item -Path '$(Build.SourcesDirectory)/backend' -Recurse -Force
+    displayName: 'Remove folder backend'
+  - task: PowerShell@2
     inputs:
-      SourceFolder: '$(Build.SourcesDirectory)/frontend'
-      Contents: '**'
-      RemoveSourceFolder: true
+      targetType: 'inline'
+      script: |
+        Remove-Item -Path '$(Build.SourcesDirectory)/frontend' -Recurse -Force
+    displayName: 'Remove folder frontend'
