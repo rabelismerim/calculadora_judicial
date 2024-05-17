@@ -329,11 +329,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         # Allowing or blocking to use django user with password
         self.is_active = self.status in STATUS_ACTIVE
-        if IS_PROD is False:
-            if not self._state.adding and (self.id != self._loaded_values['id']):
-                raise ValueError(_("Updating the value of id isn't allowed"))
-            if ENABLE_SSO:
-                self.set_unusable_password()
+        if IS_PROD and ENABLE_SSO:
+            self.set_unusable_password()
         else:
             if self.username == 'dev_admin':
                 self.is_active = True
