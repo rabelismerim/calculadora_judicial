@@ -94,7 +94,7 @@ class AbstractDateCreditor(AbstractModel):
 
     # TODO: remover apos o front ter atualizado os calculos
     occurrence = models.CharField(_('Occurrence'), max_length=1, choices=CHOICES_OCCURRENCE, default='O')
-    physical_person = models.BooleanField(_('Are you an individual?'), default=True)
+    # physical_person = models.BooleanField(_('Are you an individual?'), default=True)
     representation_documentation = models.CharField(_('Representation documentation'), max_length=1,
                                                     choices=CHOICES_REPRESENTATION_DOCUMENTATION, default='R')
 

@@ -83,8 +83,7 @@ class StatementPF(AbstractStatus):
 
     def get_agreements(self):
         return list(
-            FundsDocumentDescriptionPJ.objects.filter(document__fund__calculation__creditor__physical_person=True,
-                                                      document__fund__calculation=self.statement.calculation))
+            FundsDocumentDescriptionPJ.objects.filter(document__fund__calculation=self.statement.calculation))
 
     def get_recurral_deposit(self) -> float:
         """

@@ -16,7 +16,7 @@ from creditors.notice.schemas import NoticeRecoveringSchema, NoticeSchema
 from rates.models import FieldTypeChoices
 from recovering.models import Recovering
 from rest_framework import serializers
-from utils import _
+from utils import _, get_legal_number
 
 
 class LegalPendenciesSchema(AbstractDescriptionSchema):
@@ -97,17 +97,15 @@ class AbstractCreditorSchema(AbstractDescriptionSchema):
 
     def validate(self, data):
         recovering_id = data.get('recovering_id')
-        physical_person = data.get('physical_person', True)
         data['notice_recovering'] = data.pop('noticerecovering_set', [])
         data['notice'] = data.pop('notice_set', [])
         data['claim_creditor'] = data.pop('claimcreditor_set', [])
         data['legal_pendencies'] = data.pop('legalpendencies_set', [])
         legal_number = data.get('entity', {}).get('legal_number')
-        legal_number = ''.join(re.findall(r'\d', str(legal_number)))
+        legal_number = get_legal_number(legal_number)
 
         # TODO desbloqueio por classes diferentes
-        if Creditor.objects.filter(recovering_id=recovering_id, entity__legal_number=legal_number,
-                                   physical_person=physical_person).exists():
+        if Creditor.objects.filter(recovering_id=recovering_id, entity__legal_number=legal_number).exists():
             raise serializers.ValidationError(
                 [_('Creditor already registered in this recovering')])
         return super(AbstractCreditorSchema, self).validate(data)
@@ -183,4 +181,4 @@ class CreditorUpdateSchema(AbstractDescriptionSchema):
     class Meta:
         model = Creditor
         fields = ('description', 'admission', 'dismissal', 'default_interest', 'fine', 'advocative_hours', 'occurrence',
-                  'representation_documentation', 'claim_type', 'nature', 'name', 'legal_number', 'physical_person')
+                  'representation_documentation', 'claim_type', 'nature', 'name', 'legal_number')

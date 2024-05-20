@@ -38,10 +38,7 @@ class StatementPJ(AbstractModel):
 
     def get_documents(self):
         """Get all legal entity documents."""
-        if self.statement.calculation.creditor.physical_person:
-            return self.fundsdocumentdescriptionpj_set.filter(document__fund__calculation__creditor__physical_person=True)
-        else:
-            return self.fundsdocumentdescriptionpj_set.filter(document__fund__calculation__creditor__physical_person=False)
+        return self.fundsdocumentdescriptionpj_set.all()
 
     def set_total(self, commit=True):
         """Calculate the amounts, interest, fine and days by adding all the documents of the legal entity."""

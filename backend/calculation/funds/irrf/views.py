@@ -57,7 +57,6 @@ class AbstractFundIRRFApi(AbstractViewApi):
         ```
     """
     serializer_class = FundIRRFSchema
-    physical_person = True
     model = FundIRRF
 
     tags = [_('Cálculo - Verbas - IRRF')]

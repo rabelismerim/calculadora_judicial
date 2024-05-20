@@ -214,7 +214,6 @@ class CalculationApi(AbstractCalculationApi):
                 # 'occurrence': creditor.occurrence,
                 'representation_documentation': creditor.representation_documentation,
                 'claim_type': creditor.claim_type,
-                'physical_person': creditor.physical_person,
                 'date_rj_request': project.date_rj_request,
                 # 'date_rj_filing': project.date_rj_filing,
                 # 'date_citation': project.date_citation,

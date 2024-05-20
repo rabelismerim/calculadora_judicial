@@ -1,5 +1,6 @@
 """Commom methods"""
 import datetime
+import re
 import secrets
 import logging
 
@@ -138,3 +139,68 @@ def log_info(*args):
 def get_rate_selic():
     from rates.models import RATE_SELIC_NAME, Rate
     return Rate.objects.filter(index=RATE_SELIC_NAME).first()
+
+
+def is_valid_cpf(cpf):
+    """
+    This method is used to validate the cpf variable, which is the Brazilian version of
+    a personal identification number. It checks if the variable is present and has the correct
+    length (11 characters). It also performs numerical calculations with the numbers in the
+    variable to check that the information is valid.
+    """
+
+    if not cpf:
+        return False
+
+    cpf = ''.join(re.findall(r'\d', str(cpf))).zfill(11)
+
+    int_cpf = [int(x) for x in cpf]
+    new = int_cpf[:9]
+    while len(new) < 11:
+        r = sum([(len(new) + 1 - i) * v for i, v in enumerate(new)]) % 11
+        if r > 1:
+            f = 11 - r
+        else:
+            f = 0
+        new.append(f)
+        if new == int_cpf:
+            return True
+    return False
+
+
+def is_valid_cnpj(cnpj):
+    """
+    This method is essentially the same as the one above, but is used to validate the cnpj
+    variable which is the Brazilian version of a business identification number.
+    """
+
+    if not cnpj:
+        return False
+
+    cnpj = ''.join(re.findall(r'\d', str(cnpj))).zfill(14)
+
+    int_cnpj = [int(x) for x in cnpj]
+    new = int_cnpj[:12]
+    prod = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+    while len(new) < 14:
+        r = sum([x * y for (x, y) in zip(new, prod)]) % 11
+        if r > 1:
+            f = 11 - r
+        else:
+            f = 0
+        new.append(f)
+        prod.insert(0, 6)
+        if new == int_cnpj:
+            return True
+    return False
+
+
+def get_legal_number(legal_number):
+    legal_number = ''.join(re.findall(r'\d', str(legal_number)))
+
+    valid_cpf = is_valid_cpf(legal_number)
+    if not valid_cpf:
+        valid_cnpj = is_valid_cnpj(legal_number)
+        if valid_cnpj:
+            return legal_number.zfill(14)
+    return legal_number.zfill(11)

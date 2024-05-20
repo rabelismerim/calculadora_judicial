@@ -1,13 +1,11 @@
 import datetime
 
-from django.core.exceptions import ValidationError
-
 from base.models import AbstractDateCreditor, AbstractDescription
 from core.entity.models import Entity
 from django.db import models
 from rates.models import Rate
 from recovering.models import Recovering
-from utils import _
+from utils import _, is_valid_cpf, is_valid_cnpj
 
 CHOICES_STATUS_LEGAL = (('U', _('Under review')),
                         ('P', _('Pending')), ('C', _('Concluded')))
@@ -16,15 +14,30 @@ CHOICES_STATUS_LEGAL = (('U', _('Under review')),
 class Creditor(AbstractDateCreditor):
     entity = models.ForeignKey(Entity, on_delete=models.CASCADE)
     recovering = models.ForeignKey(Recovering, on_delete=models.CASCADE)
-    description = models.CharField(
-        _('Description'), max_length=255, null=True, blank=True)
+    description = models.CharField(_('Description'), max_length=255, null=True, blank=True)
 
     total = models.FloatField(_('Total sum of valid amounts'), default=0)
-    total_historical = models.FloatField(
-        _('Total historical sum of valid amounts'), default=0)
+    total_historical = models.FloatField(_('Total historical sum of valid amounts'), default=0)
     is_active = models.BooleanField(_('Is active'), default=True)
-    rate = models.ForeignKey(
-        Rate, on_delete=models.CASCADE, null=True, blank=True)
+    rate = models.ForeignKey(Rate, on_delete=models.CASCADE, null=True, blank=True)
+
+    @property
+    def physical_person(self):
+        return is_valid_cpf(self.entity.legal_number)
+
+    @property
+    def legal_number(self):
+        return self.entity.legal_number
+
+    @property
+    def person_type(self):
+        if is_valid_cpf(self.entity.legal_number):
+            return _('Pessoa Física')
+
+        if is_valid_cnpj(self.entity.legal_number):
+            return _('Pessoa Jurídica')
+
+        return _('Pessoa Estrangeira')
 
     def get_total(self) -> float:
         return self.total
@@ -40,18 +53,17 @@ class Creditor(AbstractDateCreditor):
         return self.claimcreditor_set.all()
 
     def get_claim_lawyer(self):
-        if hasattr(self, 'claimlawyer'):
-            return self.claimlawyer
+        return getattr(self, 'claimlawyer', None)
 
     def get_notice(self):
         return self.notice_set.all()
 
     def has_notice_aj(self) -> bool:
         return self.noticerecovering_set.exists()
-    
+
     def get_entity_name(self):
         return self.entity.name
-    
+
     def get_entity_legal_number(self):
         return self.entity.legal_number
 
