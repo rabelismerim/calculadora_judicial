@@ -68,7 +68,7 @@ steps:
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Create dir log'
   - script: |
-      pip install virtualenv
+      pip install virtualenv --user
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Install virtualenv'
