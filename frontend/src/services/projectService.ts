@@ -33,7 +33,7 @@ const mapProject = (project: any) => {
 const getUserProjects = () => api
   .get('/v1/projects/project_user/')
   .then((result: any) => [...new Set(result?.projectUser || [])])
-const getProjects = (pagination: any) => api
+const getProjects = (pagination: any = {}) => api
   .get(`/v1/projects/${controlPagination(pagination)}`)
   .then((result: any) => ({ count: result?.data?.count, items: result?.data?.results?.map(mapProject) || [] }))
 const getProject = (id: string) => api

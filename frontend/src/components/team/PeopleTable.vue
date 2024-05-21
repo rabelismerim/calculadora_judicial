@@ -56,6 +56,7 @@ interface TableColumn {
   align?: 'left' | 'right' | 'center'
   sortable?: boolean
   style?: string
+  classes?: string
 }
 const columns = [
   {
@@ -64,7 +65,7 @@ const columns = [
     label: 'Usuário',
     required: true,
     align: 'left',
-    style: 'width: 240px',
+    classes: 'w-60',
     sortable: true,
   },
   {
@@ -72,7 +73,7 @@ const columns = [
     field: 'email',
     label: 'Email',
     align: 'left',
-    style: 'width: 100px',
+    classes: 'w-25',
     sortable: true,
   },
   {
@@ -81,7 +82,7 @@ const columns = [
     label: 'Permissão',
     align: 'left',
     format: (value: any[]) => value.map(({ name }: any) => name).join(' '),
-    style: 'width: 100px',
+    classes: 'w-25 max-w-100 overflow-hidden text-ellipsis',
     sortable: true,
   },
   {
@@ -89,35 +90,17 @@ const columns = [
     field: 'roleDisplay',
     label: 'Cargo',
     align: 'left',
-    format: (value: string) => value || '-',
-    style: 'width: 100px',
+    format: (value: string) => value ?? '-',
+    classes: 'w-25',
     sortable: true,
   },
-
   {
     name: 'status',
     field: 'isActive',
     label: 'Ativo',
-    align: 'left',
-    style: 'width: 100px',
+    align: 'right',
+    classes: 'w-25',
     sortable: true,
-  },
-
-  {
-    name: 'count',
-    field: 'projects',
-    label: 'Total',
-    align: 'left',
-    style: 'width: 100px',
-    format: (value: string) => value?.length || 0,
-    sortable: true,
-  },
-  {
-    name: 'projects',
-    field: 'projects',
-    label: 'Projetos',
-    sortable: true,
-    align: 'center',
   },
 ] as TableColumn[]
 </script>
@@ -156,36 +139,11 @@ const columns = [
 
     <template #body-cell-status="props">
       <QTd :props="props">
-        <div class="flex">
+        <div class="flex justify-end">
           <StatusTag
             :label="props.row?.statusDisplay"
             :color="statusColors[props.value]"
           />
-        </div>
-      </QTd>
-    </template>
-
-    <template #body-cell-projects="props">
-      <QTd :props="props">
-        <div class="flex justify-end gap-1 no-wrap">
-          <div class="flex justify-end gap-1  max-h-7.5 overflow-hidden">
-            <div
-              v-for="project in props.value as any[]"
-              :key="project.id"
-              class="rounded-full px-3 py-1 border-1 border--black/10 bg-gray/10 whitespace-nowrap cursor-pointer hover:bg--primary/20 hover:border--primary/50"
-              @click.stop="goTo(project)"
-            >
-              {{ project.description }}
-            </div>
-          </div>
-          <div
-            v-if="props.value?.length > 0"
-            class="flex justify-end"
-          >
-            <div class="flex items-center rounded-full px-3 py-1 border-1 border--black/12 bg-gray/10 whitespace-nowrap cursor-pointer hover:bg--primary/50 hover:border--primary/12" @click.stop="{ modalUser = props.row; showUserModal = true }">
-              Ver Todos
-            </div>
-          </div>
         </div>
       </QTd>
     </template>
