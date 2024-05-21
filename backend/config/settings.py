@@ -574,14 +574,14 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 #     mimetypes.add_type("text/css", ".css", True)
 
 STATIC_URL = '/juca/static/'
-STATIC_ROOT = '/var/static_root/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'var', 'static_root')
 
 # Setting media info for images
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'juca/static'),
+    os.path.join(BASE_DIR, 'juca', 'static'),
 ]
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
@@ -646,7 +646,6 @@ else:
     LOGOUT_REDIRECT_URL = f"/juca/"
     LOGIN_REDIRECT_URL = f"/juca/"
     LOGOUT_URL = "/juca/logout/"
-
 
 if DEBUG_TOOLBAR:
     INSTALLED_APPS.append('debug_toolbar')

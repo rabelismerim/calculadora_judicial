@@ -89,6 +89,8 @@ class AbstractCreditorSchema(AbstractDescriptionSchema):
     natures = serializers.ListField(
         write_only=True, child=serializers.UUIDField(), required=False, allow_null=True)
 
+    person_type = serializers.ReadOnlyField()
+
     class Meta:
         model = Creditor
         fields = '__all__'
