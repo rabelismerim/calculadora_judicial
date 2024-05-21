@@ -17,7 +17,7 @@ interface Creditor {
   fine: number
   advocativeHours: number
   occurrence: string
-  physicalPerson: boolean
+  personType: string
   description: string
   recoverings?: { recoveringId: string; rateId: string }[]
 }
