@@ -1,14 +1,18 @@
 import logging
 import pickle
 import re
+import sys
+import traceback
+
 import xlsxwriter
 
 from django.db import models, transaction
-from django.db.models import Count, Sum, Q
+from django.db.models import Count, Sum
 from django.http import HttpResponse
 from django.utils.translation import activate, deactivate
 from numpy import number
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from base.coins.models import COIN_CHOICES
 from base.models import AbstractDateRecovering, AbstractDescription, NatureChoice
@@ -36,8 +40,6 @@ STATUS_CHOICES = (
     ('A', _('In progress')),
     ('F', _('Canceled')),
 )
-
-CHOICES_PHYSICAL_PERSON = (('verdadeiro', 'verdadeiro'), ('falso', 'falso'))
 
 
 def get_first_value(choices, second_value):
@@ -226,7 +228,6 @@ class Project(AbstractDescription, AbstractDateRecovering):
             {"title": "Credor - CPF/CNPJ", 'choice': None, 'default': None, 'type': 'str'},
             {"title": "Credor - CPF/CNPJ da Recuperanda", 'choice': None, 'default': None, 'type': 'str'},
             {"title": "Credor - Nome da Recuperanda", 'choice': None, 'default': None, 'type': 'str'},
-            {"title": "Pessoa Física", 'choice': None, 'default': 'verdadeiro', 'type': 'str'},
         ]
 
         rj_columns = default_columns.copy()
@@ -270,6 +271,38 @@ class Project(AbstractDescription, AbstractDateRecovering):
         if not has_excel:
             raise serializers.ValidationError(_('Excel is not in the correct format'))
 
+    def get_traceback_err(self, e) -> tuple:
+        logging.error(e, exc_info=True)
+        type_, value, e_traceback_str = sys.exc_info()
+
+        traceback_str = traceback.format_exc()
+        logging.critical(f'type_: {type_}')
+        logging.critical(f'value: {value}')
+        logging.critical(f'traceback_str: {traceback_str}')
+
+        if hasattr(e, 'messages'):
+            e = e.messages
+        elif (type_ == ValidationError or isinstance(type_, ValidationError)) and hasattr(e, 'get_full_details'):
+            def get_error_message(values):
+                messages = []
+
+                def extract_messages(message_values):
+                    if isinstance(message_values, dict):
+                        for key, val in message_values.items():
+                            if isinstance(val, dict) and 'message' in val:
+                                messages.extend(val['message'])
+                            else:
+                                extract_messages(val)
+                    elif isinstance(message_values, list):
+                        messages.extend([msg['message'] for msg in message_values])
+
+                extract_messages(values)
+                return ', '.join(messages)
+
+            e = get_error_message(e.get_full_details())
+
+        return traceback_str, e
+
     def process_json_to_model(self, data: list, **kwargs):
         from recovering.schemas import RecoveringExcelSchema
 
@@ -309,8 +342,9 @@ class Project(AbstractDescription, AbstractDateRecovering):
                         is_valid = recovering_schema.is_valid(raise_exception=False)
 
                         if not is_valid:
-                            error_bulk.append(ErrorFile(file_id=file_id,
-                                                        error=f'Linha: {credor["index"]}, {recovering_schema.errors}'))
+                            error_bulk.append(
+                                ErrorFile(file_id=file_id, data={'credor': credor, 'payload': recovering_data},
+                                          error=f'Linha: {credor["index"]}, {recovering_schema.errors}'))
                             continue
 
                         recovering_id = recovering_schema.save().id
@@ -359,8 +393,6 @@ class Project(AbstractDescription, AbstractDateRecovering):
                         "claim_creditor": [],
                         "notice_recovering": notice_rj_creditor,
                         "notice_aj": notice_aj_creditor,
-                        "physical_person": str(credor['Pessoa Física']).strip().lower() in ['true', 'verdadeiro', 'sim',
-                                                                                            'yes'],
                         "natures": [],
                         "legal_pendencies": legal_pendencies,
                         "is_active": True,
@@ -370,19 +402,16 @@ class Project(AbstractDescription, AbstractDateRecovering):
                     from creditors.views import CreateCreditor
 
                     serializer = CreditorBulkSchema(data=new_credor)
-
-                    if serializer.is_valid(raise_exception=False):
-                        creditor = serializer.validated_data
-                        CreateCreditor().create_creditor(creditor)
-                    else:
-                        for field, error_messages in serializer.errors.items():
-                            for error_message in error_messages:
-                                error_bulk.append(ErrorFile(file_id=file_id,
-                                                            error=f"Linha: {credor['index']}, Field {field}: {error_message}"))
+                    serializer.is_valid(raise_exception=True)
+                    creditor = serializer.validated_data
+                    CreateCreditor().create_creditor(creditor)
 
                 except Exception as e:
                     logging.error(e, exc_info=True)
-                    error_bulk.append(ErrorFile(file_id=file_id, error=str(e), status='P'))
+                    trace, err = self.get_traceback_err(e)
+                    error_bulk.append(
+                        ErrorFile(file_id=file_id, error=f"Linha: {credor['index']}, Erro: {err}", traceback=trace,
+                                  data={'credor': credor, 'payload': new_credor}))
 
             if error_bulk:
                 transaction.set_rollback(True)

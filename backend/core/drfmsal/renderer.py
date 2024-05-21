@@ -25,7 +25,7 @@ class APIRendererInterceptor(JSONRenderer):
                         'is_active': request.user.is_active,
                         'is_staff': request.user.is_staff,
                         'authenticated': is_authenticated,
-                        'user_fullname': request.user.full_name if is_authenticated else 'anonymous',
+                        'user_fullname': request.user.get_full_name if is_authenticated else 'anonymous',
                         'user_picture': None,
                     }
                 }

@@ -125,24 +125,23 @@ class FundsTest(AbstractTest):
         response = self.post('calculation/funds/documents', statement)
         self.assertEqual(response.status_code, 403)
 
-    def __get_create_creditor(self, physical_person: bool):
-        payload = Creditor.objects.filter(physical_person=physical_person).first()
+    def __get_create_creditor(self):
+        payload = Creditor.objects.filter().first()
         if payload:
             return payload.id
 
-        payload = CreditorValues().get_creditor(physical_person=physical_person)
+        payload = CreditorValues().get_creditor()
         path = 'creditors'
         response = self.post(path, payload)  # creditor
         return response.content['creditor']['id']
 
-    def __get_create_calculation(self, physical_person: bool):
-        calculation = Calculation.objects.filter(creditor__physical_person=physical_person,
-                                                 funddocument__isnull=True).first()
+    def __get_create_calculation(self):
+        calculation = Calculation.objects.filter(funddocument__isnull=True).first()
         if calculation:
             return calculation.id
 
         parameters = CalculationValues.calculation
-        parameters['creditor_id'] = self.__get_create_creditor(physical_person)
+        parameters['creditor_id'] = self.__get_create_creditor()
         path = 'calculation'
         response = self.post(path, parameters)
         return response.content['calculation']['id']
@@ -168,8 +167,7 @@ class FundsTest(AbstractTest):
             "template_id": str(Template.objects.first().id),
             'calculation_id': self.calculation_agreement_id
         }
-        self.fund_id = str(Funds.objects.filter(calculation__creditor__physical_person=True,
-                                                calculation__funddocument__isnull=True).first().id)
+        self.fund_id = str(Funds.objects.filter(calculation__funddocument__isnull=True).first().id)
         self.path = 'calculation/funds'
         self.path_get = f'{self.path}/{self.fund_id}/'
 

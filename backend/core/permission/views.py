@@ -408,23 +408,8 @@ class CheckFundsPjPfPermissions(BasePermission):
     message = _('It is not possible to register this fund')
 
     def has_permission(self, request, view):
-        if request.path == SWAGGER_URL:
-            return True
-        if hasattr(view, 'physical_person') is False:
-            raise AttributeError(
-                _('Need to add "physical_person: bool" attribute to use CheckFundsPjPfPermissions class'))
-        calculation_id = view.request.data.get('calculation_id')
-        calculation = get_object_or_404(Calculation, id=calculation_id)
+        return True
 
-        physical_person = calculation.creditor.physical_person
-        if physical_person == view.physical_person:
-            return True
-
-        if physical_person:
-            self.message = _('It is not possible to register a fund of the legal entity type for individuals')
-        else:
-            self.message = _('It is not possible to register a fund of the individuals type for legal entity')
-        return False
 
 
 class CheckHasFundRegisteredPermissions(BasePermission):

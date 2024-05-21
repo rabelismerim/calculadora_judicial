@@ -73,6 +73,7 @@ DATABASE_POSTGRES = config('DATABASE_POSTGRES', cast=bool, default=False)
 ENVIRONMENT = config('ENVIRONMENT', cast=str, default='prod').lower()
 ENABLE_LOGGER = config('ENABLE_LOGGER', cast=bool, default=False)
 ENABLE_CACHE = config('ENABLE_CACHE', cast=bool, default=False)
+DEBUG_TOOLBAR = config('DEBUG_TOOLBAR', cast=bool, default=False)
 
 if ENVIRONMENT not in ['prod', 'hml', 'dev']:
     raise ValueError('Invalid ENVIRONMENT. Options is (prod, hml or dev)')
@@ -100,7 +101,6 @@ INSTALLED_APPS = [
     'drf_yasg',  # Swagger schema
     # 'vinaigrette',
     'modeltranslation',  # Custom field translation
-    # 'debug_toolbar', # Debug query, views in realtime on navigation
     'django_apscheduler',  # Eventos crontab
     'django_celery_results',  # View results Tasks in admin
     'encrypted_fields',
@@ -197,7 +197,6 @@ MIDDLEWARE = [
     'crum.CurrentRequestUserMiddleware',  # Get current request in Models
     'drf_api_logger.middleware.api_logger_middleware.APILoggerMiddleware',
     'dashboard.middleware.LoginMiddleware',  # Save the first occurrence of user login on the day
-    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -575,14 +574,14 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 #     mimetypes.add_type("text/css", ".css", True)
 
 STATIC_URL = '/juca/static/'
-STATIC_ROOT = '/var/static_root/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'var', 'static_root')
 
 # Setting media info for images
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'juca/static'),
+    os.path.join(BASE_DIR, 'juca', 'static'),
 ]
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
@@ -642,16 +641,22 @@ if IS_DEV:
         # ...
     ]
 
-    INSTALLED_APPS.append('debug_toolbar')
-    MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
-    # End config debug toolbar
-
-
 else:
     LOGIN_URL = "/juca/login/"
     LOGOUT_REDIRECT_URL = f"/juca/"
     LOGIN_REDIRECT_URL = f"/juca/"
     LOGOUT_URL = "/juca/logout/"
+
+if DEBUG_TOOLBAR:
+    INSTALLED_APPS.append('debug_toolbar')
+    MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
+
+    INTERNAL_IPS = [
+        # ...
+        "127.0.0.1",
+        "127.0.0.3",
+        # ...
+    ]
 
 SWAGGER_URL = f'/{BASE_URL}docs/redoc/'
 RATE_FILE_TYPES = ['pdf', 'vnd.ms-excel', 'xlsx', 'xls']
