@@ -1,3 +1,6 @@
+const inProduction = import.meta.env.PROD
+const inDevelopment = import.meta.env.DEV
+
 const verifyUser = () => api
   .get('/drfmsal_signstatus/')
   .then((result: any) => result?.profile)
@@ -24,9 +27,6 @@ const getMyProfile = async () => verifyUser()
       redirectTo(`${window.location.origin}/juca/api/drfmsal_signin/juca/`)
 
     const { authenticated, authorized, isActive } = user
-
-    const inProduction = import.meta.env.PROD
-    const inDevelopment = import.meta.env.DEV
 
     if ((!authenticated && inProduction)
       || (authenticated && isActive && !authorized && inProduction))

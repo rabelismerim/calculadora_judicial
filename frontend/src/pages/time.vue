@@ -1,6 +1,4 @@
 <script setup lang="ts">
-const router = useRouter()
-
 const { hasPermissions } = $user
 
 const tab = $ref('all')
@@ -9,9 +7,9 @@ let loading = $ref(false)
 const showingRequests = $ref(false)
 const mode = $ref('person')
 let users: any[] = $ref([])
-let projects: any[] = $ref([])
+let projects: any = $ref([])
 
-const mapProjects = computed(() => projects.map((project) => {
+const mapProjects = computed(() => projects.map((project: any) => {
   const newProject = clone(project)
   const { id, description, projectUsers, status, statusDisplay } = newProject
   const filterBy = (toCompare: string) => ({ groups }: any) => groups?.findIndex(({ name }: any) => name === toCompare)
@@ -39,29 +37,6 @@ const mapProjects = computed(() => projects.map((project) => {
 const activeUsers = computed(() => users.filter(({ status }) => ['A', 'F', 'I'].includes(status)))
 const pendingUsers = computed(() => users.filter(({ status }) => ['P', 'R'].includes(status)))
 const pendingUsersCount = computed(() => users.filter(({ status }) => status === 'P').length)
-const projectsPerUser: any = computed(() => projects?.reduce((acc, project) => {
-  const { id, description, projectUsers, engagement } = project
-  projectUsers.forEach(({ idUser }: any) => {
-    if (!acc[idUser])
-      acc[idUser] = []
-    acc[idUser].push({ id, description, engagement: engagement.id })
-  })
-  return acc
-}, {}))
-const mapUsers = computed(() => activeUsers.value.map((user) => {
-  const { id } = user
-  const projects = projectsPerUser.value[id] || []
-  const uniqueProjects = projects.reduce((acc: any, project: any) => {
-    const { id } = project
-    if (!acc.ids.includes(id)) {
-      acc.ids.push(id)
-      acc.items.push(project)
-    }
-    return acc
-  }, { items: [], ids: [] })
-  user.projects = uniqueProjects.items
-  return user
-}))
 
 let showEditUser = $ref(false)
 let editingUser = $ref({})
@@ -129,7 +104,7 @@ onMounted(() => loadPage())
       v-if="mode === 'person'"
       v-model:tab="tab"
       v-model:filter="filterBy"
-      :items="mapUsers"
+      :items="activeUsers"
       :loading="loading"
       @editing-user="onEditUser"
     />

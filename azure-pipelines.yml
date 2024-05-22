@@ -159,3 +159,21 @@ steps:
       script: |
         Remove-Item -Path '$(Build.SourcesDirectory)/frontend' -Recurse -Force
     displayName: 'Remove folder frontend'
+  - script: |
+      python -m pip install python-decouple
+    failOnStderr: false
+    workingDirectory: C:/inetpub/wwwroot/juca
+    displayName: 'Install python-decouple'
+  - script: |
+      python start_server_service.py install
+    workingDirectory: C:/inetpub/wwwroot/juca
+    displayName: 'Install Windows Service'
+  - script: |
+      python start_server_service.py stop
+    workingDirectory: C:/inetpub/wwwroot/juca
+    failOnStderr: false
+    displayName: 'Stop Windows Service'
+  - script: |
+      python start_server_service.py start
+    workingDirectory: C:/inetpub/wwwroot/juca
+    displayName: 'Start Windows Service'
