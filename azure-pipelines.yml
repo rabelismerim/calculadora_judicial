@@ -162,18 +162,18 @@ steps:
   - script: |
       python -m pip install python-decouple
     failOnStderr: false
-    workingDirectory: C:/inetpub/wwwroot/juca
+    workingDirectory: E:/inetpub/wwwroot/uat.fadigitallab.deloitte.com.br/juca
     displayName: 'Install python-decouple'
   - script: |
       python start_server_service.py install
-    workingDirectory: C:/inetpub/wwwroot/juca
+    workingDirectory: E:/inetpub/wwwroot/uat.fadigitallab.deloitte.com.br/juca
     displayName: 'Install Windows Service'
   - script: |
       python start_server_service.py stop
-    workingDirectory: C:/inetpub/wwwroot/juca
+    workingDirectory: E:/inetpub/wwwroot/uat.fadigitallab.deloitte.com.br/juca
     failOnStderr: false
     displayName: 'Stop Windows Service'
   - script: |
       python start_server_service.py start
-    workingDirectory: C:/inetpub/wwwroot/juca
+    workingDirectory: E:/inetpub/wwwroot/uat.fadigitallab.deloitte.com.br/juca
     displayName: 'Start Windows Service'
