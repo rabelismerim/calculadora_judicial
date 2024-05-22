@@ -93,7 +93,7 @@ const loadCalculations = async (props: any) => {
     const noticeAJResult = await creditorsService.getNoticeAJCreditor(id)
     const noticeRJResult = await creditorsService.getNoticeAJRecovering(id)
     const noticesAJ = noticeAJResult
-      .map((notice: any) => ({
+      ?.map((notice: any) => ({
         number: 'AJ',
         incident: { number: 'Edital AJ' },
         isAdm: false,
@@ -104,7 +104,7 @@ const loadCalculations = async (props: any) => {
       }))
 
     const noticesRJ = noticeRJResult
-      .map((noticeRecovering: any) => ({
+      ?.map((noticeRecovering: any) => ({
         number: 'RJ',
         incident: { number: 'Edital RJ' },
         isAdm: true,
@@ -147,6 +147,15 @@ const creditorColumns = [
     classes: 'w-25',
     sortable: true,
     format: value => formatLegalNumber(value?.legalNumber),
+  },
+  {
+    name: 'person_type',
+    field: 'personType',
+    label: 'Tipo',
+    align: 'left',
+    classes: 'w-25',
+    sortable: true,
+    format: value => value ?? '-',
   },
   {
     name: 'action',
