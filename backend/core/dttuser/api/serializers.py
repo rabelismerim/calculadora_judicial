@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework import serializers
 
 from core.dttuser.models import User
@@ -15,9 +17,9 @@ class UserSerializer(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
         if fields is not None:
             allowed = set(fields)
-            existing = set(self.fields)
+            set(self.fields)
             for field_name in allowed:
                 try:
                     self.fields.pop(field_name)
-                except KeyError:
-                    pass
+                except KeyError as e:
+                    logging.info(e)

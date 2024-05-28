@@ -22,8 +22,7 @@ from rest_framework import permissions
 from utils import _, doc
 from xlsx2html import xlsx2html
 
-config = pdfkit.configuration(
-    wkhtmltopdf="C:\Program Files\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
+config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
 
 gray_fill = PatternFill(start_color="00C0C0C0",
                         end_color="00C0C0C0", fill_type="solid")
@@ -69,8 +68,8 @@ def get_nesteds_attr(objs, attr_str):
     for obj in objs:
         try:
             return get_nested_attr(obj, attr_str)
-        except AttributeError:
-            pass
+        except AttributeError as e:
+            logging.error(e)
 
 
 def move_cell(cell, rows: int, cols: int, preserve_original=False) -> None:
@@ -164,8 +163,8 @@ def set_sheet_number(sheet_, line, column, value, force=False, alignment=None, f
             .replace(".", "|") \
             .replace(",", ".") \
             .replace("|", ",")
-    except (ValueError, TypeError):
-        pass
+    except (ValueError, TypeError) as e:
+        logging.info(e)
     return set_sheet_value(sheet_, line, column, value, force=force, alignment=alignment, font=font, fill=fill)
 
 

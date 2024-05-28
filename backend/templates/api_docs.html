@@ -14,11 +14,13 @@
     {% if request.user.is_authenticated %}
     <form method="post" action="{% url 'logout' %}">
         {% csrf_token %}
+        <input style="visibility: hidden" name="csrf_token" value="{{ csrf_token }}">
         <button type="submit">Logout</button>
     </form>
     {% else %}
     <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
+        <input style="visibility: hidden" name="csrf_token" value="{{ csrf_token }}">
         <input type="text" name="username" placeholder="digite o username..." autocomplete="off"/>
         <input type="password" name="password" placeholder="digite a senha..." autocomplete="off"/>
         <button type="submit">Login</button>

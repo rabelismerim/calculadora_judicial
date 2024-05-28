@@ -34,7 +34,6 @@ const logout = async () => {
     await usersService.logout()
     await delay(2)
     store.value = clone(userFallback)
-    deleteAllCookies()
   }
   catch (error) {
     printError('ERROR ON LOGOUT:', error)

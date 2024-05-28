@@ -242,9 +242,9 @@ class StatementFunds(AbstractStatement):
         if monetary:
             try:
                 monetary.delete()
-            except ValueError:
+            except ValueError as e:
+                logging.info(e)
                 # Already in process to delete
-                pass
 
     def create_monetary_correction(self, data: dict):
         """Create or update the MonetaryCorrection object"""

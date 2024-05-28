@@ -225,8 +225,8 @@ class IdentityWebPython(object):
         picture = picture_response.raw.read() or picture_response.content or ''
         try:
             return b64encode(picture).decode('ascii') if picture_response.ok and picture else None
-        except (KeyError, ValueError, TypeError):
-            pass
+        except (KeyError, ValueError, TypeError) as f:
+            logging.info(f)
 
     def _parse_redirect_errors(self, req_params):
         # TODO implement all errors which affect program behaviour

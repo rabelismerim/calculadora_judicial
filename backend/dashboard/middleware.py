@@ -1,3 +1,5 @@
+import logging
+
 from django.db import transaction, IntegrityError
 from django.utils.timezone import now
 
@@ -38,8 +40,8 @@ class LoginMiddleware:
                 if not record_exists_today:
                     try:
                         LoginRecord.objects.create(user=user)
-                    except IntegrityError:
-                        pass
+                    except IntegrityError as e:
+                        logging.error(e)
                 user.login_date = today
                 user.save()
         return response

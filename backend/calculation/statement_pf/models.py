@@ -590,8 +590,8 @@ class StatementPF(AbstractStatus):
                 self._calcule_set_tax_days()
                 self._calcule_set_default_interest()
                 self._calcule_set_default_interest_due()
-            except TypeError:
-                pass
+            except TypeError as e:
+                logging.error(e)
             if not self.total_conclusion:
                 self.set_error_parameters()
             else:

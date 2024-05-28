@@ -114,8 +114,8 @@ class RequestsTask(SequentialTaskSet):
                 task_instance = task_class(self)
                 if task_instance:
                     task_instance.run()
-            except (locust.exception.RescheduleTaskImmediately, AttributeError, locust.exception.InterruptTaskSet):
-                pass
+            except (locust.exception.RescheduleTaskImmediately, AttributeError, locust.exception.InterruptTaskSet) as e:
+                logging.info(e)
         raise StopUser()
 
 

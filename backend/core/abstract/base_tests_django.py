@@ -6,6 +6,7 @@ app's tests file. Define the path value, which is the url to be consumed, and pa
 for the post. You can also define the methods to be used within the http_method_names list"""
 
 import json
+import logging
 import os.path
 import sys
 import webbrowser
@@ -190,8 +191,8 @@ class BaseTestsDjango(BaseTests, TransactionTestCase):
             try:
                 values = [dict(data['content'][key])]
                 self._write_html(values, key)
-            except ValueError:
-                pass
+            except ValueError as e:
+                logging.info(e)
         dt = {
             'sent': obj,
             'received': data['content'],

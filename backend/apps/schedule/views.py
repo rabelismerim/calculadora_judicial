@@ -1,3 +1,5 @@
+import logging
+
 from apscheduler.jobstores.base import JobLookupError
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -101,8 +103,8 @@ class SchedulerCommand(BaseCommand):
             return self.scheduler.add_job(func, executor='default', trigger=CronTrigger(**payload), id=job_id,
                                           job_id=job_id,
                                           replace_existing=True)
-        except OperationalError:
-            pass
+        except OperationalError as e:
+            logging.error(e)
 
     def at(self, job_id, func, at_time: datetime):
         """
@@ -214,8 +216,8 @@ class SchedulerCommand(BaseCommand):
         """Removes a specific job by ending its execution schedule"""
         try:
             return self.scheduler.remove_job(str(job_id))
-        except JobLookupError:
-            pass
+        except JobLookupError as e:
+            logging.error(e)
 
     def get_trigger_description(self, job) -> str:
         """
@@ -295,15 +297,15 @@ class SchedulerCommand(BaseCommand):
         """Pause a specific job by ending its execution schedule"""
         try:
             return self.scheduler.pause_job(str(job_id))
-        except JobLookupError:
-            pass
+        except JobLookupError as e:
+            logging.error(e)
 
     def resume_job(self, job_id):
         """Resume a specific job by ending its execution schedule"""
         try:
             return self.scheduler.resume_job(str(job_id))
-        except JobLookupError:
-            pass
+        except JobLookupError as e:
+            logging.error(e)
 
 
 SCHEDULER = SchedulerCommand()

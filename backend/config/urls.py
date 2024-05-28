@@ -18,6 +18,7 @@ import traceback
 
 from django.contrib import admin
 from django.http import HttpResponseRedirect, JsonResponse
+from django.template.defaulttags import csrf_token
 from django.urls import include, path, re_path, reverse
 from django.shortcuts import render, redirect
 from django.views.static import serve
