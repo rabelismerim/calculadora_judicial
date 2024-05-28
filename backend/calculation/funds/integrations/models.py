@@ -4,6 +4,7 @@ Inherits from AbstractModel, which provides common fields such as id, created_at
 and updated_at. Does not add any additional fields, so should be subclassed
 to add specific fields as needed.
 """
+import logging
 
 from django.db import models
 from django.db.models.signals import post_save
@@ -175,7 +176,7 @@ def save_rate_integrations(sender, instance, **kwargs) -> None:
 
     Triggers the creation of the formulas used at the end of the calculation
     """
-    print('Signal gerar linha extrato verbas integratorias\n')
+    logging.info('Signal gerar linha extrato verbas integratorias\n')
     instance.calcule_monetary_correction()
     instance.fund.gen_total_integrations()
 

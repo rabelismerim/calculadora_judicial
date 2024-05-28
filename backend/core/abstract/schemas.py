@@ -1,4 +1,5 @@
 import json
+import logging
 from json import JSONDecodeError
 
 from rest_framework import serializers, renderers
@@ -26,12 +27,12 @@ class AbstractModelSchema(serializers.Serializer):
         super().__init__(*args, **kwargs)
         if fields is not None:
             allowed = set(fields)
-            existing = set(self.fields)
+            set(self.fields)
             for field_name in allowed:
                 try:
                     self.fields.pop(field_name)
-                except:
-                    pass
+                except Exception as e:
+                    logging.info(e)
 
         if include_fields is not None:
             allowed = set(include_fields) & set(self.fields.keys())

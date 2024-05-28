@@ -1,6 +1,7 @@
 import calendar
 import datetime
 import json
+import logging
 
 import pandas as pd
 from django.core.validators import MinLengthValidator
@@ -676,7 +677,7 @@ class CalculeRate:
         self.rate_used: Rate = rate_used
 
     def calcule(self):
-        print(self.rate_used.index, 'name\n')
+        logging.info(self.rate_used.index, 'name\n')
         if str(self.rate_used.index).upper().endswith('RECEITA-FEDERAL'):
             return self.calcule_receita_federal()
 
@@ -686,7 +687,7 @@ class CalculeRate:
         elif str(self.rate_used.index).upper().endswith('SIMPLES'):
             return self.calcule_simples()
         else:
-            print('indice SELIC nao encontrado')
+            logging.info('indice SELIC nao encontrado')
             return self.calcule_receita_federal()
 
     def calcule_simples(self):
@@ -714,18 +715,18 @@ class CalculeRate:
 
         accumulated_interval_rj_date = (accumulated_rj_date / 100) / last_day_month_rj_date * self.data_rj.day
 
-        print(accumulated_rj_date, 'accumulated_rj_date')
-        print(last_day_month_rj_date, 'last_day_month_rj_date')
-        print(self.data_rj, 'self.data_rj.month')
-        print(self.data_rj.day, 'self.data_rj.day\n')
+        logging.info(accumulated_rj_date, 'accumulated_rj_date')
+        logging.info(last_day_month_rj_date, 'last_day_month_rj_date')
+        logging.info(self.data_rj, 'self.data_rj.month')
+        logging.info(self.data_rj.day, 'self.data_rj.day\n')
         # Calculating the final SELIC rate for the period
         rate_selic_in_period = (accumulated_in_period + accumulated_interval_filling_rj + accumulated_interval_rj_date)
 
         # Printing the SELIC rate for the period
-        print(rate_selic_in_period, 'taxa_selic_no_periodo')
-        print(accumulated_in_period, 'accumulated_in_period')
-        print(accumulated_interval_filling_rj, 'accumulated_interval_filling_rj')
-        print(accumulated_interval_rj_date, 'accumulated_interval_rj_date')
+        logging.info(rate_selic_in_period, 'taxa_selic_no_periodo')
+        logging.info(accumulated_in_period, 'accumulated_in_period')
+        logging.info(accumulated_interval_filling_rj, 'accumulated_interval_filling_rj')
+        logging.info(accumulated_interval_rj_date, 'accumulated_interval_rj_date')
         return rate_selic_in_period * 100
 
     def calcule_receita_federal(self):
@@ -748,15 +749,15 @@ class CalculeRate:
 
         # Calculating the final SELIC rate for the period
         rate_selic_in_period = (accumulated_in_period + accumulated_interval_filling_rj)
-        print(rate_selic_in_period, 'taxa_selic_no_periodo antes da porcentagem')
+        logging.info(rate_selic_in_period, 'taxa_selic_no_periodo antes da porcentagem')
 
         # aplicar 1% referente a regra de no mês da RJ ser 1%
         rate_selic_in_period = rate_selic_in_period + (1 / 100)
 
         # Printing the SELIC rate for the period
-        print(rate_selic_in_period, 'taxa_selic_no_periodo')
-        print(accumulated_in_period, 'accumulated_in_period')
-        print(accumulated_interval_filling_rj, 'accumulated_interval_filling_rj')
+        logging.info(rate_selic_in_period, 'taxa_selic_no_periodo')
+        logging.info(accumulated_in_period, 'accumulated_in_period')
+        logging.info(accumulated_interval_filling_rj, 'accumulated_interval_filling_rj')
         return rate_selic_in_period * 100
 
     def calcule_composto(self):
@@ -764,9 +765,9 @@ class CalculeRate:
         rate_date_rj = self.rate_selic.get_rate_by_date(self.data_rj)
         rate_data_filling_accumulated = filling_date.get_accumulated
         rate_base_date_rj_accumulated = rate_date_rj.get_accumulated
-        print(f"rate_data_filling_accumulated: {rate_data_filling_accumulated}")
-        print(f"rate_base_date_rj_accumulated: {rate_base_date_rj_accumulated}")
-        print(rate_base_date_rj_accumulated / rate_data_filling_accumulated)
+        logging.info(f"rate_data_filling_accumulated: {rate_data_filling_accumulated}")
+        logging.info(f"rate_base_date_rj_accumulated: {rate_base_date_rj_accumulated}")
+        logging.info(rate_base_date_rj_accumulated / rate_data_filling_accumulated)
         return (rate_base_date_rj_accumulated / rate_data_filling_accumulated)
 
 

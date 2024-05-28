@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.core.management.base import BaseCommand
 
@@ -132,8 +133,8 @@ def delete_verbas():
     for x in templates:
         try:
             x.delete()
-        except:
-            pass
+        except Exception as e:
+            logging.error(e, exc_info=True)
 
 
 def correct_verbas():

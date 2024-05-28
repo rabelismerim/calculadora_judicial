@@ -1,3 +1,5 @@
+import logging
+
 from django.core.management.base import BaseCommand
 from rates.models import IndiceIRRF, get_aliquot_by_tax
 
@@ -33,7 +35,7 @@ def create_irrf_values():
     assert get_aliquot_by_tax(4664.68).deduction == 636.13
     assert get_aliquot_by_tax(4664.69).deduction == 869.36
     assert get_aliquot_by_tax(5000.00).deduction == 869.36
-    print('\033[92m Successful created aliquots')
+    logging.info('\033[92m Successful created aliquots')
 
 
 class Command(BaseCommand):

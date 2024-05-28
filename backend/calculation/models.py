@@ -5,6 +5,7 @@ and updated_at. Does not add any additional fields, so should be subclassed
 to add specific fields as needed.
 """
 import datetime
+import logging
 
 from base.claim.models import ClaimCreditor
 from base.coins.models import Coins
@@ -196,8 +197,8 @@ class Calculation(AbstractModel):
     def create_statement(self):
         try:
             new_calc.send(sender=self.__class__, instance=self)
-        except:
-            pass
+        except Exception as e:
+            logging.error(e, exc_info=True)
 
     def get_rate(self) -> Rate:
         """

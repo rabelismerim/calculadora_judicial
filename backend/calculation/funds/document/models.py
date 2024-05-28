@@ -6,6 +6,7 @@ to add specific fields as needed.
 """
 
 import datetime
+import logging
 
 from django.db import models, transaction
 from django.db.models.signals import post_save
@@ -408,7 +409,7 @@ def save_statement_documents(sender, instance, **kwargs) -> None:
     calculates the monetary correction for the instance and generates the total document of the related fund. It
     takes the sender and instance as arguments
     """
-    print('Signal gerar linha extrato verbas documentos\n')
+    logging.info('Signal gerar linha extrato verbas documentos\n')
     instance.calcule_monetary_correction()
     instance.fund.gen_total()
 

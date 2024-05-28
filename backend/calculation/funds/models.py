@@ -8,6 +8,8 @@ with fields for a Data base date, historical value, and a foreign key to Funds.
 StatementFunds class extends AbstractStatement to represent a statement related to funds.
 StatementIntegrations extends AbstractStatement and includes a description field.
 """
+import logging
+
 from django.db import models
 from django.db.models import FloatField, signals
 from django.db.models.signals import post_save
@@ -344,7 +346,7 @@ def save_statement(sender, instance, **kwargs) -> None:
 
     Triggers the creation of the formulas used at the end of the calculation
     """
-    print('Signal gerar linha extrato verbas\n')
+    logging.info('Signal gerar linha extrato verbas\n')
 
     instance.calcule_monetary_correction()
     instance.fund.gen_total_statements()
@@ -367,7 +369,7 @@ def save_total_funds(sender, instance, **kwargs) -> None:
     calculates the monetary correction for the instance and generates the total statements of the related fund. It
     takes the sender and instance as arguments
     """
-    print('Signal somar todas as linhas de extrato verbas\n\n')
+    logging.info('Signal somar todas as linhas de extrato verbas\n\n')
     instance.gen_total_statements()
     instance.gen_total_integrations()
 

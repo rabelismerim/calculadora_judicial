@@ -13,7 +13,7 @@ import webbrowser
 from django.core.management import color_style
 from django.core.management.base import OutputWrapper
 from django.test import TransactionTestCase
-from config.settings import DEBUG, TOKEN_TEST
+from config.settings import DEBUG, TOKEN_TEST, TEST_PW
 from utils import get_user_model, secret_number
 from core.abstract.base_tests import BaseTests
 
@@ -108,7 +108,7 @@ class BaseTestsDjango(BaseTests, TransactionTestCase):
         user_create = User.objects.filter(username='user1').first()
         if not user_create:
             user_create = User.objects.create(email="user@example1.com", username="user1",
-                                              first_name="User1", last_name="User1", password="User@123",
+                                              first_name="User1", last_name="User1", password=TEST_PW,
                                               is_staff=True)
         self.assertTrue(user_create)
         user = User.objects.get(username='user1')

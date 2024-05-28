@@ -1,4 +1,5 @@
 import random
+import secrets
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -92,19 +93,19 @@ class CreditorCreateApi(AbstractCreditorApi):
     option. Contain the `ID` and the `caption`, where the ID refers to the value that must be passed, and the caption 
     what must be displayed to the user"""))
     def get(self, request, *args, **kwargs):
-        data = {}
+        list_validated_options = {}
         option = self.get_query_parameters().get('option')
         for key, field in self.serializer_class(many=False).fields.items():
             if option:
                 if option in key:
-                    data[key] = list(field.data)
+                    list_validated_options[key] = list(field.data)
             else:
-                data[key] = list(field.data)
+                list_validated_options[key] = list(field.data)
 
         if not option or option in 'nature_choices':
-            data['nature_choices'] = list(
+            list_validated_options['nature_choices'] = list(
                 NatureChoice.objects.all().values_list('id', 'description'))
-        return JsonResponse({'options': data}, status=status.HTTP_200_OK)
+        return JsonResponse({'options': list_validated_options}, status=status.HTTP_200_OK)
 
 
 class CreditorListApi(AbstractCreditorApi):
@@ -408,9 +409,9 @@ def generate_cnpj():
 
         return digit if digit < 10 else 0
 
-    cnpj = [1, 0, 0, 0] + [random.randint(0, 9) for x in range(8)]
+    cnpj = [1, 0, 0, 0] + [secrets.randbelow(10) for _ in range(8)]
 
-    for _ in range(2):
+    for i in range(2):
         cnpj = [calculate_special_digit(cnpj)] + cnpj
 
     return '%s%s%s%s%s%s%s%s%s%s%s%s%s%s' % tuple(cnpj[::-1])
@@ -425,7 +426,6 @@ def save_bk_entity():
 
         ent._encrypted_legal_number = ent.legal_number
         ent._encrypted_legal_number_bk = ent.legal_number
-        print(ent.name, 'name')
         ent.save()
 
 
@@ -440,8 +440,6 @@ def bk_entity():
         # # ent._encrypted_name = ent._encrypted_name_bk
         # # ent._encrypted_legal_number = ent._encrypted_legal_number_bk
         ent.legal_number = ent._encrypted_legal_number_bk
-
-        print(ent.name, 'name\n')
         ent.save()
 
 # bk_entity()

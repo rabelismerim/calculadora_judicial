@@ -1,3 +1,5 @@
+import logging
+
 from django.core.management.base import BaseCommand
 from xlsxwriter.contenttypes import defaults
 
@@ -15,7 +17,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for template in TemplateRate.objects.all():
-            print(template.end_point)
+            logging.info(template.end_point)
 
             if str(template.end_point).endswith('irrf/labor/'):
                 template.slug = TemplateSlugChoices.IRRF
@@ -26,7 +28,7 @@ class Command(BaseCommand):
             elif str(template.end_point).endswith('labor/'):
                 template.slug = TemplateSlugChoices.FUNDS
             else:
-                print('template nao mapeado')
+                logging.info('template nao mapeado')
             template.save()
 
         TemplateSummaryField.objects.filter(key='total_historical', order=5).update(order=6)

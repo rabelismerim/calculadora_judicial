@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
@@ -22,9 +23,9 @@ class Command(BaseCommand):
         big_numbers_method = BigNumberMethod.objects.all().values('id', 'big_number_id', 'method', 'name', 'field_type')
         big_numbers_method_fields = BigNumberMethodFields.objects.all().values('id', 'big_number_method_id', 'field',
                                                                                'field_type')
-        print(big_numbers)
-        print(big_numbers_method)
-        print(big_numbers_method_fields)
+        logging.info(big_numbers)
+        logging.info(big_numbers_method)
+        logging.info(big_numbers_method_fields)
 
         with open('big_numbers.json', 'w') as f:
             f.write(json.dumps(list(big_numbers), default=str))

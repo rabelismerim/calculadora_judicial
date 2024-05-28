@@ -612,5 +612,5 @@ def save_statement_documents(sender, instance, **kwargs) -> None:
     calculates the monetary correction for the instance and generates the total document of the related fund. It
     takes the sender and instance as arguments
     """
-    print('Signal gerar linha extrato verbas Dedução\n')
+    logging.info('Signal gerar linha extrato verbas Dedução\n')
     instance.fund.calcule_statement_deduction()

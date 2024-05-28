@@ -16,7 +16,7 @@ from .errors import *
 # features:
 # - do configurations work on multi-threaded flask environment? if not, attach them to current_app. configurations aren't stateful so this may be a moot point?
 # - edit profile interaction required error on edit profile if no token_cache or expired?
-# - password reset should use login hint/no interaction?
+# - pw reset should use login hint/no interaction?
 # - decorator for filter by security groups
 # - decorator for app roles RBAC
 # - auth failure handler to handle un-auth access?
@@ -65,7 +65,7 @@ def require_context_adapter(f):
                 self._logger.info(
                     f"{self.__class__.__name__}.{f.__name__}: invalid adapter or no request context, aborting")
             else:
-                print(f"{self.__class__.__name__}.{f.__name__}: invalid adapter or no request context, aborting")
+                logging.info(f"{self.__class__.__name__}.{f.__name__}: invalid adapter or no request context, aborting")
         return f(self, *args, **kwargs)
 
     return assert_adapter

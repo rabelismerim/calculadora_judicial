@@ -38,3 +38,7 @@ class SignStatusSerializer(serializers.Serializer):
     dttdjud = serializers.BooleanField()
     accept_token = serializers.BooleanField()
     profile = ProfileSerializer()
+
+
+class MFASerializer(serializers.Serializer):
+    pass

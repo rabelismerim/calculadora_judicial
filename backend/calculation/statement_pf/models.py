@@ -5,6 +5,7 @@ and updated_at. Does not add any additional fields, so should be subclassed
 to add specific fields as needed.
 """
 import datetime
+import logging
 
 from base.views import ExtractFormula
 from calculation.comparative.signals import new_calc
@@ -482,7 +483,7 @@ class StatementPF(AbstractStatus):
             # TODO: alterar o dias em atraso
             tt = days_in_arrears * total
             if rate.is_ipca_e_selic_composta():
-                print(tt)
+                logging.info(tt)
                 return tt - total
             return tt / 100
         return (total * (days_in_arrears / 30) * creditor_default_interest) / 100
@@ -522,7 +523,7 @@ class StatementPF(AbstractStatus):
             total = self._get_total()
             default_interest_value = self._get_defaultinterest_value()
             total_danos = self.statement.calculation.get_total_funds_danos()
-            print(total_danos, 'total_danos\n')
+            logging.info(total_danos, 'total_danos\n')
             return default_interest_value + total + total_danos
         return None
 
@@ -750,7 +751,7 @@ def new_calculation(sender, instance, **kwargs) -> None:
     :return:
         None.
     """
-    print('Signal gerar novo calculo em statement')
+    logging.info('Signal gerar novo calculo em statement')
     get_create_statement_pf_by_calculation(instance)
 
 
@@ -768,7 +769,7 @@ def new_total_funds_rate(sender, instance, **kwargs) -> None:
     :return:
         None.
     """
-    print('Signal total values funds')
+    logging.info('Signal total values funds')
 
     statement_pf = get_create_statement_pf_by_calculation(
         instance.get_calculation())
@@ -793,7 +794,7 @@ def new_total_funds_rate_integrations(sender, instance, **kwargs) -> None:
     :return:
         None.
     """
-    print('Signal total values funds integrations')
+    logging.info('Signal total values funds integrations')
     statement_pf = get_create_statement_pf_by_calculation(
         instance.get_calculation())
     defaults = {'statement_pf_id': statement_pf.id,

@@ -74,6 +74,7 @@ ENVIRONMENT = config('ENVIRONMENT', cast=str, default='prod').lower()
 ENABLE_LOGGER = config('ENABLE_LOGGER', cast=bool, default=False)
 ENABLE_CACHE = config('ENABLE_CACHE', cast=bool, default=False)
 DEBUG_TOOLBAR = config('DEBUG_TOOLBAR', cast=bool, default=False)
+TEST_PW = config('TEST_PW', cast=str, default="User@123")
 
 if ENVIRONMENT not in ['prod', 'hml', 'dev']:
     raise ValueError('Invalid ENVIRONMENT. Options is (prod, hml or dev)')
@@ -346,7 +347,7 @@ elif IS_HML:
     ]
 
 else:
-    ALLOWED_HOSTS = ['*']
+    ALLOWED_HOSTS = ['localhost', 'https://127.0.0.1', 'https://127.0.0.2', 'juca']
 
     CSRF_TRUSTED_ORIGINS = [
         'https://uat.fadigitallab.deloitte.com.br/juca',
@@ -357,6 +358,7 @@ else:
         'https://www.brsphearndt/juca',
         'https://www.brspwaoliveira/juca',
     ]
+
 # Enable Login SSO
 if ENABLE_SSO:
     MIDDLEWARE.append('core.drfmsal.middleware.MsalMiddleware')
@@ -516,7 +518,7 @@ databases = DATABASES
 # import dj_database_url
 # DATABASES['default'] = dj_database_url.config(default='sqlite://db/sqlite3.db')
 # Password validation
-# https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
+# https://docs.djangoproject.com/en/3.2/ref/settings/#auth-pw-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
