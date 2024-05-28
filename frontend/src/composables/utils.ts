@@ -342,13 +342,3 @@ export const saveFile = (data: any, fileName = 'download', fileExtension = 'txt'
   window.URL.revokeObjectURL(url)
   document.body.removeChild(link)
 }
-
-export const deleteAllCookies = () => {
-  document.cookie
-    .split(';')
-    .forEach((cookie) => {
-      const eqPos = cookie.indexOf('=')
-      const name = eqPos > -1 ? cookie.slice(0, eqPos) : cookie
-      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT`
-    })
-}
