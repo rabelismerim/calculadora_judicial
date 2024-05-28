@@ -347,7 +347,7 @@ elif IS_HML:
     ]
 
 else:
-    ALLOWED_HOSTS = ['localhost', 'https://127.0.0.1', 'https://127.0.0.2', 'juca']
+    ALLOWED_HOSTS = ['localhost', 'https://127.0.0.1', 'https://127.0.0.2', 'juca', 'brdcvmdev07']
 
     CSRF_TRUSTED_ORIGINS = [
         'https://uat.fadigitallab.deloitte.com.br/juca',
@@ -517,7 +517,7 @@ databases = DATABASES
 # Add these two lines.
 # import dj_database_url
 # DATABASES['default'] = dj_database_url.config(default='sqlite://db/sqlite3.db')
-# Password validation
+# PW validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-pw-validators
 
 AUTH_PASSWORD_VALIDATORS = [

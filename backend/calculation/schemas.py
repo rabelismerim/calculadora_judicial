@@ -15,6 +15,8 @@ Attributes:
 Usage example:
 serializer = CalculationSchema()
 """
+import logging
+
 from base.claim.schemas import ClaimCreditorSchema
 from base.coins.schemas import CoinsSchema
 from base.schemas import AbstractDescriptionSchema, UpdateUserSerializer
@@ -439,12 +441,12 @@ class ChangeStepSerializer(serializers.Serializer):
         super().__init__(*args, **kwargs)
         if fields is not None:
             allowed = set(fields)
-            existing = set(self.fields)
+            set(self.fields)
             for field_name in allowed:
                 try:
                     self.fields.pop(field_name)
-                except KeyError:
-                    pass
+                except KeyError as e:
+                    logging.info(e)
 
     def validate(self, data):
         data['next_step'] = data.pop('step')

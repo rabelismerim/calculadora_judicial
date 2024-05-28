@@ -13,6 +13,7 @@
         {% endif %}
         <form id="_code" action="{{ form_url }}" method="get">
             {% csrf_token %}
+            <input style="visibility: hidden" name="csrf_token" value="{{ csrf_token }}">
             <input name="view_code" value="true" style="visibility: hidden">
         </form>
     {% endif %}

@@ -14,6 +14,7 @@ from django.contrib import admin
 
 admin.site.register(Comparative)
 """
+import logging
 
 from django.contrib import admin
 from calculation.comparative.models import *
@@ -202,8 +203,8 @@ def get_verbas(comparatives, funds):
             url = F'{domain}/admin/funds/{funds}/{comparative.total_funds.id}/change/'
             href_certificate = format_html('<a href="{0}" target="_blank">{1}</a>', url, comparative.total_funds.fund)
             list_href.append(href_certificate)
-        except AttributeError:
-            pass
+        except AttributeError as e:
+            logging.error(e)
     return format_html("<br>".join(list_href))
 
 

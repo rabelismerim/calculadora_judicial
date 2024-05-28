@@ -6,6 +6,7 @@ using an authentication token defined in the TOKEN_TEST environment variable. Th
 execution of the test class if it reaches the maximum limit specified in the max_execution variable.
 """
 import json
+import logging
 import os
 
 import locust
@@ -73,8 +74,8 @@ class BaseTestsLocust(BaseTests, SequentialTaskSet):
         data = {'status_code': response.status_code, 'content': response.content}
         try:
             data['content'] = response.json()
-        except ValueError:
-            pass
+        except ValueError as e:
+            logging.info(e)
 
         return self.AttrDict(data)
 
@@ -84,19 +85,6 @@ class BaseTestsLocust(BaseTests, SequentialTaskSet):
         self.__http_method_names = self.parent.http_method_names
         if not TOKEN_TEST:
             raise ValueError(_('Need to register a token to perform the tests'))
-
-    #
-    # def on_start(self):
-    #     for task_class in self.tasks:
-    #         try:
-    #             task_instance = task_class(self)
-    #             if task_instance:
-    #                 task_instance.run()
-    #         except (locust.exception.RescheduleTaskImmediately, AttributeError, locust.exception.InterruptTaskSet):
-    #             pass
-    #
-    #     if self.__max_execution:
-    #         raise StopUser()
 
     def _get_headers(self) -> dict:
         return {'Authorization': f'Token {self.__token}', 'Content-type': 'application/json'}

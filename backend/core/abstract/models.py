@@ -1,3 +1,4 @@
+import logging
 import uuid
 
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -71,8 +72,8 @@ class AbstractModel(models.Model):
                 attr_value = getattr(self, name)
                 if attr_value != values:
                     setattr(self, name, values)
-            except KeyError:
-                pass
+            except KeyError as e:
+                logging.info(e)
         self.save()
         return self
 
@@ -148,8 +149,8 @@ def save_obj(sender, **kwargs):
                                           previous_value=previous_value, current_value=current_value,
                                           create_user_id=user_id, object_id=instance.id, content_object=instance)
 
-            except (ValueError, DataError, TransactionManagementError, AttributeError, DateErr, ProgrammingError):
-                pass
+            except (ValueError, DataError, TransactionManagementError, AttributeError, DateErr, ProgrammingError) as e:
+                logging.info(e)
 
     if hasattr(instance, 'create_user'):
         if instance.create_user is None:

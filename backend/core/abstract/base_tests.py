@@ -1,3 +1,4 @@
+import logging
 import re
 import sys
 
@@ -59,7 +60,7 @@ class BaseTests:
                 print_success(f"Executado {method} {class_name} com sucesso")
                 return resultado
             except AssertionError:
-                print_(f"Executando {method} {class_name} sem sucesso")
+                logging.info(f"Executando {method} {class_name} sem sucesso")
             return None
 
         return wrapper

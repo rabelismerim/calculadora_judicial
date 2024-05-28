@@ -5,6 +5,7 @@ and updated_at. Does not add any additional fields, so should be subclassed
 to add specific fields as needed.
 """
 import datetime as dt
+import logging
 from calendar import monthrange
 from datetime import datetime, timedelta, time, date
 from itertools import chain
@@ -102,8 +103,8 @@ class Query:
                 instance = self.__get_type_by_instance(type_instance)
                 try:
                     value = instance['parser'](value)
-                except (ValueError, KeyError):
-                    pass
+                except (ValueError, KeyError) as e:
+                    logging.info(e)
                 if isinstance(value, instance['type']):
                     query[field] = value
                 else:
