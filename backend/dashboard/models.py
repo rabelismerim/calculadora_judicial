@@ -239,8 +239,6 @@ class Dashboard(AbstractModel, Query):
 
         users = User.objects.all()
         for username in project_users:
-
-            print(type(username), 'user type')
             total = 0
 
             for project in projects:

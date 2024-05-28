@@ -1,3 +1,4 @@
+import logging
 import time
 
 from celery import Task
@@ -13,10 +14,7 @@ class ClassTaskExample(Task):
     """
 
     def run(self):
-        print(f'Executing scheduled task\n')
-        time.sleep(3)
-        print(f'Scheduled task executed\n')
-        # redis_conn.publish('finished-task', json.dumps({'message': 'result', 'task_id': self.request.id}))
+        logging.info(f'Executing scheduled task\n')
         return {'message': 'finished task'}
 
 

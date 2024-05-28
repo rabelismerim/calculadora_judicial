@@ -2,6 +2,7 @@ import datetime
 import csv
 import decimal
 import json
+import logging
 import time
 
 import requests
@@ -77,7 +78,7 @@ class BCB:
         """
 
         if not code or int(code) < 1:
-            print('Código do Bacen não informado')
+            logging.info('Código do Bacen não informado')
         payload = self._get_payload(start, end)
         res = requests.get(self.__base_url.format(code), params=payload)
         if res.status_code != 200:
@@ -296,14 +297,14 @@ class SetAccumulated:
 
         first_rate = rate_values.first()
         if not first_rate:
-            print('Rate values não cadastrado')
+            logging.info('Rate values não cadastrado')
             return
 
         period = 1 + first_rate.value / 100
 
         Accumulated.objects.update_or_create(rate=first_rate, defaults={'value': accumulated})
         Period.objects.update_or_create(rate=first_rate, defaults={'value': period})
-        print(
+        logging.info(
             f'data: {first_rate.date}--valor: {first_rate.value}--period: {round(period, 4)}--acumulado: {float(accumulated)}')
 
         for rate_value in rate_values[1:]:
@@ -314,7 +315,7 @@ class SetAccumulated:
             Accumulated.objects.update_or_create(rate=rate_value, defaults={'value': accumulated})
             Period.objects.update_or_create(rate=rate_value, defaults={'value': period})
 
-            print(
+            logging.info(
                 f'data: {rate_value.date}--valor: {rate_value.value}--period: {round(period, 4)}--acumulado: {float(accumulated)}')
         self.update_average()
 

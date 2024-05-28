@@ -1,4 +1,6 @@
 import json
+import logging
+
 from rest_framework import serializers
 from recovering.archive.models import Archive
 from base.schemas import AbstractDescriptionSchema
@@ -11,7 +13,8 @@ class ArchiveJsonSerializer(serializers.Serializer):
         if archive_json:
             try:
                 file_json = json.loads(archive_json)
-            except:
+            except Exception as e:
+                logging.error(e)
                 file_json = archive_json
 
             if isinstance(file_json, dict) is False:

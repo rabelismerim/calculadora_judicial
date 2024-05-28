@@ -1,3 +1,5 @@
+import logging
+
 from django.core.management.base import BaseCommand
 from base.models import NatureChoice, NATURES
 
@@ -12,7 +14,7 @@ def create_natures():
             natures_bulk.append(new_nature)
 
     NatureChoice.objects.bulk_create(natures_bulk)
-    print(f'\033[92m Successful "created" natures \n Total: {len(natures_bulk)}')
+    logging.info(f'\033[92m Successful "created" natures \n Total: {len(natures_bulk)}')
 
 
 class Command(BaseCommand):

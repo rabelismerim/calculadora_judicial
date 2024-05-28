@@ -15,11 +15,12 @@ Attributes:
 Usage example:
 serializer = StatementSchema()
 """
+import logging
 
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 from rest_framework import serializers, renderers
-from base.schemas import AbstractChoicesSerializer, AbstractDescriptionSchema
+from base.schemas import AbstractDescriptionSchema
 from utils import get_user_model, _
 from django.contrib.auth.models import Permission, Group
 from core.dttuser.models import Subgroup
@@ -55,7 +56,7 @@ class GroupSchema(serializers.ModelSerializer):
 
     def validate(self, data):
         """
-        Validate password is strong and same as password confirm.
+        Validate pw is strong and same as pw confirm.
 
         Args:
             data (dict): Data to validate.
@@ -74,12 +75,12 @@ class GroupSchema(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
         if fields is not None:
             allowed = set(fields)
-            existing = set(self.fields)
+            set(self.fields)
             for field_name in allowed:
                 try:
                     self.fields.pop(field_name)
-                except KeyError:
-                    pass
+                except KeyError as e:
+                    logging.info(e)
 
 
 class SubgroupSchema(serializers.ModelSerializer):
@@ -101,7 +102,7 @@ class SubgroupSchema(serializers.ModelSerializer):
 
     def validate(self, data):
         """
-        Validate password is strong and same as password confirm.
+        Validate pw is strong and same as pw confirm.
 
         Args:
             data (dict): Data to validate.
@@ -120,12 +121,12 @@ class SubgroupSchema(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
         if fields is not None:
             allowed = set(fields)
-            existing = set(self.fields)
+            set(self.fields)
             for field_name in allowed:
                 try:
                     self.fields.pop(field_name)
-                except KeyError:
-                    pass
+                except KeyError as e:
+                    logging.info(e)
 
 
 class UserDttSchema(serializers.ModelSerializer):
@@ -135,9 +136,9 @@ class UserDttSchema(serializers.ModelSerializer):
     Attributes:
         renderer_classes (list): A list of JSONRenderer objects.
         id (UUIDField): Unique identifier for the model instance. Read-only.
-        password (CharField): Model password with a minimum length of 8 characters. 
+        pw (CharField): Model pw with a minimum length of 8 characters.
                               Write-only, required. 
-        password_confirm (CharField): Confirmation of the model's password with a 
+        pw_confirm (CharField): Confirmation of the model's pw with a
                                      minimum length of 8 characters. Write-only, 
                                      required. 
         user_permissions (PermissionSchema): Permissions authorization details associated with model.
@@ -179,11 +180,11 @@ class UserDttSchema(serializers.ModelSerializer):
     @staticmethod
     def __check_passwd(password, password_confirm):
         """
-        Validate password is strong and same as password confirm.
+        Validate pw is strong and same as pw confirm.
 
         Args:
-            password (str): Password to validate.
-            password_confirm (str): Password confirmation.
+            pw (str): Pw to validate.
+            pw_confirm (str): Pw confirmation.
 
         :return:
             errors (list): List of errors found in validations.
@@ -224,12 +225,12 @@ class UserDttSchema(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
         if fields is not None:
             allowed = set(fields)
-            existing = set(self.fields)
+            set(self.fields)
             for field_name in allowed:
                 try:
                     self.fields.pop(field_name)
-                except KeyError:
-                    pass
+                except KeyError as e:
+                    logging.info(e)
 
 
 class UserDttProjectSchema(UserDttSchema):
@@ -258,16 +259,16 @@ class UserDttMFASchema(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
         if fields is not None:
             allowed = set(fields)
-            existing = set(self.fields)
+            set(self.fields)
             for field_name in allowed:
                 try:
                     self.fields.pop(field_name)
-                except KeyError:
-                    pass
+                except KeyError as e:
+                    logging.info(e)
 
     def validate(self, data):
         """
-        Validate password is strong and same as password confirm.
+        Validate pw is strong and same as pw confirm.
 
         Args:
             data (dict): Data to validate.

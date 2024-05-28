@@ -12,6 +12,7 @@ from projects.region.models import Region
 
 fake = Faker()
 
+
 def get_description():
     name = fake.name()
     data = dict(
@@ -19,7 +20,8 @@ def get_description():
     )
     return data
 
-def create_fake(modelby,number,description):
+
+def create_fake(modelby, number, description):
     aux_list = []
     for _ in progressbar(range(number), description):
         data = get_description()
@@ -27,11 +29,12 @@ def create_fake(modelby,number,description):
         aux_list.append(obj)
     modelby.objects.bulk_create(aux_list)
 
+
 class Command(BaseCommand):
     help = 'Create data.'
 
     def handle(self, *args, **options):
-        create_fake(Judge,30,'Juiz')
-        create_fake(Court,30,'Corte')
-        create_fake(Lawyer,30,'Advogados')
-        create_fake(Region,30,'Regioes')
+        create_fake(Judge, 30, 'Juiz')
+        create_fake(Court, 30, 'Corte')
+        create_fake(Lawyer, 30, 'Advogados')
+        create_fake(Region, 30, 'Regioes')

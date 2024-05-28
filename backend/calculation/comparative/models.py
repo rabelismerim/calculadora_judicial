@@ -4,6 +4,7 @@ Inherits from AbstractModel, which provides common fields such as id, created_at
 and updated_at. Does not add any additional fields, so should be subclassed
 to add specific fields as needed.
 """
+import logging
 
 from base.models import AbstractDescription
 from calculation.comparative.signals import gen_calc
@@ -274,7 +275,8 @@ class ApprovedCalculation(AbstractDescription):  # Calculo homologado
 
         try:
             return self.comparative.calculation.statement.get_recurral_deposit()
-        except:
+        except Exception as e:
+            logging.error(e, exc_info=True)
             return 0
 
     def get_default_interest_dtt(self) -> float:
@@ -285,7 +287,8 @@ class ApprovedCalculation(AbstractDescription):  # Calculo homologado
         """Returns float: The total credited advocative hours value from the associated CalculationStatement object."""
         try:
             return self.comparative.calculation.statement.get_total_lawyer()
-        except:
+        except Exception as e:
+            logging.error(e, exc_info=True)
             return 0
 
     def __str__(self):

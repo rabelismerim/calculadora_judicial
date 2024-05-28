@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -287,7 +289,7 @@ class CreatePermissions:
         # Create missing permissions in bulk
         for codename, name, app_label in list_permissions:
             if not PermissionsName().check_exist_codename(codename):
-                print('Codename não existente\n')
+                logging.info('Codename não existente\n')
                 continue
 
             if codename not in perms_by_codename:

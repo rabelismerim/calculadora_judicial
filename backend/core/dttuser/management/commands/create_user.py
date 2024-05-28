@@ -34,7 +34,7 @@ class Command(BaseCommand):
 
     def delete_user(self):
         user = User.objects.filter(email__icontains='').first()
-        print(user)
+
         if user:
             user.projectuser_set.all().delete()
             user.loginrecord_set.all().delete()

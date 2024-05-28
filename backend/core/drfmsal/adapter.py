@@ -66,7 +66,8 @@ class DjangoContextAdapter:
                 return self.request.POST.dict()
             else:
                 raise ValueError("Django request must be POST or GET")
-        except:
+        except Exception as e:
+            logging.error(e, exc_info=True)
             if self.logger is not None:
                 self.logger.warning("Failed to get param dict, substituting empty dict instead")
             return dict()        

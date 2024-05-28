@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 import os
 from django.core.management.base import BaseCommand
 
@@ -75,7 +76,7 @@ def create_indices():
         Source.objects.bulk_create(sources_bulk)
         Unit.objects.bulk_create(units_bulk)
         Rate.objects.bulk_create(rates_bulk)
-        print(f'\033[92m Successful "created" {index_name}\n Total: {len(rates_bulk)}')
+        logging.info(f'\033[92m Successful "created" {index_name}\n Total: {len(rates_bulk)}')
 
 
 class Command(BaseCommand):

@@ -4,6 +4,8 @@ Inherits from AbstractModel, which provides common fields such as id, created_at
 and updated_at. Does not add any additional fields, so should be subclassed
 to add specific fields as needed.
 """
+import logging
+
 from django.db import models
 from django.db.models import FloatField, PositiveIntegerField
 from django.db.models.signals import post_save
@@ -258,7 +260,7 @@ def save_statement_irrf(sender, instance, **kwargs) -> None:
     calculates the monetary correction for the instance and generates the total statements of the related fund. It
     takes the sender and instance as arguments
     """
-    print('Signal gerar linha extrato verbas irrf\n')
+    logging.info('Signal gerar linha extrato verbas irrf\n')
 
     instance.fund.gen_total()
 

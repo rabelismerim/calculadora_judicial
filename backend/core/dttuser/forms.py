@@ -3,11 +3,10 @@ from django.contrib.auth.forms import UsernameField
 
 from .models import User
 
+
 class UserCreationForm(ModelForm):
-    """
-    A form that creates a user, with no privileges, from the given username and
-    password.
-    """
+    """A form that creates a user, with no privileges, from the given username and pw."""
+
     class Meta:
         model = User
         fields = ('username', 'first_name', 'last_name', 'email')

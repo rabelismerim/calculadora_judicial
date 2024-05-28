@@ -1,14 +1,9 @@
 from django.http import Http404
-from django.urls import include, path, resolve
+from django.urls import include, path
 
-from projects.views import ProjectApi, ProjectDetailApi, ProjectDetailV2Api
+from projects.views import ProjectApi, ProjectDetailApi
 
 
-# class VersionedPath:
-#     def __init__(self, path, version, view_class):
-#         self.path = path
-#         self.version = version
-#         self.view_class = view_class
 class VersionedPath:
     def __init__(self, path, version, app_name, namespace, view_class):
         self.path = path
@@ -16,6 +11,7 @@ class VersionedPath:
         self.app_name = app_name
         self.namespace = namespace
         self.view_class = view_class
+
 
 def versioned_view(view_class, allowed_versions=None):
     """
@@ -25,8 +21,6 @@ def versioned_view(view_class, allowed_versions=None):
 
     class VersionedView(view_class):
         def dispatch(self, request, *args, **kwargs):
-            path = request.path_info.lstrip('/')
-            print(path, 'path')
             version = kwargs.get('version')
 
             # Verifica se a versão solicitada é permitida. Se não for, retorna um erro 404
@@ -49,7 +43,7 @@ def versioned_patterns(*args):
     """
     patterns = []
     for arg in args:
-        print(arg, 'arg\n')
+
         if isinstance(arg, VersionedPath):
             # Adiciona a view versionada à lista de views permitidas para essa versão
             view = versioned_view(arg.view_class.as_view(), allowed_versions=[arg.version])

@@ -1,29 +1,31 @@
 {% extends "admin/change_form.html" %}
 {% block object-tools-items %}
-{{ block.super }}
-{% load static %}
+    {{ block.super }}
+    {% load static %}
 
-{% if has_perm_view_formula %}
-{% if request.GET.view_code %}
-<a href="#" class="btn btn-md" style="padding: 6.8px 20px; background-color: green;" onclick="reload()">Ocultar
-    código</a>
-{% else %}
-<a href="#" class="btn btn-md" style="padding: 6.8px 20px; background-color: green;" onclick="viewCode()">Ver código</a>
-{% endif %}
-<form id="_code" action="" method="get">
-    {% csrf_token %}
-    <input type="hidden" name="view_code" value="true">
-</form>
-{% endif %}
-<script>
+    {% if has_perm_view_formula %}
+        {% if request.GET.view_code %}
+            <a href="#" class="btn btn-md" style="padding: 6.8px 20px; background-color: green;" onclick="reload()">Ocultar
+                código</a>
+        {% else %}
+            <a href="#" class="btn btn-md" style="padding: 6.8px 20px; background-color: green;" onclick="viewCode()">Ver
+                código</a>
+        {% endif %}
+        <form id="_code" action="{{ form_url }}" method="get">
+            {% csrf_token %}
+            <input name="view_code" value="true" style="visibility: hidden">
+        </form>
+    {% endif %}
+    <script>
         async function viewCode() {
             document.getElementById('_code').submit()
         }
+
         function reload() {
-            window.location.href =  window.location.href.split("?")[0];
+            window.location.href = window.location.href.split("?")[0];
         }
 
-</script>
+    </script>
 {% endblock %}
 
 {% block content %}{{ block.super }}

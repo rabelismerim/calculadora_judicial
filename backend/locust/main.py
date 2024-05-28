@@ -37,7 +37,6 @@ from locust import SequentialTaskSet
 from locust.exception import StopUser
 
 django_moa = os.path.join(os.getcwd(), 'config')
-print(django_moa, '\n\n')
 
 # os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'{django_moa}.settings')
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'config.settings')

@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from datetime import datetime
 
@@ -33,9 +34,9 @@ def excel_to_json(file_path, sheet_name, output_folder):
             json.dump({'is_per_day': False, 'index': sheet_name,
                        'values': data_list}, json_file, indent=4)
 
-        print(f'Arquivo JSON gerado com sucesso: {output_json_file}')
+        logging.info(f'Arquivo JSON gerado com sucesso: {output_json_file}')
     else:
-        print('Nenhum registro válido encontrado.')
+        logging.info('Nenhum registro válido encontrado.')
 
 
 class Command(BaseCommand):
