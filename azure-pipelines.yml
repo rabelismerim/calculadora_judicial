@@ -5,9 +5,9 @@
 trigger:
   - hml
 pool:
-  name: TR
+  name: TR_UAT
   demands:
-    - Agent.Name -equals TRHMG
+    - Agent.Name -equals TRUAT
 variables:
   system.debug: 'true'
 strategy:
