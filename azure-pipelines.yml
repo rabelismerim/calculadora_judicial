@@ -104,8 +104,7 @@ steps:
     displayName: 'Install pip fastcgi'
   - script: |
       $(Build.SourcesDirectory)/backend/venv/Scripts/python manage.py collectstatic --no-input
-    continueOnError: true
-    failOnStderr: false
+    failOnStderr: true
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Django collectstatic'
   - script: |

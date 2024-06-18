@@ -409,6 +409,7 @@ class Project(AbstractDescription, AbstractDateRecovering):
                 except Exception as e:
                     logging.error(e, exc_info=True)
                     trace, err = self.get_traceback_err(e)
+
                     error_bulk.append(
                         ErrorFile(file_id=file_id, error=f"Linha: {credor['index']}, Erro: {err}", traceback=trace,
                                   data={'credor': credor, 'payload': new_credor}))
