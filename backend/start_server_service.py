@@ -28,12 +28,12 @@ PYTHON_PATH = f"{CURRENT_DIR}/venv/Scripts/python.exe"
 exists = os.path.exists(PYTHON_PATH)
 FOLDER_LOG = f"{CURRENT_DIR}/log"
 os.makedirs(FOLDER_LOG, exist_ok=True)
-FILE_LOG_PATH = os.path.join(FOLDER_LOG, f'service_{datetime.datetime.now().date()}.log')
+FILE_LOG_PATH = os.path.join(FOLDER_LOG, f'{datetime.datetime.now().date()}_service.log')
 CELERY_LOG_PATH = f'{FOLDER_LOG}/celery_{datetime.datetime.now().date()}.log'
 
 logging.basicConfig(
     filename=FILE_LOG_PATH,
-    level=logging.DEBUG,
+    level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s"
 )
 logging.critical(FOLDER_LOG)
@@ -53,7 +53,7 @@ def target_func(cmd, out_queue):
 
         out_queue.put(proc.pid)
         for line in iter(proc.stdout.readline, ''):
-            logging.info(line.strip())
+            logging.debug(line.strip())
         proc.stdout.close()
         proc.wait()
     except Exception as f:
