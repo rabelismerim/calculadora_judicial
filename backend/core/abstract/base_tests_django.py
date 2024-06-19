@@ -6,6 +6,7 @@ app's tests file. Define the path value, which is the url to be consumed, and pa
 for the post. You can also define the methods to be used within the http_method_names list"""
 
 import json
+import logging
 import os.path
 import sys
 import webbrowser
@@ -13,7 +14,7 @@ import webbrowser
 from django.core.management import color_style
 from django.core.management.base import OutputWrapper
 from django.test import TransactionTestCase
-from config.settings import DEBUG, TOKEN_TEST
+from config.settings import DEBUG, TOKEN_TEST, TEST_PW
 from utils import get_user_model, secret_number
 from core.abstract.base_tests import BaseTests
 
@@ -108,7 +109,7 @@ class BaseTestsDjango(BaseTests, TransactionTestCase):
         user_create = User.objects.filter(username='user1').first()
         if not user_create:
             user_create = User.objects.create(email="user@example1.com", username="user1",
-                                              first_name="User1", last_name="User1", password="User@123",
+                                              first_name="User1", last_name="User1", password=TEST_PW,
                                               is_staff=True)
         self.assertTrue(user_create)
         user = User.objects.get(username='user1')
@@ -190,8 +191,8 @@ class BaseTestsDjango(BaseTests, TransactionTestCase):
             try:
                 values = [dict(data['content'][key])]
                 self._write_html(values, key)
-            except ValueError:
-                pass
+            except ValueError as e:
+                logging.info(e)
         dt = {
             'sent': obj,
             'received': data['content'],

@@ -41,24 +41,24 @@ class FundsDocumentTest(AbstractTest):
     path = f'calculation/funds/documents/{get_create_fund()}'
     calculation_id = None
 
-    def __get_create_creditor(self, physical_person: bool):
-        payload = Creditor.objects.filter(physical_person=physical_person).first()
+    def __get_create_creditor(self):
+        payload = Creditor.objects.filter().first()
         if payload:
             return payload.id
 
-        payload = CreditorValues().get_creditor(physical_person=physical_person)
+        payload = CreditorValues().get_creditor()
         path = 'creditors'
         response = self.post(path, payload)  # creditor
         return response.content['creditor']['id']
 
-    def __get_create_calculation(self, physical_person: bool):
-        calculation = Calculation.objects.filter(creditor__physical_person=physical_person, funds__isnull=True,
+    def __get_create_calculation(self):
+        calculation = Calculation.objects.filter(funds__isnull=True,
                                                  fundirrf__isnull=True).first()
         if calculation:
             return calculation.id
 
         parameters = CalculationValues.calculation
-        parameters['creditor_id'] = self.__get_create_creditor(physical_person)
+        parameters['creditor_id'] = self.__get_create_creditor()
         path = 'calculation'
         response = self.post(path, parameters)
         return response.content['calculation']['id']

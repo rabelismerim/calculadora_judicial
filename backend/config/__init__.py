@@ -1,3 +1,4 @@
+import logging
 import os
 
 django_module = os.environ.get('DJANGO_SETTINGS_MODULE')
@@ -16,5 +17,5 @@ __all__ = ("celery_app",)
 
 @shared_task()  # 1
 def start_celery():
-    print('||Started Celery||\n')
+    logging.info('||Started Celery||\n')
     return True

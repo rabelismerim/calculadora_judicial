@@ -4,6 +4,7 @@ Inherits from AbstractModel, which provides common fields such as id, created_at
 and updated_at. Does not add any additional fields, so should be subclassed
 to add specific fields as needed.
 """
+import logging
 
 from django.db import models
 from django.dispatch import receiver
@@ -38,10 +39,7 @@ class StatementPJ(AbstractModel):
 
     def get_documents(self):
         """Get all legal entity documents."""
-        if self.statement.calculation.creditor.physical_person:
-            return self.fundsdocumentdescriptionpj_set.filter(document__fund__calculation__creditor__physical_person=True)
-        else:
-            return self.fundsdocumentdescriptionpj_set.filter(document__fund__calculation__creditor__physical_person=False)
+        return self.fundsdocumentdescriptionpj_set.all()
 
     def set_total(self, commit=True):
         """Calculate the amounts, interest, fine and days by adding all the documents of the legal entity."""
@@ -86,7 +84,7 @@ def save_statement_total_documents(sender, instance, **kwargs) -> None:
     calculates the monetary correction for the instance and generates the total document of the related fund. It
     takes the sender and instance as arguments
     """
-    print('Signal gerar fund extrato verbas documentos\n')
+    logging.info('Signal gerar fund extrato verbas documentos\n')
     statement, created = Statement.objects.get_or_create(calculation=instance.fund.calculation)
     statement_pj, created = StatementPJ.objects.get_or_create(statement=statement)
     fund, created = FundsDocumentDescriptionPJ.objects.get_or_create(document=instance, statement_pj=statement_pj)

@@ -48,7 +48,7 @@ class IrrfTest(AbstractTest):
         "rate_id": str(Rate.objects.first().id),
         "template_id": str(Template.objects.first().id),
         "calculation_id": str(
-            Calculation.objects.filter(creditor__physical_person=True, funddocument__isnull=True).first().id),
+            Calculation.objects.filter(funddocument__isnull=True).first().id),
         "name": generate_name(),
         "months_period": 1,
     }

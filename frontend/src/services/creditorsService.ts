@@ -17,7 +17,7 @@ interface Creditor {
   fine: number
   advocativeHours: number
   occurrence: string
-  physicalPerson: boolean
+  personType: string
   description: string
   recoverings?: { recoveringId: string; rateId: string }[]
 }
@@ -80,11 +80,9 @@ const getNoticeAJ = () => api
 
 const getNoticeAJCreditor = (creditorId: any) => api
   .get(`/v1/creditors/notice/aj/creditor/${creditorId}/`)
-  .then((result: any) => result?.notices ?? [])
 
 const getNoticeAJRecovering = (creditorId: any) => api
   .get(`/v1/creditors/notice/recovering/creditor/${creditorId}/`)
-  .then((result: any) => result?.noticeRecoverings ?? [])
 
 const setNoticeAJ = async (notice: Notice) => {
   const { id } = notice

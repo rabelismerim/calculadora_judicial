@@ -100,6 +100,15 @@ const creditorColumns = [
     format: value => formatLegalNumber(value?.legalNumber),
   },
   {
+    name: 'person_type',
+    field: 'personType',
+    label: 'Tipo',
+    align: 'left',
+    classes: 'w-25',
+    sortable: true,
+    format: value => value ?? '-',
+  },
+  {
     name: 'action',
     field: 'action',
     label: 'Ação',

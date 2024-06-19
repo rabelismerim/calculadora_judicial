@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from django.core.management.base import BaseCommand
 
@@ -44,7 +45,7 @@ def create_indices():
             continue
 
         rates = Rate.objects.filter(index=index_name)
-        print(index_name, 'index\n\n')
+        logging.info(index_name +'index\n\n')
         rate_values_list = []
         accumulated_values_list = []
         period_values_list = []
@@ -71,7 +72,7 @@ def create_indices():
         Period.objects.bulk_create(period_values_list)
 
         SetAccumulated(rate_id=new_rate.id).update_rate()
-        print(f'\033[92m Successful {"created" if created else "altered"} {index_name}\n Total: {cont}')
+        logging.info(f'\033[92m Successful {"created" if created else "altered"} {index_name}\n Total: {cont}')
 
     for rate, average in averages:
         rates = Rate.objects.filter(index__in=average)

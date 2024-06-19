@@ -61,7 +61,6 @@ class AbstractFundsApi(AbstractViewApi):
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission, CheckFundsPjPfPermissions,
                           CheckHasAgreementRegisteredPermissions]
     model = Funds
-    physical_person = True
 
 
 class FundsApi(AbstractFundsApi):

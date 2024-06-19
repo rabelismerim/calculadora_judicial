@@ -26,6 +26,7 @@ identify and fix problems with your application.
 In summary, Locust's interface allows controlling and monitoring the execution of load tests, as well as viewing
 detailed information about the performance of the tested application.
 """
+import logging
 import os
 #
 
@@ -37,7 +38,6 @@ from locust import SequentialTaskSet
 from locust.exception import StopUser
 
 django_moa = os.path.join(os.getcwd(), 'config')
-print(django_moa, '\n\n')
 
 # os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'{django_moa}.settings')
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'config.settings')
@@ -109,8 +109,8 @@ class RequestsTask(SequentialTaskSet):
                 task_instance = task_class(self)
                 if task_instance:
                     task_instance.run()
-            except (locust.exception.RescheduleTaskImmediately, AttributeError, locust.exception.InterruptTaskSet):
-                pass
+            except (locust.exception.RescheduleTaskImmediately, AttributeError, locust.exception.InterruptTaskSet) as e:
+                logging.info(e)
         raise StopUser()
 
 

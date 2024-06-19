@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
@@ -292,7 +294,7 @@ class Command(BaseCommand):
                 content_type = ContentType.objects.filter(
                     app_label__icontains=content).first()
                 if not content_type:
-                    print(
+                    logging.info(
                         f'Content type to app detail: {name}, codename: {codename}, content: {content} not found')
                     continue
 

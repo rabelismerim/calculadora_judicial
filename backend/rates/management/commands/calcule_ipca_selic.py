@@ -1,3 +1,5 @@
+import logging
+
 from django.core.management.base import BaseCommand
 from rates.models import Rate, CalculeRate
 
@@ -35,4 +37,4 @@ class Command(BaseCommand):
         data_rj = '2019-03-22'
         selic = Rate.objects.filter(code=4390).first()
         accumulated = CalculeRate(filling_date=filling_date, data_rj=data_rj, rate_selic=selic).calcule()
-        print(accumulated)
+        logging.info(accumulated)

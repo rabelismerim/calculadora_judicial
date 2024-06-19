@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -287,7 +289,7 @@ class CreatePermissions:
         # Create missing permissions in bulk
         for codename, name, app_label in list_permissions:
             if not PermissionsName().check_exist_codename(codename):
-                print('Codename não existente\n')
+                logging.info('Codename não existente\n')
                 continue
 
             if codename not in perms_by_codename:
@@ -408,23 +410,8 @@ class CheckFundsPjPfPermissions(BasePermission):
     message = _('It is not possible to register this fund')
 
     def has_permission(self, request, view):
-        if request.path == SWAGGER_URL:
-            return True
-        if hasattr(view, 'physical_person') is False:
-            raise AttributeError(
-                _('Need to add "physical_person: bool" attribute to use CheckFundsPjPfPermissions class'))
-        calculation_id = view.request.data.get('calculation_id')
-        calculation = get_object_or_404(Calculation, id=calculation_id)
+        return True
 
-        physical_person = calculation.creditor.physical_person
-        if physical_person == view.physical_person:
-            return True
-
-        if physical_person:
-            self.message = _('It is not possible to register a fund of the legal entity type for individuals')
-        else:
-            self.message = _('It is not possible to register a fund of the individuals type for legal entity')
-        return False
 
 
 class CheckHasFundRegisteredPermissions(BasePermission):

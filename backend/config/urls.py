@@ -13,14 +13,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import sys
+import traceback
+
 from django.contrib import admin
 from django.http import HttpResponseRedirect, JsonResponse
+from django.template.defaulttags import csrf_token
 from django.urls import include, path, re_path, reverse
 from django.shortcuts import render, redirect
 from django.views.static import serve
 from rest_framework.views import APIView
 
-from config.settings import ENABLE_SSO, BASE_URL_NEXT, ENABLE_TOKEN, IS_DEV
+from config.settings import ENABLE_SSO, BASE_URL_NEXT, ENABLE_TOKEN, DEBUG_TOOLBAR
 from django.conf import settings
 from django.views.generic import TemplateView
 from rest_framework import permissions, status
@@ -118,9 +122,6 @@ urlpatterns = [
     re_path(r'^juca/static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
 ]
 
-if IS_DEV:
-    urlpatterns.append(path('juca/__debug__/', include('debug_toolbar.urls')))
-
 if ENABLE_SSO and not ENABLE_TOKEN:
     urlpatterns.extend([
         path('juca/admin/login/', lambda r: redirect(
@@ -131,14 +132,30 @@ if ENABLE_SSO and not ENABLE_TOKEN:
         # path('juca/admin/logout/', lambda r: redirect(
         #     reverse('drfmsal_signout', kwargs={'redirect_uri': 'juca'})
         # )),
-        path('juca/admin/', admin.site.urls),
     ])
 
-else:
-    urlpatterns.append(path('juca/admin/', admin.site.urls))
+urlpatterns.append(path('juca/admin/', admin.site.urls))
 
 if ENABLE_TOKEN:
     urlpatterns.append(path(f'{BASE_URL}obtain-auth-token/', rest_views.obtain_auth_token))
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL,
                                                                                         document_root=settings.MEDIA_ROOT)
+
+if DEBUG_TOOLBAR:
+    urlpatterns.append(path('juca/__debug__/', include('debug_toolbar.urls')))
+
+
+def error_500_view(request):
+    traceback_info = {}
+
+    if request.user.is_staff:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        traceback_info['error_type'] = exc_type.__name__
+        traceback_info['error_message'] = str(exc_value)
+        traceback_info['traceback'] = traceback.format_exception(exc_type, exc_value, exc_traceback)
+
+    return render(request, 'error_pages/500.html', traceback_info, status=500)
+
+
+handler500 = error_500_view

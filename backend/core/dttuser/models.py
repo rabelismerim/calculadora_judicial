@@ -2,6 +2,7 @@ import itertools
 
 import base64
 import hashlib
+import logging
 import uuid
 
 from django.contrib.sessions.models import Session
@@ -265,13 +266,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         try:
             data = ContentFile(base64.b64decode(self.userpicture))
             image_data = base64.b64decode(self.userpicture)
-            file_hash = hashlib.md5(image_data).hexdigest()
+            file_hash = hashlib.sha256(image_data).hexdigest()
             file_name = f"{file_hash}.jpeg"
             if (not self.user_img or str(self.user_img.name) in file_name is False) or force:
                 self.user_img.save(file_name, data, save=True)  # image is User's model field
                 self.save()
         except Exception as e:
-            print(e, 'err save img in base64')
+            logging.error(e, exc_info=True)
 
     @property
     def image_url(self):
@@ -327,13 +328,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        # Allowing or blocking to use django user with password
         self.is_active = self.status in STATUS_ACTIVE
-        if IS_PROD is False:
-            if not self._state.adding and (self.id != self._loaded_values['id']):
-                raise ValueError(_("Updating the value of id isn't allowed"))
-            if ENABLE_SSO:
-                self.set_unusable_password()
+        if IS_PROD and ENABLE_SSO:
+            self.set_unusable_password()
         else:
             if self.username == 'dev_admin':
                 self.is_active = True

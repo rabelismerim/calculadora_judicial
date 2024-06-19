@@ -1,6 +1,7 @@
 import datetime
 import inspect
 import json
+import logging
 import os
 from abc import ABC
 from importlib.util import spec_from_file_location, module_from_spec
@@ -39,8 +40,8 @@ def get_app_label_from_model(model) -> str:
     app = model._meta.app_config.name.split('.')[0]
     try:
         return str(apps.get_app_config(app).verbose_name)
-    except LookupError:
-        pass
+    except LookupError as e:
+        logging.info(e)
     return app
 
 
@@ -558,8 +559,8 @@ class AbstractViewApi(generics.GenericAPIView, OrderingFilter):
                 instance = self.__get_type_by_instance(type_instance)
                 try:
                     value = instance['parser'](value)
-                except (ValueError, KeyError):
-                    pass
+                except (ValueError, KeyError) as e:
+                    logging.info(e)
                 if isinstance(value, instance['type']):
                     query[field] = value
                 else:
@@ -721,8 +722,8 @@ class AbstractViewApi(generics.GenericAPIView, OrderingFilter):
         if response.status_code in [200, 201] and request.method == 'GET':
             try:
                 self.__set_key(cache_key, fernet.encrypt(response.content.decode()))
-            except ContentNotRenderedError:
-                pass
+            except ContentNotRenderedError as e:
+                logging.info(e)
 
         if request.method != 'GET':
             self.delete_cache_from_app(self.model)
@@ -879,8 +880,8 @@ def find_related_serializers(schema, checked_serializers=None):
                 elif isinstance(field, serializers.Serializer):
                     if field.__class__ == schema.__name__:
                         append_srl(serializer_cls)
-        except ValueError:
-            pass
+        except ValueError as e:
+            logging.info(e)
 
     for serializer_cls in related_serializer_schemas:
         if serializer_cls not in checked_serializers:

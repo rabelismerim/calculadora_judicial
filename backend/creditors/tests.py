@@ -7,7 +7,7 @@ from utils import secret_number
 
 class CreditorValues:
 
-    def __get_creditor_by_rate(self, rate, physical_person: bool = True):
+    def __get_creditor_by_rate(self, rate):
         _recovering = Recovering.objects.first()
 
         creditor = {
@@ -15,7 +15,6 @@ class CreditorValues:
                 "name": generate_name(),
                 "legal_number": cpf_generator()
             },
-            "physical_person": physical_person,
             "recovering_id": str(_recovering.id),
             "notice_aj": [{
                 "classes": {
@@ -57,8 +56,8 @@ class CreditorValues:
         }
         return creditor
 
-    def get_creditor(self, rate='TST', physical_person=True):
-        creditor = self.__get_creditor_by_rate(rate, physical_person)
+    def get_creditor(self, rate='TST'):
+        creditor = self.__get_creditor_by_rate(rate)
         return creditor
 
 
@@ -72,7 +71,6 @@ class CreditorTest(AbstractTest):
     def setUp(self):
         set_up = super().setUp()
         self.parameters = CreditorValues().get_creditor()
-        self.parameters['physical_person'] = False
         self.parameters['entity']['name'] = generate_name()
         self.parameters['entity']['legal_number'] = cpf_generator()
 

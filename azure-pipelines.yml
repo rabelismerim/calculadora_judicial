@@ -68,7 +68,7 @@ steps:
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Create dir log'
   - script: |
-      pip install virtualenv
+      pip install virtualenv --user
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Install virtualenv'
@@ -104,16 +104,18 @@ steps:
     displayName: 'Install pip fastcgi'
   - script: |
       $(Build.SourcesDirectory)/backend/venv/Scripts/python manage.py collectstatic --no-input
-    failOnStderr: false
+    failOnStderr: true
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Django collectstatic'
   - script: |
       $(Build.SourcesDirectory)/backend/venv/Scripts/python manage.py makemigrations
+    continueOnError: true
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Django makemigrations'
   - script: |
       $(Build.SourcesDirectory)/backend/venv/Scripts/python manage.py migrate
+    continueOnError: true
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Django migrate'
@@ -164,3 +166,21 @@ steps:
       script: |
         Remove-Item -Path '$(Build.SourcesDirectory)/frontend' -Recurse -Force
     displayName: 'Remove folder frontend'
+  - script: |
+      python -m pip install python-decouple
+    failOnStderr: false
+    workingDirectory: E:/inetpub/wwwroot/uat.fadigitallab.deloitte.com.br/juca
+    displayName: 'Install python-decouple'
+  - script: |
+      python start_server_service.py install
+    workingDirectory: E:/inetpub/wwwroot/uat.fadigitallab.deloitte.com.br/juca
+    displayName: 'Install Windows Service'
+  - script: |
+      python start_server_service.py stop
+    workingDirectory: E:/inetpub/wwwroot/uat.fadigitallab.deloitte.com.br/juca
+    failOnStderr: false
+    displayName: 'Stop Windows Service'
+  - script: |
+      python start_server_service.py start
+    workingDirectory: E:/inetpub/wwwroot/uat.fadigitallab.deloitte.com.br/juca
+    displayName: 'Start Windows Service'

@@ -95,6 +95,8 @@ class ErrorFile(AbstractModel):
     file = models.ForeignKey(File, on_delete=models.PROTECT)
     error = models.TextField(_("Error"))
     status = models.CharField(default="R", max_length=1, choices=ERROR_STATUS_CHOICES)
+    traceback = models.TextField(_("Traceback"), blank=True, null=True)
+    data = models.TextField(_("Error"), blank=True, null=True)
 
     def __str__(self):
         return self.error

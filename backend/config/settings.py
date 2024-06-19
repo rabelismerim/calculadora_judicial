@@ -73,6 +73,12 @@ DATABASE_POSTGRES = config('DATABASE_POSTGRES', cast=bool, default=False)
 ENVIRONMENT = config('ENVIRONMENT', cast=str, default='prod').lower()
 ENABLE_LOGGER = config('ENABLE_LOGGER', cast=bool, default=False)
 ENABLE_CACHE = config('ENABLE_CACHE', cast=bool, default=False)
+DEBUG_TOOLBAR = config('DEBUG_TOOLBAR', cast=bool, default=False)
+TEST_PW = config('TEST_PW', cast=str, default="User@123")
+LOGGING_FILE_LEVEL = config('LOGGING_FILE_LEVEL', default='DEBUG', cast=str)
+
+LOGGING_FILE_HANDLERS = config('LOGGING_FILE_HANDLERS', default='console,critical,info,error,warning', cast=str).split(
+    ',')
 
 if ENVIRONMENT not in ['prod', 'hml', 'dev']:
     raise ValueError('Invalid ENVIRONMENT. Options is (prod, hml or dev)')
@@ -100,7 +106,6 @@ INSTALLED_APPS = [
     'drf_yasg',  # Swagger schema
     # 'vinaigrette',
     'modeltranslation',  # Custom field translation
-    # 'debug_toolbar', # Debug query, views in realtime on navigation
     'django_apscheduler',  # Eventos crontab
     'django_celery_results',  # View results Tasks in admin
     'encrypted_fields',
@@ -197,7 +202,6 @@ MIDDLEWARE = [
     'crum.CurrentRequestUserMiddleware',  # Get current request in Models
     'drf_api_logger.middleware.api_logger_middleware.APILoggerMiddleware',
     'dashboard.middleware.LoginMiddleware',  # Save the first occurrence of user login on the day
-    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -285,7 +289,6 @@ if IS_PROD or ENABLE_LOGGER:
                 "formatter": "verbose",
                 "filename": file_log.format("info"),
             },
-
             "warning": {
                 'class': 'apps.handler.LevelSpecificFileHandler',
                 "level": "WARNING",
@@ -296,33 +299,33 @@ if IS_PROD or ENABLE_LOGGER:
         },
         "loggers": {
             "root": {
-                "handlers": ["console", "debug", "critical", "info", "error", 'warning'],
-                "level": "DEBUG",
+                "handlers": LOGGING_FILE_HANDLERS,
+                "level": LOGGING_FILE_LEVEL,
                 "propagate": True,
             },
             "": {
-                "handlers": ["console", "debug", "critical", "info", "error", 'warning'],
-                "level": "DEBUG",
+                "handlers": LOGGING_FILE_HANDLERS,
+                "level": LOGGING_FILE_LEVEL,
                 "propagate": False,
             },
             "django": {
-                "handlers": ["console", "debug", "critical", "info", "error", 'warning'],
-                "level": "DEBUG",
+                "handlers": LOGGING_FILE_HANDLERS,
+                "level": LOGGING_FILE_LEVEL,
                 "propagate": False,
             },
             'django.request': {  # capturar logs relacionados a requisições HTTP
-                'handlers': ["console", "debug", "critical", "info", "error", 'warning'],
-                "level": "DEBUG",
+                'handlers': LOGGING_FILE_HANDLERS,
+                "level": LOGGING_FILE_LEVEL,
                 'propagate': False,
             },
             'django.utils.autoreload': {  # capturar logs relacionados a requisições HTTP
-                'handlers': ["critical", "error", 'warning'],
+                'handlers': LOGGING_FILE_HANDLERS,
                 "level": "ERROR",
                 'propagate': False,
             },
             "werkzeug": {  # capturar logs do runser_plus,
-                "handlers": ["console", "debug", "critical", "info", "error", 'warning'],
-                "level": "DEBUG",
+                "handlers": LOGGING_FILE_HANDLERS,
+                "level": LOGGING_FILE_LEVEL,
                 "propagate": False,
             },
         }
@@ -347,7 +350,7 @@ elif IS_HML:
     ]
 
 else:
-    ALLOWED_HOSTS = ['*']
+    ALLOWED_HOSTS = ['localhost', 'https://127.0.0.1', 'https://127.0.0.2', 'juca', 'brdcvmdev07']
 
     CSRF_TRUSTED_ORIGINS = [
         'https://uat.fadigitallab.deloitte.com.br/juca',
@@ -358,6 +361,7 @@ else:
         'https://www.brsphearndt/juca',
         'https://www.brspwaoliveira/juca',
     ]
+
 # Enable Login SSO
 if ENABLE_SSO:
     MIDDLEWARE.append('core.drfmsal.middleware.MsalMiddleware')
@@ -516,8 +520,8 @@ databases = DATABASES
 # Add these two lines.
 # import dj_database_url
 # DATABASES['default'] = dj_database_url.config(default='sqlite://db/sqlite3.db')
-# Password validation
-# https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
+# PW validation
+# https://docs.djangoproject.com/en/3.2/ref/settings/#auth-pw-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -575,14 +579,14 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 #     mimetypes.add_type("text/css", ".css", True)
 
 STATIC_URL = '/juca/static/'
-STATIC_ROOT = '/var/static_root/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'var', 'static_root')
 
 # Setting media info for images
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'juca/static'),
+    os.path.join(BASE_DIR, 'juca', 'static'),
 ]
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
@@ -642,16 +646,22 @@ if IS_DEV:
         # ...
     ]
 
-    INSTALLED_APPS.append('debug_toolbar')
-    MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
-    # End config debug toolbar
-
-
 else:
     LOGIN_URL = "/juca/login/"
     LOGOUT_REDIRECT_URL = f"/juca/"
     LOGIN_REDIRECT_URL = f"/juca/"
     LOGOUT_URL = "/juca/logout/"
+
+if DEBUG_TOOLBAR:
+    INSTALLED_APPS.append('debug_toolbar')
+    MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
+
+    INTERNAL_IPS = [
+        # ...
+        "127.0.0.1",
+        "127.0.0.3",
+        # ...
+    ]
 
 SWAGGER_URL = f'/{BASE_URL}docs/redoc/'
 RATE_FILE_TYPES = ['pdf', 'vnd.ms-excel', 'xlsx', 'xls']

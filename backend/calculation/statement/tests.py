@@ -102,7 +102,6 @@ class StatementTest(AbstractTest):
     def _set_creditor(self, rate):
         """Creates a new creditor with the specified rate for the project"""
         creditor = CreditorValues().get_creditor(rate)
-        creditor['physical_person'] = True
         creditor['entity']['name'] = generate_name()
         creditor['entity']['legal_number'] = cpf_generator()
         creditor['recovering_id'] = self.project['recoverings'][0]['id']

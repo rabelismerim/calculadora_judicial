@@ -21,7 +21,7 @@ class AbstractTask(Task):
             self.logger.info(message)
 
     def run(self, channel, excel_read, callback: callable = None, **kwargs):
-        print(excel_read, 'excel_read run abstract\n')
+        logging.info(excel_read + 'excel_read run abstract\n')
         self.send_log(f'running task {self.request.id}')
         self._publish(channel, excel_read, **kwargs)
         return self._await_result()
@@ -44,7 +44,7 @@ class AbstractTask(Task):
         return f'my_task_result_{self.request.id}'
 
     def _publish(self, channel: str, obj: bytes, **kwargs):
-        print(obj, 'obj\n')
+
         data = {'data': obj, 'task_id': self.request.id, 'key': self._get_result_key(), 'pandas_kwargs': kwargs}
         cont = 0
         while self.__redis_conn.publish(channel, self.__security.encrypt(data)) == 0:

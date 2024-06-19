@@ -41,3 +41,4 @@ juca/
 .juca-dev.env
 .juca-hml.env
 .juca-prod.env
+.flake8

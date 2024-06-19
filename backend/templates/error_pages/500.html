@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Error 500</title>
+</head>
+<body>
+<h1>Error 500 - Internal Server Error</h1>
+{% if error_message %}
+    <h2>Error Details:</h2>
+    <p><strong>Type:</strong> {{ error_type }}</p>
+    <p><strong>Message:</strong> {{ error_message }}</p>
+    <h3>Traceback:</h3>
+    <div>{{ traceback | safe }}</div>
+{% else %}
+    <p>Sorry, an unexpected error occurred.</p>
+{% endif %}
+</body>
+</html>

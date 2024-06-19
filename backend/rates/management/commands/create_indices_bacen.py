@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from django.core.management.base import BaseCommand
 
@@ -43,14 +44,14 @@ def create_indices():
 
         AutomaticUpdateRates(rate_id=new_rate.id, force=True).update_rate()
 
-        print(f'\033[92m Successful {"created" if created else "altered"} {index_name}\n Total: {cont}')
+        logging.info(f'\033[92m Successful {"created" if created else "altered"} {index_name}\n Total: {cont}')
 
     for rate, average in averages:
         rates = Rate.objects.filter(index__in=average)
         rate.average.add(*rates)
         SetAccumulated(rate_id=rate.id).update_average()
 
-    print(f'\033[92m Successful')
+    logging.info(f'\033[92m Successful')
 
 
 class Command(BaseCommand):

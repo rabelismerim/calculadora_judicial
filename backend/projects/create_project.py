@@ -1,4 +1,3 @@
-import random
 import secrets
 
 from projects.judge.models import Judge
@@ -21,6 +20,7 @@ def cpf_generator():
     cpf.append(last_digit if last_digit < 10 else 0)
 
     return '{}{}{}.{}{}{}.{}{}{}-{}{}'.format(*cpf)
+
 
 def generate_number():
     return ''.join([str(secrets.randbelow(10)) for _ in range(8)])
@@ -108,6 +108,3 @@ def __validate_cpf(cpf):
         if new == int_cpf:
             return True
     return False
-
-
-print(__validate_cpf(cpf_generator()))
