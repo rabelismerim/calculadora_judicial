@@ -104,16 +104,18 @@ steps:
     displayName: 'Install pip fastcgi'
   - script: |
       $(Build.SourcesDirectory)/backend/venv/Scripts/python manage.py collectstatic --no-input
-    failOnStderr: false
+    failOnStderr: true
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Django collectstatic'
   - script: |
       $(Build.SourcesDirectory)/backend/venv/Scripts/python manage.py makemigrations
+    continueOnError: true
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Django makemigrations'
   - script: |
       $(Build.SourcesDirectory)/backend/venv/Scripts/python manage.py migrate
+    continueOnError: true
     failOnStderr: false
     workingDirectory: $(Build.SourcesDirectory)/backend
     displayName: 'Django migrate'

@@ -75,6 +75,10 @@ ENABLE_LOGGER = config('ENABLE_LOGGER', cast=bool, default=False)
 ENABLE_CACHE = config('ENABLE_CACHE', cast=bool, default=False)
 DEBUG_TOOLBAR = config('DEBUG_TOOLBAR', cast=bool, default=False)
 TEST_PW = config('TEST_PW', cast=str, default="User@123")
+LOGGING_FILE_LEVEL = config('LOGGING_FILE_LEVEL', default='DEBUG', cast=str)
+
+LOGGING_FILE_HANDLERS = config('LOGGING_FILE_HANDLERS', default='console,critical,info,error,warning', cast=str).split(
+    ',')
 
 if ENVIRONMENT not in ['prod', 'hml', 'dev']:
     raise ValueError('Invalid ENVIRONMENT. Options is (prod, hml or dev)')
@@ -285,7 +289,6 @@ if IS_PROD or ENABLE_LOGGER:
                 "formatter": "verbose",
                 "filename": file_log.format("info"),
             },
-
             "warning": {
                 'class': 'apps.handler.LevelSpecificFileHandler',
                 "level": "WARNING",
@@ -296,33 +299,33 @@ if IS_PROD or ENABLE_LOGGER:
         },
         "loggers": {
             "root": {
-                "handlers": ["console", "debug", "critical", "info", "error", 'warning'],
-                "level": "DEBUG",
+                "handlers": LOGGING_FILE_HANDLERS,
+                "level": LOGGING_FILE_LEVEL,
                 "propagate": True,
             },
             "": {
-                "handlers": ["console", "debug", "critical", "info", "error", 'warning'],
-                "level": "DEBUG",
+                "handlers": LOGGING_FILE_HANDLERS,
+                "level": LOGGING_FILE_LEVEL,
                 "propagate": False,
             },
             "django": {
-                "handlers": ["console", "debug", "critical", "info", "error", 'warning'],
-                "level": "DEBUG",
+                "handlers": LOGGING_FILE_HANDLERS,
+                "level": LOGGING_FILE_LEVEL,
                 "propagate": False,
             },
             'django.request': {  # capturar logs relacionados a requisições HTTP
-                'handlers': ["console", "debug", "critical", "info", "error", 'warning'],
-                "level": "DEBUG",
+                'handlers': LOGGING_FILE_HANDLERS,
+                "level": LOGGING_FILE_LEVEL,
                 'propagate': False,
             },
             'django.utils.autoreload': {  # capturar logs relacionados a requisições HTTP
-                'handlers': ["critical", "error", 'warning'],
+                'handlers': LOGGING_FILE_HANDLERS,
                 "level": "ERROR",
                 'propagate': False,
             },
             "werkzeug": {  # capturar logs do runser_plus,
-                "handlers": ["console", "debug", "critical", "info", "error", 'warning'],
-                "level": "DEBUG",
+                "handlers": LOGGING_FILE_HANDLERS,
+                "level": LOGGING_FILE_LEVEL,
                 "propagate": False,
             },
         }
