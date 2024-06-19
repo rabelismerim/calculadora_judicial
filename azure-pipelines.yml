@@ -129,6 +129,11 @@ steps:
       SourceFolder: '$(Build.SourcesDirectory)/backend/__pycache__'
       Contents: '**'
       RemoveSourceFolder: true
+  - task: PowerShell@2
+    inputs:
+      targetType: 'inline'
+      script: |
+        Remove-Item -Path 'E:\wwwroot\fadigitallab.deloitte.com.br\juca' -Recurse -Force
   - task: CopyFiles@2
     inputs:
       SourceFolder: '$(Build.SourcesDirectory)/backend'
