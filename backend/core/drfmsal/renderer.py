@@ -18,7 +18,7 @@ class APIRendererInterceptor(JSONRenderer):
                 is_authenticated = request.user.is_authenticated
                 data = {
                     'data': data,
-                    'dttdjud': True,
+                    'application_response': True,
                     'accept_token': True,
                     'profile': {
                         'authorized': is_authenticated,
@@ -48,7 +48,7 @@ class APIRendererInterceptor(JSONRenderer):
                         is_active = user.is_active
                 data = {
                     'data': data,
-                    'dttdjud': True,
+                    'application_response': True,
                     'accept_token': False,
                     'profile': {
                         'authorized': authorized,

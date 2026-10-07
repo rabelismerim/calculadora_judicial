@@ -23,8 +23,8 @@ from rest_framework import serializers, renderers
 from base.schemas import AbstractDescriptionSchema
 from utils import get_user_model, _
 from django.contrib.auth.models import Permission, Group
-from core.dttuser.models import Subgroup
-from core.dttuser.models import ROLES_CHOICES
+from core.users.models import Subgroup
+from core.users.models import ROLES_CHOICES
 
 User = get_user_model()
 
@@ -129,7 +129,7 @@ class SubgroupSchema(serializers.ModelSerializer):
                     logging.info(e)
 
 
-class UserDttSchema(serializers.ModelSerializer):
+class UserSchema(serializers.ModelSerializer):
     """
     Serializer for fields of the abstract model.
 
@@ -218,7 +218,7 @@ class UserDttSchema(serializers.ModelSerializer):
         errors.extend(self.__check_passwd(password, password_confirm))
         if errors:
             raise serializers.ValidationError(errors)
-        return super(UserDttSchema, self).validate(data)
+        return super(UserSchema, self).validate(data)
 
     def __init__(self, *args, **kwargs):
         fields = kwargs.pop('exclude', None)
@@ -233,13 +233,13 @@ class UserDttSchema(serializers.ModelSerializer):
                     logging.info(e)
 
 
-class UserDttProjectSchema(UserDttSchema):
+class UserProjectSchema(UserSchema):
     class Meta:
         model = User
         fields = ['full_name', 'picture_url', 'userpicture']
 
 
-class UserDttMFASchema(serializers.ModelSerializer):
+class UserMFASchema(serializers.ModelSerializer):
     """
     Serializer for fields of the abstract model.
 
@@ -279,10 +279,10 @@ class UserDttMFASchema(serializers.ModelSerializer):
         data['first_name'] = data['username'].split(' ')[0]
         data['last_name'] = ' '.join(data['username'].split(' ')[1:])
         data['username'] = data['username'].replace(' ', '_')
-        return super(UserDttMFASchema, self).validate(data)
+        return super(UserMFASchema, self).validate(data)
 
 
-class UserAuthorizeDttSchema(serializers.ModelSerializer):
+class UserAuthorizeSchema(serializers.ModelSerializer):
     """
     Serializer for fields of the abstract model.
 
@@ -299,7 +299,7 @@ class UserAuthorizeDttSchema(serializers.ModelSerializer):
         fields = ['email', 'status', 'groups', 'subgroups', 'role']
 
 
-class UserMailDttSchema(AbstractDescriptionSchema):
+class UserMailSchema(AbstractDescriptionSchema):
     """
     Serializer for fields of the abstract model.
 

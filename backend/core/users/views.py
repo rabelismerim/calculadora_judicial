@@ -1,15 +1,15 @@
 """
-This module defines a Api's classes that provides HTTP methods for managing DttUser objects models.
+This module defines a Api's classes that provides HTTP methods for managing User objects models.
 It is extended from an AbstractViewApi class and includes a CheckHasPermission permission class for authorization.
 Api's responds with JSON data and uses rest_framework.schemas.openapi.AutoSchema to generate the API documents.
-Api's classes use the DttUser model and schema DttUser to work with data.
+Api's classes use the User model and schema User to work with data.
 """
 from django.db.models import Q
 from rest_framework.exceptions import PermissionDenied
 
-from config.settings import DTT_EMAIL, ROLES, IS_DEV
+from config.settings import DEFAULT_FROM_EMAIL, ROLES, IS_DEV
 from core.abstract.views import AbstractViewApi
-from core.dttuser.schemas import UserDttSchema, UserAuthorizeDttSchema, GroupSchema, SubgroupSchema, UserMailDttSchema
+from core.users.schemas import UserSchema, UserAuthorizeSchema, GroupSchema, SubgroupSchema, UserMailSchema
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 from django.core.mail import send_mail
@@ -19,7 +19,7 @@ from core.permission.views import CheckHasPermission, CheckPermissions, CheckAut
 from utils import get_user_model, _, doc
 from rest_framework import permissions, serializers
 from django.contrib.auth.models import Group
-from core.dttuser.models import Subgroup
+from core.users.models import Subgroup
 
 User = get_user_model()
 
@@ -35,11 +35,11 @@ docs = {
 }
 
 
-class AbstractUserDttApi(AbstractViewApi):
-    """HTTP methods for interfacing with the User Deloitte modelThis method returns a JSON response that contains the
+class AbstractUserApi(AbstractViewApi):
+    """HTTP methods for interfacing with the User calculadora modelThis method returns a JSON response that contains the
     user details given a filtering criteria. The serializer is used to access the model object, and then the data is
     returned in a JSON format. """
-    serializer_class = UserDttSchema
+    serializer_class = UserSchema
     docs = docs.copy()
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = User
@@ -72,8 +72,8 @@ class AbstractUserDttApi(AbstractViewApi):
     ]
 
 
-class UserDttDetailApi(AbstractUserDttApi):
-    """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like
+class UserDetailApi(AbstractUserApi):
+    """This class represents the HTTP methods for User calculadora. It contains methods such as get, and objects like
     query_params and schema. """
     http_method_names = ['get']
 
@@ -90,11 +90,11 @@ class UserDttDetailApi(AbstractUserDttApi):
         return JsonResponse({'user': user})
 
 
-class UserAuthorizeDttApi(AbstractUserDttApi):
-    """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like
+class UserAuthorizeApi(AbstractUserApi):
+    """This class represents the HTTP methods for User calculadora. It contains methods such as get, and objects like
     query_params and schema. """
     http_method_names = ['post']
-    serializer_class = UserAuthorizeDttSchema
+    serializer_class = UserAuthorizeSchema
     permission_classes = [permissions.IsAuthenticated, CheckPermissions]
 
     perms = ['can_authorize_users']
@@ -128,15 +128,15 @@ class UserAuthorizeDttApi(AbstractUserDttApi):
             user_approved.role = role
         user_approved.save()
         user_approved.invalidate_user_sessions()
-        return JsonResponse({'user': UserDttSchema(user_approved).data}, status=status.HTTP_201_CREATED)
+        return JsonResponse({'user': UserSchema(user_approved).data}, status=status.HTTP_201_CREATED)
 
 
-class UserSendMailDttApi(AbstractUserDttApi):
-    """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like
+class UserSendMailApi(AbstractUserApi):
+    """This class represents the HTTP methods for User calculadora. It contains methods such as get, and objects like
     query_params and schema. Used to validate and send email when asked to create a new user.
     """
     http_method_names = ['post']
-    serializer_class = UserMailDttSchema
+    serializer_class = UserMailSchema
 
     docs = docs.copy()
     allow_cache = False
@@ -145,9 +145,9 @@ class UserSendMailDttApi(AbstractUserDttApi):
         The serializer is used to access the model object, and then the data is returned in a JSON format.
         """))
     def post(self, request, *args, **kwargs):
-        if not DTT_EMAIL:
+        if not DEFAULT_FROM_EMAIL:
             raise serializers.ValidationError(
-                [_('DTT sending email not configured')])
+                [_('Sistema sending email not configured')])
 
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -161,9 +161,9 @@ class UserSendMailDttApi(AbstractUserDttApi):
         send_mail(_('Release of Use - {}').format(user_mail.email),
                   _('This email is automatically sent by the system to request the release of user {} to system. To '
                     'release access, please enter the administration panel and register it at system.').format(
-                      user_mail.email), DTT_EMAIL, user_mail)
+                      user_mail.email), DEFAULT_FROM_EMAIL, user_mail)
 
-        return JsonResponse({'user': UserDttSchema(user_mail).data}, status=status.HTTP_201_CREATED)
+        return JsonResponse({'user': UserSchema(user_mail).data}, status=status.HTTP_201_CREATED)
 
 
 class GroupApi(AbstractViewApi):
@@ -207,7 +207,7 @@ class EmailListApi(AbstractViewApi):
     - get: Returns a list of groups with their names and permissions.
     """
     allow_cache = False
-    serializer_class = UserMailDttSchema
+    serializer_class = UserMailSchema
     docs = docs.copy()
 
     docs['get'] = _("""Get the email list of users able to approve a request for access to the platform. 
@@ -261,8 +261,8 @@ class SubgroupApi(AbstractViewApi):
         return {'name__in': ROLES}
 
 
-class UserDttApi(AbstractUserDttApi):
-    """HTTP methods for interacting with Deloitte user data."""
+class UserApi(AbstractUserApi):
+    """HTTP methods for interacting with calculadora user data."""
     http_method_names = ['post', 'get']
     docs = {
         'init': _("""The `User` class represents a user on the system, has common properties such as `username` 

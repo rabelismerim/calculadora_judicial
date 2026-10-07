@@ -8,7 +8,7 @@ from base.schemas import AbstractDescriptionSchema
 from calculation.funds.abstract.models import CHOICES_STATUS_FUND
 from calculation.funds.irrf.models import CHOICES_STATUS_IRRF
 from calculation.models import CHOICES_STEP
-from core.dttuser.models import ROLES_CHOICES, STATUS_CHOICES
+from core.users.models import ROLES_CHOICES, STATUS_CHOICES
 from core.entity.schemas import EntitySchema
 from creditors.classes.models import CLASSE_CHOICES
 from creditors.models import CHOICES_STATUS_LEGAL, Creditor, LegalPendencies

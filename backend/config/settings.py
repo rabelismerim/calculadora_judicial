@@ -63,13 +63,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY', cast=str)
 
 PASSWD_DEV = config('PASSWD_DEV', cast=str, default='fake_passwd')
-DTT_EMAIL = config('DTT_EMAIL', cast=str, default='')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', cast=str, default='')
 
 DEBUG = config('DEBUG', cast=bool, default=False)
 ENABLE_SSO = config('ENABLE_SSO', cast=bool, default=True)
 ENABLE_TOKEN = config('ENABLE_TOKEN', cast=bool, default=False)
 ENABLE_DRF = config('ENABLE_DRF', cast=bool, default=True)
-DATABASE_POSTGRES = config('DATABASE_POSTGRES', cast=bool, default=False)
 ENVIRONMENT = config('ENVIRONMENT', cast=str, default='prod').lower()
 ENABLE_LOGGER = config('ENABLE_LOGGER', cast=bool, default=False)
 ENABLE_CACHE = config('ENABLE_CACHE', cast=bool, default=False)
@@ -139,7 +138,7 @@ INSTALLED_APPS = [
     'projects.project_user',
 
     # Core
-    'core.dttuser.apps.DTTUserConfig',
+    'core.users.apps.UsersConfig',
     'core.abstract',
     'core.permission',
     'core.entity',
@@ -188,7 +187,7 @@ FIELD_ENCRYPTION_KEYS = FIELD_HASH_KEY.split(',')
 
 SITE_ID = 1
 
-AUTH_USER_MODEL = 'dttuser.User'
+AUTH_USER_MODEL = 'users.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -214,7 +213,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            'juca/static/src/vue/dist/', os.path.join(BASE_DIR, template)
+            'calculadora-judicial/static/src/vue/dist/', os.path.join(BASE_DIR, template)
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -331,36 +330,8 @@ if IS_PROD or ENABLE_LOGGER:
         }
     }
 
-if IS_PROD:
-    ALLOWED_HOSTS = [
-        'fadigitallab.deloitte.com.br',
-    ]
-
-    CSRF_TRUSTED_ORIGINS = [
-        'https://fadigitallab.deloitte.com.br/juca',
-    ]
-
-elif IS_HML:
-    ALLOWED_HOSTS = [
-        'uat.fadigitallab.deloitte.com.br',
-    ]
-
-    CSRF_TRUSTED_ORIGINS = [
-        'https://uat.fadigitallab.deloitte.com.br/juca',
-    ]
-
-else:
-    ALLOWED_HOSTS = ['localhost', 'https://127.0.0.1', 'https://127.0.0.2', 'juca', 'brdcvmdev07']
-
-    CSRF_TRUSTED_ORIGINS = [
-        'https://uat.fadigitallab.deloitte.com.br/juca',
-        'https://fadigitallab.deloitte.com.br/juca',
-        'https://dev.fadigitallab.deloitte.com.br/juca',
-        'https://www.brdcvmdev07/juca',
-        'https://www.brfojwanderley/juca',
-        'https://www.brsphearndt/juca',
-        'https://www.brspwaoliveira/juca',
-    ]
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda value: [item.strip() for item in value.split(',') if item.strip()])
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='http://localhost:8000,https://localhost:5173', cast=lambda value: [item.strip() for item in value.split(',') if item.strip()])
 
 # Enable Login SSO
 if ENABLE_SSO:
@@ -372,7 +343,7 @@ if ENABLE_SSO:
         'client': {
             'client_id': str(os.getenv('MSAL_CLIENT_ID')),
             'client_credential': str(os.getenv('MSAL_CLIENT_SECRET')),
-            'authority': f'https://login.microsoftonline.com/{str(os.getenv("MSAL_DTT_TENANT"))}/'
+            'authority': f'https://login.microsoftonline.com/{str(os.getenv("MSAL_TENANT_ID"))}/'
         },
         'auth_request': {
             'scopes': ['User.Read'],
@@ -402,102 +373,19 @@ if ENABLE_TOKEN:
     CORS_ALLOW_ALL_ORIGINS = True
     CORS_ALLOW_CREDENTIALS = True
 
-    CSRF_TRUSTED_ORIGINS = [
-        'http://127.0.0.1:8000',
-        'https://brfojwanderley:5173',
-        'https://brspwaoliveira:8080/juca',
-        'https://brdcvmdev07/juca',
-        'https://brsphearndt:8080/juca',
-        'https://uat.fadigitallab.deloitte.com.br/juca',
-        'https://fadigitallab.deloitte.com.br/juca',
-        'https://dev.fadigitallab.deloitte.com.br/juca',
-        'https://10.127.145.231:8000/juca'
-    ]
 
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# str(os.getenv('SECRET_KEY'))
-# if 'test' in sys.argv:
-#    ENABLE_SSO=False
-if IS_DEV or 'test' in sys.argv:
-    my_string = sys.argv[0].replace('\\', '').replace('/', '')
-
-    if my_string.endswith('main.py'):
-        if DATABASE_POSTGRES is False:
-            DATABASES = {
-                'default': {
-                    'ENGINE': 'django.db.backends.sqlite3',
-                    'NAME': ':memory:',
-                    'MIRROR': 'default',
-                    'OPTIONS': {
-                        'timeout': 40,  # Define o timeout em segundos (exemplo: 40 segundos)
-                    },
-                },
-            }
-
-            # cria uma cópia do banco de dados atual para testes do locust
-            import shutil
-            import tempfile
-            import os
-
-            tmpdir = os.path.join(tempfile.gettempdir(), 'juca')
-            tmp_db = os.path.join(tmpdir, 'tmp.sqlite3')
-            if os.path.exists(tmpdir) is False:
-                os.mkdir(tmpdir)
-            if os.path.exists(tmp_db) is False:
-                shutil.copy2(BASE_DIR / 'db.sqlite3', tmp_db)
-            DATABASES['default']['NAME'] = tmp_db
-        else:
-            DATABASES = {
-                'default': {
-                    'ENGINE': 'django.db.backends.postgresql',
-                    'NAME': str(os.getenv('DB_NAME')),
-                    'USER': str(os.getenv('DB_USER')),
-                    'PASSWORD': str(os.getenv('DB_PASS')),
-                    'HOST': str(os.getenv('DB_HOST')),
-                    'PORT': str(os.getenv('DB_PORT')),
-                }
-            }
-    else:
-        if DATABASE_POSTGRES:
-            DATABASES = {
-                'default': {
-                    'ENGINE': 'django.db.backends.postgresql',
-                    'NAME': str(os.getenv('DB_NAME')),
-                    'USER': str(os.getenv('DB_USER')),
-                    'PASSWORD': str(os.getenv('DB_PASS')),
-                    'HOST': str(os.getenv('DB_HOST')),
-                    'PORT': str(os.getenv('DB_PORT')),
-                    'TEST': {
-                        'MIRROR': 'default',
-                    },
-                }
-            }
-        else:
-            DATABASES = {
-                'default': {
-                    'ENGINE': 'django.db.backends.sqlite3',
-                    'NAME': BASE_DIR / 'db.sqlite3',
-                    'TEST': {
-                        'MIRROR': 'default',
-                    },
-                    'OPTIONS': {
-                        'timeout': 60,  # Define o timeout em segundos (exemplo: 40 segundos)
-                    },
-                }
-            }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config('DB_NAME', cast=str),
-            'USER': config('DB_USER', cast=str),
-            'PASSWORD': config('DB_PASS', cast=str),
-            'HOST': config('DB_HOST', cast=str),
-            'PORT': config('DB_PORT', cast=str),
-        }
+# SQLite is used in every environment. Relative paths resolve under BASE_DIR.
+database_path = Path(config('SQLITE_PATH', default='db.sqlite3')).expanduser()
+if not database_path.is_absolute():
+    database_path = BASE_DIR / database_path
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': database_path,
+        'OPTIONS': {'timeout': config('SQLITE_TIMEOUT', default=60, cast=int)},
     }
+}
 
 # Caches
 # https://docs.djangoproject.com/en/4.2/topics/cache/
@@ -505,7 +393,7 @@ if not DEBUG:
     CACHES = {
         "default": {
             "BACKEND": "django.core.cache.backends.db.DatabaseCache",
-            "LOCATION": "django_juca_cache_table",
+            "LOCATION": "django_calculadora_judicial_cache_table",
         },
 
     }
@@ -517,9 +405,6 @@ else:
     }
 databases = DATABASES
 
-# Add these two lines.
-# import dj_database_url
-# DATABASES['default'] = dj_database_url.config(default='sqlite://db/sqlite3.db')
 # PW validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-pw-validators
 
@@ -578,7 +463,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 #     mimetypes.add_type("application/javascript", ".js", True)
 #     mimetypes.add_type("text/css", ".css", True)
 
-STATIC_URL = '/juca/static/'
+STATIC_URL = '/calculadora-judicial/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'var', 'static_root')
 
 # Setting media info for images
@@ -586,7 +471,7 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'juca', 'static'),
+    os.path.join(BASE_DIR, 'calculadora-judicial', 'static'),
 ]
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
@@ -627,17 +512,17 @@ if ENABLE_DRF:
 
 DRF_STANDARDIZED_ERRORS = {"ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True}
 # Setting auth user
-AUTH_USER_MODEL = 'dttuser.User'
-BASE_URL = 'juca/api/v1/'  # Current version
-BASE_URL_NEXT = 'juca/api/v2/'  # Next version
-BASE_URL_AUTH = 'juca/api/'
+AUTH_USER_MODEL = 'users.User'
+BASE_URL = 'calculadora-judicial/api/v1/'  # Current version
+BASE_URL_NEXT = 'calculadora-judicial/api/v2/'  # Next version
+BASE_URL_AUTH = 'calculadora-judicial/api/'
 
 # Documentation login Urls
 if IS_DEV:
-    LOGIN_URL = "/juca/login/"
+    LOGIN_URL = "/calculadora-judicial/login/"
     LOGOUT_REDIRECT_URL = f"/{BASE_URL}docs/swagger/"
     LOGIN_REDIRECT_URL = f"/{BASE_URL}docs/swagger/"
-    LOGOUT_URL = "/juca/logout/"
+    LOGOUT_URL = "/calculadora-judicial/logout/"
     # Start config debug toolbar
     INTERNAL_IPS = [
         # ...
@@ -647,10 +532,10 @@ if IS_DEV:
     ]
 
 else:
-    LOGIN_URL = "/juca/login/"
-    LOGOUT_REDIRECT_URL = f"/juca/"
-    LOGIN_REDIRECT_URL = f"/juca/"
-    LOGOUT_URL = "/juca/logout/"
+    LOGIN_URL = "/calculadora-judicial/login/"
+    LOGOUT_REDIRECT_URL = f"/calculadora-judicial/"
+    LOGIN_REDIRECT_URL = f"/calculadora-judicial/"
+    LOGOUT_URL = "/calculadora-judicial/logout/"
 
 if DEBUG_TOOLBAR:
     INSTALLED_APPS.append('debug_toolbar')

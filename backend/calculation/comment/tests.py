@@ -25,14 +25,14 @@ from core.abstract.tests import AbstractTest
 #             "description": "comment"
 #         }
 #         response = self.client.post(
-#             '/juca/api/v1/projects/comment', comment)
+#             '/calculadora-judicial/api/v1/projects/comment', comment)
 #         self.assertEqual(response.status_code, 201)
 #         self.print_success('Created comment')
 
 #     def test_api_b_get_comments(self):
 #         """Assert get comments detail"""
 #         self.print_start('List comments')
-#         response = self.client.get('/juca/api/v1/projects/comment')
+#         response = self.client.get('/calculadora-judicial/api/v1/projects/comment')
 #         self.assertEqual(response.status_code, 200)
 #         self.print_success('Listed comments')
 #         comments = response.json()['comments']

@@ -449,10 +449,10 @@ class CheckAPIVersion(BasePermission):
         Check if the requested API version is supported.
         """
         # Obter a versão da API a partir da URL
-        version = request.path.split('juca/api/')[1].split('/')[0]
+        version = request.path.split('calculadora-judicial/api/')[1].split('/')[0]
 
         if request.path == SWAGGER_URL:
-            return BASE_URL.split('juca/api/')[1].split('/')[0] in view.allowed_versions
+            return BASE_URL.split('calculadora-judicial/api/')[1].split('/')[0] in view.allowed_versions
         if version not in view.allowed_versions:
             # Versão API não suportada
             return False

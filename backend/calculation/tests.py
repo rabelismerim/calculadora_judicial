@@ -68,5 +68,5 @@ class CalculationTest(AbstractTest):
         self.assertIn('calculation', response.content)
         return response.content['calculation']
 
-    base_url = '/juca/api/v2/'
+    base_url = '/calculadora-judicial/api/v2/'
     base_path = 'v2/'

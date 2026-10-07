@@ -25,14 +25,14 @@ from core.abstract.tests import AbstractTest
 #             "description": "premise"
 #         }
 #         response = self.client.post(
-#             '/juca/api/v1/projects/premise', premise)
+#             '/calculadora-judicial/api/v1/projects/premise', premise)
 #         self.assertEqual(response.status_code, 201)
 #         self.print_success('Created premise')
 
 #     def test_api_b_get_premises(self):
 #         """Assert get premises detail"""
 #         self.print_start('List premises')
-#         response = self.client.get('/juca/api/v1/projects/premise')
+#         response = self.client.get('/calculadora-judicial/api/v1/projects/premise')
 #         self.assertEqual(response.status_code, 200)
 #         self.print_success('Listed premises')
 #         premises = response.json()['premises']

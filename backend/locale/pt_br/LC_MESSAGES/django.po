@@ -120,7 +120,7 @@ msgid ""
 "`class` representative of \n"
 "    what is being requested. The creditor may have several claims, according "
 "to each amount requested. At the end, \n"
-"    this claim is used to compare with the calculation of the DTT.\n"
+"    this claim is used to compare with the calculation of the Sistema.\n"
 "    "
 msgstr ""
 "Representa o pleito de credores e advogados. O `pleito` são os `valores` e "
@@ -257,7 +257,7 @@ msgstr "Outro"
 msgid "Regular"
 msgstr ""
 
-#: .\backend\base\models.py:35 .\backend\core\dttuser\models.py:36
+#: .\backend\base\models.py:35 .\backend\core\users\models.py:36
 #: .\backend\creditors\models.py:8
 msgid "Pending"
 msgstr "Pendente"
@@ -641,24 +641,24 @@ msgid "Creditor base date"
 msgstr "Data base do credor"
 
 #: .\backend\calculation\comparative\models.py:48
-msgid "DTT base date"
-msgstr "Data base DTT"
+msgid "Sistema base date"
+msgstr "Data base Sistema"
 
 #: .\backend\calculation\comparative\models.py:152
 msgid "Creditor's total"
 msgstr "Total do credor"
 
 #: .\backend\calculation\comparative\models.py:153
-msgid "DTT total"
-msgstr "DTT total"
+msgid "Sistema total"
+msgstr "Sistema total"
 
 #: .\backend\calculation\comparative\models.py:373
 msgid "Creditor's request"
 msgstr "Pedido do credor"
 
 #: .\backend\calculation\comparative\models.py:374
-msgid "DTT calculation"
-msgstr "Cálculo DTT"
+msgid "Sistema calculation"
+msgstr "Cálculo Sistema"
 
 #: .\backend\calculation\comparative\models.py:395
 msgid "Must have the total_funds relation to inherit this method"
@@ -669,7 +669,7 @@ msgid ""
 "It represents the comparisons between the amounts requested by the creditor, "
 "the notices of the \n"
 "            AJ and the Company under Recovering, compared with the "
-"calculation made by DTT. The result is the \n"
+"calculation made by Sistema. The result is the \n"
 "            difference in amounts and percentage of the rates, the sum of "
 "the rates, the interest applied and the\n"
 "            advocative hours\n"
@@ -677,7 +677,7 @@ msgid ""
 msgstr ""
 "Representa as comparações entre os valores solicitados pelo credor, os "
 "editais da \n"
-"            AJ e a Recuperanda, em comparação com o cálculo feito pela DTT. "
+"            AJ e a Recuperanda, em comparação com o cálculo feito pela Sistema. "
 "O resultado é a \n"
 "            diferença nos valores e percentual das taxas, a soma das taxas, "
 "os juros aplicados e as\n"
@@ -2083,7 +2083,7 @@ msgstr "Existem taxas no cálculo aprovado?"
 msgid ""
 "Represents the entire extract of the calculation. All results of "
 "`calculations`, `fines`, \n"
-"        `amounts due`, `claims`, `summary of funds`, `DTT opinion`, "
+"        `amounts due`, `claims`, `summary of funds`, `Sistema opinion`, "
 "`classes` and `used assumptions`.\n"
 "        "
 msgstr ""
@@ -2187,7 +2187,7 @@ msgid ""
 "Represents the entire extract from the calculation of the truths of natural "
 "persons. All results \n"
 "        of `calculations`, `fines`, `amounts due`, `claims`, `summary of "
-"funds`, `DTT opinion`, `classes` and \n"
+"funds`, `Sistema opinion`, `classes` and \n"
 "        `used assumptions`.\n"
 "            "
 msgstr ""
@@ -2233,7 +2233,7 @@ msgid ""
 "Represents the entire extract from the calculation of the truths of legal "
 "entities. All results \n"
 "        of `calculations`, `fines`, `amounts due`, `claims`, `summary of "
-"funds`, `DTT opinion`, `classes` and \n"
+"funds`, `Sistema opinion`, `classes` and \n"
 "        `used assumptions`.\n"
 "            "
 msgstr ""
@@ -2612,7 +2612,7 @@ msgstr ""
 "`autorizado`, `autenticado`,\n"
 "         “perfil” e outros."
 
-#: .\backend\core\drfmsal\views.py:58 .\backend\core\dttuser\views.py:87
+#: .\backend\core\drfmsal\views.py:58 .\backend\core\users\views.py:87
 msgid ""
 "This method returns a JSON response that contains the user details as per "
 "authenticated user. \n"
@@ -2625,19 +2625,19 @@ msgstr ""
 "        O serializador é usado para aceder ao objecto de modelo e, em "
 "seguida, os dados são devolvidos num formato JSON."
 
-#: .\backend\core\dttuser\admin.py:26
+#: .\backend\core\users\admin.py:26
 msgid "Personal info"
 msgstr "Informações pessoais"
 
-#: .\backend\core\dttuser\admin.py:27
+#: .\backend\core\users\admin.py:27
 msgid "Permissions"
 msgstr "Permissões"
 
-#: .\backend\core\dttuser\admin.py:30
+#: .\backend\core\users\admin.py:30
 msgid "Important dates"
 msgstr "Datas importantes"
 
-#: .\backend\core\dttuser\api\views.py:16
+#: .\backend\core\users\api\views.py:16
 msgid ""
 "The `User` class represents a user on the system, has common properties such "
 "as `username` \n"
@@ -2648,7 +2648,7 @@ msgstr ""
 "como `username` \n"
 "            `email`, `full_name`."
 
-#: .\backend\core\dttuser\api\views.py:19
+#: .\backend\core\users\api\views.py:19
 msgid ""
 "Get the list of all users active. Can filter a user by `username`, `email`, "
 "`first_name` or \n"
@@ -2659,85 +2659,85 @@ msgstr ""
 "por `username`, `email`, `first_name` ou \n"
 "        `last_name`."
 
-#: .\backend\core\dttuser\api\views.py:30 .\backend\core\dttuser\views.py:65
+#: .\backend\core\users\api\views.py:30 .\backend\core\users\views.py:65
 msgid "Username"
 msgstr "Nome de usuário"
 
-#: .\backend\core\dttuser\api\views.py:38
+#: .\backend\core\users\api\views.py:38
 msgid "Email"
 msgstr "E-mail"
 
-#: .\backend\core\dttuser\api\views.py:46
+#: .\backend\core\users\api\views.py:46
 msgid "First Name"
 msgstr "Nome"
 
-#: .\backend\core\dttuser\api\views.py:54
+#: .\backend\core\users\api\views.py:54
 msgid "Lastname"
 msgstr "Sobrenome"
 
-#: .\backend\core\dttuser\api\views.py:62 .\backend\core\dttuser\views.py:73
+#: .\backend\core\users\api\views.py:62 .\backend\core\users\views.py:73
 msgid "Authorized Users (True/False)"
 msgstr "Usuários Autorizados (Verdadeiro/Falso)"
 
-#: .\backend\core\dttuser\apps.py:9
-msgid "DTTUser"
+#: .\backend\core\users\apps.py:9
+msgid "User"
 msgstr ""
 
-#: .\backend\core\dttuser\models.py:23
+#: .\backend\core\users\models.py:23
 msgid "Partner"
 msgstr "Sócio"
 
-#: .\backend\core\dttuser\models.py:24
+#: .\backend\core\users\models.py:24
 msgid "Manager"
 msgstr "Gerente"
 
-#: .\backend\core\dttuser\models.py:25
+#: .\backend\core\users\models.py:25
 msgid "Director"
 msgstr "Diretor"
 
-#: .\backend\core\dttuser\models.py:26
+#: .\backend\core\users\models.py:26
 msgid "Analyst"
 msgstr "Analista"
 
-#: .\backend\core\dttuser\models.py:27
+#: .\backend\core\users\models.py:27
 msgid "Senior advisor"
 msgstr "Consultor Sênior"
 
-#: .\backend\core\dttuser\models.py:28
+#: .\backend\core\users\models.py:28
 msgid "Robo"
 msgstr ""
 
-#: .\backend\core\dttuser\models.py:34
+#: .\backend\core\users\models.py:34
 msgid "Active"
 msgstr "Ativo"
 
-#: .\backend\core\dttuser\models.py:35
+#: .\backend\core\users\models.py:35
 msgid "Inactive"
 msgstr "Inativo"
 
-#: .\backend\core\dttuser\models.py:37
+#: .\backend\core\users\models.py:37
 msgid "Rejected"
 msgstr "Rejeitado"
 
-#: .\backend\core\dttuser\models.py:38
+#: .\backend\core\users\models.py:38
 msgid "Vacation"
 msgstr "Férias"
 
-#: .\backend\core\dttuser\models.py:72
+#: .\backend\core\users\models.py:72
 msgid "name"
 msgstr "nome"
 
-#: .\backend\core\dttuser\models.py:75
+#: .\backend\core\users\models.py:75
 msgid "permissions"
 msgstr "permissões"
 
-#: .\backend\core\dttuser\models.py:85
+#: .\backend\core\users\models.py:85
 #: .\backend\projects\project_user\models.py:16
 #: .\backend\venv\Lib\site-packages\django\contrib\auth\models.py:127
 msgid "groups"
 msgstr "groups"
 
-#: .\backend\core\dttuser\models.py:98
+#: .\backend\core\users\models.py:98
 #: .\backend\projects\project_user\models.py:19
 msgid ""
 "The groups this user belongs to. A user will get all permissions granted to "
@@ -2746,11 +2746,11 @@ msgstr ""
 "Os grupos a que este utilizador pertence. Um utilizador receberá todas as "
 "permissões concedidas a cada um dos seus grupos."
 
-#: .\backend\core\dttuser\models.py:106
+#: .\backend\core\users\models.py:106
 msgid "subgroups"
 msgstr "subgrupos"
 
-#: .\backend\core\dttuser\models.py:109
+#: .\backend\core\users\models.py:109
 msgid ""
 "The subgroups this user belongs to. A user will get all permissions granted "
 "to each of their subgroups."
@@ -2758,70 +2758,70 @@ msgstr ""
 "Os subgrupos aos quais este utilizador pertence. Um utilizador receberá "
 "todas as permissões concedidas a cada um dos seus subgrupos."
 
-#: .\backend\core\dttuser\models.py:117
+#: .\backend\core\users\models.py:117
 #: .\backend\projects\project_user\models.py:25
 msgid "user permissions"
 msgstr "permissões do usuário"
 
-#: .\backend\core\dttuser\models.py:119
+#: .\backend\core\users\models.py:119
 #: .\backend\projects\project_user\models.py:27
 msgid "Specific permissions for this user."
 msgstr "Permissões específicas para este usuário."
 
-#: .\backend\core\dttuser\models.py:224
+#: .\backend\core\users\models.py:224
 msgid "username"
 msgstr "nome de usuário"
 
-#: .\backend\core\dttuser\models.py:227
+#: .\backend\core\users\models.py:227
 msgid "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
 msgstr ""
 "Obrigatório. 150 caracteres ou menos. Letras, dígitos e apenas @/./+/-/_."
 
-#: .\backend\core\dttuser\models.py:229
+#: .\backend\core\users\models.py:229
 msgid "A user with that username already exists."
 msgstr "Já existe um usuário com esse nome de usuário."
 
-#: .\backend\core\dttuser\models.py:232
+#: .\backend\core\users\models.py:232
 msgid "role"
 msgstr "cargo"
 
-#: .\backend\core\dttuser\models.py:234
+#: .\backend\core\users\models.py:234
 msgid "first name"
 msgstr "primeiro nome"
 
-#: .\backend\core\dttuser\models.py:235
+#: .\backend\core\users\models.py:235
 msgid "last name"
 msgstr "sobrenome"
 
-#: .\backend\core\dttuser\models.py:236
+#: .\backend\core\users\models.py:236
 msgid "email address"
 msgstr "endereço de e-mail"
 
-#: .\backend\core\dttuser\models.py:237
+#: .\backend\core\users\models.py:237
 msgid "user picture"
 msgstr "imagem do usuário"
 
-#: .\backend\core\dttuser\models.py:238
+#: .\backend\core\users\models.py:238
 msgid "User img"
 msgstr "Imagem de usuário"
 
-#: .\backend\core\dttuser\models.py:239
+#: .\backend\core\users\models.py:239
 msgid "Login today"
 msgstr ""
 
-#: .\backend\core\dttuser\models.py:242
+#: .\backend\core\users\models.py:242
 msgid "staff status"
 msgstr "staff status"
 
-#: .\backend\core\dttuser\models.py:244
+#: .\backend\core\users\models.py:244
 msgid "Designates whether the user can log into this admin site."
 msgstr "Designa se o usuário pode fazer login neste site de administração."
 
-#: .\backend\core\dttuser\models.py:247
+#: .\backend\core\users\models.py:247
 msgid "active"
 msgstr "ativo"
 
-#: .\backend\core\dttuser\models.py:250
+#: .\backend\core\users\models.py:250
 msgid ""
 "Designates whether this user should be treated as active. Unselect this "
 "instead of deleting accounts."
@@ -2829,23 +2829,23 @@ msgstr ""
 "Designa se este usuário deve ser tratado como ativo. Desmarque isto ao invés "
 "de excluir contas."
 
-#: .\backend\core\dttuser\models.py:254
+#: .\backend\core\users\models.py:254
 msgid "date joined"
 msgstr "data de ingresso"
 
-#: .\backend\core\dttuser\models.py:329
+#: .\backend\core\users\models.py:329
 msgid "Updating the value of id isn't allowed"
 msgstr "Atualizar o valor de id não é permitido"
 
-#: .\backend\core\dttuser\schemas.py:116
+#: .\backend\core\users\schemas.py:116
 msgid "Subgroup not found"
 msgstr "Subgrupo não encontrado"
 
-#: .\backend\core\dttuser\schemas.py:199
+#: .\backend\core\users\schemas.py:199
 msgid "Passwords do not match"
 msgstr "As senhas não coincidem"
 
-#: .\backend\core\dttuser\views.py:28
+#: .\backend\core\users\views.py:28
 msgid ""
 "The `User` class represents a user on the system, has common properties such "
 "as `username` \n"
@@ -2875,12 +2875,12 @@ msgstr ""
 " inativo.\n"
 " "
 
-#: .\backend\core\dttuser\views.py:57 .\backend\rates\views.py:300
+#: .\backend\core\users\views.py:57 .\backend\rates\views.py:300
 #: .\backend\recovering\views.py:40 .\backend\recovering\views.py:88
 msgid "Name"
 msgstr "Nome"
 
-#: .\backend\core\dttuser\views.py:108
+#: .\backend\core\users\views.py:108
 msgid ""
 "Handles HTTP POST request to authorize or unauthorize user access.\n"
 "\n"
@@ -2898,11 +2898,11 @@ msgstr ""
 "        - Adiciona grupos e subgrupos de permissões especificados ao "
 "utilizador."
 
-#: .\backend\core\dttuser\views.py:126 .\backend\core\dttuser\views.py:163
+#: .\backend\core\users\views.py:126 .\backend\core\users\views.py:163
 msgid "Email {}, not found"
 msgstr "E-mail {}, não encontrado"
 
-#: .\backend\core\dttuser\views.py:148
+#: .\backend\core\users\views.py:148
 msgid ""
 "Used to validate and send email when asked to create a new user.\n"
 "        The serializer is used to access the model object, and then the data "
@@ -2914,15 +2914,15 @@ msgstr ""
 "        O serializador é usado para acessar ao objecto de modelo e, em "
 "seguida, os dados são devolvidos num formato JSON."
 
-#: .\backend\core\dttuser\views.py:154
-msgid "DTT sending email not configured"
-msgstr "e-mail de envio DTT não configurado"
+#: .\backend\core\users\views.py:154
+msgid "Sistema sending email not configured"
+msgstr "e-mail de envio Sistema não configurado"
 
-#: .\backend\core\dttuser\views.py:165
+#: .\backend\core\users\views.py:165
 msgid "Release of Use - {}"
 msgstr "Liberação de Uso - {}"
 
-#: .\backend\core\dttuser\views.py:166
+#: .\backend\core\users\views.py:166
 msgid ""
 "This email is automatically sent by the system to request the release of "
 "user {} to system. To release access, please enter the administration panel "
@@ -2932,7 +2932,7 @@ msgstr ""
 "liberação do usuário {} para o sistema. Para liberar o acesso, entre no "
 "painel de administração e registre-o no sistema."
 
-#: .\backend\core\dttuser\views.py:184
+#: .\backend\core\users\views.py:184
 msgid ""
 "The `Group` class represents a group of users on the system. Contains common "
 "properties for \n"
@@ -2960,7 +2960,7 @@ msgstr ""
 " `Consultor Jurídico`.\n"
 " "
 
-#: .\backend\core\dttuser\views.py:191
+#: .\backend\core\users\views.py:191
 msgid ""
 "The Group contains a name and a list of permissions. Groups define what \n"
 "        permissions the user has and what he can do within the system.\n"
@@ -2971,7 +2971,7 @@ msgstr ""
 "        permissões o usuário tem e o que ele pode fazer dentro do sistema.\n"
 "        Retorna uma lista de grupos."
 
-#: .\backend\core\dttuser\views.py:220
+#: .\backend\core\users\views.py:220
 msgid ""
 "Get the email list of users able to approve a request for access to the "
 "platform. \n"
@@ -2980,7 +2980,7 @@ msgid ""
 "    "
 msgstr ""
 
-#: .\backend\core\dttuser\views.py:251
+#: .\backend\core\users\views.py:251
 msgid ""
 "The `Subgroup` class represents a group of users on the system. Contains "
 "common properties for \n"
@@ -3008,7 +3008,7 @@ msgstr ""
 " `Consultor Jurídico`.\n"
 " "
 
-#: .\backend\core\dttuser\views.py:258
+#: .\backend\core\users\views.py:258
 msgid ""
 "The Subgroup contains a name and a list of permissions. Groups define what \n"
 "            permissions the user has and what he can do within the system."
@@ -3020,7 +3020,7 @@ msgstr ""
 "            permissões o usuário tem e o que ele pode fazer dentro do "
 "sistema. Retorna uma lista de grupos."
 
-#: .\backend\core\dttuser\views.py:278
+#: .\backend\core\users\views.py:278
 msgid ""
 "The `User` class represents a user on the system, has common properties such "
 "as `username` \n"
@@ -3050,7 +3050,7 @@ msgstr ""
 " inativo.\n"
 " "
 
-#: .\backend\core\dttuser\views.py:286
+#: .\backend\core\users\views.py:286
 msgid ""
 "Get the list of all users. Include user fields like  `name`, `userpicture`, "
 "`permissions list`, etc.\n"
@@ -3064,7 +3064,7 @@ msgstr ""
 "ou `is_active`.\n"
 " "
 
-#: .\backend\core\dttuser\views.py:293
+#: .\backend\core\users\views.py:293
 msgid ""
 "Only LocalHost. Create a new user by receiving data in the form of "
 "dictionaries and \n"
@@ -3823,7 +3823,7 @@ msgstr "Número de engagement {} já está registrado"
 #: .\backend\projects\engagement\views.py:31
 msgid ""
 "The engagement is the unique control number, which references the client/"
-"project in the DTT.\n"
+"project in the Sistema.\n"
 "        "
 msgstr ""
 "O engagement é o número de controle exclusivo, que faz referência ao cliente/"

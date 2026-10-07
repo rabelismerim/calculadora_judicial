@@ -25,14 +25,14 @@ Attributes:
 #             "description": "{{app_name}}"
 #         }
 #         response = self.client.post(
-#             '/juca/api/v1/projects/{{app_name}}', {{app_name}})
+#             '/calculadora-judicial/api/v1/projects/{{app_name}}', {{app_name}})
 #         self.assertEqual(response.status_code, 201)
 #         self.print_success('Created {{app_name}}')
 
 #     def test_api_b_get_{{app_name}}s(self):
 #         """Assert get {{app_name}}s detail"""
 #         self.print_start('List {{app_name}}s')
-#         response = self.client.get('/juca/api/v1/projects/{{app_name}}')
+#         response = self.client.get('/calculadora-judicial/api/v1/projects/{{app_name}}')
 #         self.assertEqual(response.status_code, 200)
 #         self.print_success('Listed {{app_name}}s')
 #         {{app_name}}s = response.json()['{{app_name}}s']

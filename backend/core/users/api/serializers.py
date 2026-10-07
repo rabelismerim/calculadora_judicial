@@ -2,7 +2,7 @@ import logging
 
 from rest_framework import serializers
 
-from core.dttuser.models import User
+from core.users.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):

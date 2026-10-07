@@ -62,9 +62,9 @@ def target_func(cmd, out_queue):
 
 
 class PythonService(win32serviceutil.ServiceFramework):
-    _svc_name_ = "JucaStartServiceCelery"
-    _svc_display_name_ = "Juca Start Service Celery"
-    _svc_description_ = "Service to start and stop Juca Celery"
+    _svc_name_ = "CalculadoraJudicialStartServiceCelery"
+    _svc_display_name_ = "CalculadoraJudicial Start Service Celery"
+    _svc_description_ = "Service to start and stop CalculadoraJudicial Celery"
     timeout = 3000
 
     def __init__(self, args):

@@ -35,14 +35,14 @@ from django.contrib.auth import views, logout
 from config.settings import BASE_URL, BASE_URL_AUTH
 from rest_framework.authtoken import views as rest_views
 
-admin.site.site_header = admin.site.site_title = 'JUCA'
+admin.site.site_header = admin.site.site_title = 'Calculadora Judicial'
 admin.site.index_title = 'Administration area'
-admin.site.site_url = '/juca/admin/login'
+admin.site.site_url = '/calculadora-judicial/admin/login'
 
 
 @ensure_csrf_cookie
 def frontend_index(request):
-    if request.META.get('REQUEST_URI', 'none')[:5].upper() == '/juca':
+    if request.path.rstrip('/') == '/calculadora-judicial':
         return HttpResponseRedirect("/")
     else:
         return render(request, template_name='index.html')
@@ -64,7 +64,7 @@ def post_logout(request):
 
 urlpatterns = [
     # API Authentication
-    path('juca/api-auth/', include("rest_framework.urls")),
+    path('calculadora-judicial/api-auth/', include("rest_framework.urls")),
 
     # # Projects
     path(f'{BASE_URL}projects/', include(("projects.urls.current", 'v1'), namespace='teste')),
@@ -92,49 +92,49 @@ urlpatterns = [
     path(f'{BASE_URL}big_number/', include("big_number.urls")),
 
     # CORE
-    path(BASE_URL, include("core.dttuser.api.urls")),
+    path(BASE_URL, include("core.users.api.urls")),
 
     # TODO: desativar urls sem versão de api
-    path(BASE_URL_AUTH, include("core.dttuser.urls")),
+    path(BASE_URL_AUTH, include("core.users.urls")),
 
     path(BASE_URL_AUTH, include("core.drfmsal.urls")),
-    path(BASE_URL, include("core.dttuser.urls")),
+    path(BASE_URL, include("core.users.urls")),
 
     # Django
-    path('juca/login/', views.LoginView.as_view(template_name='admin/login.html'), name='login'),
-    path('juca/logout/', views.LogoutView.as_view(), name='logout'),
+    path('calculadora-judicial/login/', views.LoginView.as_view(template_name='admin/login.html'), name='login'),
+    path('calculadora-judicial/logout/', views.LogoutView.as_view(), name='logout'),
 
     # VUE FRONTEND
-    re_path(r'^(?!juca\/admin|juca\/api|simple|juca\/media|juca\/__debug__).*$', frontend_index, name='frontend'),
+    re_path(r'^(?!calculadora-judicial\/admin|calculadora-judicial\/api|simple|calculadora-judicial\/media|calculadora-judicial\/__debug__).*$', frontend_index, name='frontend'),
     re_path(f'{BASE_URL}logout/', LogoutView.as_view(), name='api-logout'),
 
     # Documentation
     path(f'{BASE_URL}docs/swagger/', TemplateView.as_view(template_name='api_docs.html',
-                                                          extra_context={'schema_url': 'schema-api'}), name='JUCA'),
-    path(f'{BASE_URL}docs/redoc/', get_schema_view(title="Deloitte JUCA Project",
+                                                          extra_context={'schema_url': 'schema-api'}), name='Calculadora Judicial'),
+    path(f'{BASE_URL}docs/redoc/', get_schema_view(title="Calculadora Judicial",
                                                    description="System that integrates the legal, calculation and "
                                                                "financial teams of RJ / Bankruptcy processes ("
                                                                "liabilities monitoring)",
                                                    version="1.0.0", permission_classes=[permissions.AllowAny]),
          name='schema-api'),
 
-    re_path(r'^juca/media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
-    re_path(r'^juca/static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
+    re_path(r'^calculadora-judicial/media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    re_path(r'^calculadora-judicial/static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
 ]
 
 if ENABLE_SSO and not ENABLE_TOKEN:
     urlpatterns.extend([
-        path('juca/admin/login/', lambda r: redirect(
-            reverse('drfmsal_signin', kwargs={'redirect_uri': 'juca/admin/'})
+        path('calculadora-judicial/admin/login/', lambda r: redirect(
+            reverse('drfmsal_signin', kwargs={'redirect_uri': 'calculadora-judicial/admin/'})
         )),
 
         # TODO: verificar se deve ser do sistema ou de todos os SSOs. Inativado remove apenas do sistema. Ativo remove do SSO de todas as contas
-        # path('juca/admin/logout/', lambda r: redirect(
-        #     reverse('drfmsal_signout', kwargs={'redirect_uri': 'juca'})
+        # path('calculadora-judicial/admin/logout/', lambda r: redirect(
+        #     reverse('drfmsal_signout', kwargs={'redirect_uri': 'calculadora-judicial'})
         # )),
     ])
 
-urlpatterns.append(path('juca/admin/', admin.site.urls))
+urlpatterns.append(path('calculadora-judicial/admin/', admin.site.urls))
 
 if ENABLE_TOKEN:
     urlpatterns.append(path(f'{BASE_URL}obtain-auth-token/', rest_views.obtain_auth_token))
@@ -143,7 +143,7 @@ urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) +
                                                                                         document_root=settings.MEDIA_ROOT)
 
 if DEBUG_TOOLBAR:
-    urlpatterns.append(path('juca/__debug__/', include('debug_toolbar.urls')))
+    urlpatterns.append(path('calculadora-judicial/__debug__/', include('debug_toolbar.urls')))
 
 
 def error_500_view(request):

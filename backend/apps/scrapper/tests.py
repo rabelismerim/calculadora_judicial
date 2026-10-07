@@ -25,14 +25,14 @@ Attributes:
 #             "description": "scrapper"
 #         }
 #         response = self.client.post(
-#             '/juca/api/v1/projects/scrapper', scrapper)
+#             '/calculadora-judicial/api/v1/projects/scrapper', scrapper)
 #         self.assertEqual(response.status_code, 201)
 #         self.print_success('Created scrapper')
 
 #     def test_api_b_get_scrappers(self):
 #         """Assert get scrappers detail"""
 #         self.print_start('List scrappers')
-#         response = self.client.get('/juca/api/v1/projects/scrapper')
+#         response = self.client.get('/calculadora-judicial/api/v1/projects/scrapper')
 #         self.assertEqual(response.status_code, 200)
 #         self.print_success('Listed scrappers')
 #         scrappers = response.json()['scrappers']

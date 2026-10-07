@@ -32,7 +32,7 @@ class ComparativeCalculationSchema(AbstractDescriptionSchema):
     Meta:
         model (Model): The ComparativeCalculation model to serialize.
         fields (str or list of str): A list of all the fields to be serialized. '__all__' is used to indicate that all fields are included.
-        read_only_fields (tuple of str, optional): A tuple of fields to set as read-only. Defaults to ('dtt',).
+        read_only_fields (tuple of str, optional): A tuple of fields to set as read-only. Defaults to ('system',).
     """
     difference = serializers.FloatField(read_only=True)
     percentage = serializers.FloatField(read_only=True)
@@ -40,7 +40,7 @@ class ComparativeCalculationSchema(AbstractDescriptionSchema):
     class Meta:
         model = ComparativeCalculation
         fields = "__all__"
-        read_only_fields = ('dtt', )
+        read_only_fields = ('system', )
 
 
 class AbstractComparativeFundsSchema(AbstractDescriptionSchema):
@@ -52,7 +52,7 @@ class AbstractComparativeFundsSchema(AbstractDescriptionSchema):
 
     Read-only attributes:
         - name: The name of the fund.
-        - dtt: The date when the Creditor's recovering request was sent to the DTT.
+        - system: The date when the Creditor's recovering request was sent to the Sistema.
         - difference: The difference between the creditor and the debtor's requests.
         - percentage: The percentage of the debt based on both the creditor and the debtor's requests.
         - id: The UUID of the instance.
@@ -61,7 +61,7 @@ class AbstractComparativeFundsSchema(AbstractDescriptionSchema):
     # calculation_id = serializers.UUIDField()
     name = serializers.CharField(read_only=True)
     creditor = serializers.FloatField()
-    dtt = serializers.FloatField(read_only=True)
+    system = serializers.FloatField(read_only=True)
     difference = serializers.FloatField(read_only=True)
     percentage = serializers.FloatField(read_only=True)
     id = serializers.UUIDField()
@@ -69,7 +69,7 @@ class AbstractComparativeFundsSchema(AbstractDescriptionSchema):
     class Meta:
         model = ComparativeFunds
         exclude = ('total_funds', 'calculation')
-        read_only_fields = ('dtt', 'difference', 'percentage')
+        read_only_fields = ('system', 'difference', 'percentage')
 
 
 class ComparativeFundsSchema(AbstractComparativeFundsSchema):
@@ -98,7 +98,7 @@ class TotalDueSchema(serializers.Serializer):
     serializer = TotalDueSchema
     """
     creditor = serializers.FloatField()
-    dtt = serializers.FloatField(read_only=True)
+    system = serializers.FloatField(read_only=True)
     difference = serializers.FloatField(read_only=True)
     percentage = serializers.FloatField(read_only=True)
 
@@ -110,14 +110,14 @@ class DatesSchema(serializers.Serializer):
     Usage example:
     serializer = DatesSchema
     """
-    dtt = serializers.DateField(read_only=True)
+    system = serializers.DateField(read_only=True)
     creditor = serializers.DateField()
     difference = serializers.IntegerField(read_only=True)
 
 
 class ApprovedCalculationSchema(AbstractDescriptionSchema):
     """
-    Schema that extends AbstractDescriptionSchema to include approved calculation data such as recurral, 
+    Schema that extends AbstractDescriptionSchema to include approved calculation data such as recurral,
     total_updated, default_interest, advocative_hours, and funds_comparatives_integrations.
     """
     recurral = ComparativeCalculationSchema(required=False)
@@ -146,7 +146,7 @@ class ApprovedCalculationSchema(AbstractDescriptionSchema):
 
 class ComparativeSchema(AbstractDescriptionSchema):
     """
-    The ComparativeSchema class represents a Serializer class for Comparative model. It extends the 
+    The ComparativeSchema class represents a Serializer class for Comparative model. It extends the
     AbstractDescriptionSchema class and adds custom fields with nested serializers.
     """
     approved_calculation = ApprovedCalculationSchema(
@@ -164,4 +164,4 @@ class ComparativeSchema(AbstractDescriptionSchema):
     class Meta:
         model = Comparative
         read_only_fields = ('approved_calculation', 'difference_date', 'date')
-        exclude = ('calculation', 'data_base_creditor', 'data_base_dtt')
+        exclude = ('calculation', 'data_base_creditor', 'data_base_system')

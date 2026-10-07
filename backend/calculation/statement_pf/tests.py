@@ -31,7 +31,7 @@
 #             "description": "statementPF"
 #         }
 #         response = self.client.post(
-#             '/juca/api/v1/calculations/statementPF', statementPF)
+#             '/calculadora-judicial/api/v1/calculations/statementPF', statementPF)
 #         self.assertEqual(response.status_code, 201)
 #         self.print_success('Created statementPF')
 #
@@ -40,7 +40,7 @@
 #         user = User.objects.get(username='user1')
 #         self.client.force_login(user)
 #         self.print_start('List statement_pfs')
-#         response = self.client.get('/juca/api/v1/calculations/statement_pf')
+#         response = self.client.get('/calculadora-judicial/api/v1/calculations/statement_pf')
 #         self.assertEqual(response.status_code, 200)
 #         self.print_success('Listed statementPFs')
 #         statementPFs = response.json()['statement_pfs']

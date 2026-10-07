@@ -25,14 +25,14 @@ Attributes:
 #             "description": "file"
 #         }
 #         response = self.client.post(
-#             '/juca/api/v1/projects/file', file)
+#             '/calculadora-judicial/api/v1/projects/file', file)
 #         self.assertEqual(response.status_code, 201)
 #         self.print_success('Created file')
 
 #     def test_api_b_get_files(self):
 #         """Assert get files detail"""
 #         self.print_start('List files')
-#         response = self.client.get('/juca/api/v1/projects/file')
+#         response = self.client.get('/calculadora-judicial/api/v1/projects/file')
 #         self.assertEqual(response.status_code, 200)
 #         self.print_success('Listed files')
 #         files = response.json()['files']

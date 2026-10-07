@@ -50,7 +50,7 @@ class BaseTestsDjango(BaseTests, TransactionTestCase):
     stdout = OutputWrapper(sys.stdout)
     stderr = OutputWrapper(sys.stderr)
     style = color_style()
-    base_url = '/juca/api/v1/'
+    base_url = '/calculadora-judicial/api/v1/'
 
     def get_base_url(self):
         return self.base_url
@@ -330,7 +330,7 @@ class BaseTestsDjango(BaseTests, TransactionTestCase):
                 <!DOCTYPE html>
                 <html>
                     <head>
-                        <title>JUCA Api Tests</title>
+                        <title>Calculadora Judicial Api Tests</title>
                         <meta name="viewport" content="width=device-width, initial-scale=1">
                         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
                         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

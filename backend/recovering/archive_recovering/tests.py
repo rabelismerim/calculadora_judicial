@@ -25,7 +25,7 @@
 #         }
 #
 #         response = self.client.post(
-#             '/juca/api/v1/recovering/archive_recovering', json.dumps(archive_recovering), content_type="application/json")
+#             '/calculadora-judicial/api/v1/recovering/archive_recovering', json.dumps(archive_recovering), content_type="application/json")
 #         self.assertEqual(response.status_code, 201)
 #         self.print_success('Created archive recovering')
 #
@@ -35,7 +35,7 @@
 #         self.client.force_login(user)
 #         self.print_start('List Archive Recovering')
 #         response = self.client.get(
-#             '/juca/api/v1/recovering/archive_recovering')
+#             '/calculadora-judicial/api/v1/recovering/archive_recovering')
 #         self.assertEqual(response.status_code, 200)
 #         self.print_success('Listed archive recoverings')
 #         archive_recoverings = response.json()['archive_recoverings']

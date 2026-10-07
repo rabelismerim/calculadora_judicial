@@ -98,7 +98,7 @@
             "required": false
         }
     ],
-    "end_point": "/juca/api/v1/calculation/funds/danos/detail/",
+    "end_point": "/calculadora-judicial/api/v1/calculation/funds/danos/detail/",
     "end_point_main": "/v1/calculation/funds/danos/",
     "many": false,
     "slug": "A",

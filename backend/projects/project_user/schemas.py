@@ -19,12 +19,12 @@ Attributes:
 
 from core.abstract.schemas import AbstractModelSchema
 from rest_framework import serializers
-from core.dttuser.schemas import GroupSchema
+from core.users.schemas import GroupSchema
 from projects.project_user.models import ProjectUser
 
 
 class ProjectUserSchema(AbstractModelSchema):
-    """This class serializes fields related to the ProjectUser model, and sets it 
+    """This class serializes fields related to the ProjectUser model, and sets it
     to read-only for certain fields like 'groups' or 'permissions.'"""
     user = serializers.IntegerField(write_only=True)
 

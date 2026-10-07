@@ -26,8 +26,8 @@ config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\
 
 gray_fill = PatternFill(start_color="00C0C0C0",
                         end_color="00C0C0C0", fill_type="solid")
-green_fill = PatternFill(start_color='86BC25',
-                         end_color='86BC25', fill_type='solid')
+blue_fill = PatternFill(start_color='2563eb',
+                         end_color='2563eb', fill_type='solid')
 bold_font = Font(bold=True)
 # "FFFFFF" representa a cor branca em hexadecimal
 bold_white_font = Font(bold=True, color="FFFFFF")
@@ -197,16 +197,16 @@ class SheetTemplateViewApi(AbstractViewApi):
 
     docs = {
         "init": _(
-            """Represents templates to publishing external sheets models to frontend.`, 
+            """Represents templates to publishing external sheets models to frontend.`,
                 """
         ),
     }
 
     @doc(
         _(
-            """This method handles GET requests for the view. It retrieves a list of objects sheets file using the given 
+            """This method handles GET requests for the view. It retrieves a list of objects sheets file using the given
                 calculation_id from the query parameters and serializes the result into JSON format before returning it
-                 as an HTTP response. 
+                 as an HTTP response.
 
                     :return:  # sourcery skip: avoid-builtin-shadow
                         JsonResponse: An HTTP response containing the serialized sheets file data retrieved.
@@ -255,10 +255,10 @@ class SheetExcel:
     - set_formula_sheets(sheet, col, cnt_ini_row, let_ini_col): Define fórmulas relacionadas a folhas.
     - set_formula_premises(sheet, col, cnt_ini_row, let_ini_col): Define fórmulas de premissas.
     - set_formula_fund_document(sheet, col, cnt_ini_row, let_ini_col): Define fórmulas de documentos de fundos.
-    - set_formula_juca_lst(sheet, col): Define fórmulas com base em valores específicos.
-    - set_formula_juca(sheet, col): Define fórmulas específicas da variável 'juca_excel' em uma planilha.
-    - set_formula_jucad(sheet, col): Define fórmulas específicas da variável 'juca_excel' e, se necessário, deleta a linha.
-    - set_sheet_juca(sheet): Configura a planilha com base em condições específicas.
+    - set_formula_calculadora_judicial_lst(sheet, col): Define fórmulas com base em valores específicos.
+    - set_formula_calculadora_judicial(sheet, col): Define fórmulas específicas da variável 'calculadora_judicial_excel' em uma planilha.
+    - set_formula_calculadora_judiciald(sheet, col): Define fórmulas específicas da variável 'calculadora_judicial_excel' e, se necessário, deleta a linha.
+    - set_sheet_calculadora_judicial(sheet): Configura a planilha com base em condições específicas.
     - set_sheet_calculation(sheet): Configura a planilha de cálculo com base nas definições relacionadas aos fundos.
     - set_template(sheet, item, cnt_row, force=False, has_headers=False): Define um template específico em uma planilha para um item fornecido.
     """
@@ -338,7 +338,7 @@ class SheetExcel:
             + self.sheet_template_name.replace(".XLSX", ".PDF")
         )
 
-        self.juca_excel = {
+        self.calculadora_judicial_excel = {
             'credor_name': self.entity.name,
             'legal_number': self.entity.legal_number,
             'process_number': self.calculation.incident_number,
@@ -456,15 +456,15 @@ class SheetExcel:
 
             cnt_ini_row = cnt_ini_row + 1
 
-            self.juca_excel[
+            self.calculadora_judicial_excel[
                 'legend_monetary_correction_update'] = statement_pf.legend_monetary_correction_update
-            self.juca_excel['index_name'] = self.calculation.rate.index
-            self.juca_excel['legend_default_interest'] = statement_pf.default_interest_legend
-            self.juca_excel['default_interest'] = statement_pf.get_default_interest()
-            self.juca_excel['legend_fine'] = self.calculation.get_legend_fine()
-            self.juca_excel['fine'] = self.calculation.get_fine()
-            self.juca_excel['legend_advocative_hours'] = self.calculation.get_legend_advocative_hours()
-            self.juca_excel['advocative_hours'] = self.calculation.get_advocative_hours()
+            self.calculadora_judicial_excel['index_name'] = self.calculation.rate.index
+            self.calculadora_judicial_excel['legend_default_interest'] = statement_pf.default_interest_legend
+            self.calculadora_judicial_excel['default_interest'] = statement_pf.get_default_interest()
+            self.calculadora_judicial_excel['legend_fine'] = self.calculation.get_legend_fine()
+            self.calculadora_judicial_excel['fine'] = self.calculation.get_fine()
+            self.calculadora_judicial_excel['legend_advocative_hours'] = self.calculation.get_legend_advocative_hours()
+            self.calculadora_judicial_excel['advocative_hours'] = self.calculation.get_advocative_hours()
 
             tax_days = statement_pf.get_tax_days()
 
@@ -615,12 +615,12 @@ class SheetExcel:
         """
         col.value = ""
         if self.fund_document.exists():
-            set_sheet_value(sheet, col.row, ['A', 'D'], '', fill=green_fill)
-            set_sheet_value(sheet, col.row, ['E', 'G'], 'Correção monetária', font=underline_font, fill=green_fill,
+            set_sheet_value(sheet, col.row, ['A', 'D'], '', fill=blue_fill)
+            set_sheet_value(sheet, col.row, ['E', 'G'], 'Correção monetária', font=underline_font, fill=blue_fill,
                             alignment='center')
-            set_sheet_value(sheet, col.row, ['H', 'J'], 'Encargos moratórios', font=underline_font, fill=green_fill,
+            set_sheet_value(sheet, col.row, ['H', 'J'], 'Encargos moratórios', font=underline_font, fill=blue_fill,
                             alignment='center')
-            set_sheet_value(sheet, col.row, ['K', 'L'], '', fill=green_fill)
+            set_sheet_value(sheet, col.row, ['K', 'L'], '', fill=blue_fill)
         count = 0
         has_headers = False
         for item in self.fund_document:
@@ -649,7 +649,7 @@ class SheetExcel:
                                 'D', 'E'], statement_fund.data_base)
                 cnt_ini_row += 1
 
-    def set_formula_juca_lst(self, sheet, col):
+    def set_formula_calculadora_judicial_lst(self, sheet, col):
         """
         Define fórmulas com base em valores específicos em uma planilha.
 
@@ -689,8 +689,8 @@ class SheetExcel:
             if sheet.sheet_state == "hidden":
                 continue
 
-            if isinstance(sheet.title, str) and sheet.title.find("JUCA=") >= 0:
-                self.set_sheet_juca(sheet)
+            if isinstance(sheet.title, str) and sheet.title.find("CALCULADORA_JUDICIAL=") >= 0:
+                self.set_sheet_calculadora_judicial(sheet)
 
             sheet.title = sheet.title.replace(" Copy", "")
             for row in reversed(list(sheet.iter_rows())):
@@ -698,51 +698,51 @@ class SheetExcel:
                     if not col.value:
                         continue
 
-                    if col.value.find("JUCALST=") >= 0:
-                        self.set_formula_juca_lst(sheet, col)
+                    if col.value.find("CALCULADORA_JUDICIAL_LST=") >= 0:
+                        self.set_formula_calculadora_judicial_lst(sheet, col)
 
-                    if col.value.find("JUCAD=") >= 0:
-                        self.set_formula_jucad(sheet, col)
+                    if col.value.find("CALCULADORA_JUDICIAL_D=") >= 0:
+                        self.set_formula_calculadora_judiciald(sheet, col)
 
-                    if col.value.find("JUCA=") >= 0:
-                        self.set_formula_juca(sheet, col)
+                    if col.value.find("CALCULADORA_JUDICIAL=") >= 0:
+                        self.set_formula_calculadora_judicial(sheet, col)
 
         self.archive_view.save(self.new_name_view)
 
         return ExportProcessor(self.archive_view, self.new_name_view, self.new_name_pdf,
                                self.export_type).process_export()
 
-    def set_formula_juca(self, sheet, col):
+    def set_formula_calculadora_judicial(self, sheet, col):
         """
-        Define fórmulas específicas da variável 'juca_excel' em uma planilha.
+        Define fórmulas específicas da variável 'calculadora_judicial_excel' em uma planilha.
 
         Args:
         - sheet: A planilha na qual as fórmulas serão aplicadas.
         - col: A coluna na planilha onde as fórmulas serão aplicadas.
 
         """
-        value = replace_key('JUCA=', col.value, self.juca_excel)
+        value = replace_key('CALCULADORA_JUDICIAL=', col.value, self.calculadora_judicial_excel)
         if str(value) == 'None':
             value = ''
         col.value = value
 
-    def set_formula_jucad(self, sheet, col):
+    def set_formula_calculadora_judiciald(self, sheet, col):
         """
-        Define fórmulas específicas da variável 'juca_excel' em uma planilha e, se necessário, deleta a linha.
+        Define fórmulas específicas da variável 'calculadora_judicial_excel' em uma planilha e, se necessário, deleta a linha.
 
         Args:
         - sheet: A planilha na qual as fórmulas serão aplicadas.
         - col: A coluna na planilha onde as fórmulas serão aplicadas.
 
         """
-        value = replace_key('JUCAD=', col.value, self.juca_excel)
+        value = replace_key('CALCULADORA_JUDICIAL_D=', col.value, self.calculadora_judicial_excel)
         col.value = ''
         if str(value) == 'None':
             delete_rows(sheet, col.row)
         else:
             col.value = value
 
-    def set_sheet_juca(self, sheet):
+    def set_sheet_calculadora_judicial(self, sheet):
         """
         Configura a planilha com base em condições específicas.
 
@@ -1044,7 +1044,7 @@ class TemplateProcessor:
             fund_items = [fund_item]
             nested_attrs = [self.item.get_total_funds()]
             total_funds = self.statement.get_statement_pj()
-            color = green_fill
+            color = blue_fill
             font = bold_white_font
             unique_headers = True
         elif table['slug'] == TemplateSlugChoices.Danos:

@@ -44,11 +44,11 @@ class StatementApi(AbstractViewApi):
     permission_classes = [permissions.IsAuthenticated, CheckHasPermission]
     model = Statement
     docs = {
-        'init': _("""Represents the entire extract of the calculation. All results of `calculations`, `fines`, 
-        `amounts due`, `claims`, `summary of funds`, `DTT opinion`, `classes` and `used assumptions`.
+        'init': _("""Represents the entire extract of the calculation. All results of `calculations`, `fines`,
+        `amounts due`, `claims`, `summary of funds`, `Sistema opinion`, `classes` and `used assumptions`.
         """)
     }
-    
+
 
     layout_serializers = {
         'default': StatementSchema,
@@ -56,9 +56,9 @@ class StatementApi(AbstractViewApi):
         'put': StatementUpdateSchema,
     }
 
-    @doc(_("""This method handles GET requests for the view. It retrieves a specific statement object using the given 
-        calculation_id from the query parameters and serializes the result into JSON format before returning it as an 
-        HTTP response. 
+    @doc(_("""This method handles GET requests for the view. It retrieves a specific statement object using the given
+        calculation_id from the query parameters and serializes the result into JSON format before returning it as an
+        HTTP response.
 
             :return:
                 JsonResponse: An HTTP response containing the serialized statement data retrieved.
@@ -68,7 +68,7 @@ class StatementApi(AbstractViewApi):
         statement = get_object_or_404(self.model, calculation_id=calculation_id)
         return JsonResponse({'statement': self.serializer_class(statement, many=False).data})
 
-    @doc(_("""This method updates information regarding the statement. Editing of premises is enabled, receiving the list 
+    @doc(_("""This method updates information regarding the statement. Editing of premises is enabled, receiving the list
             of ids that will be related
             Return
                 JsonResponse: An HTTP response containing the serialized statement data retrieved.

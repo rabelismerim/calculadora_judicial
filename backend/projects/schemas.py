@@ -1,7 +1,7 @@
 from django.db.models import F
 from base.schemas import AbstractChoicesSerializer, AbstractDescriptionSchema
 from core.abstract.schemas import AbstractModelSchema
-from core.dttuser.schemas import UserDttSchema, UserDttProjectSchema
+from core.users.schemas import UserSchema, UserProjectSchema
 from projects.court.models import Court
 from projects.court.schemas import CourtSchema
 from projects.engagement.schemas import ProjectEngagementSchema
@@ -133,19 +133,19 @@ class ProjectSchema(ProjectRolesSchema):  # V1
     recoverings = RecoveringSchema(source='recovering_set',
                                    many=True, read_only=False, exclude=('project_id', 'project'))
 
-    legal_manager = UserDttSchema(many=False, read_only=True)
+    legal_manager = UserSchema(many=False, read_only=True)
     legal_manager_id = serializers.IntegerField(write_only=True)
 
-    calculation_manager = UserDttSchema(many=False, read_only=True)
+    calculation_manager = UserSchema(many=False, read_only=True)
     calculation_manager_id = serializers.IntegerField(write_only=True)
 
-    financial_manager = UserDttSchema(many=False, read_only=True)
+    financial_manager = UserSchema(many=False, read_only=True)
     financial_manager_id = serializers.IntegerField(write_only=True)
 
-    legal_partner = UserDttSchema(many=False, read_only=True)
+    legal_partner = UserSchema(many=False, read_only=True)
     legal_partner_id = serializers.IntegerField(write_only=True)
 
-    financial_partner = UserDttSchema(many=False, read_only=True)
+    financial_partner = UserSchema(many=False, read_only=True)
     financial_partner_id = serializers.IntegerField(write_only=True)
 
     project_users = ProjectUserProjectSchema(
@@ -199,19 +199,19 @@ class ProjectV2Schema(ProjectRolesSchema):  # V2
     recoverings = RecoveringV2Schema(
         source='recovering_set', many=True, read_only=False, fields=('id', 'entity'))
 
-    legal_manager = UserDttSchema(many=False, read_only=True)
+    legal_manager = UserSchema(many=False, read_only=True)
     legal_manager_id = serializers.IntegerField(write_only=True)
 
-    calculation_manager = UserDttSchema(many=False, read_only=True)
+    calculation_manager = UserSchema(many=False, read_only=True)
     calculation_manager_id = serializers.IntegerField(write_only=True)
 
-    financial_manager = UserDttSchema(many=False, read_only=True)
+    financial_manager = UserSchema(many=False, read_only=True)
     financial_manager_id = serializers.IntegerField(write_only=True)
 
-    legal_partner = UserDttSchema(many=False, read_only=True)
+    legal_partner = UserSchema(many=False, read_only=True)
     legal_partner_id = serializers.IntegerField(write_only=True)
 
-    financial_partner = UserDttSchema(many=False, read_only=True)
+    financial_partner = UserSchema(many=False, read_only=True)
     financial_partner_id = serializers.IntegerField(write_only=True)
 
     project_users = ProjectUserProjectSchema(
@@ -252,15 +252,15 @@ class ProjectListSchema(ProjectSchema):
 
     #                                    many=True, read_only=False, exclude=('project', ))
 
-    legal_manager = UserDttProjectSchema(many=False, read_only=True)
+    legal_manager = UserProjectSchema(many=False, read_only=True)
 
-    calculation_manager = UserDttProjectSchema(many=False, read_only=True)
+    calculation_manager = UserProjectSchema(many=False, read_only=True)
 
-    financial_manager = UserDttProjectSchema(many=False, read_only=True)
+    financial_manager = UserProjectSchema(many=False, read_only=True)
 
-    legal_partner = UserDttProjectSchema(many=False, read_only=True)
+    legal_partner = UserProjectSchema(many=False, read_only=True)
 
-    financial_partner = UserDttProjectSchema(many=False, read_only=True)
+    financial_partner = UserProjectSchema(many=False, read_only=True)
 
     class Meta:
         model = Project
@@ -311,7 +311,7 @@ exclude = ('create_user', 'created_at',
 class ProjectCreateSchema(serializers.Serializer):
     """Serializer Project fields to options to ccreate project"""
 
-    user_options = UserDttSchema(
+    user_options = UserSchema(
         User.objects.all(), many=True, read_only=True,
         exclude=('create_user', 'created_at', 'is_staff', 'user_permissions', 'date_joined', 'is_active', 'groups',))
 

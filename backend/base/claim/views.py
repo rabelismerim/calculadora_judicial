@@ -11,9 +11,9 @@ from creditors.schemas import CreditorSchema
 from utils import _, doc
 
 docs = {
-    'init': _("""Represents creditor and attorney claims. The `claim` are the `values` and `class` representative of 
-    what is being requested. The creditor may have several claims, according to each amount requested. At the end, 
-    this claim is used to compare with the calculation of the DTT.
+    'init': _("""Represents creditor and attorney claims. The `claim` are the `values` and `class` representative of
+    what is being requested. The creditor may have several claims, according to each amount requested. At the end,
+    this claim is used to compare with the calculation of the Sistema.
     """),
 }
 

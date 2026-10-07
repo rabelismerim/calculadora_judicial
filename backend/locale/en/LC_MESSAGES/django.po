@@ -310,149 +310,149 @@ msgstr ""
 msgid "Abstract User"
 msgstr ""
 
-#: .\core\dttuser\admin.py:26
+#: .\core\users\admin.py:26
 msgid "Personal info"
 msgstr "Personal info"
 
-#: .\core\dttuser\admin.py:27
+#: .\core\users\admin.py:27
 msgid "Permissions"
 msgstr ""
 
-#: .\core\dttuser\admin.py:30
+#: .\core\users\admin.py:30
 msgid "Important dates"
 msgstr ""
 
-#: .\core\dttuser\apps.py:10
-msgid "DTTUser"
+#: .\core\users\apps.py:10
+msgid "User"
 msgstr ""
 
-#: .\core\dttuser\models.py:16
+#: .\core\users\models.py:16
 msgid "Sócio"
 msgstr ""
 
-#: .\core\dttuser\models.py:17
+#: .\core\users\models.py:17
 msgid "Gerente"
 msgstr ""
 
-#: .\core\dttuser\models.py:18
+#: .\core\users\models.py:18
 msgid "Diretor"
 msgstr ""
 
-#: .\core\dttuser\models.py:19
+#: .\core\users\models.py:19
 msgid "Analista"
 msgstr ""
 
-#: .\core\dttuser\models.py:20
+#: .\core\users\models.py:20
 msgid "Consultor Sênior"
 msgstr ""
 
-#: .\core\dttuser\models.py:23
+#: .\core\users\models.py:23
 msgid "Ativo"
 msgstr ""
 
-#: .\core\dttuser\models.py:24
+#: .\core\users\models.py:24
 msgid "Inativo"
 msgstr ""
 
-#: .\core\dttuser\models.py:25
+#: .\core\users\models.py:25
 msgid "Pendente"
 msgstr ""
 
-#: .\core\dttuser\models.py:26
+#: .\core\users\models.py:26
 msgid "Rejeitado"
 msgstr ""
 
-#: .\core\dttuser\models.py:27
+#: .\core\users\models.py:27
 msgid "Ferias"
 msgstr ""
 
-#: .\core\dttuser\models.py:61 .\rates\views.py:120
+#: .\core\users\models.py:61 .\rates\views.py:120
 msgid "name"
 msgstr ""
 
-#: .\core\dttuser\models.py:64
+#: .\core\users\models.py:64
 msgid "permissions"
 msgstr ""
 
-#: .\core\dttuser\models.py:84 .\projects\project_user\models.py:16
+#: .\core\users\models.py:84 .\projects\project_user\models.py:16
 msgid "groups"
 msgstr ""
 
-#: .\core\dttuser\models.py:87 .\projects\project_user\models.py:19
+#: .\core\users\models.py:87 .\projects\project_user\models.py:19
 msgid ""
 "The groups this user belongs to. A user will get all permissions granted to "
 "each of their groups."
 msgstr ""
 
-#: .\core\dttuser\models.py:95
+#: .\core\users\models.py:95
 msgid "subgroups"
 msgstr ""
 
-#: .\core\dttuser\models.py:98
+#: .\core\users\models.py:98
 msgid ""
 "The subgroups this user belongs to. A user will get all permissions granted "
 "to each of their subgroups."
 msgstr ""
 
-#: .\core\dttuser\models.py:106 .\projects\project_user\models.py:25
+#: .\core\users\models.py:106 .\projects\project_user\models.py:25
 msgid "user permissions"
 msgstr ""
 
-#: .\core\dttuser\models.py:108 .\projects\project_user\models.py:27
+#: .\core\users\models.py:108 .\projects\project_user\models.py:27
 msgid "Specific permissions for this user."
 msgstr ""
 
-#: .\core\dttuser\models.py:209
+#: .\core\users\models.py:209
 msgid "username"
 msgstr ""
 
-#: .\core\dttuser\models.py:213
+#: .\core\users\models.py:213
 msgid "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
 msgstr ""
 
-#: .\core\dttuser\models.py:216
+#: .\core\users\models.py:216
 msgid "A user with that username already exists."
 msgstr ""
 
-#: .\core\dttuser\models.py:220
+#: .\core\users\models.py:220
 msgid "role"
 msgstr ""
 
-#: .\core\dttuser\models.py:222
+#: .\core\users\models.py:222
 msgid "first name"
 msgstr ""
 
-#: .\core\dttuser\models.py:223
+#: .\core\users\models.py:223
 msgid "last name"
 msgstr ""
 
-#: .\core\dttuser\models.py:224
+#: .\core\users\models.py:224
 msgid "email address"
 msgstr ""
 
-#: .\core\dttuser\models.py:225
+#: .\core\users\models.py:225
 msgid "user picture"
 msgstr ""
 
-#: .\core\dttuser\models.py:227
+#: .\core\users\models.py:227
 msgid "staff status"
 msgstr ""
 
-#: .\core\dttuser\models.py:230
+#: .\core\users\models.py:230
 msgid "Designates whether the user can log into this admin site."
 msgstr ""
 
-#: .\core\dttuser\models.py:233
+#: .\core\users\models.py:233
 msgid "active"
 msgstr ""
 
-#: .\core\dttuser\models.py:236
+#: .\core\users\models.py:236
 msgid ""
 "Designates whether this user should be treated as active. Unselect this "
 "instead of deleting accounts."
 msgstr ""
 
-#: .\core\dttuser\models.py:240
+#: .\core\users\models.py:240
 msgid "date joined"
 msgstr ""
 

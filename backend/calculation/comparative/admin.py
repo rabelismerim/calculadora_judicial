@@ -21,12 +21,12 @@ from calculation.comparative.models import *
 from django.utils.html import format_html
 from django.contrib.sites.models import Site
 
-readonly_fields_funds = ('dtt', 'difference', 'percentage')
+readonly_fields_funds = ('system', 'difference', 'percentage')
 
 
 class ComparativeFundsAdmin(admin.ModelAdmin):
     """
-    A ModelAdmin class containing the definition of fields displayed in the 
+    A ModelAdmin class containing the definition of fields displayed in the
     admin interface for the ComparativeFunds instance.
     """
     readonly_fields = readonly_fields_funds
@@ -34,7 +34,7 @@ class ComparativeFundsAdmin(admin.ModelAdmin):
 
 class ComparativeFundsIntegrationsAdmin(admin.ModelAdmin):
     """
-    A ModelAdmin class containing the definition of fields displayed in the 
+    A ModelAdmin class containing the definition of fields displayed in the
     admin interface for the ComparativeFundsIntegrations instance.
     """
     readonly_fields = readonly_fields_funds
@@ -42,39 +42,39 @@ class ComparativeFundsIntegrationsAdmin(admin.ModelAdmin):
 
 class ComparativeAdmin(admin.ModelAdmin):
     """
-    A ModelAdmin class containing the definition of fields displayed in the 
+    A ModelAdmin class containing the definition of fields displayed in the
     admin interface for the Comparative instance.
     """
-    readonly_fields = ('data_base_dtt', 'difference_date')
+    readonly_fields = ('data_base_system', 'difference_date')
 
 
 class ComparativeCalculationAdmin(admin.ModelAdmin):
     """
-    A ModelAdmin class containing the definition of fields displayed in the 
+    A ModelAdmin class containing the definition of fields displayed in the
     admin interface for the ComparativeCalculation instance.
     """
-    readonly_fields = ('dtt',)
+    readonly_fields = ('system',)
 
 
 readonly_fields = [
-    'recurral_dtt',
+    'recurral_system',
     'recurral_difference',
     'recurral_percentage',
 
-    'total_updated_dtt',
+    'total_updated_system',
     'total_updated_difference',
     'total_updated_percentage',
 
-    'default_interest_dtt',
+    'default_interest_system',
     'default_interest_difference',
     'default_interest_percentage',
 
-    'advocative_hours_dtt',
+    'advocative_hours_system',
     'advocative_hours_difference',
     'advocative_hours_percentage',
 
     'total_due_creditor',
-    'total_due_dtt',
+    'total_due_system',
     'total_due_difference',
     'total_due_percentage',
 
@@ -87,20 +87,20 @@ readonly_fields = [
 class AbstractCalculationAdmin(admin.ModelAdmin):
     """
     Provides Readonly fields to Admin view of Calculations, displays Fields from the model provided:
-        - recurral_dtt: Returns Recurral's dtt from Model.
+        - recurral_system: Returns Recurral's system from Model.
         - recurral_difference: Returns Recurral's difference from Model.
         - recurral_percentage: Returns Recurral's percentage from Model.
-        - total_updated_dtt: Returns Total Updated Charges' dtt from Model.
+        - total_updated_system: Returns Total Updated Charges' system from Model.
         - total_updated_difference: Returns Total Updated Charges' difference from Model.
         - total_updated_percentage: Returns Total Updated Charges' percentage from Model.
-        - default_interest_dtt: Returns Default Interest's dtt from Model.
+        - default_interest_system: Returns Default Interest's system from Model.
         - default_interest_difference: Returns Default Interest's difference from Model.
         - default_interest_percentage: Returns Default Interest's percentage from Model.
-        - advocative_hours_dtt: Returns Advocative Hours' dtt from Model.
+        - advocative_hours_system: Returns Advocative Hours' system from Model.
         - advocative_hours_difference: Returns Advocative Hours' difference from Model.
         - advocative_hours_percentage: Returns Advocative Hours' percentage from Model.
         - total_due_creditor: Total amount due to creditor for this calculation
-        - total_due_dtt: Returns Total Due Charges' dtt from Model.
+        - total_due_system: Returns Total Due Charges' system from Model.
         - total_due_difference: Returns Total Due Charges' difference from Model.
         - total_due_percentage: Returns Total Due Charges' percentage from Model.
         - verbas: Returns the list of all Verbas used in each comparative
@@ -111,9 +111,9 @@ class AbstractCalculationAdmin(admin.ModelAdmin):
     """
     readonly_fields = readonly_fields
 
-    @admin.display(description='DTT depósito recursal liberado')
-    def recurral_dtt(self, model):
-        return f'{model.recurral.dtt}'
+    @admin.display(description='Sistema depósito recursal liberado')
+    def recurral_system(self, model):
+        return f'{model.recurral.system}'
 
     @admin.display(description='Diferença depósito recursal liberado')
     def recurral_difference(self, model):
@@ -123,9 +123,9 @@ class AbstractCalculationAdmin(admin.ModelAdmin):
     def recurral_percentage(self, model):
         return f'{model.recurral.percentage}'
 
-    @admin.display(description='DTT total atualizado')
-    def total_updated_dtt(self, model):
-        return f'{model.total_updated.dtt}'
+    @admin.display(description='Sistema total atualizado')
+    def total_updated_system(self, model):
+        return f'{model.total_updated.system}'
 
     @admin.display(description='Diferença total atualizado')
     def total_updated_difference(self, model):
@@ -135,9 +135,9 @@ class AbstractCalculationAdmin(admin.ModelAdmin):
     def total_updated_percentage(self, model):
         return f'{model.total_updated.percentage}'
 
-    @admin.display(description='DTT juros moratorios')
-    def default_interest_dtt(self, model):
-        return f'{model.default_interest.dtt}'
+    @admin.display(description='Sistema juros moratorios')
+    def default_interest_system(self, model):
+        return f'{model.default_interest.system}'
 
     @admin.display(description='Diferença juros moratorios')
     def default_interest_difference(self, model):
@@ -147,9 +147,9 @@ class AbstractCalculationAdmin(admin.ModelAdmin):
     def default_interest_percentage(self, model):
         return f'{model.default_interest.percentage}'
 
-    @admin.display(description='DTT honorarios advocaticios')
-    def advocative_hours_dtt(self, model):
-        return f'{model.advocative_hours.dtt}'
+    @admin.display(description='Sistema honorarios advocaticios')
+    def advocative_hours_system(self, model):
+        return f'{model.advocative_hours.system}'
 
     @admin.display(description='Diferença honrarios advocaticios')
     def advocative_hours_difference(self, model):
@@ -159,9 +159,9 @@ class AbstractCalculationAdmin(admin.ModelAdmin):
     def advocative_hours_percentage(self, model):
         return f'{model.advocative_hours.percentage}'
 
-    @admin.display(description='DTT total devido')
-    def total_due_dtt(self, model):
-        return f'{model.total_due_dtt}'
+    @admin.display(description='Sistema total devido')
+    def total_due_system(self, model):
+        return f'{model.total_due_system}'
 
     @admin.display(description='Creditor total devido')
     def total_due_creditor(self, model):
@@ -194,7 +194,7 @@ def get_verbas(comparatives, funds):
       embedded hyperlinks to each Comparative model in the given queryset.
 
     Raises:
-    - No specific exceptions are raised. Exceptions will only be caught and ignored while generating the hyperlinks.  
+    - No specific exceptions are raised. Exceptions will only be caught and ignored while generating the hyperlinks.
     """
     list_href = []
     for comparative in comparatives:
@@ -210,14 +210,14 @@ def get_verbas(comparatives, funds):
 
 class ApprovedCalculationAdmin(AbstractCalculationAdmin):  # Calculo homologado
     """
-    A ModelAdmin class containing the definition of fields displayed in the 
+    A ModelAdmin class containing the definition of fields displayed in the
     admin interface for the ApprovedCalculation instance.
     """
 
     def verbas(self, model):
         """
         A helper function that returns the approved funds for each ComparativeFunds instance belonging
-        to a particular ApprovedCalculation instance. 
+        to a particular ApprovedCalculation instance.
 
         It uses the get_verbas method to query hyperlink information and return it in an HTML-formatted
         string.
@@ -230,16 +230,16 @@ class ApprovedCalculationAdmin(AbstractCalculationAdmin):  # Calculo homologado
           to each ComparativeFunds instance under this ApprovedCalculation instance.
 
         Raises:
-        - No specific exceptions are raised. Exceptions will only be caught during the execution of 
-          get_verbas helper method.       
+        - No specific exceptions are raised. Exceptions will only be caught during the execution of
+          get_verbas helper method.
         """
         comparatives = model.get_comparatives()
         return get_verbas(comparatives, 'totalvaluesfunds')
 
     def verbas_integratorias(self, model):
         """
-        A helper function that returns the approved integration funds for each ComparativeFundsIntegrations 
-        instance belonging to a particular ApprovedCalculation instance.  
+        A helper function that returns the approved integration funds for each ComparativeFundsIntegrations
+        instance belonging to a particular ApprovedCalculation instance.
 
         It uses the get_verbas method to query hyperlink information and return it in an HTML-formatted
         string.
@@ -252,8 +252,8 @@ class ApprovedCalculationAdmin(AbstractCalculationAdmin):  # Calculo homologado
           to each ComparativeFundsIntegrations instance under this ApprovedCalculation instance.
 
         Raises:
-        - No specific exceptions are raised. Exceptions will only be caught during the execution of 
-          get_verbas helper method.         
+        - No specific exceptions are raised. Exceptions will only be caught during the execution of
+          get_verbas helper method.
         """
         comparatives = model.get_comparatives_integrations()
         return get_verbas(comparatives, 'totalvaluesfundsintegrations')

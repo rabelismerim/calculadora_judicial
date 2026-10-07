@@ -17,19 +17,19 @@ from config.settings import ENABLE_SSO, DRFMSAL_IDENTITY_WEB, ENABLE_TOKEN
 from core.abstract.views import AbstractViewApi
 from core.drfmsal.schemas import SignStatusSerializer, MFASerializer
 
-from core.dttuser.models import User
+from core.users.models import User
 from utils import doc, _
 
 ms_identity_web = DRFMSAL_IDENTITY_WEB
 
 
 class ClearCacheApi(AbstractViewApi):
-    """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like
+    """This class represents the HTTP methods for User calculadora. It contains methods such as get, and objects like
     query_params and schema. """
     http_method_names = ['get']
 
     docs = {
-        'init': _("""This view forces the platform to clear caches so that any get methods are reloaded. The platform 
+        'init': _("""This view forces the platform to clear caches so that any get methods are reloaded. The platform
         has cache control in case there is any change, but if this control fails, this view can be used )""")
     }
     serializer_class = SignStatusSerializer
@@ -44,7 +44,7 @@ class ClearCacheApi(AbstractViewApi):
 
 
 class SignStatusApi(AbstractViewApi):
-    """This class represents the HTTP methods for User Deloitte. It contains methods such as get, and objects like
+    """This class represents the HTTP methods for User calculadora. It contains methods such as get, and objects like
     query_params and schema. """
     http_method_names = ['get']
 
@@ -62,7 +62,7 @@ class SignStatusApi(AbstractViewApi):
     allow_cache = False
     operation_id_base = 'Get Sign Status'
 
-    @doc(_("""This method returns a JSON response that contains the user details as per authenticated user. 
+    @doc(_("""This method returns a JSON response that contains the user details as per authenticated user.
         The serializer is used to access the model object, and then the data is returned in a JSON format.
         """))
     def get(self, request, *args, **kwargs):

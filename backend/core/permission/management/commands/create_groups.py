@@ -14,7 +14,7 @@ all_projects = {
     'name': 'Can view all Projects'
 }
 authorize_users = {
-    'content_type': 'dttuser',
+    'content_type': 'users',
     'codename': 'can_authorize_users',
     'name': 'Can authorize Users'
 }
@@ -61,7 +61,7 @@ groups = [
          {'name': 'creditors',
           'actions': ['view', 'add', 'change', 'delete'],
           },
-         {'name': 'dttuser',
+         {'name': 'users',
           'actions': ['view', 'add', 'change', 'delete'],
           },
          {'name': 'rates',
@@ -87,7 +87,7 @@ groups = [
          {'name': 'creditors',
           'actions': ['view', 'add', 'change', 'delete'],
           },
-         {'name': 'dttuser',
+         {'name': 'users',
           'actions': ['view', 'add', 'change', 'delete'],
           },
          {'name': 'rates',
@@ -113,7 +113,7 @@ groups = [
          {'name': 'creditors',
           'actions': ['view', 'add', 'change', 'delete'],
           },
-         {'name': 'dttuser',
+         {'name': 'users',
           'actions': ['view', 'add', 'change', 'delete'],
           },
          {'name': 'rates',
@@ -139,7 +139,7 @@ groups = [
          {'name': 'creditors',
           'actions': ['view', 'add', 'change', 'delete'],
           },
-         {'name': 'dttuser',
+         {'name': 'users',
           'actions': ['view', 'add', 'change', 'delete'],
           },
          {'name': 'rates',
@@ -165,7 +165,7 @@ groups = [
          {'name': 'creditors',
           'actions': ['view'],
           },
-         {'name': 'dttuser',
+         {'name': 'users',
           'actions': ['view'],
           },
          {'name': 'rates',
@@ -191,7 +191,7 @@ groups = [
          {'name': 'creditors',
           'actions': ['view'],
           },
-         {'name': 'dttuser',
+         {'name': 'users',
           'actions': ['view'],
           },
          {'name': 'rates',
@@ -217,7 +217,7 @@ groups = [
          {'name': 'creditors',
           'actions': ['view'],
           },
-         {'name': 'dttuser',
+         {'name': 'users',
           'actions': ['view'],
           },
          {'name': 'rates',
@@ -255,7 +255,7 @@ class Command(BaseCommand):
         Return the list of applications that start with the app_label parameter.
         """
         apps = INSTALLED_APPS.copy()
-        apps.append('dttuser')
+        apps.append('users')
         return [app for app in apps if app.startswith(app_label)]
 
     def create_groups(self):

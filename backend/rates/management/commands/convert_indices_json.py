@@ -45,7 +45,7 @@ class Command(BaseCommand):
     """
 
     def handle(self, *args, **options):
-        excel_file_path = 'C:/projetoJuca/DJUD/backend/uploads/juca/templates/04_RECUPERANDA_SOLICITACAO_E_ELABORACAO_DE_CALCULO.xlsm'
+        excel_file_path = 'C:/projetoCalculadoraJudicial/DJUD/backend/uploads/calculadora-judicial/templates/04_RECUPERANDA_SOLICITACAO_E_ELABORACAO_DE_CALCULO.xlsm'
         sheet_name = 'TJSP'
-        output_folder = 'C:/projetoJuca/DJUD/backend/rates/indices_json'
+        output_folder = 'C:/projetoCalculadoraJudicial/DJUD/backend/rates/indices_json'
         excel_to_json(excel_file_path, sheet_name, output_folder)

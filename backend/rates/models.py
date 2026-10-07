@@ -337,7 +337,7 @@ class RateFile(AbstractModel):
     (inherited from the AbstractCalcule class)
     """
     rate = models.OneToOneField(Rate, on_delete=models.CASCADE)
-    file = models.FileField(_('Rate file'), upload_to=f'juca/indices/%Y-%m-%d/')
+    file = models.FileField(_('Rate file'), upload_to=f'calculadora-judicial/indices/%Y-%m-%d/')
 
     def __str__(self):
         return str(_("rate: {} | file: {}").format(self.rate, self.file.name))

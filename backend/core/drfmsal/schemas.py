@@ -35,7 +35,7 @@ class ProfileSerializer(serializers.Serializer):
 class SignStatusSerializer(serializers.Serializer):
     """Serializer for the SignStatus object, which represents the sign status of a user."""
     data = CustomDictField()
-    dttdjud = serializers.BooleanField()
+    application_response = serializers.BooleanField()
     accept_token = serializers.BooleanField()
     profile = ProfileSerializer()
 

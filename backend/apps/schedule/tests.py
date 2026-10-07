@@ -25,14 +25,14 @@ Attributes:
 #             "description": "schedule"
 #         }
 #         response = self.client.post(
-#             '/juca/api/v1/projects/schedule', schedule)
+#             '/calculadora-judicial/api/v1/projects/schedule', schedule)
 #         self.assertEqual(response.status_code, 201)
 #         self.print_success('Created schedule')
 
 #     def test_api_b_get_schedules(self):
 #         """Assert get schedules detail"""
 #         self.print_start('List schedules')
-#         response = self.client.get('/juca/api/v1/projects/schedule')
+#         response = self.client.get('/calculadora-judicial/api/v1/projects/schedule')
 #         self.assertEqual(response.status_code, 200)
 #         self.print_success('Listed schedules')
 #         schedules = response.json()['schedules']

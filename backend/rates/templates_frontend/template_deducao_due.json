@@ -1,7 +1,7 @@
 {
   "name": "Verbas de dedu\u00E7\u00E3o",
   "description": "Saldo a pagar",
-  "end_point": "/juca/api/v1/calculation/funds/deduction/due/detail/",
+  "end_point": "/calculadora-judicial/api/v1/calculation/funds/deduction/due/detail/",
   "fund_main": [
     {
       "label": "Data da atualiza\u00E7\u00E3o da corre\u00E7\u00E3o monet\u00E1ria",

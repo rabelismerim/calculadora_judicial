@@ -61,7 +61,7 @@ class File(AbstractModel):
 
     Attributes:
     """
-    file = models.FileField(upload_to='juca/files/%Y/%m/%d/')
+    file = models.FileField(upload_to='calculadora-judicial/files/%Y/%m/%d/')
     generic_path = models.ForeignKey(GenericModelPath, on_delete=models.PROTECT)
     task_result = models.ForeignKey(TaskResult, on_delete=models.PROTECT, null=True, blank=True)
     task_id = models.UUIDField(null=True, blank=True)

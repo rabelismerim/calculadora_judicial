@@ -37,8 +37,8 @@ remove_migrations.py
 mypy.ini
 start_server.bat
 *sqlite3
-juca/
-.juca-dev.env
-.juca-hml.env
-.juca-prod.env
+calculadora-judicial/
+.calculadora_judicial-dev.env
+.calculadora_judicial-hml.env
+.calculadora_judicial-prod.env
 .flake8

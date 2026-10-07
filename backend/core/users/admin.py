@@ -46,7 +46,7 @@ class CustomUserAdmin(UserAdmin):
 
     def show_image(self, obj):
         image_url = obj.image_url or '/static/src/vue/dist/icon-app.svg'
-        return mark_safe(f'<img src="/juca{image_url}" width="25" height="25" />')
+        return mark_safe(f'<img src="/calculadora_judicial{image_url}" width="25" height="25" />')
 
     show_image.allow_tags = True
     show_image.short_description = _('Image')

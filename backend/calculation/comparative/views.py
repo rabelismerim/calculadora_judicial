@@ -41,17 +41,17 @@ class ComparativeDetailApi(AbstractViewApi):
     model = Comparative
 
     docs = {
-        'init': _("""It represents the comparisons between the amounts requested by the creditor, the notices of the 
-            AJ and the Company under Recovering, compared with the calculation made by DTT. The result is the 
+        'init': _("""It represents the comparisons between the amounts requested by the creditor, the notices of the
+            AJ and the Company under Recovering, compared with the calculation made by Sistema. The result is the
             difference in amounts and percentage of the rates, the sum of the rates, the interest applied and the
             advocative hours
             """),
     }
     http_method_names = ['get', 'put']
 
-    @doc(_("""This method handles GET requests for the view. It retrieves a specific comparative object using the given 
-    calculation_id from the query parameters and serializes the result into JSON format before returning it as an 
-    HTTP response. 
+    @doc(_("""This method handles GET requests for the view. It retrieves a specific comparative object using the given
+    calculation_id from the query parameters and serializes the result into JSON format before returning it as an
+    HTTP response.
 
         :return:
             - JsonResponse: An HTTP response containing the serialized comparative data retrieved.
@@ -64,15 +64,15 @@ class ComparativeDetailApi(AbstractViewApi):
         comparative_data = self.serializer_class(comparative, many=False).data
         return JsonResponse({'comparative': comparative_data})
 
-    @doc(_("""This method handles PUT requests for the view. It expects input data that conform to the serializer used by 
-    the view class. It updates the approved_calculation or date object of a specific comparative object using the 
-    given calculation_id from the query parameters and serializes the updated object in JSON format before 
-    returning it as an HTTP response. 
+    @doc(_("""This method handles PUT requests for the view. It expects input data that conform to the serializer used by
+    the view class. It updates the approved_calculation or date object of a specific comparative object using the
+    given calculation_id from the query parameters and serializes the updated object in JSON format before
+    returning it as an HTTP response.
 
     :params:
         request: The HTTP request object.
         args: Any additional positional arguments passed to the method.
-        kwargs: Any additional keyword arguments passed to the method, with calculation_id identifying the 
+        kwargs: Any additional keyword arguments passed to the method, with calculation_id identifying the
         comparative object to update.
     :return:
         - JsonResponse: An HTTP response containing the updated and serialized comparative object data.

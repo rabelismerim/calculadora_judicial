@@ -1,7 +1,7 @@
 {
     "name": "Verbas",
     "description": "Verbas",
-    "end_point": "/juca/api/v1/calculation/funds/labor/",
+    "end_point": "/calculadora-judicial/api/v1/calculation/funds/labor/",
     "fund_main": [
         {
             "label": "Nome da verba",
@@ -21,7 +21,7 @@
             "required": false
         }
     ],
-    "end_point_main": "/juca/api/v1/calculation/funds/",
+    "end_point_main": "/calculadora-judicial/api/v1/calculation/funds/",
     "many": true,
     "slug": "F",
     "has_commit": true,

@@ -52,5 +52,5 @@ class RecoveringTest(AbstractTest):
         response = self.post(self.path, parameters)  # invalid legal number
         self.assertEqual(response.status_code, 400)
 
-    base_url = '/juca/api/v2/'
+    base_url = '/calculadora-judicial/api/v2/'
     base_path = 'v2/'

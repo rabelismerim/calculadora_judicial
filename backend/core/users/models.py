@@ -31,7 +31,7 @@ ROLES_CHOICES = (
 
 ROLES_EMAIL = ['G', 'D', 'C']  # Roles that can receive email to approve the user
 
-STATUS_CHOICES = (  # Status para o User DTT
+STATUS_CHOICES = (  # Status para o User Sistema
     ('A', _('Active')),
     ('I', _('Inactive')),
     ('P', _('Pending')),
@@ -236,7 +236,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(_('last name'), max_length=150, blank=True)
     email = models.EmailField(_('email address'), blank=True)
     userpicture = models.TextField(_('user picture'), blank=True)
-    user_img = models.ImageField(_('User img'), upload_to='juca/profile/%Y/%m/%d/', blank=True, null=True)
+    user_img = models.ImageField(_('User img'), upload_to='calculadora-judicial/profile/%Y/%m/%d/', blank=True, null=True)
     login_date = models.DateField(_('Login today'), null=True, blank=True
                                   )
     is_staff = models.BooleanField(

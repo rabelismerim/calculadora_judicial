@@ -25,5 +25,5 @@
 #         self.assertEqual(response.status_code, 200)
 #
 #
-#     base_url = '/juca/api/v2/'
+#     base_url = '/calculadora-judicial/api/v2/'
 #     base_path = 'v2/'

@@ -5,10 +5,10 @@
 
     {% if has_perm_view_formula %}
         {% if request.GET.view_code %}
-            <a href="#" class="btn btn-md" style="padding: 6.8px 20px; background-color: green;" onclick="reload()">Ocultar
+            <a href="#" class="btn btn-md" style="padding: 6.8px 20px; background-color: #2563eb; color: white;" onclick="reload()">Ocultar
                 código</a>
         {% else %}
-            <a href="#" class="btn btn-md" style="padding: 6.8px 20px; background-color: green;" onclick="viewCode()">Ver
+            <a href="#" class="btn btn-md" style="padding: 6.8px 20px; background-color: #2563eb; color: white;" onclick="viewCode()">Ver
                 código</a>
         {% endif %}
         <form id="_code" action="{{ form_url }}" method="get">

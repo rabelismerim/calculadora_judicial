@@ -28,7 +28,7 @@ class EngagementApi(AbstractViewApi):
     ]
 
     docs = {
-        'init': _("""The engagement is the unique control number, which references the client/project in the DTT.
+        'init': _("""The engagement is the unique control number, which references the client/project in the Sistema.
         """),
         'get': _("""Get the list of all engagements, being able to filter by number."""),
     }

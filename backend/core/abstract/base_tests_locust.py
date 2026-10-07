@@ -51,7 +51,7 @@ class BaseTestsLocust(BaseTests, SequentialTaskSet):
     def setUp(self):
         return
 
-    base_url = '/juca/api/v1/'
+    base_url = '/calculadora-judicial/api/v1/'
 
     def get_headers(self) -> dict:
         return {'Authorization': f'Token {self.__token}', 'Content-type': 'application/json'}

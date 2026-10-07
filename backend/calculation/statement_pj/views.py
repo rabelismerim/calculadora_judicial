@@ -44,15 +44,15 @@ class StatementPJApi(AbstractViewApi):
     model = StatementPJ
 
     docs = {
-        'init': _("""Represents the entire extract from the calculation of the truths of legal entities. All results 
-        of `calculations`, `fines`, `amounts due`, `claims`, `summary of funds`, `DTT opinion`, `classes` and 
+        'init': _("""Represents the entire extract from the calculation of the truths of legal entities. All results
+        of `calculations`, `fines`, `amounts due`, `claims`, `summary of funds`, `Sistema opinion`, `classes` and
         `used assumptions`.
             """),
     }
 
-    @doc(_("""This method handles GET requests for the view. It retrieves a specific statement PJ object using the given 
+    @doc(_("""This method handles GET requests for the view. It retrieves a specific statement PJ object using the given
             calculation_id from the query parameters and serializes the result into JSON format before returning it as
-             an HTTP response. 
+             an HTTP response.
 
                 :return:
                     - JsonResponse: An HTTP response containing the serialized statement PJ data retrieved.
