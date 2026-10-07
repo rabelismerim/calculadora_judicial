@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/DJUD.iml" filepath="$PROJECT_DIR$/.idea/DJUD.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/CALC.iml" filepath="$PROJECT_DIR$/.idea/CALC.iml" />
     </modules>
   </component>
 </project>
