@@ -237,3 +237,6 @@ VM.txt
 # sll cert
 cert.crt
 cert.key
+
+# Local browser tooling for documentation captures
+.capture-tools/
