@@ -55,8 +55,8 @@ const createCredit = async () => {
 
   try {
     loading = true
-    const endPointNewCredit = endPoint.startsWith('/juca/api/')
-      ? endPoint.replace('/juca/api/', '')
+    const endPointNewCredit = endPoint.startsWith('/calculadora-judicial/api/')
+      ? endPoint.replace('/calculadora-judicial/api/', '')
       : endPoint
     const result: any = await api.post(endPointNewCredit, {
       ...newCredit,

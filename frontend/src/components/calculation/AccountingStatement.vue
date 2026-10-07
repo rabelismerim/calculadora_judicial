@@ -23,14 +23,14 @@ const html = computed(() => {
         <title>title</title>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
-          * { 
+          * {
             font-family: 'Open Sans', Helvetica, Arial, sans-serif !important;
             font-size: 16px !important;
           }
           :root {
             --base: 0, 0%, 100%;
             --dark-base: 0, 0%, 0%;
-            --secondary: 81, 68%, 44%;
+            --secondary: 221, 83%, 53%;
           }
           body {
             margin: 0;

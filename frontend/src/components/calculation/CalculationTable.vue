@@ -228,7 +228,7 @@ const calculationColumns: TableColumn[] = [
 const statusColors: any = {
   S: '#AAAAAA', // To Calculate
   C: '#C4D600', // To Review
-  E: '#86BC25', // To Approve
+  E: '#2563eb', // To Approve
   B: '#43B02A', // To Approve Special
   A: '#007CB0', // Approved
   R: '#DA291C', // Failed

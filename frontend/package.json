@@ -1,14 +1,14 @@
 {
-  "name": "deloitte-juca",
+  "name": "calculadora-judicial",
   "type": "module",
   "version": "1.0.55",
   "private": true,
-  "description": "Sistema de Recuperação Financeira - Deloitte",
+  "description": "Calculadora Judicial",
   "scripts": {
     "dev": "vite --mode devremote",
     "dev:local": "vite --mode devlocal",
-    "build:prod": "vite build --mode production --base=/juca/static/src/vue/dist/ --emptyOutDir",
-    "build:hml": "vite build --mode homolog --base=/juca/static/src/vue/dist/ --emptyOutDir",
+    "build:prod": "vite build --mode production --base=/calculadora-judicial/static/src/vue/dist/ --emptyOutDir",
+    "build:hml": "vite build --mode homolog --base=/calculadora-judicial/static/src/vue/dist/ --emptyOutDir",
     "test": "vitest --ui --mode devremote",
     "ts": "vue-tsc --noEmit",
     "preview": "vite preview",

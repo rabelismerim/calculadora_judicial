@@ -24,7 +24,7 @@ const logout = () => api
 const getMyProfile = async () => verifyUser()
   .then(async (user: any = {}) => {
     const goToSignin = () =>
-      redirectTo(`${window.location.origin}/juca/api/drfmsal_signin/juca/`)
+      redirectTo(`${window.location.origin}/calculadora-judicial/api/drfmsal_signin/calculadora-judicial/`)
 
     const { authenticated, authorized, isActive } = user
 

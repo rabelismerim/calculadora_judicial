@@ -15,8 +15,7 @@ const { user } = $user
 <template>
   <nav class="flex bg-black h-14 pl-3 md:pl-8 md:pr-8 justify-between items-center sticky top-0 z-100">
     <div class="flex items-center">
-      <Img :src="`${baseUrl}/logo/deloitte-small-dark.svg`" :height="24" class="sm:hidden" />
-      <Img :src="`${baseUrl}/logo/deloitte-dark.svg`" :height="24" class="hidden sm:block" />
+      <span class="font-bold text-white text-sm sm:text-lg whitespace-nowrap">Calculadora Judicial</span>
     </div>
     <div class="flex no-wrap flex-1 h-full overflow-x-auto overflow-y-hidden hide-scrollbar">
       <slot />
@@ -44,12 +43,7 @@ const { user } = $user
           </div>
         </template>
       </Btn>
-      <Img :src="`${baseUrl}/logo/app.svg`" :height="30" class="hidden md:block" />
-      <Img
-        :src="`${baseUrl}/logo/digital-lab-dark.svg`"
-        :height="32"
-        class="hidden lg:block"
-      />
+      <Img :src="`${baseUrl}/logo/calculator.svg`" :height="30" alt="Calculadora" class="hidden md:block" />
     </div>
   </nav>
 </template>

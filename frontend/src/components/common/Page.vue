@@ -18,7 +18,7 @@ const isOpen = $ref(false)
 </script>
 
 <template>
-  <div>
+  <div class="min-w-0 overflow-x-clip">
     <div class="relative flex flex-1 justify-center">
       <QLinearProgress
         v-if="loading"

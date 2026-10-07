@@ -46,6 +46,9 @@ export default defineConfig({
     presetIcons({
       scale: 1.2,
       warn: true,
+      collections: {
+        carbon: () => import('@iconify-json/carbon').then(module => module.icons),
+      },
     }),
     presetTypography(),
     presetWebFonts({

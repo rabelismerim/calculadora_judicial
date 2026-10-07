@@ -75,7 +75,7 @@ const fileStatuses = [
   { label: 'Pendente', value: 'PENDING', color: '#c4d600' },
   { label: 'Recebido', value: 'RECEIVED', color: '#007cb0' },
   { label: 'Iniciado', value: 'STARTED', color: '#007cb0' },
-  { label: 'Processado', value: 'SUCCESS', color: '#86bc25' },
+  { label: 'Processado', value: 'SUCCESS', color: '#2563eb' },
   { label: 'Falhou', value: 'FAILURE', color: '#d9291c' },
   { label: 'Revogado', value: 'REVOKED', color: '#cccccc' },
   { label: 'Rejeitado', value: 'REJECTED', color: '#cccccc' },

@@ -48,14 +48,14 @@ const getProject = (id: string) => api
     }))
 
     const participants = projectUsers.reduce((acc: any, current: any) => {
-      const { id, idUser, firstName, lastName, username, pictureUrl, userpicture, groups } = current
+      const { id, idUser, firstName, lastName, username, email, pictureUrl, userpicture, groups } = current
       const user = {
         id: idUser,
         idUser: id,
         pictureUrl,
         userpicture,
         fullName: `${firstName} ${lastName}`,
-        email: `${username}@deloitte.com`,
+        email: email || (username?.includes('@') ? username : ''),
       }
       groups.forEach(({ name }: any) => {
         if (!acc[name])
@@ -199,7 +199,7 @@ const getUsers = () => api
 const statusColors: any = {
   p: '#c4d600', // Em Preparação
   e: '#c4d600', // Em Preparação
-  c: '#86bc25', // Concluído
+  c: '#2563eb', // Concluído
   a: '#007cb0', // Em Andamento
   f: '#cccccc', // Cancelado
 }
@@ -220,11 +220,11 @@ const getDashboardBigNumbers = () => api
     countStatus: data?.projectStatus?.countStatus
       ?.map(({ status, total }: any) => ({ count: total, label: statusNames[status.toLowerCase()] ?? status, color: statusColors[status] ?? statusColors.p })),
     countUsers: data?.projectStatus?.countUsers
-      ?.map(({ username, total }: any) => ({ count: total, label: username }))
+      ?.map(({ username, email, total }: any) => ({ count: total, label: username }))
       ?.sort(({ label: a }: any, { label: b }: any) => a.toLowerCase() < b.toLowerCase() ? -1 : 1),
     byPhase: [
       {
-        color: '#86BC25',
+        color: '#2563eb',
         count: data?.byPhase.adm || 0,
         label: 'Administrativa',
       },
@@ -238,7 +238,7 @@ const getDashboardBigNumbers = () => api
 const stepColors: any = {
   S: '#AAAAAA', // To Calculate
   C: '#C4D600', // To Review
-  E: '#86BC25', // To Approve
+  E: '#2563eb', // To Approve
   B: '#43B02A', // To Approve Special
   A: '#007CB0', // Approved
   R: '#DA291C', // Failed

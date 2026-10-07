@@ -29,7 +29,7 @@ const avatar = (username: string) => {
   const userImage = userpicture
     ? `data:image/jpg;base64,${userpicture}`
     : pictureUrl
-      ? `${host}/juca${pictureUrl}`
+      ? `${host}/calculadora_judicial${pictureUrl}`
       : undefined
   return userImage
 }

@@ -21,7 +21,7 @@ const appVersion = APP_VERSION || '0.0.0'
     </div>
     <div class="flex items-center justify-center sm:justify-between bg-black h-10 px-10 text-white overflow-hidden">
       <div class="inline sm:block">
-        © 2023 Para mais informações contate a Deloitte Global
+        Calculadora Judicial
       </div>
       <span class="ml-4 whitespace-pre">Versão: {{ appVersion }}</span>
     </div>

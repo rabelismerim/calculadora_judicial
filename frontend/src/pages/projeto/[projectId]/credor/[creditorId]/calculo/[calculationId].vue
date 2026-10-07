@@ -43,7 +43,7 @@ const loadOptions = async () => {
   const { stepCalculationOptions = [] } = result
   const steps = []
   for (const step of stepCalculationOptions) {
-    const error = await fetch(`${host}/juca/api/v1/calculation/${attrs.calculationId}/check_step/`, {
+    const error = await fetch(`${host}/calculadora-judicial/api/v1/calculation/${attrs.calculationId}/check_step/`, {
       method: 'PUT',
       headers,
       body: JSON.stringify({
@@ -300,14 +300,14 @@ onMounted(async () => {
 const stepColors: any = {
   S: '#AAAAAA', // To Calculate
   C: '#C4D600', // To Review
-  E: '#86BC25', // To Approve
+  E: '#2563eb', // To Approve
   B: '#43B02A', // To Approve Special
   A: '#007CB0', // Approved
   R: '#DA291C', // Failed
 }
 const statusColors: any = {
   S: '#c4d600', // Requested
-  C: '#86BC25', // Concluded
+  C: '#2563eb', // Concluded
   E: '#007cb0', // In Progress
   I: '#c4d600', // In Progress
   F: '#DA291C', // Calculation failed - rate not found

@@ -22,14 +22,14 @@ const enter = async () => {
 let emailManagers = $ref([])
 const emailBody = `Prezados,
 
-Gostaria de solicitar formalmente acesso à aplicação JUCA. 
+Gostaria de solicitar formalmente acesso à aplicação Calculadora Judicial.
 Por favor, conceda-me as permissões necessárias.
 Agradeço antecipadamente pela sua atenção a esta solicitação.
 
 Atenciosamente,
 
 `.replaceAll('\n', '%0D%0A')
-const mailto = computed(() => `mailto:${emailManagers.join(',')}?subject=Pedido de Acesso - JUCA&body=${emailBody}`)
+const mailto = computed(() => `mailto:${emailManagers.join(',')}?subject=Pedido de Acesso - Calculadora Judicial&body=${emailBody}`)
 
 onMounted(async () => {
   isLoading = true
@@ -58,14 +58,14 @@ onMounted(async () => {
     />
     <div class="flex flex-col-reverse pt-8 md:pt-0 pb-6 md:pb-0 md:grid md:grid-cols-2 md:gap-16 max-w-[min(1200px,100vw)] px-6 flex-1 mx-auto">
       <div class="flex flex-col justify-center gap-6">
-        <h1 class="font-extrabold text-6xl mt-8">
-          JUCA
+        <h1 class="font-extrabold text-4xl sm:text-5xl lg:text-6xl mt-8">
+          Calculadora Judicial
         </h1>
         <h2 class="text-gray text-3xl">
           Sistema de Administração Judicial
         </h2>
         <p>
-          <strong>JUCA</strong>, acrônimo de <strong>CÁ</strong>lculo <strong>JU</strong>dicial, é um sistema que simplifica os cálculos financeiros complexos no processo de administração judicial, fornecendo resultados precisos e confiáveis ao longo do tempo.
+          <strong>Calculadora Judicial</strong> é um sistema que simplifica os cálculos financeiros complexos no processo de administração judicial, fornecendo resultados precisos e confiáveis ao longo do tempo.
           <span class="hidden sm:block">Com sua interface amigável e algoritmos avançados, é a ferramenta ideal para advogados, analistas financeiros e demais profissionais envolvidos em processos de recuperação judicial e falência.</span>
         </p>
         <!-- <p>

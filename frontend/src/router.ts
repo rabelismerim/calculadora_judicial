@@ -17,7 +17,7 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const needAuthenticated = to.meta?.authenticated
   const neededPermissions = to.meta?.permissions as string[] || []
-  const user = JSON.parse(sessionStorage.getItem('deloitte-user') || '{}')
+  const user = JSON.parse(sessionStorage.getItem('calculadora-user') || '{}')
 
   const { isActive, permissions: userPermissions } = user
   const hasAllPermissions = neededPermissions.every((permission: string) => userPermissions.includes(permission))

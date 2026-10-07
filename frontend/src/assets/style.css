@@ -2,15 +2,15 @@
 
 :root {
   color: #213547;
-  
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
-  
-  --primary: 198,100%,35%;
-  --secondary: 81, 68%, 44%;
+
+  --primary: 221, 83%, 53%;
+  --secondary: 221, 83%, 53%;
   --background: 0, 0%, 96%;
   --base: 0, 0%, 100%;
   --dark-base: 0, 0%, 0%;
@@ -18,7 +18,7 @@
   --dark-content: 0, 0%, 100%;
   --white: 0, 0%, 100%;
   --information: 198, 100%, 35%;
-  --success: 81, 67%, 44%;
+  --success: 221, 83%, 53%;
   --error: 4, 77%, 48%;
 }
 
@@ -28,7 +28,7 @@ a {
 }
 
 a:hover {
-  color: #86bc24;
+  color: #2563eb;
 }
 
 html {
@@ -142,7 +142,7 @@ div {
   background: currentColor;
   opacity: 0.1;
 }
-.q-stepper.vertical .q-stepper__dot::before, 
+.q-stepper.vertical .q-stepper__dot::before,
 .q-stepper.vertical .q-stepper__label::after {
   content: none;
 }

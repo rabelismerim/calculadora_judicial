@@ -44,7 +44,7 @@ const filters = [
   { label: 'Consultor', value: 'consultor' },
 ]
 const statusColors: any = {
-  true: '#86bc25', // Ativo
+  true: '#2563eb', // Ativo
   false: '#cccccc', // Inativo
 }
 

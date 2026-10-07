@@ -20,7 +20,7 @@ const steps = [
   },
   {
     label: 'à Aprovar',
-    background: '#86BC25',
+    background: '#2563eb',
     color: '#FFF',
     status: 'E',
   },

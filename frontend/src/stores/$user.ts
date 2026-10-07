@@ -11,7 +11,7 @@ const userFallback = {
   projects: [] as string[],
 }
 
-const store = useStorage('deloitte-user', clone(userFallback), sessionStorage)
+const store = useStorage('calculadora-user', clone(userFallback), sessionStorage)
 
 const login = async () => {
   try {

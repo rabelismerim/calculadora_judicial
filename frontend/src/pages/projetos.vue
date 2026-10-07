@@ -19,7 +19,7 @@ let projects = $ref([])
 const statusColors: any = {
   p: '#c4d600', // Em Preparação
   e: '#c4d600', // Em Preparação
-  c: '#86bc25', // Concluído
+  c: '#2563eb', // Concluído
   a: '#007cb0', // Em Andamento
   f: '#cccccc', // Cancelado
 }

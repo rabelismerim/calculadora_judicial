@@ -17,7 +17,7 @@ const redirectToProject = (_: any, row: any) => {
 const statusColors: any = {
   P: '#c4d600', // Em Preparação
   E: '#c4d600', // Em Preparação
-  C: '#86bc25', // Concluído
+  C: '#2563eb', // Concluído
   A: '#007cb0', // Em Andamento
   F: '#cccccc', // Cancelado
 }

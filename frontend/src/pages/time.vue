@@ -13,11 +13,11 @@ const mapProjects = computed(() => projects.map((project: any) => {
   const newProject = clone(project)
   const { id, description, projectUsers, status, statusDisplay } = newProject
   const filterBy = (toCompare: string) => ({ groups }: any) => groups?.findIndex(({ name }: any) => name === toCompare)
-  const mapUser = ({ firstName, lastName, pictureUrl, userpicture, username, groups }: any) => ({
+  const mapUser = ({ firstName, lastName, pictureUrl, userpicture, username, email, groups }: any) => ({
     fullName: `${firstName} ${lastName}`,
     pictureUrl,
     userpicture,
-    email: `${username}@deloitte.com`,
+    email: email || (username?.includes('@') ? username : ''),
     groups,
   })
   const users = projectUsers.map(mapUser)

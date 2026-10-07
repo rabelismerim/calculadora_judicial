@@ -3,7 +3,7 @@
     .rafter {
       --r: -25deg;
       --t: 10s;
-      transform: rotate(var(--r)); 
+      transform: rotate(var(--r));
       transform-origin: 50% 25%;
       transition: all 300ms ease-in-out;
     }
@@ -124,13 +124,13 @@
       <stop offset="1" stop-color="#0b77a9" />
     </linearGradient>
     <linearGradient id="l" x1="-4.8" x2="-4.8" y1="4.1" y2="4.1" gradientUnits="objectBoundingBox">
-      <stop offset="0" stop-color="#4aab48" />
-      <stop offset="0" stop-color="#4bab47" />
-      <stop offset=".1" stop-color="#60b13a" />
-      <stop offset=".2" stop-color="#71b630" />
-      <stop offset=".3" stop-color="#7db92a" />
-      <stop offset=".5" stop-color="#84bb26" />
-      <stop offset="1" stop-color="#86bc25" />
+      <stop offset="0" stop-color="#4867ab" />
+      <stop offset="0" stop-color="#4767ab" />
+      <stop offset=".1" stop-color="#3a60b1" />
+      <stop offset=".2" stop-color="#305ab6" />
+      <stop offset=".3" stop-color="#2a57b9" />
+      <stop offset=".5" stop-color="#2655bb" />
+      <stop offset="1" stop-color="#2555bc" />
     </linearGradient>
     <linearGradient id="n" x1="-.4" x2="-.4" y1="1.4" y2="1.4" gradientUnits="objectBoundingBox">
       <stop offset="0" stop-color="#b3b3b3" />

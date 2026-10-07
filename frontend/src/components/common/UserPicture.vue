@@ -17,14 +17,14 @@ const props = withDefaults(defineProps<{
 })
 
 const host = import.meta.env.VITE_API_HOST
-const userImage = computed(() => `${host}/juca${props.modelValue?.pictureUrl}`)
+const userImage = computed(() => `${host}/calculadora_judicial${props.modelValue?.pictureUrl}`)
 </script>
 
 <template>
   <div class="rounded-1 overflow-hidden">
     <Img
       v-if="modelValue?.pictureUrl"
-      :src="`${host}/juca${props.modelValue?.pictureUrl}`"
+      :src="`${host}/calculadora_judicial${props.modelValue?.pictureUrl}`"
       class="w-full h-full object-cover"
       :error-image="`${baseUrl}/fallback/user.svg`"
     />
